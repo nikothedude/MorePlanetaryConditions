@@ -1,0 +1,30 @@
+{
+	"niko_MPC_derelict_anti_asteroid_satellite":{
+		"defaultName":"Domain-Era Derelict Anti-Asteroid Satellite", # used if name=null in addCustomEntity()
+		"nameInText":"anti-asteroid satellite",
+		"shortName":"satellite",
+		"icon":"graphics/icons/entity_hollow.png",
+		"iconWidth":12,
+		"iconHeight":12,
+		"sprite":"graphics/ships/derelict/derelict_berserker.png", #placeholder sprite
+		"spriteWidth":20,
+		"spriteHeight":20,
+		"defaultRadius":10, # used if radius<0 in addCustomEntity()
+		"customDescriptionId":"niko_MPE_defenseSatellite",
+		"interactionImage":"graphics/illustrations/comm_relay.jpg", #placeholder
+		"showInCampaign":true, # show in campaign layer
+		"showIconOnMap":true, #placeholder
+		"showNameOnMap":false,
+		"nameFontScale":1,
+		"nameAngle":0,
+		"nameColor":[70,200,255,255],
+		"nameShadowColor":[0,0,0,255],
+		"scaleNameWithZoom":false,
+		"scaleIconWithZoom":true,
+		#"renderCircleIndicator":true, # make clickable
+		#"renderCircleIndicatorSelectionFlash":false,
+		"layers":[BELOW_STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values,
+		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC", "neutrino", "has_interaction_dialog"],
+		#"pluginClass":"data.scripts.campaign.entities.niko_MPC_defenseSatellite", #plugin is required later
+	}
+}

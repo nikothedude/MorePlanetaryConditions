@@ -1,0 +1,28 @@
+{
+    "id":"niko_morePlanetaryConditions", # For the convenience of troubleshooters, include your name and the mod name, not just an acronym.
+	"name":"More Planetary Conditions", # Displayed to the player
+	"author":"Niko",
+    "utility":"false",
+	"version":"0.0.0_dev",
+	"description":"todo.",
+    "gameVersion": "0.95.1a-RC6", 
+  	"jars":["jars/niko_morePlanetaryConditions.jar"],
+  	#"modPlugin":"niko.morePlanetaryConditions.TemplateModPlugin",
+	  	"dependencies": [
+        #{
+        #    "id": "lw_lazylib",
+        #    "name": "LazyLib",
+        #    #"version": "2.7b"
+        #},
+        #{
+        #    "id": "MagicLib",
+        #    "name": "MagicLib",
+        #    #"version": "0.34"
+        #},
+        #{
+        #    "id": "shaderLib",
+        #    "name": "GraphicsLib",
+        #    #"version": "1.5.1"
+        #}
+    ],
+}
