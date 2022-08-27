@@ -22,7 +22,7 @@
     # This is used to launch directly to the forum thread from in the game.
     # The ID is the set of digits at the end of the forum thread URL before the dot.
     # For example: fractalsoftworks.com/forum/index.php?topic=8181.0 has an ID of 8181
-    "modThreadId":0,
+    "modThreadId":25205.0,
 
     # The current patch number
     # Notation is major.minor.patch, trailing zeros are ignored
