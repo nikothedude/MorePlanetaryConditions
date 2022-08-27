@@ -47,8 +47,7 @@ public class niko_MPC_planetUtils {
      * @return The optimal angle offset in degrees between the satellites. Returns float.
      */
     public static float getOptimalOrbitalAngleForSatellites(SectorEntityToken entity, List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket) {
-        float entityRadius = entity.getRadius(); //fixme: it seems the offset found is fucking TINY like holy FUCK. with a max sat amount of 15, optimal offset was .005493164
-        int numOfSatellites = satellitesInOrbitOfMarket.size(); //^ the math is functional, i just need to figure out how to tame it so it isnt insane
+        int numOfSatellites = satellitesInOrbitOfMarket.size();
 
         float optimalAngle = (360 / (float) numOfSatellites); //todo: explain the math
 

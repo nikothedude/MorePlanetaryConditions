@@ -16,7 +16,7 @@
     # Example links for common hosts:
     "masterVersionFile":"url goes here",
 
-    "modName":"More Sensor Ghosts",
+    "modName":"More Planetary Conditions",
 
     # The ID of the thread where updates to this mod can be found (optional).
     # This is used to launch directly to the forum thread from in the game.
@@ -30,8 +30,8 @@
     # If you use major.minor notation you can just leave patch as 0
     "modVersion":
     {
-        "major":1,
+        "major":0,
         "minor":0,
-        "patch":0 # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+        "patch":0_dev # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
 }
