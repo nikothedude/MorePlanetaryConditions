@@ -1,34 +1,25 @@
 package data.scripts.campaign.econ;
 
-import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import static java.lang.Math.round;
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKey;
-import static data.utilities.niko_MPC_planetUtils.*;
+import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
+import static data.utilities.niko_MPC_planetUtils.getNumSatellitesInOrbitOfMarket;
+import static data.utilities.niko_MPC_satelliteUtils.*;
+import static data.utilities.niko_MPC_scriptUtils.addScriptIfScriptIsUnique;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     //fixme: core planets are having the sattelites added, but they dont have the condition. what? probs being applied then unapplied. for some reason
-
-    private static final Logger log = Global.getLogger(niko_MPC_antiAsteroidSatellites.class);
-
-    static {
-        log.setLevel(Level.ALL);
-    }
 
     private boolean maxPhysicalSatellitesOverridden = false;
 
@@ -78,128 +69,20 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         MemoryAPI marketMemory = (market.getMemoryWithoutUpdate());
         if (!(marketMemory.contains("$niko_MPC_defenseSatellitesInOrbit")) || (marketMemory.get("$niko_MPC_defenseSatellitesInOrbit") == null)) { // if the market doesnt think we exist
             instantiateMemoryKey(marketMemory, "$niko_MPC_defenseSatellitesInOrbit", new ArrayList<CustomCampaignEntityAPI>()); //lets tell it we do
-            addSatellitesToMarket(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
+            addSatellitesToMarketPrefab(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
         }
+
+        addScriptIfScriptIsUnique(market.getPrimaryEntity(), new niko_MPC_satelliteTrackerScript(market) {
+
+            //todo finish
+
+        });
 
         handleSatelliteStatusOfMarket(market); //todo: consider consolidating addSatellitesToMarket into this method
     }
 
-    public void handleSatelliteStatusOfMarket(MarketAPI market) { //placeholder name
-        return; //todo: placeholder
-
-    }
-
-    public void addSatellitesToMarket(MarketAPI market, int amountOfSatellitesToAdd) {
-        StarSystemAPI system = market.getStarSystem();
-        for (int i = 1; i <= amountOfSatellitesToAdd; i++) { //if the /current/ iteration is more than the max satellites in here, stop and regen
-            addSatellite(market, false);
-        }
-        regenerateOrbitSpacing(market); //only needs to be done once, after all the satellites are added
-    }
-
-    public void addSatellite(MarketAPI market) {
-        addSatellite(market, true);
-    }
-
-    public void addSatellite(MarketAPI market, boolean regenerateOrbit) {
-        StarSystemAPI system = market.getStarSystem();
-
-        List<CustomCampaignEntityAPI> satellitesInOrbit; //var instantiated here to save horizontal space
-        satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-
-        int satelliteNumber = ((satellitesInOrbit.size()) + 1); //the number of the satellite we are adding, used for tracking it
-
-        String orderedSatelliteId = (getSatelliteId() + (" " + satelliteNumber)); // the 1st satellite becomes "id 1", etc
-
-        // instantiate the satellite in the system
-        CustomCampaignEntityAPI satellite = system.addCustomEntity(orderedSatelliteId, defaultSatelliteName, defaultSatelliteId, defaultSatelliteFaction);
-        addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity()); //then add the satellite to the planet we are orbiting
-
-        satellitesInOrbit.add(satellite); //returns the same number as appendSatelliteNumberToId
-
-        satellite.setCustomDescriptionId(baseSatelliteDescriptionId);
-
-        if (regenerateOrbit)
-            regenerateOrbitSpacing(market);
-    }
-
-    public void addOrbitAroundSectorEntity(CustomCampaignEntityAPI satellite, SectorEntityToken entity) {// todo: why am i using this when i initialize a satellite? why not just use the offsets instantly instead of regenning?
-        addOrbitAroundSectorEntity(satellite, entity, (entity.getCircularOrbitAngle()));
-    }
-
-    public void addOrbitAroundSectorEntity(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
-        float orbitRadius = (entity.getRadius()); //todo: placeholder math
-        float orbitDays = (entity.getCircularOrbitPeriod()); //my understanding is that this method returns how many days it takes for this object to do a complete orbit
-
-        satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
-        //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet
-
-    }
-
-    /**
-     * Removes all satellites orbiting this market.
-     * @param market The target market.
-     */
-    public void removeSatellitesFromMarket(MarketAPI market) {
-        List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-        removeSatellitesFromMarket(market, satellitesInOrbit);
-    }
-
-    /**
-     * Removes amountOfSatellitesToRemove satellites from market's orbit, taking satellites from listToUse.
-     * @param market The target market.
-     * @param listToUse The list from which satellites will be taken.
-     */
-    public void removeSatellitesFromMarket(MarketAPI market, List<CustomCampaignEntityAPI> listToUse) {
-
-        List<CustomCampaignEntityAPI> listToUseCopy = new ArrayList<>(listToUse);
-        // we make a copy and manipualte the values in this copy to avoid a concurrentmodificationexception
-        // the result is hopefully the same, and it seems it is, from testing, although fixme: when satellites are removed, the arraylist still has a size of 1?
-
-        for (CustomCampaignEntityAPI satellite : listToUseCopy) {
-            removeSatellite(market, satellite, false);
-        }
-
-        regenerateOrbitSpacing(market);
-        if (listToUseCopy == market.getMemoryWithoutUpdate().get("$niko_MPC_defenseSatellitesInOrbit")) { //todo: sloppy code, methodize it
-            market.getMemoryWithoutUpdate().set("$niko_MPC_defenseSatellitesInOrbit", null); //we need this for reapplying fixme: throws a error. fix it
-            market.getMemoryWithoutUpdate().unset("$niko_MPC_defenseSatellitesInOrbit");
-        }
-    }
-
-    public void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite) {
-        removeSatellite(market, satellite, true);
-    }
-
-    public void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
-
-        Misc.fadeAndExpire(satellite); //both this and removeEntity dont cause the NaN
-
-        satellite.getContainingLocation().removeEntity(satellite);
-        getSatellitesInOrbitOfMarket(market).remove(satellite);
-
-        if (regenerateOrbit) {
-            regenerateOrbitSpacing(market);
-        }
-    }
-
-    public void regenerateOrbitSpacing(MarketAPI market) {
-        List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket = getSatellitesInOrbitOfMarket(market);
-
-        float optimalOrbitAngleOffset = getOptimalOrbitalAngleForSatellites(market.getPrimaryEntity(), satellitesInOrbitOfMarket);
-        float orbitAngle = 0;
-        // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc, so its safe to not add a buffer to the calculation in the optimalangle method
-        for (CustomCampaignEntityAPI satellite : satellitesInOrbitOfMarket) { //iterates through each orbitting satellite and offsets them
-            if (orbitAngle >= 360) {
-                if (Global.getSettings().isDevMode()) {
-                    Global.getSector().getCampaignUI().addMessage("A satellite on " + market + " was given a orbit offset of " + orbitAngle + "."); //debug code
-                    log.debug("A satellite on " + market + " was given a orbit offset of " + orbitAngle + ".");
-                    removeSatellite(market, satellite, false); //we dont want these weirdos overlapping
-                }
-            }
-            addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity(), orbitAngle);
-            orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
-        }
+    public void addSatellitesToMarketPrefab(MarketAPI market, int amountOfSatellitesToAdd) {
+        addSatellitesToMarket(market, amountOfSatellitesToAdd, defaultSatelliteId, defaultSatelliteName, defaultSatelliteFaction);
     }
 
     private String appendSatelliteNumberToId(MarketAPI market, String idToAppendTo) {
@@ -262,6 +145,30 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id);
 
         market.unsuppressCondition("meteor_impacts");
+
+        market.getPrimaryEntity().addScript(new EveryFrameScriptWithCleanup() {
+            float elapsed = 0f;
+            boolean done = false;
+            @Override
+            public void cleanup() {
+
+            }
+
+            @Override
+            public boolean isDone() {
+                return done;
+            }
+
+            @Override
+            public boolean runWhilePaused() {
+                return false;
+            }
+
+            @Override
+            public void advance(float amount) {
+
+            }
+        });
 
         removeSatellitesFromMarket(market);
         // more stuff

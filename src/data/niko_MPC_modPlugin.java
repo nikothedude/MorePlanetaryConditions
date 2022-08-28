@@ -1,8 +1,10 @@
 package data;
 
 import com.fs.starfarer.api.BaseModPlugin;
+import com.fs.starfarer.api.Global;
+import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
-public class TemplateModPlugin extends BaseModPlugin {
+public class niko_MPC_modPlugin extends BaseModPlugin {
     @Override
     public void onApplicationLoad() throws Exception {
         super.onApplicationLoad();
@@ -22,5 +24,13 @@ public class TemplateModPlugin extends BaseModPlugin {
 //                    new MySectorGen().generate(Global.getSector());
             // Add code that creates a new star system (will only run if Nexerelin's Random (corvus) mode is disabled).
 //        }
+    }
+    @Override
+    public void onEnabled(boolean wasEnabledBefore) {
+        if (!wasEnabledBefore) { //If this is the first time this mod has been loaded,
+            Global.getSector().addScript(new niko_MPC_satelliteTrackerScript() { //...then we should add a new tracker for satellites
+
+            });
+        }
     }
 }

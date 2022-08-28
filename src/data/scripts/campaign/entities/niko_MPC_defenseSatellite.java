@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.campaign.CampaignEntity;
 import com.fs.starfarer.campaign.CustomCampaignEntity;
 
+@Deprecated
 public class niko_MPC_defenseSatellite extends CustomCampaignEntity { //maybe abstract it and split types into specific classes
     public int satelliteNumber; // the 1st sat has an id of 1, 2nd has 2, etc
     public String descriptionId = "niko_MPE_defenseSatellite";
