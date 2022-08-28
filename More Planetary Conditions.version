@@ -14,7 +14,7 @@
     # created after October 2012 will not have a Public folder, unfortunately.
     #
     # Example links for common hosts:
-    "masterVersionFile":"https://raw.githubusercontent.com/nikothedude/MorePlanetaryConditions/master/More%20Planetary%20Conditions.version",
+    "masterVersionFile":"https://raw.githubusercontent.com/nikothedude/MorePlanetaryConditions/release/More%20Planetary%20Conditions.version",
 
     "modName":"More Planetary Conditions",
 
