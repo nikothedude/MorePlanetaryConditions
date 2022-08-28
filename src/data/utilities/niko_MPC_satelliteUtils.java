@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import org.apache.log4j.Level;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static data.utilities.niko_MPC_generalUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalAngleForSatellites;
 import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
 
@@ -23,11 +25,11 @@ public class niko_MPC_satelliteUtils {
      * Holds a reference to the single satelliteTrackerScript present in campaign. Only here for purposes of accessing it.
      */
     public static niko_MPC_satelliteTrackerScript satelliteTracker;
-
     /**
      * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
      */
     public final static List<String> satelliteConditionIds = new ArrayList<>(Arrays.asList("niko_MPC_antiAsteroidSatellites"));
+    public final static String satellitesInOrbitMemKeyId = "$niko_MPC_defenseSatellitesInOrbit";
 
     private static final Logger log = Global.getLogger(niko_MPC_satelliteUtils.class);
 
@@ -109,9 +111,10 @@ public class niko_MPC_satelliteUtils {
         }
 
         regenerateOrbitSpacing(market);
-        if (listToUse == market.getMemoryWithoutUpdate().get("$niko_MPC_defenseSatellitesInOrbit")) { //todo: sloppy code, methodize it, also, this should check size of the list instead
-            market.getMemoryWithoutUpdate().set("$niko_MPC_defenseSatellitesInOrbit", null); //we need this for reapplying fixme: throws a error. fix it
-            market.getMemoryWithoutUpdate().unset("$niko_MPC_defenseSatellitesInOrbit");
+        if (listToUse == market.getMemoryWithoutUpdate().get(satellitesInOrbitMemKeyId)) { //todo: sloppy code, methodize it, also, this should check size of the list instead
+            MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
+
+            deleteMemoryKey(marketMemory, satellitesInOrbitMemKeyId);
         }
     }
 

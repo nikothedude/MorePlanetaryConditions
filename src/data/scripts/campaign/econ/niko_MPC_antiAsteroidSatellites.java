@@ -70,8 +70,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         handleHazardAndAccessibilityChanges(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
 
         MemoryAPI marketMemory = (market.getMemoryWithoutUpdate()); //todo: do i actually need this memorylist now? or can i just use the tracker's satellites?
-        if (!(marketMemory.contains("$niko_MPC_defenseSatellitesInOrbit")) || (marketMemory.get("$niko_MPC_defenseSatellitesInOrbit") == null)) { // if the market doesnt think we exist
-            instantiateMemoryKey(marketMemory, "$niko_MPC_defenseSatellitesInOrbit", new ArrayList<CustomCampaignEntityAPI>()); //lets tell it we do
+        if (!(marketMemory.contains(satellitesInOrbitMemKeyId)) || (marketMemory.get(satellitesInOrbitMemKeyId) == null)) { // if the market doesnt think we exist
+            instantiateMemoryKey(marketMemory, satellitesInOrbitMemKeyId, new ArrayList<CustomCampaignEntityAPI>()); //lets tell it we do
             addSatellitesToMarketPrefab(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
         }
         addSatelliteTrackerIfNoneIsPresent(market, getSatellitesInOrbitOfMarket(market)); //required to be here, since all methods in the modplugin are before the sector exists, or after planetgen

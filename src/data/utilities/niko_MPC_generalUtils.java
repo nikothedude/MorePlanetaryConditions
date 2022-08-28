@@ -47,4 +47,9 @@ public class niko_MPC_generalUtils {
         return scriptsOfClass;
     }
 
+    public static void deleteMemoryKey(MemoryAPI memory, String key) {
+        memory.set(key, null);
+        memory.unset(key);
+    }
+
 }

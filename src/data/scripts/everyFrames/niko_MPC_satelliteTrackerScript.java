@@ -5,19 +5,20 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
-import com.fs.starfarer.campaign.CustomCampaignEntity;
-import data.utilities.niko_MPC_satelliteUtils;
-import jdk.jfr.Experimental;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.*;
 
+import static data.utilities.niko_MPC_generalUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.getMarketsWithSatellites;
 import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
 import static data.utilities.niko_MPC_satelliteUtils.*;
+import static data.utilities.niko_MPC_scriptUtils.addNewSatelliteTracker;
+import static data.utilities.niko_MPC_scriptUtils.satelliteTrackerId;
 
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
@@ -73,7 +74,9 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     @Override
     public void advance(float amount) {
 
-        log.debug(market.getId() + " iterated");
+        //log.debug(market.getId() + " iterated");
+
+        migrateMarketsIfEntityHasNewMarket();
 
         if (deleteSatellitesAndSelfIfMarketIsNull()) {
             return;
@@ -81,9 +84,24 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         if (deleteSatellitesAndSelfIfMarketHasNoCondition()) {
             return;
         }
-
         updateSatelliteStatus();
+    }
 
+    public void migrateMarketsIfEntityHasNewMarket() {
+        MarketAPI entityMarket = getEntity().getMarket();
+
+        if (!(entityMarket.getId().equals(market.getId()))) {
+            migrateSatellitesToNewMarket(market, entityMarket, this);
+        }
+    }
+
+    public static void migrateSatellitesToNewMarket(MarketAPI oldMarket, MarketAPI market, niko_MPC_satelliteTrackerScript script) {
+        setMarket(market, script);
+        market.getMemoryWithoutUpdate().set(satellitesInOrbitMemKeyId, script.satellites);
+        addNewSatelliteTracker(market, script);
+
+        MemoryAPI oldMarketMemory = oldMarket.getMemoryWithoutUpdate();
+        deleteMemoryKey(oldMarketMemory, satellitesInOrbitMemKeyId);
     }
 
     public void updateSatelliteStatus() {
@@ -125,19 +143,27 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
         while(iterator.hasNext()) { //iterator to avoid a concurrentmodificationexception
             CustomCampaignEntityAPI satellite = iterator.next();
-            deleteSatelliteAndRemoveFromList(satellite, this); //todo: methodize. this one might need a refactor
+            removeSatellite(satellite);
+            iterator.remove();//todo: methodize. this one might need a refactor
         }
+
+        MemoryAPI marketMemory = getMarket().getMemoryWithoutUpdate();
+        deleteMemoryKey(marketMemory, satellitesInOrbitMemKeyId);
+        deleteMemoryKey(marketMemory, satelliteTrackerId);
 
         done = true;
         getEntity().removeScript(this); // we aren't needed anymore
     }
 
+    /**
+     * Only used with lists, no iterator support.
+     * @param satellite
+     * @param script
+     */
     public static void deleteSatelliteAndRemoveFromList(CustomCampaignEntityAPI satellite, niko_MPC_satelliteTrackerScript script) {
         removeSatellite(satellite);
         getSatelliteTrackerTrackedSatellites(script).remove(satellite);
     }
-
-
 
     public void removeSatellitesFromMarketAndRemoveFromList(MarketAPI market) {
         removeSatellitesFromMarket(market, getSatellitesInOrbitOfMarket(market));
@@ -152,6 +178,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     @Getter
     public MarketAPI getMarket() {
         return market;
+    }
+
+    @Setter
+    public static void setMarket(MarketAPI market, niko_MPC_satelliteTrackerScript script) {
+        script.market = market;
     }
 
     @Getter

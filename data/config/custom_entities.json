@@ -1,6 +1,6 @@
 {
 	"niko_MPC_derelict_anti_asteroid_satellite":{
-		"defaultName":"Domain-Era Derelict Anti-Asteroid Satellite", # used if name=null in addCustomEntity()
+		"defaultName":"Domain-Era Anti-Asteroid Satellite", # used if name=null in addCustomEntity()
 		"nameInText":"anti-asteroid satellite",
 		"shortName":"satellite",
 		"icon":"graphics/icons/entity_hollow.png",
@@ -9,7 +9,7 @@
 		"sprite":"graphics/ships/derelict/derelict_berserker.png", #placeholder sprite
 		"spriteWidth":20,
 		"spriteHeight":20,
-		"defaultRadius":7, # used if radius<0 in addCustomEntity()
+		"defaultRadius":10, # used if radius<0 in addCustomEntity()
 		"customDescriptionId":"niko_MPE_defenseSatellite",
 		"interactionImage":"graphics/illustrations/comm_relay.jpg", #placeholder
 		"showInCampaign":true, # show in campaign layer

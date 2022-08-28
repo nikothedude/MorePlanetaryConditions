@@ -13,6 +13,7 @@ import java.util.List;
 
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKeyIfInvalid;
 import static data.utilities.niko_MPC_satelliteUtils.satelliteConditionIds;
+import static data.utilities.niko_MPC_satelliteUtils.satellitesInOrbitMemKeyId;
 import static java.lang.Math.round;
 
 public class niko_MPC_planetUtils {
@@ -34,9 +35,9 @@ public class niko_MPC_planetUtils {
         List<CustomCampaignEntityAPI> satellitesInOrbit;
 
         MemoryAPI marketMemory = (market.getMemoryWithoutUpdate());
-        instantiateMemoryKeyIfInvalid(marketMemory, "$niko_MPC_defenseSatellitesInOrbit", new ArrayList<CustomCampaignEntityAPI>());
+        instantiateMemoryKeyIfInvalid(marketMemory, satellitesInOrbitMemKeyId, new ArrayList<CustomCampaignEntityAPI>());
 
-        satellitesInOrbit = (List<CustomCampaignEntityAPI>) (marketMemory.get("$niko_MPC_defenseSatellitesInOrbit"));
+        satellitesInOrbit = (List<CustomCampaignEntityAPI>) (marketMemory.get(satellitesInOrbitMemKeyId));
 
         return satellitesInOrbit;
     }
