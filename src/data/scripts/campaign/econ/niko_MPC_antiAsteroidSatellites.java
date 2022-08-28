@@ -8,11 +8,13 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
+import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static java.lang.Math.round;
@@ -20,6 +22,7 @@ import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.*;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
+    //fixme: core planets are having the sattelites added, but they dont have the condition. what? probs being applied then unapplied. for some reason
 
     private static final Logger log = Global.getLogger(niko_MPC_antiAsteroidSatellites.class);
 
@@ -47,10 +50,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public String satelliteType = "derelict";
     public String defaultSatelliteFaction = "derelict";
     // These variables handle the condition's shit itself
-    public float baseHazardIncrement = -50f; //placeholder
-    public float baseAccessibilityIncrement = -10f; //also placeholder
+    public float baseHazardIncrement = 0f; //placeholder
+    public float baseAccessibilityIncrement = -15f; //also placeholder
     public float baseGroundDefenseIncrement = 500;
     public float baseStabilityIncrement = 1;
+    public int baseLuddicPathInterestIncrement = -3;
     public String baseSatelliteDescriptionId = "niko_MPE_defenseSatellite";
 
     public niko_MPC_antiAsteroidSatellites(int numberOfSatellitesToSet) {
@@ -133,45 +137,34 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     /**
-     * Removes all satellites within listToUse from market's orbit.
-     * @param market The target market.
-     * @param listToUse The list from which satellites will be taken.
-     */
-    public void removeSatellitesFromMarket(MarketAPI market, List<CustomCampaignEntityAPI> listToUse) {
-        removeSatellitesFromMarket(market, listToUse, listToUse.size()); //remove all by default
-    }
-
-    /**
-     * Removes amountOfSatellitesToRemove satellites orbiting market.
-     * @param market The target market.
-     * @param amountOfSatellitesToRemove The amount of satellites to be removed.
-     */
-    public void removeSatellitesFromMarket(MarketAPI market, int amountOfSatellitesToRemove) {
-        List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-        removeSatellitesFromMarket(market, satellitesInOrbit, amountOfSatellitesToRemove);
-    }
-
-    /**
      * Removes all satellites orbiting this market.
      * @param market The target market.
      */
     public void removeSatellitesFromMarket(MarketAPI market) {
         List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-        removeSatellitesFromMarket(market, satellitesInOrbit, satellitesInOrbit.size());
+        removeSatellitesFromMarket(market, satellitesInOrbit);
     }
 
     /**
      * Removes amountOfSatellitesToRemove satellites from market's orbit, taking satellites from listToUse.
      * @param market The target market.
      * @param listToUse The list from which satellites will be taken.
-     * @param amountOfSatellitesToRemove The amount of satellites to be removed.
      */
-    public void removeSatellitesFromMarket(MarketAPI market, List<CustomCampaignEntityAPI> listToUse, int amountOfSatellitesToRemove) {
+    public void removeSatellitesFromMarket(MarketAPI market, List<CustomCampaignEntityAPI> listToUse) {
 
-        for (int i = listToUse.size(); i-- < amountOfSatellitesToRemove;) { //iterates through the list backwards, going through the most recently added
-            removeSatellite(market, listToUse.get(i), false);
+        List<CustomCampaignEntityAPI> listToUseCopy = new ArrayList<>(listToUse);
+        // we make a copy and manipualte the values in this copy to avoid a concurrentmodificationexception
+        // the result is hopefully the same, and it seems it is, from testing, although fixme: when satellites are removed, the arraylist still has a size of 1?
+
+        for (CustomCampaignEntityAPI satellite : listToUseCopy) {
+            removeSatellite(market, satellite, false);
         }
+
         regenerateOrbitSpacing(market);
+        if (listToUseCopy == market.getMemoryWithoutUpdate().get("$niko_MPC_defenseSatellitesInOrbit")) { //todo: sloppy code, methodize it
+            market.getMemoryWithoutUpdate().set("$niko_MPC_defenseSatellitesInOrbit", null); //we need this for reapplying fixme: throws a error. fix it
+            market.getMemoryWithoutUpdate().unset("$niko_MPC_defenseSatellitesInOrbit");
+        }
     }
 
     public void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite) {
@@ -179,13 +172,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     public void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
-        StarSystemAPI system = market.getStarSystem();
-        MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
 
-        Misc.fadeAndExpire(satellite);
+        Misc.fadeAndExpire(satellite); //both this and removeEntity dont cause the NaN
 
         satellite.getContainingLocation().removeEntity(satellite);
-        getSatellitesInOrbitOfMarket(market).remove(satellite); //todo: this might not work due to passing as value and shit
+        getSatellitesInOrbitOfMarket(market).remove(satellite);
 
         if (regenerateOrbit) {
             regenerateOrbitSpacing(market);
@@ -254,6 +245,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         return baseStabilityIncrement;
     }
 
+    public int getLuddicPathInterestBonus() {
+        return baseLuddicPathInterestIncrement;
+    }
+
     public String getName() {
         return conditionName;
     }
@@ -265,7 +260,65 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         market.getStability().unmodify(id);
         market.getAccessibilityMod().unmodify(id);
         market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id);
+
+        market.unsuppressCondition("meteor_impacts");
+
+        removeSatellitesFromMarket(market);
         // more stuff
+    }
+
+    @Override
+    protected void createTooltipAfterDescription(TooltipMakerAPI tooltip, boolean expanded) { //fixme: things like hazard rating arent using percents and have a .0 trail since float
+        super.createTooltipAfterDescription(tooltip, expanded);
+
+        tooltip.addPara(
+                "%s hazard rating",
+                10f,
+                Misc.getHighlightColor(),
+                ("+" + getHazardBonus())
+        );
+
+        tooltip.addPara(
+                "%s stability",
+                10f,
+                Misc.getHighlightColor(),
+                ("+" + getStabilityBonus())
+        );
+
+        tooltip.addPara(
+                "%s accessibility",
+                10f,
+                Misc.getHighlightColor(),
+                (getAccessibilityBonus() + "%")
+        );
+
+        tooltip.addPara(
+                "%s defense rating",
+                10f,
+                Misc.getHighlightColor(),
+                ("+" + getGroundDefenseBonus())
+        );
+
+        tooltip.addPara(
+                "Effective Luddic Path interest reduced by %s.",
+                10f,
+                Misc.getHighlightColor(),
+                String.valueOf((getLuddicPathInterestBonus()))
+        );
+
+        tooltip.addPara(
+                "Danger from asteroid impacts %s.",
+                10f,
+                Misc.getHighlightColor(),
+                "nullified"
+        );
+
+        tooltip.addPara(
+                "Orbital defenses %s due to satellite presence.",
+                10f,
+                Misc.getHighlightColor(),
+                "enhanced"
+        );
     }
 
 }
