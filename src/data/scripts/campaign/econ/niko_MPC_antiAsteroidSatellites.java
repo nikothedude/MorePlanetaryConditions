@@ -1,7 +1,10 @@
 package data.scripts.campaign.econ;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
+import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
@@ -11,11 +14,14 @@ import com.fs.starfarer.api.util.Misc;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import static data.utilities.niko_MPC_generalUtils.getScriptsOfClass;
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
 import static data.utilities.niko_MPC_planetUtils.getNumSatellitesInOrbitOfMarket;
 import static data.utilities.niko_MPC_satelliteUtils.*;
+import static data.utilities.niko_MPC_scriptUtils.addSatelliteTrackerIfNoneIsPresent;
 import static data.utilities.niko_MPC_scriptUtils.addScriptIfScriptIsUnique;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
@@ -72,11 +78,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             addSatellitesToMarketPrefab(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
         }
 
-        addScriptIfScriptIsUnique(market.getPrimaryEntity(), new niko_MPC_satelliteTrackerScript(market) {
-
-            //todo finish
-
-        });
+        addSatelliteTrackerIfNoneIsPresent(); //required to be here, since all methods in the modplugin are before the sector exists, or after planetgen
+        getInstanceOfSatelliteTracker().getMarketsWithSatellites().add(market);
 
         handleSatelliteStatusOfMarket(market); //todo: consider consolidating addSatellitesToMarket into this method
     }
@@ -146,31 +149,6 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         market.unsuppressCondition("meteor_impacts");
 
-        market.getPrimaryEntity().addScript(new EveryFrameScriptWithCleanup() {
-            float elapsed = 0f;
-            boolean done = false;
-            @Override
-            public void cleanup() {
-
-            }
-
-            @Override
-            public boolean isDone() {
-                return done;
-            }
-
-            @Override
-            public boolean runWhilePaused() {
-                return false;
-            }
-
-            @Override
-            public void advance(float amount) {
-
-            }
-        });
-
-        removeSatellitesFromMarket(market);
         // more stuff
     }
 

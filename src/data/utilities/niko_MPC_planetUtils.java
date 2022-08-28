@@ -1,14 +1,18 @@
 package data.utilities;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKeyIfInvalid;
+import static data.utilities.niko_MPC_satelliteUtils.satelliteConditionIds;
 import static java.lang.Math.round;
 
 public class niko_MPC_planetUtils {
@@ -46,7 +50,7 @@ public class niko_MPC_planetUtils {
      * @param satellitesInOrbitOfMarket The satellites themselves.
      * @return The optimal angle offset in degrees between the satellites. Returns float.
      */
-    public static float getOptimalOrbitalAngleForSatellites(SectorEntityToken entity, List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket) {
+    public static float getOptimalOrbitalAngleForSatellites(List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket) {
         int numOfSatellites = satellitesInOrbitOfMarket.size();
 
         float optimalAngle = (360 / (float) numOfSatellites); //todo: explain the math
@@ -63,5 +67,20 @@ public class niko_MPC_planetUtils {
 
     public static int getMaxPhysicalSatellitesBasedOnEntitySize(SectorEntityToken entity, float radiusDivisor) {
         return ((round((entity.getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number
+    }
+
+    public static List<MarketAPI> getMarketsWithSatellites() {
+        List<MarketAPI> allMarkets = Global.getSector().getEconomy().getMarketsCopy(); //get all markets
+        List<MarketAPI> marketsWithSatellites = new ArrayList<>(); //instantiate an empty list
+
+        for (MarketAPI market : allMarkets) { //iterate through all markets
+            List<MarketConditionAPI> marketConditions = market.getConditions(); //get their conditions
+            for (MarketConditionAPI marketCondition : marketConditions) { // now, iterate through the conditions
+                if (satelliteConditionIds.contains(marketCondition.getId())) { // if the global list of satellite ids contains an id that matches the iterated condition...
+                    marketsWithSatellites.add(market); // ...we have satellites! add it!
+                }
+            }
+        }
+        return marketsWithSatellites; //here you go! a neat list of markets with satellites. i hope so badly this doesnt break
     }
 }

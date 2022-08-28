@@ -7,16 +7,30 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.niko_MPC_antiAsteroidSatellites;
+import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalAngleForSatellites;
 import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
 
 public class niko_MPC_satelliteUtils {
+
+    /**
+     * Holds a reference to the single satelliteTrackerScript present in campaign. Only here for purposes of accessing it.
+     */
+    public static niko_MPC_satelliteTrackerScript satelliteTracker;
+
+    /**
+     * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
+     */
+    public final static List<String> satelliteConditionIds = new ArrayList<>(Arrays.asList("niko_MPC_antiAsteroidSatellites"));
 
     private static final Logger log = Global.getLogger(niko_MPC_satelliteUtils.class);
 
@@ -30,7 +44,6 @@ public class niko_MPC_satelliteUtils {
     }
 
     public static void addSatellitesToMarket(MarketAPI market, int amountOfSatellitesToAdd, String id, String name, String faction) {
-        StarSystemAPI system = market.getStarSystem();
         for (int i = 1; i <= amountOfSatellitesToAdd; i++) { //if the /current/ iteration is more than the max satellites in here, stop and regen
             addSatellite(market, false, id, name, faction);
         }
@@ -124,7 +137,7 @@ public class niko_MPC_satelliteUtils {
     public static void regenerateOrbitSpacing(MarketAPI market) {
         List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket = getSatellitesInOrbitOfMarket(market);
 
-        float optimalOrbitAngleOffset = getOptimalOrbitalAngleForSatellites(market.getPrimaryEntity(), satellitesInOrbitOfMarket);
+        float optimalOrbitAngleOffset = getOptimalOrbitalAngleForSatellites(satellitesInOrbitOfMarket);
         float orbitAngle = 0;
         // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc, so its safe to not add a buffer to the calculation in the optimalangle method
         for (CustomCampaignEntityAPI satellite : satellitesInOrbitOfMarket) { //iterates through each orbitting satellite and offsets them
@@ -138,6 +151,16 @@ public class niko_MPC_satelliteUtils {
             addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity(), orbitAngle);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
+    }
+
+    @Getter
+    public static niko_MPC_satelliteTrackerScript getInstanceOfSatelliteTracker() {
+        return satelliteTracker;
+    }
+
+    @Setter
+    public static void setInstanceOfSatelliteTracker(niko_MPC_satelliteTrackerScript script) {
+        satelliteTracker = script;
     }
 
 }

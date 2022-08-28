@@ -2,16 +2,18 @@ package data;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SectorAPI;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
-public class niko_MPC_modPlugin extends BaseModPlugin {
-    @Override
-    public void onApplicationLoad() throws Exception {
-        super.onApplicationLoad();
+import java.util.HashSet;
+import java.util.Set;
 
-        // Test that the .jar is loaded and working, using the most obnoxious way possible.
-        throw new RuntimeException("Template mod loaded! Remove this crash in TemplateModPlugin.");
-    }
+import static data.utilities.niko_MPC_planetUtils.getMarketsWithSatellites;
+import static data.utilities.niko_MPC_satelliteUtils.getInstanceOfSatelliteTracker;
+import static data.utilities.niko_MPC_scriptUtils.*;
+
+public class niko_MPC_modPlugin extends BaseModPlugin {
 
     @Override
     public void onNewGame() {
@@ -25,12 +27,16 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
             // Add code that creates a new star system (will only run if Nexerelin's Random (corvus) mode is disabled).
 //        }
     }
+
     @Override
     public void onEnabled(boolean wasEnabledBefore) {
-        if (!wasEnabledBefore) { //If this is the first time this mod has been loaded,
-            Global.getSector().addScript(new niko_MPC_satelliteTrackerScript() { //...then we should add a new tracker for satellites
-
-            });
-        }
+        addSatelliteTrackerIfNoneIsPresent();
+ //       updateSatelliteTrackerMarkets();
+    }
+    @Override
+    public void onGameLoad(boolean newGame) {
+        addSatelliteTrackerIfNoneIsPresent();
+ //       updateSatelliteTrackerMarkets();
     }
 }
+

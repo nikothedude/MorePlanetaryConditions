@@ -1,6 +1,12 @@
 package data.utilities;
 
+import com.fs.starfarer.api.EveryFrameScript;
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class niko_MPC_generalUtils {
 
@@ -27,6 +33,18 @@ public class niko_MPC_generalUtils {
 
     public static void instantiateMemoryKey(MemoryAPI memory, String key, Object object) { //this method only exists for clarity
         memory.set(key, object);
+    }
+
+    public static List<EveryFrameScript> getScriptsOfClass(Class<?> clazz) {
+        SectorAPI sector = Global.getSector();
+        List<EveryFrameScript> scriptsOfClass = new ArrayList<>();
+
+        for (EveryFrameScript script : sector.getScripts()) {
+            if (script.getClass() == clazz) {
+                scriptsOfClass.add(script);
+            }
+        }
+        return scriptsOfClass;
     }
 
 }

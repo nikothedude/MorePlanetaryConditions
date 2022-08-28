@@ -2,27 +2,42 @@ package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import data.utilities.niko_MPC_satelliteUtils;
+import jdk.jfr.Experimental;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
 import static data.utilities.niko_MPC_satelliteUtils.removeSatellitesFromMarket;
 
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
-    private boolean done = false;
-    public MarketAPI holder;
 
-    public ArrayList<MarketAPI> marketsWithSatellites = new ArrayList<>();
+    private static final Logger log = Global.getLogger(niko_MPC_satelliteTrackerScript.class);
 
-    public niko_MPC_satelliteTrackerScript(MarketAPI holder) {
-        this.holder = holder;
+    static {
+        log.setLevel(Level.ALL);
+    }
+
+    /**
+     * Every single market that supposedly has satellites in orbit. Is iterated through every advance() call.
+     */
+    public HashSet<MarketAPI> marketsWithSatellites;
+
+    public niko_MPC_satelliteTrackerScript() {
+        this(new HashSet<MarketAPI>()); //default value is an empty hashset
+    }
+
+    public niko_MPC_satelliteTrackerScript(HashSet<MarketAPI> marketsWithSatellites) {
+        this.marketsWithSatellites = marketsWithSatellites;
     }
 
     @Override
     public boolean isDone() {
-        return done;
+        return false;
     }
 
     @Override
@@ -32,24 +47,29 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
     @Override
     public void advance(float amount) {
-        if (holder == null) { //theres a chance our market gets deleted without our knowledge
-            done = true;
-            Global.getSector().removeScript(this);
-            return;
+        marketsWithSatellites.removeAll(Collections.singleton(null)); //sanity, todo: come back to this, see if a better solution can be found, and if its even a problem
+        Set<MarketAPI> marketsWithSatellitesCopy = new HashSet<>(getMarketsWithSatellites()); //required to avoid concurrentmodificationexception
+        for (MarketAPI market : marketsWithSatellitesCopy) { //check each market that supposedly has the condition
+
+            log.debug(market.getId() + " iterated");
+
+            if (!(market.hasCondition("niko_MPC_antiAsteroidSatellites"))) { //if it doesnt have the condition, //fixme markets without this condition have it in their conditions var
+                removeSatellitesFromMarketAndRemoveFromList(market); //remove it and it's satellites, and stop checking it until the condition is reapplied
+
+            //todo: handle satellite status
+            }
         }
-
-        if (!(holder.hasCondition("niko_MPC_antiAsteroidSatellites"))) {
-            removeSelfAndSatellites();
-        }
     }
 
-    public void removeSelfAndSatellites() {
-        removeSatellitesFromMarket(holder, getSatellitesInOrbitOfMarket(holder));
-        Global.getSector().removeScript(this);
+    public void removeSatellitesFromMarketAndRemoveFromList(MarketAPI market) {
+        removeSatellitesFromMarket(market, getSatellitesInOrbitOfMarket(market));
+        getMarketsWithSatellites().remove(market);
     }
 
-    public MarketAPI getHolder() {
-        return holder;
+    @Getter
+    public HashSet<MarketAPI> getMarketsWithSatellites() {
+        return marketsWithSatellites;
     }
+
 
 }
