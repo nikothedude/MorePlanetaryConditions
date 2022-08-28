@@ -6,10 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.econ.niko_MPC_antiAsteroidSatellites;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -108,7 +105,7 @@ public class niko_MPC_satelliteUtils {
         // the result is hopefully the same, and it seems it is, from testing, although fixme: when satellites are removed, the arraylist still has a size of 1?
 
         for (CustomCampaignEntityAPI satellite : listToUseCopy) {
-            removeSatellite(market, satellite, false);
+            removeSatelliteFromMarket(market, satellite, false);
         }
 
         regenerateOrbitSpacing(market);
@@ -118,20 +115,21 @@ public class niko_MPC_satelliteUtils {
         }
     }
 
-    public static void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite) {
-        removeSatellite(market, satellite, true);
+    public static void removeSatelliteFromMarket(MarketAPI market, CustomCampaignEntityAPI satellite) {
+        removeSatelliteFromMarket(market, satellite, true);
     }
 
-    public static void removeSatellite(MarketAPI market, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
-
-        Misc.fadeAndExpire(satellite); //both this and removeEntity dont cause the NaN
-
-        satellite.getContainingLocation().removeEntity(satellite);
+    public static void removeSatelliteFromMarket(MarketAPI market, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
+        removeSatellite(satellite);
         getSatellitesInOrbitOfMarket(market).remove(satellite);
-
         if (regenerateOrbit) {
             regenerateOrbitSpacing(market);
         }
+    }
+
+    public static void removeSatellite(CustomCampaignEntityAPI satellite) {
+        Misc.fadeAndExpire(satellite);
+        satellite.getContainingLocation().removeEntity(satellite);
     }
 
     public static void regenerateOrbitSpacing(MarketAPI market) {
@@ -145,22 +143,11 @@ public class niko_MPC_satelliteUtils {
                 if (Global.getSettings().isDevMode()) {
                     Global.getSector().getCampaignUI().addMessage("A satellite on " + market + " was given a orbit offset of " + orbitAngle + "."); //debug code
                     log.debug("A satellite on " + market + " was given a orbit offset of " + orbitAngle + ".");
-                    removeSatellite(market, satellite, false); //we dont want these weirdos overlapping
+                    removeSatelliteFromMarket(market, satellite, false); //we dont want these weirdos overlapping
                 }
             }
             addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity(), orbitAngle);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
     }
-
-    @Getter
-    public static niko_MPC_satelliteTrackerScript getInstanceOfSatelliteTracker() {
-        return satelliteTracker;
-    }
-
-    @Setter
-    public static void setInstanceOfSatelliteTracker(niko_MPC_satelliteTrackerScript script) {
-        satelliteTracker = script;
-    }
-
 }

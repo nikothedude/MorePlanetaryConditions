@@ -46,7 +46,6 @@ public class niko_MPC_planetUtils {
      * Ex. At 1 satellite, the optimal offset is 360 (reduced to 0). At 2, the optimal is 180, so the satellites are 180 degrees apart.
      * At 3, it's 90, so they're 90 degrees, 4, 45, etc.
      *
-     * @param entity The entity the satellites are orbiting.
      * @param satellitesInOrbitOfMarket The satellites themselves.
      * @return The optimal angle offset in degrees between the satellites. Returns float.
      */

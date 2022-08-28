@@ -18,11 +18,9 @@ import java.util.List;
 
 import static data.utilities.niko_MPC_generalUtils.getScriptsOfClass;
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKey;
-import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
-import static data.utilities.niko_MPC_planetUtils.getNumSatellitesInOrbitOfMarket;
+import static data.utilities.niko_MPC_planetUtils.*;
 import static data.utilities.niko_MPC_satelliteUtils.*;
-import static data.utilities.niko_MPC_scriptUtils.addSatelliteTrackerIfNoneIsPresent;
-import static data.utilities.niko_MPC_scriptUtils.addScriptIfScriptIsUnique;
+import static data.utilities.niko_MPC_scriptUtils.*;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     //fixme: core planets are having the sattelites added, but they dont have the condition. what? probs being applied then unapplied. for some reason
@@ -71,17 +69,12 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         handleHazardAndAccessibilityChanges(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
 
-        // todo: can we use hasCondition()?
-        MemoryAPI marketMemory = (market.getMemoryWithoutUpdate());
+        MemoryAPI marketMemory = (market.getMemoryWithoutUpdate()); //todo: do i actually need this memorylist now? or can i just use the tracker's satellites?
         if (!(marketMemory.contains("$niko_MPC_defenseSatellitesInOrbit")) || (marketMemory.get("$niko_MPC_defenseSatellitesInOrbit") == null)) { // if the market doesnt think we exist
             instantiateMemoryKey(marketMemory, "$niko_MPC_defenseSatellitesInOrbit", new ArrayList<CustomCampaignEntityAPI>()); //lets tell it we do
             addSatellitesToMarketPrefab(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
         }
-
-        addSatelliteTrackerIfNoneIsPresent(); //required to be here, since all methods in the modplugin are before the sector exists, or after planetgen
-        getInstanceOfSatelliteTracker().getMarketsWithSatellites().add(market);
-
-        handleSatelliteStatusOfMarket(market); //todo: consider consolidating addSatellitesToMarket into this method
+        addSatelliteTrackerIfNoneIsPresent(market, getSatellitesInOrbitOfMarket(market)); //required to be here, since all methods in the modplugin are before the sector exists, or after planetgen
     }
 
     public void addSatellitesToMarketPrefab(MarketAPI market, int amountOfSatellitesToAdd) {

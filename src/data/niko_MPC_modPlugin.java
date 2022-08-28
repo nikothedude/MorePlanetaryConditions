@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static data.utilities.niko_MPC_planetUtils.getMarketsWithSatellites;
-import static data.utilities.niko_MPC_satelliteUtils.getInstanceOfSatelliteTracker;
 import static data.utilities.niko_MPC_scriptUtils.*;
 
 public class niko_MPC_modPlugin extends BaseModPlugin {
@@ -28,7 +27,7 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
 //        }
     }
 
-    @Override
+    /*@Override
     public void onEnabled(boolean wasEnabledBefore) {
         addSatelliteTrackerIfNoneIsPresent();
  //       updateSatelliteTrackerMarkets();
@@ -37,6 +36,6 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
     public void onGameLoad(boolean newGame) {
         addSatelliteTrackerIfNoneIsPresent();
  //       updateSatelliteTrackerMarkets();
-    }
+    } */
 }
 
