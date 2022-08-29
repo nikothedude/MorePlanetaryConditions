@@ -78,12 +78,16 @@ public class niko_MPC_satelliteUtils {
     }
 
     public static void addOrbitAroundSectorEntity(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
-        float orbitRadius = (entity.getRadius()); //todo: placeholder math
-        float orbitDays = (orbitRadius/5); //todo: placeholder
+        // a mult does not work, because we want the sat to always orbit a fixed distance away. with a mult,
+        // entities with a higher radius will have sats orbit further away
+        float orbitRadiusIncrement = 15f;
+        float orbitRadius = ((entity.getRadius()) + orbitRadiusIncrement); //todo: placeholder math
+        float orbitDaysDivisor = 6.5f;
+        float orbitDays = 15f; //todo: placeholder
         //DO NOT IGNORE THIS COMMENT
         //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!
 
-        if (orbitDays <= 0) {
+        /*if (orbitDays <= 0) {
             orbitDays = 1; //we cannot allow a zero or less number, or else saving will fail
 
             Global.getSector().getCampaignUI().addMessage(
@@ -91,7 +95,7 @@ public class niko_MPC_satelliteUtils {
             );
 
             log.debug("niko_MPC_ERROR: " + satellite + ", orbitting" + entity.getName() + " in the " + entity.getStarSystem().getName() + "system was created with a " + orbitDays + "orbitDays.");
-        }
+        }*/
 
         satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
         //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet

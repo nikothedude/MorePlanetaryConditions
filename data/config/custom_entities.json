@@ -17,6 +17,7 @@
 		"showNameOnMap":false,
 		"nameFontScale":1,
 		"nameAngle":0,
+		"renderShadow":true,
 		"nameColor":[70,200,255,255],
 		"nameShadowColor":[0,0,0,255],
 		"scaleNameWithZoom":false,
