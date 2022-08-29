@@ -31,7 +31,7 @@
     "modVersion":
     {
         "major":0,
-        "minor":0,
-        "patch":3_dev # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
+        "minor":1,
+        "patch":0_dev # Can be a number, character or string (1, 2, a, b, "-RC2", etc)
     },
 }
