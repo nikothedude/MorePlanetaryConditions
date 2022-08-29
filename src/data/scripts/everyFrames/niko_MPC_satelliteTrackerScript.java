@@ -95,7 +95,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
         //log.debug(market.getId() + " iterated");
 
-        migrateMarketsIfEntityHasNewMarket(); //does not cause the error
+        migrateMarketsIfEntityHasNewMarket();
 
         if (deleteSatellitesAndSelfIfMarketIsNull()) {
             return;
