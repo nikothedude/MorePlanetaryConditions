@@ -10,6 +10,8 @@ import java.util.List;
 
 public class niko_MPC_generalUtils {
 
+    public static final String luddicPathSuppressorStructureId = "niko_MPC_antiAsteroidLuddicPathSuppressor";
+
     public static boolean isValidMemoryKey(MemoryAPI memory, String key) {
 
         return (memory.contains(key)) || ((memory.get(key))) != null;
