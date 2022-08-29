@@ -1,32 +1,22 @@
 package data.scripts.campaign.econ;
 
-import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
-import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
+import data.utilities.niko_MPC_satelliteUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import static data.utilities.niko_MPC_generalUtils.getScriptsOfClass;
 import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.*;
 import static data.utilities.niko_MPC_satelliteUtils.*;
 import static data.utilities.niko_MPC_scriptUtils.*;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
-    //fixme: core planets are having the sattelites added, but they dont have the condition. what? probs being applied then unapplied. for some reason
-
-    private boolean maxPhysicalSatellitesOverridden = false;
-
     /**
      * The name of the condition, ideally will be the name of it on the condition tooltip.
      */
@@ -38,12 +28,12 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * Todo: Maybe add support for resizing planets? Might be inefficient.
      * Todo: Maybe move this variable onto market memory?
      */
-    public int maxPhysicalSatellites = 10; //named physical as i may have a few fucking thousand in description or smthn
-    // Variables below are used in instantiating a new satellite instance.
-    public String defaultSatelliteName = "Domain-Era Derelict Anti-Asteroid Satellite"; //todo: maybe make this an enum or smthn, make it modular to subtypes
-    public String defaultSatelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
-    public String satelliteType = "derelict";
-    public String defaultSatelliteFaction = "derelict";
+
+    private boolean maxPhysicalSatellitesOverridden = false;
+    public int maxPhysicalSatellites;
+    public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
+    public String satelliteFactionId = "derelict";
+
     // These variables handle the condition's shit itself
     public float baseHazardIncrement = 0f; //placeholder
     public float baseAccessibilityIncrement = -15f; //also placeholder
@@ -67,18 +57,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         if (!maxPhysicalSatellitesOverridden) // we dont want to change a specified value, given in the constructor
             maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(market.getPrimaryEntity());
 
-        handleHazardAndAccessibilityChanges(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
+        handleConditionStats(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
 
-        MemoryAPI marketMemory = (market.getMemoryWithoutUpdate()); //todo: do i actually need this memorylist now? or can i just use the tracker's satellites?
-        if (!(marketMemory.contains(satellitesInOrbitMemKeyId)) || (marketMemory.get(satellitesInOrbitMemKeyId) == null)) { // if the market doesnt think we exist
-            instantiateMemoryKey(marketMemory, satellitesInOrbitMemKeyId, new ArrayList<CustomCampaignEntityAPI>()); //lets tell it we do
-            addSatellitesToMarketPrefab(market, maxPhysicalSatellites); // and since we probably have none, lets add some satellites
-        }
-        addSatelliteTrackerIfNoneIsPresent(market, getSatellitesInOrbitOfMarket(market)); //required to be here, since all methods in the modplugin are before the sector exists, or after planetgen
-    }
-
-    public void addSatellitesToMarketPrefab(MarketAPI market, int amountOfSatellitesToAdd) {
-        addSatellitesToMarket(market, amountOfSatellitesToAdd, defaultSatelliteId, defaultSatelliteName, defaultSatelliteFaction);
+        // if we needed to add a new tracker
+        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, satelliteId, satelliteFactionId); //fixme: something in this causes a error
     }
 
     private String appendSatelliteNumberToId(MarketAPI market, String idToAppendTo) {
@@ -87,7 +69,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         return (idToAppendTo + (" " + satelliteNumber));  //at zero satellites, the sat is given "id 1", at 1 sats, the sat is given "id 2", etc
     }
 
-    public void handleHazardAndAccessibilityChanges(String id, MarketAPI market) {
+    public void handleConditionStats(String id, MarketAPI market) {
         if (market.hasCondition("meteor_impacts")) {
             market.suppressCondition("meteor_impacts"); //these things just fuck those things up
         }
@@ -102,10 +84,9 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         market.getAccessibilityMod().modifyFlat(id, accessibilityIncrement, getName());
         market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, groundDefenseIncrement, getName());
         market.getStability().modifyFlat(id, stabilityIncrement, getName());
-
     }
     public String getSatelliteId() {
-        return defaultSatelliteId;
+        return satelliteId;
     }
 
     public float getHazardBonus() {
@@ -175,13 +156,6 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                 10f,
                 Misc.getHighlightColor(),
                 ("+" + getGroundDefenseBonus())
-        );
-
-        tooltip.addPara(
-                "Effective Luddic Path interest reduced by %s.",
-                10f,
-                Misc.getHighlightColor(),
-                String.valueOf((getLuddicPathInterestBonus()))
         );
 
         tooltip.addPara(

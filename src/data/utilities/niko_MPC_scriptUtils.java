@@ -26,10 +26,12 @@ public class niko_MPC_scriptUtils {
     /**
      * Adds a new niko_MPC_satelliteTrackerScript to market, but ONLY if the market does not already have a tracker instance.
      * By default, passes the market's satellite memory list to the script.
+     *
      * @param market The market to add the script to.
      */
-    public static void addSatelliteTrackerIfNoneIsPresent(MarketAPI market) {
-        addSatelliteTrackerIfNoneIsPresent(market, getSatellitesInOrbitOfMarket(market));
+    public static void addSatelliteTrackerIfNoneIsPresent(MarketAPI market, SectorEntityToken entity,
+                                                          int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
+        addSatelliteTrackerIfNoneIsPresent(market, entity, getSatellitesInOrbitOfMarket(market), maxPhysicalSatellites, satelliteId, satelliteFactionId);
     }
 
     /**
@@ -37,13 +39,13 @@ public class niko_MPC_scriptUtils {
      * @param market The market to add the script to.
      * @param satellites The satellites list to pass to the script.
      */
-    public static void addSatelliteTrackerIfNoneIsPresent(MarketAPI market, List<CustomCampaignEntityAPI> satellites) {
+    public static void addSatelliteTrackerIfNoneIsPresent(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
+                                                             int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
         if (!(marketHasSatelliteTracker(market))) { // if the script isn't already present,
-            niko_MPC_satelliteTrackerScript script = (new niko_MPC_satelliteTrackerScript(market, satellites)); //make a new one,
+            niko_MPC_satelliteTrackerScript script = (new niko_MPC_satelliteTrackerScript(market, entity, satellites, maxPhysicalSatellites, satelliteId, satelliteFactionId)); //make a new one,
             //...then we should add a new tracker for satellites
             addNewSatelliteTracker(market, script); //todo: methodize
-            SectorEntityToken entity = market.getPrimaryEntity();
-            entity.addScript(script);
+            entity.addScript(script); ///fixme < this is causing an error.......?
         }
     }
 

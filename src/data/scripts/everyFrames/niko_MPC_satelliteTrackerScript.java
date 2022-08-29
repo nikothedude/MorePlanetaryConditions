@@ -1,8 +1,10 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScript;
+import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
@@ -28,37 +30,54 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         log.setLevel(Level.ALL);
     }
 
-    /**
-     * Every single market that supposedly has satellites in orbit. Is iterated through every advance() call.
-     */
     public MarketAPI market;
     public SectorEntityToken entity;
     public List<CustomCampaignEntityAPI> satellites;
     public boolean done = false;
 
-    //public niko_MPC_satelliteTrackerScript(MarketAPI market) {
-     //   this(market, new ArrayList<CustomCampaignEntityAPI>());
-   // }
+    private boolean marketNeedsSatellitesAdded;
+    private boolean marketHasFuckedUpAndWasLogged = false;
+
+    public int maxPhysicalSatellites; //named physical as i may have a few fucking thousand in description or smthn
+    // Variables below are used in instantiating a new satellite instance.
+    public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
+    public String satelliteFactionId = "derelict";
 
     /**
      * Instantiates a new satellite tracker.
      *
-     * @param market     The market this satellite tracker will track, used for conditions and determining when to remove the satellites.
-     * @param satellites A list containing CustomCampaignEntityAPI instances. Iterated through each advance(), each instance being checked and updated.
+     * @param market                The market this satellite tracker will track, used for conditions and determining when to remove the satellites.
+     * @param satellites            A list containing CustomCampaignEntityAPI instances. Iterated through each advance(), each instance being checked and updated.
+     * @param maxPhysicalSatellites
+     * @param satelliteId
+     * @param satelliteFactionId
      */
-    public niko_MPC_satelliteTrackerScript(MarketAPI market, List<CustomCampaignEntityAPI> satellites) {
-        this(market, market.getPrimaryEntity(), satellites);
+
+    public niko_MPC_satelliteTrackerScript(MarketAPI market,  List<CustomCampaignEntityAPI> satellites,
+                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
+        this(market, market.getPrimaryEntity(), satellites, maxPhysicalSatellites, satelliteId, satelliteFactionId);
     }
 
-    /**
-     * Instantiates a new satellite tracker.
-     * @param market The market this satellite tracker will track, used for conditions and determining when to remove the satellites.
-     * @param satellites A list containing CustomCampaignEntityAPI instances. Iterated through each advance(), each instance being checked and updated.
-     */
-    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites) {
+    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity,
+                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
+        this(market, entity, new ArrayList<CustomCampaignEntityAPI>(), maxPhysicalSatellites, satelliteId, satelliteFactionId);
+    }
+
+    public niko_MPC_satelliteTrackerScript(MarketAPI market,
+                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
+        this(market, market.getPrimaryEntity(), new ArrayList<CustomCampaignEntityAPI>(), maxPhysicalSatellites, satelliteId, satelliteFactionId);
+    }
+
+    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
+                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId) {
         this.market = market;
         this.entity = entity;
         this.satellites = satellites;
+        this.maxPhysicalSatellites = maxPhysicalSatellites;
+        this.satelliteId = satelliteId;
+        this.satelliteFactionId = satelliteFactionId;
+
+        marketNeedsSatellitesAdded = true;
     }
 
     @Override
@@ -76,7 +95,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
         //log.debug(market.getId() + " iterated");
 
-        migrateMarketsIfEntityHasNewMarket();
+        migrateMarketsIfEntityHasNewMarket(); //does not cause the error
 
         if (deleteSatellitesAndSelfIfMarketIsNull()) {
             return;
@@ -97,20 +116,30 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
     public static void migrateSatellitesToNewMarket(MarketAPI oldMarket, MarketAPI market, niko_MPC_satelliteTrackerScript script) {
         setMarket(market, script);
-        market.getMemoryWithoutUpdate().set(satellitesInOrbitMemKeyId, script.satellites);
+        deleteMemoryKey(oldMarket.getMemoryWithoutUpdate(), satelliteTrackerId);
         addNewSatelliteTracker(market, script);
-
-        MemoryAPI oldMarketMemory = oldMarket.getMemoryWithoutUpdate();
-        deleteMemoryKey(oldMarketMemory, satellitesInOrbitMemKeyId);
     }
 
-    public void updateSatelliteStatus() {
+    public void updateSatelliteStatus() throws RuntimeException{
+        if (marketNeedsSatellitesAdded) {
+            addSatellitesToMarket(market, maxPhysicalSatellites, satelliteId, satelliteFactionId); //todo: document
+            marketNeedsSatellitesAdded = false;
+        }
+
         Iterator<CustomCampaignEntityAPI> iterator = getSatelliteTrackerTrackedSatellites(this).iterator();
 
         while(iterator.hasNext()) {
             CustomCampaignEntityAPI satellite = iterator.next();
-
-            //do stuff
+            if (Float.valueOf(satellite.getFacing()).isNaN()) { //fixme: debug code
+                if (!(marketHasFuckedUpAndWasLogged)) {
+                    PlanetAPI planet = (PlanetAPI) market.getPrimaryEntity();
+                    log.debug("niko_MPC_ERROR: " + market.getName() + ", type " + planet.getTypeId() + ", had a satellite with NaN facing in " + market.getStarSystem().getName());
+                    marketHasFuckedUpAndWasLogged = true;
+                }
+                removeSatellite(satellite);
+                regenerateOrbitSpacing(market);
+                iterator.remove();
+            }
         }
     }
 
@@ -146,28 +175,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
             removeSatellite(satellite);
             iterator.remove();//todo: methodize. this one might need a refactor
         }
-
-        MemoryAPI marketMemory = getMarket().getMemoryWithoutUpdate();
-        deleteMemoryKey(marketMemory, satellitesInOrbitMemKeyId);
-        deleteMemoryKey(marketMemory, satelliteTrackerId);
-
         done = true;
+
+        deleteMemoryKey(market.getMemoryWithoutUpdate(), satelliteTrackerId);
+
         getEntity().removeScript(this); // we aren't needed anymore
-    }
-
-    /**
-     * Only used with lists, no iterator support.
-     * @param satellite
-     * @param script
-     */
-    public static void deleteSatelliteAndRemoveFromList(CustomCampaignEntityAPI satellite, niko_MPC_satelliteTrackerScript script) {
-        removeSatellite(satellite);
-        getSatelliteTrackerTrackedSatellites(script).remove(satellite);
-    }
-
-    public void removeSatellitesFromMarketAndRemoveFromList(MarketAPI market) {
-        removeSatellitesFromMarket(market, getSatellitesInOrbitOfMarket(market));
-        getMarketsWithSatellites().remove(market);
     }
 
     @Getter

@@ -13,7 +13,7 @@
 		"customDescriptionId":"niko_MPE_defenseSatellite",
 		"interactionImage":"graphics/illustrations/comm_relay.jpg", #placeholder
 		"showInCampaign":true, # show in campaign layer
-		"showIconOnMap":true, #placeholder
+		"showIconOnMap":false, #placeholder
 		"showNameOnMap":false,
 		"nameFontScale":1,
 		"nameAngle":0,

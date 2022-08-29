@@ -6,14 +6,15 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import static data.utilities.niko_MPC_generalUtils.instantiateMemoryKeyIfInvalid;
+import static data.scripts.everyFrames.niko_MPC_satelliteTrackerScript.getSatelliteTrackerTrackedSatellites;
 import static data.utilities.niko_MPC_satelliteUtils.satelliteConditionIds;
-import static data.utilities.niko_MPC_satelliteUtils.satellitesInOrbitMemKeyId;
+import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 import static java.lang.Math.round;
 
 public class niko_MPC_planetUtils {
@@ -32,14 +33,11 @@ public class niko_MPC_planetUtils {
      * @return Returns a ArrayList, containing all satellite instances orbiting market.
      */
     public static List<CustomCampaignEntityAPI> getSatellitesInOrbitOfMarket(MarketAPI market) {
-        List<CustomCampaignEntityAPI> satellitesInOrbit;
-
-        MemoryAPI marketMemory = (market.getMemoryWithoutUpdate());
-        instantiateMemoryKeyIfInvalid(marketMemory, satellitesInOrbitMemKeyId, new ArrayList<CustomCampaignEntityAPI>());
-
-        satellitesInOrbit = (List<CustomCampaignEntityAPI>) (marketMemory.get(satellitesInOrbitMemKeyId));
-
-        return satellitesInOrbit;
+        niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
+        if (script != null) {
+            return getSatelliteTrackerTrackedSatellites(script);
+        }
+        return new ArrayList<>(); //return an empty list so i dont get NPEd out the ass
     }
 
     /**

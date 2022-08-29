@@ -1,0 +1,13 @@
+convertAnother:43 TreeMarshaller iterates through a satellite tracker script. the satellites facing is nan. why.
+
+this would explain why not adding the script would remove the error, because then it wouldnt be iterated through
+
+also explains why not making satllites fixed it since facing wasnt nan
+
+orbit of the satellites is nan. same for currangle
+
+the thrown exception in the script's updateSatelliteStatus method is called very early into planetgen
+
+regenerateorbitspacing does not fix NaN facings
+
+most of the NaNs are from things like gas giants in nebulae; these dont orbit. what if that lack of orbitting is what causes it
