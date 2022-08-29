@@ -53,5 +53,4 @@ public class niko_MPC_generalUtils {
         memory.set(key, null);
         memory.unset(key);
     }
-
 }

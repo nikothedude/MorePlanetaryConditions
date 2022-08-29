@@ -1,13 +1,9 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScript;
-import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
-import com.fs.starfarer.api.campaign.PlanetAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import jdk.nashorn.internal.objects.annotations.Getter;
 import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.log4j.Level;
@@ -16,8 +12,6 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 import static data.utilities.niko_MPC_generalUtils.deleteMemoryKey;
-import static data.utilities.niko_MPC_planetUtils.getMarketsWithSatellites;
-import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
 import static data.utilities.niko_MPC_satelliteUtils.*;
 import static data.utilities.niko_MPC_scriptUtils.addNewSatelliteTracker;
 import static data.utilities.niko_MPC_scriptUtils.satelliteTrackerId;
@@ -42,6 +36,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     // Variables below are used in instantiating a new satellite instance.
     public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
     public String satelliteFactionId = "derelict";
+
+    public float maximumSatelliteStrength = 500f; //todo: arbitrary
+    public final float minimumSatelliteStrength = 0f;
+    public float currentOverallSatelliteStrength;
+    public float satelliteNaturalRegenRate = 1f;
 
     /**
      * Instantiates a new satellite tracker.
@@ -76,6 +75,8 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         this.maxPhysicalSatellites = maxPhysicalSatellites;
         this.satelliteId = satelliteId;
         this.satelliteFactionId = satelliteFactionId;
+
+        currentOverallSatelliteStrength = maximumSatelliteStrength;
 
         marketNeedsSatellitesAdded = true;
     }
@@ -141,6 +142,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
                 iterator.remove();
             }
         }
+        increaseOverallSatelliteStrengthIfNotAtMax(satelliteNaturalRegenRate);
     }
 
     public boolean deleteSatellitesAndSelfIfMarketIsNull() {
@@ -182,6 +184,34 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         getEntity().removeScript(this); // we aren't needed anymore
     }
 
+    public void increaseOverallSatelliteStrengthIfNotAtMax(float increment) {
+        setCurrentOverallSatelliteStrength(Math.min(getCurrentSatelliteArrayStrength() + increment, maximumSatelliteStrength));
+    }
+
+    public boolean satellitesWantToBlockFleet(CampaignFleetAPI fleet) {
+
+        if (market.isPlanetConditionMarketOnly()) { //uncolonized planets are always hostile
+            return true;
+        }
+
+        FactionAPI fleetFaction = fleet.getFaction();
+        FactionAPI satelliteFaction = Global.getSector().getFaction(getSatelliteFactionId());
+        return satelliteFaction.isHostileTo(fleetFaction) || (!(fleet.isTransponderOn()));
+    }
+
+    public boolean satellitesCapableOfBlockingFleet(CampaignFleetAPI fleet) {
+        return (getCurrentSatelliteArrayStrength() >= fleet.getEffectiveStrength()); //todo: finish
+    }
+
+    @Getter
+    public float getCurrentSatelliteArrayStrength() {
+        return currentOverallSatelliteStrength;
+    }
+
+    @Setter
+    public void setCurrentOverallSatelliteStrength(float increment) {
+        currentOverallSatelliteStrength = increment; //todo: does the getter pass by value, or ref? im doing this because i assume it passes by value
+    }
     @Getter
     public static List<CustomCampaignEntityAPI> getSatelliteTrackerTrackedSatellites(niko_MPC_satelliteTrackerScript script) {
         return script.satellites;
@@ -200,6 +230,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     @Getter
     public SectorEntityToken getEntity() {
         return entity;
+    }
+
+    @Getter
+    public String getSatelliteFactionId() {
+        return satelliteFactionId;
     }
 
 }

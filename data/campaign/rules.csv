@@ -1,1 +1,35 @@
 id,trigger,conditions,script,text,options,notes
+"#RULESET_NAME niko_MPC",,,,,,
+,,,,,,
+# Market Interactions,,,,,,
+,,,,,,
+# Satellite Interactions,,,,,,
+niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+!niko_MPC_satellitesWantToBlockPlayer score:950","FireBest OpenInteractionDialog","The satellites in orbit of $entityName give your $shipOrFleet no trouble as you approach, though sensors do give a few worrying reports of brief lock-ons and targetting laser scans.",,
+niko_MPC_marketSatellitesWantToBlockButCant,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+niko_MPC_satellitesWantToBlockPlayer 
+!niko_MPC_satellitesCapableOfBlockingPlayer score:950","FireBest OpenInteractionDialog","While the satellites in orbit of $entityName harass you, they simply are not strong enough to prevent your approach.",,"wont call noblock since wanttoblockplayer is true not false"
+niko_MPC_marketSatellitesWillingAndCapableToBlock,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+niko_MPC_satellitesCapableAndWillingToBlock score:970","FireBest niko_MPC_satellitesBlockingAccess",,,
+,,,,,,
+# Satellites Blocking Access,,,,,,
+niko_MPC_genericSatelliteBlock,niko_MPC_satellitesBlockingAccess,,"FireAll niko_MPC_satellitesBlocking_PopulateOptions
+FireBest niko_MPC_satellitesBlockingText",,,
+,,,,,,
+# Populating Options,,,,,,
+niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,,"todo"
+niko_MPC_marketLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$hasMarket
+$menuState == main","SetTooltip marketLeave $marketLeaveTooltip
+SetShortcut marketLeave ""ESCAPE""",,"100:marketLeave:Leave",
+niko_MPC_surveyLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$market.isPlanetConditionMarketOnly","SetShortcut surveyLeave ""ESCAPE""",,"100:surveyLeave:Leave",
+"#END Populating Options",,,,,,
+,,,,,,
+# Intro Text,,,,,,
+niko_MPC_genericSatelliteBlockText,niko_MPC_satellitesBlockingText,,,"Before you can even enter high orbit of $entityName, your $shipOrFleet is suddenly lit up by hundreds of thousands of targetting lasers. Your sensors officer reports that the array of defense satellites in orbit of $entityName are currently tracking your $shipOrFleet and will make further approach nearly impossible, unless a number are destroyed/disabled.
+
+if youre reading this, this dialog is unfinished :)",,
+"#END Intro Text",,,,,,
+"#END Satellites Blocking Access",,,,,,
+"#END Satellite Interactions",,,,,,
+"#END Market Interactions",,,,,,
+

@@ -1,24 +1,20 @@
 package data.utilities;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.StarSystemAPI;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import java.lang.Float;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static data.utilities.niko_MPC_generalUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalAngleForSatellites;
 import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
+import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_satelliteUtils {
 

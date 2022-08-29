@@ -1,0 +1,3 @@
+it seems non-occupied markets dont trigger MarketPostOpen
+
+maybe put the rules on OpenInteractionDialog instead?
