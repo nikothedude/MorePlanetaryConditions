@@ -26,6 +26,6 @@
 		"renderCircleIndicatorSelectionFlash":true,
 		"layers":[BELOW_STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values,
 		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC", "neutrino", "has_interaction_dialog"],
-		#"pluginClass":"data.scripts.campaign.entities.niko_MPC_defenseSatellite", #plugin is required later
+		"pluginClass":"data.scripts.entityPlugins.niko_MPC_antiAsteroidSatellitesPlugin",
 	}
 }
