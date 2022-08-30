@@ -8,24 +8,22 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class niko_MPC_generalUtils {
-
-    public static final String luddicPathSuppressorStructureId = "niko_MPC_antiAsteroidLuddicPathSuppressor";
-
+public class niko_MPC_memoryUtils {
+    /**
+     * @param memory The memory to scan for the key.
+     * @param key The key to check for.
+     * @return True if memory both contains the key and if the value of key is not null. False otherwise.
+     */
     public static boolean isValidMemoryKey(MemoryAPI memory, String key) {
-
-        return (memory.contains(key)) || ((memory.get(key))) != null;
+        return (memory.contains(key)) && ((memory.get(key))) != null;
     }
 
     /**
-     * Checks to see if the given key is present and not null in memory.
-     * If the key IS null, it will set the given object as the value for the key.
-     * If it is not, the object's value will be set to null, to allow for GC.
+     * Instantiates a new memoryKey in memory with object if isValidMemoryKey(memory, key) returns false.
      *
      * @param memory The memoryAPI object we are accessing.
      * @param key    The key we will be checking and instantiating.
      * @param object The object to set as the key's value if the key is invalid.
-     * @return
      */
     public static void instantiateMemoryKeyIfInvalid(MemoryAPI memory, String key, Object object) {
         if (!(isValidMemoryKey(memory, key))) { //if it isn't valid,
@@ -33,22 +31,18 @@ public class niko_MPC_generalUtils {
         }
     }
 
+    /**
+     * Simple wrapper for memory.set(key, object)
+     */
     public static void instantiateMemoryKey(MemoryAPI memory, String key, Object object) { //this method only exists for clarity
         memory.set(key, object);
     }
 
-    public static List<EveryFrameScript> getScriptsOfClass(Class<?> clazz) {
-        SectorAPI sector = Global.getSector();
-        List<EveryFrameScript> scriptsOfClass = new ArrayList<>();
-
-        for (EveryFrameScript script : sector.getScripts()) {
-            if (script.getClass() == clazz) {
-                scriptsOfClass.add(script);
-            }
-        }
-        return scriptsOfClass;
-    }
-
+    /**
+     * Sets key to null in memory, then unsets the key.
+     * @param memory The memory to delete from.
+     * @param key The key to delete.
+     */
     public static void deleteMemoryKey(MemoryAPI memory, String key) {
         memory.set(key, null);
         memory.unset(key);

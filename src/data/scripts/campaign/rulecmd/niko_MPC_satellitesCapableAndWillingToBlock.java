@@ -7,7 +7,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
-import com.fs.starfarer.campaign.CampaignPlanet;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class niko_MPC_satellitesCapableAndWillingToBlock extends BaseCommandPlug
             niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
             if (script != null) {
                 CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
-                return (script.satellitesWantToBlockFleet(playerFleet) && (script.satellitesCapableOfBlockingFleet(playerFleet)));
+                return (script.satellitesWantToBlockFleet(playerFleet) && (script.satellitesCapableOfBlockingPlayerFleet()));
             }
         }
         return false;

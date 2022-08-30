@@ -11,11 +11,10 @@ import jdk.nashorn.internal.objects.annotations.Setter;
 
 import java.util.List;
 
-import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
+import static data.utilities.niko_MPC_ids.satelliteTrackerId;
+import static data.utilities.niko_MPC_satelliteUtils.getSatellitesInOrbitOfMarket;
 
 public class niko_MPC_scriptUtils {
-
-    public static final String satelliteTrackerId = "$niko_MPC_satelliteTracker";
 
     public static void addScriptIfScriptIsUnique(SectorEntityToken entity, EveryFrameScript script) { //todo: maybe make an alternate type of script that has an "id" var
         if (!(entity.hasScriptOfClass(script.getClass()))) { //todo: might be able to implement this better by passing a class instead

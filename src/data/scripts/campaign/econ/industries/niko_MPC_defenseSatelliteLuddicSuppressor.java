@@ -4,11 +4,6 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry;
 
 public class niko_MPC_defenseSatelliteLuddicSuppressor extends BaseIndustry {
 
-    /**
-     * Must be negative.
-     */
-    private final float patherSuppressionAmount = -3f;
-
     @Override
     public void apply() {
         super.apply(true);
@@ -21,7 +16,7 @@ public class niko_MPC_defenseSatelliteLuddicSuppressor extends BaseIndustry {
 
     @Override
     public float getPatherInterest() {
-        return patherSuppressionAmount;
+        return -3f;
     }
 
     @Override

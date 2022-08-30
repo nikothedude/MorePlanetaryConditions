@@ -1,31 +1,30 @@
 package data.utilities;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
+import data.scripts.util.MagicCampaign;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalAngleForSatellites;
-import static data.utilities.niko_MPC_planetUtils.getSatellitesInOrbitOfMarket;
+import static data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset;
+import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalOffsetForSatellites;
 import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_satelliteUtils {
-
-    /**
-     * Holds a reference to the single satelliteTrackerScript present in campaign. Only here for purposes of accessing it.
-     */
-    public static niko_MPC_satelliteTrackerScript satelliteTracker;
-    /**
-     * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
-     */
-    public final static List<String> satelliteConditionIds = new ArrayList<>(Arrays.asList("niko_MPC_antiAsteroidSatellites"));
 
     private static final Logger log = Global.getLogger(niko_MPC_satelliteUtils.class);
 
@@ -38,64 +37,57 @@ public class niko_MPC_satelliteUtils {
 
     }
 
-    public static void addSatellitesToMarket(MarketAPI market, int amountOfSatellitesToAdd, String id, String faction) {
-        for (int i = 1; i <= amountOfSatellitesToAdd; i++) { //if the /current/ iteration is more than the max satellites in here, stop and regen
-            addSatellite(market, false, id, faction);
-        }
-        regenerateOrbitSpacing(market); //only needs to be done once, after all the satellites are added, this does not generate the error
-    }
-
+    //////////////////////////
+    //                      //
+    // ADDITION AND REMOVAL //
+    //                      //
+    //////////////////////////
+    /**
+     * Adds a new satellite to the market, orbitting around the primaryentity of the market.
+     * @param market The market to add the satellite to.
+     * @param id The id to be assigned to the satellite.
+     * @param faction The factionId to be given to the satellite.
+     */
     public static void addSatellite(MarketAPI market, String id, String faction) {
         addSatellite(market, true, id, faction);
     }
 
+    /**
+     * Adds a new satellite to the market, orbitting around the primaryentity of the market.
+     * @param market The market to add the satellite to.
+     * @param regenerateOrbit If true, regenerateOrbitSpacing(market) will be ran.
+     * @param id The id to be assigned to the satellite.
+     * @param faction The factionId to be given to the satellite.
+     */
     public static void addSatellite(MarketAPI market, boolean regenerateOrbit, String id, String faction) {
-        StarSystemAPI system = market.getStarSystem();
+        List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfMarket(market); //first, we get the satellites
 
-        List<CustomCampaignEntityAPI> satellitesInOrbit; //var instantiated here to save horizontal space
-        satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-
-        int satelliteNumber = ((satellitesInOrbit.size()) + 1); //this does not cause the error
-
+        int satelliteNumber = ((satellitesInOrbit.size()) + 1);
         String orderedId = (id + (" " + satelliteNumber)); // the 1st satellite becomes "id 1", etc
 
+        StarSystemAPI system = market.getStarSystem();
         // instantiate the satellite in the system
-        CustomCampaignEntityAPI satellite = system.addCustomEntity(orderedId, null, id, faction); //fixme: < causes the error, its not the null
-        addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity()); //DOESNT CAUSE THE ERROR?
+        CustomCampaignEntityAPI satellite = system.addCustomEntity(orderedId, null, id, faction);
+        addOrbitPointingDownWithRelativeOffset(satellite, market.getPrimaryEntity()); //set up the orbit
 
-        satellitesInOrbit.add(satellite); //returns the same number as appendSatelliteNumberToId
+        satellitesInOrbit.add(satellite);
 
         if (regenerateOrbit)
             regenerateOrbitSpacing(market);
     }
 
-    public static void addOrbitAroundSectorEntity(CustomCampaignEntityAPI satellite, SectorEntityToken entity) {// todo: why am i using this when i initialize a satellite? why not just use the offsets instantly instead of regenning?
-        addOrbitAroundSectorEntity(satellite, entity, (entity.getCircularOrbitAngle()));
-    }
-
-    public static void addOrbitAroundSectorEntity(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
-        // a mult does not work, because we want the sat to always orbit a fixed distance away. with a mult,
-        // entities with a higher radius will have sats orbit further away
-        float orbitRadiusIncrement = 15f;
-        float orbitRadius = ((entity.getRadius()) + orbitRadiusIncrement); //todo: placeholder math
-        float orbitDaysDivisor = 6.5f;
-        float orbitDays = 15f; //todo: placeholder
-        //DO NOT IGNORE THIS COMMENT
-        //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!
-
-        /*if (orbitDays <= 0) {
-            orbitDays = 1; //we cannot allow a zero or less number, or else saving will fail
-
-            Global.getSector().getCampaignUI().addMessage(
-                    "A orbit was created with an orbitdays of <=0. Please inform the mod author and provide them a copy of your starsector.log."
-            );
-
-            log.debug("niko_MPC_ERROR: " + satellite + ", orbitting" + entity.getName() + " in the " + entity.getStarSystem().getName() + "system was created with a " + orbitDays + "orbitDays.");
-        }*/
-
-        satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
-        //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet
-
+    /**
+     * Adds amountOfSatellitesToAdd satellites to market through a for loop. Runs addSatellite amountOfSatellitesToAdd times.
+     * @param market Market to add satellites to.
+     * @param amountOfSatellitesToAdd The amount of satellites.
+     * @param id The id to be assigned to the satellites.
+     * @param faction The factionid to be given to the satellites.
+     */
+    public static void addSatellitesToMarket(MarketAPI market, int amountOfSatellitesToAdd, String id, String faction) {
+        for (int i = 1; i <= amountOfSatellitesToAdd; i++) { //if the /current/ iteration is more than the max satellites in here, stop and regen
+            addSatellite(market, false, id, faction);
+        }
+        regenerateOrbitSpacing(market); //only needs to be done once, after all the satellites are added, this does not generate the error
     }
 
     /**
@@ -104,30 +96,41 @@ public class niko_MPC_satelliteUtils {
      */
     public static void removeSatellitesFromMarket(MarketAPI market) {
         List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfMarket(market);
-        removeSatellitesFromMarket(market, satellitesInOrbit);
+        removeSatellitesFromMarket(market, satellitesInOrbit.size());
     }
 
     /**
-     * Removes amountOfSatellitesToRemove satellites from market's orbit, taking satellites from listToUse.
-     * @param market The target market.
-     * @param listToUse The list from which satellites will be taken.
+     * Removes amountOfSatellitesToRemove satellites from market's orbit. Will end execution early if the list becomes empty.
+     * @param market The market to remove the satellite from.
+     * @param amountOfSatellitesToRemove The amount of satellites to remove from market.
      */
-    public static void removeSatellitesFromMarket(MarketAPI market, List<CustomCampaignEntityAPI> listToUse) {
+    public static void removeSatellitesFromMarket(MarketAPI market, int amountOfSatellitesToRemove) {
+        List<CustomCampaignEntityAPI> satellites = getSatellitesInOrbitOfMarket(market);
 
-        List<CustomCampaignEntityAPI> listToUseCopy = new ArrayList<>(listToUse); //todo: use iterator
-        // we make a copy and manipualte the values in this copy to avoid a concurrentmodificationexception
-        // the result is hopefully the same, and it seems it is, from testing, although fixme: when satellites are removed, the arraylist still has a size of 1?
-
-        for (CustomCampaignEntityAPI satellite : listToUseCopy) {
-            removeSatelliteFromMarket(market, satellite, false);
+        Iterator<CustomCampaignEntityAPI> iterator = satellites.iterator();
+        for(int i = amountOfSatellitesToRemove; ((i > 0) && (iterator.hasNext())); i--) { //fixme: this might not be stable, i dont know
+            CustomCampaignEntityAPI satellite = iterator.next();
+            removeSatellite(satellite); //we cant directly modify the list, hence why we use the straight removal method here
+            iterator.remove(); // and run iterator.remove
         }
         regenerateOrbitSpacing(market);
     }
 
+    /**
+     * Runs removeSatellite(satellite), before removing the satellite from the market's satellite orbiting list.
+     * @param market The market to remove from.
+     * @param satellite The satellite to remove.
+     */
     public static void removeSatelliteFromMarket(MarketAPI market, CustomCampaignEntityAPI satellite) {
         removeSatelliteFromMarket(market, satellite, true);
     }
 
+    /**
+     * Runs removeSatellite(satellite), before removing the satellite from the market's satellite orbiting list.
+     * @param market The market to remove from.
+     * @param satellite The satellite to remove.
+     * @param regenerateOrbit If true, regenerateOrbitSpacing(market) is called.
+     */
     public static void removeSatelliteFromMarket(MarketAPI market, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
         removeSatellite(satellite);
         getSatellitesInOrbitOfMarket(market).remove(satellite);
@@ -136,10 +139,13 @@ public class niko_MPC_satelliteUtils {
         }
     }
 
-    // does not cause the fucking error
+    /**
+     * fadeAndExpires the satellite, before removing it from it's containing location, effectively deleting it.
+     * @param satellite The satellite to remove.
+     */
     public static void removeSatellite(CustomCampaignEntityAPI satellite) {
-       Misc.fadeAndExpire(satellite); //setting to 0 doesnt help
-       satellite.getContainingLocation().removeEntity(satellite); //does not cause the error
+        Misc.fadeAndExpire(satellite);
+        satellite.getContainingLocation().removeEntity(satellite);
     }
 
     /**
@@ -149,19 +155,31 @@ public class niko_MPC_satelliteUtils {
     public static void regenerateOrbitSpacing(MarketAPI market) {
         List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket = getSatellitesInOrbitOfMarket(market);
 
-        float optimalOrbitAngleOffset = getOptimalOrbitalAngleForSatellites(satellitesInOrbitOfMarket); //fixme: does not generate the error
+        float optimalOrbitAngleOffset = getOptimalOrbitalOffsetForSatellites(satellitesInOrbitOfMarket); //fixme: does not generate the error
         float orbitAngle = 0;
         // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc, so its safe to not add a buffer to the calculation in the optimalangle method
         for (CustomCampaignEntityAPI satellite : satellitesInOrbitOfMarket) { //iterates through each orbitting satellite and offsets them
             if (orbitAngle >= 360) {
                 if (Global.getSettings().isDevMode()) {
                     Global.getSector().getCampaignUI().addMessage("A satellite on " + market + " was given a orbit offset of " + orbitAngle + "."); //debug code
-                    log.debug("A satellite on " + market + " was given a orbit offset of " + orbitAngle + ".");
-                    removeSatelliteFromMarket(market, satellite, false); //we dont want these weirdos overlapping
+                log.debug("A satellite on " + market + " was given a orbit offset of " + orbitAngle + ".");
+                removeSatelliteFromMarket(market, satellite, false); //we dont want these weirdos overlapping
                 }
             }
-            addOrbitAroundSectorEntity(satellite, market.getPrimaryEntity(), orbitAngle);
+            addOrbitPointingDownWithRelativeOffset(satellite, market.getPrimaryEntity(), orbitAngle);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
+    }
+    /**
+     * Gets the market's satellite tracker and accesses its satellite list.
+     * @param market The market we are searching for satellites.
+     * @return Returns a ArrayList, containing all satellite instances orbiting market. Returns an empty arraylist if the satellite tracker is null.
+     */
+    public static List<CustomCampaignEntityAPI> getSatellitesInOrbitOfMarket(MarketAPI market) {
+        niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
+        if (script != null) {
+            return script.getSatellites();
+        }
+        return new ArrayList<>();
     }
 }

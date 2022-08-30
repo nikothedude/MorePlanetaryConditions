@@ -5,7 +5,13 @@ import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin;
 
 public class niko_MPC_antiAsteroidSatellitesPlugin extends BaseCustomEntityPlugin {
 
+    /**
+     * The amount of XP the entity will give upon discovery.
+     */
     public float discoveryXp = 5f;
+    /**
+     * The sensor profile of the entity, duh.
+     */
     public float sensorProfile = 1f;
 
     @Override

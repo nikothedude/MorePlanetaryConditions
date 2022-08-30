@@ -1,3 +1,5 @@
 it seems non-occupied markets dont trigger MarketPostOpen
 
 maybe put the rules on OpenInteractionDialog instead?
+
+can use Misc.isInsignificant(satelliteFleet) to calculate if the satellites should be able to block maybe

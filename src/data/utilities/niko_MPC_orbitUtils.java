@@ -1,0 +1,23 @@
+package data.utilities;
+
+import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
+
+public class niko_MPC_orbitUtils {
+
+    public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity) {
+        addOrbitPointingDownWithRelativeOffset(satellite, entity, (entity.getCircularOrbitAngle()));
+    }
+
+    public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
+        float orbitRadiusIncrement = 15f;
+        float orbitRadius = ((entity.getRadius()) + orbitRadiusIncrement); //todo: placeholder math
+        float orbitDays = 15f; //todo: placeholder
+        //DO NOT IGNORE THIS COMMENT
+        //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!
+
+        satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
+        //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet
+
+    }
+}
