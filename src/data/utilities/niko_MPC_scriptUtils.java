@@ -1,14 +1,19 @@
 package data.utilities;
 
 import com.fs.starfarer.api.EveryFrameScript;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
+import com.fs.starfarer.api.campaign.RepLevel;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
+import lombok.Getter;
+import lombok.Setter;
+import org.lazywizard.lazylib.MathUtils;
+import org.lazywizard.lazylib.campaign.CampaignUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static data.utilities.niko_MPC_ids.satelliteTrackerId;
@@ -59,7 +64,6 @@ public class niko_MPC_scriptUtils {
         return (!(getInstanceOfSatelliteTracker(market) == null));
     }
 
-    @Getter
     public static niko_MPC_satelliteTrackerScript getInstanceOfSatelliteTracker(MarketAPI market) {
         MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
         return (niko_MPC_satelliteTrackerScript) marketMemory.get(satelliteTrackerId);
@@ -70,10 +74,58 @@ public class niko_MPC_scriptUtils {
      * @param market The market that will hold the script.
      * @param script The script to be applied.
      */
-    @Setter
     public static void setInstanceOfSatelliteTracker(MarketAPI market, niko_MPC_satelliteTrackerScript script) {
         MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
         marketMemory.set(satelliteTrackerId, script);
     }
 
+    public static List<CampaignFleetAPI> getFleetsOfReputationInRadiusOfEntity(SectorEntityToken entity, float range, CampaignUtils.IncludeRep include, RepLevel rep) {
+        List<CampaignFleetAPI> fleets = new ArrayList<>();
+
+        // Optimization: check for parameters that equal "just give me everything"
+        if ((include == CampaignUtils.IncludeRep.AT_OR_HIGHER && rep.ordinal() == 0)
+                || (include == CampaignUtils.IncludeRep.AT_OR_LOWER
+                && rep.ordinal() == (RepLevel.values().length - 1))) {
+
+            for (CampaignFleetAPI fleet : entity.getContainingLocation().getFleets()) {
+                if (fleet == entity) {
+                    continue;
+                }
+
+                if (!CampaignUtils.areSameFaction(fleet, entity)) {
+                    fleets.add(fleet);
+                }
+
+                if (fleet.isAlive() && fleet.getFaction().isHostileTo(entity.getFaction())
+                        && MathUtils.isWithinRange(entity, fleet, range)) {
+                    fleets.add(fleet);
+                }
+            }
+            return fleets;
+        }
+
+        // Find all tokens of the given type within reputation range
+        for (CampaignFleetAPI fleet : entity.getContainingLocation().getFleets())
+        {
+            if (fleet == entity)
+            {
+                continue;
+            }
+
+            // Exclude tokens of our faction
+            if (CampaignUtils.areSameFaction(entity, fleet))
+            {
+                continue;
+            }
+
+            // Add any token whose reputation falls within the given range
+            if (CampaignUtils.areAtRep(entity, fleet, include, rep)
+                    && MathUtils.isWithinRange(entity, fleet, range))
+            {
+                fleets.add(fleet);
+            }
+        }
+        return fleets;
+    }
 }
+

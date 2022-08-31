@@ -15,6 +15,8 @@ import com.fs.starfarer.api.loading.AbilitySpecAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import data.scripts.util.MagicCampaign;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.lazywizard.lazylib.LazyLib;
 
 import java.util.*;
@@ -22,15 +24,23 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class niko_MPC_fleetUtils {
 
-    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteTrackerScript script) {
-        String factionId = script.getSatelliteFactionId();
-        String fleetName = script.getSatelliteFleetName();
-        String fleetType = script.getSatelliteFleetType();
+    private static final Logger log = Global.getLogger(niko_MPC_fleetUtils.class);
 
+    static {
+        log.setLevel(Level.ALL);
+    }
+
+    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteTrackerScript script) {
+        return createSatelliteFleetTemplate(script.getSatelliteFactionId(), script.getSatelliteFleetName(), script.getSatelliteFleetType(), script.getMarket(), script);
+    }
+
+    public static CampaignFleetAPI createSatelliteFleetTemplate(String factionId, String fleetName, String fleetType, MarketAPI market) {
+        return createSatelliteFleetTemplate(factionId, fleetName, fleetType, market,null);
+    }
+
+    public static CampaignFleetAPI createSatelliteFleetTemplate(String factionId, String fleetName, String fleetType, MarketAPI market, niko_MPC_satelliteTrackerScript script) {
         CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(factionId, fleetName, true);
         fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_FLEET_TYPE, fleetType);
-
-        MarketAPI market = script.getMarket();
 
         if (market != null && !market.getId().equals("fake")) {
             fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_SOURCE_MARKET, market.getId());
@@ -56,7 +66,11 @@ public class niko_MPC_fleetUtils {
     }
 
     public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants) {
-        if (budget == 0) {
+        attemptToFillFleetWithVariants(budget, fleet, variants, null);
+    }
+
+    public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants, niko_MPC_satelliteTrackerScript script) {
+        if (doFleetFillBudgetCheck(budget, fleet, script)) {
             return;
         }
 
@@ -80,9 +94,10 @@ public class niko_MPC_fleetUtils {
                     satellitesToAdd.add(satellite);
 
                     budget -= variantFp;
+                    if (doFleetFillBudgetCheck(budget, fleet, script, true)) break;
                 }
-                else picker.remove(pickedVariantId);
             }
+            else picker.remove(pickedVariantId);
         }
         for (FleetMemberAPI satellite : satellitesToAdd) {
             fleet.getFleetData().addFleetMember(satellite);
@@ -94,7 +109,39 @@ public class niko_MPC_fleetUtils {
         CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(script);
 
         int numShips = 3f;//todo: VERY ARBITRARY
+    }
 
+    public static boolean doFleetFillBudgetCheck(int budget, CampaignFleetAPI fleet, niko_MPC_satelliteTrackerScript script) {
+        return doFleetFillBudgetCheck(budget, fleet, script, false);
+    }
+
+    public static boolean doFleetFillBudgetCheck(int budget, CampaignFleetAPI fleet, niko_MPC_satelliteTrackerScript script, boolean duringLoop) {
+        if (budget == 0) {
+            return true;
+        }
+        if (budget > 0) {
+            if (duringLoop) {
+                Global.getSector().getCampaignUI().addMessage("attemptToFillFleetWithVariants somehow ended a loop with a budget of " + budget + ", please inform the more" +
+                        "planetary conditions mod author, and provide a copy of your logs.");
+                if (script != null) {
+                    log.debug("attemptToFillWithVariants ended a loop with a budget of " + budget + ", called by" + script.getMarket().getName() + " 's asteroid tracker.");
+                }
+                else {
+                    log.debug(("attemptToFillWithVariants ended a loop with a budget of " + budget + ", called by an unknown caller."));
+                }
+            }
+            else {
+                Global.getSector().getCampaignUI().addMessage("attemptToFillFleetWithVariants was called with a budget of " + budget + ", please inform the more" +
+                        "planetary conditions mod author, and provide a copy of your logs.");
+                if (script != null) {
+                    log.debug(script.getMarket().getName() + "'s satellite tracker passed a budget of " + budget + "to attemptToFillFleetWithVariants.");
+                } else {
+                    log.debug("An unknown caller passed a budget of " + budget + "to attemptToFillFleetWithVariants.");
+                }
+            }
+            return true;
+        }
+    return false;
     }
 
 }

@@ -273,30 +273,30 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
         incrementExpectedSatelliteFleetStrength(satelliteFleetStrengthIncrement);
 
-        if (satelliteFleet == null) {
-            attemptToCreateNewSatelliteFleet(getSatelliteVariantWeightedIds());
-        }
-        else {
-            repairSatelliteFleet(getSatelliteVariantWeightedIds());
-        }
+        attemptToCreateNewSatelliteFleet(getSatelliteVariantWeightedIds());
+        repairSatelliteFleet(getSatelliteVariantWeightedIds());
     }
 
     public void attemptToCreateNewSatelliteFleet(HashMap<String, Float> variants) {
+        if (getSatelliteFleet() != null) {
+            return;
+        }
+
         CampaignFleetAPI fleetTemplate = createSatelliteFleetTemplate(this);
-        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), fleetTemplate, variants);
+        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), fleetTemplate, variants, this);
 
         if (fleetTemplate.getFleetData().getNumMembers() == 0) {
             fleetTemplate.despawn();
         }
         else {
+            fleetTemplate.addEventListener();
             setSatelliteFleet(fleetTemplate);
         }
-
         //todo: determine if i have to despawn this fleet if theres no members
     }
 
     public void repairSatelliteFleet(HashMap<String, Float> variants) {
-        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), getSatelliteFleet(), variants);
+        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), getSatelliteFleet(), variants, this);
     }
 
     ///////////////////////////////
