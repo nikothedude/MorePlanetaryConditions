@@ -17,7 +17,7 @@ niko_MPC_genericSatelliteBlock,niko_MPC_satellitesBlockingAccess,,"FireAll niko_
 FireBest niko_MPC_satellitesBlockingText",,,
 ,,,,,,
 # Populating Options,,,,,,
-niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,,"todo"
+niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,"80:niko_MPC_attackDefenseSatellites:Move in to engage the defense satellites",
 niko_MPC_marketLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$hasMarket
 $menuState == main","SetTooltip marketLeave $marketLeaveTooltip
 SetShortcut marketLeave ""ESCAPE""",,"100:marketLeave:Leave",
@@ -29,6 +29,17 @@ niko_MPC_genericSatelliteBlockText,niko_MPC_satellitesBlockingText,,,"Before you
 
 if youre reading this, this dialog is unfinished :)",,
 "#END Intro Text",,,,,,
+,,,,,,
+# Attacking Satellites,,,,,,
+niko_MPC_attackDefenseSatellitesSelected,DialogOptionSelected,"$option == niko_MPC_attackDefenseSatellites","niko_MPC_spawnTemporarySatelliteFleetsOnPlayer true
+FireBest niko_MPC_defenseSatellitesPrepareAttack
+FireBest niko_MPC_defenseSatellitesPrepareText",,,
+niko_MPC_defenseSatellitesDefeatedContinue,BeatDefenseSatellitesContinue,,"FireBest OpenInteractionDialog",,,
+,,,,,,
+# Text,,,,,,
+niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,"placeholder",,
+"#END Text",,,,,,
+"#END Attacking Satellites",,,,,,
 "#END Satellites Blocking Access",,,,,,
 "#END Satellite Interactions",,,,,,
 "#END Market Interactions",,,,,,

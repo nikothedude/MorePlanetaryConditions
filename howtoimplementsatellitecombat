@@ -1,0 +1,7 @@
+need to consdier getting rid of the satellite tracker everyframe
+
+idea 1: invisible uninteractable fleet. i like this one the most because it works exactly the way other things wrok i hope, but hartley dislikes it
+2. station. probably wont work
+3. just directly inject the satellites into battles that happen near the planet. maybe? need to use a listener for this
+
+can make fleets untargettable with MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS

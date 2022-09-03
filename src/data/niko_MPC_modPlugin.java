@@ -32,6 +32,10 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
         if (!isMagicLibEnabled) {
             throw(new RuntimeException("MagicLib is required for more planetary conditions!"));
         }
+        boolean isLazyLibEnabled = Global.getSettings().getModManager().isModEnabled("lw_lazylib");
+        if (!isLazyLibEnabled) {
+            throw(new RuntimeException("LazyLib is required for more planetary conditions!"));
+        }
     }
 
     /*@Override

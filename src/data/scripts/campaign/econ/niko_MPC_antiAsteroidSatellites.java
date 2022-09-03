@@ -7,6 +7,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
 
+import java.util.HashMap;
+
 import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
 import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
 import static data.utilities.niko_MPC_scriptUtils.addSatelliteTrackerIfNoneIsPresent;
@@ -20,6 +22,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * Todo: Maybe move this variable onto market memory?
      */
 
+    public HashMap<String, Float> satelliteVariantIds = new HashMap<>();
     private boolean maxPhysicalSatellitesOverridden = false;
     public int maxPhysicalSatellites;
     public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
@@ -33,9 +36,12 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public niko_MPC_antiAsteroidSatellites(int numberOfSatellitesToSet) {
         this.maxPhysicalSatellites = numberOfSatellitesToSet;
         maxPhysicalSatellitesOverridden = true;
+
+        satelliteVariantIds.put("berserker_Assault", 5f);
     }
 
     public niko_MPC_antiAsteroidSatellites() {
+        this(15);
     }
 
     @Override
@@ -51,7 +57,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         }
 
         // if we need to add a new tracker
-        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, getSatelliteId(), satelliteFactionId); // we add one
+        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, getSatelliteId(), satelliteFactionId, satelliteVariantIds); // we add one
     }
 
     public void handleConditionStats(String id, MarketAPI market) {

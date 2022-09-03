@@ -6,12 +6,14 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 public class niko_MPC_orbitUtils {
 
     public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity) {
-        addOrbitPointingDownWithRelativeOffset(satellite, entity, (entity.getCircularOrbitAngle()));
+        addOrbitPointingDownWithRelativeOffset(satellite, entity, (entity.getCircularOrbitAngle()), (entity.getRadius()) + 15f);
     }
 
     public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
-        float orbitRadiusIncrement = 15f;
-        float orbitRadius = ((entity.getRadius()) + orbitRadiusIncrement); //todo: placeholder math
+        addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, (entity.getRadius()) + 15f);
+    }
+
+    public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle, float orbitRadius) {
         float orbitDays = 15f; //todo: placeholder
         //DO NOT IGNORE THIS COMMENT
         //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!

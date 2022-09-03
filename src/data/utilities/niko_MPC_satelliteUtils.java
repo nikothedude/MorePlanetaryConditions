@@ -166,7 +166,8 @@ public class niko_MPC_satelliteUtils {
                 removeSatelliteFromMarket(market, satellite, false); //we dont want these weirdos overlapping
                 }
             }
-            addOrbitPointingDownWithRelativeOffset(satellite, market.getPrimaryEntity(), orbitAngle);
+            SectorEntityToken entity = market.getPrimaryEntity();
+            addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, entity.getRadius() + 15f);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
     }

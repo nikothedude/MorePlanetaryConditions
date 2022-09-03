@@ -6,15 +6,18 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.util.Misc;
+import data.scripts.campaign.listeners.niko_MPC_satelliteBattleCleanupListener;
 import data.utilities.niko_MPC_ids;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.lazywizard.lazylib.campaign.CampaignUtils;
+import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
-import static data.utilities.niko_MPC_fleetUtils.attemptToFillFleetWithVariants;
-import static data.utilities.niko_MPC_fleetUtils.createSatelliteFleetTemplate;
+import static data.utilities.niko_MPC_fleetUtils.*;
 import static data.utilities.niko_MPC_ids.satelliteConditionIds;
+import static data.utilities.niko_MPC_listenerUtils.addCleanupListenerToFleet;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_satelliteUtils.*;
 import static data.utilities.niko_MPC_scriptUtils.setInstanceOfSatelliteTracker;
@@ -27,6 +30,9 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         log.setLevel(Level.ALL);
     }
 
+    public float satelliteGracePeriod;
+    public List<BattleAPI> influencedBattles = new ArrayList<>();
+
     /**
      * The market this script is managing. Every advance(), iterates through every satellite in orbit and updates their status.
      * IS NOT WHAT THIS SCRIPT IS APPLIED TO, THAT IS ENTITY.
@@ -36,11 +42,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      * The entity this script is applied to. By default, it is the entity that holds market.
      */
     public SectorEntityToken entity;
-    /**
-     * The internal fleet of satellites that is used for hooking into combat that occurs near the planet,
-     * or fighting anything that they are blocking from interacting with the planet.
-     */
-    public CampaignFleetAPI satelliteFleet;
+    public HashMap<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> cleanupListenersWithFleet = new HashMap<>();
     /**
      * The name that will be applied to satellite fleets.
      */
@@ -52,11 +54,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     /**
      * todo doc
      */
-    public int desiredSatelliteFleetStrength;
-    /**
-     * todo doc
-     */
-    public int maxSatelliteFleetStrength;
+    public float satelliteOrbitRadius;
     /**
      * todo doc
      */
@@ -89,18 +87,6 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      */
     public String satelliteFactionId = "derelict";
 
-    /**
-     * Instantiates a new satellite tracker.
-     *
-     * @param market                The market this satellite tracker will track, used for conditions and determining when to remove the satellites.
-     * @param entity
-     * @param satellites            A list containing CustomCampaignEntityAPI instances. Iterated through each advance(), each instance being checked and updated.
-     * @param maxPhysicalSatellites
-     * @param satelliteId
-     * @param satelliteFactionId
-     * @param variantIds
-     */
-
     /////////////////////////
     //                     //
     //     BASIC STUFF     //
@@ -110,38 +96,16 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
                                            int maxPhysicalSatellites, String satelliteId, String satelliteFactionId,
                                            HashMap<String, Float> variantIds) {
-        this(market, entity, satellites, maxPhysicalSatellites, satelliteId, satelliteFactionId, 200, 200, variantIds);
-    }
-
-    /**
-     * Instantiates a new satellite tracker.
-     *
-     * @param market                The market this satellite tracker will track, used for conditions and determining when to remove the satellites.
-     * @param satellites            A list containing CustomCampaignEntityAPI instances. Iterated through each advance(), each instance being checked and updated.
-     * @param maxPhysicalSatellites
-     * @param satelliteId
-     * @param satelliteFactionId
-     */
-
-    /////////////////////////
-    //                     //
-    //     BASIC STUFF     //
-    //                     //
-    /////////////////////////
-
-    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
-                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId, int maxSatelliteFleetStrength,
-                                           int desiredSatelliteFleetStrength, HashMap<String, Float> variantIds) {
         this.market = market;
         this.entity = entity;
         this.satellites = satellites;
         this.maxPhysicalSatellites = maxPhysicalSatellites;
         this.satelliteId = satelliteId;
         this.satelliteFactionId = satelliteFactionId;
-        this.maxSatelliteFleetStrength = maxSatelliteFleetStrength;
-        this.desiredSatelliteFleetStrength = maxSatelliteFleetStrength;
+        this.satelliteOrbitRadius = (entity.getRadius()) + 15f;
 
         this.satelliteVariantIds = variantIds;
+        satelliteVariantIds.put("berserker_Assault", 5f);
 
         updateSatelliteStatus(true);
     }
@@ -164,6 +128,13 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         if (entityHasNewMarket()) {
             migrateMarkets();
         }
+
+        // decrement
+        setSatelliteGracePeriod(Math.max((getSatelliteGracePeriod() - amount), 0));
+
+ //       if (Global.getSector().getPlayerFleet().getContainingLocation() != entity.getContainingLocation()) {
+ //           return;
+ //       }
         //migrateMarketsIfEntityHasNewMarket();
 
         if (deleteSatellitesAndSelfIfMarketIsNull() || deleteSatellitesAndSelfIfMarketHasNoCondition()) {
@@ -173,6 +144,8 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         updateSatelliteFactionsIfMarketFactionChanged();
 
         updateSatelliteStatus(false); //todo: do i need this
+
+        spawnSatellitesToOngoingBattles();
 
         if (Global.getSettings().isDevMode()) {
             doSatelliteNaNFacingTest();
@@ -251,9 +224,6 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         for (CustomCampaignEntityAPI satellite : getSatellites()) {
             satellite.setFaction(getSatelliteFactionId());
         }
-        if (getSatelliteFleet() != null) { //todo: probably can do this better
-            getSatelliteFleet().setFaction(getSatelliteFactionId());
-        }
     }
 
     /**
@@ -265,38 +235,24 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         if (initialUpdate) {
             addSatellitesToMarket(market, maxPhysicalSatellites, satelliteId, satelliteFactionId); //todo: document
         }
-        updateSatelliteFleet();
     }
 
-    public void updateSatelliteFleet() {
-        CampaignFleetAPI satelliteFleet = getSatelliteFleet();
+    private void spawnSatellitesToOngoingBattles() {
+        List<CampaignFleetAPI> fleetsInRange = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteOrbitRadius()); //todo: probably need to remove the can see check in this method
 
-        incrementExpectedSatelliteFleetStrength(satelliteFleetStrengthIncrement);
+        for (CampaignFleetAPI fleet : fleetsInRange) {
+            BattleAPI battle = fleet.getBattle();
+            if (battle == null || influencedBattles.contains(battle)) return;
 
-        if (satelliteFleet == null) {
-            attemptToCreateNewSatelliteFleet(getSatelliteVariantWeightedIds());
+            Vector2f coordinates = battle.computeCenterOfMass();
+            CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y);
+            addCleanupListenerToFleet(this, satelliteFleet);
+            if ((satelliteFleet.getNumMembersFast() == 0) || !battle.join(satelliteFleet)) {
+                satelliteFleet.despawn();
+                return;
+            }
+            influencedBattles.add(battle);
         }
-        else {
-            repairSatelliteFleet(getSatelliteVariantWeightedIds());
-        }
-    }
-
-    public void attemptToCreateNewSatelliteFleet(HashMap<String, Float> variants) {
-        CampaignFleetAPI fleetTemplate = createSatelliteFleetTemplate(this);
-        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), fleetTemplate, variants);
-
-        if (fleetTemplate.getFleetData().getNumMembers() == 0) {
-            fleetTemplate.despawn();
-        }
-        else {
-            setSatelliteFleet(fleetTemplate);
-        }
-
-        //todo: determine if i have to despawn this fleet if theres no members
-    }
-
-    public void repairSatelliteFleet(HashMap<String, Float> variants) {
-        attemptToFillFleetWithVariants((getNewSatelliteCreationBudget()), getSatelliteFleet(), variants);
     }
 
     ///////////////////////////////
@@ -335,7 +291,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      */
     public void deleteAllSatellitesThenSelf () {
         deleteSatellites();
-        deleteSatelliteFleet();
+        deleteSatelliteFleets();
         deleteSelf();
     }
     /**
@@ -361,12 +317,17 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     /**
      * If getSatelliteFleet() does not return null, despawns the fleet and then sets the reference to null.
      */
-    public void deleteSatelliteFleet () {
-        CampaignFleetAPI satelliteFleet = getSatelliteFleet();
+    public void deleteSatelliteFleets() {
+        List<CampaignFleetAPI> satelliteFleets = getSatelliteFleets();
+        if (satelliteFleets != null && satelliteFleets.size() != 0) {
+            Iterator<CampaignFleetAPI> iterator = satelliteFleets.iterator();
 
-        if (satelliteFleet != null) {
-            satelliteFleet.despawn();
-            setSatelliteFleet(null); //just to be safe
+            while (iterator.hasNext()) {
+                CampaignFleetAPI fleet = iterator.next();
+                Misc.fadeAndExpire(fleet);
+                fleet.getContainingLocation().removeEntity(fleet);
+                iterator.remove();
+            }
         }
     }
 
@@ -395,11 +356,10 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      * @return True if isInsignificant(getSatelliteFleet()) returns false. Else, also returns false.
      */
     public boolean satellitesCapableOfBlockingPlayerFleet () {
-        CampaignFleetAPI satelliteFleet = getSatelliteFleet();
-        if (satelliteFleet != null) {
-            return (!Misc.isInsignificant(getSatelliteFleet())); //todo: finish
+        if (getSatelliteGracePeriod() > 0) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     /////////////////////////
@@ -424,6 +384,10 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         return entity;
     }
 
+    public float getSatelliteOrbitRadius() {
+        return satelliteOrbitRadius;
+    }
+
     public String getSatelliteFactionId () {
         return satelliteFactionId;
     }
@@ -444,33 +408,6 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         satelliteFactionId = factionId;
     }
 
-    public int getDesiredSatelliteFleetStrength() {
-        return desiredSatelliteFleetStrength;
-    }
-
-    public int getSatelliteFleetStrength() {
-        if (getSatelliteFleet() == null) {
-            return 0;
-        }
-        return getSatelliteFleet().getFleetPoints();
-    }
-
-    public int getNewSatelliteCreationBudget() {
-        return (getDesiredSatelliteFleetStrength() - getSatelliteFleetStrength());
-    }
-
-    public void setDesiredSatelliteFleetStrength(int strength) {
-        maxSatelliteFleetStrength = strength;
-    }
-
-    public int getMaxSatelliteFleetStrength() {
-        return maxSatelliteFleetStrength;
-    }
-
-    public void incrementExpectedSatelliteFleetStrength( int increment){
-        desiredSatelliteFleetStrength += increment;
-    }
-
     public void setSatelliteFactionIdWithDefault(String factionId){
         if (factionId.equals("neutral")) {
             factionId = "derelict";
@@ -478,16 +415,40 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         setSatelliteFactionId(factionId);
     }
 
-    public CampaignFleetAPI getSatelliteFleet() {
-        return satelliteFleet;
+    public List<CampaignFleetAPI> getSatelliteFleets() {
+        List<CampaignFleetAPI> fleets = new ArrayList<>();
+        for (Map.Entry<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> entry : cleanupListenersWithFleet.entrySet()) {
+            fleets.add(entry.getValue());
+        }
+        return fleets;
+    }
+
+    public List<niko_MPC_satelliteBattleCleanupListener> getCleanupListeners() {
+        List<niko_MPC_satelliteBattleCleanupListener> listeners = new ArrayList<>();
+        for (Map.Entry<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> entry : cleanupListenersWithFleet.entrySet()) {
+            listeners.add(entry.getKey());
+        }
+        return listeners;
     }
 
     public HashMap<String, Float> getSatelliteVariantWeightedIds() {
         return satelliteVariantIds;
     }
 
-    public void setSatelliteFleet (CampaignFleetAPI fleet){
-        satelliteFleet = fleet;
+    public void removeCleanupListener(niko_MPC_satelliteBattleCleanupListener listener) {
+        cleanupListenersWithFleet.remove(listener);
+    }
+
+    public void doneInfluencingBattle(BattleAPI battle) {
+        influencedBattles.remove(battle);
+    }
+
+    public void setSatelliteGracePeriod(float grace) {
+        satelliteGracePeriod = grace;
+    }
+
+    public float getSatelliteGracePeriod() {
+        return satelliteGracePeriod;
     }
 
     ///////////////////////////////
