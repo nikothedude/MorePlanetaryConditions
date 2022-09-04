@@ -13,6 +13,7 @@ import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import java.util.List;
 import java.util.Map;
 
+import static data.utilities.niko_MPC_ids.satelliteTrackerId;
 import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_dialogUtils {
@@ -70,7 +71,8 @@ public class niko_MPC_dialogUtils {
 
                 if (plugin.getContext() instanceof FleetEncounterContext) {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
-                    if (context.isBattleOver()) {
+                    BattleAPI battle = context.getBattle();
+                    if (battle == null || battle.isDone()) {
                         for (CampaignFleetAPI fleet : satelliteFleets) {
                             fleet.despawn(); //battles over, go home
                         }
@@ -81,9 +83,9 @@ public class niko_MPC_dialogUtils {
                     }
                     if (context.didPlayerWinEncounterOutright()) {
                         if (script != null) {
-                            script.setSatelliteGracePeriod(20f);
+                            script.incrementSatelliteGracePeriod(5f);
                         }
-                        FireBest.fire(null, dialog, memoryMap, "BeatDefenseSatellitesContinue");
+                        FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");
                     } else {
                         dialog.dismiss();
                     }

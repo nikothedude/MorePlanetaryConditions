@@ -6,8 +6,6 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
-import jdk.nashorn.internal.objects.annotations.Getter;
-import jdk.nashorn.internal.objects.annotations.Setter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +39,12 @@ public class niko_MPC_scriptUtils {
      */
     public static void addSatelliteTrackerIfNoneIsPresent(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
                                                              int maxPhysicalSatellites, String satelliteId, String satelliteFactionId, HashMap<String, Float> variantIds) {
-        if (!(marketHasSatelliteTracker(market))) { // if the script isn't already present,
+        if (!(marketHasSatelliteTracker(market)) && (!entity.hasScriptOfClass(niko_MPC_satelliteTrackerScript.class))) { // if the script isn't already present,
             niko_MPC_satelliteTrackerScript script = (new niko_MPC_satelliteTrackerScript(market, entity, satellites, maxPhysicalSatellites, satelliteId, satelliteFactionId, variantIds)); //make a new one,
             //...then we should add a new tracker for satellites
             addNewSatelliteTracker(market, script); //todo: methodize
-            entity.addScript(script); ///fixme < this is causing an error.......?
+            script.updateSatelliteStatus(true);
+            entity.addScript(script);
         }
     }
 
@@ -60,7 +59,6 @@ public class niko_MPC_scriptUtils {
         return (!(getInstanceOfSatelliteTracker(market) == null));
     }
 
-    @Getter
     public static niko_MPC_satelliteTrackerScript getInstanceOfSatelliteTracker(MarketAPI market) {
         MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
         return (niko_MPC_satelliteTrackerScript) marketMemory.get(satelliteTrackerId);
@@ -71,7 +69,6 @@ public class niko_MPC_scriptUtils {
      * @param market The market that will hold the script.
      * @param script The script to be applied.
      */
-    @Setter
     public static void setInstanceOfSatelliteTracker(MarketAPI market, niko_MPC_satelliteTrackerScript script) {
         MemoryAPI marketMemory = market.getMemoryWithoutUpdate();
         marketMemory.set(satelliteTrackerId, script);

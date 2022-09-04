@@ -6,10 +6,11 @@ import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 public class niko_MPC_listenerUtils {
 
-    public static void addCleanupListenerToFleet(niko_MPC_satelliteTrackerScript script, CampaignFleetAPI fleet) {
+    public static niko_MPC_satelliteBattleCleanupListener addCleanupListenerToFleet(niko_MPC_satelliteTrackerScript script, CampaignFleetAPI fleet) {
         niko_MPC_satelliteBattleCleanupListener cleanupListener = (new niko_MPC_satelliteBattleCleanupListener(script));
         fleet.addEventListener(cleanupListener);
         script.cleanupListenersWithFleet.put(cleanupListener, fleet);
+        return cleanupListener;
     }
 
 

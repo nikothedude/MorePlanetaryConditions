@@ -23,33 +23,24 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      */
 
     public HashMap<String, Float> satelliteVariantIds = new HashMap<>();
-    private boolean maxPhysicalSatellitesOverridden = false;
-    public int maxPhysicalSatellites;
+    public int maxPhysicalSatellites = 15;
     public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
     public String satelliteFactionId = "derelict";
 
     // These variables handle the condition's shit itself
-    public float baseAccessibilityIncrement = -15f; //also placeholder
+    public float baseAccessibilityIncrement = -0.15f; //also placeholder
     public float baseGroundDefenseIncrement = 500;
     public float baseStabilityIncrement = 1;
 
-    public niko_MPC_antiAsteroidSatellites(int numberOfSatellitesToSet) {
-        this.maxPhysicalSatellites = numberOfSatellitesToSet;
-        maxPhysicalSatellitesOverridden = true;
-
-        satelliteVariantIds.put("berserker_Assault", 5f);
-    }
-
     public niko_MPC_antiAsteroidSatellites() {
-        this(15);
+        satelliteVariantIds.put("berserker_Assault", 5f);
     }
 
     @Override
     public void apply(String id) {
         if (market.getPrimaryEntity() == null) return; //todo: figure out if this actually has no consequences
 
-        if (!maxPhysicalSatellitesOverridden) // we dont want to change a specified value, given in the constructor
-            maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(market.getPrimaryEntity());
+        maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(market.getPrimaryEntity());
 
         handleConditionStats(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
         if (!(market.hasIndustry(luddicPathSuppressorStructureId))) { // when we apply, we check to see if our luddic path suppression is active
@@ -133,11 +124,13 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                 ("+" + getStabilityBonus())
         );
 
+        int convertedAccessibilityBonus = (int) (getAccessibilityBonus() * 100);  //times 100 to convert out of decimal
+
         tooltip.addPara(
                 "%s accessibility",
                 10f,
                 Misc.getHighlightColor(),
-                (getAccessibilityBonus() + "%")
+                (convertedAccessibilityBonus + "%")
         );
 
         tooltip.addPara(

@@ -14,6 +14,10 @@ public class niko_MPC_satelliteBattleCleanupListener extends BaseFleetEventListe
         this.script = script;
     }
 
+    public void prepareForGarbageCollection() {
+        script = null;
+    }
+
     public void reportBattleOccurred(CampaignFleetAPI fleet,
                                      CampaignFleetAPI primaryWinner, BattleAPI battle) {
         if (battle.isDone()) {

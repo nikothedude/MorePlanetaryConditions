@@ -2,6 +2,7 @@ package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
@@ -20,6 +21,7 @@ import static data.utilities.niko_MPC_ids.satelliteConditionIds;
 import static data.utilities.niko_MPC_listenerUtils.addCleanupListenerToFleet;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_satelliteUtils.*;
+import static data.utilities.niko_MPC_scriptUtils.addNewSatelliteTracker;
 import static data.utilities.niko_MPC_scriptUtils.setInstanceOfSatelliteTracker;
 
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
@@ -105,9 +107,6 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         this.satelliteOrbitRadius = (entity.getRadius()) + 15f;
 
         this.satelliteVariantIds = variantIds;
-        satelliteVariantIds.put("berserker_Assault", 5f);
-
-        updateSatelliteStatus(true);
     }
 
     @Override
@@ -135,16 +134,13 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
  //       if (Global.getSector().getPlayerFleet().getContainingLocation() != entity.getContainingLocation()) {
  //           return;
  //       }
-        //migrateMarketsIfEntityHasNewMarket();
 
         if (deleteSatellitesAndSelfIfMarketIsNull() || deleteSatellitesAndSelfIfMarketHasNoCondition()) {
             return;
         }
 
         updateSatelliteFactionsIfMarketFactionChanged();
-
         updateSatelliteStatus(false); //todo: do i need this
-
         spawnSatellitesToOngoingBattles();
 
         if (Global.getSettings().isDevMode()) {
@@ -162,7 +158,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      * @return True if entity.getMarket() does not equal this.getMarket().
      */
     public boolean entityHasNewMarket() {
-        return (!(getEntity().getMarket().equals(this.getMarket())));
+        return (!(getMarket() == getEntity().getMarket()));
     }
 
     /**
@@ -200,6 +196,9 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     public boolean updateSatelliteFactionsIfMarketFactionChanged() {
         String marketFactionId = (getMarket().getFactionId());
         if (!(marketFactionId.equals(getSatelliteFactionId()))) { // is the id of our host market the same as our own?
+            if (getMarket().isPlanetConditionMarketOnly() && getSatelliteFactionId().equals("derelict")) {
+                return false;
+            }
             updateSelfAndSatelliteFactions(marketFactionId); // if not, update it
             return true;
         }
@@ -242,14 +241,16 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
         for (CampaignFleetAPI fleet : fleetsInRange) {
             BattleAPI battle = fleet.getBattle();
-            if (battle == null || influencedBattles.contains(battle)) return;
+            if (battle == null || influencedBattles.contains(battle)) continue;
 
             Vector2f coordinates = battle.computeCenterOfMass();
-            CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y);
-            addCleanupListenerToFleet(this, satelliteFleet);
+            CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y, false);
+            niko_MPC_satelliteBattleCleanupListener listener = addCleanupListenerToFleet(this, satelliteFleet);
             if ((satelliteFleet.getNumMembersFast() == 0) || !battle.join(satelliteFleet)) {
+                removeCleanupListenerCompletely(listener);
+                satelliteFleet.removeEventListener(listener);
                 satelliteFleet.despawn();
-                return;
+                continue;
             }
             influencedBattles.add(battle);
         }
@@ -409,7 +410,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     }
 
     public void setSatelliteFactionIdWithDefault(String factionId){
-        if (factionId.equals("neutral")) {
+        if (getMarket().isPlanetConditionMarketOnly()) {
             factionId = "derelict";
         }
         setSatelliteFactionId(factionId);
@@ -435,6 +436,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         return satelliteVariantIds;
     }
 
+    public void removeCleanupListenerCompletely(niko_MPC_satelliteBattleCleanupListener listener) {
+        listener.prepareForGarbageCollection();
+        removeCleanupListener(listener);
+    }
+
     public void removeCleanupListener(niko_MPC_satelliteBattleCleanupListener listener) {
         cleanupListenersWithFleet.remove(listener);
     }
@@ -445,6 +451,10 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
     public void setSatelliteGracePeriod(float grace) {
         satelliteGracePeriod = grace;
+    }
+
+    public void incrementSatelliteGracePeriod(float grace) {
+        satelliteGracePeriod += grace;
     }
 
     public float getSatelliteGracePeriod() {

@@ -6,7 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 public class niko_MPC_orbitUtils {
 
     public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity) {
-        addOrbitPointingDownWithRelativeOffset(satellite, entity, (entity.getCircularOrbitAngle()), (entity.getRadius()) + 15f);
+        addOrbitPointingDownWithRelativeOffset(satellite, entity, 0, (entity.getRadius()) + 15f);
     }
 
     public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle) {
