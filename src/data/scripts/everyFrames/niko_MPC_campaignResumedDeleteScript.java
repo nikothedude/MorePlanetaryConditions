@@ -3,6 +3,10 @@ package data.scripts.everyFrames;
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+
+import static data.utilities.niko_MPC_fleetUtils.safeDespawnFleet;
+import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
 
 public class niko_MPC_campaignResumedDeleteScript implements EveryFrameScriptWithCleanup {
 
@@ -36,10 +40,12 @@ public class niko_MPC_campaignResumedDeleteScript implements EveryFrameScriptWit
             if (fleet.getBattle() != null) {
                 return;
             }
+            safeDespawnFleet(fleet);
         }
-        entity.getContainingLocation().removeEntity(entity);
-        entity.setExpired(true);
-
+        else {
+            entity.getContainingLocation().removeEntity(entity);
+            entity.setExpired(true);
+        }
         entity.removeScript(this);
         done = true;
     }

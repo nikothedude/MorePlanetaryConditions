@@ -36,14 +36,14 @@ FireBest niko_MPC_defenseSatellitesPrepareAttack
 FireBest niko_MPC_defenseSatellitesPrepareText",,,
 ,,,,,,
 # Text,,,,,,
-niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,"placeholder",,
+niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,,,
 "#END Text",,,,,,
 ,,,,,,
 # Battle End,,,,,,
 ,,,,,,
 # Complete victory,,,,,,
 niko_MPC_defenseSatellitesDefeatedContinue,niko_MPC_DefenseSatellitesDefeated,,"FireBest OpenInteractionDialog
-FireBest niko_MPC_defenseSatellitesDefeatedText",,,
+FireBest niko_MPC_defenseSatellitesDefeatedText",,,"called in dialogUtils"
 ,,,,,,
 # End Text,,,,,,
 niko_MPC_genericDefenseSatelliteDefeatedText,niko_MPC_defenseSatellitesDefeatedText,,,"Your efforts have opened a brief hole in the satellite orbit, allowing a brief window to interact.",,

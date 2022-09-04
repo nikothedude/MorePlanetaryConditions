@@ -7,13 +7,11 @@ import com.fs.starfarer.api.combat.BattleCreationContext;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
-import com.fs.starfarer.ui.P;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.List;
 import java.util.Map;
 
-import static data.utilities.niko_MPC_ids.satelliteTrackerId;
 import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_dialogUtils {
@@ -61,7 +59,6 @@ public class niko_MPC_dialogUtils {
                 }
 
                 for (CampaignFleetAPI fleet : satelliteFleets) {
-                    fleet.getMemoryWithoutUpdate().clear();
                     fleet.clearAssignments();
                     fleet.deflate();
                 }
@@ -73,9 +70,14 @@ public class niko_MPC_dialogUtils {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
                     BattleAPI battle = context.getBattle();
                     if (battle == null || battle.isDone()) {
-                        for (CampaignFleetAPI fleet : satelliteFleets) {
-                            fleet.despawn(); //battles over, go home
-                        }
+                        /*for (CampaignFleetAPI fleet : satelliteFleets) {
+                            if (fleet.getMemoryWithoutUpdate().contains(isSatelliteFleetId)) {
+                                despawnSatelliteFleet(fleet); //commented out due to the despawn script we have
+                            }
+                            else {
+                                fleet.despawn(); //battles over, go home
+                            }
+                        } */
                     } else {
                         if (script != null) {
                             script.influencedBattles.add(context.getBattle());
@@ -83,6 +85,7 @@ public class niko_MPC_dialogUtils {
                     }
                     if (context.didPlayerWinEncounterOutright()) {
                         if (script != null) {
+                            //todo: script.satellitesDefeatedByPlayer()
                             script.incrementSatelliteGracePeriod(5f);
                         }
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");

@@ -15,11 +15,9 @@ public class niko_MPC_ids {
      */
     public static final List<String> satelliteConditionIds = new ArrayList<>(Arrays.asList("niko_MPC_antiAsteroidSatellites"));
     /**
-     * placeholder doc
-     */
-    public static final String satelliteFleetId = "niko_MPC_defenseSatelliteId";
-    /**
      * Stored value of the MemoryAPI key associated with the satellite tracker. Here for ease of use and modification.
      */
     public static final String satelliteTrackerId = "$niko_MPC_satelliteTracker";
+    public static final String isSatelliteFleetId = "$niko_MPC_isSatelliteFleet";
+    public static final String satelliteBarrageTerrainId = "niko_MPC_defenseSatelliteBarrage";
 }

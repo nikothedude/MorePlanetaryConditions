@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import static data.utilities.niko_MPC_fleetUtils.createNewSatelliteFleet;
-import static data.utilities.niko_MPC_listenerUtils.addCleanupListenerToFleet;
 import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_prepareSatellitesForCombat extends BaseCommandPlugin {
@@ -30,7 +29,6 @@ public class niko_MPC_prepareSatellitesForCombat extends BaseCommandPlugin {
             Vector2f playerCoordinates = Global.getSector().getPlayerFleet().getLocation();
 
             CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(script, playerContainingLocation, playerCoordinates.x, playerCoordinates.y);
-            addCleanupListenerToFleet(script, satelliteFleet);
             satelliteFleet.addScript(new niko_MPC_campaignResumedDeleteScript(satelliteFleet));
             return true;
         }

@@ -7,18 +7,21 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
+import com.fs.starfarer.api.fleet.MutableFleetStatsAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.ai.ModularFleetAI;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
 import data.scripts.everyFrames.niko_MPC_campaignResumedDeleteScript;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
+import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
+import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
 import static data.utilities.niko_MPC_ids.satelliteTrackerId;
-import static data.utilities.niko_MPC_listenerUtils.addCleanupListenerToFleet;
+import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_fleetUtils {
@@ -35,7 +38,10 @@ public class niko_MPC_fleetUtils {
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE, true);
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
 
+        fleetMemory.set(isSatelliteFleetId, true);
         fleetMemory.set(satelliteTrackerId, script);
+
+        MutableFleetStatsAPI stats = fleet.getStats();
 
         MarketAPI market = script.getMarket();
 
@@ -125,6 +131,7 @@ public class niko_MPC_fleetUtils {
             satelliteFleet.getAI().addAssignment(FleetAssignment.HOLD, satelliteFleet.getContainingLocation().createToken(x, y), 500f, null);
         }
 
+        script.getSatelliteFleets().add(satelliteFleet);
         return satelliteFleet;
     }
 
@@ -132,14 +139,48 @@ public class niko_MPC_fleetUtils {
         if (market != null) {
             niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
             if (script == null) return null;
-            LocationAPI playerContainingLocation = Global.getSector().getPlayerFleet().getContainingLocation();
-            Vector2f playerCoordinates = Global.getSector().getPlayerFleet().getLocation();
 
             CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(script, location, coordinates.x, coordinates.y);
-            addCleanupListenerToFleet(script, satelliteFleet);
             satelliteFleet.addScript(new niko_MPC_campaignResumedDeleteScript(satelliteFleet));
             return satelliteFleet;
         }
         return null;
+    }
+
+    public static void safeDespawnFleet(CampaignFleetAPI fleet) {
+        MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
+        if (fleetMemory.contains(isSatelliteFleetId)) {
+            niko_MPC_satelliteTrackerScript script = (niko_MPC_satelliteTrackerScript) fleetMemory.get(satelliteTrackerId);
+            if (script != null) {
+                script.getSatelliteFleets().remove(fleet);
+                deleteMemoryKey(fleet.getMemoryWithoutUpdate(), satelliteTrackerId);
+            } else if (!fleet.isExpired()) {
+                Global.getSector().getCampaignUI().addMessage("Satellite fleet has no script in despawnSatelliteFleet, and is not expired");
+            }
+        }
+        fleet.despawn();
+    }
+
+    public static List<CampaignFleetAPI> spawnTemporarySatelliteFleetsOnFleet(CampaignFleetAPI fleet) {
+        List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
+        LocationAPI containingLocation = fleet.getContainingLocation();
+
+        // we cant use getMarketsInLocation because it doesnt return planetary markets, sadly
+        // have to use a copy here, since no matter what, the base list will have a item added to it if we add a fleet
+        List<SectorEntityToken> allEntitiesInLocation = new ArrayList<>(containingLocation.getAllEntities());
+
+        for (SectorEntityToken entity : allEntitiesInLocation) {
+            MarketAPI market = entity.getMarket();
+            if (market != null) {
+                niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
+                if (script != null) {
+                    if (MathUtils.isWithinRange(entity, fleet, script.getSatelliteSpawnRadius())) {
+                        CampaignFleetAPI satelliteFleet = generateTemporarySatelliteFleet(market, containingLocation, fleet.getLocation());
+                        satelliteFleets.add(satelliteFleet);
+                        }
+                }
+            }
+        }
+        return satelliteFleets;
     }
 }

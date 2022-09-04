@@ -2,12 +2,9 @@ package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.Script;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
-import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.listeners.niko_MPC_satelliteBattleCleanupListener;
 import data.utilities.niko_MPC_ids;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -18,10 +15,8 @@ import java.util.*;
 
 import static data.utilities.niko_MPC_fleetUtils.*;
 import static data.utilities.niko_MPC_ids.satelliteConditionIds;
-import static data.utilities.niko_MPC_listenerUtils.addCleanupListenerToFleet;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_satelliteUtils.*;
-import static data.utilities.niko_MPC_scriptUtils.addNewSatelliteTracker;
 import static data.utilities.niko_MPC_scriptUtils.setInstanceOfSatelliteTracker;
 
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
@@ -40,11 +35,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      * IS NOT WHAT THIS SCRIPT IS APPLIED TO, THAT IS ENTITY.
      */
     public MarketAPI market;
+    public List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
     /**
      * The entity this script is applied to. By default, it is the entity that holds market.
      */
     public SectorEntityToken entity;
-    public HashMap<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> cleanupListenersWithFleet = new HashMap<>();
     /**
      * The name that will be applied to satellite fleets.
      */
@@ -95,7 +90,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     //                     //
     /////////////////////////
 
-    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
+        public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
                                            int maxPhysicalSatellites, String satelliteId, String satelliteFactionId,
                                            HashMap<String, Float> variantIds) {
         this.market = market;
@@ -223,6 +218,9 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         for (CustomCampaignEntityAPI satellite : getSatellites()) {
             satellite.setFaction(getSatelliteFactionId());
         }
+        for (CampaignFleetAPI satelliteFleet : getSatelliteFleets()) {
+            satelliteFleet.setFaction(getSatelliteFactionId());
+        }
     }
 
     /**
@@ -237,7 +235,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     }
 
     private void spawnSatellitesToOngoingBattles() {
-        List<CampaignFleetAPI> fleetsInRange = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteOrbitRadius()); //todo: probably need to remove the can see check in this method
+        List<CampaignFleetAPI> fleetsInRange = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteSpawnRadius()); //todo: probably need to remove the can see check in this method
 
         for (CampaignFleetAPI fleet : fleetsInRange) {
             BattleAPI battle = fleet.getBattle();
@@ -245,11 +243,8 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
             Vector2f coordinates = battle.computeCenterOfMass();
             CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y, false);
-            niko_MPC_satelliteBattleCleanupListener listener = addCleanupListenerToFleet(this, satelliteFleet);
             if ((satelliteFleet.getNumMembersFast() == 0) || !battle.join(satelliteFleet)) {
-                removeCleanupListenerCompletely(listener);
-                satelliteFleet.removeEventListener(listener);
-                satelliteFleet.despawn();
+                safeDespawnFleet(satelliteFleet);
                 continue;
             }
             influencedBattles.add(battle);
@@ -325,8 +320,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
             while (iterator.hasNext()) {
                 CampaignFleetAPI fleet = iterator.next();
-                Misc.fadeAndExpire(fleet);
-                fleet.getContainingLocation().removeEntity(fleet);
+                fleet.despawn();
                 iterator.remove();
             }
         }
@@ -417,32 +411,11 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     }
 
     public List<CampaignFleetAPI> getSatelliteFleets() {
-        List<CampaignFleetAPI> fleets = new ArrayList<>();
-        for (Map.Entry<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> entry : cleanupListenersWithFleet.entrySet()) {
-            fleets.add(entry.getValue());
-        }
-        return fleets;
-    }
-
-    public List<niko_MPC_satelliteBattleCleanupListener> getCleanupListeners() {
-        List<niko_MPC_satelliteBattleCleanupListener> listeners = new ArrayList<>();
-        for (Map.Entry<niko_MPC_satelliteBattleCleanupListener, CampaignFleetAPI> entry : cleanupListenersWithFleet.entrySet()) {
-            listeners.add(entry.getKey());
-        }
-        return listeners;
+        return satelliteFleets;
     }
 
     public HashMap<String, Float> getSatelliteVariantWeightedIds() {
         return satelliteVariantIds;
-    }
-
-    public void removeCleanupListenerCompletely(niko_MPC_satelliteBattleCleanupListener listener) {
-        listener.prepareForGarbageCollection();
-        removeCleanupListener(listener);
-    }
-
-    public void removeCleanupListener(niko_MPC_satelliteBattleCleanupListener listener) {
-        cleanupListenersWithFleet.remove(listener);
     }
 
     public void doneInfluencingBattle(BattleAPI battle) {
@@ -459,6 +432,10 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
     public float getSatelliteGracePeriod() {
         return satelliteGracePeriod;
+    }
+
+    public float getSatelliteSpawnRadius() {
+        return (getSatelliteOrbitRadius()/1.1f);
     }
 
     ///////////////////////////////

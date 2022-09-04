@@ -1,0 +1,8 @@
+{
+	#
+	# terrain with gameplay effects
+	#
+	"niko_MPC_defenseSatelliteBarrage":{
+		"plugin":"data.scripts.campaign.terrain.niko_MPC_defenseSatelliteBarrageTerrain",
+	},
+

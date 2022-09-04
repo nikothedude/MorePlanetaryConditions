@@ -16,15 +16,16 @@ import static data.utilities.niko_MPC_scriptUtils.addSatelliteTrackerIfNoneIsPre
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     /**
-     * The maximum amount of physical satellites, e.g. the ones you see in campaign, the entity we are orbiting can have.
-     * Calculated using getMaxPhysicalSatellitesBasedOnEntitySize during application.
-     * Todo: Maybe add support for resizing planets? Might be inefficient.
-     * Todo: Maybe move this variable onto market memory?
+     * A hashmap containing variantId, plus weight, in float, to be picked, when a satellite is spawned.
      */
-
-    public HashMap<String, Float> satelliteVariantIds = new HashMap<>();
+    public HashMap<String, Float> weightedVariantIds = new HashMap<>();
     public int maxPhysicalSatellites = 15;
+    /**
+     * The internal Id that will be applied to satellite entities, not fleets. Always is appended by its position in the satellite list.
+     */
     public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
+
+    //todo: do i need this
     public String satelliteFactionId = "derelict";
 
     // These variables handle the condition's shit itself
@@ -33,27 +34,35 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseStabilityIncrement = 1;
 
     public niko_MPC_antiAsteroidSatellites() {
-        satelliteVariantIds.put("berserker_Assault", 5f);
+        weightedVariantIds.put("niko_MPC_derelictSatellite_Artillery", 5f);
     }
 
     @Override
     public void apply(String id) {
         if (market.getPrimaryEntity() == null) return; //todo: figure out if this actually has no consequences
 
+        // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
         maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(market.getPrimaryEntity());
 
-        handleConditionStats(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
-        if (!(market.hasIndustry(luddicPathSuppressorStructureId))) { // when we apply, we check to see if our luddic path suppression is active
-            market.addIndustry(luddicPathSuppressorStructureId); //if it isnt, we make it active
-        }
+        handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
+        //note: this method is also what applies the luddic path suppressing industry
 
         // if we need to add a new tracker
-        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, getSatelliteId(), satelliteFactionId, satelliteVariantIds); // we add one
+        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, getSatelliteId(), satelliteFactionId, weightedVariantIds); // we add one
     }
 
-    public void handleConditionStats(String id, MarketAPI market) {
+    /**
+     * Where all the condition attributes (accessability, hazard, etc) are handled. This is NOT where the satellite tracker is handled.
+     * @param id
+     * @param market
+     */
+    public void handleConditionAttributes(String id, MarketAPI market) {
         if (market.hasCondition("meteor_impacts")) {
             market.suppressCondition("meteor_impacts"); //these things just fuck those things up
+        }
+
+        if (!(market.hasIndustry(luddicPathSuppressorStructureId))) { // when we apply, we check to see if our luddic path suppression is active
+            market.addIndustry(luddicPathSuppressorStructureId); //if it isnt, we make it active
         }
 
         //maths to handle the changing values go in the getters
