@@ -20,4 +20,9 @@ public class niko_MPC_ids {
     public static final String satelliteTrackerId = "$niko_MPC_satelliteTracker";
     public static final String isSatelliteFleetId = "$niko_MPC_isSatelliteFleet";
     public static final String satelliteBarrageTerrainId = "niko_MPC_defenseSatelliteBarrage";
+    public static final String niko_MPC_campaignPluginId = "niko_MPC_campaignPlugin";
+
+
+    public static final String satelliteMarketId = "$niko_MPC_satelliteMarket";
+    public static final String satelliteParamsId = "$niko_MPC_satelliteParams";
 }

@@ -1,25 +1,43 @@
 package data.scripts.campaign.econ;
 
+import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
+import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.everyFrames.niko_MPC_satelliteRemovalScript;
+import data.utilities.niko_MPC_satelliteUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 
 import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
 import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
-import static data.utilities.niko_MPC_scriptUtils.addSatelliteTrackerIfNoneIsPresent;
+import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
+import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteParams;
+import static data.utilities.niko_MPC_scriptUtils.*;
+import static data.utilities.niko_NPC_debugUtils.displayErrorToCampaign;
+import static data.utilities.niko_NPC_debugUtils.logEntityData;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
+
+    private static final Logger log = Global.getLogger(niko_MPC_antiAsteroidSatellites.class);
+
+    static {
+        log.setLevel(Level.ALL);
+    }
 
     /**
      * A hashmap containing variantId, plus weight, in float, to be picked, when a satellite is spawned.
      */
     public HashMap<String, Float> weightedVariantIds = new HashMap<>();
-    public int maxPhysicalSatellites = 15;
+    public int maxPhysicalSatellites = 0;
+    public int maxBattleSatellites = 0;
     /**
      * The internal Id that will be applied to satellite entities, not fleets. Always is appended by its position in the satellite list.
      */
@@ -39,16 +57,58 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     @Override
     public void apply(String id) {
-        if (market.getPrimaryEntity() == null) return; //todo: figure out if this actually has no consequences
-
-        // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
-        maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(market.getPrimaryEntity());
-
+        SectorEntityToken primaryEntity = market.getPrimaryEntity();
+        if (primaryEntity != null) {
+            // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
+            maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(primaryEntity);
+            maxBattleSatellites = maxPhysicalSatellites; //todo: placeholder
+            if (!defenseSatellitesApplied(primaryEntity)) { // if our entity is not supposed to have satellites
+                initializeSatellitesOntoHolder(); // we should make it so that it should
+            } else if (niko_MPC_satelliteUtils.marketsDesynced(primaryEntity, market)) { // if it is, check if its tracking market correctly
+                ensureOldMarketHasNoReferencesFailsafe();
+                niko_MPC_satelliteUtils.syncMarket(primaryEntity, market); // if not, set its memory key to market
+            }
+            else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up. todo: remove later
+        }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
-        //note: this method is also what applies the luddic path suppressing industry
+    }
 
-        // if we need to add a new tracker
-        addSatelliteTrackerIfNoneIsPresent(market, market.getPrimaryEntity(), maxPhysicalSatellites, getSatelliteId(), satelliteFactionId, weightedVariantIds); // we add one
+    /**
+     * Exists mainly so that I can put custom behavior here.
+     */
+    public void initializeSatellitesOntoHolder() {
+        float orbitDistance = getSatelliteOrbitDistance(market.getPrimaryEntity());
+        float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
+        niko_MPC_satelliteParams params = new niko_MPC_satelliteParams(
+                satelliteId,
+                satelliteFactionId,
+                maxPhysicalSatellites,
+                maxBattleSatellites,
+                orbitDistance,
+                interferenceDistance,
+                weightedVariantIds);
+
+        niko_MPC_satelliteUtils.initializeSatellitesOntoEntity(market.getPrimaryEntity(), market, params);
+    }
+
+    private float getSatelliteOrbitDistance(SectorEntityToken entity) {
+        return getSatelliteOrbitDistance(entity, false);
+    }
+
+    private float getSatelliteOrbitDistance(SectorEntityToken entity, boolean useParams) {
+        if (useParams) {
+            return getEntitySatelliteParams(entity).satelliteOrbitDistance;
+        }
+        float extraRadius = 15f;
+        return entity.getRadius() + extraRadius;
+    }
+
+    private float getSatelliteInterferenceDistance(SectorEntityToken entity) {
+        return getSatelliteInterferenceDistance(entity, getEntitySatelliteParams(entity).satelliteOrbitDistance);
+    }
+
+    private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {
+        return orbitDistance;
     }
 
     /**
@@ -112,6 +172,9 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
         }
         getMarket().unsuppressCondition("meteor_impacts");
+
+        market.getPrimaryEntity().addScript(new niko_MPC_satelliteRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
+        // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
     }
 
     @Override
@@ -171,4 +234,30 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         );
     }
 
+    public void marketApplicationOrderTest() {
+        SectorEntityToken entity = market.getPrimaryEntity();
+
+        if ((entity.getMarket() != market)) {
+            log.debug(market.getName() + " tried applying itself when it wasn't recognized as" + entity + "'s market, which is" +
+                    entity.getMarket().getName() + ". Debug info: System-" + entity.getStarSystem().getName() + " Market" +
+                    "condition market status" + market.isPlanetConditionMarketOnly() + entity.getMarket().isPlanetConditionMarketOnly());
+            logEntityData(entity);
+            if (Global.getSettings().isDevMode()) {
+                displayErrorToCampaign("marketApplicationOrderTest failure");
+            }
+        }
+    }
+
+    public void ensureOldMarketHasNoReferencesFailsafe() {
+        SectorEntityToken entity = market.getPrimaryEntity();
+
+        if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
+            log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());
+            logEntityData(entity);
+            if (Global.getSettings().isDevMode()) {
+                displayErrorToCampaign("ensureOldMarketHasNoReferencesFailsafe failure");
+            }
+            entity.getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
+        }
+    }
 }

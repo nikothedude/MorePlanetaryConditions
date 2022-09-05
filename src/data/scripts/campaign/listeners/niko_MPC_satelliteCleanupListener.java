@@ -13,6 +13,7 @@ import static data.utilities.niko_MPC_ids.satelliteTrackerId;
 
 public class niko_MPC_satelliteCleanupListener extends BaseCampaignEventListener {
 
+    @Deprecated
     public niko_MPC_satelliteCleanupListener(boolean permaRegister) {
         super(permaRegister);
     }

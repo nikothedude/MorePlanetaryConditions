@@ -5,20 +5,17 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 
 import java.util.List;
 
+import static data.utilities.niko_MPC_satelliteUtils.getSatellitesInOrbitOfEntity;
 import static java.lang.Math.round;
 
 public class niko_MPC_planetUtils {
 
-    /**
-     * Finds the optimal orbiting offset in degrees between orbiting satellites using exponential decay.
-     * Ex. At 1 satellite, the optimal offset is 360 (reduced to 0). At 2, the optimal is 180, so the satellites are 180 degrees apart.
-     * At 3, it's 90, so they're 90 degrees, 4, 45, etc.
-     *
-     * @param satellitesInOrbitOfMarket The satellites themselves.
-     * @return The optimal angle offset in degrees between the satellites. Returns float.
-     */
-    public static float getOptimalOrbitalOffsetForSatellites(List<CustomCampaignEntityAPI> satellitesInOrbitOfMarket) {
-        int numOfSatellites = satellitesInOrbitOfMarket.size();
+    public static float getOptimalOrbitalOffsetForSatellites(SectorEntityToken entity) {
+        return getOptimalOrbitalOffsetForSatellites(getSatellitesInOrbitOfEntity(entity));
+    }
+
+    public static float getOptimalOrbitalOffsetForSatellites(List<CustomCampaignEntityAPI> satelliteInOrbitOfEntity) {
+        int numOfSatellites = satelliteInOrbitOfEntity.size();
 
         float optimalAngle = (360 / (float) numOfSatellites); //todo: explain the math
 

@@ -19,6 +19,7 @@ import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_satelliteUtils.*;
 import static data.utilities.niko_MPC_scriptUtils.setInstanceOfSatelliteTracker;
 
+@Deprecated
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
 
     private static final Logger log = Global.getLogger(niko_MPC_satelliteTrackerScript.class);
@@ -90,18 +91,18 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
     //                     //
     /////////////////////////
 
-        public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
-                                           int maxPhysicalSatellites, String satelliteId, String satelliteFactionId,
-                                           HashMap<String, Float> variantIds) {
-        this.market = market;
-        this.entity = entity;
-        this.satellites = satellites;
-        this.maxPhysicalSatellites = maxPhysicalSatellites;
-        this.satelliteId = satelliteId;
-        this.satelliteFactionId = satelliteFactionId;
-        this.satelliteOrbitRadius = (entity.getRadius()) + 15f;
+    public niko_MPC_satelliteTrackerScript(MarketAPI market, SectorEntityToken entity, List<CustomCampaignEntityAPI> satellites,
+                                       int maxPhysicalSatellites, String satelliteId, String satelliteFactionId,
+                                       HashMap<String, Float> variantIds) {
+    this.market = market;
+    this.entity = entity;
+    this.satellites = satellites;
+    this.maxPhysicalSatellites = maxPhysicalSatellites;
+    this.satelliteId = satelliteId;
+    this.satelliteFactionId = satelliteFactionId;
+    this.satelliteOrbitRadius = (entity.getRadius()) + 15f;
 
-        this.satelliteVariantIds = variantIds;
+    this.satelliteVariantIds = variantIds;
     }
 
     @Override
@@ -230,7 +231,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
      */
     public void updateSatelliteStatus(boolean initialUpdate) {
         if (initialUpdate) {
-            addSatellitesToMarket(market, maxPhysicalSatellites, satelliteId, satelliteFactionId); //todo: document
+          //  addSatellitesToEntity(market, maxPhysicalSatellites, satelliteId, satelliteFactionId); //todo: document
         }
     }
 
@@ -456,7 +457,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
                     marketHasFuckedUpAndWasLogged = true;
                 }
                 removeSatellite(satellite);
-                regenerateOrbitSpacing(market);
+                //regenerateOrbitSpacing(market);
                 iterator.remove();
             }
         }

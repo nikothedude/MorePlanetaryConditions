@@ -27,9 +27,8 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
         }
     }
 
-    @Override
-    public void onGameLoad(boolean newGame) {
-        addSatelliteCleanupListenerIfNonePresent();
-    }
+    //@Override
+    //public void onGameLoad(boolean newGame) {
+       // addSatelliteCleanupListenerIfNonePresent();
 }
 

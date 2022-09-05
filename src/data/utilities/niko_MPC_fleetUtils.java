@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.ai.ModularFleetAI;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
+import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.scripts.everyFrames.niko_MPC_campaignResumedDeleteScript;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import org.lazywizard.lazylib.MathUtils;
@@ -26,28 +27,16 @@ import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_fleetUtils {
 
-    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteTrackerScript script) {
-        String factionId = script.getSatelliteFactionId();
-        String fleetName = script.getSatelliteFleetName();
-        String fleetType = script.getSatelliteFleetType();
+    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteParams params, String factionId, String fleetName) {
 
         final CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(factionId, fleetName, true);
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
-        fleetMemory.set(MemFlags.MEMORY_KEY_FLEET_TYPE, fleetType);
         fleetMemory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, true);
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE, true);
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
 
         fleetMemory.set(isSatelliteFleetId, true);
-        fleetMemory.set(satelliteTrackerId, script);
-
         MutableFleetStatsAPI stats = fleet.getStats();
-
-        MarketAPI market = script.getMarket();
-
-        if (market != null && !market.getId().equals("fake")) {
-            fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_SOURCE_MARKET, market.getId());
-        }
 
         return fleet;
     }
