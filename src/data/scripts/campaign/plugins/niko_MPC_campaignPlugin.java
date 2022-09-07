@@ -48,13 +48,13 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
 
     @Override
     public PluginPick<BattleAutoresolverPlugin> pickBattleAutoresolverPlugin(BattleAPI battle) {
-        HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = getNearbyEntitiesWithSatellitesWillingAndCapableToJoinBattle(battle);
+        /*HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = getNearbyEntitiesWithSatellitesWillingAndCapableToJoinBattle(battle);
         if (entitiesWillingToFight.size() > 0) {
             List<SectorEntityToken> entitiesOnSideOne = getEntitiesOnSide(battle, BattleAPI.BattleSide.ONE, entitiesWillingToFight);
             List<SectorEntityToken> entitiesOnSideTwo = getEntitiesOnSide(battle, BattleAPI.BattleSide.TWO, entitiesWillingToFight);
 
             return new PluginPick<BattleAutoresolverPlugin>(new niko_MPC_satelliteAutoresolvePlugin(battle, entitiesOnSideOne, entitiesOnSideTwo), PickPriority.MOD_SET);
-        }
-    return null;
+        } */
+    return null; //todo: hatred.
     }
 }
