@@ -4,12 +4,12 @@ id,trigger,conditions,script,text,options,notes
 # Market Interactions,,,,,,
 ,,,,,,
 # Satellite Interactions,,,,,,
-niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"niko_MPC_entityHasSatellites
 !niko_MPC_satellitesWantToBlockPlayer score:950","FireBest OpenInteractionDialog","The satellites in orbit of $entityName give your $shipOrFleet no trouble as you approach, though sensors do give a few worrying reports of brief lock-ons and targetting laser scans.",,
-niko_MPC_marketSatellitesWantToBlockButCant,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+niko_MPC_marketSatellitesWantToBlockButCant,OpenInteractionDialog,"niko_MPC_entityHasSatellites
 niko_MPC_satellitesWantToBlockPlayer 
 !niko_MPC_satellitesCapableOfBlockingPlayer score:950","FireBest OpenInteractionDialog","While the satellites in orbit of $entityName harass you, they simply are not strong enough to prevent your approach.",,"wont call noblock since wanttoblockplayer is true not false"
-niko_MPC_marketSatellitesWillingAndCapableToBlock,OpenInteractionDialog,"niko_MPC_marketHasSatelliteTracker
+niko_MPC_marketSatellitesWillingAndCapableToBlock,OpenInteractionDialog,"niko_MPC_entityHasSatellites
 niko_MPC_satellitesCapableAndWillingToBlock score:970","FireBest niko_MPC_satellitesBlockingAccess",,,
 ,,,,,,
 # Satellites Blocking Access,,,,,,
@@ -31,7 +31,7 @@ if youre reading this, this dialog is unfinished :)",,
 "#END Intro Text",,,,,,
 ,,,,,,
 # Attacking Satellites,,,,,,
-niko_MPC_attackDefenseSatellitesSelected,DialogOptionSelected,"$option == niko_MPC_attackDefenseSatellites","niko_MPC_spawnTemporarySatelliteFleetsOnPlayer true
+niko_MPC_attackDefenseSatellitesSelected,DialogOptionSelected,"$option == niko_MPC_attackDefenseSatellites","niko_MPC_prepareSatelliteEncounter
 FireBest niko_MPC_defenseSatellitesPrepareAttack
 FireBest niko_MPC_defenseSatellitesPrepareText",,,
 ,,,,,,

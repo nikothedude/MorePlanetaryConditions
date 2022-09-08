@@ -1,4 +1,4 @@
-package data.scripts.campaign.plugins.autoresolve;
+/*package data.scripts.campaign.plugins.autoresolve;
 
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
@@ -10,3 +10,4 @@ public class niko_MPC_satelliteAutoresolvePlugin extends niko_MPC_satelliteAutor
         super(battle, entitiesSupportingSideOne, entitiesSupportingSideTwo);
     }
 }
+*/

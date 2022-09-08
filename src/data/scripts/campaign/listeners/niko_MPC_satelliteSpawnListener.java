@@ -1,4 +1,4 @@
-package data.scripts.campaign.listeners;
+/*package data.scripts.campaign.listeners;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BaseCampaignEventListener;
@@ -19,4 +19,4 @@ public class niko_MPC_satelliteSpawnListener extends BaseCampaignEventListener {
 
         }
     }
-}
+}*/

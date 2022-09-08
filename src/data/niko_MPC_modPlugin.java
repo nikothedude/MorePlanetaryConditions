@@ -2,16 +2,6 @@ package data;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.SectorAPI;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
-
-import java.util.HashSet;
-import java.util.Set;
-
-import static data.utilities.niko_MPC_listenerUtils.addSatelliteCleanupListenerIfNonePresent;
-import static data.utilities.niko_MPC_listenerUtils.addSatelliteSpawnListenerIfNonePresent;
-import static data.utilities.niko_MPC_scriptUtils.*;
 
 public class niko_MPC_modPlugin extends BaseModPlugin {
 

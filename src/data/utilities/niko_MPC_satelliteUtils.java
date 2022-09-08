@@ -5,7 +5,10 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.fleet.Battle;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.terrain.satelliteBarrage.niko_MPC_defenseSatelliteBarrageTerrainPlugin;
+import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.lazywizard.lazylib.MathUtils;
@@ -17,9 +20,10 @@ import static data.utilities.niko_MPC_fleetUtils.createSatelliteFleetTemplate;
 import static data.utilities.niko_MPC_ids.*;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset;
+import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
 import static data.utilities.niko_MPC_planetUtils.getOptimalOrbitalOffsetForSatellites;
-import static data.utilities.niko_NPC_debugUtils.displayErrorToCampaign;
-import static data.utilities.niko_NPC_debugUtils.logEntityData;
+import static data.utilities.niko_MPC_debugUtils.displayErrorToCampaign;
+import static data.utilities.niko_MPC_debugUtils.logEntityData;
 
 public class niko_MPC_satelliteUtils {
 
@@ -98,8 +102,15 @@ public class niko_MPC_satelliteUtils {
         deleteMemoryKey(entityMemory, satelliteMarketId);
 
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        for (SectorEntityToken terrain : params.satelliteBarrages) {
+            removeSatelliteBarrageTerrain(entity, terrain);
+        }
         params.prepareForGarbageCollection();
         deleteMemoryKey(entityMemory, satelliteParamsId);
+    }
+
+    public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
+        return 5;
     }
 
     /**
@@ -230,7 +241,7 @@ public class niko_MPC_satelliteUtils {
      * @param market Will have satelliteMarketId set to this if not null.
      */
     public static void initializeSatellitesOntoEntity(SectorEntityToken entity, MarketAPI market, niko_MPC_satelliteParams params) {
-        if (!doEntityHasNoSatellitesTest(entity)) { //if the test fails, something fucked up, lets abort
+        if (!niko_MPC_debugUtils.doEntityHasNoSatellitesTest(entity)) { //if the test fails, something fucked up, lets abort
             return;
         }
         MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
@@ -238,6 +249,15 @@ public class niko_MPC_satelliteUtils {
             entityMemory.set(satelliteMarketId, market); // we're already protected from overwriting satellites with the above test
         }
         entityMemory.set(satelliteParamsId, params); //store our parameters onto the entity
+        LocationAPI containingLocation = entity.getContainingLocation();
+        SectorEntityToken barrageTerrain = containingLocation.addTerrain(satelliteBarrageTerrainId, new niko_MPC_defenseSatelliteBarrageTerrainPlugin.barrageAreaParams(
+            params.satelliteBarrageDistance,
+            "Bombardment zone",
+            entity
+
+        ));
+        params.satelliteBarrages.add(barrageTerrain);
+        barrageTerrain.setCircularOrbit(entity, 0, 0, 100);
         addSatellitesUpToMax(entity);
     }
 
@@ -285,17 +305,25 @@ public class niko_MPC_satelliteUtils {
         HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = new HashMap<>();
 
         for (SectorEntityToken entity : entitiesWithSatellites) { //todo methodize
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-            CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params, getCurrentSatelliteFactionId(entity), "");
-            //attemptToFillFleetWithVariants(50, satelliteFleet, params.weightedVariantIds); //todo: dont know if i need this
-            BattleAPI.BattleSide battleSide = battle.pickSide(satelliteFleet);
+            BattleAPI.BattleSide battleSide = getSideForSatellites(entity, battle);
 
             if (battleSide != BattleAPI.BattleSide.NO_JOIN) {
                 entitiesWillingToFight.put(entity, battleSide);
             }
-            satelliteFleet.despawn();
         }
         return entitiesWillingToFight;
+    }
+
+    public static BattleAPI.BattleSide getSideForSatellites(SectorEntityToken entity, BattleAPI battle) {
+        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
+        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params, getCurrentSatelliteFactionId(entity), "");
+        //attemptToFillFleetWithVariants(50, satelliteFleet, params.weightedVariantIds); //todo: dont know if i need this
+        BattleAPI.BattleSide battleSide = battle.pickSide(satelliteFleet);
+
+        satelliteFleet.despawn();
+
+        return battleSide;
     }
 
     public static HashMap<SectorEntityToken, BattleAPI.BattleSide> getNearbyEntitiesWithSatellitesWillingAndCapableToJoinBattle(BattleAPI battle) {
@@ -370,6 +398,12 @@ public class niko_MPC_satelliteUtils {
                 doEntitySatellitesWantToFight(entity, fleet));
     }
 
+    public static boolean areEntitySatellitesCapableOfBlocking(SectorEntityToken entity, CampaignFleetAPI playerFleet) {
+        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+
+        return (params.getGracePeriod() <= 0);
+    }
+
     public static niko_MPC_satelliteParams getEntitySatelliteParams(SectorEntityToken entity) {
         return (niko_MPC_satelliteParams) entity.getMemoryWithoutUpdate().get(satelliteParamsId);
     }
@@ -386,29 +420,21 @@ public class niko_MPC_satelliteUtils {
         return getEntitySatelliteParams(entity) != null;
     }
 
-    /**
-     * Returns false if the entity has satellite params, a tracker, or if the entity has a satellite market.
-     */
-    public static boolean doEntityHasNoSatellitesTest(SectorEntityToken entity) {
-        boolean result = true;
-        if (getEntitySatelliteMarket(entity) != null) {
-            log.debug(entity.getName() + " failed doEntityNoSatellitesTest because " + getEntitySatelliteMarket(entity).getName() + " was still applied");
-            if (Global.getSettings().isDevMode()) {
-                displayErrorToCampaign("doEntityHasNoSatellitesTest getEntitySatelliteMarket failure");
-            }
-            result = false;
-        }
-        if (defenseSatellitesApplied(entity) || entity.getMemoryWithoutUpdate().get(satelliteParamsId) != null) {
-            log.debug(entity.getName() + " failed doEntityNoSatellitesTest because defenseSatellitesApplied returned true");
-            if (Global.getSettings().isDevMode()) {
-                displayErrorToCampaign("doEntityHasNoSatellitesTest defenseSatellitesApplied failure");
-                result = false;
-            }
+    public static void removeSatelliteBarrageTerrain(SectorEntityToken relatedEntity, SectorEntityToken terrain) {
+        LocationAPI containingLocation = relatedEntity.getContainingLocation();
 
-        }
-        if (!result) {
-            logEntityData(entity);
-        }
-        return result;
+        terrain.setExpired(true);
+        containingLocation.removeEntity(terrain);
     }
+
+    public static void incrementSatelliteGracePeriod(float amount, SectorEntityToken entity) {
+        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        if (params == null) return;
+
+        if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {
+            entity.addScript(new niko_MPC_gracePeriodDecrementer(params));
+        }
+        params.adjustGracePeriod(amount);
+    }
+
 }

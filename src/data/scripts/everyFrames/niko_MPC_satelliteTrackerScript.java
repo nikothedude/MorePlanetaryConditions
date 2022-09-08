@@ -243,13 +243,12 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
             if (battle == null || influencedBattles.contains(battle)) continue;
 
             Vector2f coordinates = battle.computeCenterOfMass();
-            CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y, false);
-            if ((satelliteFleet.getNumMembersFast() == 0) || !battle.join(satelliteFleet)) {
-                safeDespawnFleet(satelliteFleet);
-                continue;
-            }
-            influencedBattles.add(battle);
+            //         CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(this, getEntity().getContainingLocation(), coordinates.x, coordinates.y, false);
+            //      if ((satelliteFleet.getNumMembersFast() == 0) || !battle.join(satelliteFleet)) {
+            //         safeDespawnFleet(satelliteFleet);
+            continue;
         }
+        //   influencedBattles.add(battle);
     }
 
     ///////////////////////////////

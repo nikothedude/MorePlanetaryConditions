@@ -7,6 +7,7 @@ import com.fs.starfarer.api.combat.BattleCreationContext;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
+import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_dialogUtils {
 
-    public static boolean createSatelliteFleetFocus(final CampaignFleetAPI satelliteFleet, final List<CampaignFleetAPI> satelliteFleets, InteractionDialogAPI dialog, final Map<String, MemoryAPI> memoryMap) {
+    public static boolean createSatelliteFleetFocus(final CampaignFleetAPI satelliteFleet, InteractionDialogAPI dialog, final Map<String, MemoryAPI> memoryMap) {
         if (dialog == null) return false;
         if (satelliteFleet == null) return false;
 
@@ -51,43 +52,18 @@ public class niko_MPC_dialogUtils {
         config.delegate = new FleetInteractionDialogPluginImpl.BaseFIDDelegate() {
             @Override
             public void notifyLeave(InteractionDialogAPI dialog) {
+                if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
 
-                MarketAPI market = entity.getMarket();
-                niko_MPC_satelliteTrackerScript script = null;
-                if (market != null) {
-                    script = getInstanceOfSatelliteTracker(market);
-                }
-
-                for (CampaignFleetAPI fleet : satelliteFleets) {
-                    fleet.clearAssignments();
-                    fleet.deflate();
-                }
+                satelliteFleet.setLocation(10000000, 10000000);
+                satelliteFleet.despawn();
 
                 dialog.setPlugin(originalPlugin);
                 dialog.setInteractionTarget(entity);
 
                 if (plugin.getContext() instanceof FleetEncounterContext) {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
-                    BattleAPI battle = context.getBattle();
-                    if (battle == null || battle.isDone()) {
-                        /*for (CampaignFleetAPI fleet : satelliteFleets) {
-                            if (fleet.getMemoryWithoutUpdate().contains(isSatelliteFleetId)) {
-                                despawnSatelliteFleet(fleet); //commented out due to the despawn script we have
-                            }
-                            else {
-                                fleet.despawn(); //battles over, go home
-                            }
-                        } */
-                    } else {
-                        if (script != null) {
-                            script.influencedBattles.add(context.getBattle());
-                        }
-                    }
                     if (context.didPlayerWinEncounterOutright()) {
-                        if (script != null) {
-                            //todo: script.satellitesDefeatedByPlayer()
-                            script.incrementSatelliteGracePeriod(5f);
-                        }
+                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(5f, entity);
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");
                     } else {
                         dialog.dismiss();
@@ -96,20 +72,7 @@ public class niko_MPC_dialogUtils {
                     dialog.dismiss();
                 }
             }
-
-            @Override
-            public void battleContextCreated(InteractionDialogAPI dialog, BattleCreationContext bcc) {
-                bcc.aiRetreatAllowed = true;
-                bcc.objectivesAllowed = true;
-                bcc.enemyDeployAll = true;
-            }
-
-            @Override
-            public void postPlayerSalvageGeneration(InteractionDialogAPI dialog, FleetEncounterContext context, CargoAPI salvage) {
-            }
-
         };
-
         dialog.setPlugin(plugin);
         plugin.init(dialog);
 

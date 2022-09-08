@@ -1,4 +1,4 @@
-package data.scripts.campaign.plugins.autoresolve;
+/*package data.scripts.campaign.plugins.autoresolve;
 
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
@@ -70,3 +70,4 @@ public abstract class niko_MPC_satelliteAutoresolveBasePlugin extends BattleAuto
         return result;
     }
 }
+*/

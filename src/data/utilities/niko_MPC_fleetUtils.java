@@ -92,6 +92,7 @@ public class niko_MPC_fleetUtils {
         }
     }
 
+    /*
     public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteTrackerScript script, LocationAPI location, float x, float y, boolean addAssignment) {
         return createNewSatelliteFleet(script, location, x, y, 200, script.getSatelliteVariantWeightedIds(), addAssignment);
     }
@@ -104,7 +105,9 @@ public class niko_MPC_fleetUtils {
         return createNewSatelliteFleet(script, location, x, y, budget, variants, true);
     }
 
-    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteTrackerScript script, LocationAPI location, float x, float y, int budget, HashMap<String, Float> variants,
+     */
+    /*
+    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteParams script, LocationAPI location, float x, float y, int budget, HashMap<String, Float> variants,
                                                            boolean addAssignment) {
         final CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(script);
         attemptToFillFleetWithVariants(budget, satelliteFleet, variants);
@@ -122,8 +125,9 @@ public class niko_MPC_fleetUtils {
 
         script.getSatelliteFleets().add(satelliteFleet);
         return satelliteFleet;
-    }
+    }*/
 
+    /*
     public static CampaignFleetAPI generateTemporarySatelliteFleet(MarketAPI market, LocationAPI location, Vector2f coordinates) {
         if (market != null) {
             niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
@@ -134,8 +138,9 @@ public class niko_MPC_fleetUtils {
             return satelliteFleet;
         }
         return null;
-    }
+    } */
 
+    @Deprecated
     public static void safeDespawnFleet(CampaignFleetAPI fleet) {
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
         if (fleetMemory.contains(isSatelliteFleetId)) {
@@ -150,6 +155,7 @@ public class niko_MPC_fleetUtils {
         fleet.despawn();
     }
 
+    /*
     public static List<CampaignFleetAPI> spawnTemporarySatelliteFleetsOnFleet(CampaignFleetAPI fleet) {
         List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
         LocationAPI containingLocation = fleet.getContainingLocation();
@@ -171,5 +177,6 @@ public class niko_MPC_fleetUtils {
             }
         }
         return satelliteFleets;
-    }
+
+     */
 }

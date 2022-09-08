@@ -2,4 +2,9 @@
  	"ruleCommandPackages":[
  		"data.scripts.campaign.rulecmd",
  	],
+	
+	"plugins":{
+		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_satelliteSpawnerScript",
+		"niko_MPC_satelliteBarrageTerrainCombatEffectAdder":"data.scripts.everyFrames.combat.niko_MPC_satelliteBarrageTerrainCombatEffectAdder"
+	},
  }

@@ -20,9 +20,8 @@ import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
 import static data.utilities.niko_MPC_planetUtils.getMaxPhysicalSatellitesBasedOnEntitySize;
 import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
 import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteParams;
-import static data.utilities.niko_MPC_scriptUtils.*;
-import static data.utilities.niko_NPC_debugUtils.displayErrorToCampaign;
-import static data.utilities.niko_NPC_debugUtils.logEntityData;
+import static data.utilities.niko_MPC_debugUtils.displayErrorToCampaign;
+import static data.utilities.niko_MPC_debugUtils.logEntityData;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
@@ -52,7 +51,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseStabilityIncrement = 1;
 
     public niko_MPC_antiAsteroidSatellites() {
-        weightedVariantIds.put("niko_MPC_derelictSatellite_Artillery", 5f);
+        weightedVariantIds.put("rampart_Standard", 5f);
     }
 
     @Override
@@ -61,7 +60,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         if (primaryEntity != null) {
             // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
             maxPhysicalSatellites = getMaxPhysicalSatellitesBasedOnEntitySize(primaryEntity);
-            maxBattleSatellites = maxPhysicalSatellites; //todo: placeholder
+            maxBattleSatellites = niko_MPC_satelliteUtils.getMaxBattleSatellites(primaryEntity); //todo: placeholder
             if (!defenseSatellitesApplied(primaryEntity)) { // if our entity is not supposed to have satellites
                 initializeSatellitesOntoHolder(); // we should make it so that it should
             } else if (niko_MPC_satelliteUtils.marketsDesynced(primaryEntity, market)) { // if it is, check if its tracking market correctly
@@ -79,6 +78,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public void initializeSatellitesOntoHolder() {
         float orbitDistance = getSatelliteOrbitDistance(market.getPrimaryEntity());
         float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
+        float barrageDistance = getSatelliteBarrageDistance(market.getPrimaryEntity());
         niko_MPC_satelliteParams params = new niko_MPC_satelliteParams(
                 satelliteId,
                 satelliteFactionId,
@@ -86,9 +86,14 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                 maxBattleSatellites,
                 orbitDistance,
                 interferenceDistance,
+                barrageDistance,
                 weightedVariantIds);
 
         niko_MPC_satelliteUtils.initializeSatellitesOntoEntity(market.getPrimaryEntity(), market, params);
+    }
+
+    private float getSatelliteBarrageDistance(SectorEntityToken primaryEntity) {
+        return (primaryEntity.getRadius()+500);
     }
 
     private float getSatelliteOrbitDistance(SectorEntityToken entity) {
