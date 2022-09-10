@@ -49,6 +49,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseAccessibilityIncrement = -0.15f; //also placeholder
     public float baseGroundDefenseIncrement = 500;
     public float baseStabilityIncrement = 1;
+    public float baseGroundDefenseMult = 1.5f;
 
     public niko_MPC_antiAsteroidSatellites() {
         weightedVariantIds.put("rampart_Standard", 5f);
@@ -133,9 +134,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         //maths to handle the changing values go in the getters
         float accessibilityIncrement = getAccessibilityBonus();
         float groundDefenseIncrement = getGroundDefenseBonus();
+        float groundDefenseMult = getGroundDefenseMult();
         float stabilityIncrement = getStabilityBonus();
 
         market.getAccessibilityMod().modifyFlat(id, accessibilityIncrement, getName());
+        market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, groundDefenseMult, getName());
         market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, groundDefenseIncrement, getName());
         market.getStability().modifyFlat(id, stabilityIncrement, getName());
     }
@@ -157,6 +160,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     public float getStabilityBonus() {
         return baseStabilityIncrement;
+    }
+
+    public float getGroundDefenseMult() {
+        return baseGroundDefenseMult;
     }
 
     public float getLuddicPathInterestBonus() {
@@ -218,6 +225,13 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         );
 
         tooltip.addPara(
+                "%s defense rating",
+                10f,
+                Misc.getHighlightColor(),
+                ("+" + getGroundDefenseMult() + "x")
+        );
+
+        tooltip.addPara(
                 "Danger from asteroid impacts %s.",
                 10f,
                 Misc.getHighlightColor(),
@@ -257,11 +271,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         SectorEntityToken entity = market.getPrimaryEntity();
 
         if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
-            log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());
+           /* log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());
             logEntityData(entity);
             if (Global.getSettings().isDevMode()) {
                 displayErrorToCampaign("ensureOldMarketHasNoReferencesFailsafe failure");
-            }
+            } */ //commented out since i got what i want from it: it DOES fire, meaning this IS needed
             entity.getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
         }
     }

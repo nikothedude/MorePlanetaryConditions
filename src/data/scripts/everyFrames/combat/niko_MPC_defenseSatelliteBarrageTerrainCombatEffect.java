@@ -94,6 +94,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainCombatEffect extends BaseEve
         if (generalDelayBetweenShots > 0) return;
         FleetSide otherSide = (side == FleetSide.PLAYER) ? FleetSide.ENEMY : FleetSide.PLAYER;
         int otherSideInt = (otherSide == FleetSide.ENEMY) ? 1 : 0;
+        int currentSide = (otherSide == FleetSide.ENEMY) ? 0 : 1;
 
         CombatEngineAPI engine = Global.getCombatEngine();
 
@@ -139,6 +140,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainCombatEffect extends BaseEve
             fireAtPoint.y += yProjOffset;
             float angle = VectorUtils.getAngle(firingPoint, fireAtPoint);
             CombatEntityAPI projectile = engine.spawnProjectile(null, null, weaponToSimulate, firingPoint, angle, null);
+            projectile.setOwner(currentSide);
             incrementGeneralDelay(generalDelayIncrement);
         }
         else {

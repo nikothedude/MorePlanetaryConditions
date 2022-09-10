@@ -5,11 +5,12 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TerrainAIFlags;
+import com.fs.starfarer.api.combat.MutableStat;
+import com.fs.starfarer.api.combat.StatBonus;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain;
 import com.fs.starfarer.api.impl.campaign.terrain.RingRenderer;
-import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin;
 import com.fs.starfarer.api.loading.Description;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
@@ -137,13 +138,11 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         if (dist > maxDist) return 0f;
 
         float intensity = 1f - (dist / maxDist);
-        if (intensity < 0) intensity = 0;
-        if (intensity > 1) intensity = 1;
         return Math.min(Math.max(intensity, 0f), 1f); //returns intensity if its more or equal to 0 and less or equal to 1
     }
 
     public double getThreatLevel(CampaignFleetAPI fleet,  boolean useFleetSize) {
-        return getThreatLevel(fleet, 0.1f, useFleetSize);
+        return getThreatLevel(fleet, 0.05f, useFleetSize);
     }
 
     public double getThreatLevel(CampaignFleetAPI fleet, float mult) {
@@ -151,7 +150,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
     }
 
     public double getThreatLevel(CampaignFleetAPI fleet) {
-        return getThreatLevel(fleet, 0.1f, true);
+        return getThreatLevel(fleet, 0.05f, true);
     }
 
     public double getThreatLevel(CampaignFleetAPI fleet, float mult, boolean useFleetSize) {
@@ -159,7 +158,30 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         if (useFleetSize) {
             probMult = Misc.getFleetRadiusTerrainEffectMult(fleet);
         }
-        return ((getIntensityAtPoint(fleet.getLocation()) * mult)*probMult);
+        float anchorPoint = 3f;
+        float currentBurn = fleet.getCurrBurnLevel();
+        float speedMult = 5f;
+        if (currentBurn != 0) {
+            speedMult = (anchorPoint/currentBurn); // at 4 and above, start getting hit less
+            // at 2 and below, start getting hit more
+        }
+
+        float sensorAnchorPoint = 800f;
+        float currentSensorProfile = fleet.getSensorProfile();
+        StatBonus profileMod = fleet.getDetectedRangeMod();
+        float flatModifier = profileMod.getFlatBonus();
+        float multModifier = profileMod.getMult();
+        float percentModifier = profileMod.getPercentMod();
+        if (percentModifier == 0) {
+            percentModifier = 1; //sanity
+        }
+        float modifiedSensorProfile = (((currentSensorProfile * percentModifier) + flatModifier) * multModifier); //same math as done in statbonus recompute
+        double sensorMult = 0.005;
+        if (currentSensorProfile != 0) {
+            sensorMult = Math.min((modifiedSensorProfile/sensorAnchorPoint), 1); //at <800 profile, start getting hit less
+            // never increases the chance
+        }
+        return ((((getIntensityAtPoint(fleet.getLocation()) * mult)*probMult)*speedMult)*sensorMult);
     }
 
     public boolean entityHasNoSatelliteParams() {
@@ -224,7 +246,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         }
         else {
             tooltip.addPara("You are currently non-hostile to the " + factionName
-            + " , so you are not being fired upon by the satellites.", nextPad,
+            + ", so you are not being fired upon by the satellites.", nextPad,
                     good,
                     factionName);
         }

@@ -1,0 +1,2 @@
+name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sprite
+Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all weapons by %s.,Greatly extends non-missile weapon range.,graphics/hullmods/targeting_supercomputer.png

@@ -1,12 +1,12 @@
 name,id,tier,rarity,base value,range,damage/second,damage/shot,emp,impact,turn rate,OPs,ammo,ammo/sec,reload size,type,energy/shot,energy/second,chargeup,chargedown,burst size,burst delay,min spread,max spread,spread/shot,spread decay/sec,beam speed,proj speed,launch speed,flight time,proj hitpoints,autofireAccBonus,extraArcForAI,hints,tags,groupTag,tech/manufacturer,for weapon tooltip>>,primaryRoleStr,speedStr,trackingStr,turnRateStr,accuracyStr,customPrimary,customPrimaryHL,customAncillary,customAncillaryHL,noDPSInTooltip,number
-DO NOT USEHELLBORE,niko_MPC_longranged_hellbore,5,0,3000,9999999999,,750,,200,5,16,,,,HIGH_EXPLOSIVE,750,,0,3,1,,0,10,5,10,,750,,,400,,,,,,,,Anti Armor,,,,,,,,,,8
-DO NOT USEMAULER,niko_MPC_longranged_heavymauler,5,0,2000,9999999999999,,200,,10,20,12,,,,HIGH_EXPLOSIVE,200,,0,4.4,3,0.3,0,5,1,10,,1300,,,30,,,,,,,,Anti Armor,,,,,,,,,,4.75
-DO NOT USEHAMMER,niko_MPC_longranged_hammer,5,0,75,9999999999999,,1500,,30,10,1,1,,,HIGH_EXPLOSIVE,0,,0,1,1,,0,0,0,0,,1000,1000,5000,350,,,STRIKE,,,,,Torpedo,Fast,None,,,,,,,TRUE,9.9
-DO NOT USEREAPER,niko_MPC_longranged_reaper,5,0,200,9999999,,4000,,75,10,2,1,,,HIGH_EXPLOSIVE,0,,0,5,1,,0,0,0,0,,800,800,5000,500,,,STRIKE,,,,,Torpedo,Fast,None,,,,,,,TRUE,9
-DO NOT USEMJOLNIR,niko_MPC_longranged_mjolnir,5,0,6000,9999999,,400,200,10,25,24,,,,ENERGY,500,,0,0.75,1,,0,5,1,10,,1200,,,75,,,,,,,,General,,,,,,,,,,7.5
-DO NOT USEARABALEST,niko_MPC_longranged_arabalest,5,0,800,99999999,,200,,10,12,8,,,,KINETIC,150,,0,1.2,1,,0,15,5,10,,1100,,,30,,,,,,,,Anti Shield,,,,,,,,,,4.125
-DO NOT USEHVD,niko_MPC_longranged_hveldriver,5,0,2250,999999999,,275,400,40,10,13,,,,KINETIC,350,,0,2,1,,,,,,,1500,,,300,,,,"kinetic15, LR, remnant, rare_bp, merc",,,,Anti Shield,,,,,,,,,,5.5
-DO NOT USEGAUSS,niko_MPC_longranged_gauss,5,0,5000,9999999,,700,,300,3,25,,,,KINETIC,1200,,1,1,,,,,,,,1900,,,400,,,,"kinetic20, LR, remnant, rare_bp, hist1t, merc",,,,Anti Shield,,,,,,,,,,6
+DO NOT USEHELLBORE,niko_MPC_longranged_hellbore,,,3000,9999999999,,750,,200,5,16,,,,HIGH_EXPLOSIVE,750,,0,3,1,,0,10,5,10,,750,,,400,,,,,,,,Anti Armor,,,,,,,,,,8
+DO NOT USEMAULER,niko_MPC_longranged_heavymauler,,,2000,9999999999999,,200,,10,20,12,,,,HIGH_EXPLOSIVE,200,,0,4.4,3,0.3,0,5,1,10,,1300,,,30,,,,,,,,Anti Armor,,,,,,,,,,4.75
+DO NOT USEHAMMER,niko_MPC_longranged_hammer,,,75,9999999999999,,1500,,30,10,1,1,,,HIGH_EXPLOSIVE,0,,0,1,1,,0,0,0,0,,1000,1000,5000,350,,,STRIKE,,,,,Torpedo,Fast,None,,,,,,,TRUE,9.9
+DO NOT USEREAPER,niko_MPC_longranged_reaper,,,200,9999999,,4000,,75,10,2,1,,,HIGH_EXPLOSIVE,0,,0,5,1,,0,0,0,0,,800,800,5000,500,,,STRIKE,,,,,Torpedo,Fast,None,,,,,,,TRUE,9
+DO NOT USEMJOLNIR,niko_MPC_longranged_mjolnir,,,6000,9999999,,400,200,10,25,24,,,,ENERGY,500,,0,0.75,1,,0,5,1,10,,1200,,,75,,,,,,,,General,,,,,,,,,,7.5
+DO NOT USEARABALEST,niko_MPC_longranged_arabalest,,,800,99999999,,200,,10,12,8,,,,KINETIC,150,,0,1.2,1,,0,15,5,10,,1100,,,30,,,,,,,,Anti Shield,,,,,,,,,,4.125
+DO NOT USEHVD,niko_MPC_longranged_hveldriver,,,2250,999999999,,275,400,40,10,13,,,,KINETIC,350,,0,2,1,,,,,,,1500,,,300,,,,"kinetic15, LR, remnant, rare_bp, merc",,,,Anti Shield,,,,,,,,,,5.5
+DO NOT USEGAUSS,niko_MPC_longranged_gauss,,,5000,9999999,,700,,300,3,25,,,,KINETIC,1200,,1,1,,,,,,,,1900,,,400,,,,"kinetic20, LR, remnant, rare_bp, hist1t, merc",,,,Anti Shield,,,,,,,,,,6
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,55
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,56
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,57

@@ -10,7 +10,7 @@
 		"spriteWidth":20,
 		"spriteHeight":20,
 		"defaultRadius":10, # used if radius<0 in addCustomEntity()
-		"customDescriptionId":"niko_MPE_defenseSatellite",
+		"customDescriptionId":"niko_MPC_defenseSatellite",
 		"interactionImage":"graphics/illustrations/comm_relay.jpg", #placeholder
 		"showInCampaign":true, # show in campaign layer
 		"showIconOnMap":false, #placeholder
@@ -25,7 +25,7 @@
 		"renderCircleIndicator":false, # make clickable
 		"renderCircleIndicatorSelectionFlash":true,
 		"layers":[BELOW_STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values,
-		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC", "neutrino", "has_interaction_dialog"],
+		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC"],
 		"pluginClass":"data.scripts.entityPlugins.niko_MPC_antiAsteroidSatellitesPlugin",
 	}
 }

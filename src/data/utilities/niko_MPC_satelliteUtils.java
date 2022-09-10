@@ -299,7 +299,26 @@ public class niko_MPC_satelliteUtils {
     }
 
     public static HashMap<SectorEntityToken, BattleAPI.BattleSide> getNearbyEntitiesWithSatellitesWillingToJoinBattle(BattleAPI battle) {
-        LocationAPI containingLocation = battle.getNonPlayerCombined().getContainingLocation();
+        LocationAPI containingLocation = null;
+        if (battle.isPlayerInvolved()) {
+            containingLocation = Global.getSector().getPlayerFleet().getContainingLocation();
+        }
+        else {
+            for (CampaignFleetAPI fleet : battle.getBothSides()) {
+                if (fleet.getContainingLocation() != null) {
+                    containingLocation = fleet.getContainingLocation();
+                    break;
+                }
+            }
+        }
+
+        if (containingLocation == null) {
+            if (Global.getSettings().isDevMode()) {
+                niko_MPC_debugUtils.displayErrorToCampaign("nearbyEntitiesWillingToJoinBattle null containing location");
+            }
+            return new HashMap<>();
+        }
+
         Vector2f coordinates = battle.computeCenterOfMass();
         Set<SectorEntityToken> entitiesWithSatellites = getNearbyEntitiesWithSatellites(coordinates, containingLocation);
         HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = new HashMap<>();

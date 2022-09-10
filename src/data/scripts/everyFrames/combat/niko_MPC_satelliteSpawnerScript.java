@@ -120,7 +120,7 @@ public class niko_MPC_satelliteSpawnerScript extends BaseEveryFrameCombatPlugin 
         float xCoordinate = initialXCoord;
         float yCoordinate = initialYCoord;
         if (side == FleetSide.ENEMY) { //the player spawns at the bottom, the enemy, at the top
-            facing = 0f; //hoepfully this makes them look down
+            facing = 270f; //hoepfully this makes them look down
             yCoordinate *= -1; //todo: i have no fucking clue if this is good
             yOffset *= -1; //invert it, so it moves down, not up
         }
