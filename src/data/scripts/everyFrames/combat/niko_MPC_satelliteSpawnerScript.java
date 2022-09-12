@@ -2,7 +2,6 @@ package data.scripts.everyFrames.combat;
 
 import com.fs.starfarer.api.GameState;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
@@ -10,11 +9,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import com.fs.starfarer.ui.P;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
-import data.scripts.campaign.plugins.battleCreation.niko_MPC_baseSatelliteSpawnerBattlePlugin;
-import data.scripts.campaign.plugins.battleCreation.niko_MPC_satelliteSpawnerBattlePlugin;
-import data.scripts.campaign.plugins.battleCreation.niko_MPC_satelliteSpawnerBattlePluginSecrets;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.vector.Vector2f;
@@ -27,6 +22,7 @@ import java.util.Map;
 import static data.utilities.niko_MPC_satelliteUtils.*;
 
 //suicidal everyframe that adds satellites then dies
+@Deprecated
 public class niko_MPC_satelliteSpawnerScript extends BaseEveryFrameCombatPlugin {
 
     private static final Logger log = Global.getLogger(niko_MPC_satelliteSpawnerScript.class);
@@ -58,8 +54,8 @@ public class niko_MPC_satelliteSpawnerScript extends BaseEveryFrameCombatPlugin 
         HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = getNearbyEntitiesWithSatellitesWillingAndCapableToJoinBattle(battle);
 
         if (entitiesWillingToFight.size() > 0) {
-            entitiesOnPlayerSide = getEntitiesOnSide(battle, battle.pickSide(battle.getPlayerCombined()), entitiesWillingToFight); //todo: not sure if the combined methods work
-            entitiesOnOtherSide = getEntitiesOnSide(battle, battle.pickSide(battle.getNonPlayerCombined()), entitiesWillingToFight);
+            entitiesOnPlayerSide = getEntitiesOnSide(battle.pickSide(battle.getPlayerCombined()), entitiesWillingToFight); //todo: not sure if the combined methods work
+            entitiesOnOtherSide = getEntitiesOnSide(battle.pickSide(battle.getNonPlayerCombined()), entitiesWillingToFight);
 
             currentSatellitesForSide.put(FleetSide.PLAYER, new ArrayList<ShipAPI>());
             currentSatellitesForSide.put(FleetSide.ENEMY, new ArrayList<ShipAPI>());

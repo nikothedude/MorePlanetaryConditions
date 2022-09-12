@@ -20,6 +20,5 @@ public class niko_MPC_orbitUtils {
 
         satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
         //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet
-
     }
 }

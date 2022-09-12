@@ -4,6 +4,7 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
+import data.utilities.niko_MPC_debugUtils;
 
 import static data.utilities.niko_MPC_satelliteUtils.purgeSatellitesFromEntity;
 
@@ -47,6 +48,7 @@ public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithClea
         else shouldRemove = false; //todo: to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
 
         if (shouldRemove) { //if we should remove it, we completely remove all parts of the satellite framework from the entity
+            if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
             purgeSatellitesFromEntity(entity);
         }
         prepareForGarbageCollection(); //the point of this script is simply to check on the next frame if the condition is still present

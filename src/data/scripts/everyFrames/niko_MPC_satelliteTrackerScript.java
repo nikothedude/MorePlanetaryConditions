@@ -11,13 +11,14 @@ import org.apache.log4j.Logger;
 import org.lazywizard.lazylib.campaign.CampaignUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
-import static data.utilities.niko_MPC_fleetUtils.*;
 import static data.utilities.niko_MPC_ids.satelliteConditionIds;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
-import static data.utilities.niko_MPC_satelliteUtils.*;
-import static data.utilities.niko_MPC_scriptUtils.setInstanceOfSatelliteTracker;
+import static data.utilities.niko_MPC_satelliteUtils.removeSatellite;
 
 @Deprecated
 public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
@@ -175,7 +176,7 @@ public class niko_MPC_satelliteTrackerScript implements EveryFrameScript {
         }
         setMarket(newMarket); //set our market to be the new market
 
-        setInstanceOfSatelliteTracker(getMarket(), this); //finally, add our reference to the market so we can be accessed
+  //      setInstanceOfSatelliteTracker(getMarket(), this); //finally, add our reference to the market so we can be accessed
         //note: we are NOT ACCESSABLE. PERIOD. without this. this is because there is no method for getting a existing script off an entity, only globally
     }
 

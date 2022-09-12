@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.TerrainAIFlags;
-import com.fs.starfarer.api.combat.MutableStat;
 import com.fs.starfarer.api.combat.StatBonus;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
@@ -186,7 +185,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
 
     public boolean entityHasNoSatelliteParams() {
         if (getEntitySatelliteParams(getRelatedEntity()) == null) {
-            niko_MPC_debugUtils.displayErrorToCampaign("ensureEntityHasSatelliteParams failure");
+            niko_MPC_debugUtils.displayError("ensureEntityHasSatelliteParams failure");
             niko_MPC_satelliteUtils.removeSatelliteBarrageTerrain(getRelatedEntity(), getEntity());
 
             niko_MPC_debugUtils.logEntityData(getRelatedEntity());

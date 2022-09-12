@@ -4,7 +4,7 @@
  	],
 	
 	"plugins":{
-		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_satelliteSpawnerScript",
-		"niko_MPC_satelliteBarrageTerrainCombatEffectAdder":"data.scripts.everyFrames.combat.niko_MPC_satelliteBarrageTerrainCombatEffectAdder"
+		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_newSatelliteDeployerScript",
+		"niko_MPC_campaignPlugin":"data.scripts.campaign.plugins.niko_MPC_campaignPlugin",
 	},
  }

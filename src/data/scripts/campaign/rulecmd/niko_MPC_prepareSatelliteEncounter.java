@@ -9,11 +9,14 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.utilities.niko_MPC_dialogUtils;
+import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lwjgl.util.vector.Vector2f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
     @Override
@@ -22,17 +25,23 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         niko_MPC_satelliteParams satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
         if (satelliteParams == null) return false;
+
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
+        Set<SectorEntityToken> entitiesWillingToFight = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingToFight(playerFleet);
+        entitiesWillingToFight.add(entity);
 
-        CampaignFleetAPI dummyFleet = Global.getFactory().createEmptyFleet(satelliteParams.getSatelliteFactionId(), "Defense Satellites", true);
-        entity.getContainingLocation().addEntity(dummyFleet);
-        Vector2f playerLocation = playerFleet.getLocation();
-        float xCoord = playerLocation.x;
-        float yCoord = playerLocation.y;
-        dummyFleet.setLocation(xCoord, yCoord);
-        dummyFleet.getFleetData().addFleetMember("rampart_Standard");
+        List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
 
-        niko_MPC_dialogUtils.createSatelliteFleetFocus(dummyFleet, dialog, memoryMap);
+        for (SectorEntityToken satelliteEntity : entitiesWillingToFight) {
+            niko_MPC_satelliteParams iteratedSatelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(satelliteEntity);
+            satelliteFleets.add(niko_MPC_fleetUtils.createNewFullSatelliteFleet(iteratedSatelliteParams, playerFleet));
+        }
+
+        if (satelliteFleets.size() == 0) return false;
+
+        CampaignFleetAPI focusedSatellite = satelliteFleets.get(0);
+
+        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, dialog, memoryMap);
 
         return true;
     }

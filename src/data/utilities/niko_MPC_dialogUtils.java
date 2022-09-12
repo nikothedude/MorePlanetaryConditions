@@ -1,19 +1,15 @@
 package data.utilities;
 
-import com.fs.starfarer.api.campaign.*;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.InteractionDialogAPI;
+import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
-import com.fs.starfarer.api.combat.BattleCreationContext;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
-import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 
-import java.util.List;
 import java.util.Map;
-
-import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_dialogUtils {
 

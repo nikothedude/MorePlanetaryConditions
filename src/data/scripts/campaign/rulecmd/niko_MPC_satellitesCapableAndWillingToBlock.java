@@ -4,18 +4,14 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
-import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import data.utilities.niko_MPC_satelliteUtils;
 
 import java.util.List;
 import java.util.Map;
-
-import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_satellitesCapableAndWillingToBlock extends BaseCommandPlugin {
     @Override

@@ -1,33 +1,42 @@
 package data.utilities;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.*;
-import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.campaign.FleetAssignment;
+import com.fs.starfarer.api.campaign.LocationAPI;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
-import com.fs.starfarer.api.fleet.MutableFleetStatsAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import com.fs.starfarer.campaign.ai.ModularFleetAI;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
+import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
+import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
-import data.scripts.everyFrames.niko_MPC_campaignResumedDeleteScript;
 import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
-import org.lazywizard.lazylib.MathUtils;
+import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
-import static data.utilities.niko_MPC_ids.satelliteTrackerId;
+import static data.utilities.niko_MPC_ids.*;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
-import static data.utilities.niko_MPC_scriptUtils.getInstanceOfSatelliteTracker;
 
 public class niko_MPC_fleetUtils {
 
-    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteParams params, String factionId, String fleetName) {
+    /**
+     * Creates an empty fleet with absolutely nothing in it, except for the memflags satellite fleets must have.
+     * @return A new satellite fleet.
+     */
+    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteParams params) {
+
+        String factionId = niko_MPC_satelliteUtils.getCurrentSatelliteFactionId(params);
+        String fleetName = params.getSatelliteFleetName();
 
         final CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(factionId, fleetName, true);
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
@@ -36,123 +45,114 @@ public class niko_MPC_fleetUtils {
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
 
         fleetMemory.set(isSatelliteFleetId, true);
-        MutableFleetStatsAPI stats = fleet.getStats();
+        fleetMemory.set(satelliteParamsId, params);
+
+        fleet.setAI(new niko_MPC_satelliteFleetAI((CampaignFleet) fleet));
+
+        fleet.addEventListener(new niko_MPC_satelliteFleetDespawnListener());
 
         return fleet;
     }
 
-    public static List<FleetMemberAPI> generateNewSatellites(CampaignFleetAPI fleetTemplate, int numShipsToGen, HashMap<String, Float> variantWeights) {
-        List<FleetMemberAPI> satellitesToAdd = new ArrayList<>();
-        WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
-
-        for (Map.Entry<String, Float> entry : variantWeights.entrySet()) {
-            picker.add(entry.getKey(), entry.getValue());
-        }
-
-        for (int i = numShipsToGen; i > 0; i--) {
-            String pickedVariantId = picker.pick();
-            FleetMemberAPI satellite = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
-            if(satellite!=null) satellitesToAdd.add(satellite);
-        }
-        return satellitesToAdd;
+    /**
+     * Fills fleet with the given variants up until budget isn't high enough to generate any more variants.
+     * Uses a weighted picking system to determine what ships to add.
+     *
+     * @param budget   The amount of FP to be added to the fleet. Hard cap.
+     * @param fleet    The fleet to fill.
+     * @param variants The variants, in variantId -> weight format, to be picked.
+     */
+    public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants) {
+        attemptToFillFleetWithVariants(budget, fleet, variants, false);
     }
 
-    public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants) {
-        if (budget == 0) {
+    /**
+     * Fills fleet with the given variants up until budget isn't high enough to generate any more variants.
+     * Uses a weighted picking system to determine what ships to add.
+     * @param budget The amount of FP to be added to the fleet. Hard cap.
+     * @param fleet The fleet to fill.
+     * @param variants The variants, in variantId -> weight format, to be picked.
+     */
+    public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants, boolean altBudgetMode){
+        if (budget <= 0) {
             return;
         }
 
         WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
-        List<FleetMemberAPI> satellitesToAdd = new ArrayList<>();
+        List<FleetMemberAPI> shipsToAdd = new ArrayList<>();
 
-        for (Map.Entry<String, Float> entry : variants.entrySet()) {
+        for (Map.Entry<String, Float> entry : variants.entrySet()) { //add the contents of the variants to the picker
             picker.add(entry.getKey(), entry.getValue());
         }
 
+        // explanation of the conditions here: since when a ship is successfully added we subtract its FP from budget,
+        // we need to always check to see if budget is empty so we can stop
+        // and since we also remove any variants that don't have enough fp to be made, we need to check to make sure
+        // the picker still hsa things to pick
         while ((budget > 0) && (!(picker.isEmpty()))) {
             String pickedVariantId = picker.pick();
-
             ShipVariantAPI variant = Global.getSettings().getVariant(pickedVariantId);
             int variantFp = variant.getHullSpec().getFleetPoints();
+            if (altBudgetMode) variantFp = 1; //turns this into a method that adds x amount of ships
 
-            if (variantFp <= budget) {
-                FleetMemberAPI satellite = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
-                if(satellite != null) {
-                    satellitesToAdd.add(satellite);
-                budget -= variantFp;
+            if (variantFp <= budget) { // is only true if we can afford making this ship
+                FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
+                if(ship != null) {
+                    shipsToAdd.add(ship);
+                    budget -= variantFp;
                 }
                 else {
-                    Global.getSector().getCampaignUI().addMessage("bad thing happnened in fleetutils uh oh also if youre reading this tell niko to improve their logging");
+                    String error = "attemptToFillFleetWithVariants created null ship";
+                    niko_MPC_debugUtils.displayError(error, true); //THIS SHOULD NEVER HAPPEN. EVER.
                 }
+            } else {
+                picker.remove(pickedVariantId);
+                continue; //continue for clarity
             }
-            else picker.remove(pickedVariantId);
         }
-        for (FleetMemberAPI satellite : satellitesToAdd) {
-            fleet.getFleetData().addFleetMember(satellite);
+        for (FleetMemberAPI ship : shipsToAdd) {
+            ship.getHullSpec().addTag(niko_MPC_isSatelliteHullId); //todo: !!!!!!!!!!FUCKING REMOVE THISSSSSSSSSSSSSS!!!!!!!!!!!!!!
+            fleet.getFleetData().addFleetMember(ship);
         }
     }
 
-    /*
-    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteTrackerScript script, LocationAPI location, float x, float y, boolean addAssignment) {
-        return createNewSatelliteFleet(script, location, x, y, 200, script.getSatelliteVariantWeightedIds(), addAssignment);
-    }
-
-    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteTrackerScript script, LocationAPI location, float x, float y) {
-        return createNewSatelliteFleet(script, location, x, y, 200, script.getSatelliteVariantWeightedIds(), true);
-    }
-
-    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteTrackerScript script, LocationAPI location, float x, float y, int budget, HashMap<String, Float> variants) {
-        return createNewSatelliteFleet(script, location, x, y, budget, variants, true);
-    }
-
-     */
-    /*
-    public static CampaignFleetAPI createNewSatelliteFleet(niko_MPC_satelliteParams script, LocationAPI location, float x, float y, int budget, HashMap<String, Float> variants,
-                                                           boolean addAssignment) {
-        final CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(script);
-        attemptToFillFleetWithVariants(budget, satelliteFleet, variants);
-
-        satelliteFleet.setContainingLocation(location); //todo: I HOPE THIS WORKS SO BAD
-        location.addEntity(satelliteFleet);
-        satelliteFleet.setLocation(x, y);
-        if (satelliteFleet.getAI() == null) {
-            satelliteFleet.setAI(new ModularFleetAI((CampaignFleet) satelliteFleet));
-        }
-
-        if (addAssignment) {
-            satelliteFleet.getAI().addAssignment(FleetAssignment.HOLD, satelliteFleet.getContainingLocation().createToken(x, y), 500f, null);
-        }
-
-        script.getSatelliteFleets().add(satelliteFleet);
-        return satelliteFleet;
-    }*/
-
-    /*
-    public static CampaignFleetAPI generateTemporarySatelliteFleet(MarketAPI market, LocationAPI location, Vector2f coordinates) {
-        if (market != null) {
-            niko_MPC_satelliteTrackerScript script = getInstanceOfSatelliteTracker(market);
-            if (script == null) return null;
-
-            CampaignFleetAPI satelliteFleet = createNewSatelliteFleet(script, location, coordinates.x, coordinates.y);
-            satelliteFleet.addScript(new niko_MPC_campaignResumedDeleteScript(satelliteFleet));
-            return satelliteFleet;
-        }
-        return null;
-    } */
-
-    @Deprecated
     public static void safeDespawnFleet(CampaignFleetAPI fleet) {
-        MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
-        if (fleetMemory.contains(isSatelliteFleetId)) {
-            niko_MPC_satelliteTrackerScript script = (niko_MPC_satelliteTrackerScript) fleetMemory.get(satelliteTrackerId);
-            if (script != null) {
-                script.getSatelliteFleets().remove(fleet);
-                deleteMemoryKey(fleet.getMemoryWithoutUpdate(), satelliteTrackerId);
-            } else if (!fleet.isExpired()) {
-                Global.getSector().getCampaignUI().addMessage("Satellite fleet has no script in despawnSatelliteFleet, and is not expired");
-            }
-        }
+        fleet.setLocation(9999999, 9999999);
         fleet.despawn();
+    }
+
+    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+        CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params);
+
+        location.addEntity(satelliteFleet);
+        satelliteFleet.setLocation(coordinates.x, coordinates.y);
+        satelliteFleet.addScript(new niko_MPC_temporarySatelliteFleetDespawner(satelliteFleet, params));
+
+        satelliteFleet.addAssignment(FleetAssignment.HOLD, location.createToken(coordinates), 99999999f);
+
+        params.newSatellite(satelliteFleet);
+
+        return satelliteFleet;
+    }
+
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
+        return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation());
+    }
+
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location);
+
+        attemptToFillFleetWithVariants(params.maxBattleSatellites, satelliteFleet, params.weightedVariantIds, true);
+
+        return satelliteFleet;
+    }
+
+    public static niko_MPC_satelliteParams getSatelliteFleetParams(CampaignFleetAPI fleet) {
+        return (niko_MPC_satelliteParams) fleet.getMemoryWithoutUpdate().get(satelliteParamsId);
+    }
+
+    public static boolean fleetIsSatelliteFleet(CampaignFleetAPI fleet) {
+        return fleet.getMemoryWithoutUpdate().is(isSatelliteFleetId, true);
     }
 
     /*

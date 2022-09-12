@@ -28,4 +28,6 @@ public class niko_MPC_ids {
 
     public static final String defenseSatelliteImpactId = "niko_MPC_defenseSatelliteImpact";
     public static final String defenseSatelliteImpactReasonString = "Defense Satellite Artillery Impact";
+
+    public static final String niko_MPC_isSatelliteHullId = "niko_MPC_isSatelliteHull";
 }
