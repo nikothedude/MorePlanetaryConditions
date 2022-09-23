@@ -9,6 +9,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
+import data.utilities.niko_MPC_debugUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.List;
 import static data.utilities.niko_MPC_ids.niko_MPC_isSatelliteHullId;
 
 public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlugin {
+
+    private float framesToWait = 2;
 
     @Override
     public void init(CombatEngineAPI engine) {
@@ -29,10 +32,12 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         super.advance(amount, events);
 
-        CombatEngineAPI engine = Global.getCombatEngine();
+        if (framesToWait > 0) {
+            framesToWait--;
+            return;
+        }
 
-        CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
-        BattleAPI battle = playerFleet.getBattle();
+        CombatEngineAPI engine = Global.getCombatEngine();
 
         deploySatellitesForSide(FleetSide.PLAYER, engine);
         deploySatellitesForSide(FleetSide.ENEMY, engine);
@@ -48,11 +53,13 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
     private void deploySatellitesForSide(FleetSide side, CombatEngineAPI engine) {
         List<FleetMemberAPI> satellites = new ArrayList<>();
 
+        int intOwner = (side == FleetSide.PLAYER ? 0 : 1);
+
         CombatFleetManagerAPI fleetManager = engine.getFleetManager(side);
         List<FleetMemberAPI> reserves = fleetManager.getReservesCopy();
         List<ShipAPI> ships = engine.getShips();
         for (ShipAPI ship : ships) {
-            if (ship.getHullSpec().hasTag(niko_MPC_isSatelliteHullId)) {
+            if (ship.getHullSpec().hasTag(niko_MPC_isSatelliteHullId) && (ship.getOwner() == intOwner)) {
                 satellites.add(ship.getFleetMember());
             }
         }
@@ -100,26 +107,44 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
                 xCoord = initialXCoord;
                 yCoord += yOffset;
             }
-            deploySatellite(satellite, new Vector2f(xCoord, yCoord), facing, fleetManager, side);
+            ShipAPI satelliteShip = null;
+            if (fleetManager.getDeployedCopy().contains(satellite)) {
+                niko_MPC_debugUtils.displayError("satellite already deployed");
+                satelliteShip = fleetManager.getShipFor(satellite);
+            }
+            deploySatellite(satellite, new Vector2f(xCoord, yCoord), facing, fleetManager, side, satelliteShip);
             xCoord += xOffset;
         }
     }
 
-    private void deploySatellite(FleetMemberAPI satelliteFleetMember, Vector2f vector2f, float facing, CombatFleetManagerAPI fleetManager, FleetSide side) {
-        ShipAPI satellite = fleetManager.spawnFleetMember(satelliteFleetMember, vector2f, facing, 0);
-        satellite.getHullSpec().addTag("no_combat_chatter");
+    private void deploySatellite(FleetMemberAPI satelliteFleetMember, Vector2f vector2f, float facing, CombatFleetManagerAPI fleetManager, FleetSide side, ShipAPI satellite) {
+        if (satellite == null) {
+            satellite = fleetManager.spawnFleetMember(satelliteFleetMember, vector2f, facing, 0);
+        }
+        satellite.getLocation().set(vector2f);
         int owner = 1;
         if (side == FleetSide.PLAYER) {
             owner = 0;
             satellite.setAlly(true);
         }
         String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
-        satellite.getFleetMember().setShipName(name);
-        satellite.getFleetMember().setAlly(true);
-        satellite.getFleetMember().setOwner(owner);
+        if (name == null) {
+            niko_MPC_debugUtils.displayError("deploySatellite null name");
+            name = "this name is an error, please report this to niko";
+        }
+
+        if (satellite.getFleetMember() != null) {
+            satellite.getFleetMember().setShipName(name);
+            satellite.getFleetMember().setAlly(true);
+            satellite.getFleetMember().setOwner(owner);
+        }
+        else {
+            satellite.setAlly(true);
+            satellite.setOwner(owner);
+        }
         if (Global.getSettings().getModManager().isModEnabled("automatic-orders")) {
             satellite.getVariant().addMod("automatic_orders_no_retreat");
         }
-        satellite.setFixedLocation(satellite.getLocation());
+        satellite.setFixedLocation(vector2f);
     }
 }

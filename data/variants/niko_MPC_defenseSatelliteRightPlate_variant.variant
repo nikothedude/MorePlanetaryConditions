@@ -1,0 +1,81 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteRightPlate_variant",
+  "hullId": "niko_MPC_defenseSatelliteRightPlate",
+  "displayName": "Combat",
+  "goalVariant": false,
+  "fluxCapacitors": 26,
+  "fluxVents": 38,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull",
+    "autorepair"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0003": "heavymauler",
+        "WS0015": "heavymauler"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0005": "harpoon",
+        "WS0010": "harpoonpod",
+        "WS0011": "harpoonpod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0002": "lightag",
+        "WS0008": "irpulse",
+        "WS0019": "lightag"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0007": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0016": "devastator"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "lightdualmg",
+        "WS0004": "pdburst",
+        "WS0006": "dualflak",
+        "WS0009": "dualflak",
+        "WS0012": "vulcan",
+        "WS0013": "dualflak",
+        "WS0014": "heavyburst",
+        "WS0017": "lightdualmg",
+        "WS0018": "lightdualmg"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

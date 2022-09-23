@@ -1,0 +1,17 @@
+{
+  "hullName": "Strut",
+  "hullId": "niko_MPC_strut",
+  "hullSize": "FRIGATE",
+  "spriteName": "graphics/ships/niko_MPC_strut.png",
+  "style": "LOW_TECH",
+  "height": 26,
+  "width": 26,
+  "center": [13, 13],
+  "collisionRadius": 0,
+  "shieldCenter": [0, 0],
+  "shieldRadius": 0,
+  "viewOffset": 0,
+  "weaponSlots": [],
+  "engineSlots": [],
+  "bounds": []
+}

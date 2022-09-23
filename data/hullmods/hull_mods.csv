@@ -1,2 +1,5 @@
 name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sprite
-Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all weapons by %s.,Greatly extends non-missile weapon range.,graphics/hullmods/targeting_supercomputer.png
+Fundumental Point Defense Integration,niko_MPC_superPDComputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_superPDComputer,"Gives all small non-missile weapons the ability to automatically target incoming enemy missiles and to identify - and ignore - decoy flares. Targeting missiles takes priority over targeting enemy ships or fighters.
+
+In addition, all point-defense weapons get the best possible target leading, regardless of combat readiness, and all damage to missiles is increased by %s. On top of this, all point-defense weapons gain a range extension of %s.",,graphics/hullmods/integrated_point_defense_ai.png
+Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all non-PD weapons by %s.,Extends the range of all non-PD weapons by %s.,graphics/hullmods/targeting_supercomputer.png

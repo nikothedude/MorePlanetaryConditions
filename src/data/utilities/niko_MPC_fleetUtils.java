@@ -111,7 +111,7 @@ public class niko_MPC_fleetUtils {
             }
         }
         for (FleetMemberAPI ship : shipsToAdd) {
-            ship.getHullSpec().addTag(niko_MPC_isSatelliteHullId); //todo: !!!!!!!!!!FUCKING REMOVE THISSSSSSSSSSSSSS!!!!!!!!!!!!!!
+            //ship.getHullSpec().addTag(niko_MPC_isSatelliteHullId); //todo: !!!!!!!!!!FUCKING REMOVE THISSSSSSSSSSSSSS!!!!!!!!!!!!!!
             fleet.getFleetData().addFleetMember(ship);
         }
     }

@@ -1,0 +1,17 @@
+{
+  "hullName": "Right Strut",
+  "hullId": "niko_MPC_defenseSatelliteRightStrut",
+  "hullSize": "FRIGATE",
+  "spriteName": "graphics/ships/niko_MPC_longstrutright.png",
+  "style": "LOW_TECH",
+  "height": 52,
+  "width": 41,
+  "center": [20.5, 26],
+  "collisionRadius": 0,
+  "shieldCenter": [0, 0],
+  "shieldRadius": 0,
+  "viewOffset": 0,
+  "weaponSlots": [],
+  "engineSlots": [],
+  "bounds": []
+}

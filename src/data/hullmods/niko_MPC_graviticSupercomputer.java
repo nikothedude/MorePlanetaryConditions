@@ -3,27 +3,27 @@ package data.hullmods;
 import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.impl.campaign.ids.Stats;
 
 public class niko_MPC_graviticSupercomputer extends BaseHullMod {
 
-    public static final float rangeMult = 10000f;
-    public static final float recoilMult = 70f;
-    public static final float weaponSpeedMult = 125f;
+    public final float rangePercent = 500f;
+    public final float recoilPercent = 70f;
 
     @Override
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize, MutableShipStatsAPI stats, String id) {
-        stats.getBallisticWeaponRangeBonus().modifyPercent(id, rangeMult);
-        stats.getEnergyWeaponRangeBonus().modifyPercent(id, rangeMult);
-        stats.getMissileWeaponRangeBonus().modifyPercent(id, rangeMult);
+        stats.getBallisticWeaponRangeBonus().modifyPercent(id, rangePercent);
+        stats.getEnergyWeaponRangeBonus().modifyPercent(id, rangePercent);
+        stats.getMissileWeaponRangeBonus().modifyPercent(id, rangePercent);
 
-        stats.getRecoilPerShotMult().modifyPercent(id, recoilMult);
+        stats.getNonBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent);
+        stats.getBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent);
 
-        stats.getProjectileSpeedMult().modifyPercent(id, weaponSpeedMult);
+        stats.getRecoilPerShotMult().modifyPercent(id, recoilPercent);
     }
 
     public String getDescriptionParam(int index, ShipAPI.HullSize hullSize) {
-        if (index == 0) return "" + (int)Math.round(rangeMult) + "%";
+        if (index == 0) return "" + (int)Math.round(rangePercent) + "%";
+        else if (index == 1) return "" + (int)Math.round(recoilPercent) + "%";
         return null;
     }
 }
