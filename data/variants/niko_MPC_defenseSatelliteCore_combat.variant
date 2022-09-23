@@ -54,10 +54,10 @@
       "WS0012": "niko_MPC_defenseSatelliteLeftPlate_combat"
     },
     {
-      "WS0013": "module_armour1_Standard"
+      "WS0013": "niko_MPC_right_module_armour1_Standard"
     },
     {
-      "WS0014": "module_armour1_Standard"
+      "WS0014": "niko_MPC_left_module_armour1_Standard"
     }
   ],
   "wings": [

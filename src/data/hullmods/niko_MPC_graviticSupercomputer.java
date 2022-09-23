@@ -7,6 +7,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 public class niko_MPC_graviticSupercomputer extends BaseHullMod {
 
     public final float rangePercent = 500f;
+    public final float visionIncrement = 5000f;
     public final float recoilPercent = 70f;
 
     @Override
@@ -15,8 +16,10 @@ public class niko_MPC_graviticSupercomputer extends BaseHullMod {
         stats.getEnergyWeaponRangeBonus().modifyPercent(id, rangePercent);
         stats.getMissileWeaponRangeBonus().modifyPercent(id, rangePercent);
 
-        stats.getNonBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent);
-        stats.getBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent);
+        stats.getNonBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent/2);
+        stats.getBeamPDWeaponRangeBonus().modifyPercent(id, -rangePercent/2);
+
+        stats.getSightRadiusMod().modifyFlat(id, visionIncrement);
 
         stats.getRecoilPerShotMult().modifyPercent(id, recoilPercent);
     }

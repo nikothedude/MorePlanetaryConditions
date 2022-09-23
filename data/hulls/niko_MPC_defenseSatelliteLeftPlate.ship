@@ -12,11 +12,13 @@
   "shieldRadius": 0,
   "viewOffset": 0,
   "builtInMods": [
-    "niko_MPC_graviticSupercomputer",
-    "niko_MPC_superPDComputer",
+    "dedicated_targeting_core",
+	"pointdefenseai",
     "automated",
     "missile_reload",
-    "always_detaches"
+    "always_detaches",
+	"niko_MPC_noExplosionDamage",
+	"niko_MPC_satellitePlateWeaknessRight"
   ],
   "weaponSlots": [
     {

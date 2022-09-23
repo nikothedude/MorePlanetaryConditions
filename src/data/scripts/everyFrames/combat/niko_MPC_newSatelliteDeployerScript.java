@@ -122,10 +122,10 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             satellite = fleetManager.spawnFleetMember(satelliteFleetMember, vector2f, facing, 0);
         }
         satellite.getLocation().set(vector2f);
+
         int owner = 1;
         if (side == FleetSide.PLAYER) {
             owner = 0;
-            satellite.setAlly(true);
         }
         String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
         if (name == null) {
@@ -133,18 +133,33 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             name = "this name is an error, please report this to niko";
         }
 
-        if (satellite.getFleetMember() != null) {
-            satellite.getFleetMember().setShipName(name);
-            satellite.getFleetMember().setAlly(true);
-            satellite.getFleetMember().setOwner(owner);
+        List<ShipAPI> modulesWithSatellite = (satellite.getChildModulesCopy());
+        modulesWithSatellite.add(satellite);
+
+        for (ShipAPI module : modulesWithSatellite) {
+            if (module.getFleetMember() != null) {
+                module.getFleetMember().setShipName(name);
+                module.getFleetMember().setAlly(true);
+                module.getFleetMember().setOwner(owner);
+            }
+            module.setOwner(owner);
+            if (owner == 0) {
+                module.setAlly(true);
+            }
+            if (Global.getSettings().getModManager().isModEnabled("automatic-orders")) {
+                module.getVariant().addMod("automatic_orders_no_retreat");
+            }
         }
-        else {
-            satellite.setAlly(true);
-            satellite.setOwner(owner);
+
+        for (FighterWingAPI wing : satellite.getAllWings()) {
+            for (ShipAPI fighter : wing.getWingMembers()) {
+                fighter.getLocation().set(vector2f);
+                if (owner == 0) {
+                    fighter.setAlly(true);
+                }
+            }
         }
-        if (Global.getSettings().getModManager().isModEnabled("automatic-orders")) {
-            satellite.getVariant().addMod("automatic_orders_no_retreat");
-        }
+
         satellite.setFixedLocation(vector2f);
     }
 }

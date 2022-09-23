@@ -52,7 +52,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseGroundDefenseMult = 1.5f;
 
     public niko_MPC_antiAsteroidSatellites() {
-        weightedVariantIds.put("rampart_Standard", 5f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_combat", 5f);
     }
 
     @Override

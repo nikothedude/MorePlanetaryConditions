@@ -3,3 +3,10 @@ Fundumental Point Defense Integration,niko_MPC_superPDComputer,,,,,,,,TRUE,,0,0,
 
 In addition, all point-defense weapons get the best possible target leading, regardless of combat readiness, and all damage to missiles is increased by %s. On top of this, all point-defense weapons gain a range extension of %s.",,graphics/hullmods/integrated_point_defense_ai.png
 Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all non-PD weapons by %s.,Extends the range of all non-PD weapons by %s.,graphics/hullmods/targeting_supercomputer.png
+Structural Weakness,niko_MPC_connectorWeakness,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorWeakness,Struts connected to this will explode when this explodes.,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_connectorStrutWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessLeft,Frontal plates will explode when these explode.,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_connectorStrutWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessRight,Frontal plates will explode when these explode.,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_satellitePlateWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessLeft,Armor plates will explode when these explode;.,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_satellitePlateWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessRight,Armor plates will explode when these explode;.,,graphics/hullmods/integrated_point_defense_ai.png
+Tachyon Fighter Comms,niko_MPC_tachyonFighterComms,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_tachyonFighterComms,Increases fighter engagement range by %s.,,graphics/hullmods/integrated_point_defense_ai.png
+No explosion damage,niko_MPC_noExplosionDamage,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_noExplosionDamage,Makes explosions do no damage.,,graphics/hullmods/targeting_supercomputer.png
