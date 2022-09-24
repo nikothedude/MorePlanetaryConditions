@@ -8,6 +8,7 @@ public class niko_MPC_structuralWeaknessIds {
     public static final String satelliteConnectorStrutWeaknessRightTag = "niko_MPC_satelliteConnectorStrutWeaknessRight";
     public static final String satellitePlateWeaknessLeftTag = "niko_MPC_satellitePlateWeaknessLeft";
     public static final String satellitePlateWeaknessRightTag = "niko_MPC_satellitePlateWeaknessRight";
+    public static final String satelliteCoreStrutWeaknessTag = "niko_MPC_satelliteCoreStrutWeakness";
 
 
 }

@@ -8,13 +8,19 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
+import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
+import com.fs.starfarer.api.impl.campaign.rulecmd.MakeOtherFleetHostile;
+import com.fs.starfarer.api.util.Misc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class niko_MPC_dialogUtils {
 
-    public static boolean createSatelliteFleetFocus(final CampaignFleetAPI satelliteFleet, InteractionDialogAPI dialog, final Map<String, MemoryAPI> memoryMap) {
+    public static boolean createSatelliteFleetFocus(final CampaignFleetAPI satelliteFleet, final List<CampaignFleetAPI> satelliteFleets,
+                                                    InteractionDialogAPI dialog, final Map<String, MemoryAPI> memoryMap) {
         if (dialog == null) return false;
         if (satelliteFleet == null) return false;
 
@@ -60,7 +66,7 @@ public class niko_MPC_dialogUtils {
                 if (plugin.getContext() instanceof FleetEncounterContext) {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
                     if (context.didPlayerWinEncounterOutright()) {
-                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(Global.getSector().getPlayerFleet(), 5f, entity);
+                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(Global.getSector().getPlayerFleet(), niko_MPC_ids.satelliteTotalVictoryGraceIncrement, entity);
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");
                     } else {
                         dialog.dismiss();

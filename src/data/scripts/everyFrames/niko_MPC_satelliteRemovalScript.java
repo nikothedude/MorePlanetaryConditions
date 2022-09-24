@@ -6,6 +6,8 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import data.utilities.niko_MPC_debugUtils;
 
+import java.util.Objects;
+
 import static data.utilities.niko_MPC_satelliteUtils.purgeSatellitesFromEntity;
 
 public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithCleanup {
@@ -39,7 +41,7 @@ public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithClea
         boolean shouldRemove = true;
         if (market != null) {
             for (MarketConditionAPI condition : market.getConditions()) {
-                if (condition.getId() == conditionId) { //compare each condition and see if its ours
+                if (Objects.equals(condition.getId(), conditionId)) { //compare each condition and see if its ours
                     shouldRemove = false; //if it is, we dont need to remove the satellites
                     break;
                 }

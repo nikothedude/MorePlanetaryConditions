@@ -5,6 +5,7 @@ import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.*;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.utilities.niko_MPC_fleetUtils;
+import data.utilities.niko_MPC_satelliteBattleTracker;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lazywizard.lazylib.MathUtils;
 
@@ -45,8 +46,9 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
             HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToJoinBattle = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingToJoinBattle(battle);
             for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoinBattle.entrySet()) {
                 niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entry.getKey());
+                niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
-                if (!params.getInfluencedBattles().contains(battle)) {
+                if (!tracker.areSatellitesInvolvedInBattle(battle, params)) {
                     niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet);
                 }
             }
@@ -75,7 +77,8 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
         for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoin.entrySet()) {
             SectorEntityToken entity = entry.getKey();
             niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
-            if (!params.getInfluencedBattles().contains(battle)) {
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+            if (!tracker.areSatellitesInvolvedInBattle(battle, params)) {
                 CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, battle.computeCenterOfMass(), entity.getContainingLocation());
                 if (!battle.join(satelliteFleet)) {
                     niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);

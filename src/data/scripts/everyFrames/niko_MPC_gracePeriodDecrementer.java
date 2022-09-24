@@ -41,12 +41,11 @@ public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithClea
         while (iterator.hasNext()) {
             Map.Entry<CampaignFleetAPI, Float> entry = iterator.next();
             CampaignFleetAPI fleet = entry.getKey();
-            if (fleet == null || fleet.isExpired()) {
-                iterator.remove();
+            if (fleet == null || fleet.isExpired()) { // to prevent memory leaks, we have to account for if the fleet is null or expired
+                iterator.remove(); // we dont remove on 0, because honestly theres no real reason to, we already remove them if they are deleted
                 continue;
             }
-            params.adjustGracePeriod(fleet, -(amount));
-            entry.setValue(entry.getValue());
+            params.adjustGracePeriod(fleet, -(amount)); // for each fleet tracked, decrement the grace period by amount
         }
     }
 }

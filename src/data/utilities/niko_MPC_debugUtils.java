@@ -63,16 +63,16 @@ public class niko_MPC_debugUtils {
 
     private static void displayErrorToCampaign(String errorCode, boolean highPriority) {
         CampaignUIAPI campaignUI = Global.getSector().getCampaignUI();
-        campaignUI.addMessage("###### MORE PLANETARY CONDITIONS ERROR ######");
         campaignUI.addMessage(errorCode);
+        campaignUI.addMessage("Please provide the mod author a copy of your logs.");
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f);
             campaignUI.addMessage("The above error has been deemed high priority by the mod author. It is likely" +
-                    " that it's occurrence will interfere with your gameplay, and/or it is considered to be a \"critical\" error,"
-            + " one that interferes with crucial functionality. You may want to save your game and come to the mod author.",
+                            " that it's occurrence will interfere with your gameplay, and/or it is considered to be a \"critical\" error,"
+                            + " one that interferes with crucial functionality. You may want to save your game and come to the mod author.",
                     Color.RED);
         }
-        campaignUI.addMessage("Please provide the mod author a copy of your logs.");
+        campaignUI.addMessage("###### MORE PLANETARY CONDITIONS ERROR ######");
 
     }
 
@@ -80,9 +80,9 @@ public class niko_MPC_debugUtils {
         CombatEngineAPI engine = Global.getCombatEngine();
         CombatUIAPI combatUI = engine.getCombatUI();
 
-        combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######");
-        combatUI.addMessage(1, errorCode);
         combatUI.addMessage(1, "Please provide the mod author with a copy of your logs.");
+        combatUI.addMessage(1, errorCode);
+        combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######");
 
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f);
@@ -133,6 +133,11 @@ public class niko_MPC_debugUtils {
         return result;
     }
 
+    /**
+     * Checks getEntitySatelliteParams(entity) and looks to see if it isnt null.
+     * @param entity The entity to check.
+     * @return False if entity is null or the params are null. If params are null, an error will be displayed.
+     */
     public static boolean ensureEntityHasSatellites(SectorEntityToken entity) {
         boolean result = true;
         if (entity == null) return false;

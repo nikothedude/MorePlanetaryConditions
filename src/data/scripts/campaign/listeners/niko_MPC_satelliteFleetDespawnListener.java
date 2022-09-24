@@ -14,17 +14,24 @@ import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 
 public class niko_MPC_satelliteFleetDespawnListener extends BaseFleetEventListener {
 
+    /**
+     * This listener is attached to every satellite fleet that spawns.
+     * <p>
+     * Gets the params that spawned the fleet and does the following:
+     * </p>
+     * @param fleet
+     * @param reason
+     * @param param
+     */
     @Override
     public void reportFleetDespawnedToListener(CampaignFleetAPI fleet, CampaignEventListener.FleetDespawnReason reason, Object param) {
         super.reportFleetDespawnedToListener(fleet, reason, param);
 
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(fleet)) return;
+        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(fleet)) return; //sanity
         niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(fleet);
 
         BattleAPI battle = fleet.getBattle();
-        if (battle != null) {
-            params.influencedBattles.remove(battle);
-        }
+
         params.satelliteFleets.remove(fleet);
         deleteMemoryKey(fleet.getMemoryWithoutUpdate(), satelliteParamsId);
         fleet.removeEventListener(this);

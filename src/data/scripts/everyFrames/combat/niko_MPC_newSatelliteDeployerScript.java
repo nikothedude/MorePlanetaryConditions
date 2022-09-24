@@ -80,7 +80,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         float initialXCoord = 0;
         if (size > 1) {
-            initialXCoord = (float) (mapWidth*-0.45); // if we have more than one, we set it to be at the very edge of the map
+            initialXCoord = (float) (mapWidth*-0.39); // if we have more than one, we set it to be at the very edge of the map
         }
         float xOffset = 0;
         if (size > 1) {
@@ -88,7 +88,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
         }
         float xThresholdForWrapping = mapWidth;
 
-        float initialYCoord = (float) (mapHeight*-0.35);
+        float initialYCoord = (float) (mapHeight*-0.27);
         float yOffset = 200f;
 
         float facing = 90f;

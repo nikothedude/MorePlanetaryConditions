@@ -15,7 +15,6 @@ import com.fs.starfarer.campaign.fleet.CampaignFleet;
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
-import data.scripts.everyFrames.niko_MPC_satelliteTrackerScript;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import static data.utilities.niko_MPC_ids.*;
-import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 
 public class niko_MPC_fleetUtils {
 

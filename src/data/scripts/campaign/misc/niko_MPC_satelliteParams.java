@@ -5,6 +5,8 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import data.scripts.everyFrames.niko_MPC_fleetsApproachingSatellitesChecker;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
+import data.utilities.niko_MPC_satelliteBattleTracker;
+import data.utilities.niko_MPC_satelliteUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +32,6 @@ public class niko_MPC_satelliteParams {
     public niko_MPC_fleetsApproachingSatellitesChecker approachingFleetChecker;
 
     public niko_MPC_gracePeriodDecrementer gracePeriodDecrementer;
-    public List<BattleAPI> influencedBattles = new ArrayList<>();
     public List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
     private String satelliteFleetName;
 
@@ -86,7 +87,9 @@ public class niko_MPC_satelliteParams {
         gracePeriods = null;
 
         satelliteFleets = null;
-        influencedBattles = null;
+
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+        tracker.removeParamsFromAllBattles(this);
     }
 
     public void setSatelliteId(String factionId) {
@@ -102,22 +105,19 @@ public class niko_MPC_satelliteParams {
     }
 
     public float getGracePeriod(CampaignFleetAPI fleet) {
-        if (getGracePeriods().get(fleet) == null) {
-            gracePeriods.put(fleet, 0f);
-        }
+        addFleetRefToGracePeriodsIfNonePresent(fleet);
         return getGracePeriods().get(fleet);
     }
 
     public void adjustGracePeriod(CampaignFleetAPI fleet, float amount) {
-        if (getGracePeriods().get(fleet) == null) {
-            gracePeriods.put(fleet, amount);
-            return;
-        }
+        addFleetRefToGracePeriodsIfNonePresent(fleet);
         getGracePeriods().put(fleet, Math.max(0, getGracePeriods().get(fleet) + amount));
     }
 
-    public List<BattleAPI> getInfluencedBattles() {
-        return influencedBattles;
+    private void addFleetRefToGracePeriodsIfNonePresent(CampaignFleetAPI fleet) {
+        if (getGracePeriods().get(fleet) == null) {
+            gracePeriods.put(fleet, 0f); // we dont use a amount arg here because we only exist here to initialize a new entry
+        }
     }
 
     public String getSatelliteFleetName() {

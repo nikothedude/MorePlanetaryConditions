@@ -4,12 +4,16 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.ai.ModularFleetAIAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
+import com.fs.starfarer.api.impl.campaign.rulecmd.MakeOtherFleetHostile;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_fleetUtils;
+import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -41,7 +45,27 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         CampaignFleetAPI focusedSatellite = satelliteFleets.get(0);
 
-        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, dialog, memoryMap);
+        boolean wasHostile = niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(satelliteParams, playerFleet);
+
+        for (CampaignFleetAPI satelliteFleet : satelliteFleets) {
+            MemoryAPI fleetMemory = satelliteFleet.getMemoryWithoutUpdate();
+            boolean stillSet = Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_HOSTILE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
+            if (!stillSet) {
+                if (satelliteFleet.getAI() instanceof ModularFleetAIAPI) {
+                    ModularFleetAIAPI mAI = (ModularFleetAIAPI) satelliteFleet.getAI();
+                    mAI.getTacticalModule().forceTargetReEval();
+                }
+            }
+            Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
+        }
+
+        boolean isHostile = (focusedSatellite.isHostileTo((playerFleet)));
+
+        if (wasHostile != isHostile) {
+            Global.getSoundPlayer().restartCurrentMusic();
+        }
+
+        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, memoryMap);
 
         return true;
     }

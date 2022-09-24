@@ -1,9 +1,12 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
+import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.utilities.niko_MPC_fleetUtils;
+import data.utilities.niko_MPC_satelliteBattleTracker;
+import data.utilities.niko_MPC_satelliteUtils;
 
 public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScriptWithCleanup {
 
@@ -46,8 +49,10 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
             return;
         }
         else {
-            if (!params.getInfluencedBattles().contains(fleet.getBattle())) {
-                params.influencedBattles.add(fleet.getBattle());
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+            BattleAPI battle = fleet.getBattle();
+            if (!tracker.areSatellitesInvolvedInBattle(battle, params)) { //params is supposed to hold a ref to the battles of all fleets
+                tracker.associateSatellitesWithBattle(battle, params, battle.pickSide(fleet));
             }
         }
     }
@@ -58,7 +63,6 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
             fleet.removeScript(this);
             fleet = null;
         }
-
         done = true;
     }
 

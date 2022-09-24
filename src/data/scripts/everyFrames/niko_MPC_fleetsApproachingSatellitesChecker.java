@@ -1,6 +1,7 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
@@ -36,13 +37,21 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
         return false;
     }
 
+    /**
+     * Iterates through every single hostile fleet that's within params' interference distance. If any of them intend
+     * to interact with our entity, and we are capable of blocking them, we attack them.
+     * @param amount seconds elapsed during the last frame.
+     */
     @Override
     public void advance(float amount) {
-        List<CampaignFleetAPI> hostileFleetsWithinInterferenceDistance = CampaignUtils.getNearbyHostileFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
+        List<CampaignFleetAPI> hostileFleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
         for (CampaignFleetAPI fleet : hostileFleetsWithinInterferenceDistance) {
-            if (niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, fleet)) {
-                if (fleet.getInteractionTarget() == entity) {
-                    niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(entity, fleet);
+            if (fleet == Global.getSector().getPlayerFleet()) return;
+            if (niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, fleet) && niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, fleet)) {
+                if (niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(entity, fleet)) {
+                    if (fleet.getInteractionTarget() == entity) {
+                        niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(entity, fleet);
+                    }
                 }
             }
         }
@@ -61,6 +70,10 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
 
         satelliteParams = null;
 
+        if (entity != null) {
+            entity.removeScript(this);
+            entity = null;
+        }
         done = true;
     }
 }

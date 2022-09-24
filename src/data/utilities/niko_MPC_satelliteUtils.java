@@ -30,6 +30,18 @@ public class niko_MPC_satelliteUtils {
         log.setLevel(Level.ALL);
     }
 
+    /**
+     * If the tracker is null, creates a new one.
+     * @return The savefile specific instance of the battle tracker.
+     */
+    public static niko_MPC_satelliteBattleTracker getSatelliteBattleTracker() {
+        niko_MPC_satelliteBattleTracker tracker = (niko_MPC_satelliteBattleTracker) Global.getSector().getMemory().get(niko_MPC_ids.satelliteBattleTrackerId);
+        if (tracker == null) {
+            tracker = (niko_MPC_memoryUtils.createNewSatelliteTracker());
+        }
+        return tracker;
+    }
+
     //////////////////////////
     //                      //
     // ADDITION AND REMOVAL //
@@ -137,6 +149,7 @@ public class niko_MPC_satelliteUtils {
         for (SectorEntityToken terrain : params.satelliteBarrages) { //todo: shouldnt cause issues if there is no terrain?
             removeSatelliteBarrageTerrain(entity, terrain);
         }
+
         for (CampaignFleetAPI satelliteFleet : params.satelliteFleets) {
             niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
         }
@@ -329,6 +342,10 @@ public class niko_MPC_satelliteUtils {
             return entity.getFaction().getId();
         }
         return params.getSatelliteFactionId();
+    }
+
+    public static FactionAPI getCurrentSatelliteFaction(niko_MPC_satelliteParams params) {
+        return Global.getSector().getFaction(getCurrentSatelliteFactionId(params));
     }
 
     public static float getOptimalOrbitalOffsetForSatellites(SectorEntityToken entity) {
@@ -573,8 +590,12 @@ public class niko_MPC_satelliteUtils {
                 marketUncolonized = true;
             }
         }
-        FactionAPI satelliteFaction = Global.getSector().getFaction(getCurrentSatelliteFactionId(entity));
-        return (satelliteFaction.isHostileTo(fleet.getFaction()) || (marketUncolonized && !Objects.equals(fleet.getFaction().getId(), "derelict")));
+
+        CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.spawnSatelliteFleet(params, fleet.getLocation(), fleet.getContainingLocation());
+        boolean wantsToFight = satelliteFleet.isHostileTo(fleet);
+        niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
+
+        return (wantsToFight || (marketUncolonized && !Objects.equals(fleet.getFaction().getId(), "derelict")));
     }
 
     /**
@@ -596,18 +617,21 @@ public class niko_MPC_satelliteUtils {
             return false;
         }
         return (!fleet.isTransponderOn() ||
-                params.getSatelliteFaction().isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
+                getCurrentSatelliteFaction(params).isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
                 doEntitySatellitesWantToFight(entity, fleet));
     }
 
     /**
      * @param entity The entity to check.
-     * @return True if entity's satellite params' grace period is less or equal to 0.
+     * @return True if the entity isn't already blocking the fleet, or if entity's satellite params' grace period is
+     * less or equal to 0.
      */
     public static boolean areEntitySatellitesCapableOfBlocking(SectorEntityToken entity, CampaignFleetAPI fleet) {
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+        BattleAPI battle = fleet.getBattle();
 
-        return (params.getGracePeriod(fleet) <= 0);
+        return ((battle != null && tracker.areSatellitesInvolvedInBattle(battle, params)) || params.getGracePeriod(fleet) <= 0);
     }
 
     private static boolean areEntitySatellitesCapableOfFighting(SectorEntityToken entity, CampaignFleetAPI fleet) {
@@ -616,12 +640,15 @@ public class niko_MPC_satelliteUtils {
 
 
     public static void makeEntitySatellitesEngageFleet(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        if (niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+
+        BattleAPI battleJoined = null;
 
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
         BattleAPI battle = fleet.getBattle();
         if (battle != null) {
-            if (params.getInfluencedBattles().contains(battle)) return;
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+            if (tracker.areSatellitesInvolvedInBattle(battle, params)) return;
         }
 
         CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, fleet);
@@ -629,9 +656,16 @@ public class niko_MPC_satelliteUtils {
             if (!battle.join(satelliteFleet)) {
                 niko_MPC_debugUtils.displayError("makeEntitySatellitesEngageFleet battle join failure");
             }
+            else {
+                battleJoined = battle;
+            }
         }
         else {
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); //todo: this may not work
+            battleJoined = newBattle;
+        }
+        if (battleJoined != null) {
+            getSatelliteBattleTracker().associateSatellitesWithBattle(battleJoined, params, battleJoined.pickSide(satelliteFleet));
         }
     }
 

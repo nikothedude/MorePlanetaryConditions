@@ -19,7 +19,7 @@ FireBest niko_MPC_satellitesBlockingText",,,
 # Populating Options,,,,,,
 niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,"80:niko_MPC_attackDefenseSatellites:Move in to engage the defense satellites",
 niko_MPC_marketLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$hasMarket
-$menuState == main","SetTooltip marketLeave $marketLeaveTooltip
+!$market.isPlanetConditionMarketOnly","SetTooltip marketLeave $marketLeaveTooltip
 SetShortcut marketLeave ""ESCAPE""",,"100:marketLeave:Leave",
 niko_MPC_surveyLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$market.isPlanetConditionMarketOnly","SetShortcut surveyLeave ""ESCAPE""",,"100:surveyLeave:Leave",
 "#END Populating Options",,,,,,

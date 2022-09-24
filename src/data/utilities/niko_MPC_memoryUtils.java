@@ -47,4 +47,13 @@ public class niko_MPC_memoryUtils {
         memory.set(key, null);
         memory.unset(key);
     }
+
+    public static niko_MPC_satelliteBattleTracker createNewSatelliteTracker() {
+        MemoryAPI globalMemory = Global.getSector().getMemory();
+
+        niko_MPC_satelliteBattleTracker battleTracker = new niko_MPC_satelliteBattleTracker();
+        globalMemory.set(niko_MPC_ids.satelliteBattleTrackerId, battleTracker);
+
+        return battleTracker;
+    }
 }

@@ -1,5 +1,7 @@
 package data.utilities;
 
+import com.fs.starfarer.api.util.Misc;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,4 +32,8 @@ public class niko_MPC_ids {
     public static final String defenseSatelliteImpactReasonString = "Defense Satellite Artillery Impact";
 
     public static final String niko_MPC_isSatelliteHullId = "niko_MPC_isSatelliteHull";
+    public static final float satelliteTotalVictoryGraceIncrement = 10f;
+    public static final float satelliteVictoryGraceIncrement = 10f;
+    public static String satelliteBattleTrackerId = "$niko_MPC_satelliteBattleTracker";
+    public static String satelliteFleetHostileReason = "$niko_MPC_satelliteFleetHostileReason";
 }
