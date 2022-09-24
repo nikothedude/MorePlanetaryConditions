@@ -3,9 +3,9 @@ package data.scripts.campaign.misc;
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
-import sun.awt.EventListenerAggregate;
+import data.scripts.everyFrames.niko_MPC_fleetsApproachingSatellitesChecker;
+import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +25,11 @@ public class niko_MPC_satelliteParams {
 
     public List<CustomCampaignEntityAPI> orbitalSatellites;
     public List<SectorEntityToken> satelliteBarrages = new ArrayList<>();
-    public float gracePeriod = 0f;
+    public HashMap<CampaignFleetAPI, Float> gracePeriods = new HashMap<>();
 
-    public EveryFrameScript gracePeriodDecrementer;
+    public niko_MPC_fleetsApproachingSatellitesChecker approachingFleetChecker;
+
+    public niko_MPC_gracePeriodDecrementer gracePeriodDecrementer;
     public List<BattleAPI> influencedBattles = new ArrayList<>();
     public List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
     private String satelliteFleetName;
@@ -58,6 +60,12 @@ public class niko_MPC_satelliteParams {
         this.weightedVariantIds = weightedVariantIds;
 
         this.orbitalSatellites = orbitalSatellites;
+
+        approachingFleetChecker = new niko_MPC_fleetsApproachingSatellitesChecker(this, entity);
+        entity.addScript(approachingFleetChecker);
+
+        gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
+        entity.addScript(gracePeriodDecrementer);
     }
 
     public List<CustomCampaignEntityAPI> getSatellites() {
@@ -69,13 +77,16 @@ public class niko_MPC_satelliteParams {
     }
 
     public void prepareForGarbageCollection() {
+        approachingFleetChecker.prepareForGarbageCollection();
+        gracePeriodDecrementer.prepareForGarbageCollection();
+
         entity = null;
         orbitalSatellites = null;
         satelliteBarrages = null;
-        gracePeriod = 0;
+        gracePeriods = null;
 
-        satelliteFleets.clear();
-        influencedBattles.clear();
+        satelliteFleets = null;
+        influencedBattles = null;
     }
 
     public void setSatelliteId(String factionId) {
@@ -86,12 +97,23 @@ public class niko_MPC_satelliteParams {
         return satelliteFactionId;
     }
 
-    public float getGracePeriod() {
-        return gracePeriod;
+    public HashMap<CampaignFleetAPI, Float> getGracePeriods() {
+        return gracePeriods;
     }
 
-    public void adjustGracePeriod(float amount) {
-        gracePeriod += amount;
+    public float getGracePeriod(CampaignFleetAPI fleet) {
+        if (getGracePeriods().get(fleet) == null) {
+            gracePeriods.put(fleet, 0f);
+        }
+        return getGracePeriods().get(fleet);
+    }
+
+    public void adjustGracePeriod(CampaignFleetAPI fleet, float amount) {
+        if (getGracePeriods().get(fleet) == null) {
+            gracePeriods.put(fleet, amount);
+            return;
+        }
+        getGracePeriods().put(fleet, Math.max(0, getGracePeriods().get(fleet) + amount));
     }
 
     public List<BattleAPI> getInfluencedBattles() {
@@ -105,4 +127,10 @@ public class niko_MPC_satelliteParams {
     public void newSatellite(CampaignFleetAPI satelliteFleet) {
         satelliteFleets.add(satelliteFleet);
     }
+
+    public float getSatelliteInterferenceDistance() {
+        return satelliteInterferenceDistance;
+    }
+
+
 }

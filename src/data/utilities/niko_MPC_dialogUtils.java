@@ -1,5 +1,6 @@
 package data.utilities;
 
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
@@ -59,7 +60,7 @@ public class niko_MPC_dialogUtils {
                 if (plugin.getContext() instanceof FleetEncounterContext) {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
                     if (context.didPlayerWinEncounterOutright()) {
-                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(5f, entity);
+                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(Global.getSector().getPlayerFleet(), 5f, entity);
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");
                     } else {
                         dialog.dismiss();

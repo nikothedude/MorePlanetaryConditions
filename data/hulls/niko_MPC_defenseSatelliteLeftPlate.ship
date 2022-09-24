@@ -12,7 +12,7 @@
   "shieldRadius": 0,
   "viewOffset": 0,
   "builtInMods": [
-    "dedicated_targeting_core",
+    "advancedcore",
 	"pointdefenseai",
     "automated",
     "missile_reload",

@@ -16,8 +16,8 @@
     "missile_reload",
     "chassis_storage",
     "niko_MPC_graviticSupercomputer",
-    "niko_MPC_superPDComputer",
-	"niko_MPC_tachyonFighterComms"
+    "niko_MPC_tachyonFighterComms",
+    "pointdefenseai"
   ],
   "weaponSlots": [
     {

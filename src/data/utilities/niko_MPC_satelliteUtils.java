@@ -146,7 +146,7 @@ public class niko_MPC_satelliteUtils {
     }
 
     public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
-        return 5;
+        return 3;
     }
 
     /**
@@ -545,6 +545,10 @@ public class niko_MPC_satelliteUtils {
 
     // CAPABILITY CHECKING
 
+    public static boolean doEntitySatellitesWantToFight(niko_MPC_satelliteParams params, CampaignFleetAPI fleet) {
+        return doEntitySatellitesWantToFight(params.entity, fleet);
+    }
+
     /**
      * Used for generating battles and autoresolve and such.
      * @param entity The entity to get the satellite params from.
@@ -603,7 +607,7 @@ public class niko_MPC_satelliteUtils {
     public static boolean areEntitySatellitesCapableOfBlocking(SectorEntityToken entity, CampaignFleetAPI fleet) {
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
 
-        return (params.getGracePeriod() <= 0);
+        return (params.getGracePeriod(fleet) <= 0);
     }
 
     private static boolean areEntitySatellitesCapableOfFighting(SectorEntityToken entity, CampaignFleetAPI fleet) {
@@ -650,13 +654,15 @@ public class niko_MPC_satelliteUtils {
         containingLocation.removeEntity(terrain);
     }
 
-    public static void incrementSatelliteGracePeriod(float amount, SectorEntityToken entity) {
+    public static void incrementSatelliteGracePeriod(CampaignFleetAPI fleet, float amount, SectorEntityToken entity) {
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
         if (params == null) return;
 
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {
-            entity.addScript(new niko_MPC_gracePeriodDecrementer(params));
+            niko_MPC_gracePeriodDecrementer decrementerScript = new niko_MPC_gracePeriodDecrementer(params);
+            entity.addScript(decrementerScript);
+            params.gracePeriodDecrementer = decrementerScript;
         }
-        params.adjustGracePeriod(amount);
+        params.adjustGracePeriod(fleet, amount);
     }
 }

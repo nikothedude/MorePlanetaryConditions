@@ -99,6 +99,7 @@ public class niko_MPC_fleetUtils {
                 FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
                 if(ship != null) {
                     shipsToAdd.add(ship);
+                    ship.getRepairTracker().setCR(0.7f); //the ships spawn with 50 cr, fo rsome reaosn, so i have to do this
                     budget -= variantFp;
                 }
                 else {

@@ -4,6 +4,7 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.utilities.niko_MPC_satelliteUtils;
 
+@Deprecated
 public class niko_MPC_fleetReachedEntityChecker implements EveryFrameScriptWithCleanup {
 
     public boolean done = false;

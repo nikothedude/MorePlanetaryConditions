@@ -1,7 +1,7 @@
 {
   "variantId": "niko_MPC_defenseSatelliteLeftPlate_combat",
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
-  "displayName": "Combat",
+  "displayName": "Barrage",
   "goalVariant": false,
   "fluxCapacitors": 26,
   "fluxVents": 38,
@@ -11,7 +11,8 @@
     "heavyarmor",
     "missleracks",
     "reinforcedhull",
-    "autorepair"
+    "autorepair",
+    "armoredweapons"
   ],
   "weaponGroups": [
     {
@@ -26,8 +27,6 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0012": "harpoonpod",
-        "WS0013": "harpoonpod",
         "WS0019": "harpoon"
       }
     },
@@ -44,6 +43,8 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
+        "WS0012": "swarmer",
+        "WS0013": "swarmer",
         "WS0018": "swarmer",
         "WS0020": "swarmer"
       }

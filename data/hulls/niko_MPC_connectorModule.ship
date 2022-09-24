@@ -15,7 +15,7 @@
     "automated",
     "missile_reload",
     "niko_MPC_graviticSupercomputer",
-    "niko_MPC_superPDComputer",
+    "pointdefenseai",
 	"niko_MPC_noExplosionDamage",
 	"niko_MPC_connectorWeakness",
 	"always_detaches"
