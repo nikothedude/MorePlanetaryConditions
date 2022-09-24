@@ -272,13 +272,17 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public void ensureOldMarketHasNoReferencesFailsafe() {
         SectorEntityToken entity = market.getPrimaryEntity();
 
-        if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
+        //while loading, getMarket() returns null? or maybe its something to do with condition markets being jank?
+        //todo: ensure this works. since we are operating from the market, entity SHOULD have a market, but testing shows getMarket() can return null while loading
+        if (entity.getMarket() != null) {
+            if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
            /* log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());
             logEntityData(entity);
             if (Global.getSettings().isDevMode()) {
                 displayErrorToCampaign("ensureOldMarketHasNoReferencesFailsafe failure");
             } */ //commented out since i got what i want from it: it DOES fire, meaning this IS needed
-            entity.getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
+                entity.getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
+            }
         }
     }
 }
