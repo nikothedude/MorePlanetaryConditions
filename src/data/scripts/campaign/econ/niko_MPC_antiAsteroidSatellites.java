@@ -46,7 +46,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public String satelliteFactionId = "derelict";
 
     // These variables handle the condition's shit itself
-    public float baseAccessibilityIncrement = -0.15f; //also placeholder
+    public float baseAccessibilityIncrement = -0.30f; //also placeholder
     public float baseGroundDefenseIncrement = 500;
     public float baseStabilityIncrement = 1;
     public float baseGroundDefenseMult = 1.5f;
@@ -195,13 +195,29 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     protected void createTooltipAfterDescription(TooltipMakerAPI tooltip, boolean expanded) {
         super.createTooltipAfterDescription(tooltip, expanded);
 
-        float patherInterestReductionAmount = 0f;
+        int patherInterestReductionAmount = 3;
 
         if (market.hasIndustry(luddicPathSuppressorStructureId)) {
             niko_MPC_defenseSatelliteLuddicSuppressor industry = (niko_MPC_defenseSatelliteLuddicSuppressor) market.getIndustry(luddicPathSuppressorStructureId);
 
-            patherInterestReductionAmount = industry.getPatherInterest();
+            patherInterestReductionAmount = (int) Math.abs(industry.getPatherInterest());
         }
+        tooltip.addPara(
+                "The satellites completely saturate all possible entry vectors, making it %s to approach " +
+                        market.getName() + " while the satellites consider you a threat. This seems to always be the case " +
+                        "while the satellites have standard domain programming. Judging from observation (and the odd historical record), it would seem " +
+                        "that this threat evaluation is based off reprogrammable values, meaning that whoever holds the " +
+                        "planet can %s. Additionally, it can be inferred that %s if you are %s. It would also seem that " +
+                        "the satellites cannot identify you if you %s, and will likely consider you a threat anyway, even if you hold " +
+                        "the planet.",
+                10f,
+                Misc.getHighlightColor(),
+                "entirely impossible",
+                "make the satellites target their enemies",
+                "the satellites will block your approach",
+                "inhospitable to the holder",
+                "have your transponder off"
+        );
 
         tooltip.addPara(
                 "%s stability",
@@ -211,6 +227,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         );
 
         int convertedAccessibilityBonus = (int) (getAccessibilityBonus() * 100);  //times 100 to convert out of decimal
+
 
         tooltip.addPara(
                 "%s accessibility",
@@ -241,16 +258,22 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         );
 
         tooltip.addPara(
-                "Effective Luddic Path interest reduced by %s.",
+                "Due to the satellites defaulting to hostile behavior when considering a fleet with no transponder " +
+                        "(excluding programmed exceptions and manual overrides), customs control is significantly easier, " +
+                        "leading to %s being reduced by %s.",
                 10f,
                 Misc.getHighlightColor(),
-                Float.toString(patherInterestReductionAmount)
+                "effective luddic path interest", Integer.toString(patherInterestReductionAmount)
         );
 
         tooltip.addPara(
-                "Orbital defenses %s due to satellite presence.",
+                "Due to the fact that fleets are %s, " +
+                        "and the fact that %s, " +
+                        "orbital defenses are %s.",
                 10f,
                 Misc.getHighlightColor(),
+                "forced to break into the satellite orbit to interact with the planet",
+                "any battle that takes place very close to the planet will have satellites interfere",
                 "enhanced"
         );
     }

@@ -17,10 +17,7 @@ import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lwjgl.util.vector.Vector2f;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
     @Override
@@ -45,8 +42,6 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         CampaignFleetAPI focusedSatellite = satelliteFleets.get(0);
 
-        boolean wasHostile = niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(satelliteParams, playerFleet);
-
         for (CampaignFleetAPI satelliteFleet : satelliteFleets) {
             MemoryAPI fleetMemory = satelliteFleet.getMemoryWithoutUpdate();
             boolean stillSet = Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_HOSTILE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
@@ -57,12 +52,10 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
                 }
             }
             Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
-        }
 
-        boolean isHostile = (focusedSatellite.isHostileTo((playerFleet)));
-
-        if (wasHostile != isHostile) {
-            Global.getSoundPlayer().restartCurrentMusic();
+            if (Objects.equals(satelliteFleet.getFaction().getId(), "player")) {
+                satelliteFleet.setFaction("derelict"); //hack-the game doesnt let you fight your own faction, ever
+            }
         }
 
         niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, memoryMap);

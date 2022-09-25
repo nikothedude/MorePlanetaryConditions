@@ -28,7 +28,7 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
         for (niko_MPC_satelliteParams params : tracker.getSatellitesInfluencingBattle(battle)) {
             BattleAPI.BattleSide battleSide = tracker.getSideOfSatellitesForBattle(battle, params);
             if (battleSide != battle.pickSide(primaryWinner)) { // if our picked side on the battle does not have the winner,
-                for (CampaignFleetAPI hostileFleet : battle.getSideFor(primaryWinner)) { // we can assume that
+                for (CampaignFleetAPI hostileFleet : battle.getSnapshotSideFor(primaryWinner)) { // we can assume that
                     float graceIncrement = niko_MPC_ids.satelliteVictoryGraceIncrement; // we lost the final engagement,
                     params.adjustGracePeriod(hostileFleet, graceIncrement); // to have "beat the satellites", giving
                     // them a period of grace

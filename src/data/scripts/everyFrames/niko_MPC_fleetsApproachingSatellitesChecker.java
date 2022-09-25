@@ -4,6 +4,9 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.ai.FleetAssignmentDataAPI;
+import com.fs.starfarer.api.impl.campaign.intel.raid.RaidAssignmentAI;
+import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseAssignmentAI;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lazywizard.lazylib.campaign.CampaignUtils;
@@ -46,10 +49,15 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
     public void advance(float amount) {
         List<CampaignFleetAPI> hostileFleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
         for (CampaignFleetAPI fleet : hostileFleetsWithinInterferenceDistance) {
-            if (fleet == Global.getSector().getPlayerFleet()) return;
+            if (fleet == null) continue; //literally 0 idea how this can be null but okay starsector
+            if (fleet == Global.getSector().getPlayerFleet()) continue;
             if (niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, fleet) && niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, fleet)) {
                 if (niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(entity, fleet)) {
-                    if (fleet.getInteractionTarget() == entity) {
+                    FleetAssignmentDataAPI assignment = fleet.getCurrentAssignment();
+
+                    if ((fleet.getInteractionTarget() == entity) || //this is inconsistant, not everything (notably raids) triggers this
+                        (assignment.getTarget().getOrbitFocus() == entity)) { //raids DO however have the planet as an orbit focus
+
                         niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(entity, fleet);
                     }
                 }

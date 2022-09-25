@@ -49,14 +49,14 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
                 niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
                 if (!tracker.areSatellitesInvolvedInBattle(battle, params)) {
-                    niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet);
+                    CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet); //todo: make it so that the fleets despawn if the dialog is exited and not engaged
                 }
             }
         } else {
             HashMap<SectorEntityToken, CampaignFleetAPI> entitiesWillingToFight = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingAndCapableToFightFleets(fleet, playerFleet, fleet);
             for (Map.Entry<SectorEntityToken, CampaignFleetAPI> entry : entitiesWillingToFight.entrySet()) {
                 niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entry.getKey());
-                niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet);
+                CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet);
             }
         }
     }

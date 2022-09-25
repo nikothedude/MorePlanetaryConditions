@@ -405,11 +405,13 @@ public class niko_MPC_satelliteUtils {
      */
     public static Set<SectorEntityToken> getNearbyEntitiesWithSatellites(Vector2f coordinates, LocationAPI location) {
         Set<SectorEntityToken> entitiesWithSatellites = getEntitiesInLocationWithSatellites(location);
+        Iterator<SectorEntityToken> iterator = entitiesWithSatellites.iterator();
 
-        for (SectorEntityToken entity : entitiesWithSatellites) {
+        while (iterator.hasNext()) {
+            SectorEntityToken entity = iterator.next();
             niko_MPC_satelliteParams params = getEntitySatelliteParams(entity); //we can use this here because the previously used method only returns things with params
             if (!MathUtils.isWithinRange(entity, coordinates, params.satelliteInterferenceDistance)) {
-                entitiesWithSatellites.remove(entity); //have to remove because we're using a full list already
+                iterator.remove(); //have to remove because we're using a full list already
             }
         }
         return entitiesWithSatellites;
@@ -631,7 +633,10 @@ public class niko_MPC_satelliteUtils {
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
         BattleAPI battle = fleet.getBattle();
 
-        return ((battle != null && tracker.areSatellitesInvolvedInBattle(battle, params)) || params.getGracePeriod(fleet) <= 0);
+        if (battle != null && tracker.areSatellitesInvolvedInBattle(battle, params)) {
+            return false;
+        }
+        return (params.getGracePeriod(fleet) <= 0);
     }
 
     private static boolean areEntitySatellitesCapableOfFighting(SectorEntityToken entity, CampaignFleetAPI fleet) {
@@ -661,6 +666,8 @@ public class niko_MPC_satelliteUtils {
             }
         }
         else {
+            satelliteFleet.clearAssignments();
+            satelliteFleet.addAssignment(FleetAssignment.INTERCEPT, fleet, 999999999);
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); //todo: this may not work
             battleJoined = newBattle;
         }
