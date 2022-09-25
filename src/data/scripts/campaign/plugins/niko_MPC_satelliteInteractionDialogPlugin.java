@@ -7,6 +7,7 @@ import data.utilities.niko_MPC_fleetUtils;
 
 import java.util.List;
 
+//todo: consider removing, now that i have it so that satellites flip to the other side of the map on pursuits
 public class niko_MPC_satelliteInteractionDialogPlugin extends FleetInteractionDialogPluginImpl {
 
     @Override
