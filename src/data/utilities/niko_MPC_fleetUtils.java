@@ -1,21 +1,24 @@
 package data.utilities;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.FleetAssignment;
-import com.fs.starfarer.api.campaign.LocationAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.combat.ShipVariantAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
+import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
+import com.fs.starfarer.api.impl.campaign.ids.Commodities;
+import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
+import com.fs.starfarer.ui.P;
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
+import data.scripts.util.MagicCampaign;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -39,7 +42,7 @@ public class niko_MPC_fleetUtils {
         final CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(factionId, fleetName, true);
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
         fleetMemory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, true);
-        fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE, true);
+        fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, true);
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
 
         fleetMemory.set(isSatelliteFleetId, true);
@@ -48,6 +51,9 @@ public class niko_MPC_fleetUtils {
         fleet.setAI(new niko_MPC_satelliteFleetAI((CampaignFleet) fleet));
 
         fleet.addEventListener(new niko_MPC_satelliteFleetDespawnListener());
+
+        PersonAPI aiCaptain = new AICoreOfficerPluginImpl().createPerson(Commodities.GAMMA_CORE, "derelict", null);
+        fleet.setCommander(aiCaptain);
 
         return fleet;
     }
@@ -96,6 +102,7 @@ public class niko_MPC_fleetUtils {
             if (variantFp <= budget) { // is only true if we can afford making this ship
                 FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
                 if(ship != null) {
+
                     shipsToAdd.add(ship);
                     ship.getRepairTracker().setCR(0.7f); //the ships spawn with 50 cr, fo rsome reaosn, so i have to do this
                     budget -= variantFp;
@@ -126,10 +133,10 @@ public class niko_MPC_fleetUtils {
     }
 
     public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
-        return spawnSatelliteFleet(params, coordinates, location, true);
+        return spawnSatelliteFleet(params, coordinates, location, true, false);
     }
 
-    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary) {
+    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
         CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params);
 
         location.addEntity(satelliteFleet);
@@ -140,7 +147,12 @@ public class niko_MPC_fleetUtils {
 
         satelliteFleet.addAssignment(FleetAssignment.HOLD, location.createToken(coordinates), 99999999f);
 
-        params.newSatellite(satelliteFleet);
+        if (dummy) {
+            params.newDummySatellite(satelliteFleet);
+        }
+        else {
+            params.newSatellite(satelliteFleet);
+        }
 
         return satelliteFleet;
     }
@@ -150,15 +162,19 @@ public class niko_MPC_fleetUtils {
     }
 
     public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity, boolean temporary) {
-        return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation(), temporary);
+        return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation(), temporary, false);
+    }
+
+    public static CampaignFleetAPI createNewFullDummySatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+        return createNewFullSatelliteFleet(params, coordinates, location, false, true);
     }
 
     public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
-        return createNewFullSatelliteFleet(params, coordinates, location, true);
+        return createNewFullSatelliteFleet(params, coordinates, location, true, false);
     }
 
-    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary) {
-        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location, temporary);
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location, temporary, dummy);
 
         attemptToFillFleetWithVariants(params.maxBattleSatellites, satelliteFleet, params.weightedVariantIds, true);
 
@@ -174,12 +190,31 @@ public class niko_MPC_fleetUtils {
     }
 
     public static CampaignFleetAPI createDummyFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
-        CampaignFleetAPI satelliteFleet = createNewFullSatelliteFleet(params, new Vector2f(99999999, 99999999), entity.getContainingLocation(), false);
+        CampaignFleetAPI satelliteFleet = createNewFullDummySatelliteFleet(params, new Vector2f(99999999, 99999999), entity.getContainingLocation());
 
         satelliteFleet.setDoNotAdvanceAI(true);
 
         return satelliteFleet;
     }
+
+    public static void joinBattleWithNewSatellites(BattleAPI battle, niko_MPC_satelliteParams params, SectorEntityToken entity) {
+        CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, battle.computeCenterOfMass(), entity.getContainingLocation());
+
+        if (!battle.join(satelliteFleet)) {
+            safeDespawnFleet(satelliteFleet, true);
+        }
+        BattleAPI.BattleSide side = battle.pickSide(satelliteFleet);
+        niko_MPC_satelliteUtils.getSatelliteBattleTracker().associateSatellitesWithBattle(battle, params, side);
+    }
+
+    /*public static boolean satelliteFleetIsHostileTo(CampaignFleetAPI satelliteFleet, CampaignFleetAPI fleet) {
+        niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(satelliteFleet);
+
+        String originalFactionId = satelliteFleet.getFaction().getId();
+        satelliteFleet.setFaction(niko_MPC_ids.satelliteFactionId);
+        boolean result = ((satelliteFleet.isHostileTo(fleet)) || (params.getSatelliteFaction().isHostileTo(fleet.getFaction())));
+        satelliteFleet.setFaction(originalFactionId);
+    }*/
 
     /*
     public static List<CampaignFleetAPI> spawnTemporarySatelliteFleetsOnFleet(CampaignFleetAPI fleet) {

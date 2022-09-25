@@ -30,8 +30,9 @@ public class niko_MPC_ids {
     public static final String defenseSatelliteImpactReasonString = "Defense Satellite Artillery Impact";
 
     public static final String niko_MPC_isSatelliteHullId = "niko_MPC_isSatelliteHull";
-    public static final float satellitePlayerVictoryIncrement = 20f;
-    public static final float satelliteVictoryGraceIncrement = 70f;
-    public static String satelliteBattleTrackerId = "$niko_MPC_satelliteBattleTracker";
-    public static String satelliteFleetHostileReason = "$niko_MPC_satelliteFleetHostileReason";
+    public static final float satellitePlayerVictoryIncrement = 10f;
+    public static final float satelliteVictoryGraceIncrement = 40f;
+    public static final String satelliteBattleTrackerId = "$niko_MPC_satelliteBattleTracker";
+    public static final String satelliteFleetHostileReason = "$niko_MPC_satelliteFleetHostileReason";
+    public static final String satelliteFactionId = "niko_MPC_satelliteFaction";
 }

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogAPI;
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class niko_MPC_dialogUtils {
 
     public static boolean createSatelliteFleetFocus(final CampaignFleetAPI satelliteFleet, final List<CampaignFleetAPI> satelliteFleets,
-                                                    InteractionDialogAPI dialog, final Map<String, MemoryAPI> memoryMap) {
+                                                    InteractionDialogAPI dialog, final SectorEntityToken entityFocus, final Map<String, MemoryAPI> memoryMap) {
         if (dialog == null) return false;
         if (satelliteFleet == null) return false;
 
@@ -36,7 +37,7 @@ public class niko_MPC_dialogUtils {
         config.pullInAllies = true;
         config.pullInEnemies = true;
         config.pullInStations = true;
-        config.lootCredits = true;
+        config.lootCredits = false;
 
         config.firstTimeEngageOptionText = "Engage the automated defenses";
         config.afterFirstTimeEngageOptionText = "Re-engage the automated defenses";
@@ -51,10 +52,9 @@ public class niko_MPC_dialogUtils {
         config.delegate = new FleetInteractionDialogPluginImpl.BaseFIDDelegate() {
             @Override
             public void notifyLeave(InteractionDialogAPI dialog) {
-                if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+                if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entityFocus)) return;
 
-                satelliteFleet.setLocation(10000000, 10000000);
-                satelliteFleet.despawn();
+                niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet, true);
 
                 dialog.setPlugin(originalPlugin);
                 dialog.setInteractionTarget(entity);
@@ -62,7 +62,7 @@ public class niko_MPC_dialogUtils {
                 if (plugin.getContext() instanceof FleetEncounterContext) {
                     FleetEncounterContext context = (FleetEncounterContext) plugin.getContext();
                     if (context.didPlayerWinEncounterOutright()) {
-                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(Global.getSector().getPlayerFleet(), niko_MPC_ids.satellitePlayerVictoryIncrement, entity);
+                        niko_MPC_satelliteUtils.incrementSatelliteGracePeriod(Global.getSector().getPlayerFleet(), niko_MPC_ids.satellitePlayerVictoryIncrement, entityFocus);
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated");
                     } else {
                         dialog.dismiss();
@@ -76,5 +76,16 @@ public class niko_MPC_dialogUtils {
         plugin.init(dialog);
 
         return true;
+    }
+
+    public static SectorEntityToken digForSatellitesInEntity(SectorEntityToken entity) {
+
+        MarketAPI entityMarket = entity.getMarket();
+        if (entityMarket != null && entityMarket.getPrimaryEntity() != entity) {
+            SectorEntityToken marketEntity = entityMarket.getPrimaryEntity();
+            if (marketEntity != null) entity = marketEntity;
+        }
+
+        return entity;
     }
 }

@@ -24,6 +24,8 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
         SectorEntityToken entity = dialog.getInteractionTarget();
 
+        entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
+
         niko_MPC_satelliteParams satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
         if (satelliteParams == null) return false;
 
@@ -58,7 +60,7 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
             }
         }
 
-        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, memoryMap);
+        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, entity, memoryMap);
 
         return true;
     }

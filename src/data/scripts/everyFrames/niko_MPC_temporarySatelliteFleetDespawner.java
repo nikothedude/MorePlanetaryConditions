@@ -58,12 +58,20 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     private void prepareForGarbageCollection() {
 
+        BattleAPI battle = fleet.getBattle();
+        if (battle != null && params != null) {
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+            if (tracker.areSatellitesInvolvedInBattle(battle, params)) {
+                tracker.removeParamsFromBattle(battle, params);
+            }
+        }
         if (fleet != null) {
             fleet.removeScript(this);
             fleet = null;
         }
         done = true;
     }
+
 
     private void getRidOfFleet() {
         boolean vanish = (advanceTimeSinceStart < 90); //arbitrary number

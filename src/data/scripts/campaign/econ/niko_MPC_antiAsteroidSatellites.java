@@ -116,7 +116,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {
-        return orbitDistance;
+        return orbitDistance+95;
     }
 
     /**

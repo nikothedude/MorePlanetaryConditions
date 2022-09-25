@@ -2,8 +2,10 @@ package data.scripts.campaign.misc;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
+import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import data.scripts.everyFrames.niko_MPC_fleetsApproachingSatellitesChecker;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
+import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_satelliteBattleTracker;
 import data.utilities.niko_MPC_satelliteUtils;
@@ -11,6 +13,9 @@ import data.utilities.niko_MPC_satelliteUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+
+import static data.utilities.niko_MPC_debugUtils.logEntityData;
 
 public class niko_MPC_satelliteParams {
 
@@ -78,7 +83,7 @@ public class niko_MPC_satelliteParams {
         return orbitalSatellites;
     }
 
-    public FactionAPI getSatelliteFaction() {
+    private FactionAPI getSatelliteFaction() {
         return Global.getSector().getFaction(satelliteFactionId);
     }
 
@@ -125,9 +130,32 @@ public class niko_MPC_satelliteParams {
         }
     }
 
-    public String getSatelliteFactionId() {
+    private String getSatelliteFactionId() {
         return satelliteFactionId;
     }
+
+    /**
+     * More or less just a safer way to access the satellite faction of an entity.
+     * Updates the entity's faction id whenever it's ran.
+     * @return A faction ID, in string form. Can return null if entity has no satellites.
+     */
+    public String getCurrentSatelliteFactionId() {
+        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
+
+        MarketAPI market = niko_MPC_satelliteUtils.getEntitySatelliteMarket(entity);
+        if (market != null) {
+            if (market.isPlanetConditionMarketOnly() && (!Objects.equals(this.getSatelliteFactionId(), "derelict"))) {
+                this.setSatelliteId("derelict");
+            } else if (!Objects.equals(this.getSatelliteFactionId(), market.getFactionId())) {
+                this.setSatelliteId(market.getFactionId());
+            }
+        }
+        else if (!Objects.equals(this.getSatelliteFactionId(), entity.getFaction().getId())) {
+            this.setSatelliteId(entity.getFaction().getId());
+        }
+        return this.getSatelliteFactionId();
+    }
+
 
     public HashMap<CampaignFleetAPI, Float> getGracePeriods() {
         return gracePeriods;
@@ -166,7 +194,7 @@ public class niko_MPC_satelliteParams {
         FactionAPI faction = getSatelliteFaction();
         if (dummyFleet == null) {
             if (faction != null) { // a strange hack i have to do, since this method is called before factions /exist/?
-                dummyFleet = niko_MPC_fleetUtils.createDummyFleet(this, entity);
+                niko_MPC_fleetUtils.createDummyFleet(this, entity);
             } else {
                return niko_MPC_fleetUtils.spawnSatelliteFleet(this, entity.getLocation(), entity.getContainingLocation());
             }
@@ -179,5 +207,9 @@ public class niko_MPC_satelliteParams {
         dummy.setFaction(niko_MPC_satelliteUtils.getCurrentSatelliteFactionId(this));
 
         return dummy.isHostileTo(fleet);
+    }
+
+    public void newDummySatellite(CampaignFleetAPI satelliteFleet) {
+        dummyFleet = satelliteFleet;
     }
 }

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.combat.*;
+import com.fs.starfarer.api.fleet.FleetGoal;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.input.InputEventAPI;
@@ -20,6 +21,30 @@ import static data.utilities.niko_MPC_ids.niko_MPC_isSatelliteHullId;
 public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlugin {
 
     private float framesToWait = 2;
+    public boolean escapeBattle = false;
+
+    private static class satelliteDeploymentParams {
+        public float mapWidth;
+        public float mapHeight;
+        public float initialXCoord;
+        public float xOffset;
+        public float xThresholdForWrapping;
+        public float initialYCoord;
+        public float yOffset;
+        public float facing;
+        public float yCoord;
+        public float xCoord;
+
+        private void invertCoordinates() {
+            initialYCoord *= -1f;
+            yOffset *= -1f;
+            if (facing == 90f) {
+                facing = 270f;
+            }
+            else facing = 90f;
+        }
+
+    }
 
     @Override
     public void init(CombatEngineAPI engine) {
@@ -38,6 +63,13 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
         }
 
         CombatEngineAPI engine = Global.getCombatEngine();
+
+        FleetGoal playerGoal = engine.getContext().getPlayerGoal();
+        FleetGoal otherGoal = engine.getContext().getOtherGoal();
+
+        if (otherGoal == FleetGoal.ESCAPE || playerGoal == FleetGoal.ESCAPE) {
+            escapeBattle = true;
+        }
 
         deploySatellitesForSide(FleetSide.PLAYER, engine);
         deploySatellitesForSide(FleetSide.ENEMY, engine);
@@ -72,48 +104,53 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
     }
 
     private void forceDeploySatellites(CombatEngineAPI engine, CombatFleetManagerAPI fleetManager, FleetSide side, List<FleetMemberAPI> satellites) {
+
+        satelliteDeploymentParams params = new satelliteDeploymentParams();
+
         int size = satellites.size();
         if (size == 0) return;
 
-        float mapWidth = engine.getMapWidth();
-        float mapHeight = engine.getMapHeight();
+        params.mapWidth = engine.getMapWidth();
+        params.mapHeight = engine.getMapHeight();
 
-        float initialXCoord = 0;
+        params.initialXCoord = 0;
         if (size > 1) {
-            initialXCoord = (float) (mapWidth*-0.39); // if we have more than one, we set it to be at the very edge of the map
+            params.initialXCoord = (float) (params.mapWidth*-0.39); // if we have more than one, we set it to be at the very edge of the map
         }
-        float xOffset = 0;
+        params.xOffset = 0;
         if (size > 1) {
-            xOffset = (initialXCoord * -2) / (size - 1); //ex. if we start at 400, 2 satellites causes it to be 200, then 100, 50, etc
+            params.xOffset = (params.initialXCoord * -2) / (size - 1); //ex. if we start at 400, 2 satellites causes it to be 200, then 100, 50, etc
         }
-        float xThresholdForWrapping = mapWidth;
+        params.xThresholdForWrapping = params.mapWidth;
 
-        float initialYCoord = (float) (mapHeight*-0.27);
-        float yOffset = 200f;
+        params.initialYCoord = (float) (params.mapHeight*-0.27);
+        params.yOffset = 200f;
 
-        float facing = 90f;
+        params.facing = 90f;
+
 
         if (side == FleetSide.ENEMY) {
-            initialYCoord *= -1f;
-            yOffset *= -1f;
-            facing = 270f;
+            params.invertCoordinates();
+        }
+        if (escapeBattle) {
+            params.invertCoordinates();
         }
 
-        float yCoord = initialYCoord;
-        float xCoord = initialXCoord;
+        params.yCoord = params.initialYCoord;
+        params.xCoord = params.initialXCoord;
 
         for (FleetMemberAPI satellite : satellites) {
-            if (xCoord > xThresholdForWrapping) {
-                xCoord = initialXCoord;
-                yCoord += yOffset;
+            if (params.xCoord > params.xThresholdForWrapping) {
+                params.xCoord = params.initialXCoord;
+                params.yCoord += params.yOffset;
             }
             ShipAPI satelliteShip = null;
             if (fleetManager.getDeployedCopy().contains(satellite)) {
                 niko_MPC_debugUtils.displayError("satellite already deployed");
                 satelliteShip = fleetManager.getShipFor(satellite);
             }
-            deploySatellite(satellite, new Vector2f(xCoord, yCoord), facing, fleetManager, side, satelliteShip);
-            xCoord += xOffset;
+            deploySatellite(satellite, new Vector2f(params.xCoord, params.yCoord), params.facing, fleetManager, side, satelliteShip);
+            params.xCoord += params.xOffset;
         }
     }
 

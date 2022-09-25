@@ -27,6 +27,7 @@ import java.util.Random;
 
 import static data.utilities.niko_MPC_ids.defenseSatelliteImpactId;
 import static data.utilities.niko_MPC_ids.defenseSatelliteImpactReasonString;
+import static data.utilities.niko_MPC_satelliteUtils.getCurrentSatelliteFactionId;
 import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteParams;
 
 public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerrain {
@@ -222,7 +223,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         float displayableIntensity = getStringifiedIntensity(Global.getSector().getPlayerFleet());
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         niko_MPC_satelliteParams params = getEntitySatelliteParams(getRelatedEntity());
-        String factionName = params.getSatelliteFaction().getDisplayName();
+        String factionName = Global.getSector().getFaction(getCurrentSatelliteFactionId(params)).getDisplayName();
 
         tooltip.addPara("Chance for random ships in the fleet to be hit by long-ranged artillery fire from the " +
                 "orbiting satellites, causing heavy damage and minor CR loss.", nextPad);

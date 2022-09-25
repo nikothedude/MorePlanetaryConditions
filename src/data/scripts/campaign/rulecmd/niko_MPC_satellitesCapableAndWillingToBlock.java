@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class niko_MPC_satellitesCapableAndWillingToBlock extends BaseCommandPlug
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
         SectorEntityToken entity = dialog.getInteractionTarget();
 
+        entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
         niko_MPC_satelliteParams satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
         if (satelliteParams == null) return false;
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();

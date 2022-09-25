@@ -26,7 +26,7 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
      * @param battle The battle to check.
      */
     @Override
-    public void reportBattleFinished(CampaignFleetAPI primaryWinner, BattleAPI battle) {
+    public void reportBattleFinished(CampaignFleetAPI primaryWinner, BattleAPI battle) { //fixme: doesnt fire on player battle end
         super.reportBattleFinished(primaryWinner, battle);
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
@@ -50,14 +50,18 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
 
         FleetAssignmentDataAPI assignment = fleet.getCurrentAssignment();
 
-        niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+        niko_MPC_satelliteParams params = null;
+        if (entity != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+
         if (params == null) {
-            SectorEntityToken trueTarget = assignment.getTarget();
-            params = niko_MPC_satelliteUtils.getEntitySatelliteParams(trueTarget);
+            SectorEntityToken trueTarget = null;
+            if (assignment != null) trueTarget = assignment.getTarget();
+            if (trueTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(trueTarget);
 
             if (params == null) {
-                SectorEntityToken orbitTarget = trueTarget.getOrbitFocus();
-                params = niko_MPC_satelliteUtils.getEntitySatelliteParams(orbitTarget);
+                SectorEntityToken orbitTarget = null;
+                if (trueTarget != null) orbitTarget = trueTarget.getOrbitFocus();
+                if (orbitTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(orbitTarget);
             }
         }
 

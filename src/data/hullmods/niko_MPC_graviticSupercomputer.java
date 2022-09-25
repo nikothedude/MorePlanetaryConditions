@@ -6,8 +6,9 @@ import com.fs.starfarer.api.combat.ShipAPI;
 
 public class niko_MPC_graviticSupercomputer extends BaseHullMod {
 
-    public final float rangeMult = 6.5f;
+    public final float rangeMult = 9f;
     public final float pdRangeMult = 0.7f;
+    public final float missileRangeMalice = 0.7f;
     public final float visionIncrement = 10000f;
     public final float recoilMult = 0.3f;
 
@@ -15,7 +16,7 @@ public class niko_MPC_graviticSupercomputer extends BaseHullMod {
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize, MutableShipStatsAPI stats, String id) {
         stats.getBallisticWeaponRangeBonus().modifyMult(id, rangeMult);
         stats.getEnergyWeaponRangeBonus().modifyMult(id, rangeMult);
-        stats.getMissileWeaponRangeBonus().modifyMult(id, rangeMult);
+        stats.getMissileWeaponRangeBonus().modifyMult(id, (float) (rangeMult*missileRangeMalice));
 
         stats.getNonBeamPDWeaponRangeBonus().modifyMult(id, pdRangeMult);
 

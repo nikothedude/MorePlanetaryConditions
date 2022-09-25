@@ -61,6 +61,10 @@ public class niko_MPC_satelliteBattleTracker {
         return false;
     }
 
+    public boolean areAnySatellitesInvolvedInBattle(BattleAPI battle) {
+        return (battles.get(battle) != null && !battles.get(battle).isEmpty());
+    }
+
     public HashMap<niko_MPC_satelliteParams, CampaignFleetAPI> scanBattleForSatellites(BattleAPI battle) {
         HashMap<niko_MPC_satelliteParams, CampaignFleetAPI> paramsToFleetMap = new HashMap<>();
         for (CampaignFleetAPI fleet : battle.getBothSides()) {

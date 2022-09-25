@@ -325,23 +325,13 @@ public class niko_MPC_satelliteUtils {
         niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
 
         if (params != null) {
-            MarketAPI market = getEntitySatelliteMarket(entity);
-            if (market != null) {
-                if (market.isPlanetConditionMarketOnly() && (!Objects.equals(params.getSatelliteFactionId(), "derelict"))) {
-                    params.setSatelliteId("derelict");
-                } else if (!Objects.equals(params.getSatelliteFactionId(), market.getFactionId())) {
-                    params.setSatelliteId(market.getFactionId());
-                }
-            }
-            else if (!Objects.equals(params.getSatelliteFactionId(), entity.getFaction().getId())) {
-                params.setSatelliteId(entity.getFaction().getId());
-            }
-        } else {
+            return params.getCurrentSatelliteFactionId();
+        }
+        else {
             niko_MPC_debugUtils.displayError("getCurrentSatelliteFactionId failure");
             logEntityData(entity);
             return entity.getFaction().getId();
         }
-        return params.getSatelliteFactionId();
     }
 
     public static FactionAPI getCurrentSatelliteFaction(niko_MPC_satelliteParams params) {
@@ -386,6 +376,10 @@ public class niko_MPC_satelliteUtils {
     public static Set<SectorEntityToken> getEntitiesInLocationWithSatellites(LocationAPI location) {
         Set<SectorEntityToken> entitiesWithSatellites = new HashSet<>();
         for (SectorEntityToken entity : location.getAllEntities()) {
+            if (entity instanceof CampaignFleetAPI) {
+                CampaignFleetAPI possibleSatelliteFleet = (CampaignFleetAPI) entity;
+                if (niko_MPC_fleetUtils.fleetIsSatelliteFleet(possibleSatelliteFleet)) continue;
+            }
             if (defenseSatellitesApplied(entity)) {
              entitiesWithSatellites.add(entity);
             }
@@ -478,7 +472,7 @@ public class niko_MPC_satelliteUtils {
         return entitiesWillingToFight;
     }
 
-    public static CampaignFleetAPI getSideForSatellitesAgainstFleets(SectorEntityToken entity, CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo) {
+    public static CampaignFleetAPI getSideForSatellitesAgainstFleets(SectorEntityToken entity, CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
         if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
 
         boolean wantsToFightOne = false;
@@ -493,13 +487,16 @@ public class niko_MPC_satelliteUtils {
         }
 
         if (wantsToFightOne) {
-            return fleet;
+            if (!capabilityCheck || areEntitySatellitesCapableOfBlocking(entity, fleet)) {
+                return fleet;
+            }
         }
         else if (wantsToFightTwo) {
-            return fleetTwo;
+            if (!capabilityCheck || areEntitySatellitesCapableOfBlocking(entity, fleetTwo)) {
+                return fleetTwo;
+            }
         }
-        else return null;
-
+        return null;
     }
 
     public static HashMap<SectorEntityToken, CampaignFleetAPI> getNearbyEntitiesWithSatellitesWillingAndCapableToFightFleets(SectorEntityToken entity, CampaignFleetAPI fleet, CampaignFleetAPI otherFleet) {
@@ -508,7 +505,7 @@ public class niko_MPC_satelliteUtils {
         HashMap<SectorEntityToken, CampaignFleetAPI> sidesTaken = new HashMap<>();
 
         for (SectorEntityToken entityWithSatellite : entitiesWithSatellites) {
-            CampaignFleetAPI fleetChosen = getSideForSatellitesAgainstFleets(entityWithSatellite, fleet, otherFleet);
+            CampaignFleetAPI fleetChosen = getSideForSatellitesAgainstFleets(entityWithSatellite, fleet, otherFleet, true);
             if (fleetChosen != null) {
                 sidesTaken.put(entityWithSatellite, fleetChosen);
             }
