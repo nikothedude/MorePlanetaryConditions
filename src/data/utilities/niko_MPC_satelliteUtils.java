@@ -327,17 +327,17 @@ public class niko_MPC_satelliteUtils {
         if (params != null) {
             MarketAPI market = getEntitySatelliteMarket(entity);
             if (market != null) {
-                if (market.isPlanetConditionMarketOnly()) {
+                if (market.isPlanetConditionMarketOnly() && (!Objects.equals(params.getSatelliteFactionId(), "derelict"))) {
                     params.setSatelliteId("derelict");
-                } else params.setSatelliteId(market.getFactionId());
+                } else if (!Objects.equals(params.getSatelliteFactionId(), market.getFactionId())) {
+                    params.setSatelliteId(market.getFactionId());
+                }
             }
-            else {
+            else if (!Objects.equals(params.getSatelliteFactionId(), entity.getFaction().getId())) {
                 params.setSatelliteId(entity.getFaction().getId());
             }
         } else {
-            if (Global.getSettings().isDevMode()) {
-                niko_MPC_debugUtils.displayError("getCurrentSatelliteFactionId failure");
-            }
+            niko_MPC_debugUtils.displayError("getCurrentSatelliteFactionId failure");
             logEntityData(entity);
             return entity.getFaction().getId();
         }
@@ -427,10 +427,12 @@ public class niko_MPC_satelliteUtils {
      */
     public static Set<SectorEntityToken> getNearbyEntitiesWithSatellitesWillingToFight(CampaignFleetAPI fleet) {
         Set<SectorEntityToken> entitiesWithSatellites = getNearbyEntitiesWithSatellites(fleet.getLocation(), fleet.getContainingLocation());
+        Iterator<SectorEntityToken> iterator = entitiesWithSatellites.iterator();
 
-        for (SectorEntityToken entity : entitiesWithSatellites) {
+        while (iterator.hasNext()) {
+            SectorEntityToken entity = iterator.next();
             if (!doEntitySatellitesWantToFight(entity, fleet)) {
-                entitiesWithSatellites.remove(entity);
+                iterator.remove();
             }
         }
         return entitiesWithSatellites;
@@ -593,9 +595,10 @@ public class niko_MPC_satelliteUtils {
             }
         }
 
-        CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.spawnSatelliteFleet(params, fleet.getLocation(), fleet.getContainingLocation());
+        CampaignFleetAPI satelliteFleet = params.getDummyFleetWithUpdate();
+       // CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.spawnSatelliteFleet(params, fleet.getLocation(), fleet.getContainingLocation());
+      //  niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
         boolean wantsToFight = satelliteFleet.isHostileTo(fleet);
-        niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
 
         return (wantsToFight || (marketUncolonized && !Objects.equals(fleet.getFaction().getId(), "derelict")));
     }
@@ -667,7 +670,7 @@ public class niko_MPC_satelliteUtils {
         }
         else {
             satelliteFleet.clearAssignments();
-            satelliteFleet.addAssignment(FleetAssignment.INTERCEPT, fleet, 999999999);
+            satelliteFleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, fleet, 999999999, null);
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); //todo: this may not work
             battleJoined = newBattle;
         }

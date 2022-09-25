@@ -115,16 +115,28 @@ public class niko_MPC_fleetUtils {
     }
 
     public static void safeDespawnFleet(CampaignFleetAPI fleet) {
-        fleet.setLocation(9999999, 9999999);
+        safeDespawnFleet(fleet, false);
+    }
+
+    public static void safeDespawnFleet(CampaignFleetAPI fleet, boolean vanish) {
+        if (vanish) {
+            fleet.setLocation(9999999, 9999999);
+        }
         fleet.despawn();
     }
 
     public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+        return spawnSatelliteFleet(params, coordinates, location, true);
+    }
+
+    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary) {
         CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params);
 
         location.addEntity(satelliteFleet);
         satelliteFleet.setLocation(coordinates.x, coordinates.y);
-        satelliteFleet.addScript(new niko_MPC_temporarySatelliteFleetDespawner(satelliteFleet, params));
+        if (temporary) {
+            satelliteFleet.addScript(new niko_MPC_temporarySatelliteFleetDespawner(satelliteFleet, params));
+        }
 
         satelliteFleet.addAssignment(FleetAssignment.HOLD, location.createToken(coordinates), 99999999f);
 
@@ -134,11 +146,19 @@ public class niko_MPC_fleetUtils {
     }
 
     public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
-        return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation());
+        return createNewFullSatelliteFleet(params, entity, true);
+    }
+
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity, boolean temporary) {
+        return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation(), temporary);
     }
 
     public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
-        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location);
+        return createNewFullSatelliteFleet(params, coordinates, location, true);
+    }
+
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary) {
+        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location, temporary);
 
         attemptToFillFleetWithVariants(params.maxBattleSatellites, satelliteFleet, params.weightedVariantIds, true);
 
@@ -151,6 +171,14 @@ public class niko_MPC_fleetUtils {
 
     public static boolean fleetIsSatelliteFleet(CampaignFleetAPI fleet) {
         return fleet.getMemoryWithoutUpdate().is(isSatelliteFleetId, true);
+    }
+
+    public static CampaignFleetAPI createDummyFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
+        CampaignFleetAPI satelliteFleet = createNewFullSatelliteFleet(params, new Vector2f(99999999, 99999999), entity.getContainingLocation(), false);
+
+        satelliteFleet.setDoNotAdvanceAI(true);
+
+        return satelliteFleet;
     }
 
     /*

@@ -25,9 +25,7 @@ niko_MPC_surveyLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$market.
 "#END Populating Options",,,,,,
 ,,,,,,
 # Intro Text,,,,,,
-niko_MPC_genericSatelliteBlockText,niko_MPC_satellitesBlockingText,,,"Before you can even enter high orbit of $entityName, your $shipOrFleet is suddenly lit up by hundreds of thousands of targetting lasers. Your sensors officer reports that the array of defense satellites in orbit of $entityName are currently tracking your $shipOrFleet and will make further approach nearly impossible, unless a number are destroyed/disabled.
-
-if youre reading this, this dialog is unfinished :)",,
+niko_MPC_genericSatelliteBlockText,niko_MPC_satellitesBlockingText,,,"Before you can even enter high orbit of $entityName, your $shipOrFleet is suddenly lit up by hundreds of thousands of targetting lasers. Your sensors officer reports that the array of defense satellites in orbit of $entityName are currently tracking your $shipOrFleet and will make further approach nearly impossible, unless a number are destroyed/disabled.",,
 "#END Intro Text",,,,,,
 ,,,,,,
 # Attacking Satellites,,,,,,
@@ -36,7 +34,7 @@ FireBest niko_MPC_defenseSatellitesPrepareAttack
 FireBest niko_MPC_defenseSatellitesPrepareText",,,
 ,,,,,,
 # Text,,,,,,
-niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,,,
+niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,"You give the order to prepare for an engagement with the defense satellites.",,
 "#END Text",,,,,,
 ,,,,,,
 # Battle End,,,,,,

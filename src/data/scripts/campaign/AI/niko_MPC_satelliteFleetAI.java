@@ -5,7 +5,7 @@ import com.fs.starfarer.campaign.ai.CampaignFleetAI;
 import com.fs.starfarer.campaign.ai.ModularFleetAI;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
 
-public class niko_MPC_satelliteFleetAI extends CampaignFleetAI {
+public class niko_MPC_satelliteFleetAI extends ModularFleetAI {
 
     public niko_MPC_satelliteFleetAI(CampaignFleet campaignFleet) {
         super(campaignFleet);

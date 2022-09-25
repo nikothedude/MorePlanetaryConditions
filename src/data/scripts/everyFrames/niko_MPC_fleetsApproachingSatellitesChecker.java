@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.ai.FleetAssignmentDataAPI;
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidAssignmentAI;
 import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseAssignmentAI;
 import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lazywizard.lazylib.campaign.CampaignUtils;
 
@@ -18,6 +19,8 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
     public SectorEntityToken entity;
     public boolean done = false;
     public niko_MPC_satelliteParams satelliteParams;
+
+    private float deltaTime = 0f;
 
     public niko_MPC_fleetsApproachingSatellitesChecker(niko_MPC_satelliteParams satelliteParams, SectorEntityToken entity) {
         this.satelliteParams = satelliteParams;
@@ -47,15 +50,26 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
      */
     @Override
     public void advance(float amount) {
-        List<CampaignFleetAPI> hostileFleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
-        for (CampaignFleetAPI fleet : hostileFleetsWithinInterferenceDistance) {
+        deltaTime += amount;
+        float thresholdForAdvancement = 0.2f;
+        if (deltaTime < thresholdForAdvancement) {
+            return;
+        }
+        else {
+            deltaTime = 0;
+        }
+
+        List<CampaignFleetAPI> fleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
+        for (CampaignFleetAPI fleet : fleetsWithinInterferenceDistance) {
             if (fleet == null) continue; //literally 0 idea how this can be null but okay starsector
             if (fleet == Global.getSector().getPlayerFleet()) continue;
-            if (niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, fleet) && niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, fleet)) {
+            if (niko_MPC_fleetUtils.fleetIsSatelliteFleet(fleet)) continue;
+            if (niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, fleet) && niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, fleet)) {
                 if (niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(entity, fleet)) {
                     FleetAssignmentDataAPI assignment = fleet.getCurrentAssignment();
 
                     if ((fleet.getInteractionTarget() == entity) || //this is inconsistant, not everything (notably raids) triggers this
+                        (assignment.getTarget() == entity) ||
                         (assignment.getTarget().getOrbitFocus() == entity)) { //raids DO however have the planet as an orbit focus
 
                         niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(entity, fleet);

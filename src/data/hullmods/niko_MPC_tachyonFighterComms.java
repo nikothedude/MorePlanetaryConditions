@@ -8,7 +8,7 @@ import com.fs.starfarer.api.impl.hullmods.CompromisedStructure;
 
 public class niko_MPC_tachyonFighterComms extends BaseHullMod {
 
-    public final float fighterRangeMult = 10f;
+    public final float fighterRangeMult = 30f;
 
     @Override
     public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize, MutableShipStatsAPI stats, String id) {

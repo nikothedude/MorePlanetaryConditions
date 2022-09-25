@@ -16,6 +16,8 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     public boolean done = false;
 
+    public double advanceTimeSinceStart = 0;
+
     public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteParams params) {
         this.fleet = fleet;
         this.params = params;
@@ -38,10 +40,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     @Override
     public void advance(float amount) {
-        if (grace != 0) {
-            grace -= 1;
-            return;
-        }
+        advanceTimeSinceStart += amount;
 
         if (fleet.getBattle() == null) {
             getRidOfFleet();
@@ -67,6 +66,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
     }
 
     private void getRidOfFleet() {
-        niko_MPC_fleetUtils.safeDespawnFleet(fleet);
+        boolean vanish = (advanceTimeSinceStart < 90); //arbitrary number
+        niko_MPC_fleetUtils.safeDespawnFleet(fleet, vanish);
     }
 }

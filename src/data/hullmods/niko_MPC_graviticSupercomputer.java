@@ -8,7 +8,7 @@ public class niko_MPC_graviticSupercomputer extends BaseHullMod {
 
     public final float rangeMult = 6.5f;
     public final float pdRangeMult = 0.7f;
-    public final float visionIncrement = 5000f;
+    public final float visionIncrement = 10000f;
     public final float recoilMult = 0.3f;
 
     @Override

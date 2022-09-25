@@ -160,6 +160,6 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             }
         }
 
-        satellite.setFixedLocation(vector2f);
+        satellite.setFixedLocation(vector2f); //todo: how the fuck am i gonna handle the possibility that the satellites spawn in other ships
     }
 }
