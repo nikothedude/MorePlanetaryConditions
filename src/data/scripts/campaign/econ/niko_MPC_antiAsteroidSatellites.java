@@ -99,6 +99,9 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         niko_MPC_satelliteUtils.initializeSatellitesOntoEntity(market.getPrimaryEntity(), market, params);
     }
 
+    /**
+     * Unused, currently. This was for the planned satellite barrage terrain.
+     */
     private float getSatelliteBarrageDistance(SectorEntityToken primaryEntity) {
         return (primaryEntity.getRadius()+500);
     }
@@ -128,7 +131,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * @param id
      * @param market
      */
-    public void handleConditionAttributes(String id, MarketAPI market) {
+    private void handleConditionAttributes(String id, MarketAPI market) {
         if (market.hasCondition("meteor_impacts")) {
             market.suppressCondition("meteor_impacts"); //these things just fuck those things up
         }
@@ -282,6 +285,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         );
     }
 
+    /**
+     * Debugging tool, used for ensuring this condition doesn't apply itself to a entity which doesnt consider the conditions market
+     * to be its market. Displays an error if conditions are true. May not be a required debugging tool.
+     */
     public void marketApplicationOrderTest() {
         SectorEntityToken entity = market.getPrimaryEntity();
 
@@ -296,6 +303,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         }
     }
 
+    /**
+     * Removes the luddic path suppressor industry from the entity's current market, if it isnt our market. Should
+     * only ever be called if we know we're migrating markets or some such.
+     */
     public void ensureOldMarketHasNoReferencesFailsafe() {
         SectorEntityToken entity = market.getPrimaryEntity();
 

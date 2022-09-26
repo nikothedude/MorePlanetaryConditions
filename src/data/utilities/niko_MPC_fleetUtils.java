@@ -42,7 +42,7 @@ public class niko_MPC_fleetUtils {
         final CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(factionId, fleetName, true);
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
         fleetMemory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, true);
-        fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, true);
+    //    fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE, true);
         fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
 
         fleetMemory.set(isSatelliteFleetId, true);
