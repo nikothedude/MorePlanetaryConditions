@@ -48,6 +48,11 @@ public class niko_MPC_memoryUtils {
         memory.unset(key);
     }
 
+    /**
+    * Creates a new instance of niko_MPC_satelliteBattleTracker, then does
+    * globalMemory.set(satelliteTrackerId, tracker).
+    * @return The new save-specific instance of the satellite battle tracker.
+    */
     public static niko_MPC_satelliteBattleTracker createNewSatelliteTracker() {
         MemoryAPI globalMemory = Global.getSector().getMemory();
 
