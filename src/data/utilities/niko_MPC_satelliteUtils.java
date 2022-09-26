@@ -252,11 +252,8 @@ public class niko_MPC_satelliteUtils {
         // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc, so its safe to not add a buffer to the calculation in the optimalangle method
         for (CustomCampaignEntityAPI satellite : satellitesInOrbitOfEntity) { //iterates through each orbitting satellite and offsets them
             if (orbitAngle >= 360) {
-                if (Global.getSettings().isDevMode()) {
-                    Global.getSector().getCampaignUI().addMessage("A satellite on " + entity + " was given a orbit offset of " + orbitAngle + "."); //debug code
-                    log.debug("A satellite on " + entity + " was given a orbit offset of " + orbitAngle + ".");
-                    removeSatelliteFromEntity(entity, satellite, false); //we dont want these weirdos overlapping
-                }
+                niko_MPC_debugUtils.displayError("regenerateOrbitSpacing orbitAngle = " + orbitAngle)
+                removeSatelliteFromEntity(entity, satellite, false); //we dont want these weirdos overlapping
             }
             niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
             addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, params.satelliteOrbitDistance);
