@@ -50,7 +50,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
         else {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
             BattleAPI battle = fleet.getBattle();
-            if (!tracker.areSatellitesInvolvedInBattle(battle, params)) { //params is supposed to hold a ref to the battles of all fleets
+            if (!tracker.areSatellitesInvolvedInBattle(battle, params)) { // sanity
                 tracker.associateSatellitesWithBattle(battle, params, battle.pickSide(fleet));
             }
         }
@@ -74,7 +74,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
 
     private void getRidOfFleet() {
-        boolean vanish = (advanceTimeSinceStart < 90); //arbitrary number
+        boolean vanish = (advanceTimeSinceStart < 5); //arbitrary number
         niko_MPC_fleetUtils.safeDespawnFleet(fleet, vanish);
     }
 }
