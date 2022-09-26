@@ -74,7 +74,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
 
     private void getRidOfFleet() {
-        boolean vanish = (advanceTimeSinceStart < 5); //arbitrary number
+        boolean vanish = (advanceTimeSinceStart < 1); //arbitrary number
         niko_MPC_fleetUtils.safeDespawnFleet(fleet, vanish);
     }
 }
