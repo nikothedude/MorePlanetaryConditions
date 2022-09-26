@@ -113,21 +113,44 @@ public class niko_MPC_satelliteParams {
     private CampaignFleetAPI getDummyFleet() {
         return dummyFleet;
     }
-
+    
+    /**
+     * Sets the faction ID of the params to factionId, and updates the faction of all satellite entities.
+     * @param factionId The factionId to set.
+     */
     public void setSatelliteId(String factionId) {
+        setSatelliteId(factionId, true)
+    }
+
+    /**
+     * Sets the faction ID of the params to factionId. Optionally updates the faction of all satellite entities.
+     * @param factionId The factionId to set.
+     * @param withUpdate If true, sets the faction of all satellite entities to the new faction id.
+     */
+    public void setSatelliteId(String factionId, boolean withUpdate) {
         satelliteFactionId = factionId;
 
+        if (withUpdate) {
+            updateSatelliteFactions();
+        }
+    }
+    
+    /**
+    * Iterates through every satellite entity we hold, and sets their
+    * faction to our factionId.
+    */
+    public void updateSatelliteFactions() {
         for (CampaignFleetAPI fleet : satelliteFleets) {
-            fleet.setFaction(satelliteFactionId);
+            fleet.setFaction(getSatelliteFactionId());
         }
 
         for (CustomCampaignEntityAPI satellite : orbitalSatellites) {
-            satellite.setFaction(satelliteFactionId);
+            satellite.setFaction(getSatelliteFactionId());
         }
 
         if (dummyFleet != null) {
-            dummyFleet.setFaction(satelliteFactionId);
-        }
+            dummyFleet.setFaction(getSatelliteFactionId());
+        }  
     }
 
     private String getSatelliteFactionId() {
@@ -136,24 +159,37 @@ public class niko_MPC_satelliteParams {
 
     /**
      * More or less just a safer way to access the satellite faction of an entity.
-     * Updates the entity's faction id whenever it's ran.
+     * Updates the factionId of the params it is called on.
      * @return A faction ID, in string form. Can return null if entity has no satellites.
      */
     public String getCurrentSatelliteFactionId() {
         if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
-
+        
+        updateFactionId();
+        return getSatelliteFactionId();
+    }
+    
+    /**
+    * Updates the factionId, by syncing it with the market, or setting it to derelict
+    * if the market is uncolonized.
+    * Updates the faction of all satellite entities.
+    */
+    public void updateFactionId() { 
+        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        
         MarketAPI market = niko_MPC_satelliteUtils.getEntitySatelliteMarket(entity);
         if (market != null) {
-            if (market.isPlanetConditionMarketOnly() && (!Objects.equals(this.getSatelliteFactionId(), "derelict"))) {
-                this.setSatelliteId("derelict");
+            if (market.isPlanetConditionMarketOnly()) {
+                if (!Objects.equals(getSatelliteFactionId(), "derelict")) {
+                    setSatelliteId("derelict"); //its relatively expensive to run this (due to iterations), so we try to minimize it
+                }
             } else if (!Objects.equals(this.getSatelliteFactionId(), market.getFactionId())) {
-                this.setSatelliteId(market.getFactionId());
+                setSatelliteId(market.getFactionId());
             }
         }
         else if (!Objects.equals(this.getSatelliteFactionId(), entity.getFaction().getId())) {
-            this.setSatelliteId(entity.getFaction().getId());
+            setSatelliteId(entity.getFaction().getId());
         }
-        return this.getSatelliteFactionId();
     }
 
 
@@ -161,16 +197,30 @@ public class niko_MPC_satelliteParams {
         return gracePeriods;
     }
 
+    /**
+     * Adds a new entry to gracePeriod, of (Fleet>0f) if none is present.
+     * @param fleet The fleet to get the value from.
+     * @return the gracePeriod associated value to fleet. 
+     */
     public float getGracePeriod(CampaignFleetAPI fleet) {
         addFleetRefToGracePeriodsIfNonePresent(fleet);
         return getGracePeriods().get(fleet);
     }
 
+    /**
+     * Adds a new entry to gracePeriod, of (Fleet>0f) if none is present.
+     * @param fleet The fleet to adjust the grace period of.
+     * @param amount The amount to adjust the grace period of fleet of.
+     */
     public void adjustGracePeriod(CampaignFleetAPI fleet, float amount) {
         addFleetRefToGracePeriodsIfNonePresent(fleet);
         getGracePeriods().put(fleet, Math.max(0, getGracePeriods().get(fleet) + amount));
     }
 
+    /**
+     * Adds a new entry to gracePeriod, of (Fleet>0f) if none is present.
+     * @param fleet The fleet to check.
+     */
     private void addFleetRefToGracePeriodsIfNonePresent(CampaignFleetAPI fleet) {
         if (getGracePeriods().get(fleet) == null) {
             gracePeriods.put(fleet, 0f); // we dont use a amount arg here because we only exist here to initialize a new entry
@@ -181,6 +231,9 @@ public class niko_MPC_satelliteParams {
         return satelliteFleetName;
     }
 
+    /**
+    * Should be called whenever a new non-dummy satellite fleet is created.
+    */
     public void newSatellite(CampaignFleetAPI satelliteFleet) {
         satelliteFleets.add(satelliteFleet);
     }
@@ -190,6 +243,11 @@ public class niko_MPC_satelliteParams {
     }
 
 
+    /**
+     * Instantiates a new dummy fleet is none is present, but ONLY if getSatelliteFaction() doesn't return null.
+     * @return the dummyFleet used for things such as targetting and conditional attack logic. Can return a standard
+     * satellite fleet if getSatelliteFaction() == null.
+     */
     public CampaignFleetAPI getDummyFleetWithUpdate() {
         FactionAPI faction = getSatelliteFaction();
         if (dummyFleet == null) {
@@ -202,9 +260,14 @@ public class niko_MPC_satelliteParams {
         return dummyFleet;
     }
 
+    /**
+     * Instantiates a new dummy fleet is none is present, but ONLY if getSatelliteFaction() doesn't return null.
+     * @param fleet The fleet to check.
+     * @return dummy.isHostileTo(fleet).
+     */
     public boolean dummyFleetWantsToFight(CampaignFleetAPI fleet) {
         CampaignFleetAPI dummy = getDummyFleetWithUpdate();
-        dummy.setFaction(niko_MPC_satelliteUtils.getCurrentSatelliteFactionId(this));
+        updateFactionId();
 
         return dummy.isHostileTo(fleet);
     }
