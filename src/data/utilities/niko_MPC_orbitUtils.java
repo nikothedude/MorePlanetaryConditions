@@ -19,6 +19,5 @@ public class niko_MPC_orbitUtils {
         //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!
 
         satellite.setCircularOrbitPointingDown(entity, orbitAngle, orbitRadius, orbitDays);
-        //todo: pointingdown will require the sprite to be tuned for the cannons and guns and shit to face away from the planet
     }
 }
