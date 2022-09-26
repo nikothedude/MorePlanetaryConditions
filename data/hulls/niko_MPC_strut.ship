@@ -11,6 +11,11 @@
   "shieldCenter": [0, 0],
   "shieldRadius": 0,
   "viewOffset": 0,
+  "builtInMods": [
+    "niko_MPC_noExplosionDamage",
+    "niko_MPC_satelliteCoreStrutWeakness",
+	"always_detaches"
+  ],
   "weaponSlots": [],
   "engineSlots": [],
   "bounds": [

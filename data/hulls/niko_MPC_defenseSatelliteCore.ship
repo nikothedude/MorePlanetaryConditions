@@ -17,7 +17,8 @@
     "chassis_storage",
     "niko_MPC_graviticSupercomputer",
     "niko_MPC_tachyonFighterComms",
-    "pointdefenseai"
+    "pointdefenseai",
+	"niko_MPC_cheapDeployment"
   ],
   "weaponSlots": [
     {

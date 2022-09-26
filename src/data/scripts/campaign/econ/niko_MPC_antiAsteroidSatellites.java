@@ -52,7 +52,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseGroundDefenseMult = 1.5f;
 
     public niko_MPC_antiAsteroidSatellites() {
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_combat", 5f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_barrage", 10f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_standard", 20f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_shielded", 5f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_beamer", 1.5f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_ordnance", 2f);
     }
 
     @Override

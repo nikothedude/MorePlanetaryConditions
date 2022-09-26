@@ -1,0 +1,30 @@
+{
+  "variantId": "niko_MPC_connectorModule_barrage",
+  "hullId": "niko_MPC_connectorModule",
+  "displayName": "Barrage",
+  "goalVariant": false,
+  "fluxCapacitors": 30,
+  "fluxVents": 20,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "hephag"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0002": "lightdualmg",
+        "WS0003": "lightdualmg"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

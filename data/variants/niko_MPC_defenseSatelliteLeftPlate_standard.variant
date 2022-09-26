@@ -1,0 +1,83 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteLeftPlate_standard",
+  "hullId": "niko_MPC_defenseSatelliteLeftPlate",
+  "displayName": "Standard",
+  "goalVariant": false,
+  "fluxCapacitors": 33,
+  "fluxVents": 33,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "armoredweapons",
+    "autorepair",
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0014": "mjolnir"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0015": "heavyblaster"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0001": "lightag",
+        "WS0002": "lightag",
+        "WS0003": "irpulse",
+        "WS0006": "lightag",
+        "WS0007": "irpulse"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0009": "heavymauler"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0004": "lightdualmg",
+        "WS0005": "lightdualmg",
+        "WS0008": "vulcan",
+        "WS0010": "dualflak",
+        "WS0011": "dualflak",
+        "WS0016": "dualflak",
+        "WS0017": "dualflak"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0012": "swarmer",
+        "WS0013": "swarmer",
+        "WS0018": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0019": "harpoon"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

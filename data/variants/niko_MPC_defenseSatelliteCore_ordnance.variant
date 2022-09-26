@@ -1,7 +1,7 @@
 {
-  "variantId": "niko_MPC_defenseSatelliteCore_combat",
+  "variantId": "niko_MPC_defenseSatelliteCore_ordnance",
   "hullId": "niko_MPC_defenseSatelliteCore",
-  "displayName": "Combat",
+  "displayName": "Ordnance",
   "goalVariant": false,
   "fluxCapacitors": 36,
   "fluxVents": 25,
@@ -36,7 +36,7 @@
   ],
   "modules": [
     {
-      "WS0007": "niko_MPC_connectorModule_combat"
+      "WS0007": "niko_MPC_connectorModule_ordnance"
     },
     {
       "WS0008": "niko_MPC_strut_standard"
@@ -48,10 +48,10 @@
       "WS0010": "niko_MPC_defenseSatelliteRightStrut_standard"
     },
     {
-      "WS0011": "niko_MPC_defenseSatelliteRightPlate_variant"
+      "WS0011": "niko_MPC_defenseSatelliteRightPlate_ordnance"
     },
     {
-      "WS0012": "niko_MPC_defenseSatelliteLeftPlate_combat"
+      "WS0012": "niko_MPC_defenseSatelliteLeftPlate_ordnance"
     },
     {
       "WS0013": "niko_MPC_right_module_armour1_Standard"

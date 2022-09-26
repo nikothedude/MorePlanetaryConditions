@@ -1,0 +1,83 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteRightPlate_barrage",
+  "hullId": "niko_MPC_defenseSatelliteRightPlate",
+  "displayName": "Barrage",
+  "goalVariant": false,
+  "fluxCapacitors": 19,
+  "fluxVents": 38,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull",
+    "autorepair",
+    "armoredweapons",
+    "ballistic_rangefinder"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0003": "heavymauler",
+        "WS0015": "heavymauler"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0005": "harpoon"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0002": "lightag",
+        "WS0004": "lightag",
+        "WS0017": "lightag",
+        "WS0018": "lightag",
+        "WS0019": "lightag"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0016": "devastator"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "lightdualmg",
+        "WS0006": "dualflak",
+        "WS0008": "lightdualmg",
+        "WS0009": "dualflak",
+        "WS0012": "vulcan",
+        "WS0013": "dualflak",
+        "WS0014": "heavymg"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0007": "swarmer",
+        "WS0010": "swarmer",
+        "WS0011": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

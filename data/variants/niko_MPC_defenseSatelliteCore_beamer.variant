@@ -1,0 +1,70 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteCore_beamer",
+  "hullId": "niko_MPC_defenseSatelliteCore",
+  "displayName": "Beamer",
+  "goalVariant": false,
+  "fluxCapacitors": 36,
+  "fluxVents": 25,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "turretgyros"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "gravitonbeam",
+        "WS0002": "gravitonbeam",
+        "WS0004": "taclaser"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0003": "taclaser"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0005": "heavyburst",
+        "WS0006": "heavyburst"
+      }
+    }
+  ],
+  "modules": [
+    {
+      "WS0007": "niko_MPC_connectorModule_beamer"
+    },
+    {
+      "WS0008": "niko_MPC_strut_standard"
+    },
+    {
+      "WS0009": "niko_MPC_defenseSatelliteLeftStrut_standard"
+    },
+    {
+      "WS0010": "niko_MPC_defenseSatelliteRightStrut_standard"
+    },
+    {
+      "WS0011": "niko_MPC_defenseSatelliteRightPlate_beamer"
+    },
+    {
+      "WS0012": "niko_MPC_defenseSatelliteLeftPlate_beamer"
+    },
+    {
+      "WS0013": "niko_MPC_right_module_armour1_Standard"
+    },
+    {
+      "WS0014": "niko_MPC_left_module_armour1_Standard"
+    }
+  ],
+  "wings": [
+    "wasp_wing",
+    "wasp_wing",
+    "wasp_wing"
+  ]
+}

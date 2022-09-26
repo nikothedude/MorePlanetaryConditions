@@ -13,12 +13,12 @@
   "viewOffset": 0,
   "builtInMods": [
     "advancedcore",
-	"pointdefenseai",
+    "pointdefenseai",
     "automated",
     "missile_reload",
     "always_detaches",
-	"niko_MPC_noExplosionDamage",
-	"niko_MPC_satellitePlateWeaknessRight"
+    "niko_MPC_noExplosionDamage",
+    "niko_MPC_satellitePlateWeaknessRight"
   ],
   "weaponSlots": [
     {
@@ -124,7 +124,7 @@
       "id": "WS0012",
       "size": "SMALL",
       "type": "HYBRID",
-      "mount": "HARDPOINT",
+      "mount": "TURRET",
       "arc": 262,
       "angle": 0,
       "locations": [54, 38]

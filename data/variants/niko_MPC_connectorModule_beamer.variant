@@ -1,0 +1,33 @@
+{
+  "variantId": "niko_MPC_connectorModule_beamer",
+  "hullId": "niko_MPC_connectorModule",
+  "displayName": "Beamer",
+  "goalVariant": false,
+  "fluxCapacitors": 8,
+  "fluxVents": 30,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "advancedoptics",
+    "turretgyros"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "hil"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0002": "taclaser",
+        "WS0003": "taclaser"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

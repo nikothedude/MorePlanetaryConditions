@@ -1,0 +1,80 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteLeftPlate_ordnance",
+  "hullId": "niko_MPC_defenseSatelliteLeftPlate",
+  "displayName": "Ordnance",
+  "goalVariant": false,
+  "fluxCapacitors": 27,
+  "fluxVents": 33,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "armoredweapons",
+    "autorepair",
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull",
+    "eccm"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {}
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0009": "annihilatorpod",
+        "WS0012": "harpoonpod",
+        "WS0013": "harpoonpod",
+        "WS0015": "shredder",
+        "WS0019": "breach"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0002": "lightag",
+        "WS0004": "lightmortar"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "pdburst",
+        "WS0003": "pdburst",
+        "WS0005": "lightdualmg",
+        "WS0006": "taclaser",
+        "WS0007": "taclaser",
+        "WS0008": "vulcan",
+        "WS0010": "flak",
+        "WS0011": "flak",
+        "WS0014": "locust",
+        "WS0016": "dualflak",
+        "WS0017": "dualflak",
+        "WS0018": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {}
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

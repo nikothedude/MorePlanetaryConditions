@@ -8,17 +8,17 @@
   "width": 122,
   "center": [61, 42.5],
   "collisionRadius": 140,
-  "shieldCenter": [11.5, -0.5],
-  "shieldRadius": 0,
+  "shieldCenter": [0, -0],
+  "shieldRadius": 278.5,
   "viewOffset": 0,
   "builtInMods": [
     "automated",
     "missile_reload",
     "niko_MPC_graviticSupercomputer",
     "pointdefenseai",
-	"niko_MPC_noExplosionDamage",
-	"niko_MPC_connectorWeakness",
-	"always_detaches"
+    "niko_MPC_noExplosionDamage",
+    "niko_MPC_connectorWeakness",
+    "always_detaches"
   ],
   "weaponSlots": [
     {
