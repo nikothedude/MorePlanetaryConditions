@@ -42,12 +42,15 @@ public class niko_MPC_debugUtils {
      */
     public static void displayError(String errorCode, boolean highPriority, boolean crash) throws RuntimeException {
         GameState state = Global.getCurrentState();
-        if (state == GameState.CAMPAIGN) {
-            displayErrorToCampaign(errorCode, highPriority);
+        switch (state) {
+            case (GameState.CAMPAIGN):
+                displayErrorToCampaign(errorCode, highPriority);
+            case (GameState.COMBAT):
+                displayErrorToCombat(errorCode, highPriority);
+            case (GameState.MENU):
+                displayErrorToMenu(errorCode, highPriority);
         }
-        else if (state == GameState.COMBAT) {
-            displayErrorToCombat(errorCode, highPriority);
-        }
+        
         log.error(errorCode);
 
         if (crash) {
@@ -63,8 +66,8 @@ public class niko_MPC_debugUtils {
 
     private static void displayErrorToCampaign(String errorCode, boolean highPriority) {
         CampaignUIAPI campaignUI = Global.getSector().getCampaignUI();
+        campaignUI.addMessage("###### MORE PLANETARY CONDITIONS ERROR ######");
         campaignUI.addMessage(errorCode);
-        campaignUI.addMessage("Please provide the mod author a copy of your logs.");
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f);
             campaignUI.addMessage("The above error has been deemed high priority by the mod author. It is likely" +
@@ -72,8 +75,7 @@ public class niko_MPC_debugUtils {
                             + " one that interferes with crucial functionality. You may want to save your game and come to the mod author.",
                     Color.RED);
         }
-        campaignUI.addMessage("###### MORE PLANETARY CONDITIONS ERROR ######");
-
+        campaignUI.addMessage("Please provide the mod author a copy of your logs.");
     }
 
     private static void displayErrorToCombat(String errorCode, boolean highPriority) {
@@ -81,9 +83,6 @@ public class niko_MPC_debugUtils {
         CombatUIAPI combatUI = engine.getCombatUI();
 
         combatUI.addMessage(1, "Please provide the mod author with a copy of your logs.");
-        combatUI.addMessage(1, errorCode);
-        combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######");
-
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f);
             combatUI.addMessage(1, "The above error has been deemed high priority by the mod author. It is likely" +
@@ -91,6 +90,12 @@ public class niko_MPC_debugUtils {
                             + " one that interferes with crucial functionality. You may want to save your game and come to the mod author.",
                     Color.RED);
         }
+        combatUI.addMessage(1, errorCode);
+        combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######");
+    }
+    
+    private static void displayErrorToMenu(String errorCode, boolean highPriority) {
+        return;
     }
 
     public static void logEntityData(SectorEntityToken entity) {
