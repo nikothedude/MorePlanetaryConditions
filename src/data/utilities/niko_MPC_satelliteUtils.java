@@ -366,10 +366,19 @@ public class niko_MPC_satelliteUtils {
         return getOptimalOrbitalOffsetForSatellites(getSatellitesInOrbitOfEntity(entity));
     }
 
-    public static float getOptimalOrbitalOffsetForSatellites(List<CustomCampaignEntityAPI> satelliteInOrbitOfEntity) {
-        int numOfSatellites = satelliteInOrbitOfEntity.size();
+    /**
+    * Generates an offset with which satellites in orbit of an entity will be spaced apart by. 
+    * Is based on the amount of satellites in the given list.
+    * @param satellitesInOrbitOfEntity The list of satellites to use. Should be a complete list of satellites
+    * in orbit of an entity.
+    * @return The optimal offset with which the satellites in orbit of the entity should be spaced apart by.
+    */
+    public static float getOptimalOrbitalOffsetForSatellites(List<CustomCampaignEntityAPI> satellitesInOrbitOfEntity) {
+        int numOfSatellites = satellitesInOrbitOfEntity.size();
 
-        float optimalAngle = (360 / (float) numOfSatellites); //todo: explain the math
+        float optimalAngle = (360 / (float) numOfSatellites);
+        // 1 satellite = offset of 360, so none. 2 satellites = offset or 180, so they are on opposite ends of the planet.
+        // 3 satellites = offset of 120, meaning the satellites form a triangle around the entity. Etc.
 
         if (optimalAngle == 360) {
             optimalAngle = 0; //sanity. im not sure if an angle offset of 360 breaks anything, but in case it does, this is here as a safety net
