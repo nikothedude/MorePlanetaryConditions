@@ -8,13 +8,14 @@ import com.fs.starfarer.api.campaign.StarSystemAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatUIAPI;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
 import java.util.Arrays;
 
+import static com.fs.starfarer.api.GameState.TITLE;
 import static data.utilities.niko_MPC_ids.satelliteParamsId;
 
 public class niko_MPC_debugUtils {
@@ -42,15 +43,16 @@ public class niko_MPC_debugUtils {
      */
     public static void displayError(String errorCode, boolean highPriority, boolean crash) throws RuntimeException {
         GameState state = Global.getCurrentState();
-        switch (state) {
-            case (GameState.CAMPAIGN):
-                displayErrorToCampaign(errorCode, highPriority);
-            case (GameState.COMBAT):
-                displayErrorToCombat(errorCode, highPriority);
-            case (GameState.MENU):
-                displayErrorToMenu(errorCode, highPriority);
+        if (state == GameState.CAMPAIGN) {
+            displayErrorToCampaign(errorCode, highPriority);
         }
-        
+        else if (state == GameState.COMBAT) {
+            displayErrorToCombat(errorCode, highPriority);
+        }
+        else if (state == TITLE) {
+            displayErrorToTitle(errorCode, highPriority);
+        }
+
         log.error(errorCode);
 
         if (crash) {
@@ -94,7 +96,7 @@ public class niko_MPC_debugUtils {
         combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######");
     }
     
-    private static void displayErrorToMenu(String errorCode, boolean highPriority) {
+    private static void displayErrorToTitle(String errorCode, boolean highPriority) {
         return;
     }
 
@@ -143,11 +145,11 @@ public class niko_MPC_debugUtils {
      * @param entity The entity to check.
      * @return False if entity is null or the params are null. If params are null, an error will be displayed.
      */
-    public static boolean ensureEntityHasSatellites(SectorEntityToken entity) {
+    public static boolean assertEntityHasSatellites(SectorEntityToken entity) {
         boolean result = true;
         if (entity == null) return false;
 
-        niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
         if (params == null) {
             displayError("ensureEntityHasSatellitesFailure");
             logEntityData(entity);

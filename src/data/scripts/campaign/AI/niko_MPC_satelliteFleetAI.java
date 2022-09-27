@@ -3,10 +3,9 @@ package data.scripts.campaign.AI;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin;
-import com.fs.starfarer.campaign.ai.CampaignFleetAI;
 import com.fs.starfarer.campaign.ai.ModularFleetAI;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_satelliteBattleTracker;
 import data.utilities.niko_MPC_satelliteUtils;
@@ -19,9 +18,9 @@ public class niko_MPC_satelliteFleetAI extends ModularFleetAI {
 
     @Override
     public boolean wantsToJoin(BattleAPI battle, boolean considerPlayTransponderStatus) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(getFleet())) return true;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(getFleet())) return true;
 
-        niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(getFleet());
+        niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(getFleet());
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
         if (tracker.areSatellitesInvolvedInBattle(battle, params)) {
@@ -46,7 +45,7 @@ public class niko_MPC_satelliteFleetAI extends ModularFleetAI {
             }
             else return EncounterOption.HOLD;
         }
-        else { //todo: not sure if this is how it really works?
+        else {
             if ((satelliteFleet.getEffectiveStrength() < (otherFleet.getEffectiveStrength()))) {
                 return EncounterOption.HOLD_VS_STRONGER;
             }

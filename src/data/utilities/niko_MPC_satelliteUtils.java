@@ -5,17 +5,16 @@ import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
-import static data.utilities.niko_MPC_debugUtils.logEntityData;
-import static data.utilities.niko_MPC_fleetUtils.createSatelliteFleetTemplate;
 import static data.utilities.niko_MPC_ids.satelliteMarketId;
 import static data.utilities.niko_MPC_ids.satelliteParamsId;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
@@ -48,7 +47,7 @@ public class niko_MPC_satelliteUtils {
     //                      //
     //////////////////////////
 
-    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, niko_MPC_satelliteParams params) {
+    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, niko_MPC_satelliteHandler params) {
         initializeSatellitesOntoEntity(entity, entity.getMarket(), params);
     }
 
@@ -57,7 +56,7 @@ public class niko_MPC_satelliteUtils {
      * @param entity The entity to add markets to.
      * @param market Will have satelliteMarketId set to this if not null.
      */
-    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, MarketAPI market, niko_MPC_satelliteParams params) {
+    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, MarketAPI market, niko_MPC_satelliteHandler params) {
         if (!niko_MPC_debugUtils.doEntityHasNoSatellitesTest(entity)) { //if the test fails, something fucked up, lets abort
             return;
         }
@@ -87,25 +86,10 @@ public class niko_MPC_satelliteUtils {
      * @param factionId The faction id to set as the satellite's faction.
      */
     public static void addSatellite(SectorEntityToken entity, boolean regenerateOrbit, String id, String factionId) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
-        List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfEntity(entity); //first, we get the satellites
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
 
-        int satelliteNumber = ((satellitesInOrbit.size()) + 1);
-        String orderedId = (id + (" " + satelliteNumber)); // the 1st satellite becomes "id 1", etc
-        // i dont do this orderedid for any particular reason, i just wanted to. it causes no issues but
-        // can safely be removed
-
-        LocationAPI containingLocation = entity.getContainingLocation();
-        // instantiate the satellite in the system
-        CustomCampaignEntityAPI satellite = containingLocation.addCustomEntity(orderedId, null, id, factionId);
-
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        addOrbitPointingDownWithRelativeOffset(satellite, entity, 0, params.satelliteOrbitDistance); //set up the orbit
-
-        satellitesInOrbit.add(satellite); //now add the satellite to the params' list
-
-        if (regenerateOrbit)
-            regenerateOrbitSpacing(entity); //and set up the orbital angles
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.addSatellite(regenerateOrbit, id, factionId);
     }
 
     /**
@@ -115,34 +99,32 @@ public class niko_MPC_satelliteUtils {
      * @param amountOfSatellitesToAdd The amount of satellites.
      */
     public static void addSatellitesToEntity(SectorEntityToken entity, int amountOfSatellitesToAdd) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        addSatellitesToEntity(entity, amountOfSatellitesToAdd, params.satelliteId, params.satelliteFactionId);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        addSatellitesToEntity(entity, amountOfSatellitesToAdd, handler.getParams().satelliteId, handler.getParams().satelliteFactionId);
     }
 
     /**
-     * Adds amountOfSatellitesToAdd satellites to market through a for loop. Runs addSatellite amountOfSatellitesToAdd times.
+     * Adds amountOfSatellitesToAdd satellites to entity through a for loop. Runs addSatellite amountOfSatellitesToAdd times.
      *
      * @param amountOfSatellitesToAdd The amount of satellites.
      * @param id                      The id to be assigned to the satellites.
      * @param faction                 The factionid to be given to the satellites.
      */
     public static void addSatellitesToEntity(SectorEntityToken entity, int amountOfSatellitesToAdd, String id, String faction) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
-        
-        for (int i = 1; i <= amountOfSatellitesToAdd; i++) { //if the /current/ iteration is more than the max satellites in here, stop and regen
-            addSatellite(entity, false, id, faction);
-        }
-        regenerateOrbitSpacing(entity); //only needs to be done once, after all the satellites are added, this does not generate the error
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
+
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.addSatellitesToEntity(amountOfSatellitesToAdd, id, faction);
     }
 
     // all this method should do is call addsatellites with the max shit
     public static void addSatellitesUpToMax(SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        addSatellitesToEntity(entity, params.maxPhysicalSatellites, params.satelliteId, params.satelliteFactionId);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.addSatellitesUpToMax();
     }
 
     /**
@@ -151,27 +133,29 @@ public class niko_MPC_satelliteUtils {
      * @param entity
      */
     public static void purgeSatellitesFromEntity(SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
         MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
         removeSatellitesFromEntity(entity);
         deleteMemoryKey(entityMemory, satelliteMarketId);
 
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        for (SectorEntityToken terrain : params.satelliteBarrages) { //todo: shouldnt cause issues if there is no terrain?
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        for (SectorEntityToken terrain : handler.satelliteBarrages) { //todo: shouldnt cause issues if there is no terrain?
             removeSatelliteBarrageTerrain(entity, terrain);
         }
 
-        for (CampaignFleetAPI satelliteFleet : params.satelliteFleets) {
+        for (CampaignFleetAPI satelliteFleet : handler.satelliteFleets) {
             niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
         }
 
-        params.prepareForGarbageCollection();
+        handler.prepareForGarbageCollection();
         deleteMemoryKey(entityMemory, satelliteParamsId);
     }
 
     //todo: migrate to params
     public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(primaryEntity);
+        if (handler != null) return handler.getMaxBattleSatellites();
         return 3;
     }
 
@@ -181,7 +165,7 @@ public class niko_MPC_satelliteUtils {
      * @param entity The target entity.
      */
     public static void removeSatellitesFromEntity(SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
         List<CustomCampaignEntityAPI> satellitesInOrbit = getSatellitesInOrbitOfEntity(entity);
         removeSatellitesFromEntity(entity, satellitesInOrbit.size());
@@ -194,21 +178,10 @@ public class niko_MPC_satelliteUtils {
      * @param amountOfSatellitesToRemove The amount of satellites to remove from entity.
      */
     public static void removeSatellitesFromEntity(SectorEntityToken entity, int amountOfSatellitesToRemove) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
-        List<CustomCampaignEntityAPI> satellites = getSatellitesInOrbitOfEntity(entity);
-
-        Iterator<CustomCampaignEntityAPI> iterator = satellites.iterator();
-        for (int i = amountOfSatellitesToRemove; ((i > 0) && (iterator.hasNext())); i--) { //fixme: this might not be stable, i dont know
-            CustomCampaignEntityAPI satellite = iterator.next();
-            removeSatellite(satellite); //we cant directly modify the list, hence why we use the straight removal method here
-            iterator.remove(); // and run iterator.remove
-        }
-        regenerateOrbitSpacing(entity);
-    }
-
-    public static void removeSatelliteFromEntity(SectorEntityToken entity, CustomCampaignEntityAPI satellite) {
-        removeSatelliteFromEntity(entity, satellite, true);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.removeSatellitesFromEntity(amountOfSatellitesToRemove);
     }
 
     /**
@@ -218,13 +191,10 @@ public class niko_MPC_satelliteUtils {
      * @param regenerateOrbit If true, satellite orbit will be regenerated.
      */
     public static void removeSatelliteFromEntity(SectorEntityToken entity, CustomCampaignEntityAPI satellite, boolean regenerateOrbit) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
-        
-        removeSatellite(satellite);
-        getSatellitesInOrbitOfEntity(entity).remove(satellite);
-        if (regenerateOrbit) {
-            regenerateOrbitSpacing(entity);
-        }
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
+
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.removeSatellite(satellite, regenerateOrbit, true);
     }
 
     /**
@@ -237,28 +207,15 @@ public class niko_MPC_satelliteUtils {
         satellite.getContainingLocation().removeEntity(satellite);
     }
 
-
     /**
      * Places all satellites in orbit around the given entity, ensuring they are all equally spaced apart from eachother.
      * @param entity The entity to regenerate satellite orbit from.
      */
     public static void regenerateOrbitSpacing(SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
-        
-        List<CustomCampaignEntityAPI> satellitesInOrbitOfEntity = getSatellitesInOrbitOfEntity(entity);
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
 
-        float optimalOrbitAngleOffset = getOptimalOrbitalOffsetForSatellites(satellitesInOrbitOfEntity);
-        float orbitAngle = 0;
-        // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc, so its safe to not add a buffer to the calculation in the optimalangle method
-        for (CustomCampaignEntityAPI satellite : satellitesInOrbitOfEntity) { //iterates through each orbitting satellite and offsets them
-            if (orbitAngle >= 360) {
-                niko_MPC_debugUtils.displayError("regenerateOrbitSpacing orbitAngle = " + orbitAngle)
-                removeSatelliteFromEntity(entity, satellite, false); //we dont want these weirdos overlapping
-            }
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-            addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, params.satelliteOrbitDistance);
-            orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
-        }
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.regenerateOrbitSpacing();
     }
 
     // MARKETS
@@ -295,10 +252,21 @@ public class niko_MPC_satelliteUtils {
     //GETTERS AND SETTERS
 
     /**
+     * @return Either null, or an instance of niko_MPC_satelliteHandler.
+     */
+    // no nullable, i use a method to nullcheck which intellij gets confused by
+    public static niko_MPC_satelliteHandler getEntitySatelliteHandler(SectorEntityToken entity) {
+        return (niko_MPC_satelliteHandler) entity.getMemoryWithoutUpdate().get(satelliteParamsId);
+    }
+
+    /**
      * @return Either null, or an instance of niko_MPC_satelliteParams.
      */
-    public static niko_MPC_satelliteParams getEntitySatelliteParams(SectorEntityToken entity) {
-        return (niko_MPC_satelliteParams) entity.getMemoryWithoutUpdate().get(satelliteParamsId);
+    @Nullable
+    public static niko_MPC_satelliteHandler.niko_MPC_satelliteParams getEntitySatelliteParams(SectorEntityToken entity) {
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        if (handler != null) return  handler.getParams();
+        return null;
     }
 
     /**
@@ -322,14 +290,14 @@ public class niko_MPC_satelliteUtils {
     public static List<CustomCampaignEntityAPI> getSatellitesInOrbitOfEntity(SectorEntityToken entity) {
         //does not call ensureSatellites because this is intended to be called on things w/o satellites
         
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        if (params != null) {
-            return params.getSatellites();
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        if (handler != null) {
+            return handler.getSatellites();
         }
         return new ArrayList<>();
     }
 
-    public static String getCurrentSatelliteFactionId(niko_MPC_satelliteParams params) {
+    public static String getCurrentSatelliteFactionId(niko_MPC_satelliteHandler params) {
         return getCurrentSatelliteFactionId(params.entity);
     }
 
@@ -339,28 +307,15 @@ public class niko_MPC_satelliteUtils {
      * @param entity The entity to get the params from.
      * @return A faction ID, in string form. Can return null if entity has no satellites.
      */
+    @Nullable
     public static String getCurrentSatelliteFactionId(SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null;
 
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-
-        if (params != null) {
-            return params.getCurrentSatelliteFactionId();
-        }
-        else {
-            niko_MPC_debugUtils.displayError("getCurrentSatelliteFactionId failure");
-            logEntityData(entity);
-            return entity.getFaction().getId();
-        }
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        return handler.getCurrentSatelliteFactionId();
     }
-
-    //todo: migrate to params
-    public static FactionAPI getCurrentSatelliteFaction(niko_MPC_satelliteParams params) {
-        return Global.getSector().getFaction(getCurrentSatelliteFactionId(params));
-    }
-
-    public static float getOptimalOrbitalOffsetForSatellites(SectorEntityToken entity) {
-        return getOptimalOrbitalOffsetForSatellites(getSatellitesInOrbitOfEntity(entity));
+    public static FactionAPI getCurrentSatelliteFaction(niko_MPC_satelliteHandler handler) {
+        return Global.getSector().getFaction(getCurrentSatelliteFactionId(handler));
     }
 
     /**
@@ -384,6 +339,17 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
+     * Generates an offset with which satellites in orbit of an entity will be spaced apart by.
+     * Is based on the amount of satellites in orbit of the planet.
+     * @return The optimal offset with which the satellites in orbit of the entity should be spaced apart by.
+     */
+    public static float getOptimalOrbitalOffsetForSatellites(SectorEntityToken entity) {
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        if (handler != null) return handler.getOptimalOrbitalOffsetForSatellites();
+        return getOptimalOrbitalOffsetForSatellites(new ArrayList<CustomCampaignEntityAPI>());
+    }
+
+    /**
      * Divides entity.getRadius() from radiusDivisor and returns the result.
      */
     public static int getMaxPhysicalSatellitesBasedOnEntitySize(SectorEntityToken entity) {
@@ -394,7 +360,9 @@ public class niko_MPC_satelliteUtils {
      * Divides entity.getRadius() from radiusDivisor and returns the result.
      */
     public static int getMaxPhysicalSatellitesBasedOnEntitySize(SectorEntityToken entity, float radiusDivisor) {
-        return ((round((entity.getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        if (handler != null) return handler.getMaxPhysicalSatellitesBasedOnEntitySize(radiusDivisor);
+        return ((round((entity.getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number;
     }
 
     // GETTING ENTITIES AND CHECKING CAPABILITIES
@@ -437,8 +405,8 @@ public class niko_MPC_satelliteUtils {
 
         while (iterator.hasNext()) {
             SectorEntityToken entity = iterator.next();
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(entity); //we can use this here because the previously used method only returns things with params
-            if (!MathUtils.isWithinRange(entity, coordinates, params.satelliteInterferenceDistance)) {
+            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity); //we can use this here because the previously used method only returns things with params
+            if (!MathUtils.isWithinRange(entity, coordinates, params.getSatelliteInterferenceDistance())) {
                 iterator.remove(); //have to remove because we're using a full list already
             }
         }
@@ -516,12 +484,12 @@ public class niko_MPC_satelliteUtils {
     * @return Null if the satellites want to fight both or neither, otherwise, returns which of the two fleets they're willing to fight.
     */
     public static CampaignFleetAPI getSideForSatellitesAgainstFleets(SectorEntityToken entity, CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null;
 
         boolean wantsToFightOne = false;
         boolean wantsToFightTwo = false;
 
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
         if ((doEntitySatellitesWantToFight(entity, fleet)) && (areEntitySatellitesCapableOfFighting(entity, fleet))) wantsToFightOne = true;
         if ((doEntitySatellitesWantToFight(entity, fleetTwo)) && (areEntitySatellitesCapableOfFighting(entity, fleetTwo))) wantsToFightTwo = true;
 
@@ -570,13 +538,9 @@ public class niko_MPC_satelliteUtils {
      * @return The battleside that entity's satellites would pick. Can return null if the entity has no satellites.
      */
     public static BattleAPI.BattleSide getSideForSatellites(SectorEntityToken entity, BattleAPI battle) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return null;
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
-        
-        CampaignFleetAPI dummyFleet = params.getDummyFleetWithUpdate();
-        BattleAPI.BattleSide battleSide = battle.pickSide(dummyFleet);
-
-        return battleSide;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null;
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        return handler.getSideForBattle(battle);
     }
 
     /**
@@ -612,7 +576,7 @@ public class niko_MPC_satelliteUtils {
 
     // CAPABILITY CHECKING
 
-    public static boolean doEntitySatellitesWantToFight(niko_MPC_satelliteParams params, CampaignFleetAPI fleet) {
+    public static boolean doEntitySatellitesWantToFight(niko_MPC_satelliteHandler params, CampaignFleetAPI fleet) {
         return doEntitySatellitesWantToFight(params.entity, fleet);
     }
 
@@ -624,8 +588,10 @@ public class niko_MPC_satelliteUtils {
      * if entity has no satellites.
      */
     public static boolean doEntitySatellitesWantToFight(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
+        niko_MPC_satelliteHandler holder = getEntitySatelliteHandler(entity);
+
+        return holder.doSatellitesWantToFight(entity, fleet);
 
         boolean marketUncolonized = false;
         MarketAPI market = entity.getMarket();
@@ -635,7 +601,7 @@ public class niko_MPC_satelliteUtils {
             }
         }
 
-        CampaignFleetAPI satelliteFleet = params.getDummyFleetWithUpdate();
+        CampaignFleetAPI satelliteFleet = holder.getDummyFleetWithUpdate();
         boolean wantsToFight = satelliteFleet.isHostileTo(fleet);
 
         // uncolonized markets are derelict and hostile to everyone
@@ -651,8 +617,8 @@ public class niko_MPC_satelliteUtils {
      * Can return false if params are null.
      */
     public static boolean doEntitySatellitesWantToBlock(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
 
         return (!fleet.isTransponderOn() ||
                 getCurrentSatelliteFaction(params).isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
@@ -665,8 +631,8 @@ public class niko_MPC_satelliteUtils {
      * less or equal to 0. False otherwise.
      */
     public static boolean areEntitySatellitesCapableOfBlocking(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
         BattleAPI battle = fleet.getBattle();
 
@@ -692,11 +658,11 @@ public class niko_MPC_satelliteUtils {
     * todo: migrate to params
     */
     public static void makeEntitySatellitesEngageFleet(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
 
         BattleAPI battleJoined = null;
 
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
         BattleAPI battle = fleet.getBattle();
         if (battle != null) {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
@@ -741,7 +707,7 @@ public class niko_MPC_satelliteUtils {
     * @return true if getEntitySatelliteParams(entity) is not null.
     */
     public static boolean defenseSatellitesApplied(SectorEntityToken entity) {
-        return getEntitySatelliteParams(entity) != null;
+        return getEntitySatelliteHandler(entity) != null;
     }
 
     @Deprecated
@@ -759,9 +725,9 @@ public class niko_MPC_satelliteUtils {
     @param entity The entity to get params from.
     */
     public static void incrementSatelliteGracePeriod(CampaignFleetAPI fleet, float amount, SectorEntityToken entity) {
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(entity)) return;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
         
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
         if (params == null) return;
 
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {

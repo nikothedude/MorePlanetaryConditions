@@ -1,28 +1,20 @@
 package data.scripts.campaign.plugins;
 
-import com.fs.starfarer.E.I;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.PluginPick;
 import com.fs.starfarer.api.campaign.*;
-import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.campaign.rules.MemKeys;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
-import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import com.fs.starfarer.campaign.fleet.Battle;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_satelliteBattleTracker;
 import data.utilities.niko_MPC_satelliteUtils;
-import org.lazywizard.lazylib.MathUtils;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static data.utilities.niko_MPC_ids.niko_MPC_campaignPluginId;
 
@@ -109,7 +101,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
                 }
             }
             for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoinBattle.entrySet()) {
-                niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entry.getKey());
+                niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entry.getKey());
                 niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
                 if (!tracker.areSatellitesInvolvedInBattle(battle, params)) {
@@ -123,7 +115,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
                 if (chosenFleet != null) entitiesWillingToFight.put(entityToAlwaysSpawnFleetsFrom, chosenFleet);
             }
             for (Map.Entry<SectorEntityToken, CampaignFleetAPI> entry : entitiesWillingToFight.entrySet()) {
-                niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entry.getKey());
+                niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entry.getKey());
                 CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, playerFleet);
             }
         }
@@ -135,7 +127,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
 
         for (CampaignFleetAPI satelliteFleet : battle.getBothSides()) {
             if (niko_MPC_fleetUtils.fleetIsSatelliteFleet(satelliteFleet)) {
-                niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(satelliteFleet);
+                niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteFleet);
 
                 /*if (!MathUtils.isWithinRange(params.entity, satelliteFleet, params.satelliteInterferenceDistance)) {
                     niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
@@ -151,7 +143,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
                     if (stationMarket != null) {
                         SectorEntityToken primaryEntity = stationMarket.getPrimaryEntity();
                         if (primaryEntity != null) {
-                            niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(primaryEntity);
+                            niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
                             if (params != null && (!tracker.areSatellitesInvolvedInBattle(battle, params))) {
                                 niko_MPC_fleetUtils.joinBattleWithNewSatellites(battle, params, primaryEntity);
                             }
@@ -163,7 +155,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
         }
         for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoin.entrySet()) {
             SectorEntityToken entity = entry.getKey();
-            niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+            niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
             if (!tracker.areSatellitesInvolvedInBattle(battle, params)) {
                 niko_MPC_fleetUtils.joinBattleWithNewSatellites(battle, params, params.entity);
             }

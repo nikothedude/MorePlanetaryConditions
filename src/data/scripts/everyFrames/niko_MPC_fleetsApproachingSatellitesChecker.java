@@ -5,9 +5,7 @@ import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.ai.FleetAssignmentDataAPI;
-import com.fs.starfarer.api.impl.campaign.intel.raid.RaidAssignmentAI;
-import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseAssignmentAI;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.lazywizard.lazylib.campaign.CampaignUtils;
@@ -18,11 +16,11 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
 
     public SectorEntityToken entity;
     public boolean done = false;
-    public niko_MPC_satelliteParams satelliteParams;
+    public niko_MPC_satelliteHandler satelliteParams;
 
     private float deltaTime = 0f;
 
-    public niko_MPC_fleetsApproachingSatellitesChecker(niko_MPC_satelliteParams satelliteParams, SectorEntityToken entity) {
+    public niko_MPC_fleetsApproachingSatellitesChecker(niko_MPC_satelliteHandler satelliteParams, SectorEntityToken entity) {
         this.satelliteParams = satelliteParams;
         this.entity = entity;
     }
@@ -83,7 +81,7 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
         return entity;
     }
 
-    public niko_MPC_satelliteParams getSatelliteParams() {
+    public niko_MPC_satelliteHandler getSatelliteParams() {
         return satelliteParams;
     }
 

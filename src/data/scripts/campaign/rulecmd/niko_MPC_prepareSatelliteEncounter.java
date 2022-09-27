@@ -8,14 +8,12 @@ import com.fs.starfarer.api.campaign.ai.ModularFleetAIAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
-import com.fs.starfarer.api.impl.campaign.rulecmd.MakeOtherFleetHostile;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteUtils;
-import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
@@ -26,7 +24,7 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
 
-        niko_MPC_satelliteParams satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
         if (satelliteParams == null) return false;
 
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
@@ -36,15 +34,19 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
         List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
 
         for (SectorEntityToken satelliteEntity : entitiesWillingToFight) {
-            niko_MPC_satelliteParams iteratedSatelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(satelliteEntity);
+            niko_MPC_satelliteHandler iteratedSatelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteEntity);
             satelliteFleets.add(niko_MPC_fleetUtils.createNewFullSatelliteFleet(iteratedSatelliteParams, playerFleet));
         }
 
         if (satelliteFleets.size() == 0) return false;
 
         CampaignFleetAPI focusedSatellite = satelliteFleets.get(0);
+        boolean isFightingFriendly = false;
 
         for (CampaignFleetAPI satelliteFleet : satelliteFleets) {
+            if (!satelliteFleet.isHostileTo(playerFleet)) {
+                isFightingFriendly = true;
+            }
             MemoryAPI fleetMemory = satelliteFleet.getMemoryWithoutUpdate();
             boolean stillSet = Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_HOSTILE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
             if (!stillSet) {
@@ -60,7 +62,7 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
             }
         }
 
-        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, entity, memoryMap);
+        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, entity, memoryMap, isFightingFriendly);
 
         return true;
     }

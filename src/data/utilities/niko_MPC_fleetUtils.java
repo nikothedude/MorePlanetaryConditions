@@ -9,16 +9,13 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
 import com.fs.starfarer.api.impl.campaign.ids.Commodities;
-import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
-import com.fs.starfarer.ui.P;
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
-import data.scripts.util.MagicCampaign;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -34,7 +31,7 @@ public class niko_MPC_fleetUtils {
      * Creates an empty fleet with absolutely nothing in it, except for the memflags satellite fleets must have.
      * @return A new satellite fleet.
      */
-    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteParams params) {
+    public static CampaignFleetAPI createSatelliteFleetTemplate(niko_MPC_satelliteHandler params) {
 
         String factionId = niko_MPC_satelliteUtils.getCurrentSatelliteFactionId(params);
         String fleetName = params.getSatelliteFleetName();
@@ -132,11 +129,11 @@ public class niko_MPC_fleetUtils {
         fleet.despawn();
     }
 
-    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteHandler params, Vector2f coordinates, LocationAPI location) {
         return spawnSatelliteFleet(params, coordinates, location, true, false);
     }
 
-    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+    public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteHandler params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
         CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate(params);
 
         location.addEntity(satelliteFleet);
@@ -157,23 +154,23 @@ public class niko_MPC_fleetUtils {
         return satelliteFleet;
     }
 
-    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteHandler params, SectorEntityToken entity) {
         return createNewFullSatelliteFleet(params, entity, true);
     }
 
-    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, SectorEntityToken entity, boolean temporary) {
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteHandler params, SectorEntityToken entity, boolean temporary) {
         return createNewFullSatelliteFleet(params, entity.getLocation(), entity.getContainingLocation(), temporary, false);
     }
 
-    public static CampaignFleetAPI createNewFullDummySatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+    public static CampaignFleetAPI createNewFullDummySatelliteFleet(niko_MPC_satelliteHandler params, Vector2f coordinates, LocationAPI location) {
         return createNewFullSatelliteFleet(params, coordinates, location, false, true);
     }
 
-    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location) {
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteHandler params, Vector2f coordinates, LocationAPI location) {
         return createNewFullSatelliteFleet(params, coordinates, location, true, false);
     }
 
-    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteParams params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+    public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteHandler params, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
         CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(params, coordinates, location, temporary, dummy);
 
         attemptToFillFleetWithVariants(params.maxBattleSatellites, satelliteFleet, params.weightedVariantIds, true);
@@ -181,15 +178,15 @@ public class niko_MPC_fleetUtils {
         return satelliteFleet;
     }
 
-    public static niko_MPC_satelliteParams getSatelliteFleetParams(CampaignFleetAPI fleet) {
-        return (niko_MPC_satelliteParams) fleet.getMemoryWithoutUpdate().get(satelliteParamsId);
+    public static niko_MPC_satelliteHandler getSatelliteFleetParams(CampaignFleetAPI fleet) {
+        return (niko_MPC_satelliteHandler) fleet.getMemoryWithoutUpdate().get(satelliteParamsId);
     }
 
     public static boolean fleetIsSatelliteFleet(CampaignFleetAPI fleet) {
         return fleet.getMemoryWithoutUpdate().is(isSatelliteFleetId, true);
     }
 
-    public static CampaignFleetAPI createDummyFleet(niko_MPC_satelliteParams params, SectorEntityToken entity) {
+    public static CampaignFleetAPI createDummyFleet(niko_MPC_satelliteHandler params, SectorEntityToken entity) {
         CampaignFleetAPI satelliteFleet = createNewFullDummySatelliteFleet(params, new Vector2f(99999999, 99999999), entity.getContainingLocation());
 
         satelliteFleet.setDoNotAdvanceAI(true);
@@ -197,7 +194,7 @@ public class niko_MPC_fleetUtils {
         return satelliteFleet;
     }
 
-    public static void joinBattleWithNewSatellites(BattleAPI battle, niko_MPC_satelliteParams params, SectorEntityToken entity) {
+    public static void joinBattleWithNewSatellites(BattleAPI battle, niko_MPC_satelliteHandler params, SectorEntityToken entity) {
         CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, battle.computeCenterOfMass(), entity.getContainingLocation());
 
         if (!battle.join(satelliteFleet)) {

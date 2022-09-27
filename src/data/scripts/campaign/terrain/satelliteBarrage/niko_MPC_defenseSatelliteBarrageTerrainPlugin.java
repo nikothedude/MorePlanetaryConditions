@@ -14,7 +14,7 @@ import com.fs.starfarer.api.loading.Description;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
@@ -28,7 +28,7 @@ import java.util.Random;
 import static data.utilities.niko_MPC_ids.defenseSatelliteImpactId;
 import static data.utilities.niko_MPC_ids.defenseSatelliteImpactReasonString;
 import static data.utilities.niko_MPC_satelliteUtils.getCurrentSatelliteFactionId;
-import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteParams;
+import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler;
 
 public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerrain {
     public static class barrageAreaParams {
@@ -95,7 +95,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         if (entityHasNoSatelliteParams()) return;
 
         if (entity instanceof CampaignFleetAPI) {
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(getRelatedEntity());
+            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(getRelatedEntity());
             CampaignFleetAPI fleet = (CampaignFleetAPI) entity;
 
             if (niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(getRelatedEntity(), fleet)) {
@@ -185,7 +185,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
     }
 
     public boolean entityHasNoSatelliteParams() {
-        if (getEntitySatelliteParams(getRelatedEntity()) == null) {
+        if (getEntitySatelliteHandler(getRelatedEntity()) == null) {
             niko_MPC_debugUtils.displayError("ensureEntityHasSatelliteParams failure");
             niko_MPC_satelliteUtils.removeSatelliteBarrageTerrain(getRelatedEntity(), getEntity());
 
@@ -222,7 +222,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
 
         float displayableIntensity = getStringifiedIntensity(Global.getSector().getPlayerFleet());
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(getRelatedEntity());
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(getRelatedEntity());
         String factionName = Global.getSector().getFaction(getCurrentSatelliteFactionId(params)).getDisplayName();
 
         tooltip.addPara("Chance for random ships in the fleet to be hit by long-ranged artillery fire from the " +
@@ -262,7 +262,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
     //AI flags for the terrain. This terrain has no flags, since we don't want allies to fear it at all
     public boolean hasAIFlag(Object flag, CampaignFleetAPI fleet) {
         if (entityHasNoSatelliteParams()) return false;
-        niko_MPC_satelliteParams params = getEntitySatelliteParams(getRelatedEntity());
+        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(getRelatedEntity());
         if (niko_MPC_satelliteUtils.doEntitySatellitesWantToFight(getRelatedEntity(), fleet)) {
             return (flag == TerrainAIFlags.CR_DRAIN ||
                     flag == TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE);

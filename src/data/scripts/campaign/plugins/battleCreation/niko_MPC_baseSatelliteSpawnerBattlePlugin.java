@@ -10,14 +10,14 @@ import com.fs.starfarer.api.impl.combat.BattleCreationPluginImpl;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.mission.MissionDefinitionAPI;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
-import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteParams;
+import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler;
 
 public abstract class niko_MPC_baseSatelliteSpawnerBattlePlugin extends BattleCreationPluginImpl {
 
@@ -62,7 +62,7 @@ public abstract class niko_MPC_baseSatelliteSpawnerBattlePlugin extends BattleCr
 
         for (SectorEntityToken entity : entities) {
             if (atMax(side)) break;
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
             HashMap<String, Float> weightedVariants = params.weightedVariantIds;
             WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
             for (Map.Entry<String, Float> entry : weightedVariants.entrySet()) {

@@ -6,7 +6,7 @@ import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.ai.FleetAssignmentDataAPI;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteBattleTracker;
@@ -30,7 +30,7 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
         super.reportBattleFinished(primaryWinner, battle);
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
-        for (niko_MPC_satelliteParams params : tracker.getSatellitesInfluencingBattle(battle)) {
+        for (niko_MPC_satelliteHandler params : tracker.getSatellitesInfluencingBattle(battle)) {
             BattleAPI.BattleSide battleSide = tracker.getSideOfSatellitesForBattle(battle, params);
             if (battleSide != battle.pickSide(primaryWinner)) { // if our picked side on the battle does not have the winner,
                 for (CampaignFleetAPI hostileFleet : battle.getSnapshotSideFor(primaryWinner)) { // we can assume that
@@ -50,18 +50,18 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
 
         FleetAssignmentDataAPI assignment = fleet.getCurrentAssignment();
 
-        niko_MPC_satelliteParams params = null;
-        if (entity != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler params = null;
+        if (entity != null) params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
 
         if (params == null) {
             SectorEntityToken trueTarget = null;
             if (assignment != null) trueTarget = assignment.getTarget();
-            if (trueTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(trueTarget);
+            if (trueTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(trueTarget);
 
             if (params == null) {
                 SectorEntityToken orbitTarget = null;
                 if (trueTarget != null) orbitTarget = trueTarget.getOrbitFocus();
-                if (orbitTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteParams(orbitTarget);
+                if (orbitTarget != null) params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(orbitTarget);
             }
         }
 

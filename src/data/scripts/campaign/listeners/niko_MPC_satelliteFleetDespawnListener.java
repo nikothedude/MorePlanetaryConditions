@@ -5,7 +5,7 @@ import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignEventListener;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 
@@ -27,8 +27,8 @@ public class niko_MPC_satelliteFleetDespawnListener extends BaseFleetEventListen
     public void reportFleetDespawnedToListener(CampaignFleetAPI fleet, CampaignEventListener.FleetDespawnReason reason, Object param) {
         super.reportFleetDespawnedToListener(fleet, reason, param);
 
-        if (!niko_MPC_debugUtils.ensureEntityHasSatellites(fleet)) return; //sanity
-        niko_MPC_satelliteParams params = niko_MPC_satelliteUtils.getEntitySatelliteParams(fleet);
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(fleet)) return; //sanity
+        niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);
 
         BattleAPI battle = fleet.getBattle();
 

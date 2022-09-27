@@ -2,9 +2,7 @@ package data.utilities;
 
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.campaign.H;
-import com.fs.starfarer.campaign.fleet.Battle;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +15,7 @@ import java.util.Set;
  */
 public class niko_MPC_satelliteBattleTracker {
 
-    public Map<BattleAPI, Map<niko_MPC_satelliteParams, BattleAPI.BattleSide>> battles = new HashMap<>();
+    public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> battles = new HashMap<>();
 
     /**
      * Associates a hashmap entry of (battle->(params->side)). The side is stored for future reference.
@@ -27,27 +25,27 @@ public class niko_MPC_satelliteBattleTracker {
      * @param params The satellite params we are associating.
      * @param side The stored side of the battle.
      */
-    public void associateSatellitesWithBattle(BattleAPI battle, niko_MPC_satelliteParams params, BattleAPI.BattleSide side) {
-        if (!battles.containsKey(battle) || battles.get(battle) == null) battles.put(battle, new HashMap<niko_MPC_satelliteParams, BattleAPI.BattleSide>());
+    public void associateSatellitesWithBattle(BattleAPI battle, niko_MPC_satelliteHandler params, BattleAPI.BattleSide side) {
+        if (!battles.containsKey(battle) || battles.get(battle) == null) battles.put(battle, new HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide>());
 
-        Map<niko_MPC_satelliteParams, BattleAPI.BattleSide> currentBattles = battles.get(battle);
+        Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide> currentBattles = battles.get(battle);
         currentBattles.put(params, side);
     }
 
-    public Map<BattleAPI, Map<niko_MPC_satelliteParams, BattleAPI.BattleSide>> getBattles() {
+    public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> getBattles() {
         return battles;
     }
 
-    public Set<niko_MPC_satelliteParams> getSatellitesInfluencingBattle(BattleAPI battle) {
+    public Set<niko_MPC_satelliteHandler> getSatellitesInfluencingBattle(BattleAPI battle) {
 
-        return (battles.get(battle) == null ? new HashSet<niko_MPC_satelliteParams>() : battles.get(battle).keySet());
+        return (battles.get(battle) == null ? new HashSet<niko_MPC_satelliteHandler>() : battles.get(battle).keySet());
     }
 
-    public BattleAPI.BattleSide getSideOfSatellitesForBattle(BattleAPI battle, niko_MPC_satelliteParams params) {
+    public BattleAPI.BattleSide getSideOfSatellitesForBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
         return (battles.get(battle) == null ? null : battles.get(battle).get(params));
     }
 
-    public boolean areSatellitesInvolvedInBattle(BattleAPI battle, niko_MPC_satelliteParams params) {
+    public boolean areSatellitesInvolvedInBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
         if (battles.containsKey(battle)) {
             if (battles.get(battle).containsKey(params)) {
                 return true;
@@ -65,10 +63,10 @@ public class niko_MPC_satelliteBattleTracker {
         return (battles.get(battle) != null && !battles.get(battle).isEmpty());
     }
 
-    public HashMap<niko_MPC_satelliteParams, CampaignFleetAPI> scanBattleForSatellites(BattleAPI battle) {
-        HashMap<niko_MPC_satelliteParams, CampaignFleetAPI> paramsToFleetMap = new HashMap<>();
+    public HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> scanBattleForSatellites(BattleAPI battle) {
+        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> paramsToFleetMap = new HashMap<>();
         for (CampaignFleetAPI fleet : battle.getBothSides()) {
-            niko_MPC_satelliteParams foundParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(fleet);
+            niko_MPC_satelliteHandler foundParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);
             if (foundParams != null) {
                 paramsToFleetMap.put(foundParams, fleet);
             }
@@ -77,14 +75,14 @@ public class niko_MPC_satelliteBattleTracker {
     }
 
     public void updateBattleAssociationWithScan(BattleAPI battle) {
-        HashMap<niko_MPC_satelliteParams, CampaignFleetAPI> paramsToFleetMap = scanBattleForSatellites(battle);
+        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> paramsToFleetMap = scanBattleForSatellites(battle);
 
-        for (Map.Entry<niko_MPC_satelliteParams, CampaignFleetAPI> entry : paramsToFleetMap.entrySet()) {
-            niko_MPC_satelliteParams params = entry.getKey();
+        for (Map.Entry<niko_MPC_satelliteHandler, CampaignFleetAPI> entry : paramsToFleetMap.entrySet()) {
+            niko_MPC_satelliteHandler params = entry.getKey();
             CampaignFleetAPI fleet = entry.getValue();
 
             if (!areSatellitesInvolvedInBattle(battle, params)) {
-                HashMap<niko_MPC_satelliteParams, BattleAPI.BattleSide> paramsToSideMap = new HashMap<>();
+                HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide> paramsToSideMap = new HashMap<>();
                 paramsToSideMap.put(params, battle.pickSide(fleet));
                 battles.put(battle, paramsToSideMap);
             }
@@ -95,13 +93,13 @@ public class niko_MPC_satelliteBattleTracker {
         battles.remove(battle);
     }
 
-    public void removeParamsFromBattle(BattleAPI battle, niko_MPC_satelliteParams params) {
+    public void removeParamsFromBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
         if (battles.get(battle) != null) {
             battles.get(battle).remove(params);
         }
     }
 
-    public void removeParamsFromAllBattles(niko_MPC_satelliteParams params) {
+    public void removeParamsFromAllBattles(niko_MPC_satelliteHandler params) {
         for (BattleAPI battle : battles.keySet()) {
             removeParamsFromBattle(battle, params);
         }

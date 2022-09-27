@@ -9,7 +9,7 @@ import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.lwjgl.util.vector.Vector2f;
@@ -86,7 +86,7 @@ public class niko_MPC_satelliteSpawnerScript extends BaseEveryFrameCombatPlugin 
 
         for (SectorEntityToken entity : entities) {
             if (atMax(side)) break;
-            niko_MPC_satelliteParams params = getEntitySatelliteParams(entity);
+            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
             HashMap<String, Float> weightedVariants = params.weightedVariantIds;
             WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
             for (Map.Entry<String, Float> entry : weightedVariants.entrySet()) {

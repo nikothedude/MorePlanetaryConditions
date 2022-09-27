@@ -6,7 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.misc.niko_MPC_satelliteParams;
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 
@@ -19,7 +19,7 @@ public class niko_MPC_satellitesCapableOfBlockingPlayer extends BaseCommandPlugi
         SectorEntityToken entity = dialog.getInteractionTarget();
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
-        niko_MPC_satelliteParams satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteParams(entity);
+        niko_MPC_satelliteHandler satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
         if (satelliteParams == null) return false;
 
         return niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, Global.getSector().getPlayerFleet());
