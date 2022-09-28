@@ -17,12 +17,7 @@ public class niko_MPC_satelliteFleetDespawnListener extends BaseFleetEventListen
 
     /**
      * This listener is attached to every satellite fleet that spawns.
-     * <p>
-     * Gets the params that spawned the fleet and does the following:
-     * </p>
-     * @param fleet
-     * @param reason
-     * @param param
+     * Serves to remove scripts and listeners and memorykeys, as well as a few others.
      */
     @Override
     public void reportFleetDespawnedToListener(CampaignFleetAPI fleet, CampaignEventListener.FleetDespawnReason reason, Object param) {

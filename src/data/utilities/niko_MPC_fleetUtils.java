@@ -46,14 +46,15 @@ public class niko_MPC_fleetUtils {
      * @param budget The amount of FP to be added to the fleet. Hard cap.
      * @param fleet The fleet to fill.
      * @param variants The variants, in variantId -> weight format, to be picked.
+     * @return a list of the newly created fleetmembers.
      */
-    public static void attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants, boolean altBudgetMode){
+    public static List<FleetMemberAPI> attemptToFillFleetWithVariants(int budget, CampaignFleetAPI fleet, HashMap<String, Float> variants, boolean altBudgetMode){
+        List<FleetMemberAPI> newFleetMembers = new ArrayList<>();
         if (budget <= 0) {
-            return;
+            return newFleetMembers;
         }
 
         WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
-        List<FleetMemberAPI> shipsToAdd = new ArrayList<>();
 
         for (Map.Entry<String, Float> entry : variants.entrySet()) { //add the contents of the variants to the picker
             picker.add(entry.getKey(), entry.getValue());
@@ -73,7 +74,7 @@ public class niko_MPC_fleetUtils {
                 FleetMemberAPI ship = Global.getFactory().createFleetMember(FleetMemberType.SHIP, pickedVariantId);
                 if(ship != null) {
 
-                    shipsToAdd.add(ship);
+                    newFleetMembers.add(ship);
                     ship.getRepairTracker().setCR(0.7f); //the ships spawn with 50 cr, fo rsome reaosn, so i have to do this
                     budget -= variantFp;
                 }
@@ -86,9 +87,10 @@ public class niko_MPC_fleetUtils {
                 continue; //continue for clarity
             }
         }
-        for (FleetMemberAPI ship : shipsToAdd) {
+        for (FleetMemberAPI ship : newFleetMembers) {
             fleet.getFleetData().addFleetMember(ship);
         }
+        return newFleetMembers;
     }
 
     public static void despawnSatelliteFleet(CampaignFleetAPI fleet) {

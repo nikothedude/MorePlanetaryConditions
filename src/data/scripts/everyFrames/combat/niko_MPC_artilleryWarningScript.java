@@ -9,6 +9,7 @@ import com.fs.starfarer.combat.CombatEngine;
 
 import java.util.List;
 
+// niko_MPC_antiAsteroidSatellites
 public class niko_MPC_artilleryWarningScript extends BaseEveryFrameCombatPlugin {
 
     public boolean allied = false;

@@ -30,6 +30,7 @@ import static data.utilities.niko_MPC_ids.defenseSatelliteImpactReasonString;
 import static data.utilities.niko_MPC_satelliteUtils.getCurrentSatelliteFactionId;
 import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler;
 
+// unused, for now
 public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerrain {
     public static class barrageAreaParams {
 

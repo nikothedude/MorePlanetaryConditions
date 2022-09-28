@@ -97,7 +97,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
-        if (!engine.isMission()) {
+        if (!engine.isMission()) { //we do this because theres no fleets in a mission
             BattleAPI thisBattle = playerFleet.getBattle();
             boolean usePlayerSide = (side == FleetSide.PLAYER);
             // WHY IS THIS SO FUCKING OBTUSE TO DO
@@ -116,13 +116,13 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
                 }
                 if (hasSatelliteShips)
                     if (!tracker.areSatellitesInvolvedInBattle(thisBattle, handler)) {
-                        tracker.associateSatellitesWithBattle(thisBattle, handler, thisBattle.pickSide(potentialSatelliteFleet));
+                        tracker.associateSatellitesWithBattle(thisBattle, handler, thisBattle.pickSide(potentialSatelliteFleet)); //sanity
                     }
             }
         }
         else {
-            for (FleetMemberAPI ship : reserves) {
-                if (ship.getHullSpec().hasTag(niko_MPC_ids.niko_MPC_isSatelliteHullId)) {
+            for (FleetMemberAPI ship : reserves) { //missions dont have fleets
+                if (ship.getHullSpec().hasTag(niko_MPC_ids.niko_MPC_isSatelliteHullId)) { //so we go with the second best thing
                     if (satellites.contains(ship)) {
                         continue;
                     }
@@ -131,7 +131,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             }
         }
 
-        for (ShipAPI ship : ships) {
+        for (ShipAPI ship : ships) { // ongoing battles sometimes have them already deployed
             if (ship.getHullSpec().hasTag(niko_MPC_ids.niko_MPC_isSatelliteHullId) && (ship.getOwner() == intOwner)) {
                 FleetMemberAPI shipFleetMember = ship.getFleetMember();
                 if (satellites.contains(shipFleetMember)) {
@@ -171,10 +171,10 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
 
         if (side == FleetSide.ENEMY) {
-            params.invertCoordinates();
+            params.invertCoordinates(); //enemies start at the top
         }
         if (escapeBattle) {
-            params.invertCoordinates();
+            params.invertCoordinates(); //pursuit battles would otherwise have friendly satellites spawn inside hostile fleets
         }
 
         params.yCoord = params.initialYCoord;
@@ -187,7 +187,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             }
             ShipAPI satelliteShip = null;
             if (fleetManager.getDeployedCopy().contains(satellite)) {
-               // niko_MPC_debugUtils.displayError("satellite already deployed");
+                //niko_MPC_debugUtils.displayError("satellite already deployed");
                 satelliteShip = fleetManager.getShipFor(satellite);
             }
             deploySatellite(satellite, new Vector2f(params.xCoord, params.yCoord), params.facing, fleetManager, side, satelliteShip);
@@ -206,18 +206,12 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
         if (side == FleetSide.PLAYER) {
             owner = 0;
         }
-        String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
-        if (name == null) {
-            niko_MPC_debugUtils.displayError("deploySatellite null name");
-            name = "this name is an error, please report this to niko";
-        }
 
         List<ShipAPI> modulesWithSatellite = (satellite.getChildModulesCopy());
         modulesWithSatellite.add(satellite);
 
         for (ShipAPI module : modulesWithSatellite) {
             if (module.getFleetMember() != null) {
-                module.getFleetMember().setShipName(name);
                 module.getFleetMember().setAlly(true);
                 module.getFleetMember().setOwner(owner);
             }
@@ -232,7 +226,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         for (FighterWingAPI wing : satellite.getAllWings()) {
             for (ShipAPI fighter : wing.getWingMembers()) {
-                fighter.getLocation().set(vector2f);
+                fighter.getLocation().set(vector2f); // so that they dont spawn in wacky places, at least not always
                 if (owner == 0) {
                     fighter.setAlly(true);
                 }
@@ -241,7 +235,6 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         satellite.setFixedLocation(vector2f); //todo: how the fuck am i gonna handle the possibility that the satellites spawn in other ships
         Global.getCombatEngine().addPlugin(new niko_MPC_satellitePositionDebugger(satellite, vector2f, facing));
-
-        Set<ShipAPI> shipWithinBounds = new HashSet<>();
+        // ^ i found that satellites can spawn in really really wacky places and facings, this is to fix that
     }
 }

@@ -36,4 +36,5 @@ public class niko_MPC_ids {
     public static final String satelliteFleetHostileReason = "$niko_MPC_satelliteFleetHostileReason";
     public static final String satelliteFactionId = "niko_MPC_satelliteFaction";
     public static final String temporaryFleetDespawnerId = "$niko_MPC_temporaryFleetDespawner";
+    public static final String derelictSatelliteFakeFactionId = "derelictSatelliteBuilder";
 }

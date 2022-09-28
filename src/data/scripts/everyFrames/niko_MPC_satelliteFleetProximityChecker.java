@@ -43,6 +43,8 @@ public class niko_MPC_satelliteFleetProximityChecker implements EveryFrameScript
         //CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         //if (playerFleet.getContainingLocation() != entity.getContainingLocation()) return;
 
+        // using deltatime because i want a bit more performance
+        // its not like we need to run EVERY frame, only enough
         deltaTime += amount;
         float thresholdForAdvancement = 0.2f;
         if (deltaTime < thresholdForAdvancement) {

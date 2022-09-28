@@ -25,6 +25,7 @@ import org.lwjgl.util.vector.Vector2f;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+// unused for now
 public class niko_MPC_defenseSatelliteBarrageTerrainCombatEffect extends BaseEveryFrameCombatPlugin {
 
     private static final Logger log = Global.getLogger(niko_MPC_defenseSatelliteBarrageTerrainCombatEffect.class);

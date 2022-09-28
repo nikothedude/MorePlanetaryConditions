@@ -1,19 +1,19 @@
 package data.scripts.campaign.misc;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
 import com.fs.starfarer.api.impl.campaign.ids.Commodities;
+import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
 import com.fs.starfarer.campaign.fleet.CampaignFleet;
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
-import data.scripts.everyFrames.niko_MPC_fleetsApproachingSatellitesChecker;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
@@ -24,8 +24,6 @@ import java.util.*;
 
 import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
 import static data.utilities.niko_MPC_ids.satelliteHandlerId;
-import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
-import static data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset;
 import static java.lang.Math.round;
 
 public class niko_MPC_satelliteHandler {
@@ -44,9 +42,9 @@ public class niko_MPC_satelliteHandler {
 
         public HashMap<String, Float> weightedVariantIds;
 
-        public niko_MPC_satelliteParams(String satelliteId, String satelliteFactionId, String satelliteFleetName, int maxPhysicalSatellites,
-                                        int maxBattleSatellites, float satelliteOrbitDistance, float satelliteInterferenceDistance, float barrageDistance,
-                                        HashMap<String, Float> weightedVariantIds) {
+        public niko_MPC_satelliteParams(String satelliteId, String satelliteFactionId, String satelliteFleetName,
+                                        int maxPhysicalSatellites, int maxBattleSatellites, float satelliteOrbitDistance, float satelliteInterferenceDistance,
+                                        float barrageDistance, HashMap<String, Float> weightedVariantIds) {
 
             this.satelliteId = satelliteId;
             this.satelliteFactionId = satelliteFactionId;
@@ -71,8 +69,6 @@ public class niko_MPC_satelliteHandler {
     public List<CustomCampaignEntityAPI> orbitalSatellites;
     public List<SectorEntityToken> satelliteBarrages = new ArrayList<>();
     public HashMap<CampaignFleetAPI, Float> gracePeriods = new HashMap<>();
-
-    public niko_MPC_fleetsApproachingSatellitesChecker approachingFleetChecker;
 
     public niko_MPC_gracePeriodDecrementer gracePeriodDecrementer;
     public niko_MPC_satelliteFleetProximityChecker satelliteFleetProximityChecker;
@@ -554,6 +550,7 @@ public class niko_MPC_satelliteHandler {
     public CampaignFleetAPI createSatelliteFleetTemplate() {
 
         CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(getCurrentSatelliteFactionId(), getSatelliteFleetName(), true);
+       // fleet.setFaction(getCurrentSatelliteFactionId());
         setTemplateMemoryKeys(fleet);
 
         fleet.setAI(new niko_MPC_satelliteFleetAI((CampaignFleet) fleet));
@@ -608,9 +605,20 @@ public class niko_MPC_satelliteHandler {
 
     public CampaignFleetAPI createNewFullSatelliteFleet(Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
         CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(coordinates, location, temporary, dummy);
-        niko_MPC_fleetUtils.attemptToFillFleetWithVariants(getMaxBattleSatellites(), satelliteFleet, getWeightedVariantIds(), true);
+        nameFleetMembers(niko_MPC_fleetUtils.attemptToFillFleetWithVariants(getMaxBattleSatellites(), satelliteFleet, getWeightedVariantIds(), true));
 
         return satelliteFleet;
+    }
+
+    public void nameFleetMembers(List<FleetMemberAPI> fleetMembers) {
+        for (FleetMemberAPI fleetMember : fleetMembers) {
+            String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
+            if (name == null) {
+                niko_MPC_debugUtils.displayError("deploySatellite null name");
+                name = "this name is an error, please report this to niko";
+            }
+            fleetMember.setShipName(name);
+        }
     }
 
     public CampaignFleetAPI createNewFullDummySatelliteFleet(Vector2f coordinates, LocationAPI location) {
@@ -658,6 +666,10 @@ public class niko_MPC_satelliteHandler {
     public float getSatelliteOrbitDistance() {
         return getParams().satelliteOrbitDistance;
     }
+
+    /*public FactionAPI getFakeSatelliteFaction() {
+        return Global.getSector().getFaction(getParams().fakeSatelliteFactionId);
+    }*/
 
     /**
      * Instantiates a new dummy fleet is none is present, but ONLY if getSatelliteFaction() doesn't return null.

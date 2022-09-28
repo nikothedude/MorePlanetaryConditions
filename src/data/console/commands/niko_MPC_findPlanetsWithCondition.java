@@ -41,8 +41,14 @@ public class niko_MPC_findPlanetsWithCondition implements BaseCommand {
                     if (displayConditionName) {
                         toDisplay = planet.getMarket().getCondition(conditionId).getName();
                     }
+                    boolean hasConstellation = (system.getConstellation() != null);
+                    String constellationString = "This system has no constellation.";
+                    if (hasConstellation) {
+                        constellationString = "Constellation: " + system.getConstellation().getName();
+                    }
                     Console.showMessage(planet.getName() + " has " + toDisplay + ", location " +
-                            system.getName());
+                            system.getName() + ", " + constellationString);
+
                 }
             }
         }

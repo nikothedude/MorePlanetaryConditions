@@ -61,8 +61,7 @@ public class niko_MPC_debugUtils {
                     " Error code: " + errorCode);
         }
         else {
-            RuntimeException exception = new RuntimeException("StackTraceGenerator");
-            log.debug(Arrays.toString(exception.getStackTrace())); //for debugging
+            Thread.dumpStack();
         }
     }
 

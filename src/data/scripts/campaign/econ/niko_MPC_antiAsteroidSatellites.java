@@ -11,6 +11,7 @@ import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSupp
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_satelliteRemovalScript;
 import data.utilities.niko_MPC_debugUtils;
+import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -50,6 +51,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public float baseGroundDefenseIncrement = 500;
     public float baseStabilityIncrement = 1;
     public float baseGroundDefenseMult = 1.5f;
+    public String fakeSatelliteFactionId = niko_MPC_ids.derelictSatelliteFakeFactionId;
 
     public niko_MPC_antiAsteroidSatellites() {
         weightedVariantIds.put("niko_MPC_defenseSatelliteCore_barrage", 10f);

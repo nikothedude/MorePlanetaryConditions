@@ -34,6 +34,7 @@ public class niko_MPC_satellitePositionDebugger extends BaseEveryFrameCombatPlug
         this.facing = facing;
     }
 
+    // runs for ~50 seconds (is it really though?), constantly correcting the facing
     @Override
     public void advance(float amount, List<InputEventAPI> events) {
         super.advance(amount, events);
