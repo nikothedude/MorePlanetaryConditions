@@ -3,6 +3,7 @@ package data.utilities;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
@@ -10,6 +11,7 @@ import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.lazywizard.console.Console;
 import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.util.vector.Vector2f;
 
@@ -667,5 +669,19 @@ public class niko_MPC_satelliteUtils {
             handler.gracePeriodDecrementer = decrementerScript;
         }
         handler.adjustGracePeriod(fleet, amount);
+    }
+
+    public static List<SectorEntityToken> getAllDefenseSatellitePlanets() {
+        List<SectorEntityToken> entitiesWithSatellites = new ArrayList<>();
+        List<StarSystemAPI> systems = Global.getSector().getStarSystems();
+        for (StarSystemAPI system : systems) {
+            for (SectorEntityToken entity : system.getAllEntities()) {
+                if (defenseSatellitesApplied(entity)) {
+                    entitiesWithSatellites.add(entity);
+                    continue;
+                }
+            }
+        }
+    return  entitiesWithSatellites;
     }
 }

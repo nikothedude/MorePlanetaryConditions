@@ -25,7 +25,7 @@
 		"renderCircleIndicator":false, # make clickable
 		"renderCircleIndicatorSelectionFlash":true,
 		"layers":[BELOW_STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values,
-		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC"],
+		"tags":["niko_MPC_anti_asteroid_satellite", "niko_MPC_satellite", "niko_MPC", "neutrino_low"],
 		"pluginClass":"data.scripts.entityPlugins.niko_MPC_antiAsteroidSatellitesPlugin",
 	}
 }

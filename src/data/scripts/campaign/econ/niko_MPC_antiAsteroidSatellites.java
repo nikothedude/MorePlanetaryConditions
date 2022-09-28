@@ -1,10 +1,12 @@
 package data.scripts.campaign.econ;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
@@ -21,7 +23,6 @@ import java.util.HashMap;
 import static data.utilities.niko_MPC_debugUtils.logEntityData;
 import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
 import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
-import static data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 

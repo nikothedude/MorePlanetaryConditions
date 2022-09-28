@@ -50,7 +50,6 @@ public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithClea
         else shouldRemove = false; //todo: to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
 
         if (shouldRemove) { //if we should remove it, we completely remove all parts of the satellite framework from the entity
-            if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
             purgeSatellitesFromEntity(entity);
         }
         prepareForGarbageCollection(); //the point of this script is simply to check on the next frame if the condition is still present
