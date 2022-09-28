@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Console Commands">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../Console Commands/jars" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Console Commands" />
+      <root url="file://$PROJECT_DIR$/../Console Commands/jars" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../Console Commands/jars" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../Console Commands" recursive="false" type="SOURCES" />
+    <jarDirectory url="file://$PROJECT_DIR$/../Console Commands/jars" recursive="false" type="SOURCES" />
+  </library>
+</component>

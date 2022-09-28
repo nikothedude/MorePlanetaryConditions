@@ -23,5 +23,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="Console Commands" level="project" />
   </component>
 </module>

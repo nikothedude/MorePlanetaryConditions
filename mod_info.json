@@ -3,7 +3,7 @@
 	"name":"More Planetary Conditions", # Displayed to the player
 	"author":"Niko",
     "utility":"false",
-	"version":"1.0.0_beta",
+	"version":"1.1.0_beta",
 	"description":"todo.",
     "gameVersion": "0.95.1a-RC6", 
   	"jars":["jars/niko_morePlanetaryConditions.jar"],
