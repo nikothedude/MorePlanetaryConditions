@@ -7,7 +7,7 @@ import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.mission.MissionDefinitionAPI;
 import com.fs.starfarer.api.mission.MissionDefinitionPlugin;
 
-public class MissionDefinition implements MissionDefinitionPlugin {
+public class MissionDefinition_disabled implements MissionDefinitionPlugin {
     @Override
     public void defineMission(MissionDefinitionAPI api) {
 
