@@ -66,7 +66,7 @@ public class niko_MPC_dialogUtils {
             public void notifyLeave(InteractionDialogAPI dialog) {
                 if (!niko_MPC_debugUtils.assertEntityHasSatellites(entityFocus)) return;
 
-                niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet, true);
+                niko_MPC_fleetUtils.despawnSatelliteFleet(satelliteFleet, true);
 
                 dialog.setPlugin(originalPlugin);
                 dialog.setInteractionTarget(entity);

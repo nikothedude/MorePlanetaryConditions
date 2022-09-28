@@ -16,10 +16,10 @@ import java.awt.*;
 import java.util.Arrays;
 
 import static com.fs.starfarer.api.GameState.TITLE;
-import static data.utilities.niko_MPC_ids.satelliteParamsId;
+import static data.utilities.niko_MPC_ids.satelliteHandlerId;
 
 public class niko_MPC_debugUtils {
-    private static final Logger log = Global.getLogger(niko_MPC_satelliteUtils.class);
+    private static final Logger log = Global.getLogger(niko_MPC_debugUtils.class);
 
     static {
         log.setLevel(Level.ALL);
@@ -126,7 +126,7 @@ public class niko_MPC_debugUtils {
             }
             result = false;
         }
-        if (niko_MPC_satelliteUtils.defenseSatellitesApplied(entity) || entity.getMemoryWithoutUpdate().get(satelliteParamsId) != null) {
+        if (niko_MPC_satelliteUtils.defenseSatellitesApplied(entity) || entity.getMemoryWithoutUpdate().get(satelliteHandlerId) != null) {
             log.debug(entity.getName() + " failed doEntityNoSatellitesTest because defenseSatellitesApplied returned true");
             if (Global.getSettings().isDevMode()) {
                 displayError("doEntityHasNoSatellitesTest defenseSatellitesApplied failure");

@@ -15,8 +15,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
-import static data.utilities.niko_MPC_ids.satelliteMarketId;
-import static data.utilities.niko_MPC_ids.satelliteParamsId;
+import static data.utilities.niko_MPC_ids.*;
 import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset;
 import static java.lang.Math.round;
@@ -47,8 +46,8 @@ public class niko_MPC_satelliteUtils {
     //                      //
     //////////////////////////
 
-    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, niko_MPC_satelliteHandler params) {
-        initializeSatellitesOntoEntity(entity, entity.getMarket(), params);
+    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, niko_MPC_satelliteHandler handler) {
+        initializeSatellitesOntoEntity(entity, entity.getMarket(), handler);
     }
 
     /**
@@ -56,7 +55,7 @@ public class niko_MPC_satelliteUtils {
      * @param entity The entity to add markets to.
      * @param market Will have satelliteMarketId set to this if not null.
      */
-    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, MarketAPI market, niko_MPC_satelliteHandler params) {
+    public static void initializeSatellitesOntoEntity(SectorEntityToken entity, MarketAPI market, niko_MPC_satelliteHandler handler) {
         if (!niko_MPC_debugUtils.doEntityHasNoSatellitesTest(entity)) { //if the test fails, something fucked up, lets abort
             return;
         }
@@ -64,15 +63,15 @@ public class niko_MPC_satelliteUtils {
         if (market != null) {
             entityMemory.set(satelliteMarketId, market); // we're already protected from overwriting satellites with the above test
         }
-        entityMemory.set(satelliteParamsId, params); //store our parameters onto the entity
+        entityMemory.set(satelliteHandlerId, handler); //store our parameters onto the entity
         //LocationAPI containingLocation = entity.getContainingLocation();
-        /*SectorEntityToken barrageTerrain = containingLocation.addTerrain(satelliteBarrageTerrainId, new niko_MPC_defenseSatelliteBarrageTerrainPlugin.barrageAreaParams(
-            params.satelliteBarrageDistance,
+        /*SectorEntityToken barrageTerrain = containingLocation.addTerrain(satelliteBarrageTerrainId, new niko_MPC_defenseSatelliteBarrageTerrainPlugin.barrageAreahandler(
+            handler.satelliteBarrageDistance,
             "Bombardment zone",
             entity
 
         ));
-        params.satelliteBarrages.add(barrageTerrain);
+        handler.satelliteBarrages.add(barrageTerrain);
         barrageTerrain.setCircularOrbit(entity, 0, 0, 100); */
         addSatellitesUpToMax(entity);
     }
@@ -145,14 +144,14 @@ public class niko_MPC_satelliteUtils {
         }
 
         for (CampaignFleetAPI satelliteFleet : handler.satelliteFleets) {
-            niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
+            niko_MPC_fleetUtils.despawnSatelliteFleet(satelliteFleet);
         }
 
         handler.prepareForGarbageCollection();
-        deleteMemoryKey(entityMemory, satelliteParamsId);
+        deleteMemoryKey(entityMemory, satelliteHandlerId);
     }
 
-    //todo: migrate to params
+    //todo: migrate to handler
     public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(primaryEntity);
         if (handler != null) return handler.getMaxBattleSatellites();
@@ -256,16 +255,15 @@ public class niko_MPC_satelliteUtils {
      */
     // no nullable, i use a method to nullcheck which intellij gets confused by
     public static niko_MPC_satelliteHandler getEntitySatelliteHandler(SectorEntityToken entity) {
-        return (niko_MPC_satelliteHandler) entity.getMemoryWithoutUpdate().get(satelliteParamsId);
+        return (niko_MPC_satelliteHandler) entity.getMemoryWithoutUpdate().get(satelliteHandlerId);
     }
 
     /**
-     * @return Either null, or an instance of niko_MPC_satelliteParams.
+     * @return Either null, or an instance of niko_MPC_satellitehandler.
      */
-    @Nullable
     public static niko_MPC_satelliteHandler.niko_MPC_satelliteParams getEntitySatelliteParams(SectorEntityToken entity) {
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
-        if (handler != null) return  handler.getParams();
+        if (handler != null) return handler.getParams();
         return null;
     }
 
@@ -283,7 +281,7 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
-     * Gets a list of satellites in orbit around entity, using entity's satellite params.
+     * Gets a list of satellites in orbit around entity, using entity's satellite handler.
      * @param entity The entity of which the satellites are orbitting.
      * @return A arraylist of satellite in orbit around the entity. Can return an empty list.
      */
@@ -297,14 +295,14 @@ public class niko_MPC_satelliteUtils {
         return new ArrayList<>();
     }
 
-    public static String getCurrentSatelliteFactionId(niko_MPC_satelliteHandler params) {
-        return getCurrentSatelliteFactionId(params.entity);
+    public static String getCurrentSatelliteFactionId(niko_MPC_satelliteHandler handler) {
+        return getCurrentSatelliteFactionId(handler.entity);
     }
 
     /**
      * More or less just a safer way to access the satellite faction of an entity.
      * Updates the entity's faction id whenever it's ran.
-     * @param entity The entity to get the params from.
+     * @param entity The entity to get the handler from.
      * @return A faction ID, in string form. Can return null if entity has no satellites.
      */
     @Nullable
@@ -392,7 +390,7 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
-     * First gets a list of entities in location with satellites, then does a range check using the entity's params' satelliteInterferenceDistance variable.
+     * First gets a list of entities in location with satellites, then does a range check using the entity's handler' satelliteInterferenceDistance variable.
      * @param coordinates The coordinates to compare the entity to.
      * @param location The location to scan.
      * @return A set containing every entity with satellites that has the coordinates within their interference distance.
@@ -401,12 +399,12 @@ public class niko_MPC_satelliteUtils {
         Set<SectorEntityToken> entitiesWithSatellites = getEntitiesInLocationWithSatellites(location);
         Iterator<SectorEntityToken> iterator = entitiesWithSatellites.iterator();
         
-        // a ensureSatellites check is not needed as the set only has entities with params
+        // a ensureSatellites check is not needed as the set only has entities with handler
 
         while (iterator.hasNext()) {
             SectorEntityToken entity = iterator.next();
-            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity); //we can use this here because the previously used method only returns things with params
-            if (!MathUtils.isWithinRange(entity, coordinates, params.getSatelliteInterferenceDistance())) {
+            niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity); //we can use this here because the previously used method only returns things with handler
+            if (!MathUtils.isWithinRange(entity, coordinates, handler.getSatelliteInterferenceDistance())) {
                 iterator.remove(); //have to remove because we're using a full list already
             }
         }
@@ -477,7 +475,7 @@ public class niko_MPC_satelliteUtils {
     /**
     * Uses doEntitySatellitesWantToBlock/Fight and areEntitySatellitesCapableOfFBlocking/Fighting to determine
     * which fleets the satellites would want to fight when spawned.
-    * @param entity The entity to get the params from.
+    * @param entity The entity to get the handler from.
     * @param fleet The first fleet to check.
     * @param fleetTwo The second fleet to check.
     * @param capabilityCheck If true, runs an additional check that skips over a fleet if areEntitySatellitesCapableOfBlocking returns false.
@@ -485,29 +483,9 @@ public class niko_MPC_satelliteUtils {
     */
     public static CampaignFleetAPI getSideForSatellitesAgainstFleets(SectorEntityToken entity, CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null;
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
 
-        boolean wantsToFightOne = false;
-        boolean wantsToFightTwo = false;
-
-        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
-        if ((doEntitySatellitesWantToFight(entity, fleet)) && (areEntitySatellitesCapableOfFighting(entity, fleet))) wantsToFightOne = true;
-        if ((doEntitySatellitesWantToFight(entity, fleetTwo)) && (areEntitySatellitesCapableOfFighting(entity, fleetTwo))) wantsToFightTwo = true;
-
-        if (wantsToFightOne && wantsToFightTwo) {
-            return null;
-        }
-
-        if (wantsToFightOne) {
-            if (!capabilityCheck || areEntitySatellitesCapableOfBlocking(entity, fleet)) {
-                return fleet;
-            }
-        }
-        else if (wantsToFightTwo) {
-            if (!capabilityCheck || areEntitySatellitesCapableOfBlocking(entity, fleetTwo)) {
-                return fleetTwo;
-            }
-        }
-        return null;
+        return handler.getSideForSatellitesAgainstFleets(fleet, fleetTwo, capabilityCheck);
     }
 
     /**
@@ -532,7 +510,7 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
-     * Gets the side the dummy fleet of entity's params would enter.
+     * Gets the side the dummy fleet of entity's handler would enter.
      * @param entity The entity to get the satellites from.
      * @param battle The battle to get the side for.
      * @return The battleside that entity's satellites would pick. Can return null if the entity has no satellites.
@@ -576,117 +554,72 @@ public class niko_MPC_satelliteUtils {
 
     // CAPABILITY CHECKING
 
-    public static boolean doEntitySatellitesWantToFight(niko_MPC_satelliteHandler params, CampaignFleetAPI fleet) {
-        return doEntitySatellitesWantToFight(params.entity, fleet);
+    public static boolean doEntitySatellitesWantToFight(niko_MPC_satelliteHandler handler, CampaignFleetAPI fleet) {
+        return doEntitySatellitesWantToFight(handler.entity, fleet);
     }
 
     /**
      * Used for generating battles and autoresolve and such.
-     * @param entity The entity to get the satellite params from.
+     * @param entity The entity to get the satellite handler from.
      * @param fleet The fleet to check.
-     * @return True, if the params' dummy fleet is hostile to the given fleet. False otherwise. Can return null
+     * @return True, if the handler' dummy fleet is hostile to the given fleet. False otherwise. Can return null
      * if entity has no satellites.
      */
     public static boolean doEntitySatellitesWantToFight(SectorEntityToken entity, CampaignFleetAPI fleet) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteHandler holder = getEntitySatelliteHandler(entity);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
 
-        return holder.doSatellitesWantToFight(entity, fleet);
-
-        boolean marketUncolonized = false;
-        MarketAPI market = entity.getMarket();
-        if (market != null) {
-            if (market.isPlanetConditionMarketOnly()) {
-                marketUncolonized = true;
-            }
-        }
-
-        CampaignFleetAPI satelliteFleet = holder.getDummyFleetWithUpdate();
-        boolean wantsToFight = satelliteFleet.isHostileTo(fleet);
-
-        // uncolonized markets are derelict and hostile to everyone
-        return (wantsToFight || (marketUncolonized && !Objects.equals(fleet.getFaction().getId(), "derelict")));
+        return handler.doSatellitesWantToFight(fleet);
     }
 
     /**
      * Used for things such as preventing the player from interacting with a market.
-     * @param entity The entity to get the satellite params from.
+     * @param entity The entity to get the satellite handler from.
      * @param fleet The fleet to check.
-     * @return True, if the satellite params' faction is inhospitable or worse to fleets' faction, if the fleet has no transponder,
+     * @return True, if the satellite handler' faction is inhospitable or worse to fleets' faction, if the fleet has no transponder,
      * or if the satellites want to fight.
-     * Can return false if params are null.
+     * Can return false if handler are null.
      */
     public static boolean doEntitySatellitesWantToBlock(SectorEntityToken entity, CampaignFleetAPI fleet) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
 
-        return (!fleet.isTransponderOn() ||
-                getCurrentSatelliteFaction(params).isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
-                doEntitySatellitesWantToFight(entity, fleet));
+        return handler.doSatellitesWantToBlock(fleet);
     }
 
     /**
      * @param entity The entity to check.
-     * @return True if the entity isn't already blocking the fleet, or if entity's satellite params' grace period is
+     * @return True if the entity isn't already blocking the fleet, or if entity's satellite handler' grace period is
      * less or equal to 0. False otherwise.
      */
     public static boolean areEntitySatellitesCapableOfBlocking(SectorEntityToken entity, CampaignFleetAPI fleet) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
-        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
-        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
-        BattleAPI battle = fleet.getBattle();
-
-        if (battle != null && tracker.areSatellitesInvolvedInBattle(battle, params)) {
-            return false;
-        }
-        return (params.getGracePeriod(fleet) <= 0);
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        return handler.areSatellitesCapableOfBlocking(fleet);
     }
 
     /**
     * Unfinished.
     */
     private static boolean areEntitySatellitesCapableOfFighting(SectorEntityToken entity, CampaignFleetAPI fleet) {
-        return true;
+        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false;
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+
+        return handler.areSatellitesCapableOfFighting(fleet);
     }
 
 
     /**
-    * Forces the given entity's satellite params to spawn a full satellite fleet on the target, unless
-    * it's already fighting them. Can fail if the entity has no params.
-    * @param entity The entity to get params from.
+    * Forces the given entity's satellite handler to spawn a full satellite fleet on the target, unless
+    * it's already fighting them. Can fail if the entity has no handler.
+    * @param entity The entity to get handler from.
     * @param fleet The fleet to check and engage.
-    * todo: migrate to params
     */
     public static void makeEntitySatellitesEngageFleet(SectorEntityToken entity, CampaignFleetAPI fleet) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
 
-        BattleAPI battleJoined = null;
-
-        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
-        BattleAPI battle = fleet.getBattle();
-        if (battle != null) {
-            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
-            if (tracker.areSatellitesInvolvedInBattle(battle, params)) return;
-        }
-
-        CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleet(params, fleet);
-        if (battle != null) {
-            if (!battle.join(satelliteFleet)) {
-                niko_MPC_debugUtils.displayError("makeEntitySatellitesEngageFleet battle join failure");
-            }
-            else {
-                battleJoined = battle;
-            }
-        }
-        else { //no battle? fine, i'll MAKE MY OWN
-            satelliteFleet.clearAssignments(); // just in case the hold assignment all satellite fleets get is fucking with a few things
-            satelliteFleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, fleet, 999999999, null); // again, sanity
-            BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); // force the satellite to engage the enemy
-            battleJoined = newBattle;
-        }
-        if (battleJoined != null) { //todo: methodize so that any attempt to join a battle does this
-            getSatelliteBattleTracker().associateSatellitesWithBattle(battleJoined, params, battleJoined.pickSide(satelliteFleet));
-        }
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+        handler.makeEntitySatellitesEngageFleet(fleet);
     }
 
     /**
@@ -704,7 +637,7 @@ public class niko_MPC_satelliteUtils {
 
     /**
     * @param entity The entity to check.
-    * @return true if getEntitySatelliteParams(entity) is not null.
+    * @return true if getEntitySatellitehandler(entity) is not null.
     */
     public static boolean defenseSatellitesApplied(SectorEntityToken entity) {
         return getEntitySatelliteHandler(entity) != null;
@@ -719,22 +652,20 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
-    * Runs params.adjustGracePeriod(fleet, amount). Exists so that we add a new grace decrementer if none exists.
+    * Runs handler.adjustGracePeriod(fleet, amount). Exists so that we add a new grace decrementer if none exists.
     @param fleet The fleet to adjust the grace period of.
     @param amount The amount to adjust the grace by.
-    @param entity The entity to get params from.
+    @param entity The entity to get handler from.
     */
     public static void incrementSatelliteGracePeriod(CampaignFleetAPI fleet, float amount, SectorEntityToken entity) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
-        
-        niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
-        if (params == null) return;
+        niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
 
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {
-            niko_MPC_gracePeriodDecrementer decrementerScript = new niko_MPC_gracePeriodDecrementer(params);
+            niko_MPC_gracePeriodDecrementer decrementerScript = new niko_MPC_gracePeriodDecrementer(handler);
             entity.addScript(decrementerScript);
-            params.gracePeriodDecrementer = decrementerScript;
+            handler.gracePeriodDecrementer = decrementerScript;
         }
-        params.adjustGracePeriod(fleet, amount);
+        handler.adjustGracePeriod(fleet, amount);
     }
 }

@@ -25,6 +25,11 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
     }
 
     @Override
+    public boolean isTransient() {
+        return true;
+    }
+
+    @Override
     public PluginPick<InteractionDialogPlugin> pickInteractionDialogPlugin(SectorEntityToken interactionTarget) {
         BattleAPI battle = null;
         boolean spawnedFleets = false;
@@ -121,7 +126,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
         }
     }
 
-    @Override
+    /*@Override
     public PluginPick<BattleAutoresolverPlugin> pickBattleAutoresolverPlugin(BattleAPI battle) { //imperfect, it seems this doesnt allow the spawned
         //fleets to engage in this autoresolve round
 
@@ -131,7 +136,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
 
                 /*if (!MathUtils.isWithinRange(params.entity, satelliteFleet, params.satelliteInterferenceDistance)) {
                     niko_MPC_fleetUtils.safeDespawnFleet(satelliteFleet);
-                }*/
+                }
             }
         }
         HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToJoin = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingToJoinBattle(battle);
@@ -161,5 +166,5 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
             }
         }
         return null; //todo: hatred.
-    }
+    } */
 }

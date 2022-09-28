@@ -1,19 +1,30 @@
 package data.scripts.campaign.misc;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
+import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.characters.PersonAPI;
+import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
+import com.fs.starfarer.api.impl.campaign.ids.Commodities;
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.fleet.CampaignFleet;
+import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
+import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
 import data.scripts.everyFrames.niko_MPC_fleetsApproachingSatellitesChecker;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
-import data.utilities.niko_MPC_debugUtils;
-import data.utilities.niko_MPC_fleetUtils;
-import data.utilities.niko_MPC_satelliteBattleTracker;
-import data.utilities.niko_MPC_satelliteUtils;
-import org.jetbrains.annotations.Nullable;
+import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
+import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
+import data.utilities.*;
+import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
+import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
+import static data.utilities.niko_MPC_ids.satelliteHandlerId;
+import static data.utilities.niko_MPC_memoryUtils.deleteMemoryKey;
 import static data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset;
 import static java.lang.Math.round;
 
@@ -64,6 +75,7 @@ public class niko_MPC_satelliteHandler {
     public niko_MPC_fleetsApproachingSatellitesChecker approachingFleetChecker;
 
     public niko_MPC_gracePeriodDecrementer gracePeriodDecrementer;
+    public niko_MPC_satelliteFleetProximityChecker satelliteFleetProximityChecker;
     public List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
     private CampaignFleetAPI dummyFleet;
 
@@ -106,6 +118,9 @@ public class niko_MPC_satelliteHandler {
 
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
         entity.addScript(gracePeriodDecrementer);
+
+        satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, entity);
+        entity.addScript(satelliteFleetProximityChecker);
     }
 
     public List<CustomCampaignEntityAPI> getSatellites() {
@@ -118,6 +133,7 @@ public class niko_MPC_satelliteHandler {
 
     public void prepareForGarbageCollection() {
        //approachingFleetChecker.prepareForGarbageCollection();
+        satelliteFleetProximityChecker.prepareForGarbageCollection();
         gracePeriodDecrementer.prepareForGarbageCollection();
 
         entity = null;
@@ -126,12 +142,12 @@ public class niko_MPC_satelliteHandler {
         gracePeriods = null;
 
         for (CampaignFleetAPI fleet : satelliteFleets) {
-            niko_MPC_fleetUtils.safeDespawnFleet(fleet, false);
+            niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, false);
         }
         satelliteFleets = null;
 
         if (getDummyFleet() != null) {
-            niko_MPC_fleetUtils.safeDespawnFleet(getDummyFleet(), true);
+            niko_MPC_fleetUtils.despawnSatelliteFleet(getDummyFleet(), true);
             dummyFleet = null;
         }
 
@@ -139,7 +155,7 @@ public class niko_MPC_satelliteHandler {
         params = null;
 
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
-        tracker.removeParamsFromAllBattles(this);
+        tracker.removeHandlerFromAllBattles(this);
     }
 
     private CampaignFleetAPI getDummyFleet() {
@@ -202,15 +218,17 @@ public class niko_MPC_satelliteHandler {
         updateFactionId();
         return getSatelliteFactionId();
     }
+
+    public FactionAPI getCurrentSatelliteFaction() {
+        return Global.getSector().getFaction(getCurrentSatelliteFactionId());
+    }
     
     /**
     * Updates the factionId, by syncing it with the market, or setting it to derelict
     * if the market is uncolonized.
     * Updates the faction of all satellite entities.
     */
-    public void updateFactionId() { 
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
-        
+    public void updateFactionId() {
         MarketAPI market = niko_MPC_satelliteUtils.getEntitySatelliteMarket(entity);
         if (market != null) {
             if (market.isPlanetConditionMarketOnly()) {
@@ -224,6 +242,11 @@ public class niko_MPC_satelliteHandler {
         else if (!Objects.equals(this.getSatelliteFactionId(), entity.getFaction().getId())) {
             setSatelliteId(entity.getFaction().getId());
         }
+    }
+
+    public void updateFactionForSelfAndSatellites() {
+        updateFactionId();
+        updateSatelliteFactions();
     }
 
 
@@ -247,7 +270,7 @@ public class niko_MPC_satelliteHandler {
      * @param amount The amount to adjust the grace period of fleet of.
      */
     public void adjustGracePeriod(CampaignFleetAPI fleet, float amount) {
-        addFleetRefToGracePeriodsIfNonePresent(fleet);
+        addFleetRefToGracePeriodsIfNonePresent(fleet); //todo: make this work with player battles
         getGracePeriods().put(fleet, Math.max(0, getGracePeriods().get(fleet) + amount));
     }
 
@@ -309,7 +332,7 @@ public class niko_MPC_satelliteHandler {
                 removeSatellite(satellite, false, false); //we dont want these weirdos overlapping
                 iterator.remove();
             }
-            addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, getParams().satelliteOrbitDistance);
+            niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, getParams().satelliteOrbitDistance);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
     }
@@ -320,7 +343,9 @@ public class niko_MPC_satelliteHandler {
      * @param satellite The satellite to remove.
      */
     public void removeSatellite(CustomCampaignEntityAPI satellite, boolean regenerateOrbit, boolean removeFromList) {
-        getSatellites().remove(satellite);
+        if (removeFromList) {
+            getSatellites().remove(satellite);
+        }
         Misc.fadeAndExpire(satellite);
         satellite.getContainingLocation().removeEntity(satellite);
 
@@ -375,7 +400,7 @@ public class niko_MPC_satelliteHandler {
         LocationAPI containingLocation = getEntity().getContainingLocation();
         // instantiate the satellite in the system
         CustomCampaignEntityAPI satellite = containingLocation.addCustomEntity(orderedId, null, id, factionId);
-        addOrbitPointingDownWithRelativeOffset(satellite, getEntity(), 0, params.satelliteOrbitDistance); //set up the orbit
+        niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset(satellite, getEntity(), 0, params.satelliteOrbitDistance); //set up the orbit
 
         getSatellites().add(satellite); //now add the satellite to the params' list
 
@@ -394,9 +419,220 @@ public class niko_MPC_satelliteHandler {
      */
     public BattleAPI.BattleSide getSideForBattle(BattleAPI battle) {
         CampaignFleetAPI dummyFleet = getDummyFleetWithUpdate();
+        updateFactionId();
+        updateSatelliteFactions();
         BattleAPI.BattleSide battleSide = battle.pickSide(dummyFleet);
 
         return battleSide;
+    }
+
+    /**
+     * Used for generating battles and autoresolve and such.
+     * @param fleet The fleet to check.
+     * @return True, if the params' dummy fleet is hostile to the given fleet. False otherwise.
+     */
+    public boolean doSatellitesWantToFight(CampaignFleetAPI fleet) {
+
+        boolean marketUncolonized = false;
+        MarketAPI market = entity.getMarket();
+        if (market != null) {
+            if (market.isPlanetConditionMarketOnly()) {
+                marketUncolonized = true;
+            }
+        }
+
+        boolean wantsToFight = getDummyFleetWithUpdate().isHostileTo(fleet);
+
+        // uncolonized markets are derelict and hostile to everyone
+        return (wantsToFight || (marketUncolonized && !Objects.equals(fleet.getFaction().getId(), "derelict")));
+    }
+
+    /**
+     * Unfinished.
+     */
+    public boolean areSatellitesCapableOfFighting(CampaignFleetAPI fleet) {
+        return true;
+    }
+
+    /**
+     * Used for things such as preventing the player from interacting with a market.
+     * @param fleet The fleet to check.
+     * @return True, if the satellite params' faction is inhospitable or worse to fleets' faction, if the fleet has no transponder,
+     * or if the satellites want to fight.
+     */
+    public boolean doSatellitesWantToBlock(CampaignFleetAPI fleet) {
+        return (!fleet.isTransponderOn() ||
+                getCurrentSatelliteFaction().isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
+                doSatellitesWantToFight(fleet));
+    }
+
+    /**
+     * @return True if the entity isn't already blocking the fleet, or if entity's satellite params' grace period is
+     * less or equal to 0. False otherwise.
+     */
+    public boolean areSatellitesCapableOfBlocking(CampaignFleetAPI fleet) {
+        BattleAPI battle = fleet.getBattle();
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+
+        if (battle != null && tracker.areSatellitesInvolvedInBattle(battle, this)) {
+            return false;
+        }
+        return (getGracePeriod(fleet) <= 0);
+    }
+
+    /**
+     * Uses doEntitySatellitesWantToBlock/Fight and areEntitySatellitesCapableOfFBlocking/Fighting to determine
+     * which fleets the satellites would want to fight when spawned.
+     * @param fleet The first fleet to check.
+     * @param fleetTwo The second fleet to check.
+     * @param capabilityCheck If true, runs an additional check that skips over a fleet if areEntitySatellitesCapableOfBlocking returns false.
+     * @return Null if the satellites want to fight both or neither, otherwise, returns which of the two fleets they're willing to fight.
+     */
+    public CampaignFleetAPI getSideForSatellitesAgainstFleets(CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
+
+        boolean wantsToFightOne = false;
+        boolean wantsToFightTwo = false;
+
+        if ((doSatellitesWantToFight(fleet)) && (areSatellitesCapableOfFighting(fleet))) wantsToFightOne = true;
+        if ((doSatellitesWantToFight(fleetTwo)) && (areSatellitesCapableOfFighting(fleetTwo))) wantsToFightTwo = true;
+
+        if (wantsToFightOne && wantsToFightTwo) {
+            return null;
+        }
+
+        if (wantsToFightOne) {
+            if (!capabilityCheck || areSatellitesCapableOfBlocking(fleet)) {
+                return fleet;
+            }
+        }
+        else if (wantsToFightTwo) {
+            if (!capabilityCheck || areSatellitesCapableOfBlocking(fleetTwo)) {
+                return fleetTwo;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Forces us to spawn a full satellite fleet on the target, unless
+     * we're already fighting them or they have grace.
+     * @param fleet The fleet to check and engage.
+     */
+    public void makeEntitySatellitesEngageFleet(CampaignFleetAPI fleet) {
+        BattleAPI battleJoined = null;
+
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+        BattleAPI battle = fleet.getBattle();
+        if (battle != null) {
+            if (tracker.areSatellitesInvolvedInBattle(battle, this)) return;
+        }
+
+        CampaignFleetAPI satelliteFleet = createNewFullSatelliteFleet(fleet.getLocation(), fleet.getContainingLocation(), true, false);
+        if (battle != null) {
+            if (!battle.join(satelliteFleet)) {
+                niko_MPC_debugUtils.displayError("makeEntitySatellitesEngageFleet battle join failure");
+            }
+            else {
+                battleJoined = battle;
+            }
+        }
+        else { //no battle? fine, i'll MAKE MY OWN
+            satelliteFleet.clearAssignments(); // just in case the hold assignment all satellite fleets get is fucking with a few things
+            satelliteFleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, fleet, 999999999, null); // again, sanity
+            BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); // force the satellite to engage the enemy
+            battleJoined = newBattle;
+        }
+        if (battleJoined != null) { //todo: methodize so that any attempt to join a battle does this
+            tracker.associateSatellitesWithBattle(battleJoined, this, battleJoined.pickSide(satelliteFleet));
+        }
+    }
+
+    /**
+     * Creates an empty fleet with absolutely nothing in it, except for the memflags satellite fleets must have.
+     * @return A new satellite fleet.
+     */
+    public CampaignFleetAPI createSatelliteFleetTemplate() {
+
+        CampaignFleetAPI fleet = Global.getFactory().createEmptyFleet(getCurrentSatelliteFactionId(), getSatelliteFleetName(), true);
+        setTemplateMemoryKeys(fleet);
+
+        fleet.setAI(new niko_MPC_satelliteFleetAI((CampaignFleet) fleet));
+        fleet.addEventListener(new niko_MPC_satelliteFleetDespawnListener());
+
+        PersonAPI aiCaptain = new AICoreOfficerPluginImpl().createPerson(Commodities.GAMMA_CORE, "derelict", null);
+        fleet.setCommander(aiCaptain);
+
+        return fleet;
+    }
+
+    public void cleanUpSatelliteFleetBeforeDeletion(CampaignFleetAPI satelliteFleet) {
+
+        BattleAPI battle = satelliteFleet.getBattle();
+        if (battle != null) {
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+            if (tracker.areSatellitesInvolvedInBattle(battle, this)) {
+                tracker.removeHandlerFromBattle(battle, this);
+            }
+        }
+
+        getSatelliteFleets().remove(satelliteFleet);
+        niko_MPC_memoryUtils.deleteMemoryKey(satelliteFleet.getMemoryWithoutUpdate(), satelliteHandlerId);
+    }
+
+    public List<CampaignFleetAPI> getSatelliteFleets() {
+        return satelliteFleets;
+    }
+
+    public CampaignFleetAPI spawnSatelliteFleet(Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+        CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate();
+
+        location.addEntity(satelliteFleet);
+        satelliteFleet.setLocation(coordinates.x, coordinates.y);
+        if (temporary) {
+            niko_MPC_temporarySatelliteFleetDespawner script = new niko_MPC_temporarySatelliteFleetDespawner(satelliteFleet, this);
+            satelliteFleet.addScript(script);
+            satelliteFleet.getMemoryWithoutUpdate().set(niko_MPC_ids.temporaryFleetDespawnerId, script);
+        }
+
+        satelliteFleet.addAssignment(FleetAssignment.HOLD, location.createToken(coordinates), 99999999f);
+
+        if (dummy) {
+            newDummySatellite(satelliteFleet);
+        }
+        else {
+            newSatellite(satelliteFleet);
+        }
+
+        return satelliteFleet;
+    }
+
+    public CampaignFleetAPI createNewFullSatelliteFleet(Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+        CampaignFleetAPI satelliteFleet = spawnSatelliteFleet(coordinates, location, temporary, dummy);
+        niko_MPC_fleetUtils.attemptToFillFleetWithVariants(getMaxBattleSatellites(), satelliteFleet, getWeightedVariantIds(), true);
+
+        return satelliteFleet;
+    }
+
+    public CampaignFleetAPI createNewFullDummySatelliteFleet(Vector2f coordinates, LocationAPI location) {
+        return createNewFullSatelliteFleet(coordinates, location, false, true);
+    }
+
+    public CampaignFleetAPI createDummyFleet(SectorEntityToken entity) {
+        CampaignFleetAPI satelliteFleet = createNewFullDummySatelliteFleet(new Vector2f(99999999, 99999999), entity.getContainingLocation());
+
+        satelliteFleet.setDoNotAdvanceAI(true);
+
+        return satelliteFleet;
+    }
+
+    private void setTemplateMemoryKeys(CampaignFleetAPI fleet) {
+        MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
+
+        fleetMemory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, true);
+        fleetMemory.set(MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER, true);
+
+        fleetMemory.set(isSatelliteFleetId, true);
+        fleetMemory.set(satelliteHandlerId, this);
     }
 
     public SectorEntityToken getEntity() {
@@ -415,6 +651,14 @@ public class niko_MPC_satelliteHandler {
         return getParams().maxBattleSatellites;
     }
 
+    public HashMap<String, Float> getWeightedVariantIds() {
+        return getParams().weightedVariantIds;
+    }
+
+    public float getSatelliteOrbitDistance() {
+        return getParams().satelliteOrbitDistance;
+    }
+
     /**
      * Instantiates a new dummy fleet is none is present, but ONLY if getSatelliteFaction() doesn't return null.
      * @return the dummyFleet used for things such as targetting and conditional attack logic. Can return a standard
@@ -424,9 +668,9 @@ public class niko_MPC_satelliteHandler {
         FactionAPI faction = getSatelliteFaction();
         if (dummyFleet == null) {
             if (faction != null) { // a strange hack i have to do, since this method is called before factions /exist/?
-                niko_MPC_fleetUtils.createDummyFleet(this, entity);
+                createDummyFleet(entity);
             } else {
-               return niko_MPC_fleetUtils.spawnSatelliteFleet(this, entity.getLocation(), entity.getContainingLocation());
+               return spawnSatelliteFleet(entity.getLocation(), entity.getContainingLocation(), true, false);
             }
         }
         return dummyFleet;

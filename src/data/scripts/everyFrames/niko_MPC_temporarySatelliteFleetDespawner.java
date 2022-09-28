@@ -4,9 +4,7 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
-import data.utilities.niko_MPC_fleetUtils;
-import data.utilities.niko_MPC_satelliteBattleTracker;
-import data.utilities.niko_MPC_satelliteUtils;
+import data.utilities.*;
 
 public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScriptWithCleanup {
 
@@ -43,8 +41,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
         advanceTimeSinceStart += amount;
 
         if (fleet.getBattle() == null) {
-            getRidOfFleet();
-            prepareForGarbageCollection();
+            getRidOfFleet(); //this despawns the fleet, which calls the listener, which calls prepareforgc. its weird
             return;
         }
         else {
@@ -56,25 +53,20 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
         }
     }
 
-    private void prepareForGarbageCollection() {
+    public void prepareForGarbageCollection() {
 
-        BattleAPI battle = fleet.getBattle();
-        if (battle != null && params != null) {
-            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
-            if (tracker.areSatellitesInvolvedInBattle(battle, params)) {
-                tracker.removeParamsFromBattle(battle, params);
-            }
-        }
         if (fleet != null) {
+            niko_MPC_memoryUtils.deleteMemoryKey(fleet.getMemoryWithoutUpdate(), niko_MPC_ids.temporaryFleetDespawnerId);
             fleet.removeScript(this);
             fleet = null;
         }
+        params = null;
         done = true;
     }
 
 
     private void getRidOfFleet() {
         boolean vanish = (advanceTimeSinceStart < 1); //arbitrary number
-        niko_MPC_fleetUtils.safeDespawnFleet(fleet, vanish);
+        niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, vanish);
     }
 }

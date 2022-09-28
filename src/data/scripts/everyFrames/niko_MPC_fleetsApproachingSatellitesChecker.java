@@ -16,12 +16,12 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
 
     public SectorEntityToken entity;
     public boolean done = false;
-    public niko_MPC_satelliteHandler satelliteParams;
+    public niko_MPC_satelliteHandler satelliteHandler;
 
     private float deltaTime = 0f;
 
-    public niko_MPC_fleetsApproachingSatellitesChecker(niko_MPC_satelliteHandler satelliteParams, SectorEntityToken entity) {
-        this.satelliteParams = satelliteParams;
+    public niko_MPC_fleetsApproachingSatellitesChecker(niko_MPC_satelliteHandler satelliteHandler, SectorEntityToken entity) {
+        this.satelliteHandler = satelliteHandler;
         this.entity = entity;
     }
 
@@ -57,7 +57,7 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
             deltaTime = 0;
         }
 
-        List<CampaignFleetAPI> fleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteParams().getSatelliteInterferenceDistance());
+        List<CampaignFleetAPI> fleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(getEntity(), getSatelliteHandler().getSatelliteInterferenceDistance());
         for (CampaignFleetAPI fleet : fleetsWithinInterferenceDistance) {
             if (fleet == null) continue; //literally 0 idea how this can be null but okay starsector
             if (fleet == Global.getSector().getPlayerFleet()) continue;
@@ -81,14 +81,14 @@ public class niko_MPC_fleetsApproachingSatellitesChecker implements EveryFrameSc
         return entity;
     }
 
-    public niko_MPC_satelliteHandler getSatelliteParams() {
-        return satelliteParams;
+    public niko_MPC_satelliteHandler getSatelliteHandler() {
+        return satelliteHandler;
     }
 
     public void prepareForGarbageCollection() {
-        satelliteParams.approachingFleetChecker = null;
+        satelliteHandler.approachingFleetChecker = null;
 
-        satelliteParams = null;
+        satelliteHandler = null;
 
         if (entity != null) {
             entity.removeScript(this);

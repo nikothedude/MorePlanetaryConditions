@@ -7,7 +7,7 @@
   "height": 116,
   "width": 130,
   "center": [65, 59.5],
-  "collisionRadius": 87.5,
+  "collisionRadius": 161.5,
   "shieldCenter": [-1.5, 0],
   "shieldRadius": 0,
   "viewOffset": 0,
@@ -18,7 +18,7 @@
     "niko_MPC_graviticSupercomputer",
     "niko_MPC_tachyonFighterComms",
     "pointdefenseai",
-	"niko_MPC_cheapDeployment"
+    "niko_MPC_cheapDeployment"
   ],
   "weaponSlots": [
     {

@@ -62,13 +62,13 @@ public abstract class niko_MPC_baseSatelliteSpawnerBattlePlugin extends BattleCr
 
         for (SectorEntityToken entity : entities) {
             if (atMax(side)) break;
-            niko_MPC_satelliteHandler params = getEntitySatelliteHandler(entity);
-            HashMap<String, Float> weightedVariants = params.weightedVariantIds;
+            niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
+            HashMap<String, Float> weightedVariants = handler.getWeightedVariantIds();
             WeightedRandomPicker<String> picker = new WeightedRandomPicker<>();
             for (Map.Entry<String, Float> entry : weightedVariants.entrySet()) {
                 picker.add(entry.getKey(), entry.getValue()); //add the keys and values to the picker in hashmap format, since
             } //the picker pick() uses the value as chance, key as value
-            for (int i = 0; i < params.maxBattleSatellites; i++) {
+            for (int i = 0; i < handler.getMaxBattleSatellites(); i++) {
                 if (atMax(side)) break;
                 pickedVariants.add(picker.pick());
             }

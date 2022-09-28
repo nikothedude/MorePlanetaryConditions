@@ -10,26 +10,26 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Save-specific global list that stores a hashmap of battleAPI->(satelliteParams->battleside). Will eventually replace the
- * list on params.
+ * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside). Will eventually replace the
+ * list on handler.
  */
 public class niko_MPC_satelliteBattleTracker {
 
     public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> battles = new HashMap<>();
 
     /**
-     * Associates a hashmap entry of (battle->(params->side)). The side is stored for future reference.
+     * Associates a hashmap entry of (battle->(handler->side)). The side is stored for future reference.
      * <p>
      * If the hashmap doesnt contain battle, or if the v alue of battle is null, instantiates a new hashmap and assigns (battle->Hashmap()).
      * @param battle The battle to associate with.
-     * @param params The satellite params we are associating.
+     * @param handler The satellite handler we are associating.
      * @param side The stored side of the battle.
      */
-    public void associateSatellitesWithBattle(BattleAPI battle, niko_MPC_satelliteHandler params, BattleAPI.BattleSide side) {
+    public void associateSatellitesWithBattle(BattleAPI battle, niko_MPC_satelliteHandler handler, BattleAPI.BattleSide side) {
         if (!battles.containsKey(battle) || battles.get(battle) == null) battles.put(battle, new HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide>());
 
         Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide> currentBattles = battles.get(battle);
-        currentBattles.put(params, side);
+        currentBattles.put(handler, side);
     }
 
     public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> getBattles() {
@@ -41,18 +41,18 @@ public class niko_MPC_satelliteBattleTracker {
         return (battles.get(battle) == null ? new HashSet<niko_MPC_satelliteHandler>() : battles.get(battle).keySet());
     }
 
-    public BattleAPI.BattleSide getSideOfSatellitesForBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
-        return (battles.get(battle) == null ? null : battles.get(battle).get(params));
+    public BattleAPI.BattleSide getSideOfSatellitesForBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
+        return (battles.get(battle) == null ? null : battles.get(battle).get(handler));
     }
 
-    public boolean areSatellitesInvolvedInBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
+    public boolean areSatellitesInvolvedInBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
         if (battles.containsKey(battle)) {
-            if (battles.get(battle).containsKey(params)) {
+            if (battles.get(battle).containsKey(handler)) {
                 return true;
             }
             else {
                 /*updateBattleAssociationWithScan(battle);
-                return battles.get(battle).containsKey(params);*/
+                return battles.get(battle).containsKey(handler);*/
                 return false;
             }
         }
@@ -64,27 +64,27 @@ public class niko_MPC_satelliteBattleTracker {
     }
 
     public HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> scanBattleForSatellites(BattleAPI battle) {
-        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> paramsToFleetMap = new HashMap<>();
+        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> handlerToFleetMap = new HashMap<>();
         for (CampaignFleetAPI fleet : battle.getBothSides()) {
-            niko_MPC_satelliteHandler foundParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);
-            if (foundParams != null) {
-                paramsToFleetMap.put(foundParams, fleet);
+            niko_MPC_satelliteHandler foundhandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);
+            if (foundhandler != null) {
+                handlerToFleetMap.put(foundhandler, fleet);
             }
         }
-        return paramsToFleetMap;
+        return handlerToFleetMap;
     }
 
     public void updateBattleAssociationWithScan(BattleAPI battle) {
-        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> paramsToFleetMap = scanBattleForSatellites(battle);
+        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> handlerToFleetMap = scanBattleForSatellites(battle);
 
-        for (Map.Entry<niko_MPC_satelliteHandler, CampaignFleetAPI> entry : paramsToFleetMap.entrySet()) {
-            niko_MPC_satelliteHandler params = entry.getKey();
+        for (Map.Entry<niko_MPC_satelliteHandler, CampaignFleetAPI> entry : handlerToFleetMap.entrySet()) {
+            niko_MPC_satelliteHandler handler = entry.getKey();
             CampaignFleetAPI fleet = entry.getValue();
 
-            if (!areSatellitesInvolvedInBattle(battle, params)) {
-                HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide> paramsToSideMap = new HashMap<>();
-                paramsToSideMap.put(params, battle.pickSide(fleet));
-                battles.put(battle, paramsToSideMap);
+            if (!areSatellitesInvolvedInBattle(battle, handler)) {
+                HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide> handlerToSideMap = new HashMap<>();
+                handlerToSideMap.put(handler, battle.pickSide(fleet));
+                battles.put(battle, handlerToSideMap);
             }
         }
     }
@@ -93,15 +93,15 @@ public class niko_MPC_satelliteBattleTracker {
         battles.remove(battle);
     }
 
-    public void removeParamsFromBattle(BattleAPI battle, niko_MPC_satelliteHandler params) {
+    public void removeHandlerFromBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
         if (battles.get(battle) != null) {
-            battles.get(battle).remove(params);
+            battles.get(battle).remove(handler);
         }
     }
 
-    public void removeParamsFromAllBattles(niko_MPC_satelliteHandler params) {
+    public void removeHandlerFromAllBattles(niko_MPC_satelliteHandler handler) {
         for (BattleAPI battle : battles.keySet()) {
-            removeParamsFromBattle(battle, params);
+            removeHandlerFromBattle(battle, handler);
         }
     }
 

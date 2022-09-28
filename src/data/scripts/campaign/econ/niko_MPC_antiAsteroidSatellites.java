@@ -57,6 +57,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         weightedVariantIds.put("niko_MPC_defenseSatelliteCore_shielded", 5f);
         weightedVariantIds.put("niko_MPC_defenseSatelliteCore_beamer", 1.5f);
         weightedVariantIds.put("niko_MPC_defenseSatelliteCore_ordnance", 2f);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_swarm", 0.01f); // :)
     }
 
     @Override
@@ -73,6 +74,9 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                 niko_MPC_satelliteUtils.syncMarket(primaryEntity, market); // if not, set its memory key to market
             }
             else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up. todo: remove later
+            if (!niko_MPC_debugUtils.assertEntityHasSatellites(primaryEntity)) return;
+            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
+            handler.updateFactionForSelfAndSatellites();
         }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
     }
@@ -84,7 +88,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         float orbitDistance = getSatelliteOrbitDistance(market.getPrimaryEntity());
         float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
         float barrageDistance = getSatelliteBarrageDistance(market.getPrimaryEntity());
-        niko_MPC_satelliteHandler params = new niko_MPC_satelliteHandler(
+        niko_MPC_satelliteHandler handler = new niko_MPC_satelliteHandler(
                 market.getPrimaryEntity(),
                 satelliteId,
                 satelliteFactionId,
@@ -96,7 +100,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                 barrageDistance,
                 weightedVariantIds);
 
-        niko_MPC_satelliteUtils.initializeSatellitesOntoEntity(market.getPrimaryEntity(), market, params);
+        niko_MPC_satelliteUtils.initializeSatellitesOntoEntity(market.getPrimaryEntity(), market, handler);
     }
 
     /**
@@ -110,16 +114,16 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         return getSatelliteOrbitDistance(entity, false);
     }
 
-    private float getSatelliteOrbitDistance(SectorEntityToken entity, boolean useParams) {
-        if (useParams) {
-            return getEntitySatelliteHandler(entity).satelliteOrbitDistance;
+    private float getSatelliteOrbitDistance(SectorEntityToken entity, boolean useHandler) {
+        if (useHandler) {
+            return niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity).getSatelliteOrbitDistance();
         }
         float extraRadius = 15f;
         return entity.getRadius() + extraRadius;
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken entity) {
-        return getSatelliteInterferenceDistance(entity, getEntitySatelliteHandler(entity).satelliteOrbitDistance);
+        return getSatelliteInterferenceDistance(entity, niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity).getSatelliteOrbitDistance());
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {

@@ -14,9 +14,9 @@ public class MissionDefinition implements MissionDefinitionPlugin {
         api.initFleet(FleetSide.PLAYER, "ISS", FleetGoal.ATTACK, false);
         api.initFleet(FleetSide.ENEMY, "ISS", FleetGoal.ATTACK, true);
 
-        api.addToFleet(FleetSide.PLAYER, "niko_MPC_defenseSatelliteCore_barrage", FleetMemberType.SHIP, null, false);
+        api.addToFleet(FleetSide.PLAYER, "niko_MPC_defenseSatelliteCore_swarm", FleetMemberType.SHIP, null, false);
         api.addToFleet(FleetSide.PLAYER, "tempest_Attack", FleetMemberType.SHIP, "Oogik", false);
-        api.addToFleet(FleetSide.ENEMY, "niko_MPC_defenseSatelliteCore_barrage", FleetMemberType.SHIP, null, false);
+        api.addToFleet(FleetSide.ENEMY, "niko_MPC_defenseSatelliteCore_swarm", FleetMemberType.SHIP, null, false);
 
         // Set up the map.
         float width = 6000f;
