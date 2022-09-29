@@ -25,7 +25,7 @@ public class niko_MPC_satelliteBarrageTerrainCombatEffectAdder extends BaseEvery
                 niko_MPC_defenseSatelliteBarrageTerrainPlugin barrageTerrain = (niko_MPC_defenseSatelliteBarrageTerrainPlugin) terrain.getPlugin();
 
                 BattleAPI.BattleSide entitySide = niko_MPC_satelliteUtils.getSideForSatellites(terrain.getOrbit().getFocus(), playerFleet.getBattle());
-                if (entitySide != BattleAPI.BattleSide.NO_JOIN) {
+                if (niko_MPC_satelliteUtils.isSideValid(entitySide)) {
                     engine.addPlugin(new niko_MPC_defenseSatelliteBarrageTerrainCombatEffect(barrageTerrain, entitySide));
                 }
             }

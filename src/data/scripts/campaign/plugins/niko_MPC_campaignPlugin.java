@@ -101,7 +101,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin { //todo: add to
             HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToJoinBattle = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingToJoinBattle(battle);
             if (entityToAlwaysSpawnFleetsFrom != null) {
                 BattleAPI.BattleSide side = niko_MPC_satelliteUtils.getSideForSatellites(entityToAlwaysSpawnFleetsFrom, battle);
-                if (side != BattleAPI.BattleSide.NO_JOIN) {
+                if (niko_MPC_satelliteUtils.isSideValid(side)) {
                     entitiesWillingToJoinBattle.put(entityToAlwaysSpawnFleetsFrom, side);
                 }
             }

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.util.Misc;
+import com.fs.starfarer.campaign.fleet.Battle;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import org.apache.log4j.Level;
@@ -467,7 +468,7 @@ public class niko_MPC_satelliteUtils {
         for (SectorEntityToken entity : getNearbyEntitiesWithSatellites(coordinates, containingLocation)) {
             BattleAPI.BattleSide battleSide = getSideForSatellites(entity, battle);
 
-            if (battleSide != BattleAPI.BattleSide.NO_JOIN) { //the entity doesnt want to join if its NO_JOIN
+            if (isSideValid(battleSide)) { //the entity doesnt want to join if its NO_JOIN
                 entitiesWillingToFight.put(entity, battleSide);
             }
         }
@@ -521,6 +522,10 @@ public class niko_MPC_satelliteUtils {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null;
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
         return handler.getSideForBattle(battle);
+    }
+
+    public static boolean isSideValid(BattleAPI.BattleSide side) {
+        return (side != BattleAPI.BattleSide.NO_JOIN && side != null);
     }
 
     /**
