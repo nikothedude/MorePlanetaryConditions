@@ -97,7 +97,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
 
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
-        if (!engine.isMission()) { //we do this because theres no fleets in a mission
+        if (playerFleet != null && playerFleet.getBattle() != null) { //we do this because theres no fleets in a mission
             BattleAPI thisBattle = playerFleet.getBattle();
             boolean usePlayerSide = (side == FleetSide.PLAYER);
             // WHY IS THIS SO FUCKING OBTUSE TO DO

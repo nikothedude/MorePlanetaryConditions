@@ -2,11 +2,16 @@ package data;
 
 import com.fs.starfarer.api.BaseModPlugin;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.PluginPick;
+import com.fs.starfarer.api.campaign.CampaignPlugin;
 import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
+import com.fs.starfarer.api.combat.ShipAIPlugin;
+import com.fs.starfarer.api.combat.ShipAPI;
+import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import data.scripts.bounty.MagicBountyCampaignPlugin;
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener;
@@ -33,6 +38,13 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
         }
     }
 
+   /* @Override
+    public PluginPick<ShipAIPlugin> pickShipAI(FleetMemberAPI member, ShipAPI ship) {
+        if (ship.getHullSpec().hasTag("niko_MPC_isSatelliteHullId")) {
+
+            return new PluginPick<ShipAIPlugin>(Global.getSettings().createDefaultShipAI(ship, config), CampaignPlugin.PickPriority.MOD_SPECIFIC);
+        }
+    } */
 
     @Override
     public void onGameLoad(boolean newGame) {

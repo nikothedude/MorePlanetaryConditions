@@ -25,32 +25,21 @@ public class niko_MPC_satellitePositionDebugger extends BaseEveryFrameCombatPlug
     Vector2f idealPosition;
     float facing;
 
-    float maxTimeToLive = 50;
-
-
     public niko_MPC_satellitePositionDebugger(ShipAPI satellite, Vector2f idealPosition, float facing) {
         this.satellite = satellite;
         this.idealPosition = idealPosition;
         this.facing = facing;
     }
 
-    // runs for ~50 seconds (is it really though?), constantly correcting the facing
     @Override
     public void advance(float amount, List<InputEventAPI> events) {
         super.advance(amount, events);
 
-        maxTimeToLive -= amount;
-        if (maxTimeToLive <= 0) {
+        if (!satellite.isAlive()) {
             prepareForGarbageCollection();
             return;
         }
-      /*  if (!satellite.getLocation().equals(idealPosition)) {
-            log.debug(satellite + "in wrong position, should be " + idealPosition.x + ", " + idealPosition.y + ". Is in " +
-                    satellite.getLocation().x + ", " + satellite.getLocation().y);
-            satellite.getLocation().set(idealPosition);
-        } */
         if (satellite.getFacing() != facing) {
-            log.debug(satellite + "has wrong facing, should be " + facing + ", is " + satellite.getFacing() + ".");
             satellite.setFacing(facing);
             for (ShipAPI module : satellite.getChildModulesCopy()) {
                 module.setFacing(facing);
