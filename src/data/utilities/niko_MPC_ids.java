@@ -6,6 +6,9 @@ import java.util.List;
 
 public class niko_MPC_ids {
 
+    public static final String niko_MPC_modId = "niko_morePlanetaryConditions";
+    public static final String niko_MPC_masterConfig = "niko_MPC_settings.json";
+
     /**
      * Stored value of the defense satellite luddic path suppressor structure id. Here for ease of use and modification.
      */

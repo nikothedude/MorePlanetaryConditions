@@ -69,14 +69,14 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         if (primaryEntity != null) {
             // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
             maxPhysicalSatellites = niko_MPC_satelliteUtils.getMaxPhysicalSatellitesBasedOnEntitySize(primaryEntity);
-            maxBattleSatellites = niko_MPC_satelliteUtils.getMaxBattleSatellites(primaryEntity); //todo: placeholder
+            maxBattleSatellites = niko_MPC_satelliteUtils.getMaxBattleSatellites(primaryEntity);
             if (!defenseSatellitesApplied(primaryEntity)) { // if our entity is not supposed to have satellites
                 initializeSatellitesOntoHolder(); // we should make it so that it should
             } else if (niko_MPC_satelliteUtils.marketsDesynced(primaryEntity, market)) { // if it is, check if its tracking market correctly
                 ensureOldMarketHasNoReferencesFailsafe();
                 niko_MPC_satelliteUtils.syncMarket(primaryEntity, market); // if not, set its memory key to market
             }
-            else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up. todo: remove later
+            else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up.
             if (!niko_MPC_debugUtils.assertEntityHasSatellites(primaryEntity)) return;
             niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
             handler.updateFactionForSelfAndSatellites();
@@ -201,8 +201,10 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         }
         getMarket().unsuppressCondition("meteor_impacts");
 
-        market.getPrimaryEntity().addScript(new niko_MPC_satelliteRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
-        // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
+        if (!market.getPrimaryEntity().hasScriptOfClass(niko_MPC_satelliteRemovalScript.class)) {
+            market.getPrimaryEntity().addScript(new niko_MPC_satelliteRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
+            // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
+        }
     }
 
     @Override
@@ -300,13 +302,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         SectorEntityToken entity = market.getPrimaryEntity();
 
         if ((entity.getMarket() != market)) {
-            log.debug(market.getName() + " tried applying itself when it wasn't recognized as" + entity + "'s market, which is" +
-                    entity.getMarket().getName() + ". Debug info: System-" + entity.getStarSystem().getName() + " Market" +
-                    "condition market status" + market.isPlanetConditionMarketOnly() + entity.getMarket().isPlanetConditionMarketOnly());
+            niko_MPC_debugUtils.displayError("marketApplicationOrderTest failure, market: " + market + ", recognized market: " + entity.getMarket());
             logEntityData(entity);
-            if (Global.getSettings().isDevMode()) {
-                niko_MPC_debugUtils.displayError("marketApplicationOrderTest failure");
-            }
         }
     }
 
@@ -318,7 +315,6 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         SectorEntityToken entity = market.getPrimaryEntity();
 
         //while loading, getMarket() returns null? or maybe its something to do with condition markets being jank?
-        //todo: ensure this works. since we are operating from the market, entity SHOULD have a market, but testing shows getMarket() can return null while loading
         if (entity.getMarket() != null) {
             if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
            /* log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());

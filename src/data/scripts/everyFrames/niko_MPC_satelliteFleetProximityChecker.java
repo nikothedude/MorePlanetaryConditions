@@ -59,7 +59,7 @@ public class niko_MPC_satelliteFleetProximityChecker implements EveryFrameScript
             if (fleet == Global.getSector().getPlayerFleet()) continue;
             if (niko_MPC_fleetUtils.fleetIsSatelliteFleet(fleet)) continue;
             BattleAPI battle = (fleet.getBattle());
-            if (battle == null) return;
+            if (battle == null) continue;
 
             if (satelliteHandler.areSatellitesCapableOfBlocking(fleet)) {
                 if (satelliteHandler.getSideForBattle(battle) != BattleAPI.BattleSide.NO_JOIN) {

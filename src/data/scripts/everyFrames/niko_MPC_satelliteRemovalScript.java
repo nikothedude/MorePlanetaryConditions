@@ -4,6 +4,7 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import data.utilities.niko_MPC_debugUtils;
 
 import java.util.Objects;
@@ -22,6 +23,9 @@ public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithClea
 
     @Override
     public void cleanup() {
+        if (entity != null) {
+            purgeSatellitesFromEntity(entity);
+        }
         prepareForGarbageCollection();
     }
 
@@ -39,15 +43,17 @@ public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithClea
     public void advance(float amount) {
         MarketAPI market = entity.getMarket();
         boolean shouldRemove = true;
-        if (market != null) {
-            for (MarketConditionAPI condition : market.getConditions()) {
-                if (Objects.equals(condition.getId(), conditionId)) { //compare each condition and see if its ours
-                    shouldRemove = false; //if it is, we dont need to remove the satellites
-                    break;
+        if (!entity.getTags().contains(Tags.FADING_OUT_AND_EXPIRING)) { //currently in the process of deleting
+            if (market != null) {
+                for (MarketConditionAPI condition : market.getConditions()) {
+                    if (Objects.equals(condition.getId(), conditionId)) { //compare each condition and see if its ours
+                        shouldRemove = false; //if it is, we dont need to remove the satellites
+                        break;
+                    }
                 }
             }
+            else shouldRemove = false; //todo: to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
         }
-        else shouldRemove = false; //todo: to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
 
         if (shouldRemove) { //if we should remove it, we completely remove all parts of the satellite framework from the entity
             purgeSatellitesFromEntity(entity);

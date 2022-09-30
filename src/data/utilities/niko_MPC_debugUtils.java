@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.CombatUIAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.utilities.exceptions.niko_MPC_stackTraceGenerator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -42,26 +43,23 @@ public class niko_MPC_debugUtils {
      * @throws RuntimeException
      */
     public static void displayError(String errorCode, boolean highPriority, boolean crash) throws RuntimeException {
-        GameState state = Global.getCurrentState();
-        if (state == GameState.CAMPAIGN) {
-            displayErrorToCampaign(errorCode, highPriority);
-        }
-        else if (state == GameState.COMBAT) {
-            displayErrorToCombat(errorCode, highPriority);
-        }
-        else if (state == TITLE) {
-            displayErrorToTitle(errorCode, highPriority);
+        if (niko_MPC_settings.SHOW_ERRORS_IN_GAME) {
+            GameState state = Global.getCurrentState();
+            if (state == GameState.CAMPAIGN) {
+                displayErrorToCampaign(errorCode, highPriority);
+            } else if (state == GameState.COMBAT) {
+                displayErrorToCombat(errorCode, highPriority);
+            } else if (state == TITLE) {
+                displayErrorToTitle(errorCode, highPriority);
+            }
         }
 
-        log.error(errorCode);
+        log.error("Error code:", new niko_MPC_stackTraceGenerator(errorCode));
 
         if (crash) {
             throw new RuntimeException("A critical error has occurred in More Planetary Conditions, and for one reason" +
                     " or another, the mod author has decided that this error is severe enough to warrant a crash." +
                     " Error code: " + errorCode);
-        }
-        else {
-            Thread.dumpStack();
         }
     }
 
@@ -100,18 +98,18 @@ public class niko_MPC_debugUtils {
     }
 
     public static void logEntityData(SectorEntityToken entity) {
-    MarketAPI market = entity.getMarket();
-    String marketName = null;
-    String marketId = null;
-    if (market != null) {
-        marketName = market.getName();
-        marketId = market.getId();
-    }
+        MarketAPI market = entity.getMarket();
+        String marketName = null;
+        String marketId = null;
+        if (market != null) {
+            marketName = market.getName();
+            marketId = market.getId();
+        }
 
-    log.debug("Now logging debug info of: " + entity.getName() + ". " +
-            "Entity market: " + entity.getMarket() + ", " + marketName + ", " + marketId + ". " +
-            "Entity location: " + entity.getContainingLocation().getName() + ", is star system: " + (entity.getContainingLocation() instanceof StarSystemAPI) + ". ");
-    }
+        log.debug("Now logging debug info of: " + entity.getName() + ". " +
+                "Entity market: " + marketName + ", " + marketId + ". " +
+                "Entity location: " + entity.getContainingLocation().getName() + ", is star system: " + (entity.getContainingLocation() instanceof StarSystemAPI) + ". ");
+        }
 
     /**
      * Returns false if the entity has satellite params, a tracker, or if the entity has a satellite market.
@@ -121,14 +119,14 @@ public class niko_MPC_debugUtils {
         if (niko_MPC_satelliteUtils.getEntitySatelliteMarket(entity) != null) {
             log.debug(entity.getName() + " failed doEntityNoSatellitesTest because " + niko_MPC_satelliteUtils.getEntitySatelliteMarket(entity).getName() + " was still applied");
             if (Global.getSettings().isDevMode()) {
-                displayError("doEntityHasNoSatellitesTest getEntitySatelliteMarket failure");
+                displayError("doEntityHasNoSatellitesTest getEntitySatelliteMarket failure on " + entity);
             }
             result = false;
         }
         if (niko_MPC_satelliteUtils.defenseSatellitesApplied(entity) || entity.getMemoryWithoutUpdate().get(satelliteHandlerId) != null) {
             log.debug(entity.getName() + " failed doEntityNoSatellitesTest because defenseSatellitesApplied returned true");
             if (Global.getSettings().isDevMode()) {
-                displayError("doEntityHasNoSatellitesTest defenseSatellitesApplied failure");
+                displayError("doEntityHasNoSatellitesTest defenseSatellitesApplied failure on " + entity);
                 result = false;
             }
 
@@ -150,7 +148,7 @@ public class niko_MPC_debugUtils {
 
         niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
         if (params == null) {
-            displayError("ensureEntityHasSatellitesFailure");
+            displayError("assertEntityHasSatellitesFailure on " + entity + ", entity name: " + entity.getName());
             logEntityData(entity);
             result = false;
         }

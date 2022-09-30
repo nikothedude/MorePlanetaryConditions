@@ -443,23 +443,9 @@ public class niko_MPC_satelliteUtils {
      */
     public static HashMap<SectorEntityToken, BattleAPI.BattleSide> getNearbyEntitiesWithSatellitesWillingToJoinBattle(BattleAPI battle) {
         HashMap<SectorEntityToken, BattleAPI.BattleSide> entitiesWillingToFight = new HashMap<>();
-        LocationAPI containingLocation = null;
-        if (battle.isPlayerInvolved()) {
-            containingLocation = Global.getSector().getPlayerFleet().getContainingLocation();
-        }
-        else {
-            for (CampaignFleetAPI fleet : battle.getBothSides()) { //have to do this, because some fleet dont HAVE a containing location
-                if (fleet.getContainingLocation() != null) { //ideally, this will only iterate once or twice before finding a location
-                    containingLocation = fleet.getContainingLocation();
-                    break; //we found a location, no need to check everyone else
-                }
-            }
-        }
+        LocationAPI containingLocation = niko_MPC_battleUtils.getContainingLocationOfBattle(battle);
 
         if (containingLocation == null) {
-            if (Global.getSettings().isDevMode()) {
-                niko_MPC_debugUtils.displayError("nearbyEntitiesWillingToJoinBattle null containing location");
-            }
             return entitiesWillingToFight; // in truth, if there is no containing location, then there would be no entities in range anyway
         }
 

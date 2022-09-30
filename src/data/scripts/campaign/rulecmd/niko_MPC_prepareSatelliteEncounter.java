@@ -33,19 +33,24 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
 
+        CampaignFleetAPI focusedSatellite = null;
         for (SectorEntityToken satelliteEntity : entitiesWillingToFight) {
-            niko_MPC_satelliteHandler iteratedSatelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteEntity);
-            satelliteFleets.add(niko_MPC_fleetUtils.createNewFullSatelliteFleet(iteratedSatelliteParams, playerFleet));
+            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteEntity);
+            CampaignFleetAPI potentialSatelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleetForPlayerDialog(handler, playerFleet);
+
+            if (potentialSatelliteFleet != null) satelliteFleets.add(potentialSatelliteFleet);
+            if (handler.fleetForPlayerDialog != null) {
+                focusedSatellite = handler.fleetForPlayerDialog;
+            }
         }
 
-        if (satelliteFleets.size() == 0) return false;
-
-        CampaignFleetAPI focusedSatellite = satelliteFleets.get(0);
+        if (focusedSatellite == null) return false;
         boolean isFightingFriendly = false;
 
         for (CampaignFleetAPI satelliteFleet : satelliteFleets) {
-            if (!satelliteFleet.isHostileTo(playerFleet)) {
+            if (Objects.equals(satelliteFleet.getFaction().getId(), "player")) {
                 isFightingFriendly = true;
+                satelliteFleet.setFaction("derelict"); //hack-the game doesnt let you fight your own faction, ever
             }
             MemoryAPI fleetMemory = satelliteFleet.getMemoryWithoutUpdate();
             boolean stillSet = Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_HOSTILE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
@@ -56,13 +61,8 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
                 }
             }
             Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);
-
-            if (Objects.equals(satelliteFleet.getFaction().getId(), "player")) {
-                satelliteFleet.setFaction("derelict"); //hack-the game doesnt let you fight your own faction, ever
-            }
         }
-
-        niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, entity, memoryMap, isFightingFriendly);
+            niko_MPC_dialogUtils.createSatelliteFleetFocus(focusedSatellite, satelliteFleets, dialog, entity, memoryMap, isFightingFriendly);
 
         return true;
     }

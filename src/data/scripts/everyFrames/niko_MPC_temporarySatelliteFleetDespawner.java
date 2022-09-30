@@ -1,6 +1,7 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
+import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
@@ -9,16 +10,16 @@ import data.utilities.*;
 public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScriptWithCleanup {
 
     public CampaignFleetAPI fleet;
-    public niko_MPC_satelliteHandler params;
+    public niko_MPC_satelliteHandler handler;
     public int grace = 1;
 
     public boolean done = false;
 
     public double advanceTimeSinceStart = 0;
 
-    public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandler params) {
+    public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandler handler) {
         this.fleet = fleet;
-        this.params = params;
+        this.handler = handler;
     }
 
     @Override
@@ -47,9 +48,12 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
         else {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
             BattleAPI battle = fleet.getBattle();
-            if (!tracker.areSatellitesInvolvedInBattle(battle, params)) { // sanity
-                tracker.associateSatellitesWithBattle(battle, params, battle.pickSide(fleet));
+            if (!tracker.areSatellitesInvolvedInBattle(battle, handler)) { // sanity
+                tracker.associateSatellitesWithBattle(battle, handler, battle.pickSide(fleet));
             }
+          /*  if (handler.fleetForPlayerDialog == fleet) {
+                handler.fleetForPlayerDialog = null;
+            } */
         }
     }
 
@@ -60,7 +64,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
             fleet.removeScript(this);
             fleet = null;
         }
-        params = null;
+        handler = null;
         done = true;
     }
 

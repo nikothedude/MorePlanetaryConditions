@@ -18,15 +18,19 @@ import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import data.utilities.*;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
 import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
 import static data.utilities.niko_MPC_ids.satelliteHandlerId;
+import static data.utilities.niko_MPC_satelliteUtils.isSideValid;
 import static java.lang.Math.round;
 
 public class niko_MPC_satelliteHandler {
+
+    public CampaignFleetAPI fleetForPlayerDialog;
 
     public class niko_MPC_satelliteParams {
         public String satelliteId;
@@ -132,15 +136,21 @@ public class niko_MPC_satelliteHandler {
         satelliteFleetProximityChecker.prepareForGarbageCollection();
         gracePeriodDecrementer.prepareForGarbageCollection();
 
+        if (entity != null) {
+            MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
+            if (entityMemory.get(satelliteHandlerId) == this) {
+                entityMemory.set(satelliteHandlerId, null);
+            }
+        }
         entity = null;
-        orbitalSatellites = null;
-        satelliteBarrages = null;
-        gracePeriods = null;
+        orbitalSatellites.clear();
+        satelliteBarrages.clear();
+        gracePeriods.clear();
 
         for (CampaignFleetAPI fleet : satelliteFleets) {
             niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, false);
         }
-        satelliteFleets = null;
+        satelliteFleets.clear();
 
         if (getDummyFleet() != null) {
             niko_MPC_fleetUtils.despawnSatelliteFleet(getDummyFleet(), true);
@@ -417,6 +427,12 @@ public class niko_MPC_satelliteHandler {
         CampaignFleetAPI dummyFleet = getDummyFleetWithUpdate();
         updateFactionId();
         updateSatelliteFactions();
+
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+        if (tracker.areSatellitesInvolvedInBattle(battle, this)) {
+            return BattleAPI.BattleSide.NO_JOIN;
+        }
+
         BattleAPI.BattleSide battleSide = battle.pickSide(dummyFleet);
 
         return battleSide;
@@ -447,7 +463,7 @@ public class niko_MPC_satelliteHandler {
      * Unfinished.
      */
     public boolean areSatellitesCapableOfFighting(CampaignFleetAPI fleet) {
-        return true;
+        return areSatellitesCapableOfBlocking(fleet);
     }
 
     /**
@@ -484,13 +500,23 @@ public class niko_MPC_satelliteHandler {
      * @param capabilityCheck If true, runs an additional check that skips over a fleet if areEntitySatellitesCapableOfBlocking returns false.
      * @return Null if the satellites want to fight both or neither, otherwise, returns which of the two fleets they're willing to fight.
      */
-    public CampaignFleetAPI getSideForSatellitesAgainstFleets(CampaignFleetAPI fleet, CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
+    public CampaignFleetAPI getSideForSatellitesAgainstFleets(@Nullable CampaignFleetAPI fleet, @Nullable CampaignFleetAPI fleetTwo, boolean capabilityCheck) {
 
         boolean wantsToFightOne = false;
         boolean wantsToFightTwo = false;
 
-        if ((doSatellitesWantToFight(fleet)) && (areSatellitesCapableOfFighting(fleet))) wantsToFightOne = true;
-        if ((doSatellitesWantToFight(fleetTwo)) && (areSatellitesCapableOfFighting(fleetTwo))) wantsToFightTwo = true;
+        if (fleet == fleetTwo) {
+            niko_MPC_debugUtils.displayError("getSideForSatellitesAgainstFleets same fleet, fleet: " + fleet);
+            if (fleet != null) {
+                if ((doSatellitesWantToFight(fleet)) && (areSatellitesCapableOfFighting(fleet))) {
+                    return fleet;
+                }
+            }
+            return null;
+        }
+
+        if (fleet != null && (doSatellitesWantToFight(fleet)) && (areSatellitesCapableOfFighting(fleet))) wantsToFightOne = true;
+        if (fleetTwo != null && (doSatellitesWantToFight(fleetTwo)) && (areSatellitesCapableOfFighting(fleetTwo))) wantsToFightTwo = true;
 
         if (wantsToFightOne && wantsToFightTwo) {
             return null;
@@ -519,14 +545,15 @@ public class niko_MPC_satelliteHandler {
 
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
         BattleAPI battle = fleet.getBattle();
-        if (battle != null) {
-            if (tracker.areSatellitesInvolvedInBattle(battle, this)) return;
+
+        if (!shouldAndCanEngageFleet(fleet)) {
+            return;
         }
 
         CampaignFleetAPI satelliteFleet = createNewFullSatelliteFleet(fleet.getLocation(), fleet.getContainingLocation(), true, false);
         if (battle != null) {
             if (!battle.join(satelliteFleet)) {
-                niko_MPC_debugUtils.displayError("makeEntitySatellitesEngageFleet battle join failure");
+                niko_MPC_debugUtils.displayError("makeEntitySatellitesEngageFleet battle join failure, fleet: " + fleet + ", battle: " + battle);
             }
             else {
                 battleJoined = battle;
@@ -541,6 +568,21 @@ public class niko_MPC_satelliteHandler {
         if (battleJoined != null) { //todo: methodize so that any attempt to join a battle does this
             tracker.associateSatellitesWithBattle(battleJoined, this, battleJoined.pickSide(satelliteFleet));
         }
+    }
+
+    public boolean shouldAndCanEngageFleet(CampaignFleetAPI fleet) {
+        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
+        BattleAPI battle = fleet.getBattle();
+
+        if (battle != null) {
+            if (tracker.areSatellitesInvolvedInBattle(battle, this)) return false;
+            if (!isSideValid(getSideForBattle(battle))) return false;
+        }
+
+        if (!doSatellitesWantToFight(fleet)) return false;
+        if (!areSatellitesCapableOfFighting(fleet)) return false;
+
+        return true;
     }
 
     /**
@@ -570,6 +612,10 @@ public class niko_MPC_satelliteHandler {
             if (tracker.areSatellitesInvolvedInBattle(battle, this)) {
                 tracker.removeHandlerFromBattle(battle, this);
             }
+        }
+
+        if (fleetForPlayerDialog == satelliteFleet) {
+            fleetForPlayerDialog = null;
         }
 
         getSatelliteFleets().remove(satelliteFleet);
@@ -614,7 +660,7 @@ public class niko_MPC_satelliteHandler {
         for (FleetMemberAPI fleetMember : fleetMembers) {
             String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
             if (name == null) {
-                niko_MPC_debugUtils.displayError("deploySatellite null name");
+                niko_MPC_debugUtils.displayError("deploySatellite null name, fleetMember: " + fleetMember);
                 name = "this name is an error, please report this to niko";
             }
             fleetMember.setShipName(name);
@@ -685,6 +731,7 @@ public class niko_MPC_satelliteHandler {
                return spawnSatelliteFleet(entity.getLocation(), entity.getContainingLocation(), true, false);
             }
         }
+        dummyFleet.setFaction(getCurrentSatelliteFactionId()); // update da faction
         return dummyFleet;
     }
 

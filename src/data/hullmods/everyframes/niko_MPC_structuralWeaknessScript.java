@@ -80,12 +80,12 @@ public class niko_MPC_structuralWeaknessScript extends BaseEveryFrameCombatPlugi
             result = false;
         }
         if (getModulesToDestroy() == null) {
-            niko_MPC_debugUtils.displayError("structural weakness modulesToDestroy null on init");
+            niko_MPC_debugUtils.displayError("structural weakness modulesToDestroy null on init, holder: " + getHolder());
             result = false;
         }
         else {
             if (getModulesToDestroy().size() == 0) {
-                niko_MPC_debugUtils.displayError("structural weakness modulesToDestroy.size() == 0 on init");
+                niko_MPC_debugUtils.displayError("structural weakness modulesToDestroy.size() == 0 on init, holder: " + getHolder());
                 result = false;
             }
         }

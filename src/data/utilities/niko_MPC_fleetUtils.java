@@ -9,6 +9,7 @@ import com.fs.starfarer.api.fleet.FleetMemberType;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.ArrayList;
@@ -76,12 +77,12 @@ public class niko_MPC_fleetUtils {
 
                     newFleetMembers.add(ship);
                     ship.getRepairTracker().setCR(0.7f); //the ships spawn with 50 cr, fo rsome reaosn, so i have to do this
-                    budget -= variantFp;
                 }
                 else {
-                    String error = "attemptToFillFleetWithVariants created null ship";
-                    niko_MPC_debugUtils.displayError(error, true); //THIS SHOULD NEVER HAPPEN. EVER.
+                    String error = "attemptToFillFleetWithVariants created null ship, fleet: " + fleet;
+                    niko_MPC_debugUtils.displayError(error); //THIS SHOULD NEVER HAPPEN. EVER.
                 }
+                budget -= variantFp;
             } else {
                 picker.remove(pickedVariantId);
                 continue; //continue for clarity
@@ -125,6 +126,17 @@ public class niko_MPC_fleetUtils {
 
     public static CampaignFleetAPI spawnSatelliteFleet(niko_MPC_satelliteHandler handler, Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
         return handler.spawnSatelliteFleet(coordinates, location, temporary, dummy);
+    }
+
+    @Nullable
+    public static CampaignFleetAPI createNewFullSatelliteFleetForPlayerDialog(niko_MPC_satelliteHandler handler, SectorEntityToken entity) {
+        CampaignFleetAPI satelliteFleet = null;
+        if (handler.fleetForPlayerDialog == null) {
+            satelliteFleet = createNewFullSatelliteFleet(handler, entity);
+
+            handler.fleetForPlayerDialog = satelliteFleet;
+        }
+        return satelliteFleet;
     }
 
     public static CampaignFleetAPI createNewFullSatelliteFleet(niko_MPC_satelliteHandler handler, SectorEntityToken entity) {
