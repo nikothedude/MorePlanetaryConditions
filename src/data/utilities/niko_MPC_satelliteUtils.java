@@ -693,4 +693,8 @@ public class niko_MPC_satelliteUtils {
         }
         return entitiesWithSatellites;
     }
+
+    public static boolean isCustomEntitySatellite(SectorEntityToken entity) {
+        return entity.getTags().contains(satelliteTagId);
+    }
 }

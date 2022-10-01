@@ -53,6 +53,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
     @Override
     @Nullable
     public PluginPick<InteractionDialogPlugin> pickInteractionDialogPlugin(SectorEntityToken interactionTarget) {
+        if (niko_MPC_satelliteUtils.isCustomEntitySatellite(interactionTarget)) return null;
 
         SectorEntityToken entityToExpandRadiusFrom = null; // this entity will always be checked to see if it should deploy satellites
 

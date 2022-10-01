@@ -21,6 +21,7 @@ import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import data.utilities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
@@ -118,10 +119,10 @@ public class niko_MPC_satelliteHandler {
         //entity.addScript(approachingFleetChecker);
 
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
-        entity.addScript(gracePeriodDecrementer);
+        getEntity().addScript(gracePeriodDecrementer);
 
         satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, entity);
-        entity.addScript(satelliteFleetProximityChecker);
+        getEntity().addScript(satelliteFleetProximityChecker);
     }
 
     public List<CustomCampaignEntityAPI> getSatellites() {
@@ -247,7 +248,7 @@ public class niko_MPC_satelliteHandler {
             }
         }
         else if (!Objects.equals(this.getSatelliteFactionId(), entity.getFaction().getId())) {
-            setSatelliteId(entity.getFaction().getId());
+            setSatelliteId(getEntity().getFaction().getId());
         }
     }
 
@@ -339,7 +340,7 @@ public class niko_MPC_satelliteHandler {
                 removeSatellite(satellite, false, false); //we dont want these weirdos overlapping
                 iterator.remove();
             }
-            niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, getParams().satelliteOrbitDistance);
+            niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset(satellite, getEntity(), orbitAngle, getParams().satelliteOrbitDistance);
             orbitAngle += optimalOrbitAngleOffset; //no matter what, this should end up less than 360 when the final iteration runs
         }
     }
@@ -451,7 +452,7 @@ public class niko_MPC_satelliteHandler {
     public boolean doSatellitesWantToFight(CampaignFleetAPI fleet) {
 
         boolean marketUncolonized = false;
-        MarketAPI market = entity.getMarket();
+        MarketAPI market = getEntity().getMarket();
         if (market != null) {
             if (market.isPlanetConditionMarketOnly()) {
                 marketUncolonized = true;
@@ -564,6 +565,11 @@ public class niko_MPC_satelliteHandler {
         else { //no battle? fine, i'll MAKE MY OWN
             satelliteFleet.clearAssignments(); // just in case the hold assignment all satellite fleets get is fucking with a few things
             satelliteFleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, fleet, 999999999, null); // again, sanity
+            fleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, satelliteFleet, 1, null);
+
+            satelliteFleet.setCircularOrbit(entity, VectorUtils.getAngle(fleet.getLocation(), entity.getLocation()),
+                    Misc.getDistance(satelliteFleet, entity), 999999999);
+
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); // force the satellite to engage the enemy
 
             // removing the createBattle doesnt fix the god damn issue where fleets drift
@@ -695,7 +701,10 @@ public class niko_MPC_satelliteHandler {
         fleetMemory.set(satelliteHandlerId, this);
     }
 
-    public SectorEntityToken getEntity() {
+    public SectorEntityToken getEntity() throws RuntimeException {
+        if (entity == null) {
+            niko_MPC_debugUtils.displayError("entity somehow null on handler getEntity()", true, true);
+        }
         return entity;
     }
 
@@ -704,7 +713,7 @@ public class niko_MPC_satelliteHandler {
     }
 
     public int getMaxPhysicalSatellitesBasedOnEntitySize(float radiusDivisor) {
-        return ((round((entity.getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number
+        return ((round((getEntity().getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number
     }
 
     public int getMaxBattleSatellites() {
@@ -732,9 +741,9 @@ public class niko_MPC_satelliteHandler {
         FactionAPI faction = getSatelliteFaction();
         if (dummyFleet == null) {
             if (faction != null) { // a strange hack i have to do, since this method is called before factions /exist/?
-                createDummyFleet(entity);
+                createDummyFleet(getEntity());
             } else {
-               return spawnSatelliteFleet(entity.getLocation(), entity.getContainingLocation(), true, false);
+               return spawnSatelliteFleet(getEntity().getLocation(), getEntity().getContainingLocation(), true, false);
             }
         }
         dummyFleet.setFaction(getCurrentSatelliteFactionId()); // update da faction

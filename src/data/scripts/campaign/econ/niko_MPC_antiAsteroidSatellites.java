@@ -87,6 +87,11 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * Exists mainly so that I can put custom behavior here.
      */
     public void initializeSatellitesOntoHolder() {
+        SectorEntityToken entity = market.getPrimaryEntity();
+        if (entity == null) {
+            niko_MPC_debugUtils.displayError("null entity on initializeSatellitesOntoHolder, market: " + market.getName());
+            return;
+        }
         float orbitDistance = getSatelliteOrbitDistance(market.getPrimaryEntity());
         float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
         float barrageDistance = getSatelliteBarrageDistance(market.getPrimaryEntity());

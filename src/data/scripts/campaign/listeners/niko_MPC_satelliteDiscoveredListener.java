@@ -10,8 +10,7 @@ public class niko_MPC_satelliteDiscoveredListener implements DiscoverEntityListe
 
     @Override
     public void reportEntityDiscovered(SectorEntityToken entity) {
-        String satelliteTag = "niko_MPC_satellite";
-        if (!entity.getTags().contains(satelliteTag)) return;
+        if (niko_MPC_satelliteUtils.isCustomEntitySatellite(entity)) return;
 
         niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandlerAlternate(entity);
         if (handler == null) return;
