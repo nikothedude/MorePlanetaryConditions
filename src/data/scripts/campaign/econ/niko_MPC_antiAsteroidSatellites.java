@@ -12,6 +12,7 @@ import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_ids;
+import data.utilities.niko_MPC_memoryUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -66,6 +67,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public void apply(String id) {
         SectorEntityToken primaryEntity = market.getPrimaryEntity();
         if (primaryEntity != null) {
+            doEntityIsNullTest(primaryEntity);
             // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
             maxPhysicalSatellites = niko_MPC_satelliteUtils.getMaxPhysicalSatellitesBasedOnEntitySize(primaryEntity);
             maxBattleSatellites = niko_MPC_satelliteUtils.getMaxBattleSatellites(primaryEntity);
@@ -81,6 +83,27 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             handler.updateFactionForSelfAndSatellites();
         }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
+    }
+
+    private void doEntityIsNullTest(SectorEntityToken primaryEntity) {
+        niko_MPC_satelliteHandler initialHandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
+        if (initialHandler != null) {
+            SectorEntityToken handlerEntity = initialHandler.getEntity();
+            if (handlerEntity != primaryEntity) {
+                niko_MPC_debugUtils.displayError("handler.getEntity() != market.getPrimaryEntity() in condition apply, attempting to resolve");
+                logEntityData(primaryEntity);
+                logEntityData(handlerEntity);
+                if (handlerEntity != null) {
+                    niko_MPC_satelliteUtils.purgeSatellitesFromEntity(handlerEntity);
+                }
+                else {
+                    initialHandler.prepareForGarbageCollection(); //god help us should this be called because i have no idea if this works or not
+                    niko_MPC_debugUtils.displayError("unable to purge satellites from null entity ::: possible undefined behavior", true);
+                }
+                niko_MPC_satelliteUtils.purgeSatellitesFromEntity(primaryEntity);
+                // this lets us apply a new, fresh handler in case of this really fucked up and esoteric error
+            }
+        }
     }
 
     /**

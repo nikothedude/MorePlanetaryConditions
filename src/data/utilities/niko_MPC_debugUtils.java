@@ -74,14 +74,14 @@ public class niko_MPC_debugUtils {
                             + " one that interferes with crucial functionality. You may want to save your game and come to the mod author.",
                     Color.RED);
         }
-        campaignUI.addMessage("Please provide the mod author a copy of your logs.");
+        campaignUI.addMessage("Please provide the mod author a copy of your logs. These messages can be disabled in settings.");
     }
 
     private static void displayErrorToCombat(String errorCode, boolean highPriority) {
         CombatEngineAPI engine = Global.getCombatEngine();
         CombatUIAPI combatUI = engine.getCombatUI();
 
-        combatUI.addMessage(1, "Please provide the mod author with a copy of your logs.");
+        combatUI.addMessage(1, "Please provide the mod author with a copy of your logs.  These messages can be disabled in settings.");
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f);
             combatUI.addMessage(1, "The above error has been deemed high priority by the mod author. It is likely" +
@@ -97,19 +97,23 @@ public class niko_MPC_debugUtils {
         return;
     }
 
-    public static void logEntityData(@NotNull SectorEntityToken entity) {
-        MarketAPI market = entity.getMarket();
-        String marketName = null;
-        String marketId = null;
-        if (market != null) {
-            marketName = market.getName();
-            marketId = market.getId();
+    public static void logEntityData(SectorEntityToken entity) {
+        if (entity != null) {
+            MarketAPI market = entity.getMarket();
+            String marketName = null;
+            String marketId = null;
+            if (market != null) {
+                marketName = market.getName();
+                marketId = market.getId();
+            }
+            log.debug("Now logging debug info of: " + entity.getName() + ". " +
+                    "Entity market: " + marketName + ", " + marketId + ". " +
+                    "Entity location: " + entity.getContainingLocation().getName() + ", is star system: " + (entity.getContainingLocation() instanceof StarSystemAPI) + ". ");
         }
-
-        log.debug("Now logging debug info of: " + entity.getName() + ". " +
-                "Entity market: " + marketName + ", " + marketId + ". " +
-                "Entity location: " + entity.getContainingLocation().getName() + ", is star system: " + (entity.getContainingLocation() instanceof StarSystemAPI) + ". ");
+        else {
+            log.debug("Cannot log debug info of entity-it is null.");
         }
+    }
 
     /**
      * Returns false if the entity has satellite params, a tracker, or if the entity has a satellite market.

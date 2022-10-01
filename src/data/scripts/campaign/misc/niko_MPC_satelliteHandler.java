@@ -141,10 +141,16 @@ public class niko_MPC_satelliteHandler {
         if (entity != null) {
             MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
             if (entityMemory.get(satelliteHandlerId) == this) {
-                entityMemory.set(satelliteHandlerId, null);
+                niko_MPC_memoryUtils.deleteMemoryKey(entityMemory, satelliteHandlerId);
             }
+            else {
+                niko_MPC_debugUtils.displayError("unsynced satellite handler on " + entity.getName() + " on handler GC attempt");
+            }
+            entity = null;
         }
-        entity = null;
+        else {
+            niko_MPC_debugUtils.displayError("entity was null on handler GC attempt");
+        }
         orbitalSatellites.clear();
         satelliteBarrages.clear();
         gracePeriods.clear();
@@ -159,8 +165,13 @@ public class niko_MPC_satelliteHandler {
             dummyFleet = null;
         }
 
-        getParams().prepareForGarbageCollection();
-        params = null;
+        if (getParams() != null) {
+            getParams().prepareForGarbageCollection();
+            params = null;
+        }
+        else {
+            niko_MPC_debugUtils.displayError("null params on handler GC attempt, entity: " + entity.getName());
+        }
 
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
         tracker.removeHandlerFromAllBattles(this);
