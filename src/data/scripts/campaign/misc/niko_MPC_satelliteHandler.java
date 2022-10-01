@@ -569,6 +569,7 @@ public class niko_MPC_satelliteHandler {
 
             satelliteFleet.setCircularOrbit(entity, VectorUtils.getAngle(fleet.getLocation(), entity.getLocation()),
                     Misc.getDistance(satelliteFleet, entity), 999999999);
+            //todo: remove the above, its a stopgap so that fleets dont drift away, and it sucks ass
 
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); // force the satellite to engage the enemy
 
@@ -701,9 +702,9 @@ public class niko_MPC_satelliteHandler {
         fleetMemory.set(satelliteHandlerId, this);
     }
 
-    public SectorEntityToken getEntity() throws RuntimeException {
+    public SectorEntityToken getEntity() {
         if (entity == null) {
-            niko_MPC_debugUtils.displayError("entity somehow null on handler getEntity()", true, true);
+            niko_MPC_debugUtils.displayError("entity somehow null on handler getEntity()", true, false);
         }
         return entity;
     }
@@ -713,6 +714,7 @@ public class niko_MPC_satelliteHandler {
     }
 
     public int getMaxPhysicalSatellitesBasedOnEntitySize(float radiusDivisor) {
+        if (getEntity() == null) return 0;
         return ((round((getEntity().getRadius()) / radiusDivisor))); // divide the radius of the entity by 5, then round it up or down to the nearest whole number
     }
 

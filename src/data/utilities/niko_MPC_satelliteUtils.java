@@ -305,7 +305,7 @@ public class niko_MPC_satelliteUtils {
     }
 
     public static String getCurrentSatelliteFactionId(@NotNull niko_MPC_satelliteHandler handler) {
-        return getCurrentSatelliteFactionId(handler.entity);
+        return getCurrentSatelliteFactionId(handler.getEntity());
     }
 
     /**
@@ -565,7 +565,7 @@ public class niko_MPC_satelliteUtils {
     // CAPABILITY CHECKING
 
     public static boolean doEntitySatellitesWantToFight(@NotNull niko_MPC_satelliteHandler handler, CampaignFleetAPI fleet) {
-        return doEntitySatellitesWantToFight(handler.entity, fleet);
+        return doEntitySatellitesWantToFight(handler.getEntity(), fleet);
     }
 
     /**

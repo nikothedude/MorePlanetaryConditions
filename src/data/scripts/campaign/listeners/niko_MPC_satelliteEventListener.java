@@ -66,12 +66,12 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
 
         if (handler != null) {
             if (!niko_MPC_fleetUtils.isFleetValidEngagementTarget(fleet)) return;
-            SectorEntityToken paramEntity = handler.entity;
-            if ((fleet.getInteractionTarget() == paramEntity) || //this is inconsistant, not everything (notably raids) triggers this
-                    (assignment.getTarget() == paramEntity) ||
-                    (assignment.getTarget().getOrbitFocus() == paramEntity)) { //raids DO however have the planet as an orbit focus
+            SectorEntityToken handlerEntity = handler.getEntity();
+            if ((fleet.getInteractionTarget() == handlerEntity) || //this is inconsistant, not everything (notably raids) triggers this
+                    (assignment.getTarget() == handlerEntity) ||
+                    (assignment.getTarget().getOrbitFocus() == handlerEntity)) { //raids DO however have the planet as an orbit focus
 
-                niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(paramEntity, fleet);
+                niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet(handlerEntity, fleet);
             }
         }
     }

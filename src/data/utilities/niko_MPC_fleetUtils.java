@@ -110,6 +110,7 @@ public class niko_MPC_fleetUtils {
     }
 
     public static void genericPreDeleteSatelliteFleetCleanup(@NotNull CampaignFleetAPI fleet) {
+        fleet.setOrbit(null);
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
         niko_MPC_temporarySatelliteFleetDespawner script = (niko_MPC_temporarySatelliteFleetDespawner) fleetMemory.get(niko_MPC_ids.temporaryFleetDespawnerId);
         if (script != null) {
