@@ -1,12 +1,8 @@
 package data.utilities;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.SectorAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class niko_MPC_memoryUtils {
     /**
@@ -14,7 +10,7 @@ public class niko_MPC_memoryUtils {
      * @param key The key to check for.
      * @return True if memory both contains the key and if the value of key is not null. False otherwise.
      */
-    public static boolean isValidMemoryKey(MemoryAPI memory, String key) {
+    public static boolean isValidMemoryKey(@NotNull MemoryAPI memory, String key) {
         return (memory.contains(key)) && ((memory.get(key))) != null;
     }
 
@@ -34,7 +30,7 @@ public class niko_MPC_memoryUtils {
     /**
      * Simple wrapper for memory.set(key, object)
      */
-    public static void instantiateMemoryKey(MemoryAPI memory, String key, Object object) { //this method only exists for clarity
+    public static void instantiateMemoryKey(@NotNull MemoryAPI memory, String key, Object object) { //this method only exists for clarity
         memory.set(key, object);
     }
 
@@ -43,7 +39,7 @@ public class niko_MPC_memoryUtils {
      * @param memory The memory to delete from.
      * @param key The key to delete.
      */
-    public static void deleteMemoryKey(MemoryAPI memory, String key) {
+    public static void deleteMemoryKey(@NotNull MemoryAPI memory, String key) {
         memory.set(key, null);
         memory.unset(key);
     }
@@ -53,6 +49,7 @@ public class niko_MPC_memoryUtils {
     * globalMemory.set(satelliteTrackerId, tracker).
     * @return The new save-specific instance of the satellite battle tracker.
     */
+    @NotNull
     public static niko_MPC_satelliteBattleTracker createNewSatelliteTracker() {
         MemoryAPI globalMemory = Global.getSector().getMemory();
 

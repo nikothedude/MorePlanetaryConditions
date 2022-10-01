@@ -2,4 +2,5 @@
 	"enableDefenseSatellites":true, #if false, removes all instances of defense satellite conditions after procgen, has no effect on current games
 	"showErrorsInGame":true, #if true, whenever a custom error occurs, you will be notified by some text.
 	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat
+	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered
 }

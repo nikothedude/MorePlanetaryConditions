@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
+import com.fs.starfarer.api.impl.campaign.LeashScript;
 import com.fs.starfarer.api.impl.campaign.ids.Commodities;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
@@ -18,13 +19,13 @@ import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import data.utilities.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;
 
-import static data.utilities.niko_MPC_ids.isSatelliteFleetId;
-import static data.utilities.niko_MPC_ids.satelliteHandlerId;
+import static data.utilities.niko_MPC_ids.*;
 import static data.utilities.niko_MPC_satelliteUtils.isSideValid;
 import static java.lang.Math.round;
 
@@ -355,6 +356,8 @@ public class niko_MPC_satelliteHandler {
         Misc.fadeAndExpire(satellite);
         satellite.getContainingLocation().removeEntity(satellite);
 
+        niko_MPC_memoryUtils.deleteMemoryKey(satellite.getMemoryWithoutUpdate(), satelliteHandlerIdAlt);
+
         if (regenerateOrbit) {
             regenerateOrbitSpacing();
         }
@@ -407,6 +410,8 @@ public class niko_MPC_satelliteHandler {
         // instantiate the satellite in the system
         CustomCampaignEntityAPI satellite = containingLocation.addCustomEntity(orderedId, null, id, factionId);
         niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset(satellite, getEntity(), 0, params.satelliteOrbitDistance); //set up the orbit
+
+        satellite.getMemoryWithoutUpdate().set(satelliteHandlerIdAlt, this);
 
         getSatellites().add(satellite); //now add the satellite to the params' list
 
@@ -472,7 +477,7 @@ public class niko_MPC_satelliteHandler {
      * @return True, if the satellite params' faction is inhospitable or worse to fleets' faction, if the fleet has no transponder,
      * or if the satellites want to fight.
      */
-    public boolean doSatellitesWantToBlock(CampaignFleetAPI fleet) {
+    public boolean doSatellitesWantToBlock(@NotNull CampaignFleetAPI fleet) {
         return (!fleet.isTransponderOn() ||
                 getCurrentSatelliteFaction().isAtBest(fleet.getFaction(), RepLevel.INHOSPITABLE) ||
                 doSatellitesWantToFight(fleet));
@@ -482,7 +487,7 @@ public class niko_MPC_satelliteHandler {
      * @return True if the entity isn't already blocking the fleet, or if entity's satellite params' grace period is
      * less or equal to 0. False otherwise.
      */
-    public boolean areSatellitesCapableOfBlocking(CampaignFleetAPI fleet) {
+    public boolean areSatellitesCapableOfBlocking(@NotNull CampaignFleetAPI fleet) {
         BattleAPI battle = fleet.getBattle();
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
@@ -540,16 +545,13 @@ public class niko_MPC_satelliteHandler {
      * we're already fighting them or they have grace.
      * @param fleet The fleet to check and engage.
      */
-    public void makeEntitySatellitesEngageFleet(CampaignFleetAPI fleet) {
-        BattleAPI battleJoined = null;
-
-        niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
-        BattleAPI battle = fleet.getBattle();
-
+    public void makeEntitySatellitesEngageFleet(@NotNull CampaignFleetAPI fleet) {
         if (!shouldAndCanEngageFleet(fleet)) {
             return;
         }
 
+        BattleAPI battleJoined = null;
+        BattleAPI battle = fleet.getBattle();
         CampaignFleetAPI satelliteFleet = createNewFullSatelliteFleet(fleet.getLocation(), fleet.getContainingLocation(), true, false);
         if (battle != null) {
             if (!battle.join(satelliteFleet)) {
@@ -563,14 +565,18 @@ public class niko_MPC_satelliteHandler {
             satelliteFleet.clearAssignments(); // just in case the hold assignment all satellite fleets get is fucking with a few things
             satelliteFleet.addAssignmentAtStart(FleetAssignment.INTERCEPT, fleet, 999999999, null); // again, sanity
             BattleAPI newBattle = Global.getFactory().createBattle(satelliteFleet, fleet); // force the satellite to engage the enemy
+
+            // removing the createBattle doesnt fix the god damn issue where fleets drift
+
             battleJoined = newBattle;
         }
         if (battleJoined != null) { //todo: methodize so that any attempt to join a battle does this
+            niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
             tracker.associateSatellitesWithBattle(battleJoined, this, battleJoined.pickSide(satelliteFleet));
         }
     }
 
-    public boolean shouldAndCanEngageFleet(CampaignFleetAPI fleet) {
+    public boolean shouldAndCanEngageFleet(@NotNull CampaignFleetAPI fleet) {
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
         BattleAPI battle = fleet.getBattle();
 
@@ -604,7 +610,7 @@ public class niko_MPC_satelliteHandler {
         return fleet;
     }
 
-    public void cleanUpSatelliteFleetBeforeDeletion(CampaignFleetAPI satelliteFleet) {
+    public void cleanUpSatelliteFleetBeforeDeletion(@NotNull CampaignFleetAPI satelliteFleet) {
 
         BattleAPI battle = satelliteFleet.getBattle();
         if (battle != null) {
@@ -626,7 +632,7 @@ public class niko_MPC_satelliteHandler {
         return satelliteFleets;
     }
 
-    public CampaignFleetAPI spawnSatelliteFleet(Vector2f coordinates, LocationAPI location, boolean temporary, boolean dummy) {
+    public CampaignFleetAPI spawnSatelliteFleet(@NotNull Vector2f coordinates, @NotNull LocationAPI location, boolean temporary, boolean dummy) {
         CampaignFleetAPI satelliteFleet = createSatelliteFleetTemplate();
 
         location.addEntity(satelliteFleet);
@@ -656,7 +662,7 @@ public class niko_MPC_satelliteHandler {
         return satelliteFleet;
     }
 
-    public void nameFleetMembers(List<FleetMemberAPI> fleetMembers) {
+    public void nameFleetMembers(@NotNull List<FleetMemberAPI> fleetMembers) {
         for (FleetMemberAPI fleetMember : fleetMembers) {
             String name = Global.getSector().getFaction(Factions.DERELICT).pickRandomShipName();
             if (name == null) {
@@ -671,7 +677,7 @@ public class niko_MPC_satelliteHandler {
         return createNewFullSatelliteFleet(coordinates, location, false, true);
     }
 
-    public CampaignFleetAPI createDummyFleet(SectorEntityToken entity) {
+    public CampaignFleetAPI createDummyFleet(@NotNull SectorEntityToken entity) {
         CampaignFleetAPI satelliteFleet = createNewFullDummySatelliteFleet(new Vector2f(99999999, 99999999), entity.getContainingLocation());
 
         satelliteFleet.setDoNotAdvanceAI(true);
@@ -679,7 +685,7 @@ public class niko_MPC_satelliteHandler {
         return satelliteFleet;
     }
 
-    private void setTemplateMemoryKeys(CampaignFleetAPI fleet) {
+    private void setTemplateMemoryKeys(@NotNull CampaignFleetAPI fleet) {
         MemoryAPI fleetMemory = fleet.getMemoryWithoutUpdate();
 
         fleetMemory.set(MemFlags.FLEET_FIGHT_TO_THE_LAST, true);

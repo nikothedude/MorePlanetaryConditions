@@ -20,12 +20,14 @@ import java.util.*;
 public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
+        if (dialog == null) return false;
+
         SectorEntityToken entity = dialog.getInteractionTarget();
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
 
-        niko_MPC_satelliteHandler satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
-        if (satelliteParams == null) return false;
+        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
+        if (handler == null) return false;
 
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
         Set<SectorEntityToken> entitiesWillingToFight = niko_MPC_satelliteUtils.getNearbyEntitiesWithSatellitesWillingToFight(playerFleet);
@@ -35,12 +37,11 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         CampaignFleetAPI focusedSatellite = null;
         for (SectorEntityToken satelliteEntity : entitiesWillingToFight) {
-            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteEntity);
-            CampaignFleetAPI potentialSatelliteFleet = niko_MPC_fleetUtils.createNewFullSatelliteFleetForPlayerDialog(handler, playerFleet);
-
-            if (potentialSatelliteFleet != null) satelliteFleets.add(potentialSatelliteFleet);
-            if (handler.fleetForPlayerDialog != null) {
-                focusedSatellite = handler.fleetForPlayerDialog;
+            niko_MPC_satelliteHandler satelliteHandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(satelliteEntity);
+            CampaignFleetAPI dialogFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(satelliteHandler, playerFleet);
+            if (dialogFleet != null) {
+                focusedSatellite = dialogFleet;
+                satelliteFleets.add(dialogFleet);
             }
         }
 
@@ -48,9 +49,10 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
         boolean isFightingFriendly = false;
 
         for (CampaignFleetAPI satelliteFleet : satelliteFleets) {
-            if (Objects.equals(satelliteFleet.getFaction().getId(), "player")) {
+            if (satelliteFleet.getFaction().isPlayerFaction()) {
                 isFightingFriendly = true;
                 satelliteFleet.setFaction("derelict"); //hack-the game doesnt let you fight your own faction, ever
+                // ^ possible issue, if this fleet is engaged in combat and is a player fleet it might fuck some shit up
             }
             MemoryAPI fleetMemory = satelliteFleet.getMemoryWithoutUpdate();
             boolean stillSet = Misc.setFlagWithReason(fleetMemory, MemFlags.MEMORY_KEY_MAKE_HOSTILE, niko_MPC_ids.satelliteFleetHostileReason, true, 999999999);

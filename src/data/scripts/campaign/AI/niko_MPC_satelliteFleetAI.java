@@ -20,10 +20,10 @@ public class niko_MPC_satelliteFleetAI extends ModularFleetAI {
     public boolean wantsToJoin(BattleAPI battle, boolean considerPlayTransponderStatus) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(getFleet())) return true;
 
-        niko_MPC_satelliteHandler params = niko_MPC_satelliteUtils.getEntitySatelliteHandler(getFleet());
+        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(getFleet());
         niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
-        if (tracker.areSatellitesInvolvedInBattle(battle, params)) {
+        if (tracker.areSatellitesInvolvedInBattle(battle, handler)) {
             return false;
         }
 

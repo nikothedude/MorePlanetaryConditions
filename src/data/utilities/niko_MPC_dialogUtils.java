@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext;
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl;
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,13 @@ public class niko_MPC_dialogUtils {
         return true;
     }
 
-    public static SectorEntityToken digForSatellitesInEntity(SectorEntityToken entity) {
+    /**
+     * Gets entity's market. If it isn't null, we get the entity of market, then set entity to that.
+     * @param entity The entity to dig through the memory/variables of.
+     * @return Whatever entity is the primaryentity of entity's market. If it has no market, returns entity.
+     */
+    @NotNull
+    public static SectorEntityToken digForSatellitesInEntity(@NotNull SectorEntityToken entity) {
 
         MarketAPI entityMarket = entity.getMarket();
         if (entityMarket != null && entityMarket.getPrimaryEntity() != entity) {

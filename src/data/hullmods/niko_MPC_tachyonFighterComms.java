@@ -3,8 +3,6 @@ package data.hullmods;
 import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.MutableShipStatsAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.impl.campaign.ids.Stats;
-import com.fs.starfarer.api.impl.hullmods.CompromisedStructure;
 
 public class niko_MPC_tachyonFighterComms extends BaseHullMod {
 

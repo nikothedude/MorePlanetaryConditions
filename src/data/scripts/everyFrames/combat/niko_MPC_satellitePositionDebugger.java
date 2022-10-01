@@ -2,10 +2,8 @@ package data.scripts.everyFrames.combat;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
-import com.fs.starfarer.api.combat.EveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import data.utilities.niko_MPC_satelliteUtils;
 import data.utilities.niko_MPC_settings;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -44,7 +42,8 @@ public class niko_MPC_satellitePositionDebugger extends BaseEveryFrameCombatPlug
             timeToLive -= amount;
             if (amount <= 0) {
                 prepareForGarbageCollection();
-                return;
+                return; // this script serves 2 purposes: fix incorrect facing on battle start and prevent turning
+                // due to the 1st this script needs to live for a bit even if preventTurn is false
             }
         }
 
@@ -52,6 +51,7 @@ public class niko_MPC_satellitePositionDebugger extends BaseEveryFrameCombatPlug
             prepareForGarbageCollection();
             return;
         }
+
         if (satellite.getFacing() != facing) {
             satellite.setFacing(facing);
             for (ShipAPI module : satellite.getChildModulesCopy()) {

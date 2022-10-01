@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener;
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener;
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin;
 import data.utilities.*;
@@ -60,6 +61,9 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
         super.onGameLoad(newGame);
 
         Global.getSector().addTransientListener(new niko_MPC_satelliteEventListener(false));
+        if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
+            Global.getSector().getListenerManager().addListener(new niko_MPC_satelliteDiscoveredListener(), true);
+        }
 
         Global.getSector().registerPlugin(new niko_MPC_campaignPlugin());
 
@@ -107,6 +111,7 @@ public class niko_MPC_modPlugin extends BaseModPlugin {
         niko_MPC_settings.DEFENSE_SATELLITES_ENABLED = configJson.getBoolean("enableDefenseSatellites");
         niko_MPC_settings.SHOW_ERRORS_IN_GAME = configJson.getBoolean("showErrorsInGame");
         niko_MPC_settings.PREVENT_SATELLITE_TURN = configJson.getBoolean("preventSatelliteTurning");
+        niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK = configJson.getBoolean("discoverSatellitesInBulk");
     }
 }
 

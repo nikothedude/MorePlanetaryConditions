@@ -1,7 +1,6 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
@@ -11,11 +10,11 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     public CampaignFleetAPI fleet;
     public niko_MPC_satelliteHandler handler;
-    public int grace = 1;
 
     public boolean done = false;
 
     public double advanceTimeSinceStart = 0;
+    public int graceRuns = 0;
 
     public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandler handler) {
         this.fleet = fleet;
@@ -41,20 +40,21 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
     public void advance(float amount) {
         advanceTimeSinceStart += amount;
 
-        if (fleet.getBattle() == null) {
+        if (fleet.getBattle() == null && graceRuns <= 0) {
             getRidOfFleet(); //this despawns the fleet, which calls the listener, which calls prepareforgc. its weird
             return;
         }
         else {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
             BattleAPI battle = fleet.getBattle();
-            if (!tracker.areSatellitesInvolvedInBattle(battle, handler)) { // sanity
+            if (battle != null && !tracker.areSatellitesInvolvedInBattle(battle, handler)) { // sanity
                 tracker.associateSatellitesWithBattle(battle, handler, battle.pickSide(fleet));
             }
           /*  if (handler.fleetForPlayerDialog == fleet) {
                 handler.fleetForPlayerDialog = null;
             } */
         }
+        graceRuns--;
     }
 
     public void prepareForGarbageCollection() {

@@ -2,6 +2,7 @@ package data.utilities;
 
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
+import org.jetbrains.annotations.NotNull;
 
 public class niko_MPC_orbitUtils {
 
@@ -13,7 +14,7 @@ public class niko_MPC_orbitUtils {
         addOrbitPointingDownWithRelativeOffset(satellite, entity, orbitAngle, (entity.getRadius()) + 15f);
     }
 
-    public static void addOrbitPointingDownWithRelativeOffset(CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle, float orbitRadius) {
+    public static void addOrbitPointingDownWithRelativeOffset(@NotNull CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle, float orbitRadius) {
         float orbitDays = 15f; //todo: placeholder
         //DO NOT IGNORE THIS COMMENT
         //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!

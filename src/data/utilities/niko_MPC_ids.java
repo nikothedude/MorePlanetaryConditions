@@ -28,6 +28,7 @@ public class niko_MPC_ids {
 
     public static final String satelliteMarketId = "$niko_MPC_satelliteMarket";
     public static final String satelliteHandlerId = "$niko_MPC_satelliteHandler";
+    public static String satelliteHandlerIdAlt = "$niko_MPC_satelliteHandlerAlt";
 
     public static final String defenseSatelliteImpactId = "niko_MPC_defenseSatelliteImpact";
     public static final String defenseSatelliteImpactReasonString = "Defense Satellite Artillery Impact";

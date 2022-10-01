@@ -1,22 +1,21 @@
 package data.scripts.campaign.econ;
 
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.LocationAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import com.fs.starfarer.api.impl.campaign.ids.Stats;
-import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
-import data.scripts.everyFrames.niko_MPC_satelliteRemovalScript;
+import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -109,7 +108,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     /**
      * Unused, currently. This was for the planned satellite barrage terrain.
      */
-    private float getSatelliteBarrageDistance(SectorEntityToken primaryEntity) {
+    private float getSatelliteBarrageDistance(@NotNull SectorEntityToken primaryEntity) {
         return (primaryEntity.getRadius()+500);
     }
 
@@ -138,7 +137,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * @param id
      * @param market
      */
-    private void handleConditionAttributes(String id, MarketAPI market) {
+    private void handleConditionAttributes(String id, @NotNull MarketAPI market) {
         if (market.hasCondition("meteor_impacts")) {
             market.suppressCondition("meteor_impacts"); //these things just fuck those things up
         }
@@ -201,8 +200,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         }
         getMarket().unsuppressCondition("meteor_impacts");
 
-        if (!market.getPrimaryEntity().hasScriptOfClass(niko_MPC_satelliteRemovalScript.class)) {
-            market.getPrimaryEntity().addScript(new niko_MPC_satelliteRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
+        if (!market.getPrimaryEntity().hasScriptOfClass(niko_MPC_satelliteCustomEntityRemovalScript.class)) {
+            market.getPrimaryEntity().addScript(new niko_MPC_satelliteCustomEntityRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
             // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
         }
     }

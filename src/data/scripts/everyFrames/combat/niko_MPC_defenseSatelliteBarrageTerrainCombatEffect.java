@@ -2,24 +2,18 @@ package data.scripts.everyFrames.combat;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.combat.*;
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
+import com.fs.starfarer.api.combat.CombatEngineAPI;
+import com.fs.starfarer.api.combat.CombatEntityAPI;
+import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
-import com.fs.starfarer.api.loading.ProjectileSpecAPI;
-import com.fs.starfarer.api.loading.WeaponSpecAPI;
 import com.fs.starfarer.api.mission.FleetSide;
 import com.fs.starfarer.api.util.WeightedRandomPicker;
-import com.fs.starfarer.loading.WeaponSpreadsheetLoader;
 import data.scripts.campaign.terrain.satelliteBarrage.niko_MPC_defenseSatelliteBarrageTerrainPlugin;
-import data.utilities.niko_MPC_debugUtils;
-import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.lazywizard.lazylib.MathUtils;
 import org.lazywizard.lazylib.VectorUtils;
 import org.lazywizard.lazylib.combat.AIUtils;
-import org.lazywizard.lazylib.combat.CombatUtils;
-import org.lazywizard.lazylib.combat.WeaponUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.util.*;

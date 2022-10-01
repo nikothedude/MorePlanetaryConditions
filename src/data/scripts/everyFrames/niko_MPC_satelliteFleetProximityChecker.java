@@ -1,7 +1,6 @@
 package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
-import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
@@ -55,17 +54,12 @@ public class niko_MPC_satelliteFleetProximityChecker implements EveryFrameScript
 
         List<CampaignFleetAPI> fleetsWithinInterferenceDistance = CampaignUtils.getNearbyFleets(entity, satelliteHandler.getSatelliteInterferenceDistance());
         for (CampaignFleetAPI fleet : fleetsWithinInterferenceDistance) {
-            if (fleet == null) continue; //literally 0 idea how this can be null but okay starsector
-            if (fleet == Global.getSector().getPlayerFleet()) continue;
-            if (niko_MPC_fleetUtils.fleetIsSatelliteFleet(fleet)) continue;
+            if (!niko_MPC_fleetUtils.isFleetValidEngagementTarget(fleet)) continue;
             BattleAPI battle = (fleet.getBattle());
             if (battle == null) continue;
 
-            if (satelliteHandler.areSatellitesCapableOfBlocking(fleet)) {
-                if (satelliteHandler.getSideForBattle(battle) != BattleAPI.BattleSide.NO_JOIN) {
-                    satelliteHandler.makeEntitySatellitesEngageFleet(fleet);
-                }
-            }
+            satelliteHandler.makeEntitySatellitesEngageFleet(fleet);
+            // this method does checks to see if they should be engaged
         }
     }
     public void prepareForGarbageCollection () {

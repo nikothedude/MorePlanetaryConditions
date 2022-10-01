@@ -2,6 +2,7 @@ package data.scripts.entityPlugins;
 
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin;
+import data.utilities.niko_MPC_settings;
 
 public class niko_MPC_antiAsteroidSatellitesPlugin extends BaseCustomEntityPlugin {
 
@@ -12,7 +13,7 @@ public class niko_MPC_antiAsteroidSatellitesPlugin extends BaseCustomEntityPlugi
     /**
      * The sensor profile of the entity, duh.
      */
-    public float sensorProfile = 1f;
+    public float sensorProfile = 3f;
 
     @Override
     public void init(SectorEntityToken entity, Object params) { //todo: i can make a custom init/constructor since this is its own class

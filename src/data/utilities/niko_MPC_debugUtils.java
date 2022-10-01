@@ -12,9 +12,9 @@ import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.utilities.exceptions.niko_MPC_stackTraceGenerator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Arrays;
 
 import static com.fs.starfarer.api.GameState.TITLE;
 import static data.utilities.niko_MPC_ids.satelliteHandlerId;
@@ -42,7 +42,7 @@ public class niko_MPC_debugUtils {
      * @param crash If true, crashes the game.
      * @throws RuntimeException
      */
-    public static void displayError(String errorCode, boolean highPriority, boolean crash) throws RuntimeException {
+    public static void displayError(@NotNull String errorCode, boolean highPriority, boolean crash) throws RuntimeException {
         if (niko_MPC_settings.SHOW_ERRORS_IN_GAME) {
             GameState state = Global.getCurrentState();
             if (state == GameState.CAMPAIGN) {
@@ -97,7 +97,7 @@ public class niko_MPC_debugUtils {
         return;
     }
 
-    public static void logEntityData(SectorEntityToken entity) {
+    public static void logEntityData(@NotNull SectorEntityToken entity) {
         MarketAPI market = entity.getMarket();
         String marketName = null;
         String marketId = null;

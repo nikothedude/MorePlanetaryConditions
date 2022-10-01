@@ -3,6 +3,7 @@ package data.utilities;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,7 +64,7 @@ public class niko_MPC_satelliteBattleTracker {
         return (battles.get(battle) != null && !battles.get(battle).isEmpty());
     }
 
-    public HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> scanBattleForSatellites(BattleAPI battle) {
+    public HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> scanBattleForSatellites(@NotNull BattleAPI battle) {
         HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> handlerToFleetMap = new HashMap<>();
         for (CampaignFleetAPI fleet : battle.getBothSides()) {
             niko_MPC_satelliteHandler foundhandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);

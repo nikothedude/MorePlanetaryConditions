@@ -1,6 +1,5 @@
 package data.hullmods;
 
-import com.fs.starfarer.api.combat.BaseHullMod;
 import com.fs.starfarer.api.combat.ShipAPI;
 import data.hullmods.everyframes.niko_MPC_structuralWeaknessBaseInitScript;
 import data.hullmods.everyframes.niko_MPC_structuralWeaknessInitScript;

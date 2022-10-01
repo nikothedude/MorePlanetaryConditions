@@ -14,6 +14,8 @@ import java.util.Map;
 public class niko_MPC_entityHasSatellites extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
+        if (dialog == null) return false;
+
         SectorEntityToken entity = dialog.getInteractionTarget();
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
 

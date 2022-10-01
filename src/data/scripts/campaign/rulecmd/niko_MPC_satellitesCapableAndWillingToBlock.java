@@ -17,11 +17,13 @@ import java.util.Map;
 public class niko_MPC_satellitesCapableAndWillingToBlock extends BaseCommandPlugin {
     @Override
     public boolean execute(String ruleId, InteractionDialogAPI dialog, List<Misc.Token> params, Map<String, MemoryAPI> memoryMap) {
+        if (dialog == null) return false;
+
         SectorEntityToken entity = dialog.getInteractionTarget();
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
-        niko_MPC_satelliteHandler satelliteParams = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
-        if (satelliteParams == null) return false;
+        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
+        if (handler == null) return false;
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
 
         return (niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, playerFleet) && niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, playerFleet));

@@ -5,18 +5,17 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import data.utilities.niko_MPC_debugUtils;
 
 import java.util.Objects;
 
 import static data.utilities.niko_MPC_satelliteUtils.purgeSatellitesFromEntity;
 
-public class niko_MPC_satelliteRemovalScript implements EveryFrameScriptWithCleanup {
+public class niko_MPC_satelliteCustomEntityRemovalScript implements EveryFrameScriptWithCleanup {
     public boolean done = false;
     public SectorEntityToken entity;
     public String conditionId;
 
-    public niko_MPC_satelliteRemovalScript(SectorEntityToken entity, String conditionId) {
+    public niko_MPC_satelliteCustomEntityRemovalScript(SectorEntityToken entity, String conditionId) {
         this.entity = entity;
         this.conditionId = conditionId;
     }
