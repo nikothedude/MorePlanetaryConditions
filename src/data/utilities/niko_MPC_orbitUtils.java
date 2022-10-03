@@ -15,7 +15,7 @@ public class niko_MPC_orbitUtils {
     }
 
     public static void addOrbitPointingDownWithRelativeOffset(@NotNull CustomCampaignEntityAPI satellite, SectorEntityToken entity, float orbitAngle, float orbitRadius) {
-        float orbitDays = 15f; //todo: placeholder
+        float orbitDays = 15f; //placeholder
         //DO NOT IGNORE THIS COMMENT
         //entity.getCircularOrbitPeriod() will return 0 if the entity does not orbit! THIS WILL CAUSE A JSONEXCEPTION ON SAVE! DO NOT! ENTER 0!
 

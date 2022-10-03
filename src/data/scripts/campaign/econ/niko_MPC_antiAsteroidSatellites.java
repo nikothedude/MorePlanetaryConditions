@@ -44,8 +44,6 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
      * The internal Id that will be applied to satellite entities, not fleets. Always is appended by its position in the satellite list.
      */
     public String satelliteId = "niko_MPC_derelict_anti_asteroid_satellite";
-
-    //todo: do i need this
     public String satelliteFactionId = "derelict";
 
     // These variables handle the condition's shit itself
@@ -232,7 +230,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         if (!market.getPrimaryEntity().getMemoryWithoutUpdate().contains(niko_MPC_ids.satelliteCustomEntityRemoverScriptId)) {
             niko_MPC_satelliteCustomEntityRemovalScript script = new niko_MPC_satelliteCustomEntityRemovalScript(market.getPrimaryEntity(), condition.getId());
-            niko_MPC_scriptUtils.addScriptsAtValidTime(script, market.getPrimaryEntity());
+            niko_MPC_scriptUtils.addScriptsAtValidTime(script, market.getPrimaryEntity(), false);
             // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
         }
     }

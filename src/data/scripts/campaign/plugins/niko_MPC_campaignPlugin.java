@@ -41,7 +41,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
      * scans every fleet on the side of the station to see if it's the station fleet. Once it finds it, it will grab the market
      * of the fleet, then return the primary entity of that market, which can, in 99% of cases, be either the planet
      * the station orbits, or the station itself, in the case of say, kantas den. 99% sure a getMarket() call doesn't
-     * work here, as the fleet doesn't hold a ref to the market directly. todo: confirm
+     * work here, as the fleet doesn't hold a ref to the market directly.
      * <p>
      * If it is NOT a fleet, we can assume it is either a station of a market, a market holder itself, or something mundane. In either
      * case, we know it's market is stored in getMarket(), so we get that, then get the result's getEntity(), which
@@ -206,7 +206,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
             if (!tracker.areSatellitesInvolvedInBattle(battle, handler)) { // a bit of sanity for safety
-                CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(handler, playerFleet); //todo: make it so that the fleets despawn if the dialog is exited and not engaged
+                CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(handler, playerFleet);
                 spawnedFleets.add(satelliteFleet);
             }
         }

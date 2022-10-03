@@ -11,6 +11,7 @@ import java.util.Map;
 public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithCleanup {
 
     public niko_MPC_satelliteHandler params;
+    public boolean done = false;
 
     public niko_MPC_gracePeriodDecrementer(niko_MPC_satelliteHandler params) {
         this.params = params;
@@ -32,11 +33,13 @@ public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithClea
     public void prepareForGarbageCollection() {
         params.gracePeriodDecrementer = null;
         params = null;
+
+        done = true;
     }
 
     @Override
     public boolean isDone() {
-        return (params == null);
+        return done;
     }
 
     @Override

@@ -19,6 +19,14 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
     public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandler handler) {
         this.fleet = fleet;
         this.handler = handler;
+
+        init();
+    }
+
+    private void init() {
+        if (fleet == null) {
+            prepareForGarbageCollection();
+        }
     }
 
     @Override
@@ -38,10 +46,6 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     @Override
     public void advance(float amount) {
-        if (fleet == null) {
-            prepareForGarbageCollection();
-            return;
-        }
         advanceTimeSinceStart += amount;
 
         if (fleet.getBattle() == null && graceRuns <= 0) {

@@ -141,7 +141,7 @@ public class niko_MPC_satelliteUtils {
         deleteMemoryKey(entityMemory, satelliteMarketId);
 
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
-        for (SectorEntityToken terrain : handler.satelliteBarrages) { //todo: shouldnt cause issues if there is no terrain?
+        for (SectorEntityToken terrain : handler.satelliteBarrages) {
             removeSatelliteBarrageTerrain(entity, terrain);
         }
 
@@ -153,7 +153,6 @@ public class niko_MPC_satelliteUtils {
         deleteMemoryKey(entityMemory, satelliteHandlerId);
     }
 
-    //todo: migrate to handler
     public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(primaryEntity);
         if (handler != null) return handler.getMaxBattleSatellites();
@@ -539,7 +538,6 @@ public class niko_MPC_satelliteUtils {
     }
 
     /**
-     * todo: expand this method to have more args
      * @param side The side to use.
      * @param entityMap The hashmap of entities to battleside.
      * @return A new arraylist of entities on the given side.
@@ -674,7 +672,7 @@ public class niko_MPC_satelliteUtils {
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {
             niko_MPC_gracePeriodDecrementer decrementerScript = new niko_MPC_gracePeriodDecrementer(handler);
             handler.gracePeriodDecrementer = decrementerScript;
-            niko_MPC_scriptUtils.addScriptsAtValidTime(decrementerScript, entity);
+            niko_MPC_scriptUtils.addScriptsAtValidTime(decrementerScript, entity, true);
         }
         handler.adjustGracePeriod(fleet, amount);
     }

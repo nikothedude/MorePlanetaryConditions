@@ -20,11 +20,22 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
     public boolean done = false;
     public List<EveryFrameScript> scriptsToAdd;
     public SectorEntityToken entityToAddScriptsTo;
+    boolean allowDuplicates;
 
-    public niko_MPC_scriptAdder(List<EveryFrameScript> scriptsToAdd, SectorEntityToken entityToAddScriptsTo) {
+    public niko_MPC_scriptAdder(List<EveryFrameScript> scriptsToAdd, SectorEntityToken entityToAddScriptsTo, boolean allowDuplicates) {
         this.scriptsToAdd = scriptsToAdd;
         this.entityToAddScriptsTo = entityToAddScriptsTo;
-        log.debug("delayed script adder created. entity: " + entityToAddScriptsTo);
+        this.allowDuplicates = allowDuplicates;
+
+        init();
+    }
+
+    private void init() {
+        if (entityToAddScriptsTo == null || scriptsToAdd == null) {
+            prepareForGarbageCollection();
+            return;
+        }
+        log.debug("delayed script adder created. entity: " + entityToAddScriptsTo.getName());
 
         List<niko_MPC_scriptAdder> scriptAdders = niko_MPC_scriptUtils.getEntityScriptAdderList(entityToAddScriptsTo);
         if (scriptAdders != null) {
@@ -55,7 +66,7 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
 
     public void addScripts() {
         for (EveryFrameScript script : scriptsToAdd) {
-            if (!entityToAddScriptsTo.hasScriptOfClass(script.getClass())) {
+            if (allowDuplicates || !entityToAddScriptsTo.hasScriptOfClass(script.getClass())) {
                 entityToAddScriptsTo.addScript(script);
             }
         }
@@ -69,7 +80,9 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
         }
         Global.getSector().removeScript(this);
         entityToAddScriptsTo = null;
-        scriptsToAdd.clear();
+        if (scriptsToAdd != null) {
+            scriptsToAdd.clear();
+        }
         done = true;
     }
 }

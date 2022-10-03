@@ -16,7 +16,7 @@ public class niko_MPC_antiAsteroidSatellitesPlugin extends BaseCustomEntityPlugi
     public float sensorProfile = 3f;
 
     @Override
-    public void init(SectorEntityToken entity, Object params) { //todo: i can make a custom init/constructor since this is its own class
+    public void init(SectorEntityToken entity, Object params) {
         super.init(entity, params);
 
         entity.setDiscoverable(true); //nothing special needed to ensure we always see it once discovered,

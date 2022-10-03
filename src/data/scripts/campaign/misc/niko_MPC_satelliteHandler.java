@@ -118,7 +118,7 @@ public class niko_MPC_satelliteHandler {
 
         this.entity = entity;
 
-        this.orbitalSatellites = orbitalSatellites; //todo: i dont like that im assigning this in a constructor
+        this.orbitalSatellites = orbitalSatellites;
 
         init();
     }
@@ -128,7 +128,7 @@ public class niko_MPC_satelliteHandler {
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
         satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, getEntity());
         List<EveryFrameScript> scriptsToAdd = new ArrayList<EveryFrameScript>(Arrays.asList(gracePeriodDecrementer, satelliteFleetProximityChecker));
-        niko_MPC_scriptUtils.addScriptsAtValidTime(scriptsToAdd, getEntity());
+        niko_MPC_scriptUtils.addScriptsAtValidTime(scriptsToAdd, getEntity(), true);
     }
 
     public List<CustomCampaignEntityAPI> getSatellites() {
@@ -594,7 +594,7 @@ public class niko_MPC_satelliteHandler {
 
             battleJoined = newBattle;
         }
-        if (battleJoined != null) { //todo: methodize so that any attempt to join a battle does this
+        if (battleJoined != null) {
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
             tracker.associateSatellitesWithBattle(battleJoined, this, battleJoined.pickSide(satelliteFleet));
         }

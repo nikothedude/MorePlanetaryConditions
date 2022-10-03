@@ -15,8 +15,8 @@ import java.util.List;
 
 public class niko_MPC_scriptUtils {
 
-    public static void addScriptsAtValidTime(EveryFrameScript script, SectorEntityToken entityToAddScriptsTo) {
-        addScriptsAtValidTime(new ArrayList<>(Collections.singleton(script)), entityToAddScriptsTo);
+    public static void addScriptsAtValidTime(EveryFrameScript script, SectorEntityToken entityToAddScriptsTo, boolean allowDuplicates) {
+        addScriptsAtValidTime(new ArrayList<>(Collections.singleton(script)), entityToAddScriptsTo, allowDuplicates);
     }
 
     /**
@@ -24,7 +24,7 @@ public class niko_MPC_scriptUtils {
      * @param scriptsToAdd
      * @param entityToAddScriptsTo
      */
-    public static void addScriptsAtValidTime(List<EveryFrameScript> scriptsToAdd, SectorEntityToken entityToAddScriptsTo) {
+    public static void addScriptsAtValidTime(List<EveryFrameScript> scriptsToAdd, SectorEntityToken entityToAddScriptsTo, boolean allowDuplicates) {
         if (entityToAddScriptsTo == null) return;
 
         if (isValidTimeToAddScripts(entityToAddScriptsTo)) {
@@ -35,7 +35,7 @@ public class niko_MPC_scriptUtils {
             }
         } else {
             List<niko_MPC_scriptAdder> scriptAdders = getEntityScriptAdderList(entityToAddScriptsTo);
-            niko_MPC_scriptAdder scriptAdder = new niko_MPC_scriptAdder(scriptsToAdd, entityToAddScriptsTo);
+            niko_MPC_scriptAdder scriptAdder = new niko_MPC_scriptAdder(scriptsToAdd, entityToAddScriptsTo, allowDuplicates);
             Global.getSector().addScript(scriptAdder);
             if (scriptAdders != null) {
                 scriptAdders.add(scriptAdder);

@@ -25,10 +25,10 @@ public class niko_MPC_satelliteCustomEntityRemovalScript implements EveryFrameSc
     }
 
     private void init() {
-        entity.getMemoryWithoutUpdate().set(niko_MPC_ids.satelliteCustomEntityRemoverScriptId, this);
         if (entity == null) {
             prepareForGarbageCollection();
         }
+        entity.getMemoryWithoutUpdate().set(niko_MPC_ids.satelliteCustomEntityRemoverScriptId, this);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class niko_MPC_satelliteCustomEntityRemovalScript implements EveryFrameSc
                     }
                 }
             }
-            else shouldRemove = false; //todo: to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
+            else shouldRemove = false; //to tell the truth ive got no idea of waht to do if the entity has no market. that should never happen ever
         }
 
         if (shouldRemove) { //if we should remove it, we completely remove all parts of the satellite framework from the entity
