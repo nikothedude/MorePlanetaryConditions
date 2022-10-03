@@ -20,6 +20,14 @@ public class niko_MPC_satelliteFleetProximityChecker implements EveryFrameScript
     public niko_MPC_satelliteFleetProximityChecker(niko_MPC_satelliteHandler handler, SectorEntityToken entity) {
         this.satelliteHandler = handler;
         this.entity = entity;
+
+        init();
+    }
+
+    private void init() {
+        if (entity == null) {
+            prepareForGarbageCollection();
+        }
     }
 
     @Override

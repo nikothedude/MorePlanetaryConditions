@@ -42,4 +42,6 @@ public class niko_MPC_ids {
     public static final String temporaryFleetDespawnerId = "$niko_MPC_temporaryFleetDespawner";
     public static final String derelictSatelliteFakeFactionId = "derelictSatelliteBuilder";
     public static final String satelliteTagId = "niko_MPC_satellite";
+    public static final String scriptAdderId = "$niko_MPC_scriptAdderId";
+    public static final String satelliteCustomEntityRemoverScriptId = "$niko_MPC_satelliteCustomEntityRemoverScriptId";
 }

@@ -1,5 +1,6 @@
 package data.scripts.campaign.misc;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -7,7 +8,6 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.characters.PersonAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl;
-import com.fs.starfarer.api.impl.campaign.LeashScript;
 import com.fs.starfarer.api.impl.campaign.ids.Commodities;
 import com.fs.starfarer.api.impl.campaign.ids.Factions;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
@@ -19,6 +19,8 @@ import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
 import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import data.utilities.*;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lazywizard.lazylib.VectorUtils;
@@ -31,6 +33,13 @@ import static data.utilities.niko_MPC_satelliteUtils.isSideValid;
 import static java.lang.Math.round;
 
 public class niko_MPC_satelliteHandler {
+
+    private static final Logger log = Global.getLogger(niko_MPC_satelliteHandler.class);
+
+    static {
+        log.setLevel(Level.ALL);
+    }
+
 
     public CampaignFleetAPI fleetForPlayerDialog;
 
@@ -70,7 +79,7 @@ public class niko_MPC_satelliteHandler {
 
     public niko_MPC_satelliteParams params;
 
-    public SectorEntityToken entity;
+    private SectorEntityToken entity;
 
     public List<CustomCampaignEntityAPI> orbitalSatellites;
     public List<SectorEntityToken> satelliteBarrages = new ArrayList<>();
@@ -115,14 +124,11 @@ public class niko_MPC_satelliteHandler {
     }
 
     private void init() {
-        //approachingFleetChecker = new niko_MPC_fleetsApproachingSatellitesChecker(this, entity);
-        //entity.addScript(approachingFleetChecker);
 
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
-        getEntity().addScript(gracePeriodDecrementer);
-
-        satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, entity);
-        getEntity().addScript(satelliteFleetProximityChecker);
+        satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, getEntity());
+        List<EveryFrameScript> scriptsToAdd = new ArrayList<EveryFrameScript>(Arrays.asList(gracePeriodDecrementer, satelliteFleetProximityChecker));
+        niko_MPC_scriptUtils.addScriptsAtValidTime(scriptsToAdd, getEntity());
     }
 
     public List<CustomCampaignEntityAPI> getSatellites() {

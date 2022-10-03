@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ;
 
+import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
@@ -10,15 +11,15 @@ import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript;
-import data.utilities.niko_MPC_debugUtils;
-import data.utilities.niko_MPC_ids;
-import data.utilities.niko_MPC_memoryUtils;
-import data.utilities.niko_MPC_satelliteUtils;
+import data.scripts.everyFrames.niko_MPC_scriptAdder;
+import data.utilities.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static data.utilities.niko_MPC_debugUtils.logEntityData;
 import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
@@ -68,6 +69,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         SectorEntityToken primaryEntity = market.getPrimaryEntity();
         if (primaryEntity != null) {
             doEntityIsNullTest(primaryEntity);
+            niko_MPC_scriptUtils.forceScriptAdderToAddScriptsIfOneIsPresentAndIfIsValidTime(primaryEntity);
             // important for ensuring the same density of satellites for each entity. they will all have the same ratio of satellite to radius
             maxPhysicalSatellites = niko_MPC_satelliteUtils.getMaxPhysicalSatellitesBasedOnEntitySize(primaryEntity);
             maxBattleSatellites = niko_MPC_satelliteUtils.getMaxBattleSatellites(primaryEntity);
@@ -228,8 +230,9 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         }
         getMarket().unsuppressCondition("meteor_impacts");
 
-        if (!market.getPrimaryEntity().hasScriptOfClass(niko_MPC_satelliteCustomEntityRemovalScript.class)) {
-            market.getPrimaryEntity().addScript(new niko_MPC_satelliteCustomEntityRemovalScript(market.getPrimaryEntity(), condition.getId())); //adds a script that will check the next frame if the market has no condition,
+        if (!market.getPrimaryEntity().getMemoryWithoutUpdate().contains(niko_MPC_ids.satelliteCustomEntityRemoverScriptId)) {
+            niko_MPC_satelliteCustomEntityRemovalScript script = new niko_MPC_satelliteCustomEntityRemovalScript(market.getPrimaryEntity(), condition.getId());
+            niko_MPC_scriptUtils.addScriptsAtValidTime(script, market.getPrimaryEntity());
             // and will remove the satellites and such if it doesnt. whatever the case, it removes itself next frame
         }
     }

@@ -5,6 +5,8 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
+import data.utilities.niko_MPC_ids;
+import data.utilities.niko_MPC_memoryUtils;
 
 import java.util.Objects;
 
@@ -18,6 +20,15 @@ public class niko_MPC_satelliteCustomEntityRemovalScript implements EveryFrameSc
     public niko_MPC_satelliteCustomEntityRemovalScript(SectorEntityToken entity, String conditionId) {
         this.entity = entity;
         this.conditionId = conditionId;
+
+        init();
+    }
+
+    private void init() {
+        entity.getMemoryWithoutUpdate().set(niko_MPC_ids.satelliteCustomEntityRemoverScriptId, this);
+        if (entity == null) {
+            prepareForGarbageCollection();
+        }
     }
 
     @Override
@@ -65,9 +76,11 @@ public class niko_MPC_satelliteCustomEntityRemovalScript implements EveryFrameSc
 
     private void prepareForGarbageCollection() {
         if (entity != null) {
+            niko_MPC_memoryUtils.deleteMemoryKey(entity.getMemoryWithoutUpdate(), niko_MPC_ids.satelliteCustomEntityRemoverScriptId);
             entity.removeScript(this);
             entity = null;
         }
         conditionId = null;
+        done = true;
     }
 }

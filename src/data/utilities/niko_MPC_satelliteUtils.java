@@ -673,8 +673,8 @@ public class niko_MPC_satelliteUtils {
 
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer.class)) {
             niko_MPC_gracePeriodDecrementer decrementerScript = new niko_MPC_gracePeriodDecrementer(handler);
-            entity.addScript(decrementerScript);
             handler.gracePeriodDecrementer = decrementerScript;
+            niko_MPC_scriptUtils.addScriptsAtValidTime(decrementerScript, entity);
         }
         handler.adjustGracePeriod(fleet, amount);
     }

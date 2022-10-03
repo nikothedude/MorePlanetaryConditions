@@ -2,6 +2,7 @@ package data.scripts.everyFrames;
 
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
+import com.fs.starfarer.api.impl.campaign.ids.Tags;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 
 import java.util.Iterator;
@@ -13,6 +14,14 @@ public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithClea
 
     public niko_MPC_gracePeriodDecrementer(niko_MPC_satelliteHandler params) {
         this.params = params;
+
+        init();
+    }
+
+    private void init() {
+        if (params == null) {
+            prepareForGarbageCollection();
+        }
     }
 
     @Override
@@ -41,7 +50,7 @@ public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithClea
         while (iterator.hasNext()) {
             Map.Entry<CampaignFleetAPI, Float> entry = iterator.next();
             CampaignFleetAPI fleet = entry.getKey();
-            if (fleet == null || fleet.isExpired()) { // to prevent memory leaks, we have to account for if the fleet is null or expired
+            if (fleet == null || fleet.isExpired() || fleet.hasTag(Tags.FADING_OUT_AND_EXPIRING)) { // to prevent memory leaks, we have to account for if the fleet is null or expired
                 iterator.remove(); // we dont remove on 0, because honestly theres no real reason to, we already remove them if they are deleted
                 continue;
             }

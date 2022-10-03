@@ -38,6 +38,10 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
 
     @Override
     public void advance(float amount) {
+        if (fleet == null) {
+            prepareForGarbageCollection();
+            return;
+        }
         advanceTimeSinceStart += amount;
 
         if (fleet.getBattle() == null && graceRuns <= 0) {
@@ -54,7 +58,7 @@ public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScri
                 handler.fleetForPlayerDialog = null;
             } */
         }
-        graceRuns--;
+        //graceRuns--;
     }
 
     public void prepareForGarbageCollection() {
