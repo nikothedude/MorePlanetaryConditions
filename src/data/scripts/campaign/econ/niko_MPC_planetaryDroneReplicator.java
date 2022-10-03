@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -13,4 +14,11 @@ public class niko_MPC_planetaryDroneReplicator extends BaseHazardCondition {
         log.setLevel(Level.ALL);
     }
 
+    @Override
+    public void apply(String id) {
+        SectorEntityToken primaryEntity = market.getPrimaryEntity();
+        if (primaryEntity != null) {
+
+        }
+    }
 }
