@@ -2,6 +2,7 @@ package data.scripts.campaign.econ;
 
 import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
@@ -22,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import static data.utilities.niko_MPC_debugUtils.logEntityData;
-import static data.utilities.niko_MPC_ids.luddicPathSuppressorStructureId;
 import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
@@ -170,8 +170,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             market.suppressCondition("meteor_impacts"); //these things just fuck those things up
         }
 
-        if (!(market.hasIndustry(luddicPathSuppressorStructureId))) { // when we apply, we check to see if our luddic path suppression is active
-            market.addIndustry(luddicPathSuppressorStructureId); //if it isnt, we make it active
+        if (!(market.hasIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId))) { // when we apply, we check to see if our luddic path suppression is active
+            market.addIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId); //if it isnt, we make it active
         }
 
         //maths to handle the changing values go in the getters
@@ -210,8 +210,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     public float getLuddicPathInterestBonus() {
-        if (getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
-            niko_MPC_defenseSatelliteLuddicSuppressor industry = (niko_MPC_defenseSatelliteLuddicSuppressor) market.getIndustry(luddicPathSuppressorStructureId);
+        if (getMarket().hasIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId)) {
+            niko_MPC_defenseSatelliteLuddicSuppressor industry = (niko_MPC_defenseSatelliteLuddicSuppressor) market.getIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId);
             return industry.getPatherInterest();
         }
         return 0;
@@ -223,8 +223,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         getMarket().getAccessibilityMod().unmodify(id);
         getMarket().getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id);
         getMarket().getStability().unmodify(id);
-        if (getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
-            getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
+        if (getMarket().hasIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId)) {
+            getMarket().removeIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId, null, false);
         }
         getMarket().unsuppressCondition("meteor_impacts");
 
@@ -241,19 +241,18 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         int patherInterestReductionAmount = 3;
 
-        if (market.hasIndustry(luddicPathSuppressorStructureId)) {
-            niko_MPC_defenseSatelliteLuddicSuppressor industry = (niko_MPC_defenseSatelliteLuddicSuppressor) market.getIndustry(luddicPathSuppressorStructureId);
-
+        if (market.hasIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId)) {
+            niko_MPC_defenseSatelliteLuddicSuppressor industry = (niko_MPC_defenseSatelliteLuddicSuppressor) market.getIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId);
             patherInterestReductionAmount = (int) Math.abs(industry.getPatherInterest());
         }
         tooltip.addPara(
-                "The satellites completely saturate all possible entry vectors, making it %s to approach " +
-                        market.getName() + " while the satellites consider you a threat. This seems to always be the case " +
-                        "while the satellites have standard domain programming. Judging from observation (and the odd historical record), it would seem " +
-                        "that this threat evaluation is based off reprogrammable values, meaning that whoever holds the " +
-                        "planet can %s. Additionally, it can be inferred that %s if you are %s. It would also seem that " +
-                        "the satellites cannot identify you if you %s, and will likely consider you a threat anyway, even if you hold " +
-                        "the planet.",
+        "The satellites completely saturate all possible entry vectors, making it %s to approach " +
+                market.getName() + " while the satellites consider you a threat. This seems to always be the case " +
+                "while the satellites have standard domain programming. Judging from observation (and the odd historical record), it would seem " +
+                "that this threat evaluation is based off reprogrammable values, meaning that whoever holds the " +
+                "planet can %s. Additionally, it can be inferred that %s if you are %s. It would also seem that " +
+                "the satellites cannot identify you if you %s, and will likely consider you a threat anyway, even if you hold " +
+                "the planet.",
                 10f,
                 Misc.getHighlightColor(),
                 "entirely impossible",
@@ -344,13 +343,13 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         //while loading, getMarket() returns null? or maybe its something to do with condition markets being jank?
         if (entity.getMarket() != null) {
-            if (entity.getMarket() != market && entity.getMarket().hasIndustry(luddicPathSuppressorStructureId)) {
+            if (entity.getMarket() != market && entity.getMarket().hasIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId)) {
            /* log.debug(entity.getName() + "'s " + entity.getMarket() + " failed the reference failsafe in " + entity.getStarSystem().getName());
             logEntityData(entity);
             if (Global.getSettings().isDevMode()) {
                 displayErrorToCampaign("ensureOldMarketHasNoReferencesFailsafe failure");
             } */ //commented out since i got what i want from it: it DOES fire, meaning this IS needed
-                entity.getMarket().removeIndustry(luddicPathSuppressorStructureId, null, false);
+                entity.getMarket().removeIndustry(niko_MPC_industryIds.luddicPathSuppressorStructureId, null, false);
             }
         }
     }

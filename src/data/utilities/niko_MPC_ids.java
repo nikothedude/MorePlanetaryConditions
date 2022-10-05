@@ -8,11 +8,6 @@ public class niko_MPC_ids {
 
     public static final String niko_MPC_modId = "niko_morePlanetaryConditions";
     public static final String niko_MPC_masterConfig = "niko_MPC_settings.json";
-
-    /**
-     * Stored value of the defense satellite luddic path suppressor structure id. Here for ease of use and modification.
-     */
-    public static final String luddicPathSuppressorStructureId = "niko_MPC_antiAsteroidLuddicPathSuppressor";
     /**
      * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
      */
