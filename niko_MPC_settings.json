@@ -1,21 +1,26 @@
 {
-	"enableDefenseSatellites":true, #if false, removes all instances of defense satellite conditions after procgen, has no effect on current games
-	"showErrorsInGame":true, #if true, whenever a custom error occurs, you will be notified by some text.
-	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat
-	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered
+	#GENERAL CONFIG
+	"showErrorsInGame":true, #if true, whenever a custom error occurs, you will be notified by some text. default: true
 	
-	"satelliteInterferenceDistanceBase":120, #the higher, the further away satellites will interfere in battles from. base, applied before mult
-	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself.
+	#CONDITION TOGGLES
+	"enableDefenseSatellites":true, #if false, removes all instances of defense satellite conditions after procgen, has no effect on current games. default: true
 
-	"maxBattleSatellitesBase":3, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult
-	"maxBattleSatellitesMult":1, #multipled onto base to determine amount of battle satellites
+	#SATELLITE CONFIG
+	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat. default: true
+	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered. default: false
+	
+	"satelliteInterferenceDistanceBase":120, #the higher, the further away satellites will interfere in battles from. base, applied before mult. default: 120
+	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself. default: 1
+
+	"maxBattleSatellitesBase":3, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 3
+	"maxBattleSatellitesMult":1, #multipled onto base to determine amount of battle satellites. default: 1
 	
 	# weights for the various satellite varients. higher, relative to the other variants, is higher chance of being picked
-	"barrage_weight":10f,
-	"standard_weight":20f,
-	"shielded_weight":5f,
-	"beamer_weight":1.5f,
-	"ordnance_weight":2f,
-	"swarm_weight":0.01f,
+	"barrage_weight":10f, #default: 10f
+	"standard_weight":20f, #default: 20f
+	"shielded_weight":5f, #default: 5f
+	"beamer_weight":1.5f, #default: 1.5f
+	"ordnance_weight":2f, #default: 2f
+	"swarm_weight":0.01f, #default : 0.01f
 	
 }

@@ -16,6 +16,7 @@ import com.fs.starfarer.campaign.fleet.CampaignFleet;
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI;
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener;
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer;
+import data.scripts.everyFrames.niko_MPC_satelliteBattleCheckerForStation;
 import data.scripts.everyFrames.niko_MPC_satelliteFleetProximityChecker;
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner;
 import data.utilities.*;
@@ -42,6 +43,7 @@ public class niko_MPC_satelliteHandler {
 
 
     public CampaignFleetAPI fleetForPlayerDialog;
+    public niko_MPC_satelliteBattleCheckerForStation entityStationBattleChecker;
 
     public class niko_MPC_satelliteParams {
         public String satelliteId;
@@ -127,7 +129,8 @@ public class niko_MPC_satelliteHandler {
 
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
         satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, getEntity());
-        List<EveryFrameScript> scriptsToAdd = new ArrayList<EveryFrameScript>(Arrays.asList(gracePeriodDecrementer, satelliteFleetProximityChecker));
+        entityStationBattleChecker = new niko_MPC_satelliteBattleCheckerForStation(this, getEntity().getMarket());
+        List<EveryFrameScript> scriptsToAdd = new ArrayList<EveryFrameScript>(Arrays.asList(gracePeriodDecrementer, satelliteFleetProximityChecker, entityStationBattleChecker));
         niko_MPC_scriptUtils.addScriptsAtValidTime(scriptsToAdd, getEntity(), true);
     }
 
@@ -143,6 +146,11 @@ public class niko_MPC_satelliteHandler {
        //approachingFleetChecker.prepareForGarbageCollection();
         satelliteFleetProximityChecker.prepareForGarbageCollection();
         gracePeriodDecrementer.prepareForGarbageCollection();
+        entityStationBattleChecker.prepareForGarbageCollection();
+
+        satelliteFleetProximityChecker = null;
+        gracePeriodDecrementer = null;
+        entityStationBattleChecker = null;
 
         if (entity != null) {
             MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
@@ -564,7 +572,7 @@ public class niko_MPC_satelliteHandler {
      * @param fleet The fleet to check and engage.
      */
     public void makeEntitySatellitesEngageFleet(@NotNull CampaignFleetAPI fleet) {
-        if (!shouldAndCanEngageFleet(fleet)) {
+        if (!shouldAndCanEngageFleet(fleet) || !niko_MPC_fleetUtils.isFleetValidEngagementTarget(fleet)) {
             return;
         }
 

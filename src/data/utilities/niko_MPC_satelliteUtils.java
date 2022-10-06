@@ -101,7 +101,7 @@ public class niko_MPC_satelliteUtils {
      */
     public static void addSatellitesToEntity(SectorEntityToken entity, int amountOfSatellitesToAdd) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
-        
+
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
         addSatellitesToEntity(entity, amountOfSatellitesToAdd, handler.getParams().satelliteId, handler.getParams().satelliteFactionId);
     }
@@ -123,7 +123,7 @@ public class niko_MPC_satelliteUtils {
     // all this method should do is call addsatellites with the max shit
     public static void addSatellitesUpToMax(SectorEntityToken entity) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
-        
+
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
         handler.addSatellitesUpToMax();
     }
@@ -135,17 +135,17 @@ public class niko_MPC_satelliteUtils {
      */
     public static void purgeSatellitesFromEntity(SectorEntityToken entity) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return;
-        
+
         MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
         removeSatellitesFromEntity(entity);
         deleteMemoryKey(entityMemory, satelliteMarketId);
 
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
-        for (SectorEntityToken terrain : handler.satelliteBarrages) {
+        for (SectorEntityToken terrain : new ArrayList<>(handler.satelliteBarrages)) {
             removeSatelliteBarrageTerrain(entity, terrain);
         }
 
-        for (CampaignFleetAPI satelliteFleet : handler.satelliteFleets) {
+        for (CampaignFleetAPI satelliteFleet : new ArrayList<>(handler.satelliteFleets)) {//avoid concurrentmod{
             niko_MPC_fleetUtils.despawnSatelliteFleet(satelliteFleet);
         }
 
