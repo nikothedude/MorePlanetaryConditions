@@ -54,12 +54,12 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     public String fakeSatelliteFactionId = niko_MPC_ids.derelictSatelliteFakeFactionId;
 
     public niko_MPC_antiAsteroidSatellites() {
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_barrage", 10f);
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_standard", 20f);
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_shielded", 5f);
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_beamer", 1.5f);
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_ordnance", 2f);
-        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_swarm", 0.01f); // :)
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_barrage", niko_MPC_settings.BARRAGE_WEIGHT);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_standard", niko_MPC_settings.STANDARD_WEIGHT);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_shielded", niko_MPC_settings.SHIELDED_WEIGHT);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_beamer", niko_MPC_settings.BEAMER_WEIGHT);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_ordnance", niko_MPC_settings.ORDNANCE_WEIGHT);
+        weightedVariantIds.put("niko_MPC_defenseSatelliteCore_swarm", niko_MPC_settings.SWARM_WEIGHT); // :)
     }
 
     @Override
@@ -157,7 +157,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {
-        return orbitDistance+95;
+        return (orbitDistance+niko_MPC_settings.SATELLITE_INTERFERENCE_DISTANCE_BASE)*niko_MPC_settings.SATELLITE_INTERFERENCE_DISTANCE_MULT;
     }
 
     /**

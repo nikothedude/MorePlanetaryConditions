@@ -156,7 +156,7 @@ public class niko_MPC_satelliteUtils {
     public static int getMaxBattleSatellites(SectorEntityToken primaryEntity) {
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(primaryEntity);
         if (handler != null) return handler.getMaxBattleSatellites();
-        return 3;
+        return (int) (niko_MPC_settings.BATTLE_SATELLITES_BASE*niko_MPC_settings.BATTLE_SATELLITES_MULT);
     }
 
     /**

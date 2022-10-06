@@ -3,4 +3,19 @@
 	"showErrorsInGame":true, #if true, whenever a custom error occurs, you will be notified by some text.
 	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat
 	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered
+	
+	"satelliteInterferenceDistanceBase":120, #the higher, the further away satellites will interfere in battles from. base, applied before mult
+	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself.
+
+	"maxBattleSatellitesBase":3, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult
+	"maxBattleSatellitesMult":1, #multipled onto base to determine amount of battle satellites
+	
+	# weights for the various satellite varients. higher, relative to the other variants, is higher chance of being picked
+	"barrage_weight":10f,
+	"standard_weight":20f,
+	"shielded_weight":5f,
+	"beamer_weight":1.5f,
+	"ordnance_weight":2f,
+	"swarm_weight":0.01f,
+	
 }
