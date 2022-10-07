@@ -1,20 +1,26 @@
 package data.scripts.campaign.econ;
 
-import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
-import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_industryIds;
 
-public class niko_MPC_overgrownNanoforge extends BaseHazardCondition {
+public class niko_MPC_overgrownNanoforge extends niko_MPC_industryAddingCondition {
 
-  /*  @Override
+    public niko_MPC_overgrownNanoforge() {
+        this.industryId = niko_MPC_industryIds.overgrownNanoforgeIndustryId;
+    }
+
+    @Override
     public void apply(String id) {
-        if (!market.hasIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId)) {
-            addIndustryToMarket();
-        }
+        this.industryId = niko_MPC_industryIds.overgrownNanoforgeIndustryId; //todo revisit and see if constructor works
         super.apply(id);
     }
 
-    private void addIndustryToMarket() {
-        market.addIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId);
-    } */
+    @Override
+    protected boolean wantToApplyIndustry() {
+        return (!market.hasIndustry(industryId));
+    }
+
+    @Override
+    protected void applyIndustry() {
+        market.addIndustry(industryId);
+    }
 }

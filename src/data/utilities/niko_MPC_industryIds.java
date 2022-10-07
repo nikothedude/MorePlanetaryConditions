@@ -8,4 +8,5 @@ public class niko_MPC_industryIds {
     public static final String luddicPathSuppressorStructureId = "niko_MPC_antiAsteroidLuddicPathSuppressor";
 
     public static final String primordialNanoforgeId = "niko_MPC_primordialNanoforge";
+    public static final String overgrownNanoforgeIndustryId = "niko_MPC_overgrownNanoforge";
 }
