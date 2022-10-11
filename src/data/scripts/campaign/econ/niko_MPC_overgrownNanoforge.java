@@ -2,9 +2,9 @@ package data.scripts.campaign.econ;
 
 import data.utilities.niko_MPC_industryIds;
 
-public class niko_MPC_overgrownNanoforgeIndustry extends niko_MPC_industryAddingCondition {
+public class niko_MPC_overgrownNanoforge extends niko_MPC_industryAddingCondition {
 
-    public niko_MPC_overgrownNanoforgeIndustry() {
+    public niko_MPC_overgrownNanoforge() {
         this.industryId = niko_MPC_industryIds.overgrownNanoforgeIndustryId;
     }
 
