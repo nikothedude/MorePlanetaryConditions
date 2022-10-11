@@ -102,12 +102,14 @@ public class niko_MPC_debugUtils {
             MarketAPI market = entity.getMarket();
             String marketName = null;
             String marketId = null;
+            String marketFaction = null;
             if (market != null) {
                 marketName = market.getName();
                 marketId = market.getId();
+                marketFaction = market.getFactionId();
             }
-            log.debug("Now logging debug info of: " + entity.getName() + ". " +
-                    "Entity market: " + marketName + ", " + marketId + ". " +
+            log.debug("Now logging debug info of: " + entity + entity.getName() + ". " +
+                    "Entity market: " + marketName + ", " + marketId + marketFaction + ". " +
                     "Entity location: " + entity.getContainingLocation().getName() + ", is star system: " + (entity.getContainingLocation() instanceof StarSystemAPI) + ". ");
         }
         else {

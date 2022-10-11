@@ -17,6 +17,7 @@ import data.utilities.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,17 +87,20 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
     }
 
     private void doEntityIsNullTest(SectorEntityToken primaryEntity) {
+        if (primaryEntity == null) return;
         niko_MPC_satelliteHandler initialHandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
         if (initialHandler != null) {
             SectorEntityToken handlerEntity = initialHandler.getEntity();
-            if (handlerEntity != primaryEntity) {
+            if (initialHandler.done) {
+                niko_MPC_debugUtils.displayError("for some reason, a handler wasnt unreferenced in memory after deletion");
+                niko_MPC_memoryUtils.deleteMemoryKey(primaryEntity.getMemoryWithoutUpdate(), niko_MPC_ids.satelliteHandlerId);
+            }
+            else if (handlerEntity != primaryEntity) {
                 niko_MPC_debugUtils.displayError("handler.getEntity() != market.getPrimaryEntity() in condition apply, attempting to resolve");
                 logEntityData(primaryEntity);
                 logEntityData(handlerEntity);
-                if (handlerEntity != null) {
-                    niko_MPC_satelliteUtils.purgeSatellitesFromEntity(handlerEntity);
-                }
-                else {
+                if (handlerEntity == null) {
+                    initialHandler.setEntity(primaryEntity);
                     initialHandler.prepareForGarbageCollection(); //god help us should this be called because i have no idea if this works or not
                     niko_MPC_debugUtils.displayError("unable to purge satellites from null entity ::: possible undefined behavior", true);
                 }
@@ -119,7 +123,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
         float barrageDistance = getSatelliteBarrageDistance(market.getPrimaryEntity());
         niko_MPC_satelliteHandler handler = new niko_MPC_satelliteHandler(
-                market.getPrimaryEntity(),
+                entity,
                 satelliteId,
                 satelliteFactionId,
                 satelliteFleetName,

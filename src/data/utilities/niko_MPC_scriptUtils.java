@@ -52,7 +52,7 @@ public class niko_MPC_scriptUtils {
             List<niko_MPC_scriptAdder> scriptAdders = getEntityScriptAdderList(primaryEntity);
 
             if (scriptAdders != null && (!scriptAdders.isEmpty())) {
-                for (niko_MPC_scriptAdder scriptAdder : scriptAdders) {
+                for (niko_MPC_scriptAdder scriptAdder : new ArrayList<>(scriptAdders)) {
                     scriptAdder.addScripts();
                 }
             }
@@ -60,7 +60,12 @@ public class niko_MPC_scriptUtils {
     }
 
     @Nullable
-    public static List<niko_MPC_scriptAdder> getEntityScriptAdderList(@NotNull SectorEntityToken entity) {
+    public static List<niko_MPC_scriptAdder> getEntityScriptAdderList(@Nullable SectorEntityToken entity) {
+        if (entity == null) {
+            niko_MPC_debugUtils.displayError("null entity on getEntityScriptAdderList. this shouldnt happen!!!", true);
+            return new ArrayList<>();
+        }
+
         MemoryAPI entityMemory = entity.getMemoryWithoutUpdate();
         if (entityMemory == null) return null;
 

@@ -6,8 +6,10 @@ import com.fs.starfarer.api.campaign.SectorEntityToken;
 import data.utilities.niko_MPC_scriptUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class niko_MPC_scriptAdder implements EveryFrameScript {
 
@@ -19,10 +21,11 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
 
     public boolean done = false;
     public List<EveryFrameScript> scriptsToAdd;
+    @Nullable
     public SectorEntityToken entityToAddScriptsTo;
     boolean allowDuplicates;
 
-    public niko_MPC_scriptAdder(List<EveryFrameScript> scriptsToAdd, SectorEntityToken entityToAddScriptsTo, boolean allowDuplicates) {
+    public niko_MPC_scriptAdder(List<EveryFrameScript> scriptsToAdd, @Nullable SectorEntityToken entityToAddScriptsTo, boolean allowDuplicates) {
         this.scriptsToAdd = scriptsToAdd;
         this.entityToAddScriptsTo = entityToAddScriptsTo;
         this.allowDuplicates = allowDuplicates;
@@ -66,7 +69,7 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
 
     public void addScripts() {
         for (EveryFrameScript script : scriptsToAdd) {
-            if (allowDuplicates || !entityToAddScriptsTo.hasScriptOfClass(script.getClass())) {
+            if (allowDuplicates || !Objects.requireNonNull(entityToAddScriptsTo).hasScriptOfClass(script.getClass())) {
                 entityToAddScriptsTo.addScript(script);
             }
         }

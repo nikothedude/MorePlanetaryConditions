@@ -45,6 +45,11 @@ public class niko_MPC_satelliteHandler {
     public CampaignFleetAPI fleetForPlayerDialog;
     @Nullable
     public niko_MPC_satelliteBattleCheckerForStation entityStationBattleChecker;
+    public boolean done = false;
+
+    public void setEntity(SectorEntityToken primaryEntity) {
+        this.entity = primaryEntity;
+    }
 
     public class niko_MPC_satelliteParams {
         public String satelliteId;
@@ -129,6 +134,10 @@ public class niko_MPC_satelliteHandler {
     }
 
     private void init() {
+        if (getEntity() == null) {
+            prepareForGarbageCollection();
+            return;
+        }
 
         gracePeriodDecrementer = new niko_MPC_gracePeriodDecrementer(this);
         satelliteFleetProximityChecker = new niko_MPC_satelliteFleetProximityChecker(this, getEntity());
@@ -146,7 +155,11 @@ public class niko_MPC_satelliteHandler {
     }
 
     public void prepareForGarbageCollection() {
-       //approachingFleetChecker.prepareForGarbageCollection();
+        if (done) {
+            return;
+        }
+        done = true;
+
         if (satelliteFleetProximityChecker != null) {
             satelliteFleetProximityChecker.prepareForGarbageCollection();
         }
@@ -166,14 +179,14 @@ public class niko_MPC_satelliteHandler {
             if (entityMemory.get(satelliteHandlerId) == this) {
                 niko_MPC_memoryUtils.deleteMemoryKey(entityMemory, satelliteHandlerId);
             }
-            else {
+            else if (entityMemory.contains(satelliteHandlerId)) {
                 niko_MPC_debugUtils.displayError("unsynced satellite handler on " + entity.getName() + " on handler GC attempt");
             }
-            entity = null;
+            //todo: EXPERIMENTAL: not nulling entity
+        } else {
+            niko_MPC_debugUtils.displayError("entity was null on handler GC attempt", true);
         }
-        else {
-            niko_MPC_debugUtils.displayError("entity was null on handler GC attempt");
-        }
+
         if (orbitalSatellites != null) {
             orbitalSatellites.clear();
         }
@@ -198,7 +211,6 @@ public class niko_MPC_satelliteHandler {
 
         if (getParams() != null) {
             getParams().prepareForGarbageCollection();
-            params = null;
         }
         else {
             niko_MPC_debugUtils.displayError("null params on handler GC attempt, entity: " + entity.getName());
