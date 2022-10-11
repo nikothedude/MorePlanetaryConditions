@@ -52,7 +52,7 @@ public class niko_MPC_scriptUtils {
             List<niko_MPC_scriptAdder> scriptAdders = getEntityScriptAdderList(primaryEntity);
 
             if (scriptAdders != null && (!scriptAdders.isEmpty())) {
-                for (niko_MPC_scriptAdder scriptAdder : scriptAdders) {
+                for (niko_MPC_scriptAdder scriptAdder : new ArrayList<>(scriptAdders)) {
                     scriptAdder.addScripts();
                 }
             }
