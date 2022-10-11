@@ -174,14 +174,22 @@ public class niko_MPC_satelliteHandler {
         else {
             niko_MPC_debugUtils.displayError("entity was null on handler GC attempt");
         }
-        orbitalSatellites.clear();
-        satelliteBarrages.clear();
-        gracePeriods.clear();
-
-        for (CampaignFleetAPI fleet : satelliteFleets) {
-            niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, false);
+        if (orbitalSatellites != null) {
+            orbitalSatellites.clear();
         }
-        satelliteFleets.clear();
+        if (satelliteBarrages != null) {
+            satelliteBarrages.clear();
+        }
+        if (gracePeriods != null) {
+            gracePeriods.clear();
+        }
+
+        if (satelliteFleets != null) {
+            for (CampaignFleetAPI fleet : satelliteFleets) {
+                niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, false);
+            }
+            satelliteFleets.clear();
+        }
 
         if (getDummyFleet() != null) {
             niko_MPC_fleetUtils.despawnSatelliteFleet(getDummyFleet(), true);
@@ -244,6 +252,9 @@ public class niko_MPC_satelliteHandler {
     }
 
     private String getSatelliteFactionId() {
+        if (getParams() == null) {
+            return "derelict";
+        }
         return getParams().satelliteFactionId;
     }
 
