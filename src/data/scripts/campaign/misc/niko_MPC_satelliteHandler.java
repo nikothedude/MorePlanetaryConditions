@@ -43,6 +43,7 @@ public class niko_MPC_satelliteHandler {
 
 
     public CampaignFleetAPI fleetForPlayerDialog;
+    @Nullable
     public niko_MPC_satelliteBattleCheckerForStation entityStationBattleChecker;
 
     public class niko_MPC_satelliteParams {
@@ -87,7 +88,9 @@ public class niko_MPC_satelliteHandler {
     public List<SectorEntityToken> satelliteBarrages = new ArrayList<>();
     public HashMap<CampaignFleetAPI, Float> gracePeriods = new HashMap<>();
 
+    @Nullable
     public niko_MPC_gracePeriodDecrementer gracePeriodDecrementer;
+    @Nullable
     public niko_MPC_satelliteFleetProximityChecker satelliteFleetProximityChecker;
     public List<CampaignFleetAPI> satelliteFleets = new ArrayList<>();
     private CampaignFleetAPI dummyFleet;
@@ -144,9 +147,15 @@ public class niko_MPC_satelliteHandler {
 
     public void prepareForGarbageCollection() {
        //approachingFleetChecker.prepareForGarbageCollection();
-        satelliteFleetProximityChecker.prepareForGarbageCollection();
-        gracePeriodDecrementer.prepareForGarbageCollection();
-        entityStationBattleChecker.prepareForGarbageCollection();
+        if (satelliteFleetProximityChecker != null) {
+            satelliteFleetProximityChecker.prepareForGarbageCollection();
+        }
+        if (gracePeriodDecrementer != null) {
+            gracePeriodDecrementer.prepareForGarbageCollection();
+        }
+        if (entityStationBattleChecker != null) {
+            entityStationBattleChecker.prepareForGarbageCollection();
+        }
 
         satelliteFleetProximityChecker = null;
         gracePeriodDecrementer = null;
