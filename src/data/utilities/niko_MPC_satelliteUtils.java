@@ -297,7 +297,7 @@ public class niko_MPC_satelliteUtils {
         //does not call ensureSatellites because this is intended to be called on things w/o satellites
         
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
-        if (handler != null) {
+        if (handler != null && handler.getSatellites() != null) {
             return handler.getSatellites();
         }
         return new ArrayList<>();
