@@ -43,6 +43,10 @@ public class niko_MPC_satelliteHandler {
 
     public CampaignFleetAPI fleetForPlayerDialog;
 
+    public void setEntity(SectorEntityToken primaryEntity) {
+        this.entity = primaryEntity;
+    }
+
     public class niko_MPC_satelliteParams {
         public String satelliteId;
         public String satelliteFactionId;
@@ -406,13 +410,15 @@ public class niko_MPC_satelliteHandler {
      */
     public void removeSatellitesFromEntity(int amountOfSatellitesToRemove) {
 
-        Iterator<CustomCampaignEntityAPI> iterator = getSatellites().iterator();
-        while (iterator.hasNext()) {
-            CustomCampaignEntityAPI satellite = iterator.next();
-            removeSatellite(satellite, false, false); //we cant directly modify the list, hence why we use the straight removal method here
-            iterator.remove(); // and run iterator.remove
+        if (getSatellites() != null) {
+            Iterator<CustomCampaignEntityAPI> iterator = getSatellites().iterator();
+            while (iterator.hasNext()) {
+                CustomCampaignEntityAPI satellite = iterator.next();
+                removeSatellite(satellite, false, false); //we cant directly modify the list, hence why we use the straight removal method here
+                iterator.remove(); // and run iterator.remove
+            }
+            regenerateOrbitSpacing();
         }
-        regenerateOrbitSpacing();
     }
 
     /**

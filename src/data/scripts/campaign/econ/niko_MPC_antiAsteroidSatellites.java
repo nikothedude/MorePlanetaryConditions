@@ -97,6 +97,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
                     niko_MPC_satelliteUtils.purgeSatellitesFromEntity(handlerEntity);
                 }
                 else {
+                    initialHandler.setEntity(primaryEntity);
                     initialHandler.prepareForGarbageCollection(); //god help us should this be called because i have no idea if this works or not
                     niko_MPC_debugUtils.displayError("unable to purge satellites from null entity ::: possible undefined behavior", true);
                 }

@@ -141,15 +141,9 @@ public class niko_MPC_satelliteUtils {
         deleteMemoryKey(entityMemory, satelliteMarketId);
 
         niko_MPC_satelliteHandler handler = getEntitySatelliteHandler(entity);
-        for (SectorEntityToken terrain : handler.satelliteBarrages) {
-            removeSatelliteBarrageTerrain(entity, terrain);
+        if (handler != null) {
+            handler.prepareForGarbageCollection();
         }
-
-        for (CampaignFleetAPI satelliteFleet : handler.satelliteFleets) {
-            niko_MPC_fleetUtils.despawnSatelliteFleet(satelliteFleet);
-        }
-
-        handler.prepareForGarbageCollection();
         deleteMemoryKey(entityMemory, satelliteHandlerId);
     }
 
