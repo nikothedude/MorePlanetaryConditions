@@ -155,11 +155,14 @@ public class niko_MPC_satelliteHandler {
     }
 
     public void prepareForGarbageCollection() {
+
         if (done) {
+            log.info("handler rejected GC preparations due to aleady having done it");
             return;
         }
         done = true;
 
+        log.info("handler preparing for gc");
         if (satelliteFleetProximityChecker != null) {
             satelliteFleetProximityChecker.prepareForGarbageCollection();
         }
@@ -190,15 +193,15 @@ public class niko_MPC_satelliteHandler {
         if (orbitalSatellites != null) {
             orbitalSatellites.clear();
         }
-        if (satelliteBarrages != null) {
+        /*if (satelliteBarrages != null) {
             satelliteBarrages.clear();
-        }
+        }*/
         if (gracePeriods != null) {
             gracePeriods.clear();
         }
 
         if (satelliteFleets != null) {
-            for (CampaignFleetAPI fleet : satelliteFleets) {
+            for (CampaignFleetAPI fleet : new ArrayList<>(satelliteFleets)) {
                 niko_MPC_fleetUtils.despawnSatelliteFleet(fleet, false);
             }
             satelliteFleets.clear();

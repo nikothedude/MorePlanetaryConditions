@@ -38,7 +38,7 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
             prepareForGarbageCollection();
             return;
         }
-        log.debug("delayed script adder created. entity: " + entityToAddScriptsTo.getName());
+        log.info("delayed script adder created. entity: " + entityToAddScriptsTo.getName());
 
         List<niko_MPC_scriptAdder> scriptAdders = niko_MPC_scriptUtils.getEntityScriptAdderList(entityToAddScriptsTo);
         if (scriptAdders != null) {
@@ -83,6 +83,7 @@ public class niko_MPC_scriptAdder implements EveryFrameScript {
         }
         Global.getSector().removeScript(this);
         entityToAddScriptsTo = null;
+        log.info("script adder GC prep");
         if (scriptsToAdd != null) {
             scriptsToAdd.clear();
         }

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 
 import static com.fs.starfarer.api.GameState.TITLE;
 import static data.utilities.niko_MPC_ids.satelliteHandlerId;
@@ -99,6 +100,9 @@ public class niko_MPC_debugUtils {
 
     public static void logEntityData(SectorEntityToken entity) {
         if (entity != null) {
+            /*for (Field field : entity.getClass().getDeclaredFields()) {
+                log.debug(field.getName() + "-" + field);
+            }*/
             MarketAPI market = entity.getMarket();
             String marketName = null;
             String marketId = null;
