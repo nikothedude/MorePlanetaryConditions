@@ -166,7 +166,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
 
         SectorEntityToken locationToScanFrom = fleet;
-        if (locationToScanFrom == null) {
+        if (locationToScanFrom == null || locationToScanFrom.getContainingLocation() == null) {
             locationToScanFrom = playerFleet;
         }
 
