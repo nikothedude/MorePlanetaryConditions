@@ -1,109 +1,95 @@
-package data.utilities;
+package data.utilities
 
-import com.fs.starfarer.api.campaign.BattleAPI;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import com.fs.starfarer.api.campaign.BattleAPI
+import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import data.scripts.campaign.misc.niko_MPC_satelliteHandler
+import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler
 
 /**
- * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside). Will eventually replace the
- * list on handler.
+ * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside).
  */
-public class niko_MPC_satelliteBattleTracker {
-
-    public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> battles = new HashMap<>();
+class niko_MPC_satelliteBattleTracker {
+    var battles: MutableMap<BattleAPI, MutableMap<niko_MPC_satelliteHandler, BattleSide>?> = HashMap()
 
     /**
      * Associates a hashmap entry of (battle->(handler->side)). The side is stored for future reference.
-     * <p>
+     *
+     *
      * If the hashmap doesnt contain battle, or if the v alue of battle is null, instantiates a new hashmap and assigns (battle->Hashmap()).
      * @param battle The battle to associate with.
      * @param handler The satellite handler we are associating.
      * @param side The stored side of the battle.
      */
-    public void associateSatellitesWithBattle(BattleAPI battle, niko_MPC_satelliteHandler handler, BattleAPI.BattleSide side) {
-        if (!battles.containsKey(battle) || battles.get(battle) == null) battles.put(battle, new HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide>());
-
-        Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide> currentBattles = battles.get(battle);
-        currentBattles.put(handler, side);
+    fun associateSatellitesWithBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler, side: BattleSide) {
+        if (!battles.containsKey(battle) || battles[battle] == null) battles[battle] = HashMap()
+        val currentBattles = battles[battle]
+        currentBattles!![handler] = side
     }
 
-    public Map<BattleAPI, Map<niko_MPC_satelliteHandler, BattleAPI.BattleSide>> getBattles() {
-        return battles;
+    fun getBattles(): Map<BattleAPI, MutableMap<niko_MPC_satelliteHandler, BattleSide>?> {
+        return battles
     }
 
-    public Set<niko_MPC_satelliteHandler> getSatellitesInfluencingBattle(BattleAPI battle) {
-
-        return (battles.get(battle) == null ? new HashSet<niko_MPC_satelliteHandler>() : battles.get(battle).keySet());
+    fun getSatellitesInfluencingBattle(battle: BattleAPI): Set<niko_MPC_satelliteHandler> {
+        return if (battles[battle] == null) HashSet() else battles[battle]!!.keys
     }
 
-    public BattleAPI.BattleSide getSideOfSatellitesForBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
-        return (battles.get(battle) == null ? null : battles.get(battle).get(handler));
+    fun getSideOfSatellitesForBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler): BattleSide? {
+        return if (battles[battle] == null) null else battles[battle]!![handler]
     }
 
-    public boolean areSatellitesInvolvedInBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
-        if (battles.containsKey(battle)) {
-            if (battles.get(battle).containsKey(handler)) {
-                return true;
-            }
-            else {
+    fun areSatellitesInvolvedInBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler): Boolean {
+        return if (battles.containsKey(battle)) {
+            if (battles[battle]!!.containsKey(handler)) {
+                true
+            } else {
                 /*updateBattleAssociationWithScan(battle);
                 return battles.get(battle).containsKey(handler);*/
-                return false;
+                false
             }
-        }
-        return false;
+        } else false
     }
 
-    public boolean areAnySatellitesInvolvedInBattle(BattleAPI battle) {
-        return (battles.get(battle) != null && !battles.get(battle).isEmpty());
+    fun areAnySatellitesInvolvedInBattle(battle: BattleAPI): Boolean {
+        return battles[battle] != null && !battles[battle]!!.isEmpty()
     }
 
-    public HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> scanBattleForSatellites(@NotNull BattleAPI battle) {
-        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> handlerToFleetMap = new HashMap<>();
-        for (CampaignFleetAPI fleet : battle.getBothSides()) {
-            niko_MPC_satelliteHandler foundhandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(fleet);
+    fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> {
+        val handlerToFleetMap = HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI>()
+        for (fleet in battle.bothSides) {
+            val foundhandler = getEntitySatelliteHandler(fleet)
             if (foundhandler != null) {
-                handlerToFleetMap.put(foundhandler, fleet);
+                handlerToFleetMap[foundhandler] = fleet
             }
         }
-        return handlerToFleetMap;
+        return handlerToFleetMap
     }
 
-    public void updateBattleAssociationWithScan(BattleAPI battle) {
-        HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> handlerToFleetMap = scanBattleForSatellites(battle);
-
-        for (Map.Entry<niko_MPC_satelliteHandler, CampaignFleetAPI> entry : handlerToFleetMap.entrySet()) {
-            niko_MPC_satelliteHandler handler = entry.getKey();
-            CampaignFleetAPI fleet = entry.getValue();
-
+    fun updateBattleAssociationWithScan(battle: BattleAPI) {
+        val handlerToFleetMap = scanBattleForSatellites(battle)
+        for ((handler, fleet) in handlerToFleetMap) {
             if (!areSatellitesInvolvedInBattle(battle, handler)) {
-                HashMap<niko_MPC_satelliteHandler, BattleAPI.BattleSide> handlerToSideMap = new HashMap<>();
-                handlerToSideMap.put(handler, battle.pickSide(fleet));
-                battles.put(battle, handlerToSideMap);
+                val handlerToSideMap = HashMap<niko_MPC_satelliteHandler, BattleSide>()
+                handlerToSideMap[handler] = battle.pickSide(fleet)
+                battles[battle] = handlerToSideMap
             }
         }
     }
 
-    public void removeBattle(BattleAPI battle) {
-        battles.remove(battle);
+    fun removeBattle(battle: BattleAPI) {
+        battles.remove(battle)
     }
 
-    public void removeHandlerFromBattle(BattleAPI battle, niko_MPC_satelliteHandler handler) {
-        if (battles.get(battle) != null) {
-            battles.get(battle).remove(handler);
+    fun removeHandlerFromBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler) {
+        if (battles[battle] != null) {
+            battles[battle]!!.remove(handler)
         }
     }
 
-    public void removeHandlerFromAllBattles(niko_MPC_satelliteHandler handler) {
-        for (BattleAPI battle : battles.keySet()) {
-            removeHandlerFromBattle(battle, handler);
+    fun removeHandlerFromAllBattles(handler: niko_MPC_satelliteHandler) {
+        for (battle in battles.keys) {
+            removeHandlerFromBattle(battle, handler)
         }
     }
-
 }
