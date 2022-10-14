@@ -1,20 +1,39 @@
-package data.scripts.campaign.econ;
+package data.scripts.campaign.econ
 
-import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
+import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition
+import com.fs.starfarer.api.impl.campaign.econ.BaseMarketConditionPlugin
 
-public abstract class niko_MPC_industryAddingCondition extends BaseHazardCondition {
-    public String industryId;
+abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
 
-    @Override
-    public void apply(String id) {
-        super.apply(id);
+    val industryIds = ArrayList<String>()
 
-        if (wantToApplyIndustry()) {
-            applyIndustry();
+    override fun apply(id: String) {
+        super.apply(id)
+        if (wantToApplyAnyIndustry()) {
+            for (industryId: String in industryIds) {
+                val trueIndustryId: String? = getModifiedIndustryIdToAdd(industryId);
+                if (trueIndustryId != null) {
+                    if (wantToApplyIndustry(trueIndustryId)) {
+                        applyIndustry(trueIndustryId)
+                    }
+                }
+            }
         }
     }
 
-    protected abstract boolean wantToApplyIndustry();
+    protected fun wantToApplyAnyIndustry() : Boolean {
+        for (industryId: String in industryIds) {
+            if (market.hasIndustry(industryId)) {
+                return false
+            }
+        }
+        return true
+    }
 
-    protected abstract void applyIndustry();
+    protected fun getModifiedIndustryIdToAdd(industryId: String): String? {
+        return industryId
+    }
+
+    protected fun wantToApplyIndustry(industryId : String) = !market.hasIndustry(industryId)
+    protected fun applyIndustry(industryId: String) = market.addIndustry(industryId)
 }

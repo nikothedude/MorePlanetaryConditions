@@ -1,26 +1,13 @@
-package data.scripts.campaign.econ;
+package data.scripts.campaign.econ
 
-import data.utilities.niko_MPC_industryIds;
+import data.utilities.niko_MPC_industryIds
 
-public class niko_MPC_overgrownNanoforge extends niko_MPC_industryAddingCondition {
+class niko_MPC_overgrownNanoforge : niko_MPC_industryAddingCondition() {
 
-    public niko_MPC_overgrownNanoforge() {
-        this.industryId = niko_MPC_industryIds.overgrownNanoforgeIndustryId;
+    init {
+        industryIds.add(niko_MPC_industryIds.overgrownNanoforgeIndustryId)
+
+        //todo: add structure ids and override fun from super and shit
     }
 
-    @Override
-    public void apply(String id) {
-        this.industryId = niko_MPC_industryIds.overgrownNanoforgeIndustryId; //todo revisit and see if constructor works
-        super.apply(id);
-    }
-
-    @Override
-    protected boolean wantToApplyIndustry() {
-        return (!market.hasIndustry(industryId));
-    }
-
-    @Override
-    protected void applyIndustry() {
-        market.addIndustry(industryId);
-    }
 }
