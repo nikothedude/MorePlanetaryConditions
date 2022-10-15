@@ -4,7 +4,7 @@ import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler
-import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandler
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlerOfEntity
 
 /**
  * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside).
@@ -25,10 +25,6 @@ class niko_MPC_satelliteBattleTracker {
         if (!battles.containsKey(battle) || battles[battle] == null) battles[battle] = HashMap()
         val currentBattles = battles[battle]
         currentBattles!![handler] = side
-    }
-
-    fun getBattles(): Map<BattleAPI, MutableMap<niko_MPC_satelliteHandler, BattleSide>?> {
-        return battles
     }
 
     fun getSatellitesInfluencingBattle(battle: BattleAPI): Set<niko_MPC_satelliteHandler> {
@@ -58,7 +54,7 @@ class niko_MPC_satelliteBattleTracker {
     fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> {
         val handlerToFleetMap = HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI>()
         for (fleet in battle.bothSides) {
-            val foundhandler = getEntitySatelliteHandler(fleet)
+            val foundhandler = getSatelliteHandlerOfEntity(fleet)
             if (foundhandler != null) {
                 handlerToFleetMap[foundhandler] = fleet
             }

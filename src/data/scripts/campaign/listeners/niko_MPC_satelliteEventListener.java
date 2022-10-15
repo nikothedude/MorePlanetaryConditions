@@ -50,17 +50,17 @@ public class niko_MPC_satelliteEventListener extends BaseCampaignEventListener {
         FleetAssignmentDataAPI assignment = fleet.getCurrentAssignment();
 
         niko_MPC_satelliteHandler handler = null;
-        if (entity != null) handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
+        if (entity != null) handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
 
         if (handler == null) {
             SectorEntityToken trueTarget = null;
             if (assignment != null) trueTarget = assignment.getTarget();
-            if (trueTarget != null) handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(trueTarget);
+            if (trueTarget != null) handler = niko_MPC_satelliteUtils.getSatelliteHandler(trueTarget);
 
             if (handler == null) {
                 SectorEntityToken orbitTarget = null;
                 if (trueTarget != null) orbitTarget = trueTarget.getOrbitFocus();
-                if (orbitTarget != null) handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(orbitTarget);
+                if (orbitTarget != null) handler = niko_MPC_satelliteUtils.getSatelliteHandler(orbitTarget);
             }
         }
 

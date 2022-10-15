@@ -22,7 +22,7 @@ public class niko_MPC_satellitesCapableAndWillingToBlock extends BaseCommandPlug
         SectorEntityToken entity = dialog.getInteractionTarget();
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
-        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity);
+        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
         if (handler == null) return false;
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
 

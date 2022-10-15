@@ -22,11 +22,11 @@ abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
     }
 
     protected fun wantToApplyAnyIndustry() : Boolean {
-        for (industryId: String in industryIds) {
+        /*for (industryId: String in industryIds) {
             if (market.hasIndustry(industryId)) {
                 return false
             }
-        }
+        }*/
         return true
     }
 

@@ -1,8 +1,6 @@
 package data.scripts.campaign.econ;
 
-import com.fs.starfarer.api.EveryFrameScript;
 import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.PlanetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.impl.campaign.econ.BaseHazardCondition;
@@ -12,16 +10,12 @@ import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
 import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript;
-import data.scripts.everyFrames.niko_MPC_scriptAdder;
 import data.utilities.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import static data.utilities.niko_MPC_debugUtils.logEntityData;
 import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
@@ -80,7 +74,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             }
             else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up.
             if (!niko_MPC_debugUtils.assertEntityHasSatellites(primaryEntity)) return;
-            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
+            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
             handler.updateFactionForSelfAndSatellites();
         }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
@@ -88,7 +82,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     private void doEntityIsNullTest(SectorEntityToken primaryEntity) {
         if (primaryEntity == null) return;
-        niko_MPC_satelliteHandler initialHandler = niko_MPC_satelliteUtils.getEntitySatelliteHandler(primaryEntity);
+        niko_MPC_satelliteHandler initialHandler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
         if (initialHandler != null) {
             SectorEntityToken handlerEntity = initialHandler.getEntity();
             if (initialHandler.done) {
@@ -150,14 +144,14 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     private float getSatelliteOrbitDistance(SectorEntityToken entity, boolean useHandler) {
         if (useHandler) {
-            return niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity).getSatelliteOrbitDistance();
+            return niko_MPC_satelliteUtils.getSatelliteHandler(entity).getSatelliteOrbitDistance();
         }
         float extraRadius = 15f;
         return entity.getRadius() + extraRadius;
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken entity) {
-        return getSatelliteInterferenceDistance(entity, niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity).getSatelliteOrbitDistance());
+        return getSatelliteInterferenceDistance(entity, niko_MPC_satelliteUtils.getSatelliteHandler(entity).getSatelliteOrbitDistance());
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {

@@ -19,6 +19,6 @@ public class niko_MPC_entityHasSatellites extends BaseCommandPlugin {
         SectorEntityToken entity = dialog.getInteractionTarget();
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
 
-        return niko_MPC_satelliteUtils.getEntitySatelliteHandler(entity) != null;
+        return niko_MPC_satelliteUtils.getSatelliteHandler(entity) != null;
     }
 }

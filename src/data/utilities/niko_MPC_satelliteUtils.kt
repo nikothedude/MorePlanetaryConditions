@@ -82,7 +82,7 @@ object niko_MPC_satelliteUtils {
      */
     fun addSatellite(entity: SectorEntityToken, regenerateOrbit: Boolean, id: String?, factionId: String?) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.addSatellite(regenerateOrbit, id, factionId)
     }
 
@@ -94,7 +94,7 @@ object niko_MPC_satelliteUtils {
      */
     fun addSatellitesToEntity(entity: SectorEntityToken, amountOfSatellitesToAdd: Int) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         addSatellitesToEntity(
             entity,
             amountOfSatellitesToAdd,
@@ -112,14 +112,14 @@ object niko_MPC_satelliteUtils {
      */
     fun addSatellitesToEntity(entity: SectorEntityToken, amountOfSatellitesToAdd: Int, id: String?, faction: String?) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.addSatellitesToEntity(amountOfSatellitesToAdd, id, faction)
     }
 
     // all this method should do is call addsatellites with the max shit
     fun addSatellitesUpToMax(entity: SectorEntityToken) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.addSatellitesUpToMax()
     }
 
@@ -134,7 +134,7 @@ object niko_MPC_satelliteUtils {
         val entityMemory = entity.memoryWithoutUpdate
         removeSatellitesFromEntity(entity)
         niko_MPC_memoryUtils.deleteMemoryKey(entityMemory, niko_MPC_ids.satelliteMarketId)
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         for (terrain in ArrayList(handler!!.satelliteBarrages)) {
             removeSatelliteBarrageTerrain(entity, terrain)
         }
@@ -147,7 +147,7 @@ object niko_MPC_satelliteUtils {
 
     @JvmStatic
     fun getMaxBattleSatellites(primaryEntity: SectorEntityToken): Int {
-        val handler = getEntitySatelliteHandler(primaryEntity)
+        val handler = getSatelliteHandlerOfEntity(primaryEntity)
         return handler?.maxBattleSatellites
             ?: (niko_MPC_settings.BATTLE_SATELLITES_BASE * niko_MPC_settings.BATTLE_SATELLITES_MULT).toInt()
     }
@@ -171,7 +171,7 @@ object niko_MPC_satelliteUtils {
      */
     fun removeSatellitesFromEntity(entity: SectorEntityToken, amountOfSatellitesToRemove: Int) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.removeSatellitesFromEntity(amountOfSatellitesToRemove)
     }
 
@@ -187,7 +187,7 @@ object niko_MPC_satelliteUtils {
         regenerateOrbit: Boolean
     ) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.removeSatellite(satellite, regenerateOrbit, true)
     }
 
@@ -197,9 +197,15 @@ object niko_MPC_satelliteUtils {
      * @param satellite The satellite to remove.
      */
     fun removeSatellite(satellite: CustomCampaignEntityAPI) {
-        Misc.fadeAndExpire(satellite)
-        satellite.containingLocation.removeEntity(satellite)
-        niko_MPC_memoryUtils.deleteMemoryKey(satellite.memoryWithoutUpdate, niko_MPC_ids.satelliteHandlerIdAlt)
+        val handler : niko_MPC_satelliteHandler? = satellite.getSatelliteHandler()
+        if (handler != null) {
+            handler.removeSatellite(satellite)
+        }
+        else {
+            Misc.fadeAndExpire(satellite)
+            satellite.containingLocation.removeEntity(satellite)
+            niko_MPC_memoryUtils.deleteMemoryKey(satellite.memoryWithoutUpdate, niko_MPC_ids.satelliteHandlerIdAlt)
+        }
     }
 
     /**
@@ -208,7 +214,7 @@ object niko_MPC_satelliteUtils {
      */
     fun regenerateOrbitSpacing(entity: SectorEntityToken) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.regenerateOrbitSpacing()
     }
 
@@ -249,20 +255,24 @@ object niko_MPC_satelliteUtils {
      */
     // no nullable, i use a method to nullcheck which intellij gets confused by
     @JvmStatic
-    fun getEntitySatelliteHandler(memoryEntity: HasMemory): niko_MPC_satelliteHandler? {
-        return memoryEntity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as niko_MPC_satelliteHandler
+    fun getSatelliteHandlerOfEntity(entity: SectorEntityToken): niko_MPC_satelliteHandler? {
+        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as niko_MPC_satelliteHandler?
+    }
+
+    fun HasMemory.getSatelliteHandler(): niko_MPC_satelliteHandler? {
+        return memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as niko_MPC_satelliteHandler?
     }
 
     @JvmStatic
-    fun getEntitySatelliteHandlerAlternate(entity: SectorEntityToken): niko_MPC_satelliteHandler {
-        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerIdAlt] as niko_MPC_satelliteHandler
+    fun getEntitySatelliteHandlerAlternate(entity: SectorEntityToken): niko_MPC_satelliteHandler? {
+        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerIdAlt] as niko_MPC_satelliteHandler?
     }
 
     /**
      * @return Either null, or an instance of niko_MPC_satellitehandler.
      */
     fun getEntitySatelliteParams(entity: SectorEntityToken): niko_MPC_satelliteParams? {
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler?.getParams()
     }
 
@@ -287,7 +297,7 @@ object niko_MPC_satelliteUtils {
      */
     fun getSatellitesInOrbitOfEntity(entity: SectorEntityToken): List<CustomCampaignEntityAPI> {
         //does not call ensureSatellites because this is intended to be called on things w/o satellites
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return if (handler != null && handler.satellites != null) {
             handler.satellites
         } else ArrayList()
@@ -306,7 +316,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun getCurrentSatelliteFactionId(entity: SectorEntityToken): String? {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.currentSatelliteFactionId
     }
 
@@ -340,7 +350,7 @@ object niko_MPC_satelliteUtils {
      * @return The optimal offset with which the satellites in orbit of the entity should be spaced apart by.
      */
     fun getOptimalOrbitalOffsetForSatellites(entity: SectorEntityToken): Float {
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler?.optimalOrbitalOffsetForSatellites
             ?: getOptimalOrbitalOffsetForSatellites(ArrayList())
     }
@@ -356,7 +366,7 @@ object niko_MPC_satelliteUtils {
      * Divides entity.getRadius() from radiusDivisor and returns the result.
      */
     fun getMaxPhysicalSatellitesBasedOnEntitySize(entity: SectorEntityToken, radiusDivisor: Float): Int {
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler?.getMaxPhysicalSatellitesBasedOnEntitySize(radiusDivisor)
             ?: Math.round(entity.radius / radiusDivisor)
         // divide the radius of the entity by 5, then round it up or down to the nearest whole number;
@@ -399,7 +409,7 @@ object niko_MPC_satelliteUtils {
         // a ensureSatellites check is not needed as the set only has entities with handler
         while (iterator.hasNext()) {
             val entity = iterator.next()
-            val handler = getEntitySatelliteHandler(entity) //we can use this here because the previously used method only returns things with handler
+            val handler = getSatelliteHandlerOfEntity(entity) //we can use this here because the previously used method only returns things with handler
             if (!MathUtils.isWithinRange(entity, coordinates, handler!!.satelliteInterferenceDistance)) {
                 iterator.remove() //have to remove because we're using a full list already
             }
@@ -466,7 +476,7 @@ object niko_MPC_satelliteUtils {
         capabilityCheck: Boolean
     ): CampaignFleetAPI? {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.getSideForSatellitesAgainstFleets(fleet, fleetTwo, capabilityCheck)
     }
 
@@ -503,7 +513,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun getSideForSatellites(entity: SectorEntityToken, battle: BattleAPI?): BattleSide? {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return null
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.getSideForBattle(battle)
     }
 
@@ -557,7 +567,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun doEntitySatellitesWantToFight(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.doSatellitesWantToFight(fleet)
     }
 
@@ -572,7 +582,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun doEntitySatellitesWantToBlock(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.doSatellitesWantToBlock(fleet!!)
     }
 
@@ -584,7 +594,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun areEntitySatellitesCapableOfBlocking(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.areSatellitesCapableOfBlocking(fleet!!)
     }
 
@@ -593,7 +603,7 @@ object niko_MPC_satelliteUtils {
      */
     private fun areEntitySatellitesCapableOfFighting(entity: SectorEntityToken, fleet: CampaignFleetAPI): Boolean {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         return handler!!.areSatellitesCapableOfFighting(fleet)
     }
 
@@ -606,7 +616,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun makeEntitySatellitesEngageFleet(entity: SectorEntityToken, fleet: CampaignFleetAPI?) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         handler!!.makeEntitySatellitesEngageFleet(fleet!!)
     }
 
@@ -627,7 +637,7 @@ object niko_MPC_satelliteUtils {
      */
     @JvmStatic
     fun defenseSatellitesApplied(entity: SectorEntityToken): Boolean {
-        return getEntitySatelliteHandler(entity) != null
+        return getSatelliteHandlerOfEntity(entity) != null
     }
 
     @JvmStatic
@@ -647,7 +657,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun incrementSatelliteGracePeriod(fleet: CampaignFleetAPI?, amount: Float, entity: SectorEntityToken) {
         if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getEntitySatelliteHandler(entity)
+        val handler = getSatelliteHandlerOfEntity(entity)
         if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer::class.java)) {
             val decrementerScript = niko_MPC_gracePeriodDecrementer(handler)
             handler!!.gracePeriodDecrementer = decrementerScript
