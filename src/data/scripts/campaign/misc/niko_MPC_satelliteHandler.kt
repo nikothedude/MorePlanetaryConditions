@@ -26,8 +26,10 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.satelliteHandlerId
 import data.utilities.niko_MPC_memoryUtils.deleteMemoryKey
 import data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset
+import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteMarket
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandler
 import data.utilities.niko_MPC_satelliteUtils.isSideValid
 import data.utilities.niko_MPC_scriptUtils.addScriptsAtValidTime
 import org.apache.log4j.Level
@@ -736,6 +738,22 @@ class niko_MPC_satelliteHandler @JvmOverloads constructor(
 
     fun newDummySatellite(satelliteFleet: CampaignFleetAPI?) {
         dummyFleet = satelliteFleet
+    }
+
+    /** Should compare the current market with an unupdated, "cached" market, and if it's different, remove stuff (industries)
+     * from the cached market, like the luddic path suppressor, for example. The cached market should be assigned
+     * only when the value of market is initially assigned or a desync is found.*/
+    fun handleMarketDesync() {
+        val ourMarket = getCurrentMarket() ?: return
+        val satelliteMarket = getCachedMarket()
+        if (ourMarket != satelliteMarket) {
+            if (satelliteMarket != null) {
+                if (satelliteMarket.hasSatellites(javaClass)) {
+                    displayError("Desync check failure-$satelliteMarket, ${satelliteMarket.name} still has $this" + "applied to it")
+                } else for (id: String in getIndustryIds()) satelliteMarket.removeIndustry(id, null, false)
+            }
+        }
+        setCachedMarket(getCurrentMarket())
     }
 
     companion object {

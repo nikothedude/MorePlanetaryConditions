@@ -218,18 +218,13 @@ object niko_MPC_satelliteUtils {
         handler!!.regenerateOrbitSpacing()
     }
 
-    // MARKETS
-    fun marketsDesynced(entity: SectorEntityToken): Boolean {
-        return marketsDesynced(entity, entity.market)
-    }
-
     /**
      * @param entity The entity to check.
      * @param market The market to compare entity's market to.
      * @return True if entity's satellite market != market.
      */
     @JvmStatic
-    fun marketsDesynced(entity: SectorEntityToken, market: MarketAPI): Boolean {
+    fun marketsDesynced(market: MarketAPI, entity: SectorEntityToken = market.primaryEntity): Boolean {
         return memorySatellitesDesyncedWithMarket(entity.memoryWithoutUpdate, market)
     }
 
@@ -253,18 +248,23 @@ object niko_MPC_satelliteUtils {
     /**
      * @return Either null, or an instance of niko_MPC_satelliteHandler.
      */
-    // no nullable, i use a method to nullcheck which intellij gets confused by
-    @JvmStatic
-    fun getSatelliteHandlerOfEntity(entity: SectorEntityToken): niko_MPC_satelliteHandler? {
-        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as niko_MPC_satelliteHandler?
+    fun HasMemory.getSatelliteHandler(handlerClass: String): niko_MPC_satelliteHandler? {
+        val satelliteHandlers: HashMap<Class<niko_MPC_satelliteHandler>, niko_MPC_satelliteHandler> = getSatelliteHandlers()
+        return satelliteHandlers[handlerClass]
     }
 
-    fun HasMemory.getSatelliteHandler(): niko_MPC_satelliteHandler? {
-        return memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as niko_MPC_satelliteHandler?
+    fun HasMemory.getSatelliteHandlers(): HashMap<String, niko_MPC_satelliteHandler> {
+        val cachedValue = memoryWithoutUpdate.get(niko_MPC_ids.satelliteHandlerId)
+        if (cachedValue !is HashMap<*, *>) {
+            if (cachedValue != null) niko_MPC_debugUtils.displayError("Non-null invalid value in $this satellite handler memory. Value: $cachedValue", true)
+            memoryWithoutUpdate.set(niko_MPC_ids.satelliteHandlerId, HashMap<String, niko_MPC_satelliteHandler>())
+        }
+        return (memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as HashMap<String, niko_MPC_satelliteHandler>)
     }
 
     @JvmStatic
     fun getEntitySatelliteHandlerAlternate(entity: SectorEntityToken): niko_MPC_satelliteHandler? {
+        TODO()
         return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerIdAlt] as niko_MPC_satelliteHandler?
     }
 
@@ -687,3 +687,4 @@ object niko_MPC_satelliteUtils {
         return entity.tags.contains(niko_MPC_ids.satelliteTagId)
     }
 }
+

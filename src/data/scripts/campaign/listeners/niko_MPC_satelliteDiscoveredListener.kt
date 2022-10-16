@@ -1,22 +1,16 @@
-package data.scripts.campaign.listeners;
+package data.scripts.campaign.listeners
 
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI;
-import com.fs.starfarer.api.campaign.SectorEntityToken;
-import com.fs.starfarer.api.campaign.listeners.DiscoverEntityListener;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
-import data.utilities.niko_MPC_satelliteUtils;
+import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.listeners.DiscoverEntityListener
+import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteHandlerAlternate
+import data.utilities.niko_MPC_satelliteUtils.isCustomEntitySatellite
 
-public class niko_MPC_satelliteDiscoveredListener implements DiscoverEntityListener {
-
-    @Override
-    public void reportEntityDiscovered(SectorEntityToken entity) {
-        if (niko_MPC_satelliteUtils.isCustomEntitySatellite(entity)) return;
-
-        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getEntitySatelliteHandlerAlternate(entity);
-        if (handler == null) return;
-
-        for (CustomCampaignEntityAPI satellite : handler.getSatellites()) {
-            satellite.setSensorProfile(9999999999f);
+class niko_MPC_satelliteDiscoveredListener : DiscoverEntityListener {
+    override fun reportEntityDiscovered(entity: SectorEntityToken) {
+        if (isCustomEntitySatellite(entity)) return
+        val handler = getEntitySatelliteHandlerAlternate(entity) ?: return
+        for (satellite in handler.satellites!!) {
+            satellite.sensorProfile = 9999999999f
         }
     }
 }

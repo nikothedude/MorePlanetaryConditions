@@ -174,7 +174,19 @@ object niko_MPC_debugUtils {
                 // is absolutely nothing
                 displayError("$this was not alive but had no handler")
                 result = false
-                niko_MPC_satelliteUtils.removeSatellite(this)
+            }
+            else if (orbit == null) {
+                displayError("Null orbit on $this, invalid state")
+                result = false
+            }
+            else if (orbit.focus == null) {
+                displayError("Null orbit focus on $this, invalid state")
+                result = false
+            }
+            else if (orbit.focus.market != entityHandler.getMarket()) {
+                displayError("Unsynced orbit focus market: ${orbit.focus.market}, ${orbit.focus.market.name} " +
+                        ". Should be ${entityHandler.getMarket()}, ${entityHandler.getMarket()?.getName}")
+                result = false
             }
         }
         else if (entityHandler != null) {

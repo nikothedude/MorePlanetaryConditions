@@ -1,24 +1,20 @@
-package data.scripts.campaign.listeners;
+package data.scripts.campaign.listeners
 
-import com.fs.starfarer.api.Global;
-import com.fs.starfarer.api.campaign.CampaignEventListener;
-import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener;
-import data.utilities.niko_MPC_fleetUtils;
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
+import data.utilities.niko_MPC_fleetUtils.genericPreDeleteSatelliteFleetCleanup
 
-public class niko_MPC_satelliteFleetDespawnListener extends BaseFleetEventListener {
-
+class niko_MPC_satelliteFleetDespawnListener : BaseFleetEventListener() {
     /**
      * This listener is attached to every satellite fleet that spawns.
      * Serves to remove scripts and listeners and memorykeys, as well as a few others.
      */
-    @Override
-    public void reportFleetDespawnedToListener(CampaignFleetAPI fleet, CampaignEventListener.FleetDespawnReason reason, Object param) {
-        super.reportFleetDespawnedToListener(fleet, reason, param);
-
-        niko_MPC_fleetUtils.genericPreDeleteSatelliteFleetCleanup(fleet);
-
-        fleet.removeEventListener(this);
-        Global.getSector().getListenerManager().removeListener(this);
+    override fun reportFleetDespawnedToListener(fleet: CampaignFleetAPI, reason: FleetDespawnReason, param: Any) {
+        super.reportFleetDespawnedToListener(fleet, reason, param)
+        genericPreDeleteSatelliteFleetCleanup(fleet)
+        fleet.removeEventListener(this)
+        Global.getSector().listenerManager.removeListener(this)
     }
 }
