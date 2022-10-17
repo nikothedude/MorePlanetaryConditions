@@ -43,7 +43,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
             // the market should have a handler
         } else { //update the values of our handler
             updateHandlerValues(satelliteHandler)
-            checkForMarketDesync(satelliteHandler)
+            checkForMarketDesync(satelliteHandler) //todo: move this into the industry adder abstract thingy
         }
         handleConditionAttributes(id, ourMarket)
     }
@@ -87,7 +87,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
         return ourMarket.getSatelliteHandler(getHandlerType()) //store it on the market, not entity
     }
 
-    abstract fun getHandlerType(): String
+    abstract fun getHandlerType(): String //todo: maybe make it so we associate handlers with $this?
 
     fun createNewHandler(): niko_MPC_satelliteHandlerCore {
         val newHandler: niko_MPC_satelliteHandlerCore = createNewHandlerInstance()
@@ -128,9 +128,9 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
         }
         if (satelliteMarket != null) {
             if (satelliteMarket.hasSatellites(getHandlerType())) {
-                displayError("Desync check failure-$cachedMarket still has ${cachedMarket.getSatelliteHandler(getHandlerType())}" + "applied to it")
+                return displayError("Desync check failure-$cachedMarket still has ${cachedMarket.getSatelliteHandler(getHandlerType())}" + "applied to it")
             }
-            else if ()
+            else if (cachedMarket != null) tryToUnapplyIndustries(cachedMarket)
         }
     }
 
