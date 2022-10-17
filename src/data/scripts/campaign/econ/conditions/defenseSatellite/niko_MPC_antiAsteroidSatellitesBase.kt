@@ -42,9 +42,8 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
             satelliteHandler = createNewHandler() // reassign it to a new handler. 100% of the time if this condition is active
             // the market should have a handler
         } else { //update the values of our handler
-            satelliteHandler.market = ourMarket
-            satelliteHandler.entity = ourMarket.primaryEntity
-            satelliteHandler.currentSatelliteFactionId = ourMarket.factionId
+            updateHandlerValues(satelliteHandler)
+            checkForMarketDesync(satelliteHandler)
         }
         handleConditionAttributes(id, ourMarket)
     }
@@ -97,6 +96,14 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
     }
 
     abstract fun createNewHandlerInstance(): niko_MPC_satelliteHandlerCore
+    
+    protected fun updateHandlerValues(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()) {
+        if (handler == null) return
+        val ourMarket = getMarket() ?: return
+        handler.market = ourMarket
+        handler.entity = ourMarket.primaryEntity
+        handler.currentSatelliteFactionId = ourMarket.factionId
+    }
 
     protected fun getMarket(doNullCheck: Boolean = true): MarketAPI? {
         if (doNullCheck && market == null) {
@@ -105,18 +112,25 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
         return market
     }
     /// EDGECASE FAILSAFES
-    protected fun handleMarketDesync() {
+    protected fun checkForMarketDesync(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()) {
+        if (handler == null) return
         val ourMarket = getMarket() ?: return
-        val satelliteMarket = niko_MPC_satelliteUtils.getEntitySatelliteMarket(ourMarket)
-        if (ourMarket === satelliteMarket) {
-            displayError("desync attempt: $market, ${market.name} is the same as the provided satellite market")
+        val cachedMarket = handler.cachedMarket
+        if (ourMarket !== cachedMarket) handleMarketDesync(handler, cachedMarket)
+    }
+    
+    protected fun handleMarketDesync(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler(), cachedMarket: MarketAPI?) {
+        if (handler == null) return
+        val ourMarket = getMarket() ?: return
+        if (ourMarket === cachedMarket) {
+            displayError("desync check error: $market, ${market.name} is the same as the provided cached market")
             return
         }
         if (satelliteMarket != null) {
             if (satelliteMarket.hasSatellites(getHandlerType())) {
-                displayError("Desync check failure-$satelliteMarket still has ${satelliteMarket.getSatelliteHandler(getHandlerType())}" + "applied to it")
+                displayError("Desync check failure-$cachedMarket still has ${cachedMarket.getSatelliteHandler(getHandlerType())}" + "applied to it")
             }
-            else for (id: String in industryIds) satelliteMarket.removeIndustry(id, null, false)
+            else if ()
         }
     }
 
