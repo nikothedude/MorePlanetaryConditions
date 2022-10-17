@@ -80,6 +80,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         maxCosmeticSatellitesForEntity = calculateMaxCosmeticSatellitesForEntity()
         createNewCosmeticSatellites(maxCosmeticSatellitesForEntity)
         deleteAllFleets()
+        
         TODO() // not done! might want to attach a few more entity-specific variables, like stations
         // (put those on market?)
     }
@@ -109,7 +110,7 @@ abstract class niko_MPC_satelliteHandlerCore(
 
     protected fun createNewCosmeticSatellites(amountToAdd: Int) {
         var index = amountToAdd
-        while (index != 0 && cosmeticSatellites.size < maxCosmeticSatellitesForEntity) {
+        while (index > 0 && cosmeticSatellites.size < maxCosmeticSatellitesForEntity) {
             index--
             createNewCosmeticSatellite()
         }
@@ -163,9 +164,11 @@ abstract class niko_MPC_satelliteHandlerCore(
         // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc,
         // so its safe to not add a buffer to the calculation in the optimalangle method
         for (cosmeticSatellite: CustomCampaignEntityAPI in ArrayList(cosmeticSatellites)) {
+            var errored = false
             if (orbitAngle >= 360) {
-                displayError("regenerateOrbitSpacing orbitAngle = $orbitAngle")
-                deleteCosmeticSatellite(cosmeticSatellite, false, false) //we dont want these weirdos overlapping
+                if (!errored) displayError("regenerateOrbitSpacing orbitAngle = $orbitAngle")
+                errored = true
+                cosmeticSatellite.deleteIfCosmeticSatellite()
             }
             addOrbitPointingDownWithRelativeOffset(
                 cosmeticSatellite,
