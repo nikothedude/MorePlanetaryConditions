@@ -7,7 +7,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI;
 import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -178,7 +178,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
         }
         for (SectorEntityToken entity : entitiesWithinRange) {
             if (niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, playerFleet)) { // no want check because player might do a bit of trolling (raiding)
-                niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
+                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
                 CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(handler, playerFleet);
                 spawnedFleets.add(satelliteFleet);
             }
@@ -202,7 +202,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
             }
         }
         for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoinBattle.entrySet()) {
-            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(entry.getKey());
+            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entry.getKey());
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
             if (!tracker.areSatellitesInvolvedInBattle(battle, handler)) { // a bit of sanity for safety

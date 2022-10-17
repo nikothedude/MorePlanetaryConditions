@@ -25,5 +25,4 @@ public class niko_MPC_antiAsteroidSatellitesPlugin extends BaseCustomEntityPlugi
 
         entity.setDiscoveryXP(discoveryXp);
     }
-
 }

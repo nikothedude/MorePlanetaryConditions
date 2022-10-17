@@ -3,22 +3,18 @@ package data.scripts.everyFrames;
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.*;
 import com.fs.starfarer.api.campaign.econ.MarketAPI;
-import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.niko_MPC_fleetUtils;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class niko_MPC_satelliteBattleCheckerForStation implements EveryFrameScriptWithCleanup {
 
     public MarketAPI market;
     public boolean done = false;
-    public niko_MPC_satelliteHandler satelliteHandler;
+    public niko_MPC_satelliteHandlerCore satelliteHandler;
     private float deltaTime = 0f;
 
-    public niko_MPC_satelliteBattleCheckerForStation(niko_MPC_satelliteHandler handler, MarketAPI market) {
+    public niko_MPC_satelliteBattleCheckerForStation(niko_MPC_satelliteHandlerCore handler, MarketAPI market) {
         this.satelliteHandler = handler;
         this.market = market;
 

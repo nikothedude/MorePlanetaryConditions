@@ -4,7 +4,7 @@ import com.fs.starfarer.api.campaign.BaseCampaignEventListener
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_fleetUtils.isFleetValidEngagementTarget
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
@@ -44,7 +44,7 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
         super.reportFleetReachedEntity(fleet, entity)
         if (fleet == null) return
         val assignment = fleet.currentAssignment
-        var handler: niko_MPC_satelliteHandler? = null
+        var handler: niko_MPC_satelliteHandlerCore? = null
         if (entity != null) handler = entity.getSatelliteHandler()
         if (handler == null) {
             var trueTarget: SectorEntityToken? = null

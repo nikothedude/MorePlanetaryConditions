@@ -9,7 +9,7 @@ import com.fs.starfarer.api.fleet.FleetGoal;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.api.mission.FleetSide;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.niko_MPC_ids;
 import data.utilities.niko_MPC_satelliteBattleTracker;
 import data.utilities.niko_MPC_satelliteUtils;
@@ -101,7 +101,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             List<CampaignFleetAPI> fleetsOnSide = (usePlayerSide ? thisBattle.getPlayerSide() : thisBattle.getNonPlayerSide());
 
             for (CampaignFleetAPI potentialSatelliteFleet : fleetsOnSide) {
-                niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(potentialSatelliteFleet);
+                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(potentialSatelliteFleet);
                 if (handler == null) continue;
                 // else, they have satellites
                 boolean hasSatelliteShips = false;

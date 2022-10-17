@@ -8,8 +8,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
-import com.sun.org.apache.xpath.internal.operations.Bool
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.utilities.exceptions.niko_MPC_stackTraceGenerator
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied
@@ -166,8 +165,9 @@ object niko_MPC_debugUtils {
 
     fun CustomCampaignEntityAPI.isCosmeticSatelliteInValidState(): Boolean {
         //todo: the below might not work. if it does you want to refactor it
+        if (!isCosmeticSatellite()) return true
         var result = true
-        val entityHandler: niko_MPC_satelliteHandler? = getCosmeticSatelliteHandler()
+        val entityHandler: niko_MPC_satelliteHandlerCore? = getCosmeticSatelliteHandler()
         if (isAlive && !(hasTag(Tags.FADING_OUT_AND_EXPIRING))) { //todo: consider coming back to this?
             if (entityHandler == null) {
                 // error state, the only time in which a living satellite (non-deleted) shouldnt have a handler
@@ -204,7 +204,7 @@ object niko_MPC_debugUtils {
     fun CampaignFleetAPI.isSatelliteFleetInValidState(): Boolean {
         if (!hasTag(niko_MPC_ids.isSatelliteFleetId)) return true
         var result = true
-        val entityHandler: niko_MPC_satelliteHandler? = getSatelliteHandler()
+        val entityHandler: niko_MPC_satelliteHandlerCore? = getSatelliteHandler()
         if (isAlive && !isDespawning) {
             if (entityHandler == null) {
                 displayError("$this had no entityHandler despite isAlive being true and isdespawning being false")

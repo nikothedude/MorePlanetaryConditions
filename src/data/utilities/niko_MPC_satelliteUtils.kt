@@ -7,8 +7,8 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler.niko_MPC_satelliteParams
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore.niko_MPC_satelliteParams
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer
 import org.apache.log4j.Level
 import org.jetbrains.annotations.Contract
@@ -40,7 +40,7 @@ object niko_MPC_satelliteUtils {
     // ADDITION AND REMOVAL //
     //                      //
     //////////////////////////
-    fun initializeSatellitesOntoEntity(entity: SectorEntityToken, handler: niko_MPC_satelliteHandler?) {
+    fun initializeSatellitesOntoEntity(entity: SectorEntityToken, handler: niko_MPC_satelliteHandlerCore?) {
         initializeSatellitesOntoEntity(entity, entity.market, handler)
     }
 
@@ -50,7 +50,7 @@ object niko_MPC_satelliteUtils {
      * @param market Will have satelliteMarketId set to this if not null.
      */
     @JvmStatic
-    fun initializeSatellitesOntoEntity(entity: SectorEntityToken?, market: MarketAPI?, handler: niko_MPC_satelliteHandler?) {
+    fun initializeSatellitesOntoEntity(entity: SectorEntityToken?, market: MarketAPI?, handler: niko_MPC_satelliteHandlerCore?) {
         if (!niko_MPC_debugUtils.doEntityHasNoSatellitesTest(entity)) { //if the test fails, something fucked up, lets abort
             return
         }
@@ -197,7 +197,7 @@ object niko_MPC_satelliteUtils {
      * @param satellite The satellite to remove.
      */
     fun removeSatellite(satellite: CustomCampaignEntityAPI) {
-        val handler : niko_MPC_satelliteHandler? = satellite.getSatelliteHandler()
+        val handler : niko_MPC_satelliteHandlerCore? = satellite.getSatelliteHandler()
         if (handler != null) {
             handler.removeSatellite(satellite)
         }
@@ -248,24 +248,24 @@ object niko_MPC_satelliteUtils {
     /**
      * @return Either null, or an instance of niko_MPC_satelliteHandler.
      */
-    fun HasMemory.getSatelliteHandler(handlerClass: String): niko_MPC_satelliteHandler? {
-        val satelliteHandlers: HashMap<Class<niko_MPC_satelliteHandler>, niko_MPC_satelliteHandler> = getSatelliteHandlers()
-        return satelliteHandlers[handlerClass]
+    fun HasMemory.getSatelliteHandler(handlerType: String): niko_MPC_satelliteHandlerCore? {
+        val satelliteHandlers: HashMap<String, niko_MPC_satelliteHandlerCore> = getSatelliteHandlers()
+        return satelliteHandlers[handlerType]
     }
 
-    fun HasMemory.getSatelliteHandlers(): HashMap<String, niko_MPC_satelliteHandler> {
+    fun HasMemory.getSatelliteHandlers(): HashMap<String, niko_MPC_satelliteHandlerCore> {
         val cachedValue = memoryWithoutUpdate.get(niko_MPC_ids.satelliteHandlerId)
         if (cachedValue !is HashMap<*, *>) {
             if (cachedValue != null) niko_MPC_debugUtils.displayError("Non-null invalid value in $this satellite handler memory. Value: $cachedValue", true)
-            memoryWithoutUpdate.set(niko_MPC_ids.satelliteHandlerId, HashMap<String, niko_MPC_satelliteHandler>())
+            memoryWithoutUpdate.set(niko_MPC_ids.satelliteHandlerId, HashMap<String, niko_MPC_satelliteHandlerCore>())
         }
-        return (memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as HashMap<String, niko_MPC_satelliteHandler>)
+        return (memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] as HashMap<String, niko_MPC_satelliteHandlerCore>)
     }
 
     @JvmStatic
-    fun getEntitySatelliteHandlerAlternate(entity: SectorEntityToken): niko_MPC_satelliteHandler? {
+    fun getEntitySatelliteHandlerAlternate(entity: SectorEntityToken): niko_MPC_satelliteHandlerCore? {
         TODO()
-        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerIdAlt] as niko_MPC_satelliteHandler?
+        return entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerIdAlt] as niko_MPC_satelliteHandlerCore?
     }
 
     /**
@@ -303,7 +303,7 @@ object niko_MPC_satelliteUtils {
         } else ArrayList()
     }
 
-    fun getCurrentSatelliteFactionId(handler: niko_MPC_satelliteHandler): String? {
+    fun getCurrentSatelliteFactionId(handler: niko_MPC_satelliteHandlerCore): String? {
         return getCurrentSatelliteFactionId(handler.entity)
     }
 
@@ -320,7 +320,7 @@ object niko_MPC_satelliteUtils {
         return handler!!.currentSatelliteFactionId
     }
 
-    fun getCurrentSatelliteFaction(handler: niko_MPC_satelliteHandler): FactionAPI {
+    fun getCurrentSatelliteFaction(handler: niko_MPC_satelliteHandlerCore): FactionAPI {
         return Global.getSector().getFaction(getCurrentSatelliteFactionId(handler))
     }
 
@@ -553,7 +553,7 @@ object niko_MPC_satelliteUtils {
     }
 
     // CAPABILITY CHECKING
-    fun doEntitySatellitesWantToFight(handler: niko_MPC_satelliteHandler, fleet: CampaignFleetAPI?): Boolean {
+    fun doEntitySatellitesWantToFight(handler: niko_MPC_satelliteHandlerCore, fleet: CampaignFleetAPI?): Boolean {
         return doEntitySatellitesWantToFight(handler.entity, fleet)
     }
 

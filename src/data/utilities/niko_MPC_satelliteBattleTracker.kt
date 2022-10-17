@@ -3,14 +3,14 @@ package data.utilities
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlerOfEntity
 
 /**
  * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside).
  */
 class niko_MPC_satelliteBattleTracker {
-    var battles: MutableMap<BattleAPI, MutableMap<niko_MPC_satelliteHandler, BattleSide>?> = HashMap()
+    var battles: MutableMap<BattleAPI, MutableMap<niko_MPC_satelliteHandlerCore, BattleSide>?> = HashMap()
 
     /**
      * Associates a hashmap entry of (battle->(handler->side)). The side is stored for future reference.
@@ -21,21 +21,21 @@ class niko_MPC_satelliteBattleTracker {
      * @param handler The satellite handler we are associating.
      * @param side The stored side of the battle.
      */
-    fun associateSatellitesWithBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler, side: BattleSide) {
+    fun associateSatellitesWithBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandlerCore, side: BattleSide) {
         if (!battles.containsKey(battle) || battles[battle] == null) battles[battle] = HashMap()
         val currentBattles = battles[battle]
         currentBattles!![handler] = side
     }
 
-    fun getSatellitesInfluencingBattle(battle: BattleAPI): Set<niko_MPC_satelliteHandler> {
+    fun getSatellitesInfluencingBattle(battle: BattleAPI): Set<niko_MPC_satelliteHandlerCore> {
         return if (battles[battle] == null) HashSet() else battles[battle]!!.keys
     }
 
-    fun getSideOfSatellitesForBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler): BattleSide? {
+    fun getSideOfSatellitesForBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandlerCore): BattleSide? {
         return if (battles[battle] == null) null else battles[battle]!![handler]
     }
 
-    fun areSatellitesInvolvedInBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler): Boolean {
+    fun areSatellitesInvolvedInBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandlerCore): Boolean {
         return if (battles.containsKey(battle)) {
             if (battles[battle]!!.containsKey(handler)) {
                 true
@@ -51,8 +51,8 @@ class niko_MPC_satelliteBattleTracker {
         return battles[battle] != null && !battles[battle]!!.isEmpty()
     }
 
-    fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI> {
-        val handlerToFleetMap = HashMap<niko_MPC_satelliteHandler, CampaignFleetAPI>()
+    fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandlerCore, CampaignFleetAPI> {
+        val handlerToFleetMap = HashMap<niko_MPC_satelliteHandlerCore, CampaignFleetAPI>()
         for (fleet in battle.bothSides) {
             val foundhandler = getSatelliteHandlerOfEntity(fleet)
             if (foundhandler != null) {
@@ -66,7 +66,7 @@ class niko_MPC_satelliteBattleTracker {
         val handlerToFleetMap = scanBattleForSatellites(battle)
         for ((handler, fleet) in handlerToFleetMap) {
             if (!areSatellitesInvolvedInBattle(battle, handler)) {
-                val handlerToSideMap = HashMap<niko_MPC_satelliteHandler, BattleSide>()
+                val handlerToSideMap = HashMap<niko_MPC_satelliteHandlerCore, BattleSide>()
                 handlerToSideMap[handler] = battle.pickSide(fleet)
                 battles[battle] = handlerToSideMap
             }
@@ -77,13 +77,13 @@ class niko_MPC_satelliteBattleTracker {
         battles.remove(battle)
     }
 
-    fun removeHandlerFromBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandler) {
+    fun removeHandlerFromBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandlerCore) {
         if (battles[battle] != null) {
             battles[battle]!!.remove(handler)
         }
     }
 
-    fun removeHandlerFromAllBattles(handler: niko_MPC_satelliteHandler) {
+    fun removeHandlerFromAllBattles(handler: niko_MPC_satelliteHandlerCore) {
         for (battle in battles.keys) {
             removeHandlerFromBattle(battle, handler)
         }

@@ -3,20 +3,20 @@ package data.scripts.everyFrames;
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.*;
 
 public class niko_MPC_temporarySatelliteFleetDespawner implements EveryFrameScriptWithCleanup {
 
     public CampaignFleetAPI fleet;
-    public niko_MPC_satelliteHandler handler;
+    public niko_MPC_satelliteHandlerCore handler;
 
     public boolean done = false;
 
     public double advanceTimeSinceStart = 0;
     public int graceRuns = 0;
 
-    public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandler handler) {
+    public niko_MPC_temporarySatelliteFleetDespawner(CampaignFleetAPI fleet, niko_MPC_satelliteHandlerCore handler) {
         this.fleet = fleet;
         this.handler = handler;
 

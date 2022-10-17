@@ -7,8 +7,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import com.fs.starfarer.campaign.fleet.CampaignFleet
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids.isSatelliteFleetId
@@ -20,7 +19,7 @@ object niko_MPC_fleetUtils {
      * Creates an empty fleet with absolutely nothing in it, except for the memflags satellite fleets must have.
      * @return A new satellite fleet.
      */
-    fun createSatelliteFleetTemplate(handler: niko_MPC_satelliteHandler): CampaignFleetAPI {
+    fun createSatelliteFleetTemplate(handler: niko_MPC_satelliteHandlerCore): CampaignFleetAPI {
         return handler.createSatelliteFleetTemplate()
     }
 
@@ -107,7 +106,7 @@ object niko_MPC_fleetUtils {
     }
 
     fun spawnSatelliteFleet(
-        handler: niko_MPC_satelliteHandler,
+        handler: niko_MPC_satelliteHandlerCore,
         coordinates: Vector2f?,
         location: LocationAPI?
     ): CampaignFleetAPI {
@@ -115,7 +114,7 @@ object niko_MPC_fleetUtils {
     }
 
     fun spawnSatelliteFleet(
-        handler: niko_MPC_satelliteHandler,
+        handler: niko_MPC_satelliteHandlerCore,
         coordinates: Vector2f?,
         location: LocationAPI?,
         temporary: Boolean,
@@ -125,22 +124,22 @@ object niko_MPC_fleetUtils {
     }
 
     @JvmStatic
-    fun getHandlerDialogFleet(handler: niko_MPC_satelliteHandler, entity: SectorEntityToken): CampaignFleetAPI? {
+    fun getHandlerDialogFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken): CampaignFleetAPI? {
         if (handler.fleetForPlayerDialog == null) {
             handler.fleetForPlayerDialog = createNewFullSatelliteFleet(handler, entity)
         }
         return handler.fleetForPlayerDialog
     }
 
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandler, entity: SectorEntityToken): CampaignFleetAPI {
+    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken): CampaignFleetAPI {
         return createNewFullSatelliteFleet(handler, entity, true)
     }
 
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandler, entity: SectorEntityToken, temporary: Boolean): CampaignFleetAPI {
+    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken, temporary: Boolean): CampaignFleetAPI {
         return createNewFullSatelliteFleet(handler, entity.location, entity.containingLocation, temporary, false)
     }
 
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandler, coordinates: Vector2f?, location: LocationAPI?, temporary: Boolean, dummy: Boolean): CampaignFleetAPI {
+    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, coordinates: Vector2f?, location: LocationAPI?, temporary: Boolean, dummy: Boolean): CampaignFleetAPI {
         return handler.createNewFullSatelliteFleet(coordinates, location, temporary, dummy)
     }
 
@@ -149,7 +148,7 @@ object niko_MPC_fleetUtils {
         return fleet.memoryWithoutUpdate.`is`(isSatelliteFleetId, true)
     }
 
-    fun createDummyFleet(handler: niko_MPC_satelliteHandler, entity: SectorEntityToken?): CampaignFleetAPI {
+    fun createDummyFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken?): CampaignFleetAPI {
         return handler.createDummyFleet(entity!!)
     }
 

@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ;
+package data.scripts.campaign.econ.conditions.defenseSatellite;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
@@ -8,7 +8,6 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript;
 import data.utilities.*;
 import org.apache.log4j.Level;
@@ -74,7 +73,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             }
             else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up.
             if (!niko_MPC_debugUtils.assertEntityHasSatellites(primaryEntity)) return;
-            niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
+            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
             handler.updateFactionForSelfAndSatellites();
         }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
@@ -82,7 +81,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     private void doEntityIsNullTest(SectorEntityToken primaryEntity) {
         if (primaryEntity == null) return;
-        niko_MPC_satelliteHandler initialHandler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
+        niko_MPC_satelliteHandlerCore initialHandler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
         if (initialHandler != null) {
             SectorEntityToken handlerEntity = initialHandler.getEntity();
             if (initialHandler.done) {
@@ -116,7 +115,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
         float orbitDistance = getSatelliteOrbitDistance(market.getPrimaryEntity());
         float interferenceDistance = getSatelliteInterferenceDistance(market.getPrimaryEntity(), orbitDistance);
         float barrageDistance = getSatelliteBarrageDistance(market.getPrimaryEntity());
-        niko_MPC_satelliteHandler handler = new niko_MPC_satelliteHandler(
+        niko_MPC_satelliteHandlerCore handler = new niko_MPC_satelliteHandlerCore(
                 entity,
                 satelliteId,
                 satelliteFactionId,

@@ -9,7 +9,7 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI;
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags;
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.niko_MPC_dialogUtils;
 import data.utilities.niko_MPC_fleetUtils;
 import data.utilities.niko_MPC_ids;
@@ -26,7 +26,7 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
 
-        niko_MPC_satelliteHandler handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
+        niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
         if (handler == null) return false;
 
         CampaignFleetAPI playerFleet = Global.getSector().getPlayerFleet();
@@ -37,7 +37,7 @@ public class niko_MPC_prepareSatelliteEncounter extends BaseCommandPlugin {
 
         CampaignFleetAPI focusedSatellite = null;
         for (SectorEntityToken satelliteEntity : entitiesWillingToFight) {
-            niko_MPC_satelliteHandler satelliteHandler = niko_MPC_satelliteUtils.getSatelliteHandler(satelliteEntity);
+            niko_MPC_satelliteHandlerCore satelliteHandler = niko_MPC_satelliteUtils.getSatelliteHandler(satelliteEntity);
             CampaignFleetAPI dialogFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(satelliteHandler, playerFleet);
             if (dialogFleet != null) {
                 focusedSatellite = dialogFleet;

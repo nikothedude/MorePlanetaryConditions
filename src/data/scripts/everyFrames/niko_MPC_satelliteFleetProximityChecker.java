@@ -4,7 +4,7 @@ import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.campaign.SectorEntityToken;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 import data.utilities.niko_MPC_fleetUtils;
 import org.lazywizard.lazylib.campaign.CampaignUtils;
 
@@ -14,10 +14,10 @@ public class niko_MPC_satelliteFleetProximityChecker implements EveryFrameScript
 
     public SectorEntityToken entity;
     public boolean done = false;
-    public niko_MPC_satelliteHandler satelliteHandler;
+    public niko_MPC_satelliteHandlerCore satelliteHandler;
     private float deltaTime = 0f;
 
-    public niko_MPC_satelliteFleetProximityChecker(niko_MPC_satelliteHandler handler, SectorEntityToken entity) {
+    public niko_MPC_satelliteFleetProximityChecker(niko_MPC_satelliteHandlerCore handler, SectorEntityToken entity) {
         this.satelliteHandler = handler;
         this.entity = entity;
 

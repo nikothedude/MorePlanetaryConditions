@@ -3,17 +3,17 @@ package data.scripts.everyFrames;
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup;
 import com.fs.starfarer.api.campaign.CampaignFleetAPI;
 import com.fs.starfarer.api.impl.campaign.ids.Tags;
-import data.scripts.campaign.misc.niko_MPC_satelliteHandler;
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
 
 import java.util.Iterator;
 import java.util.Map;
 
 public class niko_MPC_gracePeriodDecrementer implements EveryFrameScriptWithCleanup {
 
-    public niko_MPC_satelliteHandler params;
+    public niko_MPC_satelliteHandlerCore params;
     public boolean done = false;
 
-    public niko_MPC_gracePeriodDecrementer(niko_MPC_satelliteHandler params) {
+    public niko_MPC_gracePeriodDecrementer(niko_MPC_satelliteHandlerCore params) {
         this.params = params;
 
         init();
