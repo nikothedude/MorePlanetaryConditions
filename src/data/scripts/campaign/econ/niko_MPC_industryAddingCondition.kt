@@ -10,25 +10,41 @@ abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
     override fun apply(id: String) {
         super.apply(id)
         if (wantToApplyAnyIndustry()) {
-            for (industryId: String in industryIds) {
-                val trueIndustryId: String? = getModifiedIndustryId(industryId);
-                if (trueIndustryId != null) {
-                    if (wantToApplyIndustry(trueIndustryId)) {
-                        applyIndustry(trueIndustryId)
-                    }
-                }
-            }
+            tryToApplyIndustries()
         }
     }
 
     override fun unapply(id: String) {
         super.unapply(id)
+        tryToUnapplyIndustries()
+    }
+    
+    protected fun tryToApplyIndustries() {
         for (industryId: String in industryIds) {
-            val trueIndustryId: String? = getModifiedIndustryId(industryId);
-            if (trueIndustryId != null) {
-                if (wantToUnapplyIndustry(trueIndustryId)) {
-                    unapplyIndustry(trueIndustryId)
-                }
+            tryToApplyIndustry(industryId)
+        }
+    }
+    
+    protected fun tryToApplyIndustry(industryId: String) {
+        val trueIndustryId: String? = getModifiedIndustryId(industryId);
+        if (trueIndustryId != null) {
+            if (wantToApplyIndustry(trueIndustryId)) {
+                applyIndustry(trueIndustryId)
+            }
+        }
+    }
+    
+    protected fun tryToUnapplyIndustries() {
+        for (industryId: String in industryIds) {
+            tryToUnapplyIndustry(industryId)
+        }
+    }
+    
+    protected fun tryToUnapplyIndustry(industryId: String) {
+        val trueIndustryId: String? = getModifiedIndustryId(industryId);
+        if (trueIndustryId != null) {
+            if (wantToUnapplyIndustry(trueIndustryId)) {
+                unapplyIndustry(trueIndustryId)
             }
         }
     }
@@ -51,7 +67,7 @@ abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
 
     protected fun wantToUnapplyIndustry(industryId: String): Boolean {
         var result = true
-        for (condition: MarketConditionAPI in market.conditions) {
+        for (condition: MarketConditionAPI in market.conditions) { //todo: convert this to memory at some point, i dont trust conditions
             if (condition is niko_MPC_industryAddingCondition) {
                 if ((condition != this) && condition.industryIds.any { it == industryId }) {
                     result = false
@@ -63,4 +79,6 @@ abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
     }
     fun applyIndustry(industryId: String) = market.addIndustry(industryId)
     fun unapplyIndustry(industryId: String) = market.removeIndustry(industryId, null, false)
+    
+    override fun isTransient(): Boolean = return false //todo: is this a good idea
 }
