@@ -38,14 +38,16 @@ abstract class niko_MPC_satelliteHandlerCore(
     val defaultSatelliteFactionId: String = "derelict" //todo: make abstract as a test to see if it npes?
     var currentSatelliteFactionId: String = defaultSatelliteFactionId
         set(value) {
-            if (field !== value) updateSatelliteFactions(value)
+            if (field != value) updateSatelliteFactions(value)
+            // no !== because if we use that, "blah" !== "blah" return false, while
+            // "blah" != "blah" returns true due to contents being the same
             field = value
         }
 
     val cosmeticSatellites: MutableList<CustomCampaignEntityAPI> = ArrayList()
-    val satelliteFleets: List<CampaignFleetAPI> = ArrayList()
+    val satelliteFleets: MutableList<CampaignFleetAPI> = ArrayList()
     abstract val satelliteFleetName: String
-    abstract val maximumSatelliteFleetFp: String
+    abstract val maximumSatelliteFleetFp: Int
     abstract val cosmeticSatelliteName: String
     var maxCosmeticSatellitesForEntity: Int = calculateMaxCosmeticSatellitesForEntity()
 
@@ -64,7 +66,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         var currentEntity = entity
         if (currentEntity === oldEntity) {
             displayError("desync attempt: $oldEntity, ${oldEntity?.name} is the same as the provided entity")
-            return
+            return //todo: change to one line
         }
         if (oldEntity != null) {
             migrateEntityFeatures(oldEntity, currentEntity)
@@ -95,14 +97,13 @@ abstract class niko_MPC_satelliteHandlerCore(
                 displayError("Desync check failure-$oldMarket still has $this" + "applied to it")
             }
             else  {
-                migrateMarketFeatures(currentMarket)
-                if (conditionId != null) oldMarket.removeCondition(conditionId)
+                migrateMarketFeatures(oldMarket, currentMarket)
             }
         }
         cachedMarket = market
     }
 
-    protected fun migrateMarketFeatures(migrationTarget: MarketAPI) {
+    protected fun migrateMarketFeatures(oldMarket: MarketAPI?, migrationTarget: MarketAPI) {
         TODO("Not yet implemented")
     }
 
