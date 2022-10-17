@@ -69,7 +69,7 @@ abstract class niko_MPC_industryAddingCondition : BaseMarketConditionPlugin() {
         var result = true
         for (condition: MarketConditionAPI in ourMarket.conditions) { //todo: convert this to memory at some point, i dont trust conditions
             if (condition is niko_MPC_industryAddingCondition) {
-                if ((condition != this) && condition.industryIds.any { it == industryId }) {
+                if ((condition !== this) && condition.industryIds.any { it == industryId }) {
                     result = false
                     break
                 }
