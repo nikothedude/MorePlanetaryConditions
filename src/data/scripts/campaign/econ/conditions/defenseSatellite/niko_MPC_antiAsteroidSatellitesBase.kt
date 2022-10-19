@@ -167,7 +167,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
 
     /** Handler can be null here. */
     fun MarketAPI.getPotentialCosmeticSatellites(): List<CustomCampaignEntityAPI> {
-        if (handler != null) return handler!!.cosmeticSatellites
+        if (handler != null) return ArrayList<CustomCampaignEntityAPI>(handler!!.cosmeticSatellites)
         val cosmeticSatellitesList = ArrayList<CustomCampaignEntityAPI>()
         val primaryEntity = primaryEntity ?: return cosmeticSatellitesList
         if (containingLocation != null) {
@@ -181,7 +181,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     }
 
     fun MarketAPI.getPotentialSatelliteFleets(): List<CampaignFleetAPI> {
-        if (handler != null) return handler!!.getAllSatelliteFleets()
+        if (handler != null) return ArrayList<CampaignFleetAPI>(handler!!.getAllSatelliteFleets())
         val satelliteFleetList = ArrayList<CampaignFleetAPI>()
         val primaryEntity = primaryEntity ?: return satelliteFleetList
         if (containingLocation != null) {
@@ -200,7 +200,5 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     protected fun doMarketMigrationLeftoversCleanup(currentEntity: SectorEntityToken?, oldEntity: SectorEntityToken?) {
         doHadHandlerReferencesProperlyRemovedCheck()
     }
-    override fun isTransient(): Boolean {
-        return false
-    }
+    override fun isTransient(): Boolean = false
 }
