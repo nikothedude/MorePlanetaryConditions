@@ -178,7 +178,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
         }
         for (SectorEntityToken entity : entitiesWithinRange) {
             if (niko_MPC_satelliteUtils.areEntitySatellitesCapableOfBlocking(entity, playerFleet)) { // no want check because player might do a bit of trolling (raiding)
-                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
+                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getHandlerForCondition(entity);
                 CampaignFleetAPI satelliteFleet = niko_MPC_fleetUtils.getHandlerDialogFleet(handler, playerFleet);
                 spawnedFleets.add(satelliteFleet);
             }
@@ -202,7 +202,7 @@ public class niko_MPC_campaignPlugin extends BaseCampaignPlugin {
             }
         }
         for (Map.Entry<SectorEntityToken, BattleAPI.BattleSide> entry : entitiesWillingToJoinBattle.entrySet()) {
-            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entry.getKey());
+            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getHandlerForCondition(entry.getKey());
             niko_MPC_satelliteBattleTracker tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker();
 
             if (!tracker.areSatellitesInvolvedInBattle(battle, handler)) { // a bit of sanity for safety

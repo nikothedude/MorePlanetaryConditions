@@ -1,7 +1,5 @@
 package data.utilities
 
-import java.util.*
-
 object niko_MPC_ids {
     const val niko_MPC_modId = "niko_morePlanetaryConditions"
     const val niko_MPC_masterConfig = "niko_MPC_settings.json"
@@ -9,7 +7,6 @@ object niko_MPC_ids {
     /**
      * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
      */
-    @JvmField
     val satelliteConditionIds: List<String> = listOf("niko_MPC_antiAsteroidSatellites")
 
     const val satelliteBarrageTerrainId = "niko_MPC_defenseSatelliteBarrage"
@@ -19,7 +16,8 @@ object niko_MPC_ids {
     /**
      * Stored value of the MemoryAPI key associated with the satellite tracker. Here for ease of use and modification.
      */
-    const val satelliteHandlerId = "\$niko_MPC_satelliteHandler"
+    const val satelliteHandlersId = "\$niko_MPC_satelliteHandler"
+    const val satelliteEntityHandler = "\$niko_MPC_satelliteHandlerForSatelliteEntities"
     const val satelliteHandlerIdAlt = "\$niko_MPC_satelliteHandlerAlt"
     const val defenseSatelliteImpactId = "niko_MPC_defenseSatelliteImpact"
     const val defenseSatelliteImpactReasonString = "Defense Satellite Artillery Impact"
@@ -34,4 +32,5 @@ object niko_MPC_ids {
     const val satelliteTagId = "niko_MPC_satellite"
     const val scriptAdderId = "\$niko_MPC_scriptAdderId"
     const val satelliteCustomEntityRemoverScriptId = "\$niko_MPC_satelliteCustomEntityRemoverScriptId"
+    const val cosmeticSatelliteTagId = "niko_MPC_satellite"
 }

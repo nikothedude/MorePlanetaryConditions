@@ -7,19 +7,20 @@ import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.utilities.exceptions.niko_MPC_stackTraceGenerator
+import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlerOfEntity
 import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteMarket
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandler
 import org.apache.log4j.Level
+import org.apache.log4j.Logger
 import java.awt.Color
 
 object niko_MPC_debugUtils {
-    private val log = Global.getLogger(niko_MPC_debugUtils::class.java)
+    val log: Logger = Global.getLogger(niko_MPC_debugUtils::class.java)
 
     init {
         log.level = Level.ALL
@@ -36,24 +37,21 @@ object niko_MPC_debugUtils {
     @JvmStatic
     @Throws(RuntimeException::class)
     fun displayError(
-        errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false,
-        logType: (Any, Throwable) -> Unit = log::error) {
+        errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false, logType: (Any, Throwable) -> Unit = log::error) {
         if (niko_MPC_settings.SHOW_ERRORS_IN_GAME) {
-            val state = Global.getCurrentState()
-            if (state == GameState.CAMPAIGN) {
-                displayErrorToCampaign(errorCode, highPriority)
-            } else if (state == GameState.COMBAT) {
-                displayErrorToCombat(errorCode, highPriority)
-            } else if (state == GameState.TITLE) {
-                displayErrorToTitle(errorCode, highPriority)
+            when (val gameState = Global.getCurrentState()) {
+                GameState.CAMPAIGN -> displayErrorToCampaign(errorCode, highPriority)
+                GameState.COMBAT -> displayErrorToCombat(errorCode, highPriority)
+                GameState.TITLE -> displayErrorToTitle(errorCode, highPriority)
+                else -> log.warn("Non-standard gamestate value during displayError, gamestate: $gameState")
             }
         }
         logType("Error code:", niko_MPC_stackTraceGenerator(errorCode))
         if (crash) {
             throw RuntimeException(
                 "A critical error has occurred in More Planetary Conditions, and for one reason" +
-                        " or another, the mod author has decided that this error is severe enough to warrant a crash." +
-                        " Error code: " + errorCode
+                " or another, the mod author has decided that this error is severe enough to warrant a crash." +
+                " Error code: " + errorCode
             )
         }
     }
@@ -129,7 +127,7 @@ object niko_MPC_debugUtils {
             displayError(entity.name + " failed doEntityNoSatellitesTest because " + entitySatelliteMarket.name + " was still applied")
             result = false
         }
-        if (defenseSatellitesApplied(entity) || entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlerId] != null) {
+        if (defenseSatellitesApplied(entity) || entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlersId] != null) {
             if (Global.getSettings().isDevMode) {
                 displayError(entity.name + " failed doEntityNoSatellitesTest because defenseSatellitesApplied returned true")
                 result = false
@@ -150,8 +148,8 @@ object niko_MPC_debugUtils {
     fun assertEntityHasSatellites(entity: SectorEntityToken?): Boolean {
         var result = true
         if (entity == null) return false
-        val params = getSatelliteHandlerOfEntity(entity)
-        if (params == null) {
+        val handler = getSatelliteHandlerOfEntity(entity)
+        if (handler == null) {
             displayError("assertEntityHasSatellitesFailure on " + entity + ", entity name: " + entity.name)
             logEntityData(entity)
             result = false
@@ -167,7 +165,7 @@ object niko_MPC_debugUtils {
         //todo: the below might not work. if it does you want to refactor it
         if (!isCosmeticSatellite()) return true
         var result = true
-        val entityHandler: niko_MPC_satelliteHandlerCore? = getCosmeticSatelliteHandler()
+        val entityHandler: niko_MPC_satelliteHandlerCore? = getSatelliteEntityHandler()
         if (isAlive && !(hasTag(Tags.FADING_OUT_AND_EXPIRING))) { //todo: consider coming back to this?
             if (entityHandler == null) {
                 // error state, the only time in which a living satellite (non-deleted) shouldnt have a handler
@@ -183,15 +181,15 @@ object niko_MPC_debugUtils {
                 displayError("Null orbit focus on $this, invalid state")
                 result = false
             }
-            else if (orbit.focus.market != entityHandler.getMarket()) {
+            else if (orbit.focus.market != entityHandler.market) {
                 displayError("Unsynced orbit focus market: ${orbit.focus.market}, ${orbit.focus.market.name} " +
-                        ". Should be ${entityHandler.getMarket()}, ${entityHandler.getMarket()?.getName}")
+                        ". Should be ${entityHandler.market}, ${entityHandler.market?.name}")
                 result = false
             }
         }
         else if (entityHandler != null) {
             displayError("$this was not alive but still had a satellite handler: $entityHandler")
-            logEntityData(entityHandler.getEntity())
+            logEntityData(entityHandler.entity)
             result = false
         }
         if (!result) {
@@ -202,9 +200,9 @@ object niko_MPC_debugUtils {
     }
 
     fun CampaignFleetAPI.isSatelliteFleetInValidState(): Boolean {
-        if (!hasTag(niko_MPC_ids.isSatelliteFleetId)) return true
+        if (!isSatelliteFleet()) return true
         var result = true
-        val entityHandler: niko_MPC_satelliteHandlerCore? = getSatelliteHandler()
+        val entityHandler: niko_MPC_satelliteHandlerCore? = getSatelliteEntityHandler()
         if (isAlive && !isDespawning) {
             if (entityHandler == null) {
                 displayError("$this had no entityHandler despite isAlive being true and isdespawning being false")
@@ -213,7 +211,7 @@ object niko_MPC_debugUtils {
         }
         else if (entityHandler != null) {
             displayError("$this was not alive but still had a satellite handler: $entityHandler")
-            logEntityData(entityHandler.getEntity())
+            logEntityData(entityHandler.entity)
             result = false
         }
         if (!result) {
@@ -222,4 +220,30 @@ object niko_MPC_debugUtils {
         }
         return result
     }
+
+    inline fun <reified T> memKeyHasIncorrectType(memoryHaver: HasMemory, key: String): Boolean {
+        val cachedValue = memoryHaver.memoryWithoutUpdate[key]
+        if (cachedValue !is T) {
+            if (cachedValue != null) displayError(
+                "Non-null invalid value in $this memory, key: $key." +
+                        "Expected value: ${T::class.simpleName} Value: $cachedValue", true)
+            return true
+        }
+        return false
+    }
+}
+
+fun SectorEntityToken.getSatelliteEntityHandler(): niko_MPC_satelliteHandlerCore? {
+    if (memKeyHasIncorrectType<niko_MPC_satelliteHandlerCore>(this, niko_MPC_ids.satelliteEntityHandler)) {
+        return null
+    }
+    return memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] as niko_MPC_satelliteHandlerCore
+}
+
+fun CampaignFleetAPI.isSatelliteFleet(): Boolean {
+    return hasTag(niko_MPC_ids.isSatelliteFleetId)
+}
+
+fun CustomCampaignEntityAPI.isCosmeticSatellite(): Boolean {
+    return (hasTag(niko_MPC_ids.cosmeticSatelliteTagId))
 }

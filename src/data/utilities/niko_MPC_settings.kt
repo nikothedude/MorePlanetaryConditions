@@ -6,15 +6,11 @@ import org.json.JSONException
 import java.io.IOException
 
 object niko_MPC_settings {
-    private val log = Global.getLogger(niko_MPC_settings::class.java)
-    init {
-        log.level = Level.ALL
-    }
 
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
     fun loadSettings() {
-        log.debug("reloading settings")
+        niko_MPC_debugUtils.log.debug("reloading settings")
         val configJson = Global.getSettings().loadJSON(niko_MPC_ids.niko_MPC_masterConfig)
         DEFENSE_SATELLITES_ENABLED = configJson.getBoolean("enableDefenseSatellites")
         SHOW_ERRORS_IN_GAME = configJson.getBoolean("showErrorsInGame")

@@ -35,10 +35,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } catch (ex: Exception) {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
-
-        if (niko_MPC_settings.DEBUG_MODE) {
-
-        }
     }
 
     /* @Override
@@ -87,14 +83,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                     purgeSatellitesFromEntity(entity)
                 }
             }
-        }
-    }
-
-    companion object {
-        private val log = Global.getLogger(niko_MPC_modPlugin::class.java)
-
-        init {
-            log.level = Level.ALL
         }
     }
 }

@@ -73,7 +73,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             }
             else marketApplicationOrderTest(); //if markets arent desynced, make sure the order didnt get fucked up.
             if (!niko_MPC_debugUtils.assertEntityHasSatellites(primaryEntity)) return;
-            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
+            niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getHandlerForCondition(primaryEntity);
             handler.updateFactionForSelfAndSatellites();
         }
         handleConditionAttributes(id, market); //whenever we apply or re-apply this condition, we first adjust our numbered bonuses and malices
@@ -81,12 +81,12 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     private void doEntityIsNullTest(SectorEntityToken primaryEntity) {
         if (primaryEntity == null) return;
-        niko_MPC_satelliteHandlerCore initialHandler = niko_MPC_satelliteUtils.getSatelliteHandler(primaryEntity);
+        niko_MPC_satelliteHandlerCore initialHandler = niko_MPC_satelliteUtils.getHandlerForCondition(primaryEntity);
         if (initialHandler != null) {
             SectorEntityToken handlerEntity = initialHandler.getEntity();
             if (initialHandler.done) {
                 niko_MPC_debugUtils.displayError("for some reason, a handler wasnt unreferenced in memory after deletion");
-                niko_MPC_memoryUtils.deleteMemoryKey(primaryEntity.getMemoryWithoutUpdate(), niko_MPC_ids.satelliteHandlerId);
+                niko_MPC_memoryUtils.deleteMemoryKey(primaryEntity.getMemoryWithoutUpdate(), niko_MPC_ids.satelliteHandlersId);
             }
             else if (handlerEntity != primaryEntity) {
                 niko_MPC_debugUtils.displayError("handler.getEntity() != market.getPrimaryEntity() in condition apply, attempting to resolve");
@@ -143,14 +143,14 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
     private float getSatelliteOrbitDistance(SectorEntityToken entity, boolean useHandler) {
         if (useHandler) {
-            return niko_MPC_satelliteUtils.getSatelliteHandler(entity).getSatelliteOrbitDistance();
+            return niko_MPC_satelliteUtils.getHandlerForCondition(entity).getSatelliteOrbitDistance();
         }
         float extraRadius = 15f;
         return entity.getRadius() + extraRadius;
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken entity) {
-        return getSatelliteInterferenceDistance(entity, niko_MPC_satelliteUtils.getSatelliteHandler(entity).getSatelliteOrbitDistance());
+        return getSatelliteInterferenceDistance(entity, niko_MPC_satelliteUtils.getHandlerForCondition(entity).getSatelliteOrbitDistance());
     }
 
     private float getSatelliteInterferenceDistance(SectorEntityToken primaryEntity, float orbitDistance) {

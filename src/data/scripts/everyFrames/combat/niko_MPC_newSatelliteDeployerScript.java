@@ -101,7 +101,7 @@ public class niko_MPC_newSatelliteDeployerScript extends BaseEveryFrameCombatPlu
             List<CampaignFleetAPI> fleetsOnSide = (usePlayerSide ? thisBattle.getPlayerSide() : thisBattle.getNonPlayerSide());
 
             for (CampaignFleetAPI potentialSatelliteFleet : fleetsOnSide) {
-                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(potentialSatelliteFleet);
+                niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getHandlerForCondition(potentialSatelliteFleet);
                 if (handler == null) continue;
                 // else, they have satellites
                 boolean hasSatelliteShips = false;

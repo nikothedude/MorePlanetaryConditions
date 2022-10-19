@@ -3,47 +3,45 @@ package data.scripts.campaign.econ.conditions.defenseSatellite
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
+import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.niko_MPC_industryAddingCondition
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
+import data.utilities.isSatelliteFleet
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.isCosmeticSatelliteInValidState
 import data.utilities.niko_MPC_debugUtils.isSatelliteFleetInValidState
-import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_satelliteUtils
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandler
-import org.apache.log4j.Level
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
+import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
-abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCondition() {
-
-    private val log = Global.getLogger(niko_MPC_antiAsteroidSatellitesBase::class.java)
-
-    init {
-        log.level = Level.ALL
-        industryIds.add(niko_MPC_industryIds.luddicPathSuppressorStructureId)
-    }
+abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondition() {
 
     //todo: READ ME NIKO.
     // we can move to using market instead of entity for most things
     // except for scripts and cosmetics and shit
     // market.getContaningLocation and .getLocation exist and work
 
+    /** The primary reason this is done on a handler is because this is detachable from conditions
+     * and can be done seperately. Also I hate storing data on conditions out of paranoia.*/
+    var handler: niko_MPC_satelliteHandlerCore? = null
+
     override fun apply(id: String) {
         super.apply(id) // in the rare case that market is null (should never happen, none of my code is written to account for it)
         // we should avoid any jank behavior by having a specific error condition for it
         val ourMarket = getMarket() ?: return
 
-        var satelliteHandler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()
+        var satelliteHandler: niko_MPC_satelliteHandlerCore? = handler
         if (satelliteHandler == null) { // doesnt have our type of satellite handler
             doHadHandlerReferencesProperlyRemovedCheck() // make sure that if we had it removed before, we properly removed all of it's stuff
             // ^ as of now, only does most of its stuff in devmode to avoid performance loss
             satelliteHandler = createNewHandler() // reassign it to a new handler. 100% of the time if this condition is active
-            // the market should have a handler
         } else { //update the values of our handler
+            // dont need to check these values if we make a new handler because we alreayd know what they are
             updateHandlerValues(satelliteHandler)
-            checkForMarketDesync(satelliteHandler) //todo: move this into the industry adder abstract thingy
         }
         handleConditionAttributes(id, ourMarket)
     }
@@ -57,11 +55,19 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
         prepareToRemoveSatellites(ourMarket)
     }
 
+    /** Adds a script next frame to see if we should remove ourselves. TODO: maybe account for having multiple of this script?
+     * Shouldnt be needed due to the script running while paused... */
     protected fun prepareToRemoveSatellites(ourMarket: MarketAPI) {
-        // global beacuse during loading entity's scripts just dont exist at all
-        val ourHandler = getMarketSatelliteHandler()
+        addDeletionScriptToMarket(ourMarket)
+    }
+
+    protected fun addDeletionScriptToMarket(ourMarket: MarketAPI) {
+        val ourHandler = handler
         if (ourHandler != null) {
-            Global.getSector().addScript(niko_MPC_satelliteCustomEntityRemovalScript(ourMarket, condition.idForPluginModifications))
+            // global beacuse during loading entity's scripts just dont exist at all
+            //TODO: make it so that this accesses a memkey to see if we already have a script
+            val deletionScript = niko_MPC_satelliteCustomEntityRemovalScript(ourMarket, condition.idForPluginModifications)
+            Global.getSector().addScript(deletionScript)
         }
     }
 
@@ -73,31 +79,32 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
 
     override fun advance(amount: Float) {
         super.advance(amount)
-        val ourMarket = getMarket() ?: return
+
         TODO()
     }
 
-    /** Should force the satellite handler to update the factions of all of its entities. */
-    protected fun updateSatelliteFactions(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()) {
+    // no longer needed, check the setter methods on the handler
+    protected fun updateSatelliteFactions(handler: niko_MPC_satelliteHandlerCore? = this.handler) {
         handler?.updateSatelliteFactions()
     }
 
-    protected fun getMarketSatelliteHandler(): niko_MPC_satelliteHandlerCore? {
-        val ourMarket = getMarket() ?: return null
-        return ourMarket.getSatelliteHandler(getHandlerType()) //store it on the market, not entity
+    protected fun createNewHandler(): niko_MPC_satelliteHandlerCore {
+        handler = createNewHandlerInstance()
+        assignHandlerToMarket(getMarket())
+
+        return handler!!
     }
 
-    abstract fun getHandlerType(): String //todo: maybe make it so we associate handlers with $this?
-
-    fun createNewHandler(): niko_MPC_satelliteHandlerCore {
-        val newHandler: niko_MPC_satelliteHandlerCore = createNewHandlerInstance()
-
-        TODO()
-    }
-
+    /** Should EXCLUSIVELY exist to create a new instance. No side effects. */
     abstract fun createNewHandlerInstance(): niko_MPC_satelliteHandlerCore
-    
-    protected fun updateHandlerValues(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()) {
+
+    protected fun assignHandlerToMarket(market: MarketAPI? = getMarket()) {
+        if (market == null || handler == null) return
+        niko_MPC_satelliteUtils.instantiateSatellitesOntoMarket(handler!!, market)
+        market.getSatelliteHandlers().add(handler!!)
+    }
+
+    protected fun updateHandlerValues(handler: niko_MPC_satelliteHandlerCore? = this.handler) {
         if (handler == null) return
         val ourMarket = getMarket() ?: return
         handler.market = ourMarket
@@ -105,38 +112,34 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
         handler.currentSatelliteFactionId = ourMarket.factionId
     }
 
-    protected fun getMarket(doNullCheck: Boolean = true): MarketAPI? {
-        if (doNullCheck && market == null) {
-            handleNullMarket()
-        }
-        return market
-    }
-    /// EDGECASE FAILSAFES
-    protected fun checkForMarketDesync(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()) {
-        if (handler == null) return
-        val ourMarket = getMarket() ?: return
-        val cachedMarket = handler.cachedMarket
-        if (ourMarket !== cachedMarket) handleMarketDesync(handler, cachedMarket)
-    }
-    
-    protected fun handleMarketDesync(handler: niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler(), cachedMarket: MarketAPI?) {
+    protected fun handleMarketDesync(handler: niko_MPC_satelliteHandlerCore? = this.handler, cachedMarket: MarketAPI?) {
         if (handler == null) return
         val ourMarket = getMarket() ?: return
         if (ourMarket === cachedMarket) {
             displayError("desync check error: $market, ${market.name} is the same as the provided cached market")
             return
         }
-        if (satelliteMarket != null) {
-            if (satelliteMarket.hasSatellites(getHandlerType())) {
-                return displayError("Desync check failure-$cachedMarket still has ${cachedMarket.getSatelliteHandler(getHandlerType())}" + "applied to it")
+        if (cachedMarket != null) {
+            if (cachedMarket.hasSatelliteHandler(handler)) {
+                return displayError("Desync check failure-$cachedMarket still has $handler" + "applied to it")
+                TODO() //more debuggign code, ex. code that tells us if both the cachedmarket and our market have
+                // the handler in memory or smthn
             }
-            else if (cachedMarket != null) tryToUnapplyIndustries(cachedMarket)
+            else tryToUnapplyIndustries(cachedMarket)
         }
     }
 
-    /** Just in case of insanity, we should have some error handling for a null market.*/
-    protected fun handleNullMarket() {
-        displayError("Something has gone terribly wrong and market was $market in $this.")
+    override fun handleMarketDesyncEffect() {
+        if (handler != null) {
+            if (cachedMarket != null) {
+                if (cachedMarket!!.hasSatelliteHandler(handler!!)) {
+                    return displayError("Desync check failure-$cachedMarket still has $handler" + "applied to it")
+                    TODO() //more debuggign code, ex. code that tells us if both the cachedmarket and our market have
+                    // the handler in memory or smthn
+                }
+            }
+        }
+        super.handleMarketDesyncEffect()
     }
 
     /// TEST FUNCTIONS
@@ -149,22 +152,55 @@ abstract class niko_MPC_antiAsteroidSatellitesBase : niko_MPC_industryAddingCond
     protected fun doHadHandlerReferencesProperlyRemovedCheck(entity: SectorEntityToken? = getMarket()?.primaryEntity) {
         val ourMarket = getMarket() ?: return
         if (niko_MPC_debugUtils.isDebugMode()) { //this would cause some fucked up lag otherwise
-            for (cosmeticSatellite: CustomCampaignEntityAPI in niko_MPC_satelliteUtils.getPotentialCosmeticSatellites(ourMarket, entity, this)) {
+            for (cosmeticSatellite: CustomCampaignEntityAPI in ourMarket.getPotentialCosmeticSatellites()) {
                 cosmeticSatellite.isCosmeticSatelliteInValidState()
             }
-            for (satelliteFleet : CampaignFleetAPI in niko_MPC_satelliteUtils.getPotentialSatelliteFleets(ourMarket, entity, this)) {
+            for (satelliteFleet : CampaignFleetAPI in ourMarket.getPotentialSatelliteFleets()) {
                 satelliteFleet.isSatelliteFleetInValidState()
             }
         }
-        val handler : niko_MPC_satelliteHandlerCore? = getMarketSatelliteHandler()
         if (handler != null) {
             displayError("$handler not null when it should be")
-            handler.delete()
+            handler!!.delete()
         }
+    }
+
+    /** Handler can be null here. */
+    fun MarketAPI.getPotentialCosmeticSatellites(): List<CustomCampaignEntityAPI> {
+        if (handler != null) return handler!!.cosmeticSatellites
+        val cosmeticSatellitesList = ArrayList<CustomCampaignEntityAPI>()
+        val primaryEntity = primaryEntity ?: return cosmeticSatellitesList
+        if (containingLocation != null) {
+            for (potentialCosmeticSatellite: CustomCampaignEntityAPI in containingLocation.getCustomEntitiesWithTag(niko_MPC_ids.cosmeticSatelliteTagId)) {
+                if (potentialCosmeticSatellite.orbitFocus == primaryEntity) {
+                    cosmeticSatellitesList.add(potentialCosmeticSatellite)
+                }
+            }
+        }
+        return cosmeticSatellitesList
+    }
+
+    fun MarketAPI.getPotentialSatelliteFleets(): List<CampaignFleetAPI> {
+        if (handler != null) return handler!!.getAllSatelliteFleets()
+        val satelliteFleetList = ArrayList<CampaignFleetAPI>()
+        val primaryEntity = primaryEntity ?: return satelliteFleetList
+        if (containingLocation != null) {
+            for (potentialSatelliteFleet: CampaignFleetAPI in containingLocation.fleets) {
+                if (potentialSatelliteFleet.isSatelliteFleet()) {
+                    if (potentialSatelliteFleet.market == this) { //todo
+                        satelliteFleetList.add(potentialSatelliteFleet)
+                    }
+                }
+            }
+        }
+        return satelliteFleetList
     }
 
     /** Should be called when the market has migrated through schenanigans and we need to remove shit. */
     protected fun doMarketMigrationLeftoversCleanup(currentEntity: SectorEntityToken?, oldEntity: SectorEntityToken?) {
         doHadHandlerReferencesProperlyRemovedCheck()
+    }
+    override fun isTransient(): Boolean {
+        return false
     }
 }

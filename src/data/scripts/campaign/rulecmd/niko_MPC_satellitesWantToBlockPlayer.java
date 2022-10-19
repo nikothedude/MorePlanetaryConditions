@@ -21,7 +21,7 @@ public class niko_MPC_satellitesWantToBlockPlayer extends BaseCommandPlugin {
         SectorEntityToken entity = dialog.getInteractionTarget();
 
         entity = niko_MPC_dialogUtils.digForSatellitesInEntity(entity);
-        niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getSatelliteHandler(entity);
+        niko_MPC_satelliteHandlerCore handler = niko_MPC_satelliteUtils.getHandlerForCondition(entity);
         if (handler == null) return false;
 
         return niko_MPC_satelliteUtils.doEntitySatellitesWantToBlock(entity, Global.getSector().getPlayerFleet());

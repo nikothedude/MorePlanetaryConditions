@@ -24,6 +24,7 @@ abstract class niko_MPC_satelliteHandlerCore(
             field = value
             if (field !== cachedEntity) handleEntityDesync()
         }
+
     var cachedEntity: SectorEntityToken? = this.entity
 
     var market: MarketAPI? = market
@@ -137,9 +138,9 @@ abstract class niko_MPC_satelliteHandlerCore(
         TODO()
     }
 
-    protected fun getAllSatelliteFleets(): List<CampaignFleetAPI> {
+    fun getAllSatelliteFleets(): List<CampaignFleetAPI> {
         if (dummyFleetForConditionalLogic != null) {
-            return satelliteFleets + dummyFleetForConditionalLogic
+            return (satelliteFleets + dummyFleetForConditionalLogic)
         }
         return satelliteFleets
     }

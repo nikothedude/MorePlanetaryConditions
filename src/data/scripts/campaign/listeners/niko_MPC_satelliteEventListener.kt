@@ -8,7 +8,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satellite
 import data.utilities.niko_MPC_fleetUtils.isFleetValidEngagementTarget
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandler
+import data.utilities.niko_MPC_satelliteUtils.getHandlerForCondition
 import data.utilities.niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet
 
 class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEventListener(permaRegister) {
@@ -45,15 +45,15 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
         if (fleet == null) return
         val assignment = fleet.currentAssignment
         var handler: niko_MPC_satelliteHandlerCore? = null
-        if (entity != null) handler = entity.getSatelliteHandler()
+        if (entity != null) handler = entity.getHandlerForCondition()
         if (handler == null) {
             var trueTarget: SectorEntityToken? = null
             if (assignment != null) trueTarget = assignment.target
-            if (trueTarget != null) handler = trueTarget.getSatelliteHandler()
+            if (trueTarget != null) handler = trueTarget.getHandlerForCondition()
             if (handler == null) {
                 var orbitTarget: SectorEntityToken? = null
                 if (trueTarget != null) orbitTarget = trueTarget.orbitFocus
-                if (orbitTarget != null) handler = orbitTarget.getSatelliteHandler()
+                if (orbitTarget != null) handler = orbitTarget.getHandlerForCondition()
             }
         }
         if (handler != null) {
