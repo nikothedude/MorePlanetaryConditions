@@ -28,6 +28,10 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     /** The primary reason this is done on a handler is because this is detachable from conditions
      * and can be done seperately. Also I hate storing data on conditions out of paranoia.*/
     var handler: niko_MPC_satelliteHandlerCore? = null
+    fun getHandlerWithErrorCheck(boolean doNullCheck = true): niko_MPC_satelliteHandlerCore? {
+        if (doNullCheck && handler == null) displayError("handler null during getHandler on $this")
+        return handler
+    }
 
     override fun apply(id: String) {
         super.apply(id) // in the rare case that market is null (should never happen, none of my code is written to account for it)
@@ -62,7 +66,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     }
 
     protected fun addDeletionScriptToMarket(ourMarket: MarketAPI) {
-        val ourHandler = handler
+        val ourHandler = getHandlerWithErrorCheck()
         if (ourHandler != null) {
             // global beacuse during loading entity's scripts just dont exist at all
             //TODO: make it so that this accesses a memkey to see if we already have a script
@@ -83,11 +87,6 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         TODO()
     }
 
-    // no longer needed, check the setter methods on the handler
-    protected fun updateSatelliteFactions(handler: niko_MPC_satelliteHandlerCore? = this.handler) {
-        handler?.updateSatelliteFactions()
-    }
-
     protected fun createNewHandler(): niko_MPC_satelliteHandlerCore {
         handler = createNewHandlerInstance()
         assignHandlerToMarket(getMarket())
@@ -98,28 +97,28 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     /** Should EXCLUSIVELY exist to create a new instance. No side effects. */
     abstract fun createNewHandlerInstance(): niko_MPC_satelliteHandlerCore
 
-    protected fun assignHandlerToMarket(market: MarketAPI? = getMarket()) {
-        if (market == null || handler == null) return
-        niko_MPC_satelliteUtils.instantiateSatellitesOntoMarket(handler!!, market)
-        market.getSatelliteHandlers().add(handler!!)
+    protected fun assignHandlerToMarket() {
+        val ourMarket = getMarket() ?: return
+        val ourHandler = getHandlerWithErrorCheck() ?: return
+        niko_MPC_satelliteUtils.instantiateSatellitesOntoMarket(ourHandler, ourMarket)
     }
 
     protected fun updateHandlerValues(handler: niko_MPC_satelliteHandlerCore? = this.handler) {
-        if (handler == null) return
+        val ourHandler = getHandlerWithErrorCheck() ?: return
         val ourMarket = getMarket() ?: return
-        handler.market = ourMarket
-        handler.entity = ourMarket.primaryEntity
-        handler.currentSatelliteFactionId = ourMarket.factionId
+        ourHandler.market = ourMarket
+        ourHandler.entity = ourMarket.primaryEntity
+        ourHandler.currentSatelliteFactionId = ourMarket.factionId
     }
 
-    protected fun handleMarketDesync(handler: niko_MPC_satelliteHandlerCore? = this.handler, cachedMarket: MarketAPI?) {
-        if (handler == null) return
+    protected fun handleMarketDesync() {
+        val ourHandler = getHandlerWithErrorCheck()
         val ourMarket = getMarket() ?: return
         if (ourMarket === cachedMarket) {
             displayError("desync check error: $market, ${market.name} is the same as the provided cached market")
             return
         }
-        if (cachedMarket != null) {
+        if (cachedMarket != null && ourHandler != null) {
             if (cachedMarket.hasSatelliteHandler(handler)) {
                 return displayError("Desync check failure-$cachedMarket still has $handler" + "applied to it")
                 TODO() //more debuggign code, ex. code that tells us if both the cachedmarket and our market have
@@ -130,7 +129,8 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     }
 
     override fun handleMarketDesyncEffect() {
-        if (handler != null) {
+        val ourHandler = getHandlerWithErrorCheck()
+        if (ourHandler != null) {
             if (cachedMarket != null) {
                 if (cachedMarket!!.hasSatelliteHandler(handler!!)) {
                     return displayError("Desync check failure-$cachedMarket still has $handler" + "applied to it")
