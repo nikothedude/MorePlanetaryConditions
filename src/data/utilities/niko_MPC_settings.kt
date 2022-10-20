@@ -28,6 +28,10 @@ object niko_MPC_settings {
         SWARM_WEIGHT = configJson.getDouble("swarm_weight").toFloat()
     }
 
+    fun isIdEnabled(enabledSetting: String?): Boolean {
+
+    }
+
     var XENOLIFE_ENABLED = false
 
     var XENO_RANCHING_IND_ENABLED = false

@@ -33,4 +33,6 @@ object niko_MPC_ids {
     const val scriptAdderId = "\$niko_MPC_scriptAdderId"
     const val satelliteCustomEntityRemoverScriptId = "\$niko_MPC_satelliteCustomEntityRemoverScriptId"
     const val cosmeticSatelliteTagId = "niko_MPC_satellite"
+    const val globalSatelliteHandlerListId = "\$niko_MPC_globalSatelliteHandlerList"
+
 }

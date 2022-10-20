@@ -8,15 +8,20 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
+import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.utilities.exceptions.niko_MPC_stackTraceGenerator
+import data.utilities.niko_MPC_debugUtils.doLogOf
+import data.utilities.niko_MPC_debugUtils.logEntityData
 import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied
 import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteMarket
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
+import org.lwjgl.Sys
 import java.awt.Color
 
 object niko_MPC_debugUtils {
@@ -34,10 +39,10 @@ object niko_MPC_debugUtils {
      * @param crash If true, crashes the game.
      * @throws RuntimeException
      */
-    @JvmStatic
     @Throws(RuntimeException::class)
-    fun displayError(
-        errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false, logType: (Any, Throwable) -> Unit = log::error) {
+    fun displayError(errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false,
+                     logType: (Any, Throwable) -> Unit = log::error) {
+
         if (niko_MPC_settings.SHOW_ERRORS_IN_GAME) {
             when (val gameState = Global.getCurrentState()) {
                 GameState.CAMPAIGN -> displayErrorToCampaign(errorCode, highPriority)
@@ -96,23 +101,6 @@ object niko_MPC_debugUtils {
         return
     }
 
-    @JvmStatic
-    fun logEntityData(entity: SectorEntityToken?) {
-        if (entity != null) {
-            /*for (Field field : entity.getClass().getDeclaredFields()) {
-                log.debug(field.getName() + "-" + field);
-            }*/
-            val market = entity.market
-            log.debug(
-                "Now logging debug info of: " + entity + entity.name + ". " +
-                "Entity market: " + entity.market + ", " + market?.id + market?.factionId + ". " +
-                "Entity location: " + entity.containingLocation?.name + ", is star system: " + (entity.containingLocation is StarSystemAPI) + "."
-            )
-        } else {
-            log.debug("Cannot log debug info of entity-it is null.")
-        }
-    }
-
     /**
      * Returns false if the entity has satellite params, a tracker, or if the entity has a satellite market.
      */
@@ -134,7 +122,7 @@ object niko_MPC_debugUtils {
             }
         }
         if (!result) {
-            logEntityData(entity)
+            logDataOf(entity)
         }
         return result
     }
@@ -151,7 +139,7 @@ object niko_MPC_debugUtils {
         val handler = getSatelliteHandlerOfEntity(entity)
         if (handler == null) {
             displayError("assertEntityHasSatellitesFailure on " + entity + ", entity name: " + entity.name)
-            logEntityData(entity)
+            logDataOf(entity)
             result = false
         }
         return result
@@ -189,11 +177,11 @@ object niko_MPC_debugUtils {
         }
         else if (entityHandler != null) {
             displayError("$this was not alive but still had a satellite handler: $entityHandler")
-            logEntityData(entityHandler.entity)
+            logDataOf(entityHandler.entity)
             result = false
         }
         if (!result) {
-            logEntityData(this)
+            logDataOf(this)
             niko_MPC_satelliteUtils.removeSatellite(this)
         }
         return result
@@ -211,18 +199,22 @@ object niko_MPC_debugUtils {
         }
         else if (entityHandler != null) {
             displayError("$this was not alive but still had a satellite handler: $entityHandler")
-            logEntityData(entityHandler.entity)
+            logDataOf(entityHandler.entity)
             result = false
         }
         if (!result) {
-            logEntityData(this)
+            logDataOf(this)
             satelliteFleetDespawn()
         }
         return result
     }
 
-    inline fun <reified T> memKeyHasIncorrectType(memoryHaver: HasMemory, key: String): Boolean {
-        val cachedValue = memoryHaver.memoryWithoutUpdate[key]
+    inline fun <reified T> memKeyHasIncorrectType(hasMemory: HasMemory, key: String): Boolean {
+        return memKeyHasIncorrectType<T>(hasMemory.memoryWithoutUpdate, key)
+    }
+    inline fun <reified T> memKeyHasIncorrectType(memory: MemoryAPI?, key: String): Boolean {
+        if (memory == null) return false
+        val cachedValue = memory[key]
         if (cachedValue !is T) {
             if (cachedValue != null) displayError(
                 "Non-null invalid value in $this memory, key: $key." +
@@ -230,6 +222,33 @@ object niko_MPC_debugUtils {
             return true
         }
         return false
+    }
+
+    fun logDataOf(obj: Any?) {
+        if (obj != null) {
+            when(obj) {
+                is niko_MPC_dataLoggable -> doLogOf(obj, obj.provideLoggableData())
+                // CampaignFleetAPI -> obj.logFleetData()
+                is SectorEntityToken -> obj.logEntityData()
+                is MarketAPI -> obj.logMarketData()
+                else -> log.warn("$this is an unloggable type.")
+            }
+        } else log.debug("Cannot log debug info of obj-it is null.")
+    }
+    private fun doLogOf(obj: Any, loggableData: List<String>) {
+        log.info("Now logging data of " + obj::class.simpleName + " :" + loggableData.joinToString(" "))
+    }
+    private fun SectorEntityToken.logEntityData() {
+        doLogOf(this, arrayListOf("$this, ${this.name}", "Market: ${this.market}, Market Faction: ${this.market?.factionId}",
+            "Entity location: ${this.containingLocation}, ${this.containingLocation?.name}, is star system: " +
+            "${this.containingLocation is StarSystemAPI}", "Handlers: ${this.getSatelliteHandlers()}")
+        )
+    }
+    private fun MarketAPI.logMarketData() {
+        doLogOf(this, arrayListOf("$this, ${this.name}", "Entity: ${this.primaryEntity}, Faction: ${factionId}",
+            "Our location: ${this.containingLocation}, ${this.containingLocation?.name}, is star system: " +
+            "${this.containingLocation is StarSystemAPI}", "Handlers: ${this.getSatelliteHandlers()}")
+        )
     }
 }
 

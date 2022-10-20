@@ -190,7 +190,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
             niko_MPC_debugUtils.displayError("ensureEntityHasSatelliteParams failure");
             niko_MPC_satelliteUtils.removeSatelliteBarrageTerrain(getRelatedEntity(), getEntity());
 
-            niko_MPC_debugUtils.logEntityData(getRelatedEntity());
+            niko_MPC_debugUtils.logDataOf(getRelatedEntity());
 
             return true;
         }

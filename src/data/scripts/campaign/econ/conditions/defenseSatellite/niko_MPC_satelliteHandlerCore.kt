@@ -4,9 +4,20 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.api.impl.campaign.ids.Factions
+import data.utilities.isCosmeticSatellite
+import data.utilities.niko_MPC_dataLoggable
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_debugUtils.displayError
+import data.utilities.niko_MPC_debugUtils.log
+import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
+import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_orbitUtils.addOrbitPointingDownWithRelativeOffset
+import data.utilities.niko_MPC_satelliteUtils.deleteIfCosmeticSatellite
+import data.utilities.niko_MPC_satelliteUtils.getAllSatelliteHandlers
+import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
+import org.json.XMLTokener.entity
 import kotlin.math.cos
 import kotlin.math.roundToInt
 
@@ -16,9 +27,9 @@ import kotlin.math.roundToInt
 abstract class niko_MPC_satelliteHandlerCore(
     entity: SectorEntityToken?,
     market: MarketAPI? = entity?.market,
-    val industryIds: List<String>,
-    val conditionId: String? = null
-) {
+): niko_MPC_dataLoggable {
+    var deleted: Boolean = false
+
     var entity: SectorEntityToken? = entity //entity should be detachable from market
         set(value) {
             field = value
@@ -32,11 +43,13 @@ abstract class niko_MPC_satelliteHandlerCore(
             field = value
             if (field !== cachedMarket) handleMarketDesync()
             //the below is fine; SS is not multithreaded so this wont break. yet? i wish i could do this in a threadsafe way easily
-            currentSatelliteFactionId = (if (market != null) market!!.factionId else defaultSatelliteFactionId)
+            currentSatelliteFactionId = (if (market != null && !(market!!.isPlanetConditionMarketOnly)) market!!.factionId else defaultSatelliteFactionId)
         }
 
     var cachedMarket: MarketAPI? = this.market
-    val defaultSatelliteFactionId: String = "derelict" //todo: make abstract as a test to see if it npes?
+    var condition: niko_MPC_antiAsteroidSatellitesBase? = null
+
+    val defaultSatelliteFactionId: String = Factions.DERELICT //todo: make abstract as a test to see if it npes?
     var currentSatelliteFactionId: String = defaultSatelliteFactionId
         set(value) {
             if (field != value) updateSatelliteFactions(value)
@@ -49,7 +62,6 @@ abstract class niko_MPC_satelliteHandlerCore(
     val satelliteFleets: MutableList<CampaignFleetAPI> = ArrayList()
     abstract val satelliteFleetName: String
     abstract val maximumSatelliteFleetFp: Int
-    abstract val cosmeticSatelliteName: String
     var maxCosmeticSatellitesForEntity: Int = calculateMaxCosmeticSatellitesForEntity()
 
     /** The ID of the dummy faction used to construct our fleets. */
@@ -59,6 +71,12 @@ abstract class niko_MPC_satelliteHandlerCore(
     protected fun createNewDummyFleet(): CampaignFleetAPI = TODO()
 
     abstract val satelliteOrbitDistance: Float
+    val satelliteOrbitDays: Float = 15f
+
+    init {
+        getAllSatelliteHandlers().add(this)
+        log.info("$this added to global satellite handler list due to init")
+    }
 
     /** Handles situations where we migrated entities, ex. our satellites, or our condition, moved to a new entity, or
      * market with a different entity.*/
@@ -67,16 +85,20 @@ abstract class niko_MPC_satelliteHandlerCore(
         var currentEntity = entity
         if (currentEntity === oldEntity) {
             displayError("desync attempt: $oldEntity, ${oldEntity?.name} is the same as the provided entity")
-            return //todo: change to one line
+            logDataOf(oldEntity)
         }
         if (oldEntity != null) {
-            migrateEntityFeatures(oldEntity, currentEntity)
+            if (oldEntity.hasSatelliteHandler(this)) {
+                displayError("Desync check failure-$oldEntity still has $this" + "applied to it")
+                logDataOf(oldEntity)
+            }
+            else migrateEntityFeatures(oldEntity, currentEntity)
         }
         cachedEntity = entity
     }
 
     /**Assumes the current entity is the entity to migrate things to.*/
-    private fun migrateEntityFeatures(oldEntity: SectorEntityToken, migrationTarget: SectorEntityToken?) {
+    protected fun migrateEntityFeatures(oldEntity: SectorEntityToken?, migrationTarget: SectorEntityToken?) {
         deleteCosmeticSatellites()
         maxCosmeticSatellitesForEntity = calculateMaxCosmeticSatellitesForEntity()
         createNewCosmeticSatellites(maxCosmeticSatellitesForEntity)
@@ -91,21 +113,21 @@ abstract class niko_MPC_satelliteHandlerCore(
         val oldMarket = cachedMarket
         val currentMarket = market
         if (currentMarket === oldMarket) {
-            displayError("desync attempt: $oldMarket, ${oldMarket?.name} is the same as the provided market")
+            displayError("Desync check failure: $oldMarket, ${oldMarket?.name} is the same as the provided market")
+            logDataOf(market)
             return
         }
         if (oldMarket != null) {
-            if (oldMarket.hasSatellites(this.getType())) {
+            if (oldMarket.hasSatelliteHandler(this)) {
                 displayError("Desync check failure-$oldMarket still has $this" + "applied to it")
-            }
-            else  {
-                migrateMarketFeatures(oldMarket, currentMarket)
-            }
+                logDataOf(oldMarket)
+            } else currentMarket?.let { migrateMarketFeatures(oldMarket, it) }
+
         }
         cachedMarket = market
     }
 
-    protected fun migrateMarketFeatures(oldMarket: MarketAPI?, migrationTarget: MarketAPI) {
+    protected fun migrateMarketFeatures(oldMarket: MarketAPI?, migrationTarget: MarketAPI?) {
         TODO("Not yet implemented")
     }
 
@@ -119,7 +141,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     /** Dont call this directly.*/
-    private fun createNewCosmeticSatellite() {
+    protected fun createNewCosmeticSatellite() {
         val cosmeticSatellite: CustomCampaignEntityAPI =
         TODO("Not yet implemented")
     }
@@ -145,7 +167,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         return satelliteFleets
     }
 
-    protected fun getOptimalOrbitalOffsetForSatellites(): Float {
+    protected open fun getOptimalOrbitalOffsetForSatellites(): Float {
         val numOfSatellites = cosmeticSatellites.size
         var optimalAngle = (360 / numOfSatellites.toFloat())
         // 1 satellite = offset of 360, so none. 2 satellites = offset or 180, so they are on opposite ends of the planet.
@@ -159,7 +181,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     /**
      * Places all satellites in orbit around our entity, ensuring they are all equally spaced apart from eachother.
      */
-    protected fun regenerateOrbitSpacing() {
+    fun regenerateOrbitSpacing() {
         val optimalOrbitAngleOffset = getOptimalOrbitalOffsetForSatellites()
         var orbitAngle = 0f
         // this for loop won't apply an offset if theres only 1, and only the 1st calculated offset if 2, etc,
@@ -171,14 +193,17 @@ abstract class niko_MPC_satelliteHandlerCore(
                 errored = true
                 cosmeticSatellite.deleteIfCosmeticSatellite()
             }
-            addOrbitPointingDownWithRelativeOffset(
+            applyCosmeticSatelliteOrbit(
                 cosmeticSatellite,
                 entity,
                 orbitAngle,
-                satelliteOrbitDistance
             )
             orbitAngle += optimalOrbitAngleOffset //no matter what, this should end up less than 360 when the final iteration runs
         }
+    }
+
+    fun applyCosmeticSatelliteOrbit(cosmeticSatellite: CustomCampaignEntityAPI, entity: SectorEntityToken?, orbitAngle: Float) {
+        cosmeticSatellite.setCircularOrbitPointingDown(entity, orbitAngle, satelliteOrbitDistance, satelliteOrbitDays)
     }
 
     protected fun calculateMaxCosmeticSatellitesForEntity(radiusDivisor: Float = 5f): Int {
@@ -187,17 +212,72 @@ abstract class niko_MPC_satelliteHandlerCore(
         // divide the radius of the entity by 5, then round it up or down to the nearest whole number
     }
 
-    fun delete() {
+    open fun delete() {
+        if (isDeletedWrapper()) displayError("$this deleted multiple times")
+        deleted = true
+
+        deleteAllFleets()
+        deleteAllCosmeticSatellites()
+
+        unassociateWithEntity()
+        unassociateWithMarket()
+        unassociateWithCondition()
+
+        getAllSatelliteHandlers().remove(this)
+
+        stopScripts()
         TODO("Not yet implemented")
+    }
+
+    protected fun deleteAllFleets() {
+        for (fleet: CampaignFleetAPI in ArrayList(getAllSatelliteFleets())) fleet.satelliteFleetDespawn()
+    }
+
+    protected fun deleteAllCosmeticSatellites() {
+        for (cosmeticSatellite: CustomCampaignEntityAPI in ArrayList(cosmeticSatellites)) {
+            if (!cosmeticSatellite.isCosmeticSatellite())  {
+                displayError("$cosmeticSatellite is" + "not a cosmetic satellite but managed to get into " +
+                            "$this $cosmeticSatellite list")
+                cosmeticSatellites -= cosmeticSatellite
+            }
+            cosmeticSatellite.deleteIfCosmeticSatellite()
+        }
+    }
+
+    protected open fun unassociateWithEntity() {
+        if (entity == null) return
+        TODO("Not yet implemented")
+    }
+
+    protected open fun unassociateWithMarket() {
+        if (market == null) return
+        if (condition != null && market!!.hasSpecificCondition(condition!!.getCondition().idForPluginModifications)) {
+            condition!!.handler = null
+            market!!.removeSpecificCondition(condition!!.getCondition().idForPluginModifications)
+        }
+        market = null
+    }
+
+    protected open fun unassociateWithCondition() {
+        if (condition == null) return
+        condition!!.handler = null // do it before so we dont trigger the unapply script
+        if (market != null && market!!.hasSpecificCondition(condition!!.getCondition().idForPluginModifications)) {
+            market!!.removeSpecificCondition(condition!!.getCondition().idForPluginModifications)
+        }
+        condition = null
+    }
+
+    open fun isDeletedWrapper(): Boolean {
+        return deleted
+    }
+
+    override fun provideLoggableData(): List<String> {
+        return arrayListOf("$this.", "Entity: $entity, ${entity?.name}, location: ${entity?.containingLocation}, ${entity?.containingLocation?.name}",
+                            "Market: $market, ${market?.name}, market faction: ${market?.factionId}, market location: ${market?.containingLocation}, ${market?.containingLocation?.name}",
+                            "$this variables: Faction: $currentSatelliteFactionId, Deleted: $deleted",
+                            "Cached market: $cachedMarket, ${cachedMarket?.name}",
+                            "Cached entity: $cachedEntity, ${cachedEntity?.name}")
     }
 }
 
 /// COSMETIC SATELLITES EXTENSIONS
-
-fun CustomCampaignEntityAPI.deleteIfCosmeticSatellite() {
-    if (!isCosmeticSatellite()) return
-    val handler: niko_MPC_satelliteHandlerCore = getCosmeticSatelliteHandler() ?: return
-    handler.cosmeticSatellites.remove(this)
-    Misc.fadeAndExpire(this) //this causes a removeentity after a bit
-    //containingLocation.removeEntity(this)
-}

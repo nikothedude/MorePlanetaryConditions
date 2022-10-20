@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ
+package data.scripts.campaign.econ.conditions.auxillaryPatrol
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken

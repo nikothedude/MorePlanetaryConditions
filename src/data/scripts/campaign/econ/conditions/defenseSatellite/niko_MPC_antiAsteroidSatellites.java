@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
-import static data.utilities.niko_MPC_debugUtils.logEntityData;
+import static data.utilities.niko_MPC_debugUtils.logDataOf;
 import static data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied;
 
 public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
@@ -90,8 +90,8 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
             }
             else if (handlerEntity != primaryEntity) {
                 niko_MPC_debugUtils.displayError("handler.getEntity() != market.getPrimaryEntity() in condition apply, attempting to resolve");
-                logEntityData(primaryEntity);
-                logEntityData(handlerEntity);
+                logDataOf(primaryEntity);
+                logDataOf(handlerEntity);
                 if (handlerEntity == null) {
                     initialHandler.setEntity(primaryEntity);
                     initialHandler.prepareForGarbageCollection(); //god help us should this be called because i have no idea if this works or not
@@ -327,7 +327,7 @@ public class niko_MPC_antiAsteroidSatellites extends BaseHazardCondition {
 
         if ((entity.getMarket() != market)) {
             niko_MPC_debugUtils.displayError("marketApplicationOrderTest failure, market: " + market + ", recognized market: " + entity.getMarket());
-            logEntityData(entity);
+            logDataOf(entity);
         }
     }
 

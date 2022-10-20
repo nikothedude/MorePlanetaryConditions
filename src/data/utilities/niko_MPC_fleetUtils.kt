@@ -160,7 +160,7 @@ object niko_MPC_fleetUtils {
     }
 
     fun CampaignFleetAPI.satelliteFleetDespawn(vanish: Boolean = false) {
-        if (hasTag(isSatelliteFleetId)) {
+        if (isSatelliteFleet()) {
             genericPreDeleteSatelliteFleetCleanup(this) //todo come back to this and clean it up
             if (vanish) {
                 setLocation(9999999f, 9999999f)

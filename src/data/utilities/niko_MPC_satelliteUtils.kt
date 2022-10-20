@@ -8,8 +8,8 @@ import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore.niko_MPC_satelliteParams
 import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import org.jetbrains.annotations.Contract
@@ -656,6 +656,30 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun isCustomEntitySatellite(entity: SectorEntityToken): Boolean {
         return entity.tags.contains(niko_MPC_ids.satelliteTagId)
+    }
+
+    /** If this returns null, the sector doesnt exist yet. */
+    fun getAllSatelliteHandlers(): MutableSet<niko_MPC_satelliteHandlerCore> {
+        val sector: SectorAPI? = Global.getSector()
+        if (sector == null) {
+            displayError("Sector not initialized yet, oh fuck i didnt account for this", true)
+            return HashSet()
+        }
+        if (memKeyHasIncorrectType<MutableSet<niko_MPC_satelliteHandlerCore>>(
+                sector.memoryWithoutUpdate, niko_MPC_ids.globalSatelliteHandlerListId)) {
+            sector.memoryWithoutUpdate[niko_MPC_ids.globalSatelliteHandlerListId] = HashSet<niko_MPC_satelliteHandlerCore>()
+        }
+        return sector.memoryWithoutUpdate[niko_MPC_ids.globalSatelliteHandlerListId] as MutableSet<niko_MPC_satelliteHandlerCore>
+    }
+
+    fun CustomCampaignEntityAPI.deleteIfCosmeticSatellite() {
+        if (!isCosmeticSatellite()) return
+        val handler: niko_MPC_satelliteHandlerCore? = getCosmeticSatelliteHandler()
+        if (handler != null) {
+            handler.cosmeticSatellites.remove(this)
+        } else displayError("$this, despite being a cosmetic satellite, had no handler")
+        Misc.fadeAndExpire(this) //this causes a removeentity after a bit
+        //containingLocation.removeEntity(this)
     }
 }
 
