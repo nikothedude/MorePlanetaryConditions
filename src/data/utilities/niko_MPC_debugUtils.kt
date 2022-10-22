@@ -15,12 +15,16 @@ import data.utilities.exceptions.niko_MPC_stackTraceGenerator
 import data.utilities.niko_MPC_debugUtils.doLogOf
 import data.utilities.niko_MPC_debugUtils.logEntityData
 import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
+import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied
 import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteMarket
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
+import data.utilities.niko_MPC_satelliteUtils.isCosmeticSatellite
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
+import org.apache.log4j.Priority
 import org.lwjgl.Sys
 import java.awt.Color
 
@@ -41,7 +45,7 @@ object niko_MPC_debugUtils {
      */
     @Throws(RuntimeException::class)
     fun displayError(errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false,
-                     logType: (Any, Throwable) -> Unit = log::error) {
+                     logType: Level = Level.ERROR) {
 
         if (niko_MPC_settings.SHOW_ERRORS_IN_GAME) {
             when (val gameState = Global.getCurrentState()) {
@@ -51,7 +55,7 @@ object niko_MPC_debugUtils {
                 else -> log.warn("Non-standard gamestate value during displayError, gamestate: $gameState")
             }
         }
-        logType("Error code:", niko_MPC_stackTraceGenerator(errorCode))
+        log.log(logType, "Error code:", niko_MPC_stackTraceGenerator(errorCode))
         if (crash) {
             throw RuntimeException(
                 "A critical error has occurred in More Planetary Conditions, and for one reason" +
@@ -250,19 +254,4 @@ object niko_MPC_debugUtils {
             "${this.containingLocation is StarSystemAPI}", "Handlers: ${this.getSatelliteHandlers()}")
         )
     }
-}
-
-fun SectorEntityToken.getSatelliteEntityHandler(): niko_MPC_satelliteHandlerCore? {
-    if (memKeyHasIncorrectType<niko_MPC_satelliteHandlerCore>(this, niko_MPC_ids.satelliteEntityHandler)) {
-        return null
-    }
-    return memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] as niko_MPC_satelliteHandlerCore
-}
-
-fun CampaignFleetAPI.isSatelliteFleet(): Boolean {
-    return hasTag(niko_MPC_ids.isSatelliteFleetId)
-}
-
-fun CustomCampaignEntityAPI.isCosmeticSatellite(): Boolean {
-    return (hasTag(niko_MPC_ids.cosmeticSatelliteTagId))
 }

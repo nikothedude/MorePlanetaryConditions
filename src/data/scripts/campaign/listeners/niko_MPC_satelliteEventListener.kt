@@ -4,11 +4,16 @@ import com.fs.starfarer.api.campaign.BaseCampaignEventListener
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.rules.HasMemory
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_fleetUtils.isFleetValidEngagementTarget
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
-import data.utilities.niko_MPC_satelliteUtils.getHandlerForCondition
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
+import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
+import data.utilities.niko_MPC_satelliteUtils.hasSatellites
 import data.utilities.niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet
 
 class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEventListener(permaRegister) {
@@ -20,11 +25,9 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
      * @param primaryWinner The "primary" fleet of the side that won. This is NOT the combined fleet.
      * @param battle The battle to check.
      */
-    override fun reportBattleFinished(
-        primaryWinner: CampaignFleetAPI,
-        battle: BattleAPI
-    ) { //fixme: doesnt fire on player battle end
+    override fun reportBattleFinished(primaryWinner: CampaignFleetAPI, battle: BattleAPI) { //fixme: doesnt fire on player battle end
         super.reportBattleFinished(primaryWinner, battle)
+
         val tracker = getSatelliteBattleTracker()
         for (handler in tracker.getSatellitesInfluencingBattle(battle)) {
             val battleSide = tracker.getSideOfSatellitesForBattle(battle, handler)
@@ -40,27 +43,30 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
     }
 
     //if this fails, we can add a script on fleet usage of jump point, which is a method in here
-    override fun reportFleetReachedEntity(fleet: CampaignFleetAPI, entity: SectorEntityToken) {
+    override fun reportFleetReachedEntity(fleet: CampaignFleetAPI?, entity: SectorEntityToken?) {
         super.reportFleetReachedEntity(fleet, entity)
-        if (fleet == null) return
+        if (fleet == null) return niko_MPC_debugUtils.log.info("null fleet during reportfleetreached entity, entity: $entity")
         val assignment = fleet.currentAssignment
-        var handler: niko_MPC_satelliteHandlerCore? = null
-        if (entity != null) handler = entity.getHandlerForCondition()
-        if (handler == null) {
-            var trueTarget: SectorEntityToken? = null
+        var trueTarget: SectorEntityToken? = entity
+        var handlers: MutableSet<niko_MPC_satelliteHandlerCore>? = trueTarget?.getSatelliteHandlers()
+        if (trueTarget?.hasSatellites() != true) {
             if (assignment != null) trueTarget = assignment.target
-            if (trueTarget != null) handler = trueTarget.getHandlerForCondition()
-            if (handler == null) {
+            if (trueTarget != null) handlers = trueTarget.getSatelliteHandlers()
+            if (trueTarget?.hasSatellites() != true) {
                 var orbitTarget: SectorEntityToken? = null
                 if (trueTarget != null) orbitTarget = trueTarget.orbitFocus
-                if (orbitTarget != null) handler = orbitTarget.getHandlerForCondition()
+                if (orbitTarget != null) handlers = orbitTarget.getSatelliteHandlers()
             }
         }
-        if (handler != null) {
-            if (!isFleetValidEngagementTarget(fleet)) return
-            val handlerEntity = handler.getEntity()
-            if (fleet.interactionTarget === handlerEntity || assignment!!.target === handlerEntity || assignment!!.target.orbitFocus === handlerEntity) { //raids DO however have the planet as an orbit focus
-                makeEntitySatellitesEngageFleet(handlerEntity, fleet)
+        if (handlers?.isNotEmpty() == true) {
+            for (handler: niko_MPC_satelliteHandlerCore in handlers) {
+                if (!handler.isFleetValidEngagementTarget(fleet)) continue
+                var handlerEntity: HasMemory = handler.getPrimaryHolder() ?: continue
+                if (handlerEntity is MarketAPI && handlerEntity.primaryEntity != null) handlerEntity = handlerEntity.primaryEntity
+                //^ if no entity, get market. if no market, get entity. if both, get entity.
+                if (fleet.interactionTarget === handlerEntity || assignment!!.target === handlerEntity || assignment!!.target.orbitFocus === handlerEntity) { //raids DO however have the planet as an orbit focus
+                    handler.engageFleet(fleet)
+                }
             }
         }
     }

@@ -2,39 +2,22 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
 import data.utilities.niko_MPC_debugUtils.displayError
+import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_ids.isSatelliteFleetId
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlerOfEntity
 import org.lwjgl.util.vector.Vector2f
 
 object niko_MPC_fleetUtils {
-    /**
-     * Creates an empty fleet with absolutely nothing in it, except for the memflags satellite fleets must have.
-     * @return A new satellite fleet.
-     */
-    fun createSatelliteFleetTemplate(handler: niko_MPC_satelliteHandlerCore): CampaignFleetAPI {
-        return handler.createSatelliteFleetTemplate()
-    }
-
-    /**
-     * Fills fleet with the given variants up until budget isn't high enough to generate any more variants.
-     * Uses a weighted picking system to determine what ships to add.
-     *
-     * @param budget   The amount of FP to be added to the fleet. Hard cap.
-     * @param fleet    The fleet to fill.
-     * @param variants The variants, in variantId -> weight format, to be picked.
-     */
-    fun attemptToFillFleetWithVariants(budget: Int, fleet: CampaignFleetAPI, variants: HashMap<String?, Float?>) {
-        attemptToFillFleetWithVariants(budget, fleet, variants, false)
-    }
-
     /**
      * Fills fleet with the given variants up until budget isn't high enough to generate any more variants.
      * Uses a weighted picking system to determine what ships to add.
@@ -85,87 +68,57 @@ object niko_MPC_fleetUtils {
         return newFleetMembers
     }
 
-    @JvmStatic
-    @JvmOverloads
-    fun despawnSatelliteFleet(fleet: CampaignFleetAPI, vanish: Boolean = false) {
-        genericPreDeleteSatelliteFleetCleanup(fleet)
-        if (vanish) {
-            fleet.setLocation(9999999f, 9999999f)
-        }
-        fleet.despawn() //will ALWAYS call the despawn listener
-    }
-
-    @JvmStatic
-    fun genericPreDeleteSatelliteFleetCleanup(fleet: CampaignFleetAPI) {
-        fleet.orbit = null
-        val fleetMemory = fleet.memoryWithoutUpdate
-        val script = fleetMemory[niko_MPC_ids.temporaryFleetDespawnerId] as niko_MPC_temporarySatelliteFleetDespawner
-        script?.prepareForGarbageCollection()
-        val handler = getSatelliteHandlerOfEntity(fleet)
-        handler?.cleanUpSatelliteFleetBeforeDeletion(fleet)
-    }
-
-    fun spawnSatelliteFleet(
-        handler: niko_MPC_satelliteHandlerCore,
-        coordinates: Vector2f?,
-        location: LocationAPI?
-    ): CampaignFleetAPI {
-        return spawnSatelliteFleet(handler, coordinates, location, true, false)
-    }
-
-    fun spawnSatelliteFleet(
-        handler: niko_MPC_satelliteHandlerCore,
-        coordinates: Vector2f?,
-        location: LocationAPI?,
-        temporary: Boolean,
-        dummy: Boolean
-    ): CampaignFleetAPI {
-        return handler.spawnSatelliteFleet(coordinates!!, location!!, temporary, dummy)
-    }
-
-    @JvmStatic
-    fun getHandlerDialogFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken): CampaignFleetAPI? {
-        if (handler.fleetForPlayerDialog == null) {
-            handler.fleetForPlayerDialog = createNewFullSatelliteFleet(handler, entity)
-        }
-        return handler.fleetForPlayerDialog
-    }
-
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken): CampaignFleetAPI {
-        return createNewFullSatelliteFleet(handler, entity, true)
-    }
-
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken, temporary: Boolean): CampaignFleetAPI {
-        return createNewFullSatelliteFleet(handler, entity.location, entity.containingLocation, temporary, false)
-    }
-
-    fun createNewFullSatelliteFleet(handler: niko_MPC_satelliteHandlerCore, coordinates: Vector2f?, location: LocationAPI?, temporary: Boolean, dummy: Boolean): CampaignFleetAPI {
-        return handler.createNewFullSatelliteFleet(coordinates, location, temporary, dummy)
-    }
-
-    @JvmStatic
-    fun fleetIsSatelliteFleet(fleet: CampaignFleetAPI): Boolean {
-        return fleet.memoryWithoutUpdate.`is`(isSatelliteFleetId, true)
-    }
-
-    fun createDummyFleet(handler: niko_MPC_satelliteHandlerCore, entity: SectorEntityToken?): CampaignFleetAPI {
-        return handler.createDummyFleet(entity!!)
-    }
-
-    @JvmStatic
-    fun isFleetValidEngagementTarget(fleet: CampaignFleetAPI?): Boolean {
-        if (fleet == null) return false
-        if (fleet === Global.getSector().playerFleet) return false
-        return if (fleetIsSatelliteFleet(fleet)) false else true
-    }
-
+    /** Despawn() on satellite fleets will trigger the despawn listener. No need for any fancy shit.*/
     fun CampaignFleetAPI.satelliteFleetDespawn(vanish: Boolean = false) {
         if (isSatelliteFleet()) {
-            genericPreDeleteSatelliteFleetCleanup(this) //todo come back to this and clean it up
             if (vanish) {
                 setLocation(9999999f, 9999999f)
             }
         }
         despawn() //will ALWAYS call the despawn listener
+    }
+
+    fun SectorEntityToken.getSatelliteEntityHandler(): niko_MPC_satelliteHandlerCore? {
+        if (niko_MPC_debugUtils.memKeyHasIncorrectType<niko_MPC_satelliteHandlerCore>(this, niko_MPC_ids.satelliteEntityHandler)) return null
+        return memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] as niko_MPC_satelliteHandlerCore
+    }
+
+    fun CampaignFleetAPI.setSatelliteEntityHandler(handler: niko_MPC_satelliteHandlerCore) {
+        memory[niko_MPC_ids.satelliteEntityHandler] = handler
+    }
+
+    /** TODO finish */
+    fun CampaignFleetAPI.trimDownToFP(maxFp: Float) {
+        var failsafeIndex = 0
+        val failsafeThreshold = 25 //25 iterations before we break out
+        while (effectiveStrength > maxFp) {
+            if (++failsafeIndex >= failsafeThreshold) {
+                displayError("$this trimdown interrupted due to failsafe Index exceeding or reaching $failsafeThreshold")
+                logDataOf(this)
+                return
+            }
+            for (fleetMember: FleetMemberAPI in fleetData.membersListCopy) {
+                fleetData.removeFleetMember(fleetMember)
+                if (effectiveStrength <= maxFp) return
+            }
+        }
+    }
+
+    fun CampaignFleetAPI.setDummyFleet(dummyMode: Boolean = true) {
+        val ourMemory: MemoryAPI = memoryWithoutUpdate
+        ourMemory.set(niko_MPC_ids.isDummyFleetId, dummyMode)
+        isDoNotAdvanceAI = dummyMode
+    }
+
+    fun CampaignFleetAPI.isDummyFleet(): Boolean {
+        return memoryWithoutUpdate.`is`(niko_MPC_ids.isDummyFleetId, true)
+    }
+
+    fun CampaignFleetAPI.isSatelliteFleet(): Boolean {
+        return hasTag(niko_MPC_ids.isSatelliteFleetId)
+    }
+
+    fun CampaignFleetAPI.setSatelliteFleet(mode: Boolean) {
+        memoryWithoutUpdate[niko_MPC_ids.isSatelliteFleetId] = mode
     }
 }

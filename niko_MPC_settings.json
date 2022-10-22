@@ -22,5 +22,5 @@
 	"beamer_weight":1.5f, #default: 1.5f
 	"ordnance_weight":2f, #default: 2f
 	"swarm_weight":0.01f, #default : 0.01f
-	
+		
 }

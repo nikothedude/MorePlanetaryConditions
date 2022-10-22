@@ -35,4 +35,5 @@ object niko_MPC_ids {
     const val cosmeticSatelliteTagId = "niko_MPC_satellite"
     const val globalSatelliteHandlerListId = "\$niko_MPC_globalSatelliteHandlerList"
 
+    const val isDummyFleetId = "\$niko_MPC_isDummyFleet"
 }

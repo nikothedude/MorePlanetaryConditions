@@ -1,0 +1,12 @@
+{
+	"conditions": {
+		"thiswillcrashuntilnikoreplacesitwithsomething"{
+			"desc":"The satellites in orbit of this entity endlessly harass incoming hostile craft, and make it nearly impossible to deploy troops without taking losses. Increases drop attrition by 40%, and also prevents bombardment.",
+			"highlights":["drop attrition", "40%", "prevents bombardment"],
+			"color":[155,139,134,255],
+			"tags":[preventBombardment],
+			"plugin":"exerelin.campaign.intel.groundbattle.plugins.MagneticCrustPlugin",
+			
+		}
+	}
+}

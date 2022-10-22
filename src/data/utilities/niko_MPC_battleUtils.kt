@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 
 object niko_MPC_battleUtils {
+    @JvmStatic
     fun getContainingLocationOfBattle(battle: BattleAPI): LocationAPI? {
         var containingLocation: LocationAPI? = null
         if (battle.isPlayerInvolved) {
@@ -22,13 +23,18 @@ object niko_MPC_battleUtils {
     }
 
     @JvmStatic
-    fun getStationFleetOfBattle(battle: BattleAPI): CampaignFleetAPI? {
+    fun getStationsFleetOfBattle(battle: BattleAPI): List<CampaignFleetAPI> {
+        val stationFleets = ArrayList<CampaignFleetAPI>()
         for (potentialStationFleet in battle.stationSide) {
             if (potentialStationFleet.isStationMode) {
-                return potentialStationFleet // fun fact about battles, there can only ever be one fleet with isstationmode set to true in a battle
-                // so, this is risk-free
+                stationFleets += potentialStationFleet
             }
         }
-        return null
+        return stationFleets
+    }
+
+    @JvmStatic
+    fun isSideValid(side: BattleAPI.BattleSide?): Boolean {
+        return side != BattleAPI.BattleSide.NO_JOIN && side != null
     }
 }

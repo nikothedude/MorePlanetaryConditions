@@ -20,6 +20,8 @@ object niko_MPC_settings {
         SATELLITE_INTERFERENCE_DISTANCE_MULT = configJson.getDouble("satelliteInterferenceDistanceMult").toFloat()
         BATTLE_SATELLITES_BASE = configJson.getInt("maxBattleSatellitesBase")
         BATTLE_SATELLITES_MULT = configJson.getDouble("maxBattleSatellitesMult")
+
+
         BARRAGE_WEIGHT = configJson.getDouble("barrage_weight").toFloat()
         STANDARD_WEIGHT = configJson.getDouble("standard_weight").toFloat()
         SHIELDED_WEIGHT = configJson.getDouble("shielded_weight").toFloat()
@@ -27,15 +29,6 @@ object niko_MPC_settings {
         ORDNANCE_WEIGHT = configJson.getDouble("ordnance_weight").toFloat()
         SWARM_WEIGHT = configJson.getDouble("swarm_weight").toFloat()
     }
-
-    fun isIdEnabled(enabledSetting: String?): Boolean {
-
-    }
-
-    var XENOLIFE_ENABLED = false
-
-    var XENO_RANCHING_IND_ENABLED = false
-    var XENO_HUNTING_IND_ENABLED = false
     @JvmField
     var PREVENT_SATELLITE_TURN = false
     @JvmField
@@ -47,7 +40,9 @@ object niko_MPC_settings {
     var SATELLITE_INTERFERENCE_DISTANCE_BASE = 0f
     @JvmField
     var SATELLITE_INTERFERENCE_DISTANCE_MULT = 0f
+    @JvmField
     var BATTLE_SATELLITES_BASE = 0
+    @JvmField
     var BATTLE_SATELLITES_MULT = 0.0
     @JvmField
     var BARRAGE_WEIGHT: Float? = null

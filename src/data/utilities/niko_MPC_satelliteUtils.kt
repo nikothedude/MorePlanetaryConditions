@@ -8,10 +8,9 @@ import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
-import data.scripts.everyFrames.niko_MPC_gracePeriodDecrementer
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import org.jetbrains.annotations.Contract
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
@@ -232,6 +231,15 @@ object niko_MPC_satelliteUtils {
         }
         // null-safe from the above is check
         return (memoryWithoutUpdate[niko_MPC_ids.satelliteHandlersId] as MutableSet<niko_MPC_satelliteHandlerCore>)
+    }
+
+    fun HasMemory?.hasSatellites(): Boolean {
+        if (this == null) return false
+        return (this.getSatelliteHandlers().isNotEmpty())
+    }
+
+    fun HasMemory.isSatelliteEntity(): Boolean {
+        return (memoryWithoutUpdate.get(niko_MPC_ids.satelliteEntityHandler) != null)
     }
 
     @JvmStatic
@@ -490,24 +498,12 @@ object niko_MPC_satelliteUtils {
     }
 
     @JvmStatic
-    fun isSideValid(side: BattleSide?): Boolean {
-        return side != BattleSide.NO_JOIN && side != null
-    }
-
-    /**
-     * @param battle The battle to check.
-     * @return A hashmap of nearby entities with satellites that are both willing and capable of joining battle.
-     */
-    fun getNearbyEntitiesWithSatellitesWillingAndCapableToJoinBattle(battle: BattleAPI): HashMap<SectorEntityToken, BattleSide?> {
-        return getNearbyEntitiesWithSatellitesWillingToJoinBattle(battle)
-    }
-
     /**
      * @param side The side to use.
      * @param entityMap The hashmap of entities to battleside.
      * @return A new arraylist of entities on the given side.
      */
-    fun getEntitiesOnSide(
+    fun getEntitiesOnBattleSide(
         side: BattleSide,
         entityMap: HashMap<SectorEntityToken, BattleSide>
     ): List<SectorEntityToken> {
@@ -519,89 +515,6 @@ object niko_MPC_satelliteUtils {
         }
         return entitiesOnSide
     }
-
-    fun getNearbyEntitiesWithSatellitesWillingAndCapableToFight(fleet: CampaignFleetAPI): Set<SectorEntityToken> {
-        return getEntitiesWithSatellitesCapableOfFighting(getNearbyEntitiesWithSatellitesWillingToFight(fleet))
-    }
-
-    // CAPABILITY CHECKING
-    fun doEntitySatellitesWantToFight(handler: niko_MPC_satelliteHandlerCore, fleet: CampaignFleetAPI?): Boolean {
-        return doEntitySatellitesWantToFight(handler.entity, fleet)
-    }
-
-    /**
-     * Used for generating battles and autoresolve and such.
-     * @param entity The entity to get the satellite handler from.
-     * @param fleet The fleet to check.
-     * @return True, if the handler' dummy fleet is hostile to the given fleet. False otherwise. Can return null
-     * if entity has no satellites.
-     */
-    @JvmStatic
-    fun doEntitySatellitesWantToFight(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getSatelliteHandlerOfEntity(entity)
-        return handler!!.doSatellitesWantToFight(fleet)
-    }
-
-    /**
-     * Used for things such as preventing the player from interacting with a market.
-     * @param entity The entity to get the satellite handler from.
-     * @param fleet The fleet to check.
-     * @return True, if the satellite handler' faction is inhospitable or worse to fleets' faction, if the fleet has no transponder,
-     * or if the satellites want to fight.
-     * Can return false if handler are null.
-     */
-    @JvmStatic
-    fun doEntitySatellitesWantToBlock(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getSatelliteHandlerOfEntity(entity)
-        return handler!!.doSatellitesWantToBlock(fleet!!)
-    }
-
-    /**
-     * @param entity The entity to check.
-     * @return True if the entity isn't already blocking the fleet, or if entity's satellite handler' grace period is
-     * less or equal to 0. False otherwise.
-     */
-    @JvmStatic
-    fun areEntitySatellitesCapableOfBlocking(entity: SectorEntityToken, fleet: CampaignFleetAPI?): Boolean {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getSatelliteHandlerOfEntity(entity)
-        return handler!!.areSatellitesCapableOfBlocking(fleet!!)
-    }
-
-    /**
-     * Unfinished.
-     */
-    private fun areEntitySatellitesCapableOfFighting(entity: SectorEntityToken, fleet: CampaignFleetAPI): Boolean {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return false
-        val handler = getSatelliteHandlerOfEntity(entity)
-        return handler!!.areSatellitesCapableOfFighting(fleet)
-    }
-
-    /**
-     * Forces the given entity's satellite handler to spawn a full satellite fleet on the target, unless
-     * it's already fighting them. Can fail if the entity has no handler.
-     * @param entity The entity to get handler from.
-     * @param fleet The fleet to check and engage.
-     */
-    @JvmStatic
-    fun makeEntitySatellitesEngageFleet(entity: SectorEntityToken, fleet: CampaignFleetAPI?) {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getSatelliteHandlerOfEntity(entity)
-        handler!!.makeEntitySatellitesEngageFleet(fleet!!)
-    }
-
-    /**
-     * Forces all nearby entities out of getNearbyEntitiesWithSatellitesWillingAndCapableToFight to
-     * run makeEntitySatellitesEngageFleet.
-     * @param fleet The fleet to force the entities to engage.
-     */
-    fun makeNearbyEntitySatellitesEngageFleet(fleet: CampaignFleetAPI) {
-        for (entity in getNearbyEntitiesWithSatellitesWillingAndCapableToFight(fleet)) {
-            makeEntitySatellitesEngageFleet(entity, fleet)
-        }
-    }
     //MISC
     /**
      * @param entity The entity to check.
@@ -610,32 +523,6 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun defenseSatellitesApplied(entity: SectorEntityToken): Boolean {
         return entity.getSatelliteHandlers().isEmpty()
-    }
-
-    @JvmStatic
-    @Deprecated("")
-    fun removeSatelliteBarrageTerrain(relatedEntity: SectorEntityToken, terrain: SectorEntityToken) {
-        val containingLocation = relatedEntity.containingLocation
-        terrain.isExpired = true
-        containingLocation.removeEntity(terrain)
-    }
-
-    /**
-     * Runs handler.adjustGracePeriod(fleet, amount). Exists so that we add a new grace decrementer if none exists.
-     * @param fleet The fleet to adjust the grace period of.
-     * @param amount The amount to adjust the grace by.
-     * @param entity The entity to get handler from.
-     */
-    @JvmStatic
-    fun incrementSatelliteGracePeriod(fleet: CampaignFleetAPI?, amount: Float, entity: SectorEntityToken) {
-        if (!niko_MPC_debugUtils.assertEntityHasSatellites(entity)) return
-        val handler = getSatelliteHandlerOfEntity(entity)
-        if (!entity.hasScriptOfClass(niko_MPC_gracePeriodDecrementer::class.java)) {
-            val decrementerScript = niko_MPC_gracePeriodDecrementer(handler)
-            handler!!.gracePeriodDecrementer = decrementerScript
-            niko_MPC_scriptUtils.addScriptsAtValidTime(decrementerScript, entity, true)
-        }
-        handler!!.adjustGracePeriod(fleet, amount)
     }
 
     @JvmStatic
@@ -654,10 +541,6 @@ object niko_MPC_satelliteUtils {
     }
 
     @JvmStatic
-    fun isCustomEntitySatellite(entity: SectorEntityToken): Boolean {
-        return entity.tags.contains(niko_MPC_ids.satelliteTagId)
-    }
-
     /** If this returns null, the sector doesnt exist yet. */
     fun getAllSatelliteHandlers(): MutableSet<niko_MPC_satelliteHandlerCore> {
         val sector: SectorAPI? = Global.getSector()
@@ -674,12 +557,16 @@ object niko_MPC_satelliteUtils {
 
     fun CustomCampaignEntityAPI.deleteIfCosmeticSatellite() {
         if (!isCosmeticSatellite()) return
-        val handler: niko_MPC_satelliteHandlerCore? = getCosmeticSatelliteHandler()
+        val handler: niko_MPC_satelliteHandlerCore? = getSatelliteEntityHandler()
         if (handler != null) {
             handler.cosmeticSatellites.remove(this)
         } else displayError("$this, despite being a cosmetic satellite, had no handler")
         Misc.fadeAndExpire(this) //this causes a removeentity after a bit
         //containingLocation.removeEntity(this)
+    }
+
+    fun CustomCampaignEntityAPI.isCosmeticSatellite(): Boolean {
+        return (hasTag(niko_MPC_ids.cosmeticSatelliteTagId))
     }
 }
 
