@@ -7,7 +7,9 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_miscUtils.getStationFleet
+import data.utilities.niko_MPC_miscUtils.getStationsInOrbit
 
 /** Every successful [advance] run, iterate through [niko_MPC_satelliteHandlerCore.getPrimaryHolder]'s [MarketAPI.getConnectedEntities]
  * if the provided value is a market, or if its an entity, and it has a market. We then check every found entity in that list
@@ -38,9 +40,8 @@ class niko_MPC_satelliteStationBattleChecker(val handler: niko_MPC_satelliteHand
             handlerEntity = handlerEntity.market
         }
         if (handlerEntity !is MarketAPI) return
-        for (possibleStation: SectorEntityToken? in handlerEntity.connectedEntities) {
-            if (possibleStation == null) continue
-            val stationFleet = (possibleStation.memoryWithoutUpdate[MemFlags.STATION_FLEET] as? CampaignFleetAPI) ?: continue
+        for (possibleStation: SectorEntityToken in handlerEntity.getStationsInOrbit()) {
+            val stationFleet = possibleStation.getStationFleet() ?: continue
             // no fleet: fleet defeated
             // has base fleet: fleet defeated
             // no need to doublecheck

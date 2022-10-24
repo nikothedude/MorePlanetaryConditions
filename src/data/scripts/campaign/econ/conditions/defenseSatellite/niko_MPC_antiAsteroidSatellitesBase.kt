@@ -1,19 +1,26 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
-import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.niko_MPC_industryAddingCondition
+import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.isCosmeticSatelliteInValidState
 import data.utilities.niko_MPC_debugUtils.isSatelliteFleetInValidState
+import data.utilities.niko_MPC_debugUtils.log
+import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
+
 
 /** Base class for all forms of satellite-bound conditions. This condition should, apon application, create a new handler
  * for the [market], and bind itself to it. The reason that the handler is separate is because the handler can exist
@@ -23,15 +30,17 @@ import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondition(), niko_MPC_dataLoggable {
     override val isEnabled: Boolean
         get() = niko_MPC_settings.DEFENSE_SATELLITES_ENABLED
-
     //todo: READ ME NIKO.
-    // we can move to using market instead of entity for most things
-    // except for scripts and cosmetics and shit
-    // market.getContaningLocation and .getLocation exist and work
 
     /** The primary reason this is done on a handler is because this is detachable from conditions
      * and can be done seperately. Also I hate storing data on conditions out of paranoia.*/
     var handler: niko_MPC_satelliteHandlerCore? = null
+    val suppressedConditions = ArrayList<String>()
+
+    // market.getContaningLocation and .getLocation exist and work
+    // except for scripts and cosmetics and shit
+    // we can move to using market instead of entity for most things
+    abstract val suppressorId: String?
     fun getHandlerWithErrorCheck(doNullCheck: Boolean = true): niko_MPC_satelliteHandlerCore? {
         if (doNullCheck && handler == null) displayError("handler null during getHandler on $this")
         return handler
@@ -68,12 +77,12 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     }
 
     protected open fun addDeletionScriptToMarket(ourMarket: MarketAPI) {
-        val ourHandler = getHandlerWithErrorCheck()
+        val ourHandler = handler
         if (ourHandler != null) {
             // global beacuse during loading entity's scripts just dont exist at all
             //TODO: make it so that this accesses a memkey to see if we already have a script
             val deletionScript = createDeletionScript(ourMarket, ourHandler)
-            Global.getSector().addScript(deletionScript)
+            deletionScript.start()
         }
     }
 
@@ -87,12 +96,6 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
 
     /** Generic value-based and non-jank operations should be here. Ex. an access buff removal.*/
     abstract fun unapplyConditionAttributes(id: String, ourMarket: MarketAPI)
-
-    override fun advance(amount: Float) {
-        super.advance(amount)
-
-        TODO() // do i even want to use the advance here? maybe just put it on the handler?
-    }
 
     protected fun createNewHandler(): niko_MPC_satelliteHandlerCore {
         handler = createNewHandlerInstance()
@@ -185,6 +188,22 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
             }
         }
         return satelliteFleetList
+    }
+
+    fun getLuddicSupression(): Int {
+        var patherInterestReductionAmount = 0
+
+        if (suppressorId != null && market.hasIndustry(suppressorId)) {
+            val industry = market.getIndustry(suppressorId) as niko_MPC_defenseSatelliteLuddicSuppressor
+            patherInterestReductionAmount = Math.abs(industry.patherInterest).toInt()
+        } else {
+            displayError("no luddic path supressor on $market during $this getLuddincSupression")
+            logDataOf(this)
+            if (market != null) {
+                logDataOf(market)
+            }
+        }
+        return patherInterestReductionAmount
     }
 
     override fun isTransient(): Boolean = false

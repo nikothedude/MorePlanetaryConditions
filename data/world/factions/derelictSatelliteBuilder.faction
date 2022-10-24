@@ -53,7 +53,7 @@
 		],
 	},
 	"knownFighters":{
-		"tags":["derelictniko_MPC_derelictSatelliteFighter"],
+		"tags":["derelict, niko_MPC_derelictSatelliteFighter"],
 		"fighters":[
 			"wasp_wing",
 			"mining_drone_wing",
@@ -64,11 +64,13 @@
 	"priorityFighters":{
 		"tags":[],
 		"fighters":[
+			"wasp_wing",
 		],
 	},
 	"knownWeapons":{
 		"tags":["derelict", "lowtech_bp", "midline_bp", "hightech_bp", "rare_bp", "missile_bp", "base_bp"],
 		"weapons":[
+			"amblaster",
 			"tachyonlance",
 			"hil",
 			"pulselaser",
@@ -118,20 +120,68 @@
 			"typhoon",
 			"cyclone",
 			"hurricane",
-			"squall",
 			"locust",
 			"hammerrack",
 			"mininglaser",
 			"pdlaser",
+			"pdburst",
+			"heavyburst",
 			"irpulse",
 			"lrpdlaser",
 			"miningblaster",
 			"plasma",
+			"heavyblaster",
 		],
 	},
 	"priorityWeapons":{
-		"tags":[],
+		"tags":["derelict"],
 		"weapons":[
+			"amblaster",
+			"tachyonlance",
+			"hil",
+			"pulselaser",
+			"lightdualmg",
+			"lightmortar",
+			"vulcan",
+			"lightag",
+			"shredder",
+			"heavymg",
+			"flak",
+			"dualflak",
+			"chaingun",
+			"heavymauler",
+			"gauss",
+			"hephag",
+			"devastator",
+			"hellbore",
+			"mjolnir",
+			"reaper",
+			"atropos",
+			"atropos_single",
+			"hammer",
+			"hammer_single",
+			"swarmer",
+			"annihilator",
+			"harpoon",
+			"harpoon_single",
+			"harpoonpod",
+			"breachpod",
+			"annihilatorpod",
+			"typhoon",
+			"cyclone",
+			"hurricane",
+			"locust",
+			"hammerrack",
+			"mininglaser",
+			"pdlaser",
+			"heavyburst",
+			"pdburst",
+			"irpulse",
+			"lrpdlaser",
+			"miningblaster",
+			"plasma",
+			"heavyblaster",
+			"heavymauler",
 		],
 	},
 	"knownHullMods":{
@@ -143,7 +193,7 @@
 			"armoredweapons",
 			"augmentedengines",
 			"autorepair",
-			#"converted_hangar",
+			"converted_hangar",
 			"eccm",
 			"ecm",
 			"magazines",
@@ -172,20 +222,45 @@
 		
 		"shipSize":3,
 		
-		"aggression":2,
+		"aggression":5,
 		
 		"combatFreighterProbability":0,     				# instead of some portion of the freighters in a fleet
-		"combatFreighterCombatUseFraction":1,				# as part of the normal combat lineup
-		"combatFreighterCombatUseFractionWhenPriority":1,   # as part of normal combat lineup, when marked as priority ship
-		"autofitRandomizeProbability":0.75,
+		"combatFreighterCombatUseFraction":0,				# as part of the normal combat lineup
+		"combatFreighterCombatUseFractionWhenPriority":0,   # as part of normal combat lineup, when marked as priority ship
+		"autofitRandomizeProbability":0.01,
 
 		"commanderSkillsShuffleProbability":0,
 		"commanderSkills":[
 		],
 	},
 	"shipRoles":{
-		"derelictMothership":{
-			"station_derelict_survey_mothership_Standard":10,
+		"combatSmall":{
+			"includeDefault":true,
+			"niko_MPC_defenseSatelliteCore_barrage":40,
+			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_shielded":15,
+			"niko_MPC_defenseSatelliteCore_ordnance":5,
+			"niko_MPC_defenseSatelliteCore_beamer":0.5,
+			"niko_MPC_defenseSatelliteCore_swarm":0.001,
+			
+		},
+		"combatMedium":{
+			"includeDefault":true,
+			"niko_MPC_defenseSatelliteCore_barrage":40,
+			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_shielded":15,
+			"niko_MPC_defenseSatelliteCore_ordnance":5,
+			"niko_MPC_defenseSatelliteCore_beamer":1,
+			"niko_MPC_defenseSatelliteCore_swarm":0.01,
+		},
+		"combatLarge":{
+			"includeDefault":true,
+			"niko_MPC_defenseSatelliteCore_barrage":40,
+			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_shielded":10,
+			"niko_MPC_defenseSatelliteCore_ordnance":5,
+			"niko_MPC_defenseSatelliteCore_beamer":0.5,
+			"niko_MPC_defenseSatelliteCore_swarm":0.001,
 		},
 	},
 	"illegalCommodities":[

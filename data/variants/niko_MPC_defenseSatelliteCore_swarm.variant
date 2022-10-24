@@ -1,6 +1,6 @@
 {
   "variantId": "niko_MPC_defenseSatelliteCore_swarm",
-  "hullId": "niko_MPC_defenseSatelliteCore",
+  "hullId": "niko_MPC_defenseSatelliteCore_swarm",
   "displayName": "Swarm",
   "goalVariant": false,
   "fluxCapacitors": 36,
@@ -68,17 +68,17 @@
     "wasp_wing",
     "wasp_wing",
     "wasp_wing",
+    "wasp_wing",
+    "wasp_wing",
+    "wasp_wing",
+    "wasp_wing",
+    "wasp_wing",
+    "wasp_wing",
     "terminator_wing",
     "terminator_wing",
     "terminator_wing",
     "terminator_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing",
-    "borer_wing"
+    "terminator_wing",
+    "terminator_wing"
   ]
 }

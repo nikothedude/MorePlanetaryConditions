@@ -3,7 +3,7 @@ package data.scripts.everyFrames
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
 open class niko_MPC_satelliteCustomEntityRemovalScript(var memoryHaver: HasMemory, val handler: niko_MPC_satelliteHandlerCore)

@@ -5,13 +5,14 @@ import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
-import data.utilities.isSatelliteFleet
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
+import data.utilities.niko_MPC_fleetUtils.getTemporaryFleetDespawner
+import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 
 class niko_MPC_satelliteFleetDespawnListener : BaseFleetEventListener() {
     /** Here, and nowhere else, should we handle post-deletion GC prep. NOWHERE ELSE GODDAMN IT. */
-    override fun reportFleetDespawnedToListener(fleet: CampaignFleetAPI?, reason: FleetDespawnReason, param: Any) {
+    override fun reportFleetDespawnedToListener(fleet: CampaignFleetAPI?, reason: FleetDespawnReason?, param: Any?) {
         super.reportFleetDespawnedToListener(fleet, reason, param)
         if (fleet == null) return
         if (!fleet.isSatelliteFleet()) {
@@ -35,7 +36,9 @@ private fun CampaignFleetAPI.postDeletionGCPrep() {
     this.orbit = null
     val despawnerScript: niko_MPC_temporarySatelliteFleetDespawner = getTemporaryFleetDespawner()
     despawnerScript.delete()
-    val handler = getSatelliteEntityHandler() ?: return niko_MPC_debugUtils.displayError("$this had no handler" +
-            " during satellite fleet gc prep")
+    val handler = getSatelliteEntityHandler() ?: return niko_MPC_debugUtils.displayError(
+        "$this had no handler" +
+                " during satellite fleet gc prep"
+    )
     handler.doSatelliteFleetPostDeletionGCPrep(this)
 }

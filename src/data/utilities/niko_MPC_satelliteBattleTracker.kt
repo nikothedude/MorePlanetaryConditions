@@ -3,7 +3,8 @@ package data.utilities
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 
 /**
  * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside).
@@ -24,6 +25,7 @@ class niko_MPC_satelliteBattleTracker {
         if (!battles.containsKey(battle) || battles[battle] == null) battles[battle] = HashMap()
         val currentBattles = battles[battle]
         currentBattles!![handler] = side
+        niko_MPC_debugUtils.log.info("satellite battle tracker associated $handler with $battle, $side")
     }
 
     fun getSatellitesInfluencingBattle(battle: BattleAPI): Set<niko_MPC_satelliteHandlerCore> {
@@ -36,13 +38,7 @@ class niko_MPC_satelliteBattleTracker {
 
     fun areSatellitesInvolvedInBattle(battle: BattleAPI, handler: niko_MPC_satelliteHandlerCore): Boolean {
         return if (battles.containsKey(battle)) {
-            if (battles[battle]!!.containsKey(handler)) {
-                true
-            } else {
-                /*updateBattleAssociationWithScan(battle);
-                return battles.get(battle).containsKey(handler);*/
-                false
-            }
+            battles[battle]!!.containsKey(handler)
         } else false
     }
 
@@ -53,7 +49,7 @@ class niko_MPC_satelliteBattleTracker {
     fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandlerCore, CampaignFleetAPI> {
         val handlerToFleetMap = HashMap<niko_MPC_satelliteHandlerCore, CampaignFleetAPI>()
         for (fleet in battle.bothSides) {
-            val foundhandler = getSatelliteHandlerOfEntity(fleet)
+            val foundhandler = fleet.getSatelliteEntityHandler()
             if (foundhandler != null) {
                 handlerToFleetMap[foundhandler] = fleet
             }
@@ -80,6 +76,7 @@ class niko_MPC_satelliteBattleTracker {
         if (battles[battle] != null) {
             battles[battle]!!.remove(handler)
         }
+        niko_MPC_debugUtils.log.info("tracker removed $handler from $battle")
     }
 
     fun removeHandlerFromAllBattles(handler: niko_MPC_satelliteHandlerCore) {

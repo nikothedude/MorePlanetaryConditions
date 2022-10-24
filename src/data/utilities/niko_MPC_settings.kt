@@ -33,6 +33,7 @@ object niko_MPC_settings {
     var PREVENT_SATELLITE_TURN = false
     @JvmField
     var DEFENSE_SATELLITES_ENABLED = false
+    @JvmField
     var SHOW_ERRORS_IN_GAME = false
     @JvmField
     var DISCOVER_SATELLITES_IN_BULK = false

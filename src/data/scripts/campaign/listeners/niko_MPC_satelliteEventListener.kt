@@ -6,15 +6,12 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_debugUtils
-import data.utilities.niko_MPC_fleetUtils.isFleetValidEngagementTarget
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
-import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 import data.utilities.niko_MPC_satelliteUtils.hasSatellites
-import data.utilities.niko_MPC_satelliteUtils.makeEntitySatellitesEngageFleet
 
 class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEventListener(permaRegister) {
     /**
@@ -28,7 +25,7 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
     override fun reportBattleFinished(primaryWinner: CampaignFleetAPI, battle: BattleAPI) { //fixme: doesnt fire on player battle end
         super.reportBattleFinished(primaryWinner, battle)
 
-        val tracker = getSatelliteBattleTracker()
+        val tracker = getSatelliteBattleTracker() ?: return
         for (handler in tracker.getSatellitesInfluencingBattle(battle)) {
             val battleSide = tracker.getSideOfSatellitesForBattle(battle, handler)
             if (battleSide != battle.pickSide(primaryWinner)) { // if our picked side on the battle does not have the winner,
@@ -65,7 +62,7 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
                 if (handlerEntity is MarketAPI && handlerEntity.primaryEntity != null) handlerEntity = handlerEntity.primaryEntity
                 //^ if no entity, get market. if no market, get entity. if both, get entity.
                 if (fleet.interactionTarget === handlerEntity || assignment!!.target === handlerEntity || assignment!!.target.orbitFocus === handlerEntity) { //raids DO however have the planet as an orbit focus
-                    handler.engageFleet(fleet)
+                    handler.tryToEngageFleet(fleet)
                 }
             }
         }

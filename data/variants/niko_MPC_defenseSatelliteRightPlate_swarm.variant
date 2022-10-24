@@ -32,7 +32,7 @@
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
         "WS0001": "lightdualmg",
         "WS0002": "lightag",

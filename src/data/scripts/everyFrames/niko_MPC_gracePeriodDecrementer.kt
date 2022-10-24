@@ -1,17 +1,20 @@
 package data.scripts.everyFrames
 
-import com.fs.starfarer.api.EveryFrameScriptWithCleanup
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.impl.campaign.ids.Tags
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_dataLoggable
 import data.utilities.niko_MPC_debugUtils
 
 /** Every time [advance] successfully runs, iterates through every item in [niko_MPC_satelliteHandlerCore.gracePeriods]
  * and subtracts the value of each key with [cachedDeltaTime] using [niko_MPC_satelliteHandlerCore.adjustGracePeriod].*/
 class niko_MPC_gracePeriodDecrementer(var handler: niko_MPC_satelliteHandlerCore) : niko_MPC_deltaTimeScript(), niko_MPC_dataLoggable {
+
+    override val thresholdForAdvancement: Float
+        get() = 0.0f
+    override val doOneSecondDelayIfPlayerNotNear: Boolean
+        get() = true
 
     override fun start() {
         Global.getSector().addScript(this)
@@ -24,11 +27,6 @@ class niko_MPC_gracePeriodDecrementer(var handler: niko_MPC_satelliteHandlerCore
     override fun runWhilePaused(): Boolean {
         return false
     }
-
-    override val thresholdForAdvancement: Float
-        get() = 0.0f
-    override val doOneSecondDelayIfPlayerNotNear: Boolean
-        get() = true
     var cachedDeltaTime: Float = 0f
 
     override fun getPrimaryLocation(): LocationAPI? {

@@ -4,15 +4,23 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.SectorAPI
+import data.utilities.niko_MPC_miscUtils.isStationFleet
 
 object niko_MPC_battleUtils {
     @JvmStatic
-    fun getContainingLocationOfBattle(battle: BattleAPI): LocationAPI? {
+    fun BattleAPI.getContainingLocation(): LocationAPI? {
+        if (!Global.getCombatEngine().isInCampaign) {
+            niko_MPC_debugUtils.log.info("$this not in campaign, returning null for getContainingLocation()")
+            return null //todo: is this a bad idea
+        }
         var containingLocation: LocationAPI? = null
-        if (battle.isPlayerInvolved) {
-            containingLocation = Global.getSector().playerFleet.containingLocation
+        val sector: SectorAPI? = Global.getSector()
+        val playerFleet: CampaignFleetAPI? = sector?.playerFleet
+        if (isPlayerInvolved && playerFleet != null) {
+            containingLocation = Global.getSector()?.playerFleet?.containingLocation
         } else {
-            for (fleet in battle.bothSides) { //have to do this, because some fleet dont HAVE a containing location
+            for (fleet in bothSides) { //have to do this, because some fleet dont HAVE a containing location
                 if (fleet.containingLocation != null) { //ideally, this will only iterate once or twice before finding a location
                     containingLocation = fleet.containingLocation
                     break //we found a location, no need to check everyone else
@@ -23,12 +31,21 @@ object niko_MPC_battleUtils {
     }
 
     @JvmStatic
-    fun getStationsFleetOfBattle(battle: BattleAPI): List<CampaignFleetAPI> {
+    fun BattleAPI.getStationFleet(): CampaignFleetAPI? {
+        val stationFleets = getStationFleets()
+        return stationFleets.firstOrNull()
+    }
+
+    @JvmStatic
+    private fun BattleAPI.getStationFleets(): List<CampaignFleetAPI> {
         val stationFleets = ArrayList<CampaignFleetAPI>()
-        for (potentialStationFleet in battle.stationSide) {
-            if (potentialStationFleet.isStationMode) {
+        for (potentialStationFleet in stationSide) {
+            if (potentialStationFleet.isStationFleet()) {
                 stationFleets += potentialStationFleet
             }
+        }
+        if (stationFleets.size > 1) {
+            niko_MPC_debugUtils.displayError("$this had more than 1 station fleet during getStationFleets()")
         }
         return stationFleets
     }

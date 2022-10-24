@@ -10,22 +10,16 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.exceptions.niko_MPC_stackTraceGenerator
-import data.utilities.niko_MPC_debugUtils.doLogOf
-import data.utilities.niko_MPC_debugUtils.logEntityData
-import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
-import data.utilities.niko_MPC_satelliteUtils.defenseSatellitesApplied
-import data.utilities.niko_MPC_satelliteUtils.getEntitySatelliteMarket
+import data.utilities.niko_MPC_satelliteUtils.deleteIfCosmeticSatellite
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import data.utilities.niko_MPC_satelliteUtils.isCosmeticSatellite
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.apache.log4j.Priority
-import org.lwjgl.Sys
 import java.awt.Color
 
 object niko_MPC_debugUtils {
@@ -44,6 +38,7 @@ object niko_MPC_debugUtils {
      * @throws RuntimeException
      */
     @Throws(RuntimeException::class)
+    @JvmStatic
     fun displayError(errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false,
                      logType: Level = Level.ERROR) {
 
@@ -65,6 +60,7 @@ object niko_MPC_debugUtils {
         }
     }
 
+    @JvmStatic
     private fun displayErrorToCampaign(errorCode: String, highPriority: Boolean) {
         val campaignUI = Global.getSector().campaignUI
         campaignUI.addMessage("###### MORE PLANETARY CONDITIONS ERROR ######")
@@ -81,6 +77,7 @@ object niko_MPC_debugUtils {
         campaignUI.addMessage("Please provide the mod author a copy of your logs. These messages can be disabled in settings.")
     }
 
+    @JvmStatic
     private fun displayErrorToCombat(errorCode: String, highPriority: Boolean) {
         val engine = Global.getCombatEngine()
         val combatUI = engine.combatUI
@@ -101,58 +98,17 @@ object niko_MPC_debugUtils {
         combatUI.addMessage(1, "###### MORE PLANETARY CONDITIONS ERROR ######")
     }
 
+    @JvmStatic
     private fun displayErrorToTitle(errorCode: String, highPriority: Boolean) {
         return
     }
 
-    /**
-     * Returns false if the entity has satellite params, a tracker, or if the entity has a satellite market.
-     */
-    fun doEntityHasNoSatellitesTest(entity: SectorEntityToken?): Boolean {
-        var result = true
-        if (entity == null) {
-            displayError("doEntityNoSatellitesTest failed because entity was null")
-            return false
-        }
-        val entitySatelliteMarket : MarketAPI? = getEntitySatelliteMarket(entity)
-        if (entitySatelliteMarket != null) {
-            displayError(entity.name + " failed doEntityNoSatellitesTest because " + entitySatelliteMarket.name + " was still applied")
-            result = false
-        }
-        if (defenseSatellitesApplied(entity) || entity.memoryWithoutUpdate[niko_MPC_ids.satelliteHandlersId] != null) {
-            if (Global.getSettings().isDevMode) {
-                displayError(entity.name + " failed doEntityNoSatellitesTest because defenseSatellitesApplied returned true")
-                result = false
-            }
-        }
-        if (!result) {
-            logDataOf(entity)
-        }
-        return result
-    }
-
-    /**
-     * Checks getEntitySatelliteParams(entity) and looks to see if it isnt null.
-     * @param entity The entity to check.
-     * @return False if entity is null or the params are null. If params are null, an error will be displayed.
-     */
     @JvmStatic
-    fun assertEntityHasSatellites(entity: SectorEntityToken?): Boolean {
-        var result = true
-        if (entity == null) return false
-        val handler = getSatelliteHandlerOfEntity(entity)
-        if (handler == null) {
-            displayError("assertEntityHasSatellitesFailure on " + entity + ", entity name: " + entity.name)
-            logDataOf(entity)
-            result = false
-        }
-        return result
-    }
-
     fun isDebugMode(): Boolean {
         return (Global.getSettings().isDevMode)
     }
 
+    @JvmStatic
     fun CustomCampaignEntityAPI.isCosmeticSatelliteInValidState(): Boolean {
         //todo: the below might not work. if it does you want to refactor it
         if (!isCosmeticSatellite()) return true
@@ -186,11 +142,12 @@ object niko_MPC_debugUtils {
         }
         if (!result) {
             logDataOf(this)
-            niko_MPC_satelliteUtils.removeSatellite(this)
+            deleteIfCosmeticSatellite()
         }
         return result
     }
 
+    @JvmStatic
     fun CampaignFleetAPI.isSatelliteFleetInValidState(): Boolean {
         if (!isSatelliteFleet()) return true
         var result = true
@@ -213,9 +170,12 @@ object niko_MPC_debugUtils {
         return result
     }
 
+    @JvmStatic
     inline fun <reified T> memKeyHasIncorrectType(hasMemory: HasMemory, key: String): Boolean {
         return memKeyHasIncorrectType<T>(hasMemory.memoryWithoutUpdate, key)
     }
+
+    @JvmStatic
     inline fun <reified T> memKeyHasIncorrectType(memory: MemoryAPI?, key: String): Boolean {
         if (memory == null) return false
         val cachedValue = memory[key]
@@ -228,6 +188,7 @@ object niko_MPC_debugUtils {
         return false
     }
 
+    @JvmStatic
     fun logDataOf(obj: Any?) {
         if (obj != null) {
             when(obj) {
@@ -239,15 +200,18 @@ object niko_MPC_debugUtils {
             }
         } else log.debug("Cannot log debug info of obj-it is null.")
     }
+    @JvmStatic
     private fun doLogOf(obj: Any, loggableData: List<String>) {
         log.info("Now logging data of " + obj::class.simpleName + " :" + loggableData.joinToString(" "))
     }
+    @JvmStatic
     private fun SectorEntityToken.logEntityData() {
         doLogOf(this, arrayListOf("$this, ${this.name}", "Market: ${this.market}, Market Faction: ${this.market?.factionId}",
             "Entity location: ${this.containingLocation}, ${this.containingLocation?.name}, is star system: " +
             "${this.containingLocation is StarSystemAPI}", "Handlers: ${this.getSatelliteHandlers()}")
         )
     }
+    @JvmStatic
     private fun MarketAPI.logMarketData() {
         doLogOf(this, arrayListOf("$this, ${this.name}", "Entity: ${this.primaryEntity}, Faction: ${factionId}",
             "Our location: ${this.containingLocation}, ${this.containingLocation?.name}, is star system: " +

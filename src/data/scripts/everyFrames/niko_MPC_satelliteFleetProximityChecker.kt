@@ -5,7 +5,7 @@ import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import org.lazywizard.lazylib.campaign.CampaignUtils
 
 /** Every successful [advance] run, iterates through [getPrimaryEntity]'s fleets to find fleets near [getPrimaryEntity], using

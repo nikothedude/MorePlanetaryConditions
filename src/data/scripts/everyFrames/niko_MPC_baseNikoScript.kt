@@ -21,13 +21,12 @@ abstract class niko_MPC_baseNikoScript: EveryFrameScriptWithCleanup{
 
     /** Returns false in an error state. Make sure to return false if super returned false before you do anything. */
     open fun delete(): Boolean {
+        done = true
+        stop()
         if (deleted) {
             niko_MPC_debugUtils.displayError("$this was deleted despite having deleted set to true")
             return false
         }
-        done = true
-
-        stop()
         return true
     }
 

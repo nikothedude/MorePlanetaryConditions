@@ -8,8 +8,8 @@
   "width": 122,
   "center": [61, 42.5],
   "collisionRadius": 515,
-  "shieldCenter": [-36.5, -0],
-  "shieldRadius": 412,
+  "shieldCenter": [-53, -0],
+  "shieldRadius": 357,
   "viewOffset": 0,
   "builtInMods": [
     "automated",

@@ -1,6 +1,5 @@
 package data.utilities
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
@@ -10,19 +9,16 @@ import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.BaseFIDDelegate
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.FIDConfig
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
-import data.utilities.niko_MPC_debugUtils.assertEntityHasSatellites
-import data.utilities.niko_MPC_fleetUtils.despawnSatelliteFleet
-import data.utilities.niko_MPC_satelliteUtils.incrementSatelliteGracePeriod
+import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
+import data.utilities.niko_MPC_satelliteUtils.hasSatellites
 
 object niko_MPC_dialogUtils {
     @JvmStatic
     fun createSatelliteFleetFocus(
-        satelliteFleet: CampaignFleetAPI?, satelliteFleets: List<CampaignFleetAPI?>?,
-        dialog: InteractionDialogAPI?, entityFocus: SectorEntityToken, memoryMap: Map<String?, MemoryAPI?>?,
+        satelliteFleet: CampaignFleetAPI, satelliteFleets: List<CampaignFleetAPI>,
+        dialog: InteractionDialogAPI, entityFocus: SectorEntityToken, memoryMap: Map<String, MemoryAPI>,
         isFightingFriendly: Boolean
     ): Boolean {
-        if (dialog == null) return false
-        if (satelliteFleet == null) return false
         val entity = dialog.interactionTarget
         dialog.interactionTarget = satelliteFleet
         val config = FIDConfig()
@@ -60,19 +56,21 @@ object niko_MPC_dialogUtils {
         val originalPlugin = dialog.plugin
         config.delegate = object : BaseFIDDelegate() {
             override fun notifyLeave(dialog: InteractionDialogAPI) {
-                if (!assertEntityHasSatellites(entityFocus)) return
-                despawnSatelliteFleet(satelliteFleet, true)
+                val dugUpEntity = digForSatellitesInEntity(entity)
+                if (!dugUpEntity.hasSatellites()) niko_MPC_debugUtils.displayError("entity has no satellites in notifyLeave")
+                satelliteFleet.satelliteFleetDespawn(true)
                 dialog.plugin = originalPlugin
                 dialog.interactionTarget = entity
                 if (plugin.context is FleetEncounterContext) {
                     val context = plugin.context as FleetEncounterContext
                     if (context.didPlayerWinEncounterOutright()) {
+                        /*for (handler: niko_MPC_satelliteHandlerCore in )
                         //todo: is the below needed
                         incrementSatelliteGracePeriod(
                             Global.getSector().playerFleet,
                             niko_MPC_ids.satellitePlayerVictoryIncrement,
                             entityFocus
-                        )
+                        ) */
                         FireBest.fire(null, dialog, memoryMap, "niko_MPC_DefenseSatellitesDefeated")
                     } else {
                         dialog.dismiss()

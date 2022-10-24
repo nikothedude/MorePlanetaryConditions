@@ -2,20 +2,22 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
-import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
+import com.fs.starfarer.api.impl.campaign.DModManager
+import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
+import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
-import data.utilities.niko_MPC_ids.isSatelliteFleetId
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlerOfEntity
-import org.lwjgl.util.vector.Vector2f
+import org.lazywizard.lazylib.MathUtils
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object niko_MPC_fleetUtils {
     /**
@@ -84,23 +86,42 @@ object niko_MPC_fleetUtils {
     }
 
     fun CampaignFleetAPI.setSatelliteEntityHandler(handler: niko_MPC_satelliteHandlerCore) {
-        memory[niko_MPC_ids.satelliteEntityHandler] = handler
+        memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] = handler
     }
 
     /** TODO finish */
     fun CampaignFleetAPI.trimDownToFP(maxFp: Float) {
+        if (fleetData.membersListCopy.isEmpty()) return
         var failsafeIndex = 0
-        val failsafeThreshold = 25 //25 iterations before we break out
-        while (effectiveStrength > maxFp) {
+        val failsafeThreshold = 35
+        var addedDefecit = 0
+        while ((effectiveStrength - addedDefecit) > maxFp) {
             if (++failsafeIndex >= failsafeThreshold) {
-                displayError("$this trimdown interrupted due to failsafe Index exceeding or reaching $failsafeThreshold")
+                displayError("$this trimdown interrupted due to failsafe Index ($failsafeIndex) exceeding or reaching $failsafeThreshold")
                 logDataOf(this)
                 return
             }
-            for (fleetMember: FleetMemberAPI in fleetData.membersListCopy) {
-                fleetData.removeFleetMember(fleetMember)
-                if (effectiveStrength <= maxFp) return
+            val fleetMember: FleetMemberAPI = fleetData.membersListCopy.randomOrNull() ?: return
+            val maxDmods = 6
+            var amountOfDmods = 0
+            for (hullmodId: String in fleetMember.variant.hullMods) {
+                val hullmod: HullModSpecAPI = Global.getSettings().getHullModSpec(hullmodId)
+                if (hullmod.hasTag(HULLMOD_DMOD)) amountOfDmods++
             }
+            if (amountOfDmods >= maxDmods) {
+                fleetData.removeFleetMember(fleetMember)
+                break
+            }
+            val numToAdd = 1
+            val variant = fleetMember.variant
+            for (moduleId: String in variant.stationModules.keys) {
+                val module = variant.getModuleVariant(moduleId)
+                DModManager.addDMods(module, true, numToAdd, MathUtils.getRandom())
+            }
+            DModManager.addDMods(variant, true, numToAdd, MathUtils.getRandom())
+            addedDefecit += (numToAdd * 5)
+
+            if ((effectiveStrength - addedDefecit) <= maxFp) return
         }
     }
 
@@ -120,5 +141,13 @@ object niko_MPC_fleetUtils {
 
     fun CampaignFleetAPI.setSatelliteFleet(mode: Boolean) {
         memoryWithoutUpdate[niko_MPC_ids.isSatelliteFleetId] = mode
+    }
+
+    fun CampaignFleetAPI.setTemporaryFleetDespawner(script: niko_MPC_temporarySatelliteFleetDespawner?) {
+        memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] = script
+    }
+
+    fun CampaignFleetAPI.getTemporaryFleetDespawner(): niko_MPC_temporarySatelliteFleetDespawner {
+        return memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] as niko_MPC_temporarySatelliteFleetDespawner
     }
 }

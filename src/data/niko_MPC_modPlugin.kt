@@ -2,22 +2,14 @@ package data
 
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.campaign.econ.MarketConditionAPI
-import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
-import data.utilities.niko_MPC_satelliteUtils.allDefenseSatellitePlanets
-import data.utilities.niko_MPC_satelliteUtils.purgeSatellitesFromEntity
+import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.loadSettings
-import org.apache.log4j.Level
-import org.json.JSONException
-import java.io.IOException
-import java.lang.Exception
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
@@ -60,29 +52,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     override fun onNewGameAfterEconomyLoad() {
         super.onNewGameAfterEconomyLoad()
-        removeSatellitesFromMarkets(allDefenseSatellitePlanets, niko_MPC_settings.DEFENSE_SATELLITES_ENABLED)
-    }
-
-    fun removeSatellitesFromMarkets(toRemoveFrom: List<SectorEntityToken>?, removeOnlyFromCore: Boolean) {
-        var toRemoveFrom = toRemoveFrom
-        if (toRemoveFrom == null) {
-            toRemoveFrom = allDefenseSatellitePlanets //by default: nuke it
-        }
-        for (entity in toRemoveFrom) {
-            val containingLocation = entity.containingLocation
-            if (!removeOnlyFromCore || containingLocation.tags.contains(Tags.THEME_CORE)) { //we dont want to spawn in core worlds
-                val market = entity.market
-                if (market != null) {
-                    val conditionsCopy: List<MarketConditionAPI> = ArrayList(market.conditions)
-                    for (condition in conditionsCopy) {
-                        if (niko_MPC_ids.satelliteConditionIds.contains(condition.id)) {
-                            market.removeCondition(condition.id)
-                        }
-                    }
-                } else {
-                    purgeSatellitesFromEntity(entity)
-                }
-            }
-        }
+        if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) niko_MPC_satelliteUtils.obliterateSatellites()
     }
 }

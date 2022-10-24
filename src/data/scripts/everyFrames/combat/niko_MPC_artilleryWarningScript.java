@@ -5,7 +5,9 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.input.InputEventAPI;
+import data.utilities.niko_MPC_ids;
 
+import java.util.HashSet;
 import java.util.List;
 
 // niko_MPC_antiAsteroidSatellites
@@ -32,6 +34,8 @@ public class niko_MPC_artilleryWarningScript extends BaseEveryFrameCombatPlugin 
         CombatEngineAPI engine = Global.getCombatEngine();
         ShipAPI newPlayerShip = engine.getPlayerShip();
         if (newPlayerShip == playerShip) return;
+
+        ((HashSet<Object>)Global.getSector().getMemoryWithoutUpdate().get(niko_MPC_ids.globalSatelliteHandlerListId)).toString();
 
         engine.maintainStatusForPlayerShip(key, icon, name, alliedOrHostile + " satellites firing upon battlefield, " +
                 "expect artillery fire", allied);

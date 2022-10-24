@@ -14,9 +14,15 @@ abstract class niko_MPC_industryAddingCondition: niko_MPC_baseNikoCondition() {
 
     /** A stored value of our [market], that is only updated when [handleMarketDesync] is ran. Used for checking if our
      * [market] has changed.*/
-    var cachedMarket: MarketAPI? = getMarket()
+    var cachedMarket: MarketAPI? = null
+    /** Delays the caching of market into the first apply(). Errors otherwise. */
+    var marketCached: Boolean = false
 
     override fun apply(id: String) {
+        if (!marketCached) {
+            marketCached = true
+            cachedMarket = getMarket()
+        }
         super.apply(id)
         val ourMarket = getMarket() ?: return
         if (wantToApplyAnyIndustry(ourMarket, true)) {

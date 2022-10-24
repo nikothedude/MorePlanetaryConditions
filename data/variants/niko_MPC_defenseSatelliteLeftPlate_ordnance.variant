@@ -39,7 +39,7 @@
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
         "WS0002": "lightag",
         "WS0004": "lightmortar"

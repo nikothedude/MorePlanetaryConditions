@@ -6,24 +6,21 @@ import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin
 import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI.EncounterOption
 import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleet
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore
-import data.utilities.niko_MPC_debugUtils.assertEntityHasSatellites
-import data.utilities.niko_MPC_satelliteUtils
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
 
 class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(campaignFleet) {
-    override fun wantsToJoin(battle: BattleAPI, considerPlayTransponderStatus: Boolean): Boolean {
-        if (!assertEntityHasSatellites(fleet)) return true
-        val handler: niko_MPC_satelliteHandlerCore = niko_MPC_satelliteUtils.getHandlerForCondition(fleet)
-        val tracker = getSatelliteBattleTracker()
-        return if (tracker.areSatellitesInvolvedInBattle(battle, handler)) {
-            false
-        } else true
+    override fun wantsToJoin(battle: BattleAPI?, considerPlayTransponderStatus: Boolean): Boolean {
+        val handler: niko_MPC_satelliteHandlerCore = fleet.getSatelliteEntityHandler() ?: return true
+        val tracker = getSatelliteBattleTracker() ?: return false
+        if (battle == null) return false
+        return tracker.areSatellitesInvolvedInBattle(battle, handler)
     }
 
     override fun pickEncounterOption(
-        context: FleetEncounterContextPlugin,
-        otherFleet: CampaignFleetAPI,
+        context: FleetEncounterContextPlugin?,
+        otherFleet: CampaignFleetAPI?,
         pureCheck: Boolean
     ): EncounterOption {
         val satelliteFleet: CampaignFleetAPI = fleet //todo: this fucking sucks
@@ -36,7 +33,7 @@ class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(
             return if (satelliteFleet.effectiveStrength < effectiveHostileStrength) {
                 EncounterOption.HOLD_VS_STRONGER
             } else EncounterOption.HOLD
-        } else {
+        } else if (otherFleet != null){
             if (satelliteFleet.effectiveStrength < otherFleet.effectiveStrength) {
                 return EncounterOption.HOLD_VS_STRONGER
             }
@@ -45,8 +42,8 @@ class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(
     }
 
     override fun pickEncounterOption(
-        context: FleetEncounterContextPlugin,
-        otherFleet: CampaignFleetAPI
+        context: FleetEncounterContextPlugin?,
+        otherFleet: CampaignFleetAPI?
     ): EncounterOption {
         return pickEncounterOption(context, otherFleet, false)
     }

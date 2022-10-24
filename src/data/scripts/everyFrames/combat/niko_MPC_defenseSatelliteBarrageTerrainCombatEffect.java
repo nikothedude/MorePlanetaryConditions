@@ -1,6 +1,6 @@
 package data.scripts.everyFrames.combat;
 
-import com.fs.starfarer.api.Global;
+/*import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.BattleAPI;
 import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin;
 import com.fs.starfarer.api.combat.CombatEngineAPI;
@@ -154,3 +154,4 @@ public class niko_MPC_defenseSatelliteBarrageTerrainCombatEffect extends BaseEve
         generalDelayBetweenShots = Math.max(0, generalDelayBetweenShots - amount);
     }
 }
+*/

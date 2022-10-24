@@ -1,4 +1,4 @@
-package data.scripts.campaign.terrain.satelliteBarrage;
+/*package data.scripts.campaign.terrain.satelliteBarrage;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.campaign.CampaignEngineLayers;
@@ -14,7 +14,7 @@ import com.fs.starfarer.api.loading.Description;
 import com.fs.starfarer.api.ui.Alignment;
 import com.fs.starfarer.api.ui.TooltipMakerAPI;
 import com.fs.starfarer.api.util.Misc;
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satelliteHandlerCore;
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore;
 import data.utilities.niko_MPC_debugUtils;
 import data.utilities.niko_MPC_satelliteUtils;
 import org.apache.log4j.Level;
@@ -71,7 +71,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
     }
 
     public void render(CampaignEngineLayers layer, ViewportAPI viewport) {
-        /*-Do nothing-*/
+        -Do nothing-
     }
 
     private transient RingRenderer ringRenderer;
@@ -92,7 +92,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
 
     //Runs once per affected fleet in the area, with "days" being the campaign-days representation of the more ubiquitous "amount"
     @Override
-    public void applyEffect(SectorEntityToken entity, float days) {
+    publicvoid applyEffect(SectorEntityToken entity, float days) {
         if (entityHasNoSatelliteParams()) return;
 
         if (entity instanceof CampaignFleetAPI) {
@@ -107,7 +107,7 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         }
     }
 
-    private SectorEntityToken getOrbitTarget() {
+    private SectorEntityToken getOrbitTarget() { /*
         return (getEntity().getOrbitFocus());
     }
 
@@ -278,4 +278,4 @@ public class niko_MPC_defenseSatelliteBarrageTerrainPlugin extends BaseRingTerra
         return null;
     }
 
-}
+} */

@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 
 object niko_MPC_memoryUtils {
+    @JvmStatic
     /**
      * @param memory The memory to scan for the key.
      * @param key The key to check for.
@@ -13,6 +14,7 @@ object niko_MPC_memoryUtils {
         return memory.contains(key) && memory[key] != null
     }
 
+    @JvmStatic
     /**
      * Instantiates a new memoryKey in memory with object if isValidMemoryKey(memory, key) returns false.
      *
@@ -26,6 +28,7 @@ object niko_MPC_memoryUtils {
         }
     }
 
+    @JvmStatic
     /**
      * Simple wrapper for memory.set(key, object)
      */

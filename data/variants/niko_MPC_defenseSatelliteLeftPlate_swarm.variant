@@ -37,7 +37,7 @@
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
         "WS0006": "taclaser",
         "WS0008": "vulcan"
