@@ -13,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener
@@ -23,6 +24,7 @@ import data.utilities.niko_MPC_battleUtils.isSideValid
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.log
 import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.isDummyFleet
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
@@ -69,7 +71,7 @@ abstract class niko_MPC_satelliteHandlerCore(
             field = value
             if (field !== cachedMarket) handleMarketDesync()
             //the below is fine; SS is not multithreaded so this wont break. yet? i wish i could do this in a threadsafe way easily
-            currentSatelliteFactionId = (if (market != null && !(market!!.isPlanetConditionMarketOnly)) market!!.factionId else defaultSatelliteFactionId)
+            currentSatelliteFactionId = (if (market != null && !(marketIsUncolonized())) market!!.factionId else defaultSatelliteFactionId)
         }
     /** Should only be set in [handleMarketDesync] or it's called funcs. Should cause [handleMarketDesync] to be called
      * if, apon [market] set(), [market] is not the same as this. */
@@ -82,12 +84,30 @@ abstract class niko_MPC_satelliteHandlerCore(
      *  Applied to satellite fleets post-creation, and cosmetic satellites on creation.
      *  This set() calls [updateSatelliteFactions] if the provided value is not the same as this's value.*/
     var currentSatelliteFactionId: String = defaultSatelliteFactionId
+        get() {
+            if (field == "neutral" && marketIsUncolonized()) {
+                field = defaultSatelliteFactionId
+            }
+            return field
+        }
         set(value) {
-            if (field != value) updateSatelliteFactions(value)
+            var mutableValue = value
+            if (mutableValue == "neutral" && marketIsUncolonized()) {
+                mutableValue = defaultSatelliteFactionId
+            }
+            if (field != mutableValue) updateSatelliteFactions(mutableValue)
             // no !== because if we use that, "blah" !== "blah" return false, while
             // "blah" != "blah" returns true due to contents being the same
-            field = value
+            field = mutableValue
         }
+
+    protected fun marketIsUncolonized(): Boolean {
+        if (market != null && market!!.isPlanetConditionMarketOnly) {
+            return true
+        }
+        return false
+    }
+
     /** The ID of the dummy faction used to construct our fleets. The faction should not ever be viewable by the player.
      *  Whenever a satellite fleet is created, this should be the faction provided to the [FleetParamsV3] instance.*/
     abstract val satelliteConstructionFactionId: String
@@ -118,20 +138,25 @@ abstract class niko_MPC_satelliteHandlerCore(
      * there's no real reason to create a new satellite fleet every time we need to perform some conditional, comparative
      * logic. We can just use one with no AI. Excluded from [satelliteFleets].*/
     var dummyFleetForConditionalLogic: CampaignFleetAPI? = null
-        get() {
-            if (field == null) field = spawnGenericSatelliteFleet(createNewDummyFleet(), Vector2f(9999999f, 9999999f))
-            return field
-        }
     /** Come back to this. Theres a reason I made it. */
     var satelliteFleetForPlayerDialog: CampaignFleetAPI? = null
     /** Creates a new satellite fleet, and calls [setDummyFleet].(true) on it, disabling it's AI and setting a memflag,
      * as well as setting [dummyFleetForConditionalLogic] to it. */
-    protected fun createNewDummyFleet(): CampaignFleetAPI {
+    private fun createNewDummyFleet(): CampaignFleetAPI {
         val dummyFleet: CampaignFleetAPI = createNewSatelliteFleet()
         dummyFleet.setDummyFleet(true)
 
         this.dummyFleetForConditionalLogic = dummyFleet
         return dummyFleet
+    }
+
+    fun getDummyFleetWithUpdate(): CampaignFleetAPI? {
+        if (deleted) return null
+
+        if (dummyFleetForConditionalLogic == null) {
+            dummyFleetForConditionalLogic = spawnGenericSatelliteFleet(createNewDummyFleet(), Vector2f(9999999f, 9999999f))
+        }
+        return dummyFleetForConditionalLogic
     }
     /** The extra, distance, in "starsector units", that cosmetic satellites will be away from the [entity] they orbit.
      * Relative to [entity].getRadius(), calculated through [calculateSatelliteOrbitDistance].*/
@@ -214,7 +239,11 @@ abstract class niko_MPC_satelliteHandlerCore(
 
     open fun setupSatellite(cosmeticSatellite: CustomCampaignEntityAPI, regenerateOrbit: Boolean = false): CustomCampaignEntityAPI? {
         if (entity == null) return null
-
+        if (!cosmeticSatellite.isCosmeticSatellite()) {
+            displayError("$cosmeticSatellite had $this setUpSatellite ran on it despite failing isCosmeticSatellite()")
+            return cosmeticSatellite
+        }
+        cosmeticSatellite.setSatelliteEntityHandler(this)
         cosmeticSatellite.applyCosmeticSatelliteOrbit(entity, 0f)
         cosmeticSatellites += cosmeticSatellite
 
@@ -310,11 +339,13 @@ abstract class niko_MPC_satelliteHandlerCore(
         // divide the radius of the entity by 5, then round it up or down to the nearest whole number
     }
 
+    @JvmOverloads
     /** Should always ONLY create a new satellite fleet, should not add it or anything. Will be used to create
      * dummy fleets, so keep that in mind. */
-    fun createNewSatelliteFleet(): CampaignFleetAPI {
+    fun createNewSatelliteFleet(useFactionQuality: Boolean = false): CampaignFleetAPI {
         val constructionFaction = Global.getSector().getFaction(satelliteConstructionFactionId) // this can crash for all i care, isnt a big deal
-        val quality: Float = constructionFaction.doctrine.shipQualityContribution
+        var quality: Float = constructionFaction.doctrine.shipQualityContribution
+        if (!useFactionQuality) quality = 0f
         val fleetParams = FleetParamsV3(null, null,
             satelliteConstructionFactionId,
             quality,
@@ -364,6 +395,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     fun spawnSatelliteFleet(satelliteFleet: CampaignFleetAPI, coordinates: Vector2f, location: LocationAPI? = getLocation()): CampaignFleetAPI {
         spawnGenericSatelliteFleet(satelliteFleet, coordinates, location)
         satelliteFleets.add(satelliteFleet)
+        log.info("spawned satellitefleet $satelliteFleet at $location, ${location?.name}, coordinates $coordinates")
         return satelliteFleet
     }
 
@@ -387,7 +419,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     protected open fun createNewDespawnListener(): niko_MPC_satelliteFleetDespawnListener = niko_MPC_satelliteFleetDespawnListener()
     /** Handles situations where we migrated entities, ex. our satellites, or our condition, moved to a new entity, or
      * market with a different entity.*/
-    protected fun handleEntityDesync() {
+    protected open fun handleEntityDesync() {
         val oldEntity = cachedEntity
         val currentEntity = entity
         if (currentEntity === oldEntity) {
@@ -399,13 +431,13 @@ abstract class niko_MPC_satelliteHandlerCore(
                 displayError("Desync check failure-$oldEntity still has $this" + "applied to it")
                 logDataOf(oldEntity)
             }
-            else migrateEntityFeatures(oldEntity, currentEntity)
         }
+        migrateEntityFeatures(oldEntity, currentEntity)
         cachedEntity = entity
     }
 
     /**Assumes the current entity is the entity to migrate things to.*/
-    protected fun migrateEntityFeatures(oldEntity: SectorEntityToken?, migrationTarget: SectorEntityToken?) {
+    protected open fun migrateEntityFeatures(oldEntity: SectorEntityToken?, migrationTarget: SectorEntityToken?) {
         deleteCosmeticSatellites()
         maxCosmeticSatellitesForEntity = calculateMaxCosmeticSatellitesForEntity()
         createNewCosmeticSatellites(maxCosmeticSatellitesForEntity)
@@ -417,7 +449,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     /** Handles situations where we migrated markets, ex. our condition moved to a new market.*/
-    protected fun handleMarketDesync() {
+    protected open fun handleMarketDesync() {
         val oldMarket = cachedMarket
         val currentMarket = market
         if (currentMarket === oldMarket) {
@@ -429,13 +461,13 @@ abstract class niko_MPC_satelliteHandlerCore(
             if (oldMarket.hasSatelliteHandler(this)) {
                 displayError("Desync check failure-$oldMarket still has $this" + "applied to it")
                 logDataOf(oldMarket)
-            } else currentMarket?.let { migrateMarketFeatures(oldMarket, it) }
-
+            }
         }
+        migrateMarketFeatures(oldMarket, currentMarket)
         cachedMarket = market
     }
 
-    protected fun migrateMarketFeatures(oldMarket: MarketAPI?, migrationTarget: MarketAPI?) {
+    protected open fun migrateMarketFeatures(oldMarket: MarketAPI?, migrationTarget: MarketAPI?) {
 
         oldMarket?.getSatelliteHandlers()?.minusAssign(this)
         migrationTarget?.getSatelliteHandlers()?.plusAssign(this)
@@ -485,8 +517,9 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     fun tryToEngageFleet(fleet: CampaignFleetAPI): Boolean {
-        if (isFleetValidEngagementTarget(fleet)) return false
-        engageFleet(fleet)
+        if (wantToFight(fleet) && capableOfFighting(fleet)) {
+            engageFleet(fleet)
+        }
         return true
     }
 
@@ -609,24 +642,26 @@ abstract class niko_MPC_satelliteHandlerCore(
     open fun areWeHostileTo(fleet: CampaignFleetAPI): Boolean {
         val ourMarket = getOurMarket()
 
-        val fleetWantsToFight = dummyFleetForConditionalLogic?.isHostileTo(fleet)
+        val fleetWantsToFight = getDummyFleetWithUpdate()?.isHostileTo(fleet)
         if (fleetWantsToFight == null) {
             displayError("somehow dummyfleet was null after an access")
             return false
         }
 
-        return ((ourMarket?.isPlanetConditionMarketOnly == true && uncolonizedHostilityLogic(fleet)) || fleetWantsToFight)
+        return ((marketIsUncolonized() && uncolonizedHostilityLogic(fleet)) || fleetWantsToFight)
     }
 
     open fun uncolonizedHostilityLogic(fleet: CampaignFleetAPI): Boolean {
-        val dummyFleet = dummyFleetForConditionalLogic ?: return false
-        if (dummyFleet.isHostileTo(fleet) || fleet.faction.id != defaultSatelliteFactionId) return true
+        val dummyFleet = getDummyFleetWithUpdate() ?: return false
+        val playerFleet: CampaignFleetAPI? = Global.getSector().playerFleet
+        val fleetIsPlayer = (playerFleet != null && fleet === playerFleet)
+        if (dummyFleet.isHostileTo(fleet) || (fleet.faction.id != defaultSatelliteFactionId || (fleetIsPlayer))) return true
         return false
     }
 
     /** Returns NO_JOIN if we're already influencing the battle. */
     fun getSideForBattle(battle: BattleAPI): BattleSide? {
-        val dummyFleet: CampaignFleetAPI = dummyFleetForConditionalLogic ?: return BattleSide.NO_JOIN
+        val dummyFleet: CampaignFleetAPI = getDummyFleetWithUpdate() ?: return BattleSide.NO_JOIN
         val tracker = getSatelliteBattleTracker() ?: return null
         if (tracker.areSatellitesInvolvedInBattle(battle, this)) return BattleSide.NO_JOIN
         return battle.pickSide(dummyFleet)
@@ -660,9 +695,9 @@ abstract class niko_MPC_satelliteHandlerCore(
         deleteAllFleets()
         deleteAllCosmeticSatellites()
 
+        unassociateWithCondition()
         unassociateWithEntity()
         unassociateWithMarket()
-        unassociateWithCondition()
 
         getAllSatelliteHandlers().remove(this)
 
@@ -687,6 +722,7 @@ abstract class niko_MPC_satelliteHandlerCore(
                 cosmeticSatellites -= cosmeticSatellite
             }
             cosmeticSatellite.deleteIfCosmeticSatellite()
+            cosmeticSatellites -= cosmeticSatellite
         }
     }
 
@@ -708,6 +744,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     protected open fun unassociateWithCondition() {
         if (condition == null) return
         condition!!.handler = null // do it before so we dont trigger the unapply script
+        //val conditionMarket = condition!!.getMarket()
         if (market != null && market!!.hasSpecificCondition(condition!!.getCondition().idForPluginModifications)) {
             market!!.removeSpecificCondition(condition!!.getCondition().idForPluginModifications)
         }
@@ -763,5 +800,21 @@ abstract class niko_MPC_satelliteHandlerCore(
                             "$this variables: Faction: $currentSatelliteFactionId, Deleted: $deleted",
                             "Cached market: $cachedMarket, ${cachedMarket?.name}",
                             "Cached entity: $cachedEntity, ${cachedEntity?.name}")
+    }
+
+    fun getPrimaryLocation(): LocationAPI? {
+        var location: LocationAPI? = null
+        val primaryHolder = getPrimaryHolder()
+        when (primaryHolder) {
+            is SectorEntityToken -> location = primaryHolder.containingLocation
+            is MarketAPI -> location = primaryHolder.containingLocation
+        }
+
+        return location
+    }
+
+    open fun allowedInLocationWithTag(tag: String): Boolean {
+        if (tag == Tags.THEME_CORE) return false
+        return true
     }
 }

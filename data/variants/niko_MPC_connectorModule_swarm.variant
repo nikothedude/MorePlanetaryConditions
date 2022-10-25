@@ -4,7 +4,7 @@
   "displayName": "Swarm",
   "goalVariant": false,
   "fluxCapacitors": 30,
-  "fluxVents": 20,
+  "fluxVents": 24,
   "quality": 1,
   "permaMods": [],
   "hullMods": [],

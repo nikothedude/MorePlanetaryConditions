@@ -2,6 +2,10 @@ package data
 
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Tags
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -52,6 +56,19 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     override fun onNewGameAfterEconomyLoad() {
         super.onNewGameAfterEconomyLoad()
-        if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) niko_MPC_satelliteUtils.obliterateSatellites()
+        if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) {
+            niko_MPC_satelliteUtils.obliterateSatellites()
+        } else {
+            clearSatellitesFromCoreWorlds()
+        }
+
+    }
+
+    fun clearSatellitesFromCoreWorlds() {
+        for (handler: niko_MPC_satelliteHandlerCore in ArrayList(niko_MPC_satelliteUtils.getAllSatelliteHandlers())) {
+            if (handler.allowedInLocationWithTag(Tags.THEME_CORE)) continue
+            val location: LocationAPI = handler.getPrimaryLocation() ?: continue
+            if (location.hasTag(Tags.THEME_CORE)) handler.delete()
+        }
     }
 }

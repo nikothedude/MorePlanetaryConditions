@@ -57,7 +57,6 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
         }
         if (handlers?.isNotEmpty() == true) {
             for (handler: niko_MPC_satelliteHandlerCore in handlers) {
-                if (!handler.isFleetValidEngagementTarget(fleet)) continue
                 var handlerEntity: HasMemory = handler.getPrimaryHolder() ?: continue
                 if (handlerEntity is MarketAPI && handlerEntity.primaryEntity != null) handlerEntity = handlerEntity.primaryEntity
                 //^ if no entity, get market. if no market, get entity. if both, get entity.

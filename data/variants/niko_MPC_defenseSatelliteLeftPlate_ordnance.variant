@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Ordnance",
   "goalVariant": false,
-  "fluxCapacitors": 27,
+  "fluxCapacitors": 25,
   "fluxVents": 33,
   "quality": 1,
   "permaMods": [],

@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteRightPlate",
   "displayName": "Swarm",
   "goalVariant": false,
-  "fluxCapacitors": 19,
+  "fluxCapacitors": 21,
   "fluxVents": 44,
   "quality": 1,
   "permaMods": [],
@@ -12,13 +12,19 @@
     "missleracks",
     "reinforcedhull",
     "autorepair",
-    "armoredweapons"
+    "armoredweapons",
+    "converted_hangar"
   ],
   "weaponGroups": [
     {
       "autofire": false,
       "mode": "ALTERNATING",
-      "weapons": {}
+      "weapons": {
+        "WS0011": "swarmer_fighter",
+        "WS0013": "dualflak",
+        "WS0014": "dualflak",
+        "WS0015": "heavymg"
+      }
     },
     {
       "autofire": true,
@@ -52,11 +58,7 @@
         "WS0008": "vulcan",
         "WS0009": "flak",
         "WS0010": "swarmer",
-        "WS0011": "swarmer_fighter",
         "WS0012": "vulcan",
-        "WS0013": "flak",
-        "WS0014": "flak",
-        "WS0015": "flak",
         "WS0016": "locust",
         "WS0018": "vulcan",
         "WS0020": "swarmer"
@@ -74,5 +76,7 @@
     }
   ],
   "modules": [],
-  "wings": []
+  "wings": [
+    "terminator_wing"
+  ]
 }

@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Barrage",
   "goalVariant": false,
-  "fluxCapacitors": 20,
+  "fluxCapacitors": 13,
   "fluxVents": 38,
   "quality": 1,
   "permaMods": [],

@@ -3,7 +3,7 @@
 	"name":"More Planetary Conditions", # Displayed to the player
 	"author":"Niko",
     "utility":"false",
-	"version":"1.0.5a",
+	"version":"2.0.0",
 	"description":"Adds a bunch of misc. planetary conditions to the game, many, if not most, with custom scripted effects that go beyond what most other conditions, vanilla or modded, do.",
     "gameVersion": "0.95.1a-RC6", 
   	"jars":["jars/niko_morePlanetaryConditions.jar"],

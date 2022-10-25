@@ -114,7 +114,6 @@
 			"harpoonpod",
 			"breachpod",
 			"sabotpod",
-			"salamanderpod",
 			"annihilatorpod",
 			"pilum",
 			"typhoon",
@@ -227,7 +226,7 @@
 		"combatFreighterProbability":0,     				# instead of some portion of the freighters in a fleet
 		"combatFreighterCombatUseFraction":0,				# as part of the normal combat lineup
 		"combatFreighterCombatUseFractionWhenPriority":0,   # as part of normal combat lineup, when marked as priority ship
-		"autofitRandomizeProbability":0.01,
+		"autofitRandomizeProbability":0.0,
 
 		"commanderSkillsShuffleProbability":0,
 		"commanderSkills":[
@@ -236,8 +235,8 @@
 	"shipRoles":{
 		"combatSmall":{
 			"includeDefault":true,
-			"niko_MPC_defenseSatelliteCore_barrage":40,
-			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_barrage":30,
+			"niko_MPC_defenseSatelliteCore_standard":30,
 			"niko_MPC_defenseSatelliteCore_shielded":15,
 			"niko_MPC_defenseSatelliteCore_ordnance":5,
 			"niko_MPC_defenseSatelliteCore_beamer":0.5,
@@ -246,17 +245,17 @@
 		},
 		"combatMedium":{
 			"includeDefault":true,
-			"niko_MPC_defenseSatelliteCore_barrage":40,
-			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_barrage":30,
+			"niko_MPC_defenseSatelliteCore_standard":30,
 			"niko_MPC_defenseSatelliteCore_shielded":15,
 			"niko_MPC_defenseSatelliteCore_ordnance":5,
-			"niko_MPC_defenseSatelliteCore_beamer":1,
-			"niko_MPC_defenseSatelliteCore_swarm":0.01,
+			"niko_MPC_defenseSatelliteCore_beamer":0.5,
+			"niko_MPC_defenseSatelliteCore_swarm":0.001,
 		},
 		"combatLarge":{
 			"includeDefault":true,
-			"niko_MPC_defenseSatelliteCore_barrage":40,
-			"niko_MPC_defenseSatelliteCore_standard":50,
+			"niko_MPC_defenseSatelliteCore_barrage":30,
+			"niko_MPC_defenseSatelliteCore_standard":30,
 			"niko_MPC_defenseSatelliteCore_shielded":10,
 			"niko_MPC_defenseSatelliteCore_ordnance":5,
 			"niko_MPC_defenseSatelliteCore_beamer":0.5,

@@ -3,8 +3,8 @@
   "hullId": "niko_MPC_connectorModule",
   "displayName": "Beamer",
   "goalVariant": false,
-  "fluxCapacitors": 8,
-  "fluxVents": 30,
+  "fluxCapacitors": 0,
+  "fluxVents": 17,
   "quality": 1,
   "permaMods": [],
   "hullMods": [

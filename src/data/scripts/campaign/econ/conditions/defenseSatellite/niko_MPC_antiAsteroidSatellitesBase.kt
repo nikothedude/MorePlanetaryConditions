@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.niko_MPC_industryAddingCondition
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor
@@ -30,16 +31,13 @@ import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondition(), niko_MPC_dataLoggable {
     override val isEnabled: Boolean
         get() = niko_MPC_settings.DEFENSE_SATELLITES_ENABLED
-    //todo: READ ME NIKO.
-
     /** The primary reason this is done on a handler is because this is detachable from conditions
      * and can be done seperately. Also I hate storing data on conditions out of paranoia.*/
     var handler: niko_MPC_satelliteHandlerCore? = null
-    val suppressedConditions = ArrayList<String>()
 
-    // market.getContaningLocation and .getLocation exist and work
-    // except for scripts and cosmetics and shit
-    // we can move to using market instead of entity for most things
+    val suppressedConditions = ArrayList<String>()
+    var deletionScript: niko_MPC_satelliteCustomEntityRemovalScript? = null
+
     abstract val suppressorId: String?
     fun getHandlerWithErrorCheck(doNullCheck: Boolean = true): niko_MPC_satelliteHandlerCore? {
         if (doNullCheck && handler == null) displayError("handler null during getHandler on $this")
@@ -78,16 +76,25 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
 
     protected open fun addDeletionScriptToMarket(ourMarket: MarketAPI) {
         val ourHandler = handler
+        var shouldAdd = false
         if (ourHandler != null) {
-            // global beacuse during loading entity's scripts just dont exist at all
-            //TODO: make it so that this accesses a memkey to see if we already have a script
-            val deletionScript = createDeletionScript(ourMarket, ourHandler)
-            deletionScript.start()
+            if (deletionScript != null) {
+                if (deletionScript!!.handler != handler) {
+                    // global beacuse during loading entity's scripts just dont exist at all
+                    //TODO: make it so that this accesses a memkey to see if we already have a script
+                    displayError("desynced handler, $handler on $this deletionscript: $deletionScript, ${deletionScript!!.handler}")
+                    shouldAdd = true
+                }
+            } else shouldAdd = true
+            if (shouldAdd) {
+                deletionScript = createDeletionScript(ourMarket, ourHandler)
+                deletionScript?.start()
+            }
         }
     }
 
     /** Should EXCLUSVELY create and return a removal script, no side effects. */
-    protected open fun createDeletionScript(ourMarket: MarketAPI, ourHandler: niko_MPC_satelliteHandlerCore): niko_MPC_baseNikoScript {
+    protected open fun createDeletionScript(ourMarket: MarketAPI, ourHandler: niko_MPC_satelliteHandlerCore): niko_MPC_satelliteCustomEntityRemovalScript {
         return niko_MPC_satelliteCustomEntityRemovalScript(ourMarket, ourHandler)
     }
 

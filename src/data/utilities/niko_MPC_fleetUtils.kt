@@ -3,6 +3,7 @@ package data.utilities
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
@@ -85,7 +86,7 @@ object niko_MPC_fleetUtils {
         return memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] as niko_MPC_satelliteHandlerCore
     }
 
-    fun CampaignFleetAPI.setSatelliteEntityHandler(handler: niko_MPC_satelliteHandlerCore) {
+    fun HasMemory.setSatelliteEntityHandler(handler: niko_MPC_satelliteHandlerCore) {
         memoryWithoutUpdate[niko_MPC_ids.satelliteEntityHandler] = handler
     }
 
@@ -95,7 +96,8 @@ object niko_MPC_fleetUtils {
         var failsafeIndex = 0
         val failsafeThreshold = 35
         var addedDefecit = 0
-        while ((effectiveStrength - addedDefecit) > maxFp) {
+        val effectiveFleetPoints = fleetData.fleetPointsUsed - addedDefecit
+        while ((effectiveFleetPoints - addedDefecit) > maxFp) {
             if (++failsafeIndex >= failsafeThreshold) {
                 displayError("$this trimdown interrupted due to failsafe Index ($failsafeIndex) exceeding or reaching $failsafeThreshold")
                 logDataOf(this)
@@ -147,7 +149,7 @@ object niko_MPC_fleetUtils {
         memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] = script
     }
 
-    fun CampaignFleetAPI.getTemporaryFleetDespawner(): niko_MPC_temporarySatelliteFleetDespawner {
-        return memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] as niko_MPC_temporarySatelliteFleetDespawner
+    fun CampaignFleetAPI.getTemporaryFleetDespawner(): niko_MPC_temporarySatelliteFleetDespawner? {
+        return memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] as? niko_MPC_temporarySatelliteFleetDespawner
     }
 }

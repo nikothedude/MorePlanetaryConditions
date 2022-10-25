@@ -136,14 +136,20 @@ object niko_MPC_satelliteUtils {
     fun getNearbyEntitiesWithSatellites(coordinates: Vector2f?, location: LocationAPI): MutableSet<SectorEntityToken> {
         val entitiesWithSatellites = getEntitiesInLocationWithSatellites(location)
         val iterator = entitiesWithSatellites.iterator()
+        var needToRemove = true
 
         // a ensureSatellites check is not needed as the set only has entities with handler
         while (iterator.hasNext()) {
             val entity = iterator.next()
             for (handler: niko_MPC_satelliteHandlerCore in entity.getSatelliteHandlers()) {
-                if (!MathUtils.isWithinRange(entity, coordinates, handler.satelliteInterferenceDistance)) {
-                    iterator.remove() //have to remove because we're using a full list already
+                if (MathUtils.isWithinRange(entity, coordinates, handler.satelliteInterferenceDistance)) {
+                    needToRemove = false
+                    //iterator.remove() //have to remove because we're using a full list already
                 }
+            }
+            if (needToRemove) {
+                iterator.remove()
+                continue
             }
         }
         return entitiesWithSatellites

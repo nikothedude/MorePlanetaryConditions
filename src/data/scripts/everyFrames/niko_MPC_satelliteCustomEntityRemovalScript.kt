@@ -6,7 +6,7 @@ import com.fs.starfarer.api.campaign.rules.HasMemory
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
-open class niko_MPC_satelliteCustomEntityRemovalScript(var memoryHaver: HasMemory, val handler: niko_MPC_satelliteHandlerCore)
+open class niko_MPC_satelliteCustomEntityRemovalScript(var memoryHaver: HasMemory, public val handler: niko_MPC_satelliteHandlerCore)
     : niko_MPC_baseNikoScript() {
 
     override fun runWhilePaused(): Boolean {
@@ -18,7 +18,11 @@ open class niko_MPC_satelliteCustomEntityRemovalScript(var memoryHaver: HasMemor
     }
 
     override fun advance(amount: Float) {
-        if (!memoryHaver.hasSatelliteHandler(handler)) handler.delete()
+        if (!memoryHaver.hasSatelliteHandler(handler)) {
+            if (!handler.deleted) {
+                handler.delete()
+            }
+        }
         delete()
     }
 

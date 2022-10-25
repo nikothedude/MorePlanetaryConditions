@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteRightPlate",
   "displayName": "Beamer",
   "goalVariant": false,
-  "fluxCapacitors": 20,
+  "fluxCapacitors": 26,
   "fluxVents": 33,
   "quality": 1,
   "permaMods": [],

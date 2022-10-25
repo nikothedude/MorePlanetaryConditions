@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Swarm",
   "goalVariant": false,
-  "fluxCapacitors": 27,
+  "fluxCapacitors": 33,
   "fluxVents": 34,
   "quality": 1,
   "permaMods": [],
@@ -13,7 +13,8 @@
     "heavyarmor",
     "missleracks",
     "reinforcedhull",
-    "eccm"
+    "eccm",
+    "converted_hangar"
   ],
   "weaponGroups": [
     {
@@ -77,5 +78,7 @@
     }
   ],
   "modules": [],
-  "wings": []
+  "wings": [
+    "terminator_wing"
+  ]
 }
