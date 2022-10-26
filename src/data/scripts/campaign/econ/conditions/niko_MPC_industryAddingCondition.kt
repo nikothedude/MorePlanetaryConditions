@@ -49,7 +49,7 @@ abstract class niko_MPC_industryAddingCondition: niko_MPC_baseNikoCondition() {
      * Should then set [cachedMarket] to [market], to sync the market.*/
     protected open fun handleMarketDesync(ourMarket: MarketAPI?) {
         if (ourMarket === cachedMarket) {
-            niko_MPC_debugUtils.displayError("desync check error: $market, ${market.name} is the same as the provided cached market")
+            niko_MPC_debugUtils.displayError("desync check error: ${market.name} is the same as the provided cached market")
             return
         }
         if (cachedMarket != null) {

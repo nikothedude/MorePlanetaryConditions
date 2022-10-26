@@ -7,7 +7,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.rules.Memory
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_battleUtils.getContainingLocation
 import data.utilities.niko_MPC_battleUtils.isSideValid
@@ -259,6 +258,28 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun CustomCampaignEntityAPI.isCosmeticSatellite(): Boolean {
         return (hasTag(niko_MPC_ids.cosmeticSatelliteTagId))
+    }
+
+    @JvmStatic
+    fun MarketAPI.getConditionLinkedHandler(id: String): niko_MPC_satelliteHandlerCore? {
+        return getConditionLinkedHandlers()[id]
+    }
+    @JvmStatic
+    fun MarketAPI.getConditionLinkedHandlers(): HashMap<String, niko_MPC_satelliteHandlerCore?> {
+        if (memKeyHasIncorrectType<HashMap<String, niko_MPC_satelliteHandlerCore>>(this, niko_MPC_ids.conditionLinkedHandlerMemoryId)) {
+            memoryWithoutUpdate[niko_MPC_ids.conditionLinkedHandlerMemoryId] = HashMap<String, niko_MPC_satelliteHandlerCore>()
+        }
+        return memoryWithoutUpdate[niko_MPC_ids.conditionLinkedHandlerMemoryId] as HashMap<String, niko_MPC_satelliteHandlerCore?>
+    }
+
+    @JvmStatic
+    fun MarketAPI.setConditionLinkedHandler(id: String?, handler: niko_MPC_satelliteHandlerCore?) {
+        if (id == null) return
+        val currentLinkedHandler: niko_MPC_satelliteHandlerCore? = getConditionLinkedHandlers()[id]
+        if (currentLinkedHandler != null && !currentLinkedHandler.deleted) {
+            currentLinkedHandler.delete()
+        }
+        getConditionLinkedHandlers()[id] = handler
     }
 }
 

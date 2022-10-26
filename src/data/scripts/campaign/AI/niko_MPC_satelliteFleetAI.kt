@@ -8,6 +8,7 @@ import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleet
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
+import data.utilities.niko_MPC_fleetUtils.isDummyFleet
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
 
 class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(campaignFleet) {

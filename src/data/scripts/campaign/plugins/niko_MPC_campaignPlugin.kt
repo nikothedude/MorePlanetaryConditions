@@ -56,7 +56,6 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
     override fun pickInteractionDialogPlugin(interactionTarget: SectorEntityToken?): PluginPick<InteractionDialogPlugin>? {
         if (interactionTarget == null || interactionTarget.isSatelliteEntity()) return null
         var entityToExpandRadiusFrom: SectorEntityToken? = null // this entity will always be checked to see if it should deploy satellites
-        var dontNeedToSpawnFleets = false
         var battle: BattleAPI? = null
         var targetFleet: CampaignFleetAPI? = null
         val tracker = getSatelliteBattleTracker() ?: return null
@@ -91,9 +90,6 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
                 // we're only getting this info to pass it to the spawn method
                 // you may ask "why pass it"? good question i havent thought it through but it works lol
                 if (targetFleet != null) battle = targetFleet.battle
-                if (battle != null) {
-                    if (tracker.areAnySatellitesInvolvedInBattle(battle)) dontNeedToSpawnFleets = true
-                }
                 val interactionMarket: MarketAPI? = dugUpEntity.market
                 if (interactionMarket != null) {
                     for (station: SectorEntityToken in interactionMarket.getStationsInOrbit()) {
@@ -158,7 +154,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
             entitiesWithinRange += entityToAlwaysTryToSpawnFrom
         }
         for (entityInRange: SectorEntityToken in entitiesWithinRange) {
-            for (handler: niko_MPC_satelliteHandlerCore in entityInRange.getSatelliteHandlers()) {
+            for (handler: niko_MPC_satelliteHandlerCore in ArrayList(entityInRange.getSatelliteHandlers())) {
                 val spawnedFleet: CampaignFleetAPI? = handler.interfereForCampaignPlugin(fleet, playerFleet, battle)
                 if (spawnedFleet != null) spawnedFleets += spawnedFleet
             }

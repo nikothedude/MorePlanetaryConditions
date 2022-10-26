@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.impl.campaign.ids.Stats
@@ -31,7 +32,6 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             market.suppressCondition(suppressedCondition)
         }
 
-
         market.accessibilityMod.modifyFlat(id, baseAccessibilityIncrement, name)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, baseGroundDefenseMult, name)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, baseGroundDefenseIncrement, name)
@@ -49,8 +49,8 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
         }
     }
 
-    override fun createNewHandlerInstance(): niko_MPC_satelliteHandlerCore {
-        return niko_MPC_derelictSatelliteHandler.createNewHandlerInstance(getMarket()?.primaryEntity, getMarket(), this)
+    override fun createNewHandlerInstance(entity: SectorEntityToken): niko_MPC_satelliteHandlerCore {
+        return niko_MPC_derelictSatelliteHandler.createNewHandlerInstance(entity)
     }
 
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI, expanded: Boolean) {

@@ -1,6 +1,7 @@
 package data.utilities
 
 object niko_MPC_ids {
+    const val conditionLinkedHandlerMemoryId = "\$conditionLinkedMemoryHandlerId"
     const val niko_MPC_modId = "niko_morePlanetaryConditions"
     const val niko_MPC_masterConfig = "niko_MPC_settings.json"
 

@@ -9,7 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="indevo" level="project" />
     <orderEntry type="library" name="MagicLib" level="project" />
     <orderEntry type="library" name="MagicLib" level="project" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="project" />

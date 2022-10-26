@@ -11,6 +11,7 @@ abstract class niko_MPC_baseNikoCondition: BaseMarketConditionPlugin() {
 
     /** Use [niko_MPC_settings] variables to determine this.*/
     protected open val isEnabled: Boolean = true
+    val suppressedConditions = ArrayList<String>()
 
     override fun apply(id: String) {
         super.apply(id)
@@ -46,5 +47,11 @@ abstract class niko_MPC_baseNikoCondition: BaseMarketConditionPlugin() {
 
     fun getCondition(): MarketConditionAPI {
         return condition
+    }
+
+    open fun delete() {
+        val ourMarket = getMarket() ?: return
+
+        ourMarket.removeSpecificCondition(condition.idForPluginModifications)
     }
 }

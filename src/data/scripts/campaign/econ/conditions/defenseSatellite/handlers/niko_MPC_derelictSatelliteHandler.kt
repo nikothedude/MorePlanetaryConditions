@@ -14,18 +14,18 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAster
 import org.lazywizard.lazylib.MathUtils
 
 class niko_MPC_derelictSatelliteHandler private constructor(
-    entity: SectorEntityToken?,
-    market: MarketAPI?,
-    condition: niko_MPC_antiAsteroidSatellitesBase?
-): niko_MPC_satelliteHandlerCore(entity, market, condition) {
+    entity: SectorEntityToken
+): niko_MPC_satelliteHandlerCore(entity) {
 
     companion object derelictHandlerFactory {
-        fun createNewHandlerInstance(entity: SectorEntityToken?, market: MarketAPI?, condition: niko_MPC_antiAsteroidSatellitesBase?): niko_MPC_derelictSatelliteHandler {
-            val handler = niko_MPC_derelictSatelliteHandler(entity, market, condition)
+        fun createNewHandlerInstance(entity: SectorEntityToken): niko_MPC_derelictSatelliteHandler {
+            val handler = niko_MPC_derelictSatelliteHandler(entity)
             handler.postConstructInit()
             return handler
         }
     }
+
+    override val conditionId: String = "niko_MPC_antiAsteroidSatellites_derelict"
 
     override val satelliteConstructionFactionId: String = "derelictSatelliteBuilder"
     override val cosmeticSatelliteId: String = "niko_MPC_derelict_anti_asteroid_satellite"

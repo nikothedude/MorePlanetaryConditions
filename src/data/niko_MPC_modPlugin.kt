@@ -61,13 +61,12 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } else {
             clearSatellitesFromCoreWorlds()
         }
-
     }
 
     fun clearSatellitesFromCoreWorlds() {
         for (handler: niko_MPC_satelliteHandlerCore in ArrayList(niko_MPC_satelliteUtils.getAllSatelliteHandlers())) {
             if (handler.allowedInLocationWithTag(Tags.THEME_CORE)) continue
-            val location: LocationAPI = handler.getPrimaryLocation() ?: continue
+            val location: LocationAPI = handler.getLocation() ?: continue
             if (location.hasTag(Tags.THEME_CORE)) handler.delete()
         }
     }

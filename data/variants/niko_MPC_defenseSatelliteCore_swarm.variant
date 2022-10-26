@@ -14,9 +14,7 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "heavymortar",
-        "WS0002": "heavymortar",
-        "WS0005": "flak",
-        "WS0006": "flak"
+        "WS0002": "heavymortar"
       }
     },
     {
@@ -30,7 +28,10 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+        "WS0005": "flak",
+        "WS0006": "flak"
+      }
     }
   ],
   "modules": [
