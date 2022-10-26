@@ -21,7 +21,7 @@ class niko_MPC_entityStatusChecker(val handler: niko_MPC_satelliteHandlerCore): 
     }
 
     override fun advance(amount: Float) {
-        if (handler.entity.isExpired || handler.entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)) {
+        if (!handler.entity.isAlive())) {
             handler.delete()
         }
     }
