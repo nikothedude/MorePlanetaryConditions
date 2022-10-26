@@ -13,10 +13,11 @@ import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
 
 class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(campaignFleet) {
     override fun wantsToJoin(battle: BattleAPI?, considerPlayTransponderStatus: Boolean): Boolean {
-        val handler: niko_MPC_satelliteHandlerCore = fleet.getSatelliteEntityHandler() ?: return true
+        val handler: niko_MPC_satelliteHandlerCore = fleet.getSatelliteEntityHandler() ?: return false
         val tracker = getSatelliteBattleTracker() ?: return false
         if (battle == null) return false
         return (!tracker.areSatellitesInvolvedInBattle(battle, handler))
+        // if our handler isnt influencing the battle, we can join
     }
 
     override fun pickEncounterOption(
