@@ -39,6 +39,7 @@ object niko_MPC_debugUtils {
      */
     @Throws(RuntimeException::class)
     @JvmStatic
+    @JvmOverloads
     fun displayError(errorCode: String = "Unimplemented errorcode", highPriority: Boolean = false, crash: Boolean = false,
                      logType: Level = Level.ERROR) {
 
