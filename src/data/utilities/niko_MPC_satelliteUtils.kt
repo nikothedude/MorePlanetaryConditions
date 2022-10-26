@@ -165,16 +165,18 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun getNearbyEntitiesWithSatellitesWillingToFight(fleet: CampaignFleetAPI): MutableSet<SectorEntityToken> {
         val entitiesWithSatellites = HashSet(getNearbyEntitiesWithSatellites(fleet.location, fleet.containingLocation))
-        for (entity: SectorEntityToken in entitiesWithSatellites) {
-            var keepEntity: Boolean = false
+        val iterator = entitiesWithSatellites.iterator()
+        while (iterator.hasNext()) {
+            val entity = iterator.next()
+            var keepEntity = false
             for (handler: niko_MPC_satelliteHandlerCore in entity.getSatelliteHandlers()) {
-                if (handler.wantToFight(fleet)) {
+                if (handler.wantToFight(fleet) && handler.capableOfFighting(fleet)) {
                     keepEntity = true
                     break
                 }
             }
             if (!keepEntity) {
-                entitiesWithSatellites.remove(entity)
+                iterator.remove()
             }
         }
         return entitiesWithSatellites

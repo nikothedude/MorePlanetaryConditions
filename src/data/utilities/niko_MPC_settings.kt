@@ -1,7 +1,6 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
-import org.apache.log4j.Level
 import org.json.JSONException
 import java.io.IOException
 
@@ -18,16 +17,9 @@ object niko_MPC_settings {
         DISCOVER_SATELLITES_IN_BULK = configJson.getBoolean("discoverSatellitesInBulk")
         SATELLITE_INTERFERENCE_DISTANCE_BASE = configJson.getDouble("satelliteInterferenceDistanceBase").toFloat()
         SATELLITE_INTERFERENCE_DISTANCE_MULT = configJson.getDouble("satelliteInterferenceDistanceMult").toFloat()
-        BATTLE_SATELLITES_BASE = configJson.getInt("maxBattleSatellitesBase")
-        BATTLE_SATELLITES_MULT = configJson.getDouble("maxBattleSatellitesMult")
+        SATELLITE_FLEET_FP_BONUS_INCREMENT = configJson.getInt("maxSatelliteFpBonus")
+        SATELLITE_FLEET_FP_BONUS_MULT = configJson.getDouble("maxSatelliteFpBonusMult")
 
-
-        BARRAGE_WEIGHT = configJson.getDouble("barrage_weight").toFloat()
-        STANDARD_WEIGHT = configJson.getDouble("standard_weight").toFloat()
-        SHIELDED_WEIGHT = configJson.getDouble("shielded_weight").toFloat()
-        BEAMER_WEIGHT = configJson.getDouble("beamer_weight").toFloat()
-        ORDNANCE_WEIGHT = configJson.getDouble("ordnance_weight").toFloat()
-        SWARM_WEIGHT = configJson.getDouble("swarm_weight").toFloat()
     }
     @JvmField
     var PREVENT_SATELLITE_TURN = false
@@ -42,19 +34,7 @@ object niko_MPC_settings {
     @JvmField
     var SATELLITE_INTERFERENCE_DISTANCE_MULT = 0f
     @JvmField
-    var BATTLE_SATELLITES_BASE = 0
+    var SATELLITE_FLEET_FP_BONUS_INCREMENT = 0
     @JvmField
-    var BATTLE_SATELLITES_MULT = 0.0
-    @JvmField
-    var BARRAGE_WEIGHT: Float? = null
-    @JvmField
-    var STANDARD_WEIGHT: Float? = null
-    @JvmField
-    var SHIELDED_WEIGHT: Float? = null
-    @JvmField
-    var BEAMER_WEIGHT: Float? = null
-    @JvmField
-    var ORDNANCE_WEIGHT: Float? = null
-    @JvmField
-    var SWARM_WEIGHT: Float? = null
+    var SATELLITE_FLEET_FP_BONUS_MULT = 0.0
 }

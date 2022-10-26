@@ -16,7 +16,7 @@ class niko_MPC_satelliteFleetAI(campaignFleet: CampaignFleet?) : ModularFleetAI(
         val handler: niko_MPC_satelliteHandlerCore = fleet.getSatelliteEntityHandler() ?: return true
         val tracker = getSatelliteBattleTracker() ?: return false
         if (battle == null) return false
-        return tracker.areSatellitesInvolvedInBattle(battle, handler)
+        return (!tracker.areSatellitesInvolvedInBattle(battle, handler))
     }
 
     override fun pickEncounterOption(

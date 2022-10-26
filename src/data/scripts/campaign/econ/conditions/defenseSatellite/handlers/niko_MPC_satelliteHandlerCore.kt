@@ -1,6 +1,5 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite.handlers
 
-import com.fs.starfarer.api.EveryFrameScriptWithCleanup
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
@@ -62,7 +61,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     var entity: SectorEntityToken = entity //entity should be detachable from market
         set(value) {
             field = value
-            if (entity !== cachedEntity) {
+            if (value !== cachedEntity) {
                 handleEntityDesync()
             }
             val entityMarket = entity.market
@@ -79,7 +78,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     var market: MarketAPI? = entity.market
         set(value) {
             field = value
-            if (market !== cachedMarket) {
+            if (value !== cachedMarket) {
                 handleMarketDesync()
             }
             //the below is fine; SS is not multithreaded so this wont break. yet? i wish i could do this in a threadsafe way easily
@@ -154,7 +153,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     abstract val satelliteFleetName: String
 
     /** Very important. The absolute maximum FP a handler can generate for a satellite fleet. Any ships that push this
-     * limit will be culled through [trimDownToFP]. Should be beholded to [niko_MPC_settings.BATTLE_SATELLITES_BASE], [niko_MPC_settings.BATTLE_SATELLITES_MULT]*/
+     * limit will be culled through [trimDownToFP]. Should be beholded to [niko_MPC_settings.SATELLITE_FLEET_FP_BONUS_INCREMENT], [niko_MPC_settings.SATELLITE_FLEET_FP_BONUS_MULT]*/
     abstract val maximumSatelliteFleetFp: Float
 
     /** The absolute maximum cosmetic satellites that can be in orbit of [getPrimaryHolder]. By default, is proportional
@@ -542,7 +541,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         }
         if (oldMarket != null) {
             if (oldMarket.hasSatelliteHandler(this) && oldMarket != currentMarket) {
-                displayError("Desync check failure-$oldMarket still has $this" + "applied to it")
+                displayError("Desync check failure-${oldMarket.name} still has $this" + "applied to it")
                 logDataOf(oldMarket)
             }
         }
@@ -679,6 +678,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     fun cullUselessConditions() {
+        log.info("$this culling conditions")
         for (condition: niko_MPC_antiAsteroidSatellitesBase in ArrayList(conditions)) {
             if (condition.getMarket() !== market) {
                 condition.delete()
