@@ -8,7 +8,7 @@ import data.utilities.niko_MPC_settings
 import org.apache.log4j.Level
 import org.lwjgl.util.vector.Vector2f
 
-class niko_MPC_satellitePositionDebugger(var satellite: ShipAPI?, var idealPosition: Vector2f, var facing: Float) :
+class niko_MPC_satellitePositionDebugger(var satellite: ShipAPI, var idealPosition: Vector2f, var facing: Float) :
     BaseEveryFrameCombatPlugin() {
     var preventTurn: Boolean = niko_MPC_settings.PREVENT_SATELLITE_TURN
     var timeToLive = 20f
@@ -23,20 +23,19 @@ class niko_MPC_satellitePositionDebugger(var satellite: ShipAPI?, var idealPosit
                 // due to the 1st this script needs to live for a bit even if preventTurn is false
             }
         }
-        if (!satellite!!.isAlive) {
+        if (!satellite.isAlive) {
             prepareForGarbageCollection()
             return
         }
-        if (satellite!!.facing != facing) {
-            satellite!!.facing = facing
-            for (module in satellite!!.childModulesCopy) {
+        if (satellite.facing != facing) {
+            satellite.facing = facing
+            for (module in satellite.childModulesCopy) {
                 module.facing = facing
             }
         }
     }
 
     private fun prepareForGarbageCollection() {
-        satellite = null
         Global.getCombatEngine().removePlugin(this)
     }
 }
