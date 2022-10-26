@@ -74,7 +74,7 @@ object niko_MPC_debugUtils {
                 Color.RED
             )
         }
-        campaignUI.addMessage("Please provide the mod author a copy of your logs. These messages can be disabled in settings.")
+        campaignUI.addMessage("Please provide the mod author of more planetary conditions a copy of your logs. These messages can be disabled in the niko_MPC_settings.json file in the MPC mod folder.")
     }
 
     @JvmStatic
@@ -83,7 +83,7 @@ object niko_MPC_debugUtils {
         val combatUI = engine.combatUI
         combatUI.addMessage(
             1,
-            "Please provide the mod author with a copy of your logs.  These messages can be disabled in settings."
+            "Please provide the mod author of more planetary conditions with a copy of your logs. These messages can be disabled in the niko_MPC_settings.json file in the MPC mod folder."
         )
         if (highPriority) {
             Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f)
