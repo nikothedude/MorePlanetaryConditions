@@ -785,10 +785,12 @@ abstract class niko_MPC_satelliteHandlerCore(
         return gracePeriods[fleet]!!
     }
 
+    @JvmOverloads
     open fun delete(removeCondition: Boolean = true) {
         if (isDeletedWrapper()) {
             displayError("$this deleted multiple times")
             logDataOf(this)
+            return
         }
         deleted = true
 

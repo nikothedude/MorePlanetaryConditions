@@ -54,11 +54,10 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
      * interactionTarget is engaged in a battle or not.
      */
     override fun pickInteractionDialogPlugin(interactionTarget: SectorEntityToken?): PluginPick<InteractionDialogPlugin>? {
-        if (interactionTarget == null || interactionTarget.isSatelliteEntity() || interactionTarget.hasTag("IndEvo_eye")) return null
+        if (interactionTarget == null || interactionTarget.isSatelliteEntity() || interactionTarget.shouldSkip()) return null
         var entityToExpandRadiusFrom: SectorEntityToken? = null // this entity will always be checked to see if it should deploy satellites
         var battle: BattleAPI? = null
         var targetFleet: CampaignFleetAPI? = null
-        val tracker = getSatelliteBattleTracker() ?: return null
         if (interactionTarget is CampaignFleetAPI) {
             targetFleet = interactionTarget // we're interacting with a fleet
             battle = targetFleet.battle
@@ -90,38 +89,17 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
                 // we're only getting this info to pass it to the spawn method
                 // you may ask "why pass it"? good question i havent thought it through but it works lol
                 if (targetFleet != null) battle = targetFleet.battle
-                val interactionMarket: MarketAPI? = dugUpEntity.market
-                if (interactionMarket != null) {
-                    for (station: SectorEntityToken in interactionMarket.getStationsInOrbit()) {
-                        //val stationFleet = station.getStationFleet()
-                        //val stationBattle: BattleAPI? = stationFleet?.battle
-                       /* if (stationBattle != null) {
-                            if (tracker.areAnySatellitesInvolvedInBattle(stationBattle)) {
-                                dontNeedToSpawnFleets = true
-                                break
-                            }
-                        }*/
-                    }
-                }
             }
             if (dugUpEntity.hasSatellites()) { // to avoid an error message
                 entityToExpandRadiusFrom = dugUpEntity //lets make it so the station's entity knows to deploy satellites
             }
         }
-       // if (!dontNeedToSpawnFleets) {
         spawnSatelliteFleetsOnPlayerIfAble(interactionTarget, targetFleet, battle, entityToExpandRadiusFrom)
-       // }
-        /*if (battle != null) {
-            val tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker() ?: return null
-            if (tracker.areAnySatellitesInvolvedInBattle(battle)) {
-                return PluginPick<InteractionDialogPlugin>(niko_MPC_satelliteInteractionDialogPlugin(), PickPriority.MOD_GENERAL)
-                // general priority because i want it to be overridable easily
-            }
-        }*/
-        //^ caused a class cast exception
         return null
     }
-
+    private fun SectorEntityToken.shouldSkip(): Boolean {
+        return ((!hasTag(Tags.HAS_INTERACTION_DIALOG) && (!hasTag(Tags.STATION) && market == null)) || hasTag("IndEvo_eye"))
+    }
     private fun spawnSatelliteFleetsOnPlayerIfAble(interactionTarget: SectorEntityToken, fleet: CampaignFleetAPI?, battle: BattleAPI?, entityToAlwaysTryToSpawnFrom: SectorEntityToken?)
     : List<CampaignFleetAPI> {
 
