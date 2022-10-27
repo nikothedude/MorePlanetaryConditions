@@ -79,7 +79,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         set(value) {
             field = value
             if (value !== cachedMarket) {
-                handleMarketDesync()
+                handleMarketDesync(value)
             }
             //the below is fine; SS is not multithreaded so this wont break. yet? i wish i could do this in a threadsafe way easily
             currentSatelliteFactionId =
@@ -459,7 +459,6 @@ abstract class niko_MPC_satelliteHandlerCore(
         if (location == null) return satelliteFleet
         location.addEntity(satelliteFleet)
         satelliteFleet.setLocation(coordinates.x, coordinates.y)
-        addDespawnScript(satelliteFleet)
 
         return satelliteFleet
     }
@@ -470,6 +469,7 @@ abstract class niko_MPC_satelliteHandlerCore(
         location: LocationAPI? = getLocation()
     ): CampaignFleetAPI {
         spawnGenericSatelliteFleet(satelliteFleet, coordinates, location)
+        addDespawnScript(satelliteFleet)
         satelliteFleets.add(satelliteFleet)
         log.info("spawned satellitefleet $satelliteFleet at $location, ${location?.name}, coordinates $coordinates")
         return satelliteFleet
@@ -531,12 +531,11 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     /** Handles situations where we migrated markets, ex. our condition moved to a new market.*/
-    protected open fun handleMarketDesync() {
+    protected open fun handleMarketDesync(currentMarket: MarketAPI? = market) {
         val oldMarket = cachedMarket
-        val currentMarket = market
         if (currentMarket === oldMarket) {
             displayError("Desync check failure: ${oldMarket?.name} is the same as the provided market")
-            logDataOf(market)
+            logDataOf(currentMarket)
             return
         }
         if (oldMarket != null) {

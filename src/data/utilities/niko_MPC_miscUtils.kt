@@ -71,4 +71,9 @@ object niko_MPC_miscUtils {
         }
         return stations
     }
+
+    @JvmStatic
+    fun SectorEntityToken.isDespawning(): Boolean {
+        return (!isAlive || hasTag(Tags.FADING_OUT_AND_EXPIRING))
+    }
 }

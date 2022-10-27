@@ -9,8 +9,8 @@
 	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat. default: true
 	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered. default: false
 	
-	"satelliteInterferenceDistanceBase":120, #the higher, the further away satellites will interfere in battles from. base, applied before mult. default: 120
-	"satelliteInterferenceDistanceMult":50, #this value will multiply the interferance distance by itself. default: 1
+	"satelliteInterferenceDistanceBase":90, #the higher, the further away satellites will interfere in battles from. base, applied before mult. default: 120
+	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself. default: 1
 
 	"maxSatelliteFpBonus":0, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 0
 	"maxSatelliteFpBonusMult":1, #multipled onto base to determine amount of battle satellites. default: 1

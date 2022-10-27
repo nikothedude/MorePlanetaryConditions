@@ -15,6 +15,7 @@ import data.utilities.exceptions.niko_MPC_stackTraceGenerator
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
+import data.utilities.niko_MPC_miscUtils.isDespawning
 import data.utilities.niko_MPC_satelliteUtils.deleteIfCosmeticSatellite
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import data.utilities.niko_MPC_satelliteUtils.isCosmeticSatellite
@@ -115,7 +116,7 @@ object niko_MPC_debugUtils {
         if (!isCosmeticSatellite()) return true
         var result = true
         val entityHandler: niko_MPC_satelliteHandlerCore? = getSatelliteEntityHandler()
-        if (isAlive && !(hasTag(Tags.FADING_OUT_AND_EXPIRING))) { //todo: consider coming back to this?
+        if (!isDespawning()) { //todo: consider coming back to this?
             if (entityHandler == null) {
                 // error state, the only time in which a living satellite (non-deleted) shouldnt have a handler
                 // is absolutely nothing

@@ -19,7 +19,8 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0014": "mjolnir"
+        "WS0009": "heavymauler",
+        "WS0016": "heavymauler"
       }
     },
     {
@@ -44,7 +45,7 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0009": "heavymauler"
+        "WS0014": "mjolnir"
       }
     },
     {
@@ -56,7 +57,6 @@
         "WS0008": "vulcan",
         "WS0010": "dualflak",
         "WS0011": "dualflak",
-        "WS0016": "dualflak",
         "WS0017": "dualflak"
       }
     },

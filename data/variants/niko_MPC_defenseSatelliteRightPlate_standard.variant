@@ -4,7 +4,7 @@
   "displayName": "Standard",
   "goalVariant": false,
   "fluxCapacitors": 26,
-  "fluxVents": 44,
+  "fluxVents": 52,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -36,12 +36,13 @@
         "WS0002": "lightag",
         "WS0008": "irpulse",
         "WS0012": "lightag",
+        "WS0013": "heavymortar",
         "WS0019": "lightag"
       }
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
         "WS0015": "pulselaser"
       }
@@ -54,7 +55,6 @@
         "WS0004": "pdburst",
         "WS0006": "dualflak",
         "WS0009": "dualflak",
-        "WS0013": "dualflak",
         "WS0014": "heavyburst",
         "WS0017": "lightdualmg",
         "WS0018": "lightdualmg"

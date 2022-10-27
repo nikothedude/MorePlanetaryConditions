@@ -54,7 +54,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
      * interactionTarget is engaged in a battle or not.
      */
     override fun pickInteractionDialogPlugin(interactionTarget: SectorEntityToken?): PluginPick<InteractionDialogPlugin>? {
-        if (interactionTarget == null || interactionTarget.isSatelliteEntity()) return null
+        if (interactionTarget == null || interactionTarget.isSatelliteEntity() || interactionTarget.hasTag("IndEvo_eye")) return null
         var entityToExpandRadiusFrom: SectorEntityToken? = null // this entity will always be checked to see if it should deploy satellites
         var battle: BattleAPI? = null
         var targetFleet: CampaignFleetAPI? = null
