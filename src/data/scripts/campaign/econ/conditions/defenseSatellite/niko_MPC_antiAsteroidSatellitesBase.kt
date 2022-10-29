@@ -44,6 +44,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         val isValidTargetForHandler = (ourMarket.id != "fake_Colonize") // markets made during loading have null tags
         if (isValidTargetForHandler) {
             val satelliteHandler: niko_MPC_satelliteHandlerCore? = getHandlerWithUpdate()
+            // DO NOT REMOVE THIS NULLCHECK THIS PREVENTS THE HANDLER BEING ACCESSED BEFORE ITS DESERIALIZED!!!!
             if (satelliteHandler != null && satelliteHandler.entity != null) {
                 if (satelliteHandler.market === ourMarket) {
                     updateHandlerValues()
