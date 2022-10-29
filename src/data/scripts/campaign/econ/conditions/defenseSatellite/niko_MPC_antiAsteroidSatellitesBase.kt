@@ -1,5 +1,7 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
@@ -42,7 +44,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         val isValidTargetForHandler = (ourMarket.id != "fake_Colonize") // markets made during loading have null tags
         if (isValidTargetForHandler) {
             val satelliteHandler: niko_MPC_satelliteHandlerCore? = getHandlerWithUpdate()
-            if (satelliteHandler != null) {
+            if (satelliteHandler != null && satelliteHandler.entity != null) {
                 if (satelliteHandler.market === ourMarket) {
                     updateHandlerValues()
                     satelliteHandler.addNewConditionToDelete(this)

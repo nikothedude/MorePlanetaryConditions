@@ -727,9 +727,9 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     open fun wantToBlock(fleet: CampaignFleetAPI): Boolean {
-        return (!fleet.isTransponderOn || getFaction().isAtBest(fleet.faction, RepLevel.INHOSPITABLE) || wantToFight(
-            fleet
-        ))
+        return (!fleet.isTransponderOn && (market == null || (!market!!.isFreePort && market!!.faction?.getCustomBoolean(Factions.CUSTOM_ALLOWS_TRANSPONDER_OFF_TRADE) == false)) ||
+                getFaction().isAtBest(fleet.faction, RepLevel.INHOSPITABLE) ||
+                wantToFight(fleet))
     }
 
     open fun capableOfBlocking(fleet: CampaignFleetAPI): Boolean {

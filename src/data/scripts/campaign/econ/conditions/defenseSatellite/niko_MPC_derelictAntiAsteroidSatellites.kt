@@ -56,6 +56,8 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI, expanded: Boolean) {
         super.createTooltipAfterDescription(tooltip, expanded)
 
+        val ourMarket = getMarket() ?: return
+
         val luddicSupressionValue = getLuddicSupression()
         tooltip.addPara(
             "%s stability",
@@ -94,14 +96,24 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "nullified"
         )
 
-        tooltip.addPara(
-            "Due to the satellites defaulting to hostile behavior when considering a fleet with no transponder " +
-                    "(excluding programmed exceptions and manual overrides), customs control is significantly easier, " +
-                    "leading to %s being reduced by %s.",
-            10f,
-            Misc.getHighlightColor(),
-            "effective luddic path interest", luddicSupressionValue.toString()
-        )
+        if (!market.isFreePort) {
+            tooltip.addPara(
+                "Due to the satellites defaulting to hostile behavior when considering a fleet with no transponder " +
+                        "(excluding programmed exceptions and manual overrides), customs control is significantly easier, " +
+                        "leading to %s being reduced by %s.",
+                10f,
+                Misc.getHighlightColor(),
+                "effective luddic path interest", luddicSupressionValue.toString()
+            )
+        } else {
+            tooltip.addPara(
+                "While the satellites would normally make it more difficult for pathers to approach the planet, and thus reduce" +
+                " effective pather interest, the market's status as a %s requires a firmware hack to allow anyone and anything unidentified into orbit.",
+                10f,
+                Misc.getHighlightColor(),
+                "free port"
+            )
+        }
 
         tooltip.addPara(
             ("Due to the fact that fleets are %s, " +
