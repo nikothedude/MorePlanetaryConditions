@@ -16,7 +16,7 @@ class niko_MPC_satelliteBattleTracker {
      * Associates a hashmap entry of (battle->(handler->side)). The side is stored for future reference.
      *
      *
-     * If the hashmap doesnt contain battle, or if the v alue of battle is null, instantiates a new hashmap and assigns (battle->Hashmap()).
+     * If the hashmap doesnt contain battle, or if the value of battle is null, instantiates a new hashmap and assigns (battle->Hashmap()).
      * @param battle The battle to associate with.
      * @param handler The satellite handler we are associating.
      * @param side The stored side of the battle.
@@ -43,7 +43,7 @@ class niko_MPC_satelliteBattleTracker {
     }
 
     fun areAnySatellitesInvolvedInBattle(battle: BattleAPI): Boolean {
-        return battles[battle] != null && !battles[battle]!!.isEmpty()
+        return battles[battle] != null && battles[battle]!!.isNotEmpty()
     }
 
     fun scanBattleForSatellites(battle: BattleAPI): HashMap<niko_MPC_satelliteHandlerCore, CampaignFleetAPI> {

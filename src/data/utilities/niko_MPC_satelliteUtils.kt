@@ -76,8 +76,7 @@ object niko_MPC_satelliteUtils {
     }
 
     @JvmStatic
-    fun HasMemory?.hasSatellites(): Boolean {
-        if (this == null) return false
+    fun HasMemory.hasSatellites(): Boolean {
         return (this.getSatelliteHandlers().isNotEmpty())
     }
 
@@ -92,12 +91,12 @@ object niko_MPC_satelliteUtils {
      * @return The satellite market of the entity.
      */
     @JvmStatic
-    fun getEntitySatelliteMarket(entity: SectorEntityToken): MarketAPI? {
+    fun getEntitySatelliteMarket(entity: SectorEntityToken): MarketAPI {
         return getMemorySatelliteMarket(entity.memoryWithoutUpdate)
     }
 
     @JvmStatic
-    fun getMemorySatelliteMarket(memory: MemoryAPI): MarketAPI? {
+    fun getMemorySatelliteMarket(memory: MemoryAPI): MarketAPI {
         return memory[niko_MPC_ids.satelliteMarketId] as MarketAPI
     }
     // GETTING ENTITIES AND CHECKING CAPABILITIES
