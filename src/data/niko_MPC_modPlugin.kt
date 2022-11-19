@@ -13,6 +13,7 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
+import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
 
 class niko_MPC_modPlugin : BaseModPlugin() {
@@ -60,6 +61,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             niko_MPC_satelliteUtils.obliterateSatellites()
         } else {
             clearSatellitesFromCoreWorlds()
+
+            generatePredefinedSatellites()
         }
     }
 

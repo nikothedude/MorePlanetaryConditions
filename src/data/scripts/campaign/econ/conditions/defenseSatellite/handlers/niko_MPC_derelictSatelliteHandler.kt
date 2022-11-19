@@ -33,7 +33,6 @@ class niko_MPC_derelictSatelliteHandler private constructor(
             return ((field+niko_MPC_settings.SATELLITE_FLEET_FP_BONUS_INCREMENT)*niko_MPC_settings.SATELLITE_FLEET_FP_BONUS_MULT).toFloat()
         }
     override var satelliteOrbitDistance: Float = 15.0f
-        set(value) { field = value }
 
     override fun assignCommanderToSatelliteFleet(satelliteFleet: CampaignFleetAPI): PersonAPI? {
         return AICoreOfficerPluginImpl().createPerson(Commodities.GAMMA_CORE, currentSatelliteFactionId, MathUtils.getRandom())

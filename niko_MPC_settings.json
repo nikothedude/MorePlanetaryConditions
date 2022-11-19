@@ -14,4 +14,11 @@
 
 	"maxSatelliteFpBonus":0, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 0
 	"maxSatelliteFpBonusMult":1, #multipled onto base to determine amount of battle satellites. default: 1
+	
+	#enter the id of a pre-generated entity and a key word to generate satellites onto it
+	#valid keys: DERELICT
+	"entitiesToAddSatellitesTo": {
+		#"sindria":"DERELICT",
+		"raesvelg":"DERELICT",
+	},
 }

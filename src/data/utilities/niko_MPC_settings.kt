@@ -1,6 +1,9 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.SectorEntityToken
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import org.json.JSONException
 import java.io.IOException
 
@@ -19,8 +22,38 @@ object niko_MPC_settings {
         SATELLITE_INTERFERENCE_DISTANCE_MULT = configJson.getDouble("satelliteInterferenceDistanceMult").toFloat()
         SATELLITE_FLEET_FP_BONUS_INCREMENT = configJson.getInt("maxSatelliteFpBonus")
         SATELLITE_FLEET_FP_BONUS_MULT = configJson.getDouble("maxSatelliteFpBonusMult")
-
     }
+
+    @JvmStatic
+    @Throws(JSONException::class, IOException::class)
+    fun generatePredefinedSatellites() {
+        niko_MPC_debugUtils.log.debug("generating pre-defined satellites")
+        val configJson = Global.getSettings().loadJSON(niko_MPC_ids.niko_MPC_masterConfig)
+        val objectOfEntityToHandler = configJson.getJSONObject("entitiesToAddSatellitesTo")
+        val iterator = objectOfEntityToHandler.keys()
+        while (iterator.hasNext()) {
+            val key = iterator.next() as String
+            val data = objectOfEntityToHandler.getString(key)
+
+            val entity = Global.getSector().getEntityById(key)
+            if (entity == null) {
+                niko_MPC_debugUtils.log.warn("could not find $key, continuing")
+                continue
+            }
+            when (data) {
+                "DERELICT" -> {
+                    if (entity.market != null) {
+                        entity.market.addCondition("niko_MPC_antiAsteroidSatellites_derelict")
+                    } else {
+                        niko_MPC_derelictSatelliteHandler.createNewHandlerInstance(entity)
+                    }
+                } else -> {
+                    niko_MPC_debugUtils.log.warn("invalid handler type in settings for $key, skipping")
+                }
+            }
+        }
+    }
+
     @JvmField
     var PREVENT_SATELLITE_TURN = false
     @JvmField
