@@ -11,6 +11,7 @@ class niko_MPC_graviticSupercomputer : BaseHullMod() {
     val visionIncrement = 9000f
     val recoilMult = 0.3f
     val accuracyMult = 0.5f
+    val autofireMult = 1f
     override fun applyEffectsBeforeShipCreation(hullSize: HullSize, stats: MutableShipStatsAPI, id: String) {
         stats.ballisticWeaponRangeBonus.modifyMult(id, rangeMult)
         stats.energyWeaponRangeBonus.modifyMult(id, rangeMult)
@@ -20,6 +21,7 @@ class niko_MPC_graviticSupercomputer : BaseHullMod() {
         stats.recoilPerShotMult.modifyMult(id, recoilMult)
         stats.recoilDecayMult.modifyMult(id, recoilMult)
         stats.maxRecoilMult.modifyMult(id, accuracyMult)
+        stats.autofireAimAccuracy.modifyFlat(id, autofireMult)
     }
 
     override fun getDescriptionParam(index: Int, hullSize: HullSize): String? {
