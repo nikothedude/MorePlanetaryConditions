@@ -14,7 +14,7 @@ import org.lazywizard.lazylib.campaign.CampaignUtils
 class niko_MPC_satelliteFleetProximityChecker(var handler: niko_MPC_satelliteHandlerCore): niko_MPC_deltaTimeScript() {
 
     override val thresholdForAdvancement: Float
-        get() = 0.2f
+        get() = 1f
     override val onlyUseDeltaIfPlayerNotNear: Boolean
         get() = true
 
