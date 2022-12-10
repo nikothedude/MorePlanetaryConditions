@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import org.json.JSONException
 import java.io.IOException
 
@@ -49,8 +50,20 @@ object niko_MPC_settings {
                     }
                 } else -> {
                     niko_MPC_debugUtils.log.warn("invalid handler type in settings for $key, skipping")
+                    return
                 }
             }
+            /*val market = (entity.market)
+            if (market != null) {
+                if (!market.isHidden && !market.isPlanetConditionMarketOnly) {
+                    val handlers = entity.getSatelliteHandlers()
+                    for (handler in handlers) {
+                        for (satellite in handler.cosmeticSatellites) {
+                            satellite.isDiscoverable = false
+                        }
+                    }
+                }
+            }*/
         }
     }
 

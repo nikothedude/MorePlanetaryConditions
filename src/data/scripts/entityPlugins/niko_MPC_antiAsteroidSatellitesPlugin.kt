@@ -7,7 +7,7 @@ class niko_MPC_antiAsteroidSatellitesPlugin : BaseCustomEntityPlugin() {
     /**
      * The amount of XP the entity will give upon discovery.
      */
-    var discoveryXp = 5f
+    var discoveryXp = 28f
 
     /**
      * The sensor profile of the entity, duh.

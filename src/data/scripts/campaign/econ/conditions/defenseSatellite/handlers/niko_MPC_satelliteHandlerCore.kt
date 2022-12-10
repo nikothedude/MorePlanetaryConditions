@@ -30,6 +30,7 @@ import data.utilities.niko_MPC_fleetUtils.setDummyFleet
 import data.utilities.niko_MPC_fleetUtils.setSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.setSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.trimDownToFP
+import data.utilities.niko_MPC_miscUtils.hasCustomControls
 import data.utilities.niko_MPC_satelliteUtils.deleteIfCosmeticSatellite
 import data.utilities.niko_MPC_satelliteUtils.getAllSatelliteHandlers
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
@@ -727,7 +728,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     open fun wantToBlock(fleet: CampaignFleetAPI): Boolean {
-        return (!fleet.isTransponderOn && (market == null || (!market!!.isFreePort && market!!.faction?.getCustomBoolean(Factions.CUSTOM_ALLOWS_TRANSPONDER_OFF_TRADE) == false)) ||
+        return (!fleet.isTransponderOn && (market == null || market!!.hasCustomControls()) ||
                 getFaction().isAtBest(fleet.faction, RepLevel.INHOSPITABLE) ||
                 wantToFight(fleet))
     }

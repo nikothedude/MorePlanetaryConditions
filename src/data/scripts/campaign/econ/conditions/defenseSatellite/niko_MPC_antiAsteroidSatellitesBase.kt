@@ -140,8 +140,10 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         if (handler == null) return
         val ourMarket = getMarket() ?: return
         if (handler.market === ourMarket) {
-            handler.entity = ourMarket.primaryEntity
-            handler.currentSatelliteFactionId = ourMarket.factionId
+            val entity = ourMarket.primaryEntity ?: return
+            handler.entity = entity
+            val factionid = ourMarket.factionId ?: "neutral"
+            handler.currentSatelliteFactionId = factionid
         }
     }
 

@@ -1,7 +1,9 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -11,6 +13,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_miscUtils.hasCustomControls
 import data.utilities.niko_MPC_scriptUtils.addScriptsAtValidTime
 
 
@@ -23,8 +26,8 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
     }
 
     var baseAccessibilityIncrement = -0.30f //also placeholder
-    var baseGroundDefenseIncrement = 500f
-    var baseStabilityIncrement = 1f
+    var baseGroundDefenseIncrement = 400f
+    var baseStabilityIncrement = 2f
     var baseGroundDefenseMult = 1.5f
 
     override fun handleConditionAttributes(id: String, ourMarket: MarketAPI) {
@@ -63,7 +66,7 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "%s stability",
             10f,
             Misc.getHighlightColor(),
-            "+" + baseStabilityIncrement
+            "+${baseStabilityIncrement.toInt()}"
         )
 
         val convertedAccessibilityBonus = (baseAccessibilityIncrement * 100).toInt() //times 100 to convert out of decimal
@@ -79,14 +82,14 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+" + baseGroundDefenseIncrement
+            "+${baseGroundDefenseIncrement.toInt()}"
         )
 
         tooltip.addPara(
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            ("+" + baseGroundDefenseMult) + "x"
+            ("+${baseGroundDefenseMult}x")
         )
 
         tooltip.addPara(
@@ -96,7 +99,7 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "nullified"
         )
 
-        if (!market.isFreePort) {
+        if (ourMarket.hasCustomControls()) {
             tooltip.addPara(
                 "Due to the satellites defaulting to hostile behavior when considering a fleet with no transponder " +
                         "(excluding programmed exceptions and manual overrides), customs control is significantly easier, " +
