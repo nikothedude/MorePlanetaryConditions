@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="ExerelinCore">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../starsector modding/nex/jars/ExerelinCore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../starsector modding/nex/jars/ExerelinCore.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../starsector modding/nex/jars/sources/ExerelinCore" />
+      <root url="file://$PROJECT_DIR$/../../../starsector modding/nex/jars/sources/ExerelinCore" />
+    </SOURCES>
+  </library>
+</component>

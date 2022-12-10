@@ -53,17 +53,18 @@ object niko_MPC_settings {
                     return
                 }
             }
-            /*val market = (entity.market)
+            val market = (entity.market)
             if (market != null) {
                 if (!market.isHidden && !market.isPlanetConditionMarketOnly) {
                     val handlers = entity.getSatelliteHandlers()
                     for (handler in handlers) {
                         for (satellite in handler.cosmeticSatellites) {
+                            satellite.setSensorProfile(null)
                             satellite.isDiscoverable = false
                         }
                     }
                 }
-            }*/
+            }
         }
     }
 
