@@ -10,7 +10,6 @@
     <orderEntry type="library" name="starfarer.api" level="project" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="MagicLib" level="project" />
-    <orderEntry type="library" name="MagicLib" level="project" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="project" />
     <orderEntry type="module-library">
       <library>

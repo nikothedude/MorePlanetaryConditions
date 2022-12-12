@@ -19,10 +19,6 @@ import data.utilities.niko_MPC_settings.loadSettings
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
     override fun onApplicationLoad() {
-        val isMagicLibEnabled = Global.getSettings().modManager.isModEnabled("MagicLib")
-        if (!isMagicLibEnabled) {
-            throw RuntimeException("MagicLib is required for more planetary conditions!")
-        }
         val isLazyLibEnabled = Global.getSettings().modManager.isModEnabled("lw_lazylib")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")

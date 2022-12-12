@@ -3,7 +3,7 @@
 	"name":"More Planetary Conditions", # Displayed to the player
 	"author":"Niko",
     "utility":"false",
-	"version":"2.2.0",
+	"version":"2.2.0a",
 	"description":"Adds a bunch of misc. planetary conditions to the game, many, if not most, with custom scripted effects that go beyond what most other conditions, vanilla or modded, do.",
     "gameVersion": "0.95.1a-RC6", 
   	"jars":["jars/niko_morePlanetaryConditions.jar"],
@@ -13,11 +13,6 @@
 			"id": "lw_lazylib",
             "name": "LazyLib",
 			"version": "2.7b"
-        },
-        {
-            "id": "MagicLib",
-            "name": "MagicLib",
-			"version": "0.42.1"
         },
     ],
 }
