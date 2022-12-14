@@ -11,7 +11,7 @@ class niko_MPC_defenseSatelliteLuddicSuppressor : BaseIndustry() {
     override fun getPatherInterest(): Float {
         val ourMarket = getMarket() ?: return 0f
         if (ourMarket.isFreePort) return 0f
-        return -3f
+        return -6f
     }
 
     override fun isHidden(): Boolean { //hidden structures dont block structure construction
