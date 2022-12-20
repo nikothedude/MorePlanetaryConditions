@@ -4,7 +4,7 @@
   "displayName": "Ordnance",
   "goalVariant": false,
   "fluxCapacitors": 25,
-  "fluxVents": 33,
+  "fluxVents": 26,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -19,7 +19,9 @@
     {
       "autofire": false,
       "mode": "ALTERNATING",
-      "weapons": {}
+      "weapons": {
+        "WS0014": "hurricane"
+      }
     },
     {
       "autofire": true,
@@ -58,7 +60,6 @@
         "WS0008": "vulcan",
         "WS0010": "flak",
         "WS0011": "flak",
-        "WS0014": "locust",
         "WS0016": "dualflak",
         "WS0017": "dualflak",
         "WS0018": "swarmer",
