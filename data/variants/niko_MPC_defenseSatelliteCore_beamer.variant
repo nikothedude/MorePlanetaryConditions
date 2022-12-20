@@ -3,37 +3,43 @@
   "hullId": "niko_MPC_defenseSatelliteCore",
   "displayName": "Beamer",
   "goalVariant": false,
-  "fluxCapacitors": 32,
-  "fluxVents": 25,
+  "fluxCapacitors": 9,
+  "fluxVents": 23,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
-    "turretgyros"
+    "turretgyros",
+    "advancedoptics"
   ],
   "weaponGroups": [
     {
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "gravitonbeam",
-        "WS0002": "gravitonbeam",
-        "WS0004": "taclaser"
+        "WS0001": "niko_MPC_LR_graviton",
+        "WS0002": "niko_MPC_LR_graviton"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0003": "taclaser"
+        "WS0003": "niko_MPC_LR_taclaser",
+        "WS0004": "niko_MPC_LR_taclaser"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0005": "heavyburst",
-        "WS0006": "heavyburst"
+        "WS0005": "niko_MPC_LR_heavyburst",
+        "WS0006": "niko_MPC_LR_heavyburst"
       }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {}
     }
   ],
   "modules": [

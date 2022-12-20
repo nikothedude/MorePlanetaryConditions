@@ -1,7 +1,5 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
-import com.fs.starfarer.api.GameState
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
@@ -14,7 +12,6 @@ import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_satelliteUtils.getConditionLinkedHandler
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 import data.utilities.niko_MPC_satelliteUtils.setConditionLinkedHandler
-import org.apache.log4j.Level
 import kotlin.math.abs
 
 
@@ -50,7 +47,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
                     updateHandlerValues()
                     satelliteHandler.addNewConditionToDelete(this)
                 }
-                val lastCondition = satelliteHandler.conditions.lastOrNull()
+                //val lastCondition = satelliteHandler.conditions.lastOrNull()
                /* if (lastCondition !== this) {
                     displayError("niko's theory has been proven false.", true, logType = Level.INFO)
                 }*/ // on post game-creation, this is triggered

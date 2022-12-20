@@ -7,8 +7,10 @@ class niko_MPC_overgrownNanoforge : niko_MPC_industryAddingCondition() {
 
     init {
         industryIds.add(niko_MPC_industryIds.overgrownNanoforgeIndustryId)
-        industryIds.add(niko_MPC_industryIds.overgrownNanoforgeJunkStructureId)
     }
 
+    override fun apply(id: String) {
+        super.apply(id)
+    }
 
 }

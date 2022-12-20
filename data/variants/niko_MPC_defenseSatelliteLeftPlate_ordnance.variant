@@ -24,7 +24,10 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+        "WS0006": "niko_MPC_LR_taclaser",
+        "WS0007": "niko_MPC_LR_taclaser"
+      }
     },
     {
       "autofire": true,
@@ -49,11 +52,9 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "pdburst",
-        "WS0003": "pdburst",
+        "WS0001": "niko_MPC_LR_pdburst",
+        "WS0003": "niko_MPC_LR_pdburst",
         "WS0005": "lightdualmg",
-        "WS0006": "taclaser",
-        "WS0007": "taclaser",
         "WS0008": "vulcan",
         "WS0010": "flak",
         "WS0011": "flak",

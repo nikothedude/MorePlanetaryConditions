@@ -18,7 +18,9 @@
     "missile_reload",
     "always_detaches",
     "niko_MPC_noExplosionDamage",
-    "niko_MPC_satellitePlateWeaknessRight"
+    "niko_MPC_satellitePlateWeaknessRight",
+    "armoredweapons",
+    "turretgyros"
   ],
   "weaponSlots": [
     {

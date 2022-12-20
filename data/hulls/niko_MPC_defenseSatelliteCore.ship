@@ -18,7 +18,8 @@
     "niko_MPC_graviticSupercomputer",
     "niko_MPC_tachyonFighterComms",
     "pointdefenseai",
-    "niko_MPC_cheapDeployment"
+    "niko_MPC_cheapDeployment",
+    "turretgyros"
   ],
   "weaponSlots": [
     {

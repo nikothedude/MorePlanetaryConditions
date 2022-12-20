@@ -20,6 +20,28 @@
     "pointdefenseai",
     "niko_MPC_cheapDeployment"
   ],
+  "builtInWings": [
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing",
+	"wasp_wing"
+  ],
   "weaponSlots": [
     {
       "id": "LB 1",

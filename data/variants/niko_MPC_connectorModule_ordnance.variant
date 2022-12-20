@@ -3,11 +3,13 @@
   "hullId": "niko_MPC_connectorModule",
   "displayName": "Ordnance",
   "goalVariant": false,
-  "fluxCapacitors": 24,
+  "fluxCapacitors": 4,
   "fluxVents": 20,
   "quality": 1,
   "permaMods": [],
-  "hullMods": [],
+  "hullMods": [
+    "eccm"
+  ],
   "weaponGroups": [
     {
       "autofire": false,

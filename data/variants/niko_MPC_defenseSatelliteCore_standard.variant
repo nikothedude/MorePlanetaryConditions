@@ -4,7 +4,7 @@
   "displayName": "Standard",
   "goalVariant": false,
   "fluxCapacitors": 36,
-  "fluxVents": 25,
+  "fluxVents": 23,
   "quality": 1,
   "permaMods": [],
   "hullMods": [],
@@ -29,8 +29,8 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0005": "heavyburst",
-        "WS0006": "heavyburst"
+        "WS0005": "dualflak",
+        "WS0006": "dualflak"
       }
     }
   ],

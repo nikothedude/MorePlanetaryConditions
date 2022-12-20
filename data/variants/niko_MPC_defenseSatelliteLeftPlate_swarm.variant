@@ -40,7 +40,6 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0006": "taclaser",
         "WS0008": "vulcan"
       }
     },
@@ -52,7 +51,6 @@
         "WS0002": "lightdualmg",
         "WS0003": "lrpdlaser",
         "WS0005": "vulcan",
-        "WS0007": "taclaser",
         "WS0009": "flak",
         "WS0010": "flak",
         "WS0011": "flak",
@@ -74,7 +72,10 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+        "WS0006": "niko_MPC_LR_taclaser",
+        "WS0007": "niko_MPC_LR_taclaser"
+      }
     }
   ],
   "modules": [],

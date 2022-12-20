@@ -1,0 +1,29 @@
+{
+	"MPC_superheavyDamperStart":[
+		{"file":"sounds/sfx_systems/damper_field_activate.ogg","pitch":0.7,"volume":1.2},
+	],
+		
+	"MPC_superheavyDamperLoop":[
+		{"file":"sounds/sfx_systems/damper_field_loop.ogg","pitch":0.7,"volume":1.2},
+	],
+	"MPC_superheavyDamperStop":[
+		{"file":"sounds/sfx_systems/damper_field_deactivate.ogg","pitch":0.7,"volume":1.0},
+	],
+	
+	"MPC_overclockedTargettingStart":{
+		"sounds":[
+			{"file":"sounds/sfx_interface/ui_income_report_positive.ogg","pitch":1,"volume":0.2},
+		],
+	},
+
+	"MPC_overclockedTargettingLoop":{
+		"sounds":[
+			{"file":"sounds/sfx_abilities/ability-interdiction_pulse_charge.ogg","pitch":1,"volume":0.4},
+		],
+	},
+	"MPC_overclockedTargettingStop":{
+		"sounds":[
+			{"file":"sounds/sfx_interface/ui_income_report_negative.ogg","pitch":1,"volume":0.2},
+		],
+	},
+}

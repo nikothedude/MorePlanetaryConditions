@@ -16,14 +16,14 @@
   ],
   "weaponGroups": [
     {
-      "autofire": true,
+      "autofire": false,
       "mode": "LINKED",
       "weapons": {
         "WS0016": "hephag"
       }
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
         "WS0003": "heavymauler"
@@ -52,10 +52,10 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "lightdualmg",
-        "WS0004": "pdburst",
+        "WS0004": "niko_MPC_LR_pdburst",
         "WS0006": "dualflak",
         "WS0009": "dualflak",
-        "WS0014": "heavyburst",
+        "WS0014": "niko_MPC_LR_heavyburst",
         "WS0017": "lightdualmg",
         "WS0018": "lightdualmg"
       }
@@ -71,7 +71,7 @@
       }
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
         "WS0005": "harpoon"

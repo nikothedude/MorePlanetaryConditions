@@ -238,11 +238,18 @@ abstract class niko_MPC_satelliteHandlerCore(
         return niko_MPC_entityStatusChecker(this)
     }
 
+    init {
+        currentSatelliteFactionId = entity.market?.factionId ?: entity.faction.id
+    }
+
     /** THIS METHOD IS WHY YOU USE THE HANDLER CREATOR. Runs non-final methods that would be in the constructor,
      *  if not for the fact that open funcs in constructors are dangerous. */
     protected open fun postConstructInit() {
         getAllSatelliteHandlers().add(this)
         log.info("$this added to global satellite handler list due to postconstructinit")
+
+        entity.getSatelliteHandlers() += this
+        market?.getSatelliteHandlers()?.plusAssign(this)
 
         gracePeriodDecrementer = createNewDecrementorScript()
         proximityChecker = createNewProximityChecker()

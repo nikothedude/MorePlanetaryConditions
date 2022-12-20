@@ -5,7 +5,7 @@ import com.fs.starfarer.api.combat.MutableShipStatsAPI
 import com.fs.starfarer.api.combat.ShipAPI.HullSize
 
 class niko_MPC_graviticSupercomputer : BaseHullMod() {
-    val rangeMult = 10.5f
+    val rangeMult = 20.5f
     val pdRangeMult = 0.7f
     val missileRangeMalice = 0.7f
     val visionIncrement = 9000f

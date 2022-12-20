@@ -13,12 +13,14 @@
   "viewOffset": 0,
   "builtInMods": [
     "advancedcore",
-	"pointdefenseai",
+    "pointdefenseai",
     "automated",
     "missile_reload",
     "always_detaches",
-	"niko_MPC_noExplosionDamage",
-	"niko_MPC_satellitePlateWeaknessLeft"
+    "niko_MPC_noExplosionDamage",
+    "niko_MPC_satellitePlateWeaknessLeft",
+    "armoredweapons",
+    "turretgyros"
   ],
   "weaponSlots": [
     {

@@ -1,0 +1,32 @@
+{
+    "id":"MPC_overclockedTargetting",
+    "type":"STAT_MOD",
+    "aiType":"CUSTOM",
+    "aiScript":"data.scripts.shipsystems.ai.niko_MPC_overclockedTargettingSystemAI",
+    "statsScript":"data.scripts.shipsystems.niko_MPC_overclockedTargettingSystemStats",
+
+    "runScriptWhileIdle":false,
+    "useSound":"MPC_overclockedTargettingStart",
+	"loopSound":"MPC_overclockedTargettingLoop",
+	"deactivateSound":"MPC_overclockedTargettingStop",
+
+    "outOfUsesSound":"gun_out_of_ammo",
+
+	"jitterUnderColor":[122,64,222,125],
+	"jitterUnderCopies":8,
+	"jitterUnderMinRange":0,
+	"jitterUnderRange":5,
+	"jitterUnderRangeRadiusFraction":0,
+
+	"jitterColor":[122,64,222,50],
+	"jitterCopies":2,
+	"jitterMinRange":0,
+	"jitterRange":3,
+	"jitterRangeRadiusFraction":0,
+
+    "aiHints":{
+        "activeSpeedIncrease":0,
+        "burstMovementPotential":0,
+        "averageSpeedIncrease":0,
+    }
+}

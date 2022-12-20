@@ -29,8 +29,8 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0005": "heavyburst",
-        "WS0006": "heavyburst"
+        "WS0005": "niko_MPC_LR_heavyburst",
+        "WS0006": "niko_MPC_LR_heavyburst"
       }
     }
   ],

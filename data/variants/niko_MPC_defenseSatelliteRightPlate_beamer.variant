@@ -21,11 +21,46 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "pdburst",
-        "WS0005": "harpoon",
-        "WS0013": "gravitonbeam",
-        "WS0014": "gravitonbeam",
         "WS0019": "amblaster"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0016": "guardian"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0013": "niko_MPC_LR_graviton",
+        "WS0014": "niko_MPC_LR_graviton"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0005": "harpoon"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "niko_MPC_LR_pdburst",
+        "WS0002": "niko_MPC_LR_pdburst",
+        "WS0003": "niko_MPC_LR_heavyburst",
+        "WS0004": "niko_MPC_LR_pdburst",
+        "WS0006": "niko_MPC_LR_heavyburst",
+        "WS0008": "niko_MPC_LR_pdburst",
+        "WS0009": "niko_MPC_LR_heavyburst",
+        "WS0012": "niko_MPC_LR_pdburst",
+        "WS0015": "niko_MPC_LR_heavyburst",
+        "WS0017": "niko_MPC_LR_pdburst",
+        "WS0018": "niko_MPC_LR_pdburst"
       }
     },
     {
@@ -37,38 +72,6 @@
         "WS0011": "swarmer",
         "WS0020": "swarmer"
       }
-    },
-    {
-      "autofire": true,
-      "mode": "LINKED",
-      "weapons": {
-        "WS0002": "pdburst",
-        "WS0003": "heavyburst",
-        "WS0004": "pdburst",
-        "WS0006": "heavyburst",
-        "WS0008": "pdburst",
-        "WS0009": "heavyburst",
-        "WS0012": "pdburst",
-        "WS0015": "heavyburst",
-        "WS0016": "guardian",
-        "WS0017": "pdburst",
-        "WS0018": "pdburst"
-      }
-    },
-    {
-      "autofire": false,
-      "mode": "ALTERNATING",
-      "weapons": {}
-    },
-    {
-      "autofire": false,
-      "mode": "LINKED",
-      "weapons": {}
-    },
-    {
-      "autofire": false,
-      "mode": "LINKED",
-      "weapons": {}
     },
     {
       "autofire": false,

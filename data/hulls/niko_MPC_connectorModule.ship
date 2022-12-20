@@ -18,7 +18,8 @@
     "pointdefenseai",
     "niko_MPC_noExplosionDamage",
     "niko_MPC_connectorWeakness",
-    "always_detaches"
+    "always_detaches",
+    "turretgyros"
   ],
   "weaponSlots": [
     {

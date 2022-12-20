@@ -13,3 +13,7 @@ When exploratorium drones discover a planet, they often perform rudimentary terr
 
 Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of it's nature.
 Between those that are aware of their existance now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
+,,,,,
+MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
+
+Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",

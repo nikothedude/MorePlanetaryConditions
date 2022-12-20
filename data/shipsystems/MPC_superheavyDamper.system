@@ -1,0 +1,40 @@
+{
+	"id":"MPC_superheavyDamper",
+	"type":"STAT_MOD",
+	"aiType":"DAMPER_FIELD",
+	
+	"statsScript":"data.scripts.shipsystems.niko_MPC_superheavyDamperSystemStats",
+	
+	"jitterUnderColor":[255,51,15,175],
+	"jitterUnderCopies":33,
+	"jitterUnderMinRange":0,
+	"jitterUnderRange":8,
+	"jitterUnderRangeRadiusFraction":0,
+	
+	"jitterColor":[255,73,55,125],
+	"jitterCopies":5,
+	"jitterMinRange":0,
+	"jitterRange":5,
+	"jitterRangeRadiusFraction":0,
+	
+	#"weaponGlowColor":[255,87,55,0],
+	#"weaponTypes":[ENERGY, BALLISTIC, MISSILE],
+	
+	#"engineGlowColor":[255,90,255,255],
+	
+	"soundFilterType":"LOWPASS",
+	"soundFilterGain":0.5,
+	"soundFilterGainHF":0.10,
+
+	"fadeActivationSoundOnChargedown":true,
+	"useSound":"MPC_superheavyDamperStart",
+	"loopSound":"MPC_superheavyDamperLoop",
+	"deactivateSound":"MPC_superheavyDamperStop",
+	"outOfUsesSound":"gun_out_of_ammo",
+	
+	"aiHints":{
+	}
+}
+
+
+

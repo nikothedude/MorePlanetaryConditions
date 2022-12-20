@@ -23,8 +23,8 @@ public class MissionDefinition implements MissionDefinitionPlugin {
         api.addToFleet(FleetSide.ENEMY, "niko_MPC_defenseSatelliteCore_beamer", FleetMemberType.SHIP, null, false);
 
         // Set up the map.
-        float width = 6000f;
-        float height = 6000f;
+        float width = 18000f;
+        float height = 18000f;
         api.initMap((float)-width/2f, (float)width/2f, (float)-height/2f, (float)height/2f);
 
         float minX = -width/2;

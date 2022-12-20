@@ -37,7 +37,9 @@ class niko_MPC_satelliteStationBattleChecker(val handler: niko_MPC_satelliteHand
         if (!canAdvance(amount)) return
         var handlerEntity: HasMemory = handler.getPrimaryHolder() ?: return
         if (handlerEntity is SectorEntityToken) {
-            handlerEntity = handlerEntity.market
+            if (handlerEntity.market != null) {
+                handlerEntity = handlerEntity.market
+            } else return
         }
         if (handlerEntity !is MarketAPI) return
         for (possibleStation: SectorEntityToken in handlerEntity.getStationsInOrbit()) {
