@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="RuthlessSector">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Ruthless Sector/jars/RuthlessSector.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

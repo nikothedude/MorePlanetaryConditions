@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="src">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Legacy of Arkgneisis/jars/al_arkleg.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Legacy of Arkgneisis/jars/src" />
+      <root url="file://$PROJECT_DIR$/../Legacy of Arkgneisis/jars/src" />
+    </SOURCES>
+  </library>
+</component>

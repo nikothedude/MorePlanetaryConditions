@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="src1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Industrial.Evolution3.1.f/jars/IndEvo.jar!/" />
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.1.f" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.1.f/jars/src" />
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.1.f/jars/src" />
+    </SOURCES>
+  </library>
+</component>
