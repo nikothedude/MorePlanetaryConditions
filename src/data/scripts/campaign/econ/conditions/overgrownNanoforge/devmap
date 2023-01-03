@@ -1,0 +1,8 @@
+structure for creating effects:
+
+instead of having a class for each type of effect, have a prototype object that will create a anonymous class?
+or maybe have a enum correspond to each class type? i just want to be able to call like, supplyIncreaseEffect.canBeAppliedTo(market)
+or something.
+
+idea
+enum class effectPrototype {

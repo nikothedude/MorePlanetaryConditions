@@ -4,16 +4,19 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
 import com.fs.starfarer.api.loading.HullModSpecAPI
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import lunalib.lunaExtensions.getMarketsCopy
 
 object niko_MPC_miscUtils {
-
     @JvmStatic
     fun SectorEntityToken.isOrbitalStation(): Boolean {
         return (hasTag(Tags.STATION))
@@ -76,11 +79,5 @@ object niko_MPC_miscUtils {
     @JvmStatic
     fun SectorEntityToken.isDespawning(): Boolean {
         return (!isAlive || hasTag(Tags.FADING_OUT_AND_EXPIRING))
-    }
-
-    @JvmStatic
-    fun MarketAPI.hasCustomControls(): Boolean {
-        val allowsFreePortTrade = (faction?.getCustomBoolean(Factions.CUSTOM_ALLOWS_TRANSPONDER_OFF_TRADE)) ?: false
-        return (!isFreePort && !allowsFreePortTrade)
     }
 }

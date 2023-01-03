@@ -10,6 +10,9 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    const val overgrownNanoforgeBaseJunkSpreadTargettingChance = 500f
+
+
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
     fun loadSettings() {

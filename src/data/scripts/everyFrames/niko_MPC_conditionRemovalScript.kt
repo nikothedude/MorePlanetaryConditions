@@ -10,7 +10,7 @@ import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.utilities.niko_MPC_satelliteUtils.getConditionLinkedHandler
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
-abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken, var conditionId: String, val condition: niko_MPC_baseNikoCondition? = null): niko_MPC_baseNikoScript() {
+abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, var conditionId: String, val condition: niko_MPC_baseNikoCondition? = null): niko_MPC_baseNikoScript() {
     var runs = 0
     var thresholdTilEnd = 250
 
@@ -20,7 +20,7 @@ abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken, va
 
     override fun advance(amount: Float) {
         runs++
-        val market: MarketAPI? = entity.market
+        val market: MarketAPI? = entity?.market ?: condition?.getMarket()
         if (market == null) {
             if (runs >= thresholdTilEnd) {
                 delete()
@@ -36,8 +36,7 @@ abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken, va
     abstract fun deleteItem()
 
     protected open fun shouldDelete(market: MarketAPI): Boolean {
-        return ((entity.isExpired || entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)) ||
-                !market.hasCondition(conditionId))
+        return (entity != null && (entity.isExpired || entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)) || !market.hasCondition(conditionId))
     }
 
     override fun start() {

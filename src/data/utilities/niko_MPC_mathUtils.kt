@@ -1,6 +1,7 @@
 package data.utilities
 
 import org.jetbrains.annotations.Contract
+import kotlin.math.roundToInt
 
 object niko_MPC_mathUtils {
     @JvmStatic
@@ -12,4 +13,16 @@ object niko_MPC_mathUtils {
         }
         return number
     }
+
+    @JvmStatic
+    fun Float.roundToMultipleOf(anchor: Float): Float {
+        return anchor*((this) / anchor).roundToInt()
+    }
+
+    @JvmStatic
+    fun Int.roundToMultipleOf(anchor: Float): Float {
+        return anchor*((this) / anchor).roundToInt()
+    }
+
+
 }

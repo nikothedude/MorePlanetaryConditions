@@ -1,9 +1,9 @@
-package data.utilities
+package data.scripts.campaign.econ.conditions.overgrownNanoforge
 
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 
 
-object niko_MPC_overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeCommoditySetupData>() {
+object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeCommodityDataStore.overgrownNanoforgeCommoditySetupData>() {
 
     val supplyData = overgrownNanoforgeCommoditySetupData(Commodities.SUPPLIES, 35f, hashMapOf(Pair(Commodities.METALS, 0.25f), Pair(Commodities.ORGANICS, 0.2f), Pair(Commodities.HEAVY_MACHINERY, 0.5f)))
 
@@ -43,8 +43,7 @@ object niko_MPC_overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownN
         this[Commodities.VOLATILES] = volatilesData
         this[Commodities.ORGANICS] = organicsData
     }
+    class overgrownNanoforgeCommoditySetupData(
+        val commodity: String, val cost: Float, val demandPerSupply: MutableMap<String, Float>
+    )
 }
-
-class overgrownNanoforgeCommoditySetupData(
-    val commodity: String, val cost: Float, val demandPerSupply: MutableMap<String, Float>
-)

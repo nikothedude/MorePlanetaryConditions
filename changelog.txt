@@ -1,0 +1,147 @@
+3.0.0:
+INSERT COMPATIBILITY NOTE HERE
+
+New condition: Overgrown Nanoforge
+<Insert effects here>
+
+2.1.1a:
+SAVE COMPATABLE
+SOme misc balance changes, such as reducing the time the superheavy damper is active for, increasing targetting overclock cooldown, switching the ordnance locust to a hurricane
+
+2.1.1:
+SAVE COMPATABLE
+
+Satellites significantly buffed: Heavy combat modules now have the system "Overclocked Targetting", which multiples weapon range by a factor of 100 for ~10 seconds, before overloading the module for 10 seconds. Has custom AI so that it doesn't activate when it's fighting a nearby ship. The satellites were a little sucky at their role as a long-ranged artillery platform, and this will significantly alleviate that flaw.
+Core given "Superheavy damper field", a damepr field that reduces damage taken by 90% but only lasts for 2.5 seconds, has a 1 second cooldown, has 2 charges, and takes a while to recharge. The intent is to give cores a small amount of survivability against strike attacks, so you cant just rush in and burst it down. You're forced to at least hit it for 2.5 seconds, and at worst, 6 full seconds.
+Heavy combat modules have been given armored weapon mounts.
+Their beams are now modded weapons, that have instant travel time. This makes the beamer varient scary.
+Raised DP/FP to 60.
+Swarm variant is more common and now is composed almost entirely out of wasps. https://fractalsoftworks.com/forum/Smileys/default/smiley.gif
+
+Misc. cleanup
+
+2.1.0a
+Removes magiclib dependency
+
+2.1.0
+MAYBE SAVE COMPATABLE I DONT REMEMBER
+Makes satellites work a bit more consistantly
+Raesvelg now starts with satellites (You can generate satellites on planets via the config)
+Hopefully fixed an edge case crash
+
+2.0.0
+NOT SAVE COMPATBLE
+Massively refactors most of the mod
+Fixed a few critical bugs
+Fixed a few misc bugs
+Changed some satellite stats
+Game should be significantly more stable
+
+1.0.5a
+LIKELY SAVE COMPATABLE
+
+Fixes up a few things from the last updates and polishes it
+
+1.0.5
+
+HOPEFULLY SAVE COMPATBLE
+
+Laid very initial groundwork for next condition
+Made a workaround for a bug that caused a crash when a game was loaded
+
+1.0.4
+INCOMPATABLE WITH PREVIOUS SAVES
+
+Added a few config options for discovering every satellite at once
+Added a stopgap for the satellite fleet drift issue by forcing the satellite fleet on fleets interacting with the planet to orbit the planet
+Improved station digging code so that it almost always finds the satellite entity and returns important data, even if the entity we interact with isnt a station
+Added a lot more debug code that should hopefully catch and resolve scenarios where entity is null apon application of the satellite condition
+Improved code for fighting your own faction's satellites to use a better method
+Increased satellite sensor profile to 3 from 1
+
+Backend:
+Documented campaignplugin heavily
+Misc documentation and annotations
+Misc nullchecks
+Misc naming improvements
+Deleted unneccessary files, renamed a few to be more descriptive and accurate
+
+1.0.3
+Added a few config options for enabling/disabling a few features
+Reworked some of the backend
+Satellites now always defend markets and stations if you interact with them
+Upgraded debugging
+More station compatibility
+
+1.0.2
+Fixed NPE on fighting station markets
+
+1.0.1
+Fixed NPE on simulation
+Removed weapons from the game, they were unused
+Added tips
+Satellites can no longer turn
+Most likely save compatable? Probably?
+
+1.0.0
+
+Release
+Satellites no longer spawn in core worlds.
+Fixed up some combat AI.
+Polished some things
+Fixed the console command
+
+1.1.0_beta:
+
+Added a new console command, FindPlanetsWithConditionId (conditionId). Lists all planets in the game with a given condition. Syntax: FindPlanetsWithConditionId (conditionId)
+
+1.0.0_beta:
+
+Finishing up the beta stage. All major bugs seem to have vanished and functionality has never been better.
+Added a new very rare swarm variant. This one will kick your ass.
+
+0.0.6_beta:
+Adds a bunch of questionably balanced variants. Fixes a few bugs. Reduces satellite DP to one to hopefully let their allies deploy more ships.
+
+0.0.5_beta:
+Reworked a lot of the backend. Improved a lot of ***, although in a way that makes me unhappy.
+
+Next update will probably be a huge quality pass.
+
+0.0.4_beta:
+Fixed a few crashes.
+
+Improved polish further.
+Buffed satellites FP.
+Buffed satellite range.
+Nearly perfects fleet interception.
+
+More misc changes. All in all, its way more playable now.
+
+0.0.3_beta:
+Fixed a few crashes.
+Improved the functionality of hostile fleet interception. It now works. Somewhat.
+
+You can now fight your own colony's satellites.
+Improved the description of the condition.
+Added illustrations that arent placeholders.
+
+Misc polish and ***.
+
+0.0.2_beta:
+Fixed a NPE when loading saves. Hopefully.
+
+Please tell me if you get any strange crashes at random, I found a possible hole in the logic of my design (I am assuming many variables will not be null, they may be).
+
+0.0.1_beta:
+Satellite balance: Nerfed the range of the satellites, reduced the number of the satellites, reduced the amount of harpoons on the heavy combat modules, reduced the health/armor of the heavy combat modules. Satellites now start at 70% CR.
+
+New features: Untested framework for fleets being attacked by satellites if the fleets want to attack the planet.
+
+New description for satellites. New sprite for satellites in orbit of entities.
+Cleaned up some backend code.
+
+Many more misc changes I won't be assed to document until release.
+
+0.0.0_beta:
+Beta release

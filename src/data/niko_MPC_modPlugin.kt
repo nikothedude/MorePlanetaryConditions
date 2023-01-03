@@ -3,9 +3,11 @@ package data
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import data.campaign.ids.vic_Items
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -28,6 +30,17 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } catch (ex: Exception) {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
+
+        addSpecialItemsToItemRepo()
+    }
+
+    val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(niko_MPC_ids.overgrownNanoforgeItemId, 0, 0)
+
+    private fun addSpecialItemsToItemRepo() {
+
+        //add special items
+        ItemEffectsRepo.ITEM_EFFECTS[niko_MPC_ids.overgrownNanoforgeItemId] = overgrownNanoforgeItemInstance
+
     }
 
     /* @Override

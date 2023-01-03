@@ -7,5 +7,5 @@ object niko_MPC_industryIds {
     const val luddicPathSuppressorStructureId = "niko_MPC_antiAsteroidLuddicPathSuppressor"
     const val primordialNanoforgeId = "niko_MPC_primordialNanoforge"
     const val overgrownNanoforgeIndustryId = "niko_MPC_overgrownNanoforge"
-    const val overgrownNanoforgeJunkStructureId = "niko_MPC_overgrownNanoforgeJunk"
+    const val overgrownNanoforgeJunkStructureId = "niko_MPC_overgrownNanoforgeJunk_"
 }
