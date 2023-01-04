@@ -27,15 +27,24 @@ object niko_MPC_mathUtils {
     }
 
     fun randomlyDistributeBudgetAcrossCommodities(
-        entries: Collection<Any>,
+        entries: Collection<String>,
         remainingScore: Float,
-        min: Float = 0f) : MutableMap<Any, Float> {
-        return randomlyDistributeNumberAcrossEntries(
+        min: Float = 0f) : MutableMap<String, Int> {
+        val distributedMap = randomlyDistributeNumberAcrossEntries(
             entries,
             remainingScore,
             min,
             getMax = { budget: Float, remainingRuns: Int, entry: Any -> (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) },
             modifyScoreForMap = { score: Float, commodityId: Any -> (score/overgrownNanoforgeCommodityDataStore[commodityId]!!.cost).coerceAtLeast(0f) })
+
+        val convertedMap = HashMap<String, Int>()
+        for (entry in distributedMap.entries) {
+            val commodityId = entry.key as? String ?: continue
+            val score = entry.value.toInt()
+
+            convertedMap[commodityId] = score
+        }
+        return convertedMap
     }
     @JvmOverloads
     @JvmStatic

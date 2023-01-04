@@ -18,10 +18,24 @@ enum class overgrownNanoforgeEffectPrototypes {
             return (superValue && market.getProducableCommoditiesForOvergrownNanoforge().isNotEmpty())
         }
         override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float = 5f
-        override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float {
-            TODO("Not yet implemented")
+        override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? {
+            val market = params.nanoforge.market
+            val producableCommodities = market.getProducableCommodityModifiers()
+            getNanoforgeProducableCommoditiesOutOfList(producableCommodities.keys)
+            if (producableCommodities.isEmpty()) return null 
+            var lowestCost = Float.MAX_VALUE
+            for (commodityId in producableCommodities.keys) {
+                val cost = getCostForCommodity(params, commodityId) ?: continue
+                if (lowestCost < cost) lowestCost = cost
+            }
+            return lowestCost
         }
-        override fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeAlterSupplySource {
+        fun getCostForCommodity(params: overgrownNanoforgeRandomizedSourceParams, commodityId: String): Float? {
+            val market = params.nanoforge.market
+            return overgrownNanoforgeCommodityDataStore[entry]?.cost
+        }
+        override fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeAlterSupplySource? {
+            if (!canAfford(params, availableBudget)) return null
             val market = params.nanoforge.market
             val producableCommodities = market.getProducableCommoditiesForOvergrownNanoforge()
 
@@ -41,10 +55,9 @@ enum class overgrownNanoforgeEffectPrototypes {
             var timesToPick = getTimesToPickCommodities(params, availableBudget, picker)
             val pickedCommodities = HashSet<String>()
             while (timesToPick-- > 0 && !picker.isEmpty) pickedCommodities += picker.pickAndRemove()
-
-            val themeToScore = randomlyDistributeBudgetAcrossCommodities(pickedCommodities, availableBudget, 0f)
-
-
+            val themeToScore = randomlyDistributeBudgetAcrossCommodities(pickedCommodities, availableBudget) //assign quantities to the things
+            val effect = overgrownNanoforgeAlterSupplySource(TODO(), themeToScore)
+            return effect
         }
         private fun getTimesToPickCommodities(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float, picker: WeightedRandomPicker<String>): Float {
             var times: Float = OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
@@ -56,10 +69,13 @@ enum class overgrownNanoforgeEffectPrototypes {
     },
 
     open fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean = canAfford(params, availableBudget)
-    fun canAfford(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean = getMinimumCost(params) <= availableBudget
+    fun canAfford(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean {
+        val minimumCost = getMinimumCost(params) ?: return false
+        return (getMinimumCost(params) <= availableBudget)
+    }
     abstract fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float
-    abstract fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float
-    abstract fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeEffect
+    abstract fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float?
+    abstract fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeEffect?
 
     companion object {
         val allPrototypes = overgrownNanoforgeEffectPrototypes.values().toSet()

@@ -3,9 +3,8 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 
 abstract class overgrownNanoforgeRandomizedEffect(
-    source: overgrownNanoforgeEffectSource,
-    val score: Float
-): overgrownNanoforgeEffect(source) {
+    source: overgrownNanoforgeEffectSource
+    ): overgrownNanoforgeEffect(source) {
 
 
 }

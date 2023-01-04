@@ -52,18 +52,9 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
             remainingScore.toFloat(),
             0f
         )
-
-        val convertedThemeToScoreMap = HashMap<String, Int>()
-        for (entry in themeToScore.entries) {
-            val commodityId = entry.key as? String ?: continue
-            val score = entry.value.toInt()
-
-            convertedThemeToScoreMap[commodityId] = score
-        }
-
         // and now we have the values for our intrinsic supply
 
-        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, convertedThemeToScoreMap, nanoforge = this))
+        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, themeToScore, nanoforge = this))
         baseSource = overgrownNanoforgeIndustrySource(sourceData, this)
     }
 

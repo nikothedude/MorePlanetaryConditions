@@ -6,11 +6,10 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 
 class overgrownNanoforgeAlterSupplySource(
     source: overgrownNanoforgeRandomizedSource,
-    score: Float,
     val supply: MutableMap<String, Float> = HashMap()
-): overgrownNanoforgeRandomizedEffect(source, score) {
+): overgrownNanoforgeRandomizedEffect(source) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
-        TODO("Not yet implemented")
+        return if (isSupplyNegative()) overgrownNanoforgeEffectCategories.DEFECIT else overgrownNanoforgeEffectCategories.BENEFIT
     }
 
     override fun getName(): String {
@@ -22,6 +21,12 @@ class overgrownNanoforgeAlterSupplySource(
     }
 
     override fun apply() {
+        for (entry in supply.entries) {
+            val commodityId = entry.key
+            val quantitiy = entry.value
+
+            getIndustry().supply(getId(), TODO())
+        }
         TODO("Not yet implemented")
     }
 

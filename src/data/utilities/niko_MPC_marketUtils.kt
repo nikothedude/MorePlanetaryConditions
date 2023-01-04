@@ -23,6 +23,19 @@ object niko_MPC_marketUtils {
     Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES)
 
     @JvmStatic
+    fun getNanoforgeProducableCommoditiesOutOfList(list: MutableSet<String>): MutableSet<String> {
+        val iterator = list.iterator()
+        while (iterator.hasNext()) {
+            val entry = iterator.next()
+            if (overgrownNanoforgeCommodityDataStore[entry] == null) {
+                iterator.remove()
+                continue
+            }
+        }
+        return list
+    }
+
+    @JvmStatic
     fun MarketAPI.getProducableCommodityModifiers(): MutableMap<String, Int> {
         // things that just arent producable without certain conditions
         val removeIfNull: HashSet<String> = hashSetOf(Commodities.FOOD, Commodities.ORE, Commodities.ORGANICS, Commodities.RARE_ORE, Commodities.VOLATILES)
@@ -45,12 +58,7 @@ object niko_MPC_marketUtils {
     @JvmStatic
     fun MarketAPI.getProducableCommoditiesForOvergrownNanoforge(): MutableSet<String> {
         val producableCommodities = getProducableCommodities()
-        val iterator = producableCommodities.iterator()
-        while (iterator.hasNext()) {
-            val entry = iterator.next()
-            if (overgrownNanoforgeCommodityDataStore[entry] == null) iterator.remove()
-        }
-        return producableCommodities
+        return getNanoforgeProducableCommoditiesOutOfList(producableCommodities)
     }
 
     @JvmStatic
