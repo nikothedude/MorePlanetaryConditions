@@ -8,11 +8,10 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeJunkSpreader
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeSupplyData
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getProducableCommodityModifiers
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
-import data.utilities.niko_MPC_mathUtils.roundToMultipleOf
+import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
@@ -47,29 +46,25 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
             producableModifiers -= pickedCommodity
         }
 
-        var remainingScore = getBaseScore()
-        var remainingRuns = pickedThemes.size
+        val remainingScore = getBaseScore()
+        val themeToScore = randomlyDistributeBudgetAcrossCommodities(
+            pickedThemes.keys.toMutableList(),
+            remainingScore.toFloat(),
+            0f
+        )
 
-        // distribute the budget randomly across all picked outputs
-        for (entry in pickedThemes.keys) {
-            remainingRuns--
-            val commoditySetupData = overgrownNanoforgeCommodityDataStore[entry]!!
-            val cost = commoditySetupData.cost
-            if (remainingRuns == 0) {
-                pickedThemes[entry] = (remainingScore.roundToMultipleOf(cost).toInt()).coerceAtLeast(0)
-                continue
-            }
-            val max = (((remainingScore - remainingRuns).roundToMultipleOf(cost)).toInt()).coerceAtLeast(0)
-            val min = 0
+        val convertedThemeToScoreMap = HashMap<String, Int>()
+        for (entry in themeToScore.entries) {
+            val commodityId = entry.key as? String ?: continue
+            val score = entry.value.toInt()
 
-            val score = MathUtils.getRandomNumberInRange(min, max)
-            remainingScore -= score
-            pickedThemes[entry] = (score/cost).toInt().coerceAtLeast(0)
+            convertedThemeToScoreMap[commodityId] = score
         }
+
         // and now we have the values for our intrinsic supply
 
-        val data = hashSetOf(overgrownNanoforgeSupplyData(this, pickedThemes, nanoforge = this))
-        baseSource = data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustry(data, this)
+        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, convertedThemeToScoreMap, nanoforge = this))
+        baseSource = overgrownNanoforgeIndustrySource(sourceData, this)
     }
 
     private fun applyConditions() {

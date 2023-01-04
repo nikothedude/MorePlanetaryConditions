@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import lunalib.lunaExtensions.getMarketsCopy
 import niko.MCTE.utils.MCTE_debugUtils.displayError
@@ -22,7 +23,8 @@ object niko_MPC_marketUtils {
     Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES)
 
     @JvmStatic
-    fun MarketAPI.getProducableCommodityModifiers(): HashMap<String, Int> {
+    fun MarketAPI.getProducableCommodityModifiers(): MutableMap<String, Int> {
+        // things that just arent producable without certain conditions
         val removeIfNull: HashSet<String> = hashSetOf(Commodities.FOOD, Commodities.ORE, Commodities.ORGANICS, Commodities.RARE_ORE, Commodities.VOLATILES)
         val producableCommodities = ArrayList(commodities)
         val producableModifiers = HashMap<String, Int>()
@@ -37,10 +39,25 @@ object niko_MPC_marketUtils {
             }
             producableModifiers[commodityId] = modifier
         }
-
         return producableModifiers
-
     }
+
+    @JvmStatic
+    fun MarketAPI.getProducableCommoditiesForOvergrownNanoforge(): MutableSet<String> {
+        val producableCommodities = getProducableCommodities()
+        val iterator = producableCommodities.iterator()
+        while (iterator.hasNext()) {
+            val entry = iterator.next()
+            if (overgrownNanoforgeCommodityDataStore[entry] == null) iterator.remove()
+        }
+        return producableCommodities
+    }
+
+    @JvmStatic
+    fun MarketAPI.getProducableCommodities(): MutableSet<String> {
+        return getProducableCommodityModifiers().keys
+    }
+
     fun MarketAPI.getCommodityModifier(id: String): Int? {
         var modifier: Int? = null
         for (mc in conditions) {

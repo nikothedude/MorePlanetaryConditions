@@ -6,7 +6,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 
 class overgrownNanoforgeAlterSupplySource(
     source: overgrownNanoforgeRandomizedSource,
-    score: Float
+    score: Float,
+    val supply: MutableMap<String, Float> = HashMap()
 ): overgrownNanoforgeRandomizedEffect(source, score) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         TODO("Not yet implemented")
