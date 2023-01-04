@@ -11,13 +11,19 @@ import kotlin.collections.HashSet
 
 enum class overgrownNanoforgeEffectPrototypes {
 
+    //TODO: Replace params with a special class that has its own budget
+    // This is important because as it stands the caller hsa no way of knowing how much budget was actually used up
+
     ALTER_SUPPLY {
+        override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
+            return mutableSetOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFECIT)
+        }
         override fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean {
             val superValue = super.canBeAppliedTo(params, availableBudget)
             val market = params.nanoforge.market
             return (superValue && market.getProducableCommoditiesForOvergrownNanoforge().isNotEmpty())
         }
-        override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float = 5f
+        override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float = 50f
         override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? {
             val market = params.nanoforge.market
             val producableCommodities = market.getProducableCommodityModifiers()
@@ -66,8 +72,69 @@ enum class overgrownNanoforgeEffectPrototypes {
             if (randomFloat > threshold) times++
             return times.coerceAtMost(picker.items.size.toFloat())
         }
+        ALTER_UPKEEP {
+
+        }
+        ALTER_ACCESSABILITY {
+
+        }
+        ALTER_DEFENSES {
+
+        }
+        ALTER_STABILITY {
+            fun getCostPerStability(params: overgrownNanoforgeRandomizedSourceParams): Float = 25f
+            override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float {
+                val weight = 20f
+                val market = params.getMarket()
+                val stability = market.stability.modifiedValue
+                val divisor = (ANCHOR_POINT_FOR_STABILITY/stability).coerceAtLeast(1f)
+                // TODO: can i store a variable directly on a enum? ex. store anchor point in val
+                var mult = (1/divisor)
+                return weight*mult //always returns 0 if stability is 0
+            }
+            override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? = getCostPerStability(params)
+            override fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeAlterStabilityEffect? {
+                var availableBudget = availableBudget
+                val instance: overgrownNanoforgeAlterStabilityEffect? = null
+                var stabilityIncrement = 0
+                var timesToIncrement = getTimesToIncrement(params, availableBudget)
+                while (timesToIncrement-- > 0) {
+                    availableBudget -= getCostPerStability(params)
+                    stabilityIncrement++
+                }
+                if (stabilityIncrement > 0) instance = overgrownNanoforgeAlterStabilityEffect(TODO(), stabilityIncrement)
+
+                return instance
+            }
+            fun getTimesToIncrement(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float) {
+                var availableBudget = availableBudget
+                var timesToIncrement = 0
+                while (canAfford(params, availableBudget)) {
+                    availableBudget -= getCostPerStability(params)
+                    timesToIncrement++
+                }
+                return timesToIncrement
+            }
+        ALTER_HAZARD {
+
+        }
+        
+        // SPECIAL
+        EXPLODE_UPON_DESTRUCTION {
+            override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
+                return mutableSetOf(overgrownNanoforgeEffectCategories.DEFECIT, overgrownNanoforgeEffectCategories.SPECIAL)
+            }
+        }
+
+        SPAWN_HOSTILE_FLEETS {
+            override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
+                return mutableSetOf(overgrownNanoforgeEffectCategories.DEFECIT, overgrownNanoforgeEffectCategories.SPECIAL)
+            }
+        }
+
     },
 
+    abstract fun getPossibleCategories(): MutableSet<overgrownNanoforgeEffectCategories>
     open fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean = canAfford(params, availableBudget)
     fun canAfford(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean {
         val minimumCost = getMinimumCost(params) ?: return false
@@ -78,8 +145,17 @@ enum class overgrownNanoforgeEffectPrototypes {
     abstract fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeEffect?
 
     companion object {
+        val ANCHOR_POINT_FOR_STABILITY: Int = 5
         val allPrototypes = overgrownNanoforgeEffectPrototypes.values().toSet()
 
+        val prototypesByCategory: MutableMap<overgrownNanoforgeEffectCategories, MutableSet<overgrownNanoforgeEffectPrototypes>> = HashMap()
+        init {
+            for (category in overgrownNanoforgeEffectCategories.values) prototypesByCategory[category] = HashSet()
+
+            for (entry in overgrownNanoforgeEffectPrototypes.values) {
+                for (category in entry.getPossibleCategories()) prototypesByCategory[category]!! += entry
+            }
+        }
         fun getPrototype(
             params: overgrownNanoforgeRandomizedSourceParams,
             availableBudget: Float,
