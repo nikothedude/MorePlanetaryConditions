@@ -6,14 +6,16 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overg
 enum class randomizedSourceBudgets(
     val chance: Float, val value: Float
 ) {
+    USELESS(0.01f, 10f),
     EXTREMELY_LOW(0.1f, 25f),
     VERY_LOW(1f, 50f),
     LOW(5f, 75f),
-    MEDIUM(50f, 100f),
+    MEDIUM(30f, 100f),
     HIGH(10f, 125f),
     VERY_HIGH(5f, 150f),
     EXTREMELY_HIGH(1f, 175f),
-    INSANE(0.5f, 200f)
+    INSANE(0.5f, 200f),
+    EXOTIC(0.1f, 280f)
 }
 
 object randomizedSourceBudgetsPicker: WeightedRandomPicker<randomizedSourceBudgets>() {

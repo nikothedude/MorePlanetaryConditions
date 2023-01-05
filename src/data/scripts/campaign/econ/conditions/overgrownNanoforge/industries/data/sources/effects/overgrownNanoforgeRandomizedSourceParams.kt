@@ -31,7 +31,7 @@ class overgrownNanoforgeRandomizedSourceParams(
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
             getBudget(),
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(this)!!},
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(this) ?: 0f},
         )
         for (entry in weightedPrototypes) ourBudgetHolder.budget -= entry.value
         for (entry in weightedPrototypes) {
@@ -47,7 +47,7 @@ class overgrownNanoforgeRandomizedSourceParams(
         TODO("Not yet implemented")
     }
 
-    fun getInitialBudget(nanoforge: overgrownNanoforgeIndustry): Float {
+    private fun getInitialBudget(nanoforge: overgrownNanoforgeIndustry): Float {
         return randomizedSourceBudgetsPicker.getRandomBudget(nanoforge)
     }
     fun getBudget(): Float {

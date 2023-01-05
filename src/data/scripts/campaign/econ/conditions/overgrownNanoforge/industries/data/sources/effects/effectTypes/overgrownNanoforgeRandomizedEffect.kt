@@ -4,7 +4,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 
 abstract class overgrownNanoforgeRandomizedEffect(
-    params: overgrownNanoforgeRandomizedSourceParams
+    nanoforge: overgrownNanoforgeIndustry
     ): overgrownNanoforgeEffect(params) {
 
 

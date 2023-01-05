@@ -7,7 +7,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 abstract class overgrownNanoforgeEffect(
-    val params: overgrownNanoforgeRandomizedSourceParams
+    val nanoforge: overgrownNanoforgeIndustry
 ) {
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories
@@ -21,7 +21,7 @@ abstract class overgrownNanoforgeEffect(
         return
     }
 
-    fun getMarket(): MarketAPI = params.getMarket()
-    fun getIndustry(): overgrownNanoforgeIndustry = params.nanoforge
-    open fun getId(): String = params.toString() + this.toString()
+    fun getMarket(): MarketAPI = nanoforge.market
+    fun getIndustry(): overgrownNanoforgeIndustry = nanoforge
+    open fun getId(): String = nanoforge.toString() + this.toString()
 }
