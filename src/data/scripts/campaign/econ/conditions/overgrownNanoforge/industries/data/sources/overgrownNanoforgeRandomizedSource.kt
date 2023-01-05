@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources
 
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeSupplyData
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
@@ -12,7 +13,7 @@ class overgrownNanoforgeRandomizedSource(
     data: MutableSet<overgrownNanoforgeSupplyData> = HashSet(),
     nanoforge: overgrownNanoforgeIndustry,
     id: Any,
-    val params: overgrownNanoforgeSourceParams
+    val params: overgrownNanoforgeRandomizedSourceParams
 ): overgrownNanoforgeEffectSource(data, nanoforge, id) {
 
     var structure: overgrownNanoforgeJunk? = null

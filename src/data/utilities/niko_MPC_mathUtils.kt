@@ -29,11 +29,11 @@ object niko_MPC_mathUtils {
     fun randomlyDistributeBudgetAcrossCommodities(
         entries: Collection<String>,
         remainingScore: Float,
-        min: Float = 0f) : MutableMap<String, Int> {
+        getMin: (budget: Float, remainingRuns: Int, entry: String) -> Float = { _, _, _, -> 0f},) : MutableMap<String, Int> {
         val distributedMap = randomlyDistributeNumberAcrossEntries(
             entries,
             remainingScore,
-            min,
+            getMin,
             getMax = { budget: Float, remainingRuns: Int, entry: Any -> (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) },
             modifyScoreForMap = { score: Float, commodityId: Any -> (score/overgrownNanoforgeCommodityDataStore[commodityId]!!.cost).coerceAtLeast(0f) })
 
@@ -48,26 +48,32 @@ object niko_MPC_mathUtils {
     }
     @JvmOverloads
     @JvmStatic
-    inline fun randomlyDistributeNumberAcrossEntries(
-        entries: Collection<Any>,
+    /**
+     * Randomly distributes [remainingScore] across all items in [entries] into a [HashMap] of type [T] -> [Float], with the value
+     * being the assigned value. The cumulative values are guaranteed to sum up to [remainingScore].
+     * */
+    inline fun <T: Any> randomlyDistributeNumberAcrossEntries(
+        entries: Collection<T>,
         remainingScore: Float,
-        min: Float = 0f,
-        getMax: (budget: Float, remainingRuns: Int, entry: Any) -> Float = { budget, _, _ -> budget },
-        modifyScoreForMap: (budget: Float, entry: Any) -> Float = { budget, _ -> budget.coerceAtLeast(0f) }
-    ): MutableMap<Any, Float> {
+        getMin: (budget: Float, remainingRuns: Int, entry: T) -> Float = { _, _, _, -> 0f},
+        getMax: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _ -> budget },
+        modifyScoreForMap: (budget: Float, entry: T) -> Float = { budget, _ -> budget.coerceAtLeast(0f) }
+    ): MutableMap<T, Float> {
 
         var remainingScore = remainingScore
         var remainingRuns = entries.size
-        val entriesToScore: MutableMap<Any, Float> = HashMap()
+        val entriesToScore: MutableMap<T, Float> = HashMap()
         for (entry in entries) {
             remainingRuns--
             if (remainingScore <= 0) {
                 entriesToScore[entry] = 0f
                 continue
             }
-            val max = getMax(remainingScore, remainingRuns, entry)
-            if (remainingRuns <= 0) {
-                entriesToScore[entry] = max
+            val min = getMin(remainingScore, remainingRuns, entry)
+            if (remainingScore < min) continue
+            val max = getMax(remainingScore, remainingRuns, entry).coerceAtLeast(min)
+            if (remainingRuns <= 0) { //we're at the end, so we can avoid the math and just assign it
+                entriesToScore[entry] = modifyScoreForMap(max, entry)
                 break
             }
 
@@ -77,6 +83,4 @@ object niko_MPC_mathUtils {
         }
         return entriesToScore
     }
-
-
 }

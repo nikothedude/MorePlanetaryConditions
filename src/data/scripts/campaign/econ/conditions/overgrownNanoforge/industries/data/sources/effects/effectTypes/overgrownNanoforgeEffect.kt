@@ -2,11 +2,12 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 abstract class overgrownNanoforgeEffect(
-    val source: overgrownNanoforgeEffectSource
+    val params: overgrownNanoforgeRandomizedSourceParams
 ) {
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories
@@ -20,7 +21,7 @@ abstract class overgrownNanoforgeEffect(
         return
     }
 
-    fun getMarket(): MarketAPI = source.getMarket()
-    fun getIndustry(): overgrownNanoforgeIndustry = source.industry
-    open fun getId(): String = this.toString()
+    fun getMarket(): MarketAPI = params.getMarket()
+    fun getIndustry(): overgrownNanoforgeIndustry = params.nanoforge
+    open fun getId(): String = params.toString() + this.toString()
 }

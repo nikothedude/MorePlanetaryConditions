@@ -4,9 +4,12 @@ import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.utilities.niko_MPC_marketUtils.removeNonNanoforgeProducableCommodities
 import data.utilities.niko_MPC_marketUtils.getProducableCommoditiesForOvergrownNanoforge
+import data.utilities.niko_MPC_marketUtils.getProducableCommodityModifiers
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
 import org.lazywizard.lazylib.MathUtils
+import java.util.*
 import kotlin.collections.HashSet
 
 enum class overgrownNanoforgeEffectPrototypes {
@@ -15,11 +18,11 @@ enum class overgrownNanoforgeEffectPrototypes {
     // This is important because as it stands the caller hsa no way of knowing how much budget was actually used up
 
     ALTER_SUPPLY {
-        override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
-            return mutableSetOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFECIT)
+        override fun getPossibleCategories(): Set<overgrownNanoforgeEffectCategories> {
+            return setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)
         }
-        override fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean {
-            val superValue = super.canBeAppliedTo(params, availableBudget)
+        override fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, maxBudget: Float): Boolean {
+            val superValue = super.canBeAppliedTo(params, maxBudget)
             val market = params.nanoforge.market
             return (superValue && market.getProducableCommoditiesForOvergrownNanoforge().isNotEmpty())
         }
@@ -27,8 +30,8 @@ enum class overgrownNanoforgeEffectPrototypes {
         override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? {
             val market = params.nanoforge.market
             val producableCommodities = market.getProducableCommodityModifiers()
-            getNanoforgeProducableCommoditiesOutOfList(producableCommodities.keys)
-            if (producableCommodities.isEmpty()) return null 
+            removeNonNanoforgeProducableCommodities(producableCommodities.keys)
+            if (producableCommodities.isEmpty()) return null
             var lowestCost = Float.MAX_VALUE
             for (commodityId in producableCommodities.keys) {
                 val cost = getCostForCommodity(params, commodityId) ?: continue
@@ -37,11 +40,10 @@ enum class overgrownNanoforgeEffectPrototypes {
             return lowestCost
         }
         fun getCostForCommodity(params: overgrownNanoforgeRandomizedSourceParams, commodityId: String): Float? {
-            val market = params.nanoforge.market
-            return overgrownNanoforgeCommodityDataStore[entry]?.cost
+            return overgrownNanoforgeCommodityDataStore[commodityId]?.cost
         }
-        override fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeAlterSupplySource? {
-            if (!canAfford(params, availableBudget)) return null
+        override fun getParamsForInstance(params: overgrownNanoforgeRandomizedSourceParams, maxBudget: Float): overgrownNanoforgeAlterSupplySource? {
+            if (!canAfford(params, maxBudget)) return null
             val market = params.nanoforge.market
             val producableCommodities = market.getProducableCommoditiesForOvergrownNanoforge()
 
@@ -50,7 +52,7 @@ enum class overgrownNanoforgeEffectPrototypes {
             while (iterator.hasNext()) {
                 val commodityId: String = iterator.next()
                 val cost = overgrownNanoforgeCommodityDataStore[commodityId]!!.cost
-                if (cost > availableBudget) {
+                if (cost > maxBudget) {
                     iterator.remove()
                     continue
                 }
@@ -58,31 +60,54 @@ enum class overgrownNanoforgeEffectPrototypes {
                 picker.add(commodityId, weight)
             }
 
-            var timesToPick = getTimesToPickCommodities(params, availableBudget, picker)
+            var timesToPick = getTimesToPickCommodities(params, maxBudget, picker)
             val pickedCommodities = HashSet<String>()
             while (timesToPick-- > 0 && !picker.isEmpty) pickedCommodities += picker.pickAndRemove()
-            val themeToScore = randomlyDistributeBudgetAcrossCommodities(pickedCommodities, availableBudget) //assign quantities to the things
-            val effect = overgrownNanoforgeAlterSupplySource(TODO(), themeToScore)
+            val themeToScore = randomlyDistributeBudgetAcrossCommodities(pickedCommodities, maxBudget) //assign quantities to the things
+            val effect = overgrownNanoforgeAlterSupplySource(params, themeToScore)
             return effect
         }
-        private fun getTimesToPickCommodities(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float, picker: WeightedRandomPicker<String>): Float {
-            var times: Float = OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
+        private fun getTimesToPickCommodities(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float, picker: WeightedRandomPicker<String>): Int {
+            var times: Int = OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
             val threshold = 0.9f
             val randomFloat = MathUtils.getRandom().nextFloat()
             if (randomFloat > threshold) times++
-            return times.coerceAtMost(picker.items.size.toFloat())
+            return times.coerceAtMost(picker.items.size)
         }
+    },
         ALTER_UPKEEP {
+            override fun getPossibleCategories(): Set<overgrownNanoforgeEffectCategories> {
+                return setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)
+            }
 
-        }
+            override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float {
+                TODO("Not yet implemented")
+            }
+
+            override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? {
+                TODO("Not yet implemented")
+            }
+
+            override fun getParamsForInstance(
+                params: overgrownNanoforgeRandomizedSourceParams,
+                maxBudget: Float
+            ): overgrownNanoforgeEffect? {
+                TODO("Not yet implemented")
+            }
+
+        },
         ALTER_ACCESSABILITY {
 
-        }
+        },
         ALTER_DEFENSES {
 
-        }
+        },
         ALTER_STABILITY {
+            override fun getPossibleCategories(): Set<overgrownNanoforgeEffectCategories> {
+                return setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)
+            }
             fun getCostPerStability(params: overgrownNanoforgeRandomizedSourceParams): Float = 25f
+
             override fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float {
                 val weight = 20f
                 val market = params.getMarket()
@@ -93,6 +118,13 @@ enum class overgrownNanoforgeEffectPrototypes {
                 return weight*mult //always returns 0 if stability is 0
             }
             override fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float? = getCostPerStability(params)
+            override fun getParamsForInstance(
+                params: overgrownNanoforgeRandomizedSourceParams,
+                maxBudget: Float
+            ): overgrownNanoforgeEffect? {
+                TODO("Not yet implemented")
+            }
+
             override fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeAlterStabilityEffect? {
                 var availableBudget = availableBudget
                 val instance: overgrownNanoforgeAlterStabilityEffect? = null
@@ -117,42 +149,43 @@ enum class overgrownNanoforgeEffectPrototypes {
             }
         ALTER_HAZARD {
 
-        }
+        },
         
         // SPECIAL
         EXPLODE_UPON_DESTRUCTION {
             override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
-                return mutableSetOf(overgrownNanoforgeEffectCategories.DEFECIT, overgrownNanoforgeEffectCategories.SPECIAL)
+                return setOf(overgrownNanoforgeEffectCategories.SPECIAL)
             }
         }
 
         SPAWN_HOSTILE_FLEETS {
             override fun getPossibleCategories(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectCategories> {
-                return mutableSetOf(overgrownNanoforgeEffectCategories.DEFECIT, overgrownNanoforgeEffectCategories.SPECIAL)
+                return mutableSetOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)
             }
         }
 
     },
 
-    abstract fun getPossibleCategories(): MutableSet<overgrownNanoforgeEffectCategories>
-    open fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean = canAfford(params, availableBudget)
-    fun canAfford(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): Boolean {
+    abstract fun getPossibleCategories(): Set<overgrownNanoforgeEffectCategories>
+    open fun canBeAppliedTo(params: overgrownNanoforgeRandomizedSourceParams, maxBudget: Float): Boolean = canAfford(params, maxBudget)
+    fun canAfford(params: overgrownNanoforgeRandomizedSourceParams, maxBudget: Float): Boolean {
         val minimumCost = getMinimumCost(params) ?: return false
-        return (getMinimumCost(params) <= availableBudget)
+        return (minimumCost <= maxBudget)
     }
     abstract fun getWeight(params: overgrownNanoforgeRandomizedSourceParams): Float
     abstract fun getMinimumCost(params: overgrownNanoforgeRandomizedSourceParams): Float?
-    abstract fun getInstance(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): overgrownNanoforgeEffect?
+    abstract fun getParamsForInstance(params: overgrownNanoforgeRandomizedSourceParams, maxBudget: Float): overgrownNanoforgeEffect?
 
     companion object {
         val ANCHOR_POINT_FOR_STABILITY: Int = 5
         val allPrototypes = overgrownNanoforgeEffectPrototypes.values().toSet()
 
-        val prototypesByCategory: MutableMap<overgrownNanoforgeEffectCategories, MutableSet<overgrownNanoforgeEffectPrototypes>> = HashMap()
+        val prototypesByCategory: MutableMap<overgrownNanoforgeEffectCategories, MutableSet<overgrownNanoforgeEffectPrototypes>> =
+            EnumMap(overgrownNanoforgeEffectCategories::class.java)
         init {
-            for (category in overgrownNanoforgeEffectCategories.values) prototypesByCategory[category] = HashSet()
+            for (category in overgrownNanoforgeEffectCategories.values()) prototypesByCategory[category] = HashSet()
 
-            for (entry in overgrownNanoforgeEffectPrototypes.values) {
+            for (entry in overgrownNanoforgeEffectPrototypes.values()) {
                 for (category in entry.getPossibleCategories()) prototypesByCategory[category]!! += entry
             }
         }
@@ -170,10 +203,10 @@ enum class overgrownNanoforgeEffectPrototypes {
 
         }
 
-        fun getPotentialPrototypes(params: overgrownNanoforgeRandomizedSourceParams, availableBudget: Float): MutableSet<overgrownNanoforgeEffectPrototypes> {
+        fun getPotentialPrototypes(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectPrototypes> {
             val potentialPrototypes = HashSet<overgrownNanoforgeEffectPrototypes>()
             for (prototype in allPrototypes) {
-                if (prototype.canBeAppliedTo(params, availableBudget)) potentialPrototypes += prototype
+                if (prototype.canBeAppliedTo(params, params.getBudget())) potentialPrototypes += prototype
             }
             return potentialPrototypes
         }
