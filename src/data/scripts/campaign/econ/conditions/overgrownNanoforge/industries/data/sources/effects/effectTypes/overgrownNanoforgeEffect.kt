@@ -17,9 +17,7 @@ abstract class overgrownNanoforgeEffect(
     abstract fun apply()
     abstract fun unapply()
 
-    open fun delete() {
-        return
-    }
+    abstract fun delete()
 
     fun getMarket(): MarketAPI = nanoforge.market
     fun getIndustry(): overgrownNanoforgeIndustry = nanoforge

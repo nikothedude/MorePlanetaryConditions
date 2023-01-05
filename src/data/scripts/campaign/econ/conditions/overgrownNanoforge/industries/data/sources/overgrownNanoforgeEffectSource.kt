@@ -6,9 +6,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 abstract class overgrownNanoforgeEffectSource(
-    val data: overgrownNanoforgeRandomizedEffect = HashSet(),
     val industry: overgrownNanoforgeIndustry,
     val id: Any,
+    val effects: MutableSet<overgrownNanoforgeEffect>
     ) {
     open fun delete() {
         unapply()
@@ -21,10 +21,20 @@ abstract class overgrownNanoforgeEffectSource(
 
     open fun apply() {
         industry.sources += this
+        applyEffects()
     }
 
-    open fun unapply() {
+    fun applyEffects() {
+        for (effect in effects) effect.apply()
+    }
+
+    open fun unapply(unapplyEffects: Boolean = true) {
         industry.sources -= this
+        if (unapplyEffects) unapplyEffects()
+    }
+
+    fun unapplyEffects() {
+        for (effect in effects) effect.unapply()
     }
 
     fun getMarket(): MarketAPI {

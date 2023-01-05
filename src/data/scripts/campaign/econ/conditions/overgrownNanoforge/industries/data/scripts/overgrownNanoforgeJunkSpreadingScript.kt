@@ -18,20 +18,26 @@ class overgrownNanoforgeJunkSpreadingScript(
     val params: constructionParams
 ): niko_MPC_baseNikoScript() {
 
-    enum class pauseReasons {
-        TOO_MANY_STRUCTURES {
+    enum class pauseReasons() {
+        TOO_MANY_STRUCTURES() {
             override fun getText(script: overgrownNanoforgeJunkSpreadingScript): String {
                 val market = script.getMarket()
                 return "${market.name} has exceeded the structure limit by ${market.industries.size - maxStructureAmount}"
             }
+            override fun shouldApply(script: overgrownNanoforgeJunkSpreadingScript): Boolean = script.marketExceedsMaxStructuresAndDoWeCare()
+            override fun getMultIncrement(script: overgrownNanoforgeJunkSpreadingScript): Float = existingMult.abs() -  
         };
 
         abstract fun getText(script: overgrownNanoforgeJunkSpreadingScript): String
+        abstract fun getMultIncrement(script: overgrownNanoforgeJunkSpreadingScript, existingMult: Float): Float
+        abstract fun shouldApply(script: overgrownNanoforgeJunkSpreadingScript): Boolean
 
         companion object {
             fun getReasons(script: overgrownNanoforgeJunkSpreadingScript): MutableSet<pauseReasons> {
                 val reasons = HashSet<pauseReasons>()
-                if (script.marketExceedsMaxStructuresAndDoWeCare()) reasons += TOO_MANY_STRUCTURES
+                for (reason in pauseReasons.values().toMutableList()) {
+                    if (reason.shouldApply(script)) reasons += reason
+                }
                 return reasons
             }
         }
@@ -47,6 +53,7 @@ class overgrownNanoforgeJunkSpreadingScript(
             return constructionParams(target, effectParams)
         }
     }
+    val baseMult = 1f
     var paused: Boolean = false
     var pausedReasons: MutableSet<pauseReasons> = HashSet()
 
@@ -77,7 +84,7 @@ class overgrownNanoforgeJunkSpreadingScript(
 
     /** Can return negatives to revert progress */
     fun getAdvancementSpeedMult(): Float {
-        var mult = 1f
+        var mult = baseMult
         if (paused) mult = 0f
 
         return mult

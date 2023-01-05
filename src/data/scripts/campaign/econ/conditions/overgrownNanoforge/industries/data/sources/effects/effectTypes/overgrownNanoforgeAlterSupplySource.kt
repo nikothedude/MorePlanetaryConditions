@@ -6,7 +6,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 class overgrownNanoforgeAlterSupplySource(
     nanoforge: overgrownNanoforgeIndustry,
     val supply: MutableMap<String, Int> = HashMap()
-): overgrownNanoforgeRandomizedEffect(params) {
+): overgrownNanoforgeRandomizedEffect(nanoforge) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         return if (isSupplyNegative()) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
     }

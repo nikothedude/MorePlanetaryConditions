@@ -16,7 +16,7 @@ import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
-    var baseSource: overgrownNanoforgeIndustrySource? = null
+    var baseSource: overgrownNanoforgeIndustrySource? = generateBaseStats()
         set(value) {
             if (field != null) field!!.delete()
             field = value
@@ -32,10 +32,11 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         junkSpreader = overgrownNanoforgeJunkSpreader(this)
     }
 
-    private fun generateBaseStats() {
-        if (baseSource != null) return
+    private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
+        val remainingScore = getBaseScore()
+        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getParamsForInstance(this, remainingScore)
 
-        var themesLeftToPick: Int = MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MIN, OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MAX)
+/*         var themesLeftToPick: Int = MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MIN, OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MAX)
 
         val producableModifiers = HashMap(market.getProducableCommodityModifiers())
         val pickedThemes = HashMap<String, Int>()
@@ -51,11 +52,12 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
             pickedThemes.keys.toMutableList(),
             remainingScore.toFloat(),
             0f
-        )
-        // and now we have the values for our intrinsic supply
+        ) 
+        // and now we have the values for our intrinsic supply 
 
-        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, themeToScore, nanoforge = this))
-        baseSource = overgrownNanoforgeIndustrySource(sourceData, this)
+        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, themeToScore, nanoforge = this)) */
+        val source = overgrownNanoforgeIndustrySource(this, getId(), mutableSetOf(supplyEffect))
+        return source
     }
 
     private fun applyConditions() {
