@@ -20,8 +20,18 @@ import org.lazywizard.lazylib.MathUtils
 class overgrownNanoforgeJunkSpreader(
     val nanoforge: overgrownNanoforgeIndustry
 ) {
-    val spreadingTimer = IntervalUtil(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
+
+    val timeTilSpread = spreadTimer(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
     var spreadingScript: overgrownNanoforgeJunkSpreadingScript? = null
+
+    class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
+        override fun advance(amount: Float) {
+            super.advance(amount)
+            if (intervalElapsed()) {
+                setInterval(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
+            }
+        }
+    }
 
     fun spreadJunkIfPossible(amount: Float) {
         val dayAmount = Misc.getDays(amount)
@@ -31,16 +41,16 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun shouldSpreadJunk(): Boolean {
-        if (getMarket().exceedsMaxStructures() || spreadingScript != null) {
-            spreadingTimer.elapsed = 0f
+        if (spreadingSuppressed() || getMarket().exceedsMaxStructures() || spreadingScript != null) {
+            timeTilSpread.elapsed = 0f
             return false
         }
         return true
     }
 
     fun tryToSpreadJunk(dayAmount: Float) {
-        spreadingTimer.advance(dayAmount)
-        if (spreadingTimer.intervalElapsed()) spreadJunk()
+        timeTilSpread.advance(dayAmount)
+        if (timeTilSpread.intervalElapsed()) spreadJunk()
     }
 
 

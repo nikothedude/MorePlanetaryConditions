@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 class overgrownNanoforgeAlterSupplySource(
     nanoforge: overgrownNanoforgeIndustry,

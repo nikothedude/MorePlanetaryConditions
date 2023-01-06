@@ -86,19 +86,31 @@ object niko_MPC_marketUtils {
 
     @JvmStatic
     fun MarketAPI.hasMaxStructures(): Boolean {
-        return (industries.size == maxStructureAmount)
+        return (getVisibleIndustries().size == maxStructureAmount)
+    }
+
+    fun MarketAPI.getVisibleIndustries(): MutableList<Industry> {
+        val visibleIndustries = ArrayList<Industry>()
+        for (industry in industries) {
+            if (industry.isVisible()) visibleIndustries += industry
+        }
+        return visibleIndustries
+    }
+
+    fun Industry.isVisible(): Boolean {
+        return (!this.isHidden)
     }
 
     @JvmStatic
     fun MarketAPI.exceedsMaxStructures(): Boolean {
-        return (industries.size > maxStructureAmount)
+        return (getVisibleIndustries().size > maxStructureAmount)
     }
+
 
     @JvmStatic
     fun Industry.isOrbital(): Boolean {
         return (this is OrbitalStation || this is Waystation)
     }
-
 
     @JvmStatic
     fun MarketAPI.hasCustomControls(): Boolean {
@@ -135,7 +147,6 @@ object niko_MPC_marketUtils {
         }
         return null
     }
-
     fun MarketAPI.getOvergrownJunk(): HashSet<Industry> {
         val junk = HashSet<Industry>()
         for (structure in industries) {
@@ -146,6 +157,7 @@ object niko_MPC_marketUtils {
     fun Industry.isJunk(): Boolean {
         return (this is overgrownNanoforgeJunk)
     }
+
     fun MarketAPI.addJunkStructure(id: String, source: overgrownNanoforgeRandomizedSource): overgrownNanoforgeJunk? {
         addIndustry(id)
         val industry = getIndustry(id)
@@ -158,7 +170,6 @@ object niko_MPC_marketUtils {
         junkIndustry.source = source
         return junkIndustry
     }
-
     fun MarketAPI.hasJunkStructures(): Boolean {
         return getOvergrownJunk().isNotEmpty()
     }

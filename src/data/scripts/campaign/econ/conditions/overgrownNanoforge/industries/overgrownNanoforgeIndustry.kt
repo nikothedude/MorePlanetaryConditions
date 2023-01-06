@@ -2,16 +2,16 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.SpecialItemData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeJunkSpreader
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeSupplyData
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_ids
-import data.utilities.niko_MPC_marketUtils.getProducableCommodityModifiers
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
-import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
@@ -23,7 +23,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         }
     val sources: MutableList<overgrownNanoforgeEffectSource> = ArrayList()
     val junk: MutableSet<overgrownNanoforgeJunk> = HashSet()
-    var junkSpreader: overgrownNanoforgeJunkSpreader? = null
+    var junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
 
     override fun init(id: String?, market: MarketAPI?) {
         super.init(id, market)
@@ -34,29 +34,11 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
     private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
         val remainingScore = getBaseScore()
-        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getParamsForInstance(this, remainingScore)
+        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getInstance(this, remainingScore.toFloat())
+            ?: return overgrownNanoforgeIndustrySource(this, //shuld never happen
+                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500)))))
 
-/*         var themesLeftToPick: Int = MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MIN, OVERGROWN_NANOFORGE_INITIAL_COMMODITY_CATEGORY_MAX)
-
-        val producableModifiers = HashMap(market.getProducableCommodityModifiers())
-        val pickedThemes = HashMap<String, Int>()
-
-        while (themesLeftToPick-- > 0 && producableModifiers.isNotEmpty()) {
-            val pickedCommodity = producableModifiers.keys.random()
-            pickedThemes[pickedCommodity] = 0
-            producableModifiers -= pickedCommodity
-        }
-
-        val remainingScore = getBaseScore()
-        val themeToScore = randomlyDistributeBudgetAcrossCommodities(
-            pickedThemes.keys.toMutableList(),
-            remainingScore.toFloat(),
-            0f
-        ) 
-        // and now we have the values for our intrinsic supply 
-
-        val sourceData = hashSetOf(overgrownNanoforgeSupplyData(this, themeToScore, nanoforge = this)) */
-        val source = overgrownNanoforgeIndustrySource(this, getId(), mutableSetOf(supplyEffect))
+        val source = overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
         return source
     }
 

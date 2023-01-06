@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.utilities.niko_MPC_marketUtils.removeNonNanoforgeProducableCommodities
 import data.utilities.niko_MPC_marketUtils.getProducableCommoditiesForOvergrownNanoforge
@@ -41,7 +42,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         fun getCostForCommodity(nanoforge: overgrownNanoforgeIndustry, commodityId: String): Float? {
             return overgrownNanoforgeCommodityDataStore[commodityId]?.cost
         }
-        override fun getParamsForInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeAlterSupplySource? {
+        override fun getInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeAlterSupplySource? {
             if (!canAfford(nanoforge, maxBudget)) return null
             val market = nanoforge.market
             val producableCommodities = market.getProducableCommoditiesForOvergrownNanoforge()
@@ -79,7 +80,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCostPerPointOneIncrement(nanoforge) //TODO: this is bad
             fun getCostPerPointOneIncrement(nanoforge: overgrownNanoforgeIndustry): Float = 25f
             
-            override fun getParamsForInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeAlterUpkeepEffect? {
+            override fun getInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeAlterUpkeepEffect? {
                 var mult = TODO() //todo: maybe cap the amount of budget a effect can actually take? i dunno.
                 return overgrownNanoforgeAlterUpkeepEffect(nanoforge, mult)
             }
@@ -90,18 +91,18 @@ enum class overgrownNanoforgeEffectPrototypes(
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCostPerOnePercentAccessability(nanoforge)
             fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeIndustry): Float = 5f
             
-            override fun getParamsForInstance(
+            override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustry,
                 maxBudget: Float
             ): overgrownNanoforgeAlterAccessabilityEffect? {
                 var remainingBudget = maxBudget
-                var increment = 0f
+                var increment = 0
                 while (canAfford(nanoforge, remainingBudget)) {
                     increment++
                     val cost = getCostPerOnePercentAccessability(nanoforge)
                     remainingBudget -= cost
                 }
-                if (increment == 0) return 0f
+                if (increment == 0) return null
                 return overgrownNanoforgeAlterAccessabilityEffect(nanoforge, increment)
             }
 
@@ -120,7 +121,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCostPerOneDefenseRating(nanoforge)
             fun getCostPerOneDefenseRating(nanoforge: overgrownNanoforgeIndustry): Float = 0.5f
             
-            override fun getParamsForInstance(
+            override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustry,
                 maxBudget: Float
             ): overgrownNanoforgeAlterDefensesEffect? {
@@ -149,7 +150,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return weight*mult //always returns 0 if stability is 0
             }
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCostPerStability(nanoforge)
-            override fun getParamsForInstance(
+            override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustry,
                 maxBudget: Float
             ): overgrownNanoforgeEffect? {
@@ -174,7 +175,8 @@ enum class overgrownNanoforgeEffectPrototypes(
                 }
                 return timesToIncrement
             }
-        ALTER_HAZARD {
+        },
+        ALTER_HAZARD() {
 
         },
         
@@ -188,7 +190,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCost(nanoforge)
             fun getCost(nanoforge: overgrownNanoforgeIndustry): Float = 50f
-            override fun getParamsForInstance(
+            override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustry,
                 maxBudget: Float
             ): overgrownNanoforgeVolatileEffect? {
@@ -200,7 +202,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)) {
         };
 
-    },
+
 
     open fun canBeAppliedTo(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean = canAfford(nanoforge, maxBudget)
     fun canAfford(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean {
@@ -209,7 +211,7 @@ enum class overgrownNanoforgeEffectPrototypes(
     }
     abstract fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float
     abstract fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float?
-    abstract fun getParamsForInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeEffect?
+    abstract fun getInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeEffect?
 
     companion object {
         val ANCHOR_POINT_FOR_STABILITY: Int = 5

@@ -1,6 +1,5 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
@@ -31,13 +30,13 @@ class overgrownNanoforgeRandomizedSourceParams(
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
             getBudget(),
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(this) ?: 0f},
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(nanoforge) ?: 0f},
         )
         for (entry in weightedPrototypes) ourBudgetHolder.budget -= entry.value
         for (entry in weightedPrototypes) {
             val prototype = entry.key
             val score = entry.value
-            val instance = prototype.getParamsForInstance(this, score) ?: continue
+            val instance = prototype.getInstance(this, score) ?: continue
             effects += instance
         }
         return effects
