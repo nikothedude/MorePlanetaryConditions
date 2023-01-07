@@ -7,6 +7,7 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
@@ -157,6 +158,21 @@ object niko_MPC_marketUtils {
     fun Industry.isJunk(): Boolean {
         return (this is overgrownNanoforgeJunk)
     }
+    fun Industry.isJunkStructure(): Boolean {
+        return (this is baseOvergrownNanoforgeStructure)
+    }
+
+    fun Industry.isApplied(): Boolean {
+        return (market != null)
+    }
+
+    fun MarketAPI.hasNonJunkStructures(): Boolean {
+        for (industry in industries) {
+            if (!industry.isVisible()) continue
+            if (!industry.isJunk()) return true
+        }
+        return false
+    }
 
     fun MarketAPI.addJunkStructure(id: String, source: overgrownNanoforgeRandomizedSource): overgrownNanoforgeJunk? {
         addIndustry(id)
@@ -168,6 +184,7 @@ object niko_MPC_marketUtils {
         }
         val junkIndustry = industry as overgrownNanoforgeJunk
         junkIndustry.source = source
+        junkIndustry.properlyAdded = true
         return junkIndustry
     }
     fun MarketAPI.hasJunkStructures(): Boolean {

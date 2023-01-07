@@ -35,12 +35,11 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
 
     override fun upgradeFinished(previous: Industry?) {
         super.upgradeFinished(previous)
-        delete()
         reportDestroyed()
     }
 
     open fun reportDestroyed() {
-        return
+        delete()
     }
 
 }

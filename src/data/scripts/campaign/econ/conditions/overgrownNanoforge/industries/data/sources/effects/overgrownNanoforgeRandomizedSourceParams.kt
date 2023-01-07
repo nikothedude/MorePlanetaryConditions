@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
@@ -36,7 +37,7 @@ class overgrownNanoforgeRandomizedSourceParams(
         for (entry in weightedPrototypes) {
             val prototype = entry.key
             val score = entry.value
-            val instance = prototype.getInstance(this, score) ?: continue
+            val instance = prototype.getInstance(nanoforge, score) ?: continue //TODO: this fucking sucks
             effects += instance
         }
         return effects

@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources
 
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
@@ -10,7 +11,7 @@ import niko.MCTE.utils.MCTE_debugUtils.displayError
 
 class overgrownNanoforgeRandomizedSource(
     nanoforge: overgrownNanoforgeIndustry,
-    effects: MutableSet<overgrownNanoforgeRandomizedEffect>,
+    effects: MutableSet<overgrownNanoforgeEffect>,
     val params: overgrownNanoforgeRandomizedSourceParams,
 ): overgrownNanoforgeEffectSource(nanoforge, effects) {
 

@@ -11,6 +11,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import org.lazywizard.lazylib.MathUtils
 
@@ -42,18 +43,18 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         return source
     }
 
-    private fun applyConditions() {
-        if (market.hasCondition(Conditions.HABITABLE)) {
-            market.addCondition(Conditions.POLLUTION)
-        }
-    }
-
     //use this one
     override fun apply(withIncomeUpdate: Boolean) {
         super.apply(withIncomeUpdate)
 
         applyConditions()
         for (source in getAllSources()) source.apply()
+    }
+
+    private fun applyConditions() {
+        if (market.hasCondition(Conditions.HABITABLE)) {
+            market.addCondition(Conditions.POLLUTION)
+        }
     }
 
     override fun apply() {
@@ -96,7 +97,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
     override fun reportDestroyed() {
         super.reportDestroyed()
-        val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, "")
+        val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, null)
         Misc.getStorage(market).cargo.addSpecial(overgrownNanoforgeData, 1f)
         TODO("this will not work")
     }

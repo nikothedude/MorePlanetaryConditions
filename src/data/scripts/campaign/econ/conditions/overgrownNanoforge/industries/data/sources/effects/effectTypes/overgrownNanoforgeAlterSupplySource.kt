@@ -41,4 +41,8 @@ class overgrownNanoforgeAlterSupplySource(
             getIndustry().supply(getId(), commodityId, 0, getName())
         }
     }
+
+    override fun delete() {
+        unapply()
+    }
 }

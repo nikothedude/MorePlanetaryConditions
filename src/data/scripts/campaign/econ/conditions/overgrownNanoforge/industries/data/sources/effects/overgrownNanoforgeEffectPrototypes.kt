@@ -183,7 +183,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         // SPECIAL
         EXPLODE_UPON_DESTRUCTION(setOf(overgrownNanoforgeEffectCategories.SPECIAL)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 5f
-            overide fun canBeAppliedTo(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean {
+            override fun canBeAppliedTo(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean {
                 val superValue = super.canBeAppliedTo(nanoforge, maxBudget)
                 val market = nanoforge.market
                 return (superValue && market.hasNonJunkStructures())
@@ -226,24 +226,14 @@ enum class overgrownNanoforgeEffectPrototypes(
                 for (category in entry.possibleCategories) prototypesByCategory[category]!! += entry
             }
         }
-        fun getPrototype(
+        fun getPotentialPrototypes(
             params: overgrownNanoforgeRandomizedSourceParams,
-            availableBudget: Float,
-            potentialPrototypes: MutableSet<overgrownNanoforgeEffectPrototypes> = getPotentialPrototypes(
-                params,
-                availableBudget
-            )
-        ): overgrownNanoforgeEffectPrototypes? {
-
-            val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
-            for (prototype in potentialPrototypes) picker.add(prototype, prototype.getWeight(params))
-
-        }
-
-        fun getPotentialPrototypes(params: overgrownNanoforgeRandomizedSourceParams): MutableSet<overgrownNanoforgeEffectPrototypes> {
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)): MutableSet<overgrownNanoforgeEffectPrototypes>
+        {
             val potentialPrototypes = HashSet<overgrownNanoforgeEffectPrototypes>()
-            for (prototype in allPrototypes) {
-                if (prototype.canBeAppliedTo(params, params.getBudget())) potentialPrototypes += prototype
+            for (prototype in ArrayList(allPrototypes)) {
+                if (!prototype.possibleCategories.any { allowedCategories.contains(it) }) continue
+                if (prototype.canBeAppliedTo(params.nanoforge, params.getBudget())) potentialPrototypes += prototype
             }
             return potentialPrototypes
         }

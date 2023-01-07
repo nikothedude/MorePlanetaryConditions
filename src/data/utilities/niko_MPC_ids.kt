@@ -5,14 +5,15 @@ object niko_MPC_ids {
     const val conditionLinkedHandlerMemoryId = "\$conditionLinkedMemoryHandlerId"
     const val niko_MPC_modId = "niko_morePlanetaryConditions"
     const val niko_MPC_masterConfig = "niko_MPC_settings.json"
-
     /**
      * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
      */
     val satelliteConditionIds: List<String> = listOf("niko_MPC_antiAsteroidSatellites")
 
     const val satelliteBarrageTerrainId = "niko_MPC_defenseSatelliteBarrage"
+
     const val niko_MPC_campaignPluginId = "niko_MPC_campaignPlugin"
+    const val overgrownNanoforgeFleetsizeRemovalScriptId = "\$niko_MPC_overgrownNanoforgeFleetsizeRemovalScriptId"
     const val satelliteMarketId = "\$niko_MPC_satelliteMarket"
     const val isSatelliteFleetId = "\$niko_MPC_isSatelliteFleet"
     /**

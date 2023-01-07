@@ -20,7 +20,6 @@ enum class randomizedSourceBudgets(
 
 object randomizedSourceBudgetsPicker: WeightedRandomPicker<randomizedSourceBudgets>() {
     fun getRandomBudget(nanoforge: overgrownNanoforgeIndustry): Float {
-        val market = nanoforge.market
         val pickedBudget = pick().value
         return pickedBudget*OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT
     }
