@@ -24,20 +24,21 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         }
     val sources: MutableList<overgrownNanoforgeEffectSource> = ArrayList()
     val junk: MutableSet<overgrownNanoforgeJunk> = HashSet()
-    var junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
+    val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
 
     override fun init(id: String?, market: MarketAPI?) {
         super.init(id, market)
-
-        generateBaseStats()
-        junkSpreader = overgrownNanoforgeJunkSpreader(this)
     }
 
     private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
         val remainingScore = getBaseScore()
         val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getInstance(this, remainingScore.toFloat())
-            ?: return overgrownNanoforgeIndustrySource(this, //shuld never happen
+        if (supplyEffect == null) {
+            displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
+            val source = overgrownNanoforgeIndustrySource(this, //shuld never happen
                 mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500)))))
+            return source
+        } 
 
         val source = overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
         return source
@@ -78,8 +79,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     override fun advance(amount: Float) {
         super.advance(amount)
 
-        val spreader = junkSpreader ?: return
-        spreader.spreadJunkIfPossible(amount)
+        junkSpreader.spreadJunkIfPossible(amount)
     }
 
     override fun delete() {

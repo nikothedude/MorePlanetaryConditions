@@ -14,10 +14,25 @@ abstract class overgrownNanoforgeEffect(
     abstract fun getName(): String
     abstract fun getDescription(): String
 
-    abstract fun apply()
-    abstract fun unapply()
+    open fun apply() {
+        if (!getMarket().exceedsMaxStructures()) applyBenefits()
+        applyDeficits()
+    }
 
-    abstract fun delete()
+    abstract fun applyBenefits()
+    abstract fun applyDeficits()
+
+    open fun unapply() {
+        unapplyBenefits()
+        unapplyDeficits()
+    }
+
+    abstract fun unapplyBenefits()
+    abstract fun unapplyDeficits()
+
+    open fun delete() {
+        unapply()
+    }
 
     fun getMarket(): MarketAPI = nanoforge.market
     fun getIndustry(): overgrownNanoforgeIndustry = nanoforge

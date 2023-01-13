@@ -5,9 +5,9 @@ import data.scripts.campaign.intel.baseNikoIntelPlugin
 
 class overgrownNanoforgeIntel: baseNikoIntelPlugin() {
 
-    override fun getName(): String {
-        return "Overgrown Nanoforges"
-    }
+    var name: String = "Overgrown Nanoforge"
+
+    override fun getName(): String = name
 
     override fun isImportant(): Boolean {
         return true

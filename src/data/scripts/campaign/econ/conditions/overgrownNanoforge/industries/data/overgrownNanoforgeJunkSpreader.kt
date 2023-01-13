@@ -50,6 +50,7 @@ class overgrownNanoforgeJunkSpreader(
 
 
         companion object {
+            val alterations = advancementAlteration.valuss().toSet()
             fun getReasons(nanoforge: overgrownNanoforgeIndustry): MutableSet<advancementAlteration> {
                 val reasons = HashSet<advancementAlteration>()
                 for (reason in advancementAlteration.values().toMutableList()) {
@@ -64,7 +65,7 @@ class overgrownNanoforgeJunkSpreader(
 
     fun updateAdvancementAlterations() {
         advancementAlterations.clear()
-        for (entry in advancementAlteration.values().toSet()) if (entry.shouldApply(nanoforge)) advancementAlterations += entry
+        for (entry in advancementAlteration.alterations) if (entry.shouldApply(nanoforge)) advancementAlterations += entry
     }
 
     class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
@@ -84,7 +85,7 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun shouldSpreadJunk(): Boolean {
-        if (spreadingSuppressed() || getMarket().exceedsMaxStructures() || spreadingScript != null) {
+        if (spreadingScript != null || spreadingSuppressed() || getMarket().exceedsMaxStructures()) {
             timeTilSpread.elapsed = 0f
             return false
         }
