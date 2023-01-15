@@ -17,6 +17,18 @@ object niko_MPC_mathUtils {
     }
 
     @JvmStatic
+    @Contract("null -> 0.0")
+    fun Double.ensureIsJsonValidFloat(): Double {
+        return niko_MPC_mathUtils.ensureIsJsonValidFloat(this)
+    }
+
+    @JvmStatic
+    @Contract("null -> 0.0")
+    fun Float.ensureIsJsonValidFloat(): Double {
+        return niko_MPC_mathUtils.ensureIsJsonValidFloat(this.toDouble())
+    }
+
+    @JvmStatic
     fun Float.roundToMultipleOf(anchor: Float): Float {
         return anchor*((this) / anchor).roundToInt()
     }
@@ -26,15 +38,17 @@ object niko_MPC_mathUtils {
         return anchor*((this) / anchor).roundToInt()
     }
 
-    fun randomlyDistributeBudgetAcrossCommodities(
+    inline fun randomlyDistributeBudgetAcrossCommodities(
         entries: Collection<String>,
         remainingScore: Float,
-        getMin: (budget: Float, remainingRuns: Int, entry: String) -> Float = { _, _, _, -> 0f},) : MutableMap<String, Int> {
+        getMin: (budget: Float, remainingRuns: Int, entry: String) -> Float = { budget, remainingRuns, entry, ->
+            if (budget < 0) (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) else 0f},) : MutableMap<String, Int> {
         val distributedMap = randomlyDistributeNumberAcrossEntries(
             entries,
             remainingScore,
             getMin,
-            getMax = { budget: Float, remainingRuns: Int, entry: Any -> (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) },
+            getMax = { budget: Float, remainingRuns: Int, entry: Any ->
+                if (budget > 0) (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) else 0f},
             modifyScoreForMap = { score: Float, commodityId: Any -> (score/overgrownNanoforgeCommodityDataStore[commodityId]!!.cost).coerceAtLeast(0f) })
 
         val convertedMap = HashMap<String, Int>()
@@ -55,8 +69,8 @@ object niko_MPC_mathUtils {
     inline fun <T: Any> randomlyDistributeNumberAcrossEntries(
         entries: Collection<T>,
         remainingScore: Float,
-        getMin: (budget: Float, remainingRuns: Int, entry: T) -> Float = { _, _, _, -> 0f},
-        getMax: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _ -> budget },
+        getMin: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _, -> if (budget <= 0) budget else 0f},
+        getMax: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _ -> if (budget > 0) budget else 0f },
         modifyScoreForMap: (budget: Float, entry: T) -> Float = { budget, _ -> budget.coerceAtLeast(0f) }
     ): MutableMap<T, Float> {
 

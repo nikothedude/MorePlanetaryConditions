@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 
 class overgrownNanoforgeAlterSupplySource(
     nanoforge: overgrownNanoforgeIndustry,
@@ -18,8 +19,8 @@ class overgrownNanoforgeAlterSupplySource(
             val quantity = entry.value
 
             if (quantity == 0) continue //why would this even ever happen
-            if (quantity > 0) positiveSupply[commodity] = quantity
-            if (quantity < 0) negativeSupply[commodity] = quantity
+            if (quantity > 0) positiveSupply[commodityId] = quantity
+            if (quantity < 0) negativeSupply[commodityId] = quantity
         }
     }
 

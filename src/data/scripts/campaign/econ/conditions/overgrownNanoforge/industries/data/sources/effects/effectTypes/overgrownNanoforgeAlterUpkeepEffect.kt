@@ -28,22 +28,22 @@ class overgrownNanoforgeAlterUpkeepEffect(
 
     override fun applyBenefits() {
         if (isUpkeepNegative()) return
-        getIndustry().getUpkeepMult().modifyMult(getId(), mult)
+        getIndustry().upkeep.modifyMult(getId(), mult)
     }
 
     override fun applyDeficits() {
         if (!isUpkeepNegative()) return
-        getIndustry().getUpkeepMult().modifyMult(getId(), mult)
+        getIndustry().upkeep.modifyMult(getId(), mult)
     }
 
     override fun unapplyBenefits() {
         if (isUpkeepNegative()) return
-        getIndustry().getUpkeepMult().unmodifyMult(getId())
+        getIndustry().upkeep.unmodifyMult(getId())
     }
 
     override fun unapplyDeficits() {
         if (!isUpkeepNegative()) return
-        getIndustry().getUpkeepMult().unmodifyMult(getId())
+        getIndustry().upkeep.unmodifyMult(getId())
     }
 
     override fun delete() {
