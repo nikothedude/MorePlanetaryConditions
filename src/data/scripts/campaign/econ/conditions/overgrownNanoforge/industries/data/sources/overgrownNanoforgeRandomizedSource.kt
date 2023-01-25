@@ -11,8 +11,8 @@ import niko.MCTE.utils.MCTE_debugUtils.displayError
 
 class overgrownNanoforgeRandomizedSource(
     nanoforge: overgrownNanoforgeIndustry,
-    effects: MutableSet<overgrownNanoforgeEffect>,
     val params: overgrownNanoforgeRandomizedSourceParams,
+    effects: MutableSet<overgrownNanoforgeEffect> = params.effects,
 ): overgrownNanoforgeEffectSource(nanoforge, effects) {
 
     var structure: overgrownNanoforgeJunk? = null

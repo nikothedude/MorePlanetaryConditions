@@ -2,10 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterAccessibilityEffect
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterUpkeepEffect
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.utilities.niko_MPC_marketUtils.removeNonNanoforgeProducableCommodities
@@ -20,7 +17,8 @@ import kotlin.collections.HashSet
 import kotlin.math.absoluteValue
 
 enum class overgrownNanoforgeEffectPrototypes(
-    val possibleCategories: Set<overgrownNanoforgeEffectCategories>
+    val possibleCategories: Set<overgrownNanoforgeEffectCategories>,
+    val canInvert: Boolean = possibleCategories.contains(overgrownNanoforgeEffectCategories.DEFICIT)
 ) {
 
     //TODO: Replace params with a special class that has its own budget
@@ -108,7 +106,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
 
         },
-        ALTER_ACCESSABILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
+        ALTER_ACCESSIBILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 10f
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCostPerOnePercentAccessability(nanoforge)
             fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeIndustry): Float = 5f
@@ -153,13 +151,13 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (!canAfford(nanoforge, maxBudget)) return null
                 val shouldInvert = maxBudget < 0
                 var remainingBudget = maxBudget.absoluteValue
-                var increment = 0
+                var increment = 0f
                 while (canAfford(nanoforge, remainingBudget)) {
                     increment++
                     val cost = getCostPerOneDefenseRating(nanoforge)
                     remainingBudget -= cost
                 }
-                if (increment == 0) return null
+                if (increment == 0f) return null
                 if (shouldInvert) increment = -increment.absoluteValue
                 return overgrownNanoforgeAlterDefensesEffect(nanoforge, increment)
             }
@@ -180,16 +178,19 @@ enum class overgrownNanoforgeEffectPrototypes(
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float = getCostPerStability(nanoforge)
 
             override fun getInstance(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): overgrownNanoforgeAlterStabilityEffect? {
-                var maxBudget = maxBudget
+                if (!canAfford(nanoforge, maxBudget)) return null
+                val shouldInvert = maxBudget < 0
+                var maxBudget = maxBudget.absoluteValue
                 val instance: overgrownNanoforgeAlterStabilityEffect? = null
                 var stabilityIncrement = getTimesToIncrement(nanoforge, maxBudget)
-                if (stabilityIncrement > 0) instance = overgrownNanoforgeAlterStabilityEffect(TODO(), stabilityIncrement)
+                if (shouldInvert) stabilityIncrement = -stabilityIncrement.absoluteValue
+                if (stabilityIncrement != 0f) instance = overgrownNanoforgeAlterStabilityEffect(TODO(), stabilityIncrement)
 
                 return instance
             }
-            fun getTimesToIncrement(nanoforge: overgrownNanoforgeIndustry, availableBudget: Float): Int {
+            fun getTimesToIncrement(nanoforge: overgrownNanoforgeIndustry, availableBudget: Float): Float {
                 var availableBudget = availableBudget
-                var timesToIncrement = 0
+                var timesToIncrement = 0f
                 while (canAfford(nanoforge, availableBudget)) {
                     val cost = getCostPerStability(nanoforge)
                     availableBudget -= cost
@@ -198,7 +199,40 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return timesToIncrement
             }
         },
-        ALTER_HAZARD() {
+        ALTER_HAZARD(setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)) {
+            override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 5f
+
+            override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float {
+                return getCostPerOnePercent(nanoforge)
+            }
+
+            fun getCostPerOnePercent(nanoforge: overgrownNanoforgeIndustry): Float = 20f
+
+            override fun getInstance(
+                nanoforge: overgrownNanoforgeIndustry,
+                maxBudget: Float
+            ): overgrownNanoforgeAlterHazardEffect? {
+                if (!canAfford(nanoforge, maxBudget)) return null
+                val shouldInvert = maxBudget < 0
+                var maxBudget = maxBudget.absoluteValue
+                val instance: overgrownNanoforgeAlterHazardEffect? = null
+                var hazardIncrement = getTimesToIncrement(nanoforge, maxBudget)
+                if (shouldInvert) hazardIncrement = -hazardIncrement.absoluteValue
+                if (hazardIncrement != 0f) instance = overgrownNanoforgeAlterHazardEffect(TODO(), hazardIncrement)
+
+                return instance
+            }
+
+            fun getTimesToIncrement(nanoforge: overgrownNanoforgeIndustry, availableBudget: Float): Float {
+                var availableBudget = availableBudget
+                var timesToIncrement = 0f
+                while (canAfford(nanoforge, availableBudget)) {
+                    val cost = getCostPerOnePercent(nanoforge)
+                    availableBudget -= cost
+                    timesToIncrement++
+                }
+                return timesToIncrement
+            }
 
         },
         
@@ -222,13 +256,26 @@ enum class overgrownNanoforgeEffectPrototypes(
         },
 
         SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)) {
+            override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 0.05f
+
+            override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCost(nanoforge)
+
+            fun getCost(nanoforge: overgrownNanoforgeIndustry) = 100f
+
+            override fun getInstance(
+                nanoforge: overgrownNanoforgeIndustry,
+                maxBudget: Float
+            ): overgrownNanoforgeSpawnFleetEffect? {
+                if (!canAfford(nanoforge, maxBudget)) return null
+                return overgrownNanoforgeSpawnFleetEffect(nanoforge)
+            }
         };
 
 
 
     open fun canBeAppliedTo(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean = canAfford(nanoforge, maxBudget)
     fun canAfford(nanoforge: overgrownNanoforgeIndustry, maxBudget: Float): Boolean {
-        val maxBudget = if (possibleCategories.contains(overgrownNanoforgeEffectCategories.DEFICIT)) maxBudget.absoluteValue else maxBudget
+        val maxBudget = if (canInvert) maxBudget.absoluteValue else maxBudget
         val minimumCost = getMinimumCost(nanoforge) ?: return false
         return (minimumCost <= maxBudget)
     }
@@ -251,12 +298,13 @@ enum class overgrownNanoforgeEffectPrototypes(
         }
         fun getPotentialPrototypes(
             params: overgrownNanoforgeRandomizedSourceParams,
+            holder: overgrownNanoforgeRandomizedSourceParams.budgetHolder,
             allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)): MutableSet<overgrownNanoforgeEffectPrototypes>
         {
             val potentialPrototypes = HashSet<overgrownNanoforgeEffectPrototypes>()
             for (prototype in ArrayList(allPrototypes)) {
                 if (!prototype.possibleCategories.any { allowedCategories.contains(it) }) continue
-                if (prototype.canBeAppliedTo(params.nanoforge, params.getBudget())) potentialPrototypes += prototype
+                if (prototype.canBeAppliedTo(params.nanoforge, holder.budget)) potentialPrototypes += prototype
             }
             return potentialPrototypes
         }

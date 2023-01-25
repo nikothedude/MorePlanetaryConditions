@@ -30,7 +30,7 @@ import data.utilities.niko_MPC_fleetUtils.setDummyFleet
 import data.utilities.niko_MPC_fleetUtils.setSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.setSatelliteFleet
 import data.utilities.niko_MPC_fleetUtils.trimDownToFP
-import data.utilities.niko_MPC_miscUtils.hasCustomControls
+import data.utilities.niko_MPC_marketUtils.hasCustomControls
 import data.utilities.niko_MPC_satelliteUtils.deleteIfCosmeticSatellite
 import data.utilities.niko_MPC_satelliteUtils.getAllSatelliteHandlers
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
