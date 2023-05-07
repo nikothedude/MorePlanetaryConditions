@@ -6,13 +6,16 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeJunkSpreader
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading.overgrownNanoforgeJunkSpreader
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_ids
-import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_IS_INDUSTRY
+import niko.MCTE.utils.MCTE_debugUtils.displayError
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
@@ -31,8 +34,8 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
-        val remainingScore = getBaseScore()
-        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getInstance(this, remainingScore.toFloat())
+        val baseScore = getBaseScore()
+        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getInstance(this, baseScore.toFloat())
         if (supplyEffect == null) {
             displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
             val source = overgrownNanoforgeIndustrySource(this, //shuld never happen
@@ -115,7 +118,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     companion object {
-        fun getBaseScore(): Int {
+        fun getBaseScore(): Float {
             return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_BASE_SCORE_MIN, OVERGROWN_NANOFORGE_BASE_SCORE_MAX)
         }
     }

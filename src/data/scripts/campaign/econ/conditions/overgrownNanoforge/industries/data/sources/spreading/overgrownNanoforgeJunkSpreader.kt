@@ -1,13 +1,9 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading
 
-import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.econ.impl.PopulationAndInfrastructure
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.scripts.overgrownNanoforgeJunkSpreadingScript
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
@@ -15,9 +11,11 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overg
 import data.utilities.niko_MPC_marketUtils
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.getVisibleIndustries
-import data.utilities.niko_MPC_marketUtils.hasMaxStructures
-import data.utilities.niko_MPC_marketUtils.isOrbital
-import data.utilities.niko_MPC_settings.overgrownNanoforgeBaseJunkSpreadTargettingChance
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_SPREADING_DAYS
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_SPREADING_DAYS
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeJunkSpreader(
@@ -43,14 +41,14 @@ class overgrownNanoforgeJunkSpreader(
 
         abstract fun getText(nanoforge: overgrownNanoforgeIndustry): String
         abstract fun shouldApply(nanoforge: overgrownNanoforgeIndustry): Boolean
-        open fun getMult(nanoforge: overgrownNanoforgeIndustry): Float = 0f
+        open fun getMult(nanoforge: overgrownNanoforgeIndustry): Float = 0f // think this is more of a mult increment?
         open fun getPositiveIncrement(nanoforge: overgrownNanoforgeIndustry): Float = 0f
         open fun getNegativeMult(nanoforge: overgrownNanoforgeIndustry): Float = 0f
         open fun getNegativeIncrement(nanoforge: overgrownNanoforgeIndustry): Float = 0f
 
 
         companion object {
-            val alterations = advancementAlteration.valuss().toSet()
+            val alterations = advancementAlteration.values().toSet()
             fun getReasons(nanoforge: overgrownNanoforgeIndustry): MutableSet<advancementAlteration> {
                 val reasons = HashSet<advancementAlteration>()
                 for (reason in advancementAlteration.values().toMutableList()) {

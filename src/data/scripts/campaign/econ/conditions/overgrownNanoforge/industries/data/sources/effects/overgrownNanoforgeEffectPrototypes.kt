@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.*
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.utilities.niko_MPC_marketUtils.removeNonNanoforgeProducableCommodities
@@ -11,6 +12,9 @@ import data.utilities.niko_MPC_marketUtils.getProducableCommodityModifiers
 import data.utilities.niko_MPC_marketUtils.hasNonJunkStructures
 import data.utilities.niko_MPC_mathUtils.ensureIsJsonValidFloat
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
+import data.utilities.niko_MPC_settings.ANCHOR_POINT_FOR_DEFENSE
+import data.utilities.niko_MPC_settings.HARD_LIMIT_FOR_DEFENSE
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
 import org.lazywizard.lazylib.MathUtils
 import java.util.*
 import kotlin.collections.HashSet
@@ -253,9 +257,10 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (!canAfford(nanoforge, maxBudget)) return null
                 return overgrownNanoforgeVolatileEffect(nanoforge)
             }
-        },
+        };
 
-        SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)) {
+        // FIXME: disabled, finish later
+        /*SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 0.05f
 
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? = getCost(nanoforge)
@@ -269,7 +274,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (!canAfford(nanoforge, maxBudget)) return null
                 return overgrownNanoforgeSpawnFleetEffect(nanoforge)
             }
-        };
+        }; */
 
 
 

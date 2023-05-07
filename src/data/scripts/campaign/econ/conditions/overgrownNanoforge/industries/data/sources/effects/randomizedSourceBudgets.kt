@@ -2,6 +2,9 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MIN
+import org.lazywizard.lazylib.MathUtils
 
 enum class randomizedSourceBudgets(
     val chance: Float, val value: Float
@@ -21,7 +24,8 @@ enum class randomizedSourceBudgets(
 object randomizedSourceBudgetsPicker: WeightedRandomPicker<randomizedSourceBudgets>() {
     fun getRandomBudget(nanoforge: overgrownNanoforgeIndustry): Float {
         val pickedBudget = pick().value
-        return pickedBudget*OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT
+        val randomMult = MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MIN, OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX)
+        return pickedBudget*randomMult
     }
 
     init {

@@ -10,7 +10,7 @@ import data.utilities.niko_MPC_settings
 /** A base class that holds extremely basic and generic methods I will apply to all conditions I make.*/
 abstract class niko_MPC_baseNikoCondition: BaseMarketConditionPlugin() {
 
-    var deletionScript: niko_MPC_conditionRemovalScript? = null
+    open val deletionScript: niko_MPC_conditionRemovalScript? = null
 
     /** Use [niko_MPC_settings] variables to determine this.*/
     protected open val isEnabled: Boolean = true

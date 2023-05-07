@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.niko_MPC_industryAddingCondition
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor
+import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
@@ -24,7 +25,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     abstract val suppressorId: String
     override val isEnabled: Boolean
         get() = niko_MPC_settings.DEFENSE_SATELLITES_ENABLED
-    var deletionScript: niko_MPC_satelliteCustomEntityRemovalScript? = null
+    override var deletionScript: niko_MPC_satelliteCustomEntityRemovalScript? = null
 
     fun getHandlerWithErrorCheck(doNullCheck: Boolean = true): niko_MPC_satelliteHandlerCore? {
         val ourHandler = getHandler()
@@ -104,7 +105,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
 
     /** Should EXCLUSVELY create and return a removal script, no side effects. */
     protected open fun createDeletionScript(ourEntity: SectorEntityToken, ourHandler: niko_MPC_satelliteHandlerCore): niko_MPC_satelliteCustomEntityRemovalScript {
-        return niko_MPC_satelliteCustomEntityRemovalScript(ourEntity, condition.id, ourHandler, this)
+        return niko_MPC_satelliteCustomEntityRemovalScript(ourEntity, condition.id, this, ourHandler)
     }
 
     /** Generic value-based and non-jank operations should be here. Ex. an access buff.*/

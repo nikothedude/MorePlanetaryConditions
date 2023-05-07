@@ -7,6 +7,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.everyFrames.niko_MPC_overgrownNanoforgeRemovalScript
 import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_marketUtils.purgeOvergrownNanoforgeBuildings
 
 class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition() {
 

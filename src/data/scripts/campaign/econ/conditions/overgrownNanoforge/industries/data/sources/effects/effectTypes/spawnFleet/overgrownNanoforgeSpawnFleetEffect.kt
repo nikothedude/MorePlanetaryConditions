@@ -1,10 +1,8 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.spawnFleet
 
-import com.fs.starfarer.api.campaign.econ.Industry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.utilities.niko_MPC_marketUtils.getVisibleIndustries
-import data.utilities.niko_MPC_marketUtils.isJunkStructure
 
 class overgrownNanoforgeSpawnFleetEffect(
     nanoforge: overgrownNanoforgeIndustry

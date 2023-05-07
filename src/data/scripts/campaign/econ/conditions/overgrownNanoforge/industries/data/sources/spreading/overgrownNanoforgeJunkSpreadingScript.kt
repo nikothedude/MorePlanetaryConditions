@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.scripts
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
@@ -7,7 +7,6 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.PopulationAndInfrastructure
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeJunkSpreader
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
@@ -61,7 +60,7 @@ class overgrownNanoforgeJunkSpreadingScript(
         } else if (areWeReverted()) { // negative means it was reverted
             culled()
         }
-        TODO("Not yet implemented")
+        // TODO: expand more?
     }
 
     fun areWeReverted(): Boolean {
@@ -136,7 +135,7 @@ class overgrownNanoforgeJunkSpreadingScript(
     }
 
     private fun createSource(): overgrownNanoforgeRandomizedSource {
-        return overgrownNanoforgeRandomizedSource(nanoforge, effectParams.effects, effectParams)
+        return overgrownNanoforgeRandomizedSource(nanoforge, effectParams)
     }
 
     fun getMarket(): MarketAPI {

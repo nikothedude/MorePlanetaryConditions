@@ -12,7 +12,7 @@ import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
 abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, var conditionId: String, val condition: niko_MPC_baseNikoCondition? = null): niko_MPC_baseNikoScript() {
     var runs = 0
-    var thresholdTilEnd = 250
+    open var thresholdTilEnd = 250
 
     override fun runWhilePaused(): Boolean {
         return true //todo: return to this

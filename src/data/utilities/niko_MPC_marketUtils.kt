@@ -141,17 +141,17 @@ object niko_MPC_marketUtils {
         val existingJunk = getOvergrownJunk()
             for (junk in existingJunk) {
                 val junkId = junk.id
-                existingDesignations += junkId.lastOrNull()?.code ?: continue
+                existingDesignations += (junkId.filter { it.isDigit() }.toInt())
             }
         for (designation: Int in 1..maxStructureAmount) {
             if (!existingDesignations.contains(designation)) return niko_MPC_industryIds.overgrownNanoforgeJunkStructureId + designation
         }
         return null
     }
-    fun MarketAPI.getOvergrownJunk(): HashSet<Industry> {
-        val junk = HashSet<Industry>()
+    fun MarketAPI.getOvergrownJunk(): HashSet<overgrownNanoforgeJunk> {
+        val junk = HashSet<overgrownNanoforgeJunk>()
         for (structure in industries) {
-            if (structure.isJunk()) junk += structure
+            if (structure.isJunk()) junk += structure as overgrownNanoforgeJunk
         }
         return junk
     }
@@ -189,5 +189,20 @@ object niko_MPC_marketUtils {
     }
     fun MarketAPI.hasJunkStructures(): Boolean {
         return getOvergrownJunk().isNotEmpty()
+    }
+
+    fun MarketAPI.purgeOvergrownNanoforgeBuildings() {
+        val iterator = this.getOvergrownNanoforgeBuildings().iterator()
+        while (iterator.hasNext()) {
+            val building = iterator.next()
+            building.unapply()
+        }
+    }
+    fun MarketAPI.getOvergrownNanoforgeBuildings(): MutableSet<baseOvergrownNanoforgeStructure> {
+        val buildings: MutableSet<baseOvergrownNanoforgeStructure> = HashSet()
+        buildings.addAll(getOvergrownJunk())
+        getOvergrownNanoforge()?.let { buildings += it }
+
+        return buildings
     }
 }

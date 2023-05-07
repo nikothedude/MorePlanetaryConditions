@@ -13,7 +13,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_industryIds
-import data.utilities.niko_MPC_miscUtils.hasCustomControls
+import data.utilities.niko_MPC_marketUtils.hasCustomControls
 import data.utilities.niko_MPC_scriptUtils.addScriptsAtValidTime
 
 

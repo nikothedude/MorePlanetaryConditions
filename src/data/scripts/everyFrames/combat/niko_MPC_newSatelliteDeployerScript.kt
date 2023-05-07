@@ -43,10 +43,6 @@ class niko_MPC_newSatelliteDeployerScript : BaseEveryFrameCombatPlugin() {
         }
     }
 
-    override fun init(engine: CombatEngineAPI) {
-        super.init(engine)
-    }
-
     override fun advance(amount: Float, events: List<InputEventAPI>) {
         if (Global.getCurrentState() != GameState.COMBAT) return
         super.advance(amount, events)
