@@ -12,9 +12,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import lunalib.lunaExtensions.getMarketsCopy
-import niko.MCTE.utils.MCTE_debugUtils.displayError
 
 object niko_MPC_marketUtils {
 
@@ -42,16 +42,15 @@ object niko_MPC_marketUtils {
         val removeIfNull: HashSet<String> = hashSetOf(Commodities.FOOD, Commodities.ORE, Commodities.ORGANICS, Commodities.RARE_ORE, Commodities.VOLATILES)
         val producableCommodities = ArrayList(commodities)
         val producableModifiers = HashMap<String, Int>()
-        producableModifiers.keys.addAll(producableCommodities)
         for (commodityId in producableCommodities) {
             val modifier = getCommodityModifier(commodityId)
             if (modifier == null) {
                 if (removeIfNull.contains(commodityId)) {
                     producableModifiers -= commodityId
+                    continue
                 }
-                continue
             }
-            producableModifiers[commodityId] = modifier
+            producableModifiers[commodityId] = modifier ?: 0
         }
         return producableModifiers
     }
@@ -83,6 +82,11 @@ object niko_MPC_marketUtils {
     @JvmStatic
     fun MarketAPI.getOvergrownNanoforge(): overgrownNanoforgeIndustry? {
         return getIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId) as? overgrownNanoforgeIndustry
+    }
+
+    @JvmStatic
+    fun MarketAPI.getOvergrownNanoforgeCondition(): overgrownNanoforgeCondition? {
+        return getCondition(niko_MPC_ids.overgrownNanoforgeConditionId)?.plugin as? overgrownNanoforgeCondition
     }
 
     @JvmStatic
@@ -178,7 +182,7 @@ object niko_MPC_marketUtils {
         addIndustry(id)
         val industry = getIndustry(id)
         if (!industry.isJunk()) {
-            displayError("addjunkstructure failed on $this due to cast error")
+            niko_MPC_debugUtils.displayError("addjunkstructure failed on $this due to cast error")
             logDataOf(this)
             return null
         }

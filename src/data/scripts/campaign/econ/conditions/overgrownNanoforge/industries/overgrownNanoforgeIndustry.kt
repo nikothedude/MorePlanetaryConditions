@@ -10,27 +10,31 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_IS_INDUSTRY
-import niko.MCTE.utils.MCTE_debugUtils.displayError
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
-    var baseSource: overgrownNanoforgeIndustrySource? = generateBaseStats()
+    var baseSource: overgrownNanoforgeIndustrySource? = null
         set(value) {
             if (field != null) field!!.delete()
             field = value
         }
-    val sources: MutableList<overgrownNanoforgeEffectSource> = ArrayList()
+    val sources: MutableSet<overgrownNanoforgeEffectSource> = HashSet()
     val junk: MutableSet<overgrownNanoforgeJunk> = HashSet()
     val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
 
     override fun init(id: String?, market: MarketAPI?) {
         super.init(id, market)
+
+        baseSource = generateBaseStats()
     }
 
     private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
@@ -55,8 +59,8 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         for (source in getAllSources()) source.apply()
     }
 
-    private fun applyConditions() {
-        if (market.hasCondition(Conditions.HABITABLE)) {
+    private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
+        if (market.hasCondition(Conditions.HABITABLE) && !market.hasCondition(Conditions.POLLUTION)) {
             market.addCondition(Conditions.POLLUTION)
         }
     }
@@ -67,14 +71,16 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
     override fun unapply() {
         super.unapply()
-        if (!reapplying) {
+        val condition = market.getOvergrownNanoforgeCondition()
+        if (condition == null) {
             delete()
-        } else {
-            for (source in getAllSources()) source.unapply()
+            return
         }
+        for (source in getAllSources()) source.unapply()
+        condition.startDeletionScript(market)
     }
 
-    fun getAllSources(): List<overgrownNanoforgeEffectSource> {
+    fun getAllSources(): Set<overgrownNanoforgeEffectSource> {
         if (baseSource != null) return sources + baseSource!!
         return sources
     }
@@ -88,7 +94,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     override fun delete() {
         super.delete()
         for (source in getAllSources()) source.delete()
-        TODO()
+        //TODO()
     }
 
     override fun canBeDestroyed(): Boolean {
@@ -102,7 +108,7 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         super.reportDestroyed()
         val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, null)
         Misc.getStorage(market).cargo.addSpecial(overgrownNanoforgeData, 1f)
-        TODO("this will not work")
+        //TODO("this will not work")
     }
 
     override fun canInstallAICores(): Boolean {

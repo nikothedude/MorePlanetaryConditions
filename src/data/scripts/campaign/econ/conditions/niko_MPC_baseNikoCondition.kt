@@ -3,14 +3,11 @@ package data.scripts.campaign.econ.conditions
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI
 import com.fs.starfarer.api.impl.campaign.econ.BaseMarketConditionPlugin
-import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_settings
 
 /** A base class that holds extremely basic and generic methods I will apply to all conditions I make.*/
 abstract class niko_MPC_baseNikoCondition: BaseMarketConditionPlugin() {
-
-    open val deletionScript: niko_MPC_conditionRemovalScript? = null
 
     /** Use [niko_MPC_settings] variables to determine this.*/
     protected open val isEnabled: Boolean = true
@@ -57,4 +54,5 @@ abstract class niko_MPC_baseNikoCondition: BaseMarketConditionPlugin() {
 
         ourMarket.removeSpecificCondition(condition.idForPluginModifications)
     }
+
 }

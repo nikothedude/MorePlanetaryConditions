@@ -5,18 +5,19 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Tags
-import data.campaign.ids.vic_Items
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
+import org.lazywizard.console.Console
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
@@ -72,6 +73,20 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             clearSatellitesFromCoreWorlds()
 
             generatePredefinedSatellites()
+        }
+        clearNanoforgesFromCoreWorlds()
+    }
+
+    private fun clearNanoforgesFromCoreWorlds() {
+        val systems = Global.getSector().starSystems
+        for (system in systems) {
+            if (!system.hasTag(Tags.THEME_CORE)) continue
+            for (planet in system.planets) {
+                val foundMarket = planet.market ?: continue
+                if (foundMarket.hasCondition(overgrownNanoforgeConditionId)) {
+                    foundMarket.removeCondition(overgrownNanoforgeConditionId)
+                }
+            }
         }
     }
 

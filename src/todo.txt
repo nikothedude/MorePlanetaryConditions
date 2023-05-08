@@ -1,0 +1,19 @@
+Migrate vars from industry to memory AGAIN for fuck SAKE
+Store core variables in memory so its consistant across decivs
+Store pre-generated junk apon generation (Once the market is no longer onlyforplanetarycondition or whatever, that is when
+it is "properly" generated. do the shit then)
+
+Reduce the amount of stuff actually picked
+
+please fucking improve the advancement alteration shit thats wacky as fuck
+
+Figure out why sync check failures are happening with null new markets
+
+Investigate that weird crash that happened after i went to a planet with a nanoforge and had a bunch of squares apepar in the top right
+(where the condition icons are) and then crash with an NPE in core code
+
+DONE:::
+Figure out why ore is always picked as the supply alteration
+
+Figure out why satellite handelrs are deleting multiple times
+    Maybe done by making customentityremovalscript not delete if handler is deleted

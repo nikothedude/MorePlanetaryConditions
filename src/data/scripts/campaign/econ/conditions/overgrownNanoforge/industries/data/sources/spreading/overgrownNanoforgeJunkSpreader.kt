@@ -24,6 +24,7 @@ class overgrownNanoforgeJunkSpreader(
 
     val timeTilSpread = spreadTimer(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
     var spreadingScript: overgrownNanoforgeJunkSpreadingScript? = null
+    val baseSpreadRate = 1f
 
     enum class advancementAlteration() {
         TOO_MANY_STRUCTURES() {
@@ -67,12 +68,6 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
-        override fun advance(amount: Float) {
-            super.advance(amount)
-            if (intervalElapsed()) {
-                setInterval(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
-            }
-        }
     }
 
     fun spreadJunkIfPossible(amount: Float) {
@@ -96,7 +91,9 @@ class overgrownNanoforgeJunkSpreader(
 
     fun tryToSpreadJunk(dayAmount: Float) {
         timeTilSpread.advance(dayAmount)
-        if (timeTilSpread.intervalElapsed()) spreadJunk()
+        if (timeTilSpread.intervalElapsed()) {
+            spreadJunk()
+        }
     }
 
     fun spreadJunk(): overgrownNanoforgeJunkSpreadingScript? {
@@ -128,7 +125,7 @@ class overgrownNanoforgeJunkSpreader(
         return mult
     }
     fun getPositiveIncrement(): Float {
-        var increment = 0f
+        var increment = baseSpreadRate
         for (entry in advancementAlterations) increment += entry.getPositiveIncrement(nanoforge)
         return increment
     }
@@ -194,7 +191,9 @@ class overgrownNanoforgeJunkSpreader(
                         continue
                     }
                 }
-                overgrownNanoforgeSourceTypes.INTERNAL -> {}
+                overgrownNanoforgeSourceTypes.INTERNAL -> {
+                    iterator.remove() // TODO return to this
+                }
             }
         }
         return types

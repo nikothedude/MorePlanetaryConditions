@@ -3,6 +3,6 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data
 enum class overgrownNanoforgeSourceTypes(
     val chance: Float
 ) {
-    INTERNAL(95f),
-    STRUCTURE(5f)
+    INTERNAL(0f),
+    STRUCTURE(100f)
 }

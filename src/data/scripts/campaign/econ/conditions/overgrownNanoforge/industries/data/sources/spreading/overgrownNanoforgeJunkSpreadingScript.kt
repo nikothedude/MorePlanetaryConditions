@@ -106,7 +106,7 @@ class overgrownNanoforgeJunkSpreadingScript(
 
     fun shouldTarget(): Boolean {
         if (getType() != overgrownNanoforgeSourceTypes.STRUCTURE) return false
-        if (!getMarket().hasMaxStructures()) return false
+        if (getMarket().hasMaxStructures()) return false
 
         return true
     }

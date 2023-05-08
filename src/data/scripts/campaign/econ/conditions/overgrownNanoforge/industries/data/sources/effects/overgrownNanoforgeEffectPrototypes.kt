@@ -6,6 +6,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.utilities.niko_MPC_marketUtils.getProducableCommodities
 import data.utilities.niko_MPC_marketUtils.removeNonNanoforgeProducableCommodities
 import data.utilities.niko_MPC_marketUtils.getProducableCommoditiesForOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.getProducableCommodityModifiers
@@ -37,13 +38,13 @@ enum class overgrownNanoforgeEffectPrototypes(
         override fun getWeight(nanoforge: overgrownNanoforgeIndustry): Float = 50f
         override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustry): Float? {
             val market = nanoforge.market
-            val producableCommodities = market.getProducableCommodityModifiers()
-            removeNonNanoforgeProducableCommodities(producableCommodities.keys)
+            val producableCommodities = market.getProducableCommodities()
+            removeNonNanoforgeProducableCommodities(producableCommodities)
             if (producableCommodities.isEmpty()) return null
             var lowestCost = Float.MAX_VALUE
-            for (commodityId in producableCommodities.keys) {
+            for (commodityId in producableCommodities) {
                 val cost = getCostForCommodity(nanoforge, commodityId) ?: continue
-                if (lowestCost < cost) lowestCost = cost
+                if (lowestCost > cost) lowestCost = cost
             }
             return lowestCost
         }
@@ -185,10 +186,10 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (!canAfford(nanoforge, maxBudget)) return null
                 val shouldInvert = maxBudget < 0
                 var maxBudget = maxBudget.absoluteValue
-                val instance: overgrownNanoforgeAlterStabilityEffect? = null
+                var instance: overgrownNanoforgeAlterStabilityEffect? = null
                 var stabilityIncrement = getTimesToIncrement(nanoforge, maxBudget)
                 if (shouldInvert) stabilityIncrement = -stabilityIncrement.absoluteValue
-                if (stabilityIncrement != 0f) instance = overgrownNanoforgeAlterStabilityEffect(TODO(), stabilityIncrement)
+                if (stabilityIncrement != 0f) instance = overgrownNanoforgeAlterStabilityEffect(nanoforge, stabilityIncrement)
 
                 return instance
             }
@@ -219,10 +220,10 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (!canAfford(nanoforge, maxBudget)) return null
                 val shouldInvert = maxBudget < 0
                 var maxBudget = maxBudget.absoluteValue
-                val instance: overgrownNanoforgeAlterHazardEffect? = null
+                var instance: overgrownNanoforgeAlterHazardEffect? = null
                 var hazardIncrement = getTimesToIncrement(nanoforge, maxBudget)
                 if (shouldInvert) hazardIncrement = -hazardIncrement.absoluteValue
-                if (hazardIncrement != 0f) instance = overgrownNanoforgeAlterHazardEffect(TODO(), hazardIncrement)
+                if (hazardIncrement != 0f) instance = overgrownNanoforgeAlterHazardEffect(nanoforge, hazardIncrement)
 
                 return instance
             }

@@ -3,9 +3,9 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
-import niko.MCTE.utils.MCTE_debugUtils.displayError
 
 class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
 

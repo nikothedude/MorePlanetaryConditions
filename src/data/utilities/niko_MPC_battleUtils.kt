@@ -5,9 +5,14 @@ import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorAPI
+import com.fs.starfarer.api.combat.WeaponAPI
 import data.utilities.niko_MPC_miscUtils.isStationFleet
 
 object niko_MPC_battleUtils {
+
+    fun WeaponAPI.isPD(): Boolean {
+        return (hasAIHint(WeaponAPI.AIHints.PD) || hasAIHint(WeaponAPI.AIHints.PD_ALSO))
+    }
     @JvmStatic
     fun BattleAPI.getContainingLocation(): LocationAPI? {
         if (!Global.getCombatEngine().isInCampaign) {

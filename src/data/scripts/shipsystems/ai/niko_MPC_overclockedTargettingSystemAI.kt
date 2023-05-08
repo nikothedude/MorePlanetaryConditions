@@ -6,12 +6,9 @@ import com.fs.starfarer.api.impl.combat.DamperFieldStats
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.shipsystems.niko_MPC_overclockedTargettingSystemStats
+import data.utilities.niko_MPC_battleUtils.isPD
 import org.lazywizard.lazylib.combat.AIUtils
 import org.lwjgl.util.vector.Vector2f
-
-fun WeaponAPI.isPD(): Boolean {
-    return (hasAIHint(WeaponAPI.AIHints.PD) || hasAIHint(WeaponAPI.AIHints.PD_ALSO))
-}
 
 class niko_MPC_overclockedTargettingSystemAI: ShipSystemAIScript {
 

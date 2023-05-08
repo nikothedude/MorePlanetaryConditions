@@ -1,41 +1,43 @@
 package data.scripts.everyFrames
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
+import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
-import data.utilities.niko_MPC_satelliteUtils.getConditionLinkedHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 
-abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, var conditionId: String, val condition: niko_MPC_baseNikoCondition? = null): niko_MPC_baseNikoScript() {
-    var runs = 0
-    open var thresholdTilEnd = 250
+abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, var conditionId: String,
+                                               open val condition: niko_MPC_baseNikoCondition? = null,
+                                               hasDeletionScript: hasDeletionScript<out deletionScript?>
+): deletionScript(hasDeletionScript) {
 
     override fun runWhilePaused(): Boolean {
         return true //todo: return to this
     }
 
     override fun advance(amount: Float) {
-        runs++
-        val market: MarketAPI? = entity?.market ?: condition?.getMarket()
-        if (market == null) {
-            if (runs >= thresholdTilEnd) {
-                delete()
-            }
-            return
-        }
-        if (shouldDelete(market)) {
+        super.advance(amount)
+        if (shouldDelete()) {
             deleteItem()
         }
         delete()
     }
 
-    abstract fun deleteItem()
+    override fun shouldDelete(): Boolean {
+        val market: MarketAPI? = entity?.market ?: condition?.getMarket()
+        return shouldDeleteWithMarket(market)
+    }
 
-    protected open fun shouldDelete(market: MarketAPI): Boolean {
+    open fun shouldDeleteWithMarket(market: MarketAPI?): Boolean {
+        if (market == null) {
+            if (runs >= thresholdTilEnd) {
+                return true
+            }
+            return false
+        }
         return (entity != null && (entity.isExpired || entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)) || !market.hasCondition(conditionId))
     }
 
@@ -47,10 +49,14 @@ abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, v
         Global.getSector().removeScript(this)
     }
 
+    override fun deleteItem() {
+        condition?.delete()
+    }
+
     override fun delete(): Boolean {
         if (!super.delete()) return false
 
-        condition?.deletionScript = null
+        hasDeletionScript.deletionScript = null
 
         return true
     }

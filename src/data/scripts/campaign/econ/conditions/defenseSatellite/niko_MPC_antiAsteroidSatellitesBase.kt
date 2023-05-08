@@ -3,9 +3,9 @@ package data.scripts.campaign.econ.conditions.defenseSatellite
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_industryAddingCondition
 import data.scripts.campaign.econ.industries.niko_MPC_defenseSatelliteLuddicSuppressor
-import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
@@ -21,11 +21,11 @@ import kotlin.math.abs
  * on it's own, without a condition. The only thing a condition adds is 1. binding the handler to the condition, so
  * deleting it if the condition is removed, 2. binding the handler to the market, so it follows wherever the market is, rather
  * than the entity of the market, and 3. adding market-specific effects that the generic handler cannot.*/
-abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondition(), niko_MPC_dataLoggable {
+abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondition(), niko_MPC_dataLoggable,
+    hasDeletionScript<niko_MPC_satelliteCustomEntityRemovalScript?> {
     abstract val suppressorId: String
     override val isEnabled: Boolean
         get() = niko_MPC_settings.DEFENSE_SATELLITES_ENABLED
-    override var deletionScript: niko_MPC_satelliteCustomEntityRemovalScript? = null
 
     fun getHandlerWithErrorCheck(doNullCheck: Boolean = true): niko_MPC_satelliteHandlerCore? {
         val ourHandler = getHandler()
@@ -80,10 +80,6 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
     }
 
     protected open fun prepareToRemoveSatellites(ourMarket: MarketAPI) {
-        addDeletionScriptToMarket(ourMarket)
-    }
-
-    protected open fun addDeletionScriptToMarket(ourMarket: MarketAPI) {
         val ourEntity = ourMarket.primaryEntity ?: return
         val ourHandler = getHandler()
         var shouldAdd = false
@@ -92,20 +88,20 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
                 if (deletionScript!!.handler != ourHandler) {
                     // global beacuse during loading entity's scripts just dont exist at all
                     //TODO: make it so that this accesses a memkey to see if we already have a script
-                    displayError("desynced handler, $ourHandler on $this deletionscript: $deletionScript, ${deletionScript!!.handler}")
+                    displayError("desynced handler, $ourHandler on $this deletionscript: $deletionScript, ${(deletionScript as niko_MPC_satelliteCustomEntityRemovalScript).handler}")
                     shouldAdd = true
                 }
             } else shouldAdd = true
             if (shouldAdd) {
-                deletionScript = createDeletionScript(ourEntity, ourHandler)
-                deletionScript?.start()
+                startDeletionScript(ourEntity, ourHandler)
             }
         }
     }
 
     /** Should EXCLUSVELY create and return a removal script, no side effects. */
-    protected open fun createDeletionScript(ourEntity: SectorEntityToken, ourHandler: niko_MPC_satelliteHandlerCore): niko_MPC_satelliteCustomEntityRemovalScript {
-        return niko_MPC_satelliteCustomEntityRemovalScript(ourEntity, condition.id, this, ourHandler)
+    override fun createDeletionScriptInstance(vararg args: Any): niko_MPC_satelliteCustomEntityRemovalScript {
+        return niko_MPC_satelliteCustomEntityRemovalScript(args[0] as SectorEntityToken, condition.id, this,
+            args[1] as niko_MPC_satelliteHandlerCore, this)
     }
 
     /** Generic value-based and non-jank operations should be here. Ex. an access buff.*/

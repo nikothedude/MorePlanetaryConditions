@@ -22,11 +22,7 @@
     </orderEntry>
     <orderEntry type="library" name="Console Commands" level="project" />
     <orderEntry type="library" name="javadoc" level="project" />
-    <orderEntry type="library" name="ExerelinCore" level="project" />
-    <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
     <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="src" level="project" />
-    <orderEntry type="library" name="jars" level="project" />
-    <orderEntry type="library" name="vic" level="project" />
   </component>
 </module>

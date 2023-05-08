@@ -11,17 +11,17 @@ class overgrownNanoforgeRandomizedSourceParams(
     val nanoforge: overgrownNanoforgeIndustry,
     val type: overgrownNanoforgeSourceTypes,
 ): overgrownNanoforgeSourceParams() {
-    val effects: MutableSet<overgrownNanoforgeEffect> = generateRandomizedEffects(nanoforge)
     var positiveBudgetHolder: budgetHolder
     var negativeBudgetHolder: budgetHolder
     var specialBudgetHolder: budgetHolder
-
     init {
         val budget = getInitialBudget(nanoforge)
         positiveBudgetHolder = budgetHolder(budget)
         negativeBudgetHolder = budgetHolder(-budget)
         specialBudgetHolder = budgetHolder(getSpecialBudget())
     }
+
+    val effects: MutableSet<overgrownNanoforgeEffect> = generateRandomizedEffects(nanoforge)
 
     private fun getSpecialBudget(): Float {
         return 0f
@@ -64,9 +64,11 @@ class overgrownNanoforgeRandomizedSourceParams(
 
         val potentialPrototypes: MutableSet<overgrownNanoforgeEffectPrototypes> = HashSet()
 
+        val initialPrototypes = getPotentialPrototypes(this, holder, allowedCategories)
         while (maxToPick-- > 0) {
             val pickedPrototype = getPotentialPrototypes(this, holder, allowedCategories).randomOrNull() ?: break
             potentialPrototypes += pickedPrototype
+            initialPrototypes -= pickedPrototype
         }
         if (potentialPrototypes.isEmpty()) return HashSet()
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
@@ -85,7 +87,8 @@ class overgrownNanoforgeRandomizedSourceParams(
     }
 
     private fun getMaxEffectsToPick(): Float {
-        TODO("Not yet implemented")
+        return 1f
+        //TODO("Not yet implemented")
     }
 
     private fun getInitialBudget(nanoforge: overgrownNanoforgeIndustry): Float {

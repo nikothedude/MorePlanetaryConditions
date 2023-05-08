@@ -5,9 +5,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_marketUtils.addJunkStructure
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
-import niko.MCTE.utils.MCTE_debugUtils.displayError
 
 class overgrownNanoforgeRandomizedSource(
     nanoforge: overgrownNanoforgeIndustry,

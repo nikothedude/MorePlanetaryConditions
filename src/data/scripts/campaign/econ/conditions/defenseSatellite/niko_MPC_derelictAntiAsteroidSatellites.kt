@@ -18,17 +18,20 @@ import data.utilities.niko_MPC_scriptUtils.addScriptsAtValidTime
 
 
 class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBase() {
+
     override val suppressorId: String = niko_MPC_industryIds.luddicPathSuppressorStructureId
+    override var deletionScript: niko_MPC_satelliteCustomEntityRemovalScript? = null
 
     init {
         suppressedConditions += Conditions.METEOR_IMPACTS //these things just fuck those things up
         industryIds += suppressorId
     }
-
     var baseAccessibilityIncrement = -0.30f //also placeholder
     var baseGroundDefenseIncrement = 400f
     var baseStabilityIncrement = 2f
+
     var baseGroundDefenseMult = 1.5f
+
 
     override fun handleConditionAttributes(id: String, ourMarket: MarketAPI) {
         for (suppressedCondition in suppressedConditions) {
@@ -40,7 +43,6 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, baseGroundDefenseIncrement, name)
         market.stability.modifyFlat(id, baseStabilityIncrement, name)
     }
-
 
     override fun unapplyConditionAttributes(id: String, ourMarket: MarketAPI) {
         ourMarket.accessibilityMod.unmodify(id)

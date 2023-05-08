@@ -3,7 +3,7 @@ niko_MPC_antiAsteroidLuddicPathSuppressor,Satellite Customs Control,0,0,,0,,,"st
 ,,,,,,,,,,,,,
 niko_MPC_overgrownNanoforge,Overgrown Nanoforge,0,0,,0,,niko_MPC_overgrownNanoforgeDestroyDummy,no_saturation_bombardment,,graphics/industry/niko_MPC_defenseSatelliteLuddicSupressor.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry,placeholder,90
 ,,,,,,,,,,,,,
-niko_MPC_overgrownNanoforgeDestroyDummy,nothing,10,90,,,,,,,,,,
+niko_MPC_overgrownNanoforgeDestroyDummy,nothing,10,90,,,,,,,graphics/industry/niko_MPC_defenseSatelliteLuddicSupressor.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.upgradeToDestroyStructure,placeholder....,
 ,,,,,,,,,,,,,
 niko_MPC_overgrownNanoforgeJunk_1,Nanoforge Growth,0,0,,,,niko_MPC_overgrownNanoforgeDestroyDummy,no_saturation_bombardment,,graphics/industry/niko_MPC_defenseSatelliteLuddicSupressor.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk,placeholder,
 niko_MPC_overgrownNanoforgeJunk_2,Nanoforge Growth,0,0,,,,niko_MPC_overgrownNanoforgeDestroyDummy,no_saturation_bombardment,,graphics/industry/niko_MPC_defenseSatelliteLuddicSupressor.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk,placeholder,
