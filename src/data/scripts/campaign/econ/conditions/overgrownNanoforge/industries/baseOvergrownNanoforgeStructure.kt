@@ -59,4 +59,18 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         delete()
     }
 
+    open fun getHandlerWithUpdate(): overgrownNanoforgeHandler {
+        val handler = getHandler() ?: instantiateNewHandler()
+    }
+
+    open fun instantiateNewHandler(): overgrownNanoforgeHandler {
+        val newHandler = createNewHandlerInstance()
+        newHandler.init()
+        return newHandler
+    }
+
+    abstract fun createNewHandlerInstance(): overgrownNanoforgeHandler
+
+    abstract fun getHandler(): overgrownNanoforgeHandler?
+
 }

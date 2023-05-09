@@ -9,6 +9,8 @@ import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_marketUtils.addJunkStructure
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
 
+// More of a "holder class" for a list of effects, which we apply one by one.
+// The source isn't the star of the show, it's the source of the effects, meaning the effects are the big boys here.
 class overgrownNanoforgeRandomizedSource(
     nanoforge: overgrownNanoforgeIndustry,
     val params: overgrownNanoforgeRandomizedSourceParams,

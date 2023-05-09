@@ -81,8 +81,20 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     fun getAllSources(): Set<overgrownNanoforgeEffectSource> {
-        if (baseSource != null) return sources + baseSource!!
+        if (baseSource != null) return getSources() + getBaseSource()!!
         return sources
+    }
+
+    fun getSources(): MutableSet<overgrownNanoforgeEffectSource> {
+        return getHandler().sources
+    }
+
+    override fun getHandler(): overgrownNanoforgeIndustryHandler? {
+        return market.getOvergrownIndustryHandler(this)
+    }
+
+    override fun createNewHandlerInstance(): overgrownNanoforgeIndustryHandler {
+        return overgrownNanoforgeIndustryHandler(this)
     }
 
     override fun advance(amount: Float) {

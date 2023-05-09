@@ -209,4 +209,11 @@ object niko_MPC_marketUtils {
 
         return buildings
     }
+
+    fun MarketAPI.getOvergrownHandler(): overgrownNanoforgeHandler {
+        if (memKeyHasIncorrectType<overgrownNanoforgeHandler>(this, niko_MPC_ids.overgrownNanoforgeHandlerMemoryId)) {
+            memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] = overgrownNanoforgeHandler()
+        }
+        return memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] as HashMap<String, niko_MPC_satelliteHandlerCore?>
+    }
 }

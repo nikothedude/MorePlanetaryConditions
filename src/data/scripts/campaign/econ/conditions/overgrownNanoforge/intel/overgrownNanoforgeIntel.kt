@@ -1,11 +1,12 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel
 
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
-import data.scripts.campaign.intel.baseNikoIntelPlugin
+import data.scripts.campaign.intel.baseNikoEventIntelPlugin
 
-class overgrownNanoforgeIntel: baseNikoIntelPlugin() {
+class overgrownNanoforgeIntel: baseNikoEventIntelPlugin() {
 
     var ourName: String = "Overgrown Nanoforge"
+    val ourNanoforge: overgrownNanoforgeCondition
 
     override fun getName(): String = ourName
 
