@@ -7,9 +7,30 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 // 2. Okay just everything the junk should hold
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
-    initBaseSource: overgrownNanoforgeRandomizedSource
+    initBaseSource: overgrownNanoforgeRandomizedSource,
+    initBuildingId: String?
 ): overgrownNanoforgeHandler(initMarket, initBaseSource) {
-    override fun init() {
 
+    var buildingId: String? = initBuildingId ?: getNewStructureId()
+        set(value: String?) {
+            if (value == null) {
+                handleNullBuildingId()
+            }
+            field == value
+        }
+
+    override fun init() {
+        if (initBuildingId)
+    }
+
+    override fun apply() {
+        super.apply()
+        buildingId = getStructure()?.id
+    }
+
+    // Shouldn't cause issues, since this is only called during the building's instantiation, right? Riiiiiight?
+    // No we still need to keep a copy of our structure ID so we can actually grab it huhgh
+    override fun getNewStructureId(): String? {
+        return market.getNextOvergrownJunkId()
     }
 }

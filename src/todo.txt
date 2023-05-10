@@ -12,6 +12,11 @@ Figure out why sync check failures are happening with null new markets
 Investigate that weird crash that happened after i went to a planet with a nanoforge and had a bunch of squares apepar in the top right
 (where the condition icons are) and then crash with an NPE in core code
 
+IN PROGRESS 
+
+Migrate vars from industry to memory AGAIN for fuck SAKE
+    See overgrownNanoforgeHandler
+
 DONE:::
 Figure out why ore is always picked as the supply alteration
 

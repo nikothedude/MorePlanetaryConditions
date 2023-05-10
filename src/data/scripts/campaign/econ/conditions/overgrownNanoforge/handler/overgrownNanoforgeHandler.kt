@@ -7,22 +7,35 @@ abstract class overgrownNanoforgeHandler(
     initMarket: MarketAPI,
     initBaseSource: overgrownNanoforgeEffectSource
 ) {
+    var currentStructureId: String? = null
     val baseSource: overgrownNanoforgeEffectSource = initBaseSource
 
     var market: MarketAPI? = initMarket
         set(value: MarketAPI?) {
             if (field != null && value == null) {
                 migratingToNullMarket()
+            } else if (field != value) {
+                migrateToNewMarket(value)
             }
             field = value
         }
 
     open fun init() {
-        addSelfToMarket(market)
+        addSelfToMarket()
     }
 
     open fun delete() {
         removeSelfFromMarket(market)
+    }
+
+    open fun apply() {
+        if (shouldCreateStructure()) {
+           createStructure()
+        }
+    }
+
+    open fun unapply() {
+        removeStructure()
     }
 
     abstract fun addSelfToMarket(market: MarketAPI): Boolean
@@ -37,15 +50,27 @@ abstract class overgrownNanoforgeHandler(
     /* Returns the structure this handler stores data of. Can be null if the structure doesn't exist. */
     abstract fun getStructure(): baseOvergrownNanoforgeStructure?
 
-    open fun getStructureWithUpdate(): baseOvergrownNanoforgeStructure {
+    open fun getStructureWithUpdate(): baseOvergrownNanoforgeStructure? {
         if (getStructure() == null) createStructure()
-        return getStructure()!!
+        return getStructure()
+    }
+
+    open fun shouldCreateStructure(): Boolean {
+        return (getStructure() == null)
     }
 
     open fun createStructure() {
-        market!!.addIndustry(getNewStructureId())
+        val newStructureId = getNewStructureId()
+        market?.addIndustry(newStructureId)
+        currentStructureId = newStructureId
     }
 
-    abstract fun getNewStructureId(): String
+    open fun removeStructure() {
+        market?.removeIndustry(getStructureId())
+    }
+    /* Should return the String ID of the structure we currently have active. */
+    abstract fun getStructureId(): String?
+    /* Should return the String ID of the next structure we want to build. */
+    abstract fun getNewStructureId(): String?
 
 }

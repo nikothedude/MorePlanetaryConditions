@@ -41,6 +41,13 @@ class overgrownNanoforgeIndustryHandler(
         return ourMarket.getOvergrownNanoforge()
     }
 
+    override fun getNewStructureId(): String {
+        return niko_MPC_ids.overgrownNanoforgeIndustryId
+    }
+    override fun getStructureId(): String {
+        return niko_MPC_ids.overgrownNanoforgeIndustryId
+    }
+
     companion object {
         fun getBaseScore(): Float {
             return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_BASE_SCORE_MIN, OVERGROWN_NANOFORGE_BASE_SCORE_MAX)
