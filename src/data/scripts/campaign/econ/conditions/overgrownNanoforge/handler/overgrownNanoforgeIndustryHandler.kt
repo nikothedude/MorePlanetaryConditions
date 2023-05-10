@@ -12,12 +12,21 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 class overgrownNanoforgeIndustryHandler(
     initMarket: MarketAPI,
     initBaseSource: overgrownNanoforgeIndustrySource = createBaseSource()
-): overgrownNanoforgeHandler(initMarket, initBaseSource) {
+): overgrownNanoforgeHandler(initMarket, initBaseSource), EveryFrameScript {
 
     override val baseSource: overgrownNanoforgeIndustrySource = initBaseSource
     val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
 
     val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
+
+    var discovered: Boolean = false
+        set(value: Boolean) {
+            if (value != field) {
+                intel.hidden = !value
+            }
+            field = value
+        }
+    val intel: overgrownNanoforgeIntel = createIntel()
 
     private fun createBaseSource(): overgrownNanoforgeIndustrySource {
         val baseScore = getBaseScore()
@@ -28,6 +37,24 @@ class overgrownNanoforgeIndustryHandler(
                 mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500)))))
             return source
         return source
+    }
+
+    override fun advance(amount: Float) {
+        junkSpreader.advance(amount)
+    }
+
+    override fun isDone(): Boolean {
+        return deleted
+    }
+
+    override fun apply() {
+        super.apply()
+        Global.getSector().addScript(this)
+    }
+
+    override fun unapply() {
+        super.unapply()
+        Global.getSector().removeScript(this)
     }
 
     private fun getBaseEffectPrototype(): overgrownNanoforgeEffectPrototypes {
@@ -44,8 +71,10 @@ class overgrownNanoforgeIndustryHandler(
     override fun getNewStructureId(): String {
         return niko_MPC_ids.overgrownNanoforgeIndustryId
     }
-    override fun getStructureId(): String {
-        return niko_MPC_ids.overgrownNanoforgeIndustryId
+
+    fun createIntel(): overgrownNanoforgeIntel {
+        val intel: overgrownNanoforgeIntel = overgrownNanoforgeIntel(this)
+        intel.init()
     }
 
     companion object {

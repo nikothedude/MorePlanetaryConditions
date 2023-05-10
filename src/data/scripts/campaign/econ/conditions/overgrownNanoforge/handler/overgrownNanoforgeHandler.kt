@@ -10,6 +10,8 @@ abstract class overgrownNanoforgeHandler(
     var currentStructureId: String? = null
     val baseSource: overgrownNanoforgeEffectSource = initBaseSource
 
+    var deleted: Boolean = false
+
     var market: MarketAPI = initMarket
         set(value: MarketAPI) {
              if (field != value) {
@@ -26,6 +28,7 @@ abstract class overgrownNanoforgeHandler(
         removeSelfFromMarket(market)
 
         for (source in getAllSources()) source.delete() // TODO: this will cause issues if delete calls unapply since this callchain calls source.unapply
+        deleted = true
     }
 
     open fun apply() {

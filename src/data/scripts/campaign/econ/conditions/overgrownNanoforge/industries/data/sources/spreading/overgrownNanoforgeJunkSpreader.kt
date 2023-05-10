@@ -70,7 +70,7 @@ class overgrownNanoforgeJunkSpreader(
     class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
     }
 
-    fun spreadJunkIfPossible(amount: Float) {
+    fun advance(amount: Float) {
         val dayAmount = Misc.getDays(amount)
         if (shouldSpreadJunk()) {
             tryToSpreadJunk(dayAmount) //only increment the timer if we should even try
