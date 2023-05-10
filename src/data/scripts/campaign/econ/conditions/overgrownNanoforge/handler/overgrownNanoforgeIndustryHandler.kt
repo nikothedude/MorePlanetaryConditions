@@ -14,7 +14,7 @@ class overgrownNanoforgeIndustryHandler(
     initBaseSource: overgrownNanoforgeIndustrySource = createBaseSource()
 ): overgrownNanoforgeHandler(initMarket, initBaseSource) {
 
-    override val baseSource: overgrownNanoforgeIndustrySource = baseSource
+    override val baseSource: overgrownNanoforgeIndustrySource = initBaseSource
     val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
 
     val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)

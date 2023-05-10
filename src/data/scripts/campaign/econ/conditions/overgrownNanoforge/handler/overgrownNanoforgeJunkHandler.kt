@@ -11,7 +11,8 @@ class overgrownNanoforgeJunkHandler(
     initBuildingId: String?
 ): overgrownNanoforgeHandler(initMarket, initBaseSource) {
 
-    var buildingId: String? = initBuildingId ?: getNewStructureId()
+    /* Should be the String ID of the building we currently have active, or will instantiate later. */
+    var cachedBuildingId: String? = initBuildingId ?: getNewStructureId()
         set(value: String?) {
             if (value == null) {
                 handleNullBuildingId()
@@ -19,18 +20,18 @@ class overgrownNanoforgeJunkHandler(
             field == value
         }
 
-    override fun init() {
-        if (initBuildingId)
-    }
-
-    override fun apply() {
-        super.apply()
-        buildingId = getStructure()?.id
+    override fun createStructure() {
+        super.createStructure()
+        cachedBuildingId = currentStructureId
     }
 
     // Shouldn't cause issues, since this is only called during the building's instantiation, right? Riiiiiight?
     // No we still need to keep a copy of our structure ID so we can actually grab it huhgh
     override fun getNewStructureId(): String? {
         return market.getNextOvergrownJunkId()
+    }
+
+    override fun getStructure(): overgrownNanoforgeJunk? {
+        return (market?.getIndustry(currentStructureId) as? overgrownNanoforgeJunk) 
     }
 }

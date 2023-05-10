@@ -16,8 +16,26 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         return false
     }
 
+    override fun apply() {
+        apply(true)
+    }
+
+    override fun apply(withIncomeUpdate: Boolean) {
+        super.apply(withIncomeUpdate)
+
+        val handler = getHandlerWithUpdate()
+        handler.apply()
+    }
+
     override fun unapply() {
         super.unapply()
+        val handler = getHandlerWithUpdate()
+        handler.apply()  
+    }
+
+    open fun delete() {
+        val handler = getHandlerWithUpdate()
+        handler.delete()
     }
 
     override fun canUpgrade(): Boolean {

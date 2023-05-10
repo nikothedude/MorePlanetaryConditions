@@ -9,7 +9,6 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 
 class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
 
-    lateinit var source: overgrownNanoforgeRandomizedSource
     var properlyAdded: Boolean = false
 
     override fun init(id: String?, market: MarketAPI?) {

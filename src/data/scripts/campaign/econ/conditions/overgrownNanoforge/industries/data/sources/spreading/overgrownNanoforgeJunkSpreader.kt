@@ -19,7 +19,7 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeJunkSpreader(
-    val nanoforge: overgrownNanoforgeIndustry
+    val nanoforgeHandler: overgrownNanoforgeIndustryHandler
 ) {
 
     val timeTilSpread = spreadTimer(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
@@ -29,11 +29,11 @@ class overgrownNanoforgeJunkSpreader(
     enum class advancementAlteration() {
         TOO_MANY_STRUCTURES() {
             override fun getText(nanoforge: overgrownNanoforgeIndustry): String {
-                val market = nanoforge.market
+                val market = nanoforgeHandler.market
                 return "${market.name} has exceeded the structure limit by ${market.getVisibleIndustries().size - niko_MPC_marketUtils.maxStructureAmount}"
             }
             override fun shouldApply(nanoforge: overgrownNanoforgeIndustry): Boolean {
-                val spreadingScript = nanoforge.junkSpreader.spreadingScript ?: return false
+                val spreadingScript = nanoforgeHandler.junkSpreader.spreadingScript ?: return false
                 return spreadingScript.marketExceedsMaxStructuresAndDoWeCare()
             }
             override fun getMult(nanoforge: overgrownNanoforgeIndustry): Float = -1f //halt all growth but not recession
@@ -50,10 +50,10 @@ class overgrownNanoforgeJunkSpreader(
 
         companion object {
             val alterations = advancementAlteration.values().toSet()
-            fun getReasons(nanoforge: overgrownNanoforgeIndustry): MutableSet<advancementAlteration> {
+            fun getReasons(nanoforgeHandler: overgrownNanoforgeIndustryHandler): MutableSet<advancementAlteration> {
                 val reasons = HashSet<advancementAlteration>()
                 for (reason in advancementAlteration.values().toMutableList()) {
-                    if (reason.shouldApply(nanoforge)) reasons += reason
+                    if (reason.shouldApply(nanoforgeHandler)) reasons += reason
                 }
                 return reasons
             }
@@ -200,7 +200,7 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun getMarket(): MarketAPI {
-        return nanoforge.market
+        return nanoforgeHandler.market
     }
 
     fun delete() {
@@ -208,6 +208,6 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun getExistingJunk(): MutableSet<overgrownNanoforgeJunk> {
-        return nanoforge.junk
+        return nanoforgeHandler.junk
     }
 }

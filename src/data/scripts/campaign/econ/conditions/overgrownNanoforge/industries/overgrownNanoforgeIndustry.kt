@@ -56,17 +56,12 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         super.apply(withIncomeUpdate)
 
         applyConditions()
-        for (source in getAllSources()) source.apply()
     }
 
     private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
         if (market.hasCondition(Conditions.HABITABLE) && !market.hasCondition(Conditions.POLLUTION)) {
             market.addCondition(Conditions.POLLUTION)
         }
-    }
-
-    override fun apply() {
-        apply(true)
     }
 
     override fun unapply() {
@@ -76,13 +71,16 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
             delete()
             return
         }
-        for (source in getAllSources()) source.unapply()
         condition.startDeletionScript(market)
     }
 
     fun getAllSources(): Set<overgrownNanoforgeEffectSource> {
         if (baseSource != null) return getSources() + getBaseSource()!!
         return sources
+    }
+
+    fun getBaseSource(): overgrownNanoforgeIndustrySource {
+        return getHandlerWithUpdate().baseSource
     }
 
     fun getSources(): MutableSet<overgrownNanoforgeEffectSource> {
@@ -94,13 +92,13 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     override fun createNewHandlerInstance(): overgrownNanoforgeIndustryHandler {
-        return overgrownNanoforgeIndustryHandler(this)
+        return overgrownNanoforgeIndustryHandler(market)
     }
 
     override fun advance(amount: Float) {
         super.advance(amount)
 
-        junkSpreader.spreadJunkIfPossible(amount)
+        getHandlerWithUpdate().junkSpreader.spreadJunkIfPossible(amount)
     }
 
     override fun delete() {
@@ -117,9 +115,9 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     override fun reportDestroyed() {
-        super.reportDestroyed()
         val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, null)
         Misc.getStorage(market).cargo.addSpecial(overgrownNanoforgeData, 1f)
+        super.reportDestroyed()
         //TODO("this will not work")
     }
 
