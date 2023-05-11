@@ -1,27 +1,30 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
 
 class overgrownNanoforgeRandomizedSourceParams(
-    val nanoforge: overgrownNanoforgeIndustry,
+    val handler: overgrownNanoforgeIndustryHandler,
     val type: overgrownNanoforgeSourceTypes,
 ): overgrownNanoforgeSourceParams() {
     var positiveBudgetHolder: budgetHolder
     var negativeBudgetHolder: budgetHolder
     var specialBudgetHolder: budgetHolder
     init {
-        val budget = getInitialBudget(nanoforge)
+        val budget = getInitialBudget(handler)
         positiveBudgetHolder = budgetHolder(budget)
         negativeBudgetHolder = budgetHolder(-budget)
         specialBudgetHolder = budgetHolder(getSpecialBudget())
     }
 
-    val effects: MutableSet<overgrownNanoforgeEffect> = generateRandomizedEffects(nanoforge)
+    val effects: MutableSet<overgrownNanoforgeEffect> = generateRandomizedEffects(handler)
 
     private fun getSpecialBudget(): Float {
         return 0f
@@ -29,30 +32,30 @@ class overgrownNanoforgeRandomizedSourceParams(
 
     class budgetHolder(var budget: Float)
 
-    private fun generateRandomizedEffects(nanoforge: overgrownNanoforgeIndustry): MutableSet<overgrownNanoforgeEffect> {
+    private fun generateRandomizedEffects(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
         val effects = HashSet<overgrownNanoforgeEffect>()
 
-        effects += pickPositives(nanoforge)
-        effects += pickNegatives(nanoforge)
-        effects += pickSpecial(nanoforge)
+        effects += pickPositives(handler)
+        effects += pickNegatives(handler)
+        effects += pickSpecial(handler)
 
         return effects
     }
 
-    private fun pickPositives(nanoforge: overgrownNanoforgeIndustry): MutableSet<overgrownNanoforgeEffect> {
-        return pickEffects(nanoforge, positiveBudgetHolder, setOf(overgrownNanoforgeEffectCategories.BENEFIT))
+    private fun pickPositives(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
+        return pickEffects(handler, positiveBudgetHolder, setOf(overgrownNanoforgeEffectCategories.BENEFIT))
     }
 
-    private fun pickNegatives(nanoforge: overgrownNanoforgeIndustry): MutableSet<overgrownNanoforgeEffect> {
-        return pickEffects(nanoforge, negativeBudgetHolder, setOf(overgrownNanoforgeEffectCategories.DEFICIT))
+    private fun pickNegatives(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
+        return pickEffects(handler, negativeBudgetHolder, setOf(overgrownNanoforgeEffectCategories.DEFICIT))
     }
 
-    private fun pickSpecial(nanoforge: overgrownNanoforgeIndustry): MutableSet<overgrownNanoforgeEffect> {
-        return pickEffects(nanoforge, specialBudgetHolder, setOf(overgrownNanoforgeEffectCategories.SPECIAL))
+    private fun pickSpecial(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
+        return pickEffects(handler, specialBudgetHolder, setOf(overgrownNanoforgeEffectCategories.SPECIAL))
     }
 
     private fun pickEffects(
-        nanoforge: overgrownNanoforgeIndustry,
+        handler: overgrownNanoforgeHandler,
         holder: budgetHolder,
         allowedCategories: Set<overgrownNanoforgeEffectCategories>,
         maxToPick: Float = getMaxEffectsToPick()
@@ -74,13 +77,13 @@ class overgrownNanoforgeRandomizedSourceParams(
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
             initialBudget,
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(nanoforge) ?: 0f},
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler.getCoreHandler()) ?: 0f},
         )
         for (entry in weightedPrototypes) positiveBudgetHolder.budget -= entry.value
         for (entry in weightedPrototypes) {
             val prototype = entry.key
             val score = entry.value
-            val instance = prototype.getInstance(nanoforge, score) ?: continue //TODO: this fucking sucks
+            val instance = prototype.getInstance(handler.market.getOvergrownNanoforgeIndustryHandler()!!, score) ?: continue //TODO: this fucking sucks
             effects += instance
         }
         return effects
@@ -91,11 +94,11 @@ class overgrownNanoforgeRandomizedSourceParams(
         //TODO("Not yet implemented")
     }
 
-    private fun getInitialBudget(nanoforge: overgrownNanoforgeIndustry): Float {
-        return randomizedSourceBudgetsPicker.getRandomBudget(nanoforge)
+    private fun getInitialBudget(handler: overgrownNanoforgeHandler): Float {
+        return randomizedSourceBudgetsPicker.getRandomBudget(handler)
     }
 
     fun getMarket(): MarketAPI {
-        return nanoforge.market
+        return handler.market
     }
 }

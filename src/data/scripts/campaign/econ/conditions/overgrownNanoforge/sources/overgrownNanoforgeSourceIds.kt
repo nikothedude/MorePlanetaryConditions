@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources
 
 object overgrownNanoforgeSourceIds {
 

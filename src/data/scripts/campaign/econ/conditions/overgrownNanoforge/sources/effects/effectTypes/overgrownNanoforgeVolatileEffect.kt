@@ -1,15 +1,16 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
 import com.fs.starfarer.api.campaign.econ.Industry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.utilities.niko_MPC_marketUtils.getVisibleIndustries
-import data.utilities.niko_MPC_marketUtils.isJunk
 import data.utilities.niko_MPC_marketUtils.isJunkStructure
+import data.utilities.niko_MPC_settings.VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT
 
 class overgrownNanoforgeVolatileEffect(
-    nanoforge: overgrownNanoforgeIndustry
-): overgrownNanoforgeRandomizedEffect(nanoforge) {
+    handler: overgrownNanoforgeHandler
+): overgrownNanoforgeRandomizedEffect(handler) {
 
     companion object {
         const val VOLATILE_EXPLOSION_DURATION = 90f
@@ -57,7 +58,14 @@ class overgrownNanoforgeVolatileEffect(
         for (possibleTarget in getMarket().getVisibleIndustries()) {
             if (possibleTarget.isValidTarget()) validTargets += possibleTarget
         }
-        val target = validTargets.randomOrNull() ?: return
-        target.setDisrupted(VOLATILE_EXPLOSION_DURATION, true)
+        val pickedTargets: MutableSet<Industry> = HashSet()
+        var industriesToDisrupt: Float = VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT
+        for (target in validTargets.shuffled()) {
+            pickedTargets += target
+            industriesToDisrupt--
+        }
+        pickedTargets.forEach { it.setDisrupted(VOLATILE_EXPLOSION_DURATION, true) }
+
+        //TODO: do intel here
     }
 }

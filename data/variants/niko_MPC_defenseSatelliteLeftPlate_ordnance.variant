@@ -20,6 +20,8 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
+        "WS0009": "typhoon",
+        "WS0013": "harpoonpod",
         "WS0014": "hurricane"
       }
     },
@@ -35,9 +37,7 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0009": "annihilatorpod",
         "WS0012": "harpoonpod",
-        "WS0013": "harpoonpod",
         "WS0015": "shredder",
         "WS0019": "breach"
       }

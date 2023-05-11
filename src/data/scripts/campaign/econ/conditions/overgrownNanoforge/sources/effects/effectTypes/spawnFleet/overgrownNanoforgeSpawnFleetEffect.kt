@@ -1,12 +1,13 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.spawnFleet
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet
 
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 class overgrownNanoforgeSpawnFleetEffect(
-    nanoforge: overgrownNanoforgeIndustry
-): overgrownNanoforgeRandomizedEffect(nanoforge) {
+    nanoforgeHandler: overgrownNanoforgeIndustryHandler
+): overgrownNanoforgeRandomizedEffect(nanoforgeHandler) {
     val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(this)
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {

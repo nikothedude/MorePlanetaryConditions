@@ -19,7 +19,8 @@
     "niko_MPC_tachyonFighterComms",
     "pointdefenseai",
     "niko_MPC_cheapDeployment",
-    "turretgyros"
+    "turretgyros",
+    "do_not_fire_through"
   ],
   "weaponSlots": [
     {

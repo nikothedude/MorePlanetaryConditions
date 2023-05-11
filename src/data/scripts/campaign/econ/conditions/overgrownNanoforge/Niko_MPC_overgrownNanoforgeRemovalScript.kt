@@ -6,6 +6,7 @@ import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
 
 class niko_MPC_overgrownNanoforgeRemovalScript(
     entity: SectorEntityToken, conditionId: String, override val condition: overgrownNanoforgeCondition? = null,
@@ -15,7 +16,7 @@ class niko_MPC_overgrownNanoforgeRemovalScript(
 
     override fun shouldDeleteWithMarket(market: MarketAPI?): Boolean {
         val superResult = super.shouldDeleteWithMarket(market)
-        val isSupposedToHaveIndustry = ((market == null) || condition?.shouldHaveIndustry(market) == true)
+        val isSupposedToHaveIndustry = ((market == null) || market.shouldHaveOvergrownNanoforgeIndustry())
         return (superResult || (isSupposedToHaveIndustry && market?.hasIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId) == false))
     }
 }

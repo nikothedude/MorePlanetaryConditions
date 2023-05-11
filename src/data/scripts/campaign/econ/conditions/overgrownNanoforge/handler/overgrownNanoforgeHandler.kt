@@ -1,14 +1,19 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+
 /* The structure that creates this isnt guranteed to exist, this class exists to store data between decivs and shit so it's "consistant" */
 
 // This should be considered the actual overgrown nanoforge structure. The building itself is only our hook into the API.
 abstract class overgrownNanoforgeHandler(
     initMarket: MarketAPI,
-    initBaseSource: overgrownNanoforgeEffectSource
 ) {
     var currentStructureId: String? = null
-    val baseSource: overgrownNanoforgeEffectSource = initBaseSource
+    lateinit var baseSource: overgrownNanoforgeEffectSource
+
+    abstract fun createBaseSource(): overgrownNanoforgeEffectSource
 
     var deleted: Boolean = false
 
@@ -20,8 +25,14 @@ abstract class overgrownNanoforgeHandler(
             field = value
         }
 
-    open fun init() {
-        addSelfToMarket()
+    protected open fun migrateToNewMarket(newMarket: MarketAPI) {
+        removeSelfFromMarket(market)
+        addSelfToMarket(newMarket)
+    }
+
+    open fun init(initBaseSource: overgrownNanoforgeEffectSource? = null) {
+        baseSource = initBaseSource ?: createBaseSource()
+        addSelfToMarket(market)
     }
 
     open fun delete() {
@@ -44,12 +55,11 @@ abstract class overgrownNanoforgeHandler(
         for (source in getAllSources()) source.unapply()
     }
 
-    open fun addSelfToMarket(market: MarketAPI): Boolean {
-        TODO()
+    open fun addSelfToMarket(market: MarketAPI) {
         apply()
     }
-    open fun removeSelfFromMarket(market: MarketAPI): Boolean {
-        TODO()
+
+    open fun removeSelfFromMarket(market: MarketAPI) {
         unapply()
     }
 
@@ -61,7 +71,7 @@ abstract class overgrownNanoforgeHandler(
 
     /* Returns the structure this handler stores data of. Can be null if the structure doesn't exist. */
     open fun getStructure(): baseOvergrownNanoforgeStructure? {
-        return (market?.getIndustry(currentStructureId) as? baseOvergrownNanoforgeStructure) 
+        return (market.getIndustry(currentStructureId) as? baseOvergrownNanoforgeStructure)
     }
 
     open fun getStructureWithUpdate(): baseOvergrownNanoforgeStructure? {
@@ -75,17 +85,19 @@ abstract class overgrownNanoforgeHandler(
 
     protected open fun createStructure() {
         val newStructureId = getNewStructureId()
-        market?.addIndustry(newStructureId)
+        market.addIndustry(newStructureId)
         currentStructureId = newStructureId
     }
 
     open fun removeStructure() {
-        market?.removeIndustry(currentStructureId))
+        market.removeIndustry(currentStructureId, null, false)
         currentStructureId = null
     }
 
     open fun getAllSources(): MutableSet<overgrownNanoforgeEffectSource> {
-        return hashSetOf(baseSource)
+        val sources = HashSet<overgrownNanoforgeEffectSource>()
+        if (this::baseSource.isInitialized) sources += baseSource
+        return sources
     }
 
     /* Should return the String ID of the next structure we want to build. */
@@ -94,5 +106,13 @@ abstract class overgrownNanoforgeHandler(
     fun structurePresent(): Boolean {
         return (getStructure() != null)
     }
+
+    open fun getCurrentName(): String {
+        if (getStructure() != null) return getStructure()!!.currentName
+        return "placeholder"
+    }
+
+    /** Should return the "master" handler, AKA the nanoforge industry's handler. */
+    abstract fun getCoreHandler(): overgrownNanoforgeIndustryHandler
 
 }

@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteRightPlate",
   "displayName": "Beamer",
   "goalVariant": false,
-  "fluxCapacitors": 26,
+  "fluxCapacitors": 14,
   "fluxVents": 35,
   "quality": 1,
   "permaMods": [],
@@ -21,7 +21,12 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0019": "amblaster"
+        "WS0005": "gorgon",
+        "WS0007": "swarmer",
+        "WS0010": "gorgon",
+        "WS0011": "dragon",
+        "WS0019": "amblaster",
+        "WS0020": "swarmer"
       }
     },
     {
@@ -42,9 +47,7 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {
-        "WS0005": "harpoon"
-      }
+      "weapons": {}
     },
     {
       "autofire": true,
@@ -66,12 +69,7 @@
     {
       "autofire": true,
       "mode": "ALTERNATING",
-      "weapons": {
-        "WS0007": "swarmer",
-        "WS0010": "swarmer",
-        "WS0011": "swarmer",
-        "WS0020": "swarmer"
-      }
+      "weapons": {}
     },
     {
       "autofire": false,

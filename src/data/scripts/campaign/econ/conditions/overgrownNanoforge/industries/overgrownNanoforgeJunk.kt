@@ -1,15 +1,15 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.sun.org.apache.xpath.internal.operations.Bool
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 
 class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
 
-    var properlyAdded: Boolean = false
+    lateinit var ourHandler: overgrownNanoforgeJunkHandler
 
     override fun init(id: String?, market: MarketAPI?) {
         super.init(id, market)
@@ -22,20 +22,21 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
             market.removeIndustry(id, null, false)
             return
         }
-        nanoforge.junk += this
     }
 
-    override fun canBeDestroyed(): Boolean {
+    override fun createNewHandlerInstance(): overgrownNanoforgeJunkHandler {
         TODO("Not yet implemented")
     }
 
-    override fun apply() {
-        if (!properlyAdded) {
-            displayError("$this was improperly created")
-            delete()
-            return
-        }
-        source.apply()
+    override fun getHandler(): overgrownNanoforgeJunkHandler? {
         TODO("Not yet implemented")
+    }
+
+    override fun isAvailableToBuild(): Boolean {
+        return false
+    }
+
+    override fun showWhenUnavailable(): Boolean {
+        return false
     }
 }

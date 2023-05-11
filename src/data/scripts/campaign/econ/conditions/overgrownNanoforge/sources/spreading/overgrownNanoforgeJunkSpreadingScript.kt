@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
@@ -7,9 +7,10 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.PopulationAndInfrastructure
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
@@ -20,9 +21,9 @@ import data.utilities.niko_MPC_marketUtils.isOrbital
 import data.utilities.niko_MPC_settings
 
 class overgrownNanoforgeJunkSpreadingScript(
-    val nanoforge: overgrownNanoforgeIndustry,
+    val nanoforgeHandler: overgrownNanoforgeIndustryHandler,
     val daysTilSpread: Float,
-    val spreader: overgrownNanoforgeJunkSpreader = nanoforge.junkSpreader,
+    val spreader: overgrownNanoforgeJunkSpreader = nanoforgeHandler.junkSpreader,
     val effectParams: overgrownNanoforgeRandomizedSourceParams,
 ): niko_MPC_baseNikoScript() {
     var target: Industry? = getTargetForJunk()
@@ -135,11 +136,11 @@ class overgrownNanoforgeJunkSpreadingScript(
     }
 
     private fun createSource(): overgrownNanoforgeRandomizedSource {
-        return overgrownNanoforgeRandomizedSource(nanoforge, effectParams)
+        return overgrownNanoforgeRandomizedSource(nanoforgeHandler, effectParams)
     }
 
     fun getMarket(): MarketAPI {
-        return nanoforge.market
+        return nanoforgeHandler.market
     }
 
     override fun delete(): Boolean {

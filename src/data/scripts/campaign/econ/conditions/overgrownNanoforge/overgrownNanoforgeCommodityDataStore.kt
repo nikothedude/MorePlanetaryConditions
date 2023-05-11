@@ -1,6 +1,8 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge
 
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
 
@@ -52,10 +54,10 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
         this[Commodities.ORGANICS] = organicsData
     }
 
-    fun getWeightForCommodity(commodityId: String, nanoforge: overgrownNanoforgeIndustry): Float {
+    fun getWeightForCommodity(commodityId: String, nanoforge: overgrownNanoforgeIndustryHandler): Float {
         var weight: Float = this[commodityId]?.baseWeight ?: return 0f
         val supply = nanoforge.getSupply(commodityId)
-        if (supply != null && supply.quantity.modifiedInt > 0f) weight *= OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
+        if (supply > 0f) weight *= OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
         return weight
     }
 

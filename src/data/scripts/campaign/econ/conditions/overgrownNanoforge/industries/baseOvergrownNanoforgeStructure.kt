@@ -6,7 +6,10 @@ import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
+import data.utilities.niko_MPC_marketUtils.hasJunkStructures
+import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
 import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
@@ -24,24 +27,29 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         super.apply(withIncomeUpdate)
 
         val handler = getHandlerWithUpdate()
-        handler.apply()
+        handler?.apply()
     }
 
     override fun unapply() {
         super.unapply()
         val handler = getHandlerWithUpdate()
-        handler.apply()  
+        handler?.apply()
     }
 
-    open fun delete() {
+    override fun delete() {
         val handler = getHandlerWithUpdate()
-        handler.delete()
+        handler?.delete()
     }
 
     override fun canUpgrade(): Boolean {
         return canBeDestroyed()
     }
-    abstract fun canBeDestroyed(): Boolean
+    open fun canBeDestroyed(): Boolean {
+        if (playerNotNearAndDoWeCare()) return false
+        if (market.hasJunkStructures()) return false
+
+        return true
+    }
 
     fun playerNotNearAndDoWeCare(): Boolean {
         if (!niko_MPC_settings.OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON) return false
@@ -77,14 +85,17 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         delete()
     }
 
-    open fun getHandlerWithUpdate(): overgrownNanoforgeHandler {
-        val handler = getHandler() ?: instantiateNewHandler()
+    open fun getHandlerWithUpdate(): overgrownNanoforgeHandler? {
+        return getHandler() ?: instantiateNewHandler()
     }
 
-    open fun instantiateNewHandler(): overgrownNanoforgeHandler {
-        val newHandler = createNewHandlerInstance()
-        newHandler.init()
-        return newHandler
+    open fun instantiateNewHandler(): overgrownNanoforgeHandler? {
+        if (market.isValidTargetForOvergrownHandler()) {
+            val newHandler = createNewHandlerInstance()
+            newHandler.init()
+            return newHandler
+        }
+        return null
     }
 
     abstract fun createNewHandlerInstance(): overgrownNanoforgeHandler

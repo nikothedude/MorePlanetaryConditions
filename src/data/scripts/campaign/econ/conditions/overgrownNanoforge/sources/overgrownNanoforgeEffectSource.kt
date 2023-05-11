@@ -1,11 +1,13 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 abstract class overgrownNanoforgeEffectSource(
-    val industry: overgrownNanoforgeIndustry,
+    val handler: overgrownNanoforgeHandler,
     val effects: MutableSet<overgrownNanoforgeEffect>
     ) {
     open fun delete() {
@@ -18,7 +20,6 @@ abstract class overgrownNanoforgeEffectSource(
     }
 
     open fun apply() {
-        industry.sources += this
         applyEffects()
     }
 
@@ -27,7 +28,6 @@ abstract class overgrownNanoforgeEffectSource(
     }
 
     open fun unapply(unapplyEffects: Boolean = true) {
-        industry.sources -= this
         if (unapplyEffects) unapplyEffects()
     }
 
@@ -36,7 +36,7 @@ abstract class overgrownNanoforgeEffectSource(
     }
 
     fun getMarket(): MarketAPI {
-        return industry.market
+        return handler.market
     }
 
     fun getId(): String {
@@ -44,7 +44,7 @@ abstract class overgrownNanoforgeEffectSource(
     }
 
     open fun getDesc(): String {
-        return industry.currentName
+        return handler.getCurrentName()
     }
 
 }

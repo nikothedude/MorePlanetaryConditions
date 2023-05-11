@@ -1,55 +1,20 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.SpecialItemData
-import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading.overgrownNanoforgeJunkSpreader
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectPrototypes
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeEffectSource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
-import data.utilities.niko_MPC_debugUtils.displayError
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
-import data.utilities.niko_MPC_marketUtils.hasJunkStructures
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_IS_INDUSTRY
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
-
-    var baseSource: overgrownNanoforgeIndustrySource? = null
-        set(value) {
-            if (field != null) field!!.delete()
-            field = value
-        }
-    val sources: MutableSet<overgrownNanoforgeEffectSource> = HashSet()
-    val junk: MutableSet<overgrownNanoforgeJunk> = HashSet()
-    val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
-
-    override fun init(id: String?, market: MarketAPI?) {
-        super.init(id, market)
-
-        baseSource = generateBaseStats()
-    }
-
-    private fun generateBaseStats(): overgrownNanoforgeIndustrySource {
-        val baseScore = getBaseScore()
-        val supplyEffect = overgrownNanoforgeEffectPrototypes.ALTER_SUPPLY.getInstance(this, baseScore.toFloat())
-        if (supplyEffect == null) {
-            displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
-            val source = overgrownNanoforgeIndustrySource(this, //shuld never happen
-                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500)))))
-            return source
-        } 
-
-        val source = overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
-        return source
-    }
 
     //use this one
     override fun apply(withIncomeUpdate: Boolean) {
@@ -75,43 +40,30 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     fun getAllSources(): Set<overgrownNanoforgeEffectSource> {
-        if (baseSource != null) return getSources() + getBaseSource()!!
-        return sources
+        return getSources() + getBaseSource()
     }
 
-    fun getBaseSource(): overgrownNanoforgeIndustrySource {
+    fun getBaseSource(): overgrownNanoforgeEffectSource {
         return getHandlerWithUpdate().baseSource
     }
 
     fun getSources(): MutableSet<overgrownNanoforgeEffectSource> {
-        return getHandler().sources
+        return getHandlerWithUpdate().getJunkSources()
     }
 
+    override fun getHandlerWithUpdate(): overgrownNanoforgeIndustryHandler {
+        return super.getHandlerWithUpdate() as overgrownNanoforgeIndustryHandler
+    }
     override fun getHandler(): overgrownNanoforgeIndustryHandler? {
-        return market.getOvergrownIndustryHandler(this)
+        return market.getOvergrownNanoforgeIndustryHandler()
+    }
+
+    override fun instantiateNewHandler(): overgrownNanoforgeIndustryHandler {
+        return super.instantiateNewHandler() as overgrownNanoforgeIndustryHandler
     }
 
     override fun createNewHandlerInstance(): overgrownNanoforgeIndustryHandler {
         return overgrownNanoforgeIndustryHandler(market)
-    }
-
-    override fun advance(amount: Float) {
-        super.advance(amount)
-
-        getHandlerWithUpdate().junkSpreader.spreadJunkIfPossible(amount)
-    }
-
-    override fun delete() {
-        super.delete()
-        for (source in getAllSources()) source.delete()
-        //TODO()
-    }
-
-    override fun canBeDestroyed(): Boolean {
-        if (playerNotNearAndDoWeCare()) return false
-        if (market.hasJunkStructures()) return false
-
-        return true
     }
 
     override fun reportDestroyed() {

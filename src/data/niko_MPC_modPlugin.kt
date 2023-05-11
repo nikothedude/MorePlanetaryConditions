@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
@@ -55,6 +56,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
+        Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
             Global.getSector().listenerManager.addListener(niko_MPC_satelliteDiscoveredListener(), true)
         }

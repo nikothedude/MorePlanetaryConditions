@@ -1,21 +1,20 @@
-Migrate vars from industry to memory AGAIN for fuck SAKE
-Store core variables in memory so its consistant across decivs
-Store pre-generated junk apon generation (Once the market is no longer onlyforplanetarycondition or whatever, that is when
-it is "properly" generated. do the shit then)
-
-Reduce the amount of stuff actually picked
 
 please fucking improve the advancement alteration shit thats wacky as fuck
 
 Figure out why sync check failures are happening with null new markets
 
-Investigate that weird crash that happened after i went to a planet with a nanoforge and had a bunch of squares apepar in the top right
-(where the condition icons are) and then crash with an NPE in core code
+Make the volatile effect print out an intel report detailing damages
+
+Figure out why dialog satellite fleets are being cloned and given modular fleet ai instead of ours
 
 IN PROGRESS 
 
+Store pre-generated junk apon generation (Once the market is no longer onlyforplanetarycondition or whatever, that is when
+it is "properly" generated. do the shit then)
+Store core variables in memory so its consistant across decivs
 Migrate vars from industry to memory AGAIN for fuck SAKE
     See overgrownNanoforgeHandler
+
 
 DONE:::
 Figure out why ore is always picked as the supply alteration

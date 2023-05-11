@@ -13,7 +13,7 @@ class upgradeToDestroyStructure: baseNikoIndustry() {
     var timesApplied = 0
     val thresholdToDelete = 2
 
-    override fun apply() {
+    override fun apply() { // needed since addstructure calls apply and the g ame crashes if we instantly delete
         timesApplied++
         if (timesApplied >= thresholdToDelete) delete()
     }
@@ -26,5 +26,17 @@ class upgradeToDestroyStructure: baseNikoIndustry() {
             intel.sound = BaseIntelPlugin.getSoundStandardUpdate()
             Global.getSector().campaignUI.addMessage(intel, CommMessageAPI.MessageClickAction.COLONY_INFO, market)
         }
+    }
+
+    override fun isHidden(): Boolean {
+        return true
+    }
+
+    override fun isAvailableToBuild(): Boolean {
+        return false
+    }
+
+    override fun showWhenUnavailable(): Boolean {
+        return false
     }
 }

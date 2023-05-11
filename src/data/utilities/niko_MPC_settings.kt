@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.randomizedSourceBudgets
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import org.json.JSONException
 import java.io.IOException
@@ -89,9 +90,6 @@ object niko_MPC_settings {
 
     var OVERGROWN_NANOFORGE_IS_INDUSTRY = true
 
-    var OVERGROWN_NANOFORGE_BASE_SCORE_MIN = 200f
-    var OVERGROWN_NANOFORGE_BASE_SCORE_MAX = 300f
-
     var OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON = true
     var OVERGROWN_NANOFORGE_INTERACTION_DISTANCE = 1000f //todo: adjust
     var OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES = true
@@ -107,8 +105,16 @@ object niko_MPC_settings {
     var OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MIN = 0.8f
     var OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX = 1.2f
 
-    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = 15f
-    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = 45f
+    // this is so completely inaccurate because the api methods are useless
+    const val multToConvertFloatToDays = 100f
+    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = 120f * multToConvertFloatToDays
+    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = 200f * multToConvertFloatToDays
 
     var OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT = 3f
+    var VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT = 5f
+    var OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT = 0.0f
+    var OVERGROWN_NANOFORGE_OVERALL_BUDGET_MULT = 1f
+
+    var OVERGROWN_NANOFORGE_BASE_SCORE_MIN = randomizedSourceBudgets.HIGH.value*OVERGROWN_NANOFORGE_OVERALL_BUDGET_MULT
+    var OVERGROWN_NANOFORGE_BASE_SCORE_MAX = randomizedSourceBudgets.EXTREMELY_HIGH.value*OVERGROWN_NANOFORGE_OVERALL_BUDGET_MULT
 }

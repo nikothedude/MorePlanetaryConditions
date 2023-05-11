@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 enum class overgrownNanoforgeEffectCategories(
 ) {

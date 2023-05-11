@@ -1,12 +1,13 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 
 class overgrownNanoforgeAlterHazardEffect(
-    nanoforge: overgrownNanoforgeIndustry,
+    handler: overgrownNanoforgeHandler,
     val increment: Float
-): overgrownNanoforgeRandomizedEffect(nanoforge) {
+): overgrownNanoforgeRandomizedEffect(handler) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         if (hazardIsNegative()) return overgrownNanoforgeEffectCategories.DEFICIT else return overgrownNanoforgeEffectCategories.BENEFIT
     }

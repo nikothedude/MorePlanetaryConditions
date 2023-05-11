@@ -1,5 +1,31 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
+import com.fs.starfarer.api.EveryFrameScript
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.econ.MutableCommodityQuantity
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading.overgrownNanoforgeJunkSpreader
+import data.utilities.niko_MPC_debugUtils
+import data.utilities.niko_MPC_debugUtils.displayError
+import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
+import org.lazywizard.lazylib.MathUtils
+
 // WHAT THIS CLASS SHOULD HOLD
 // 1. The base source of the industry
 // 2. A list of structures spawned by this industry, or at least their parameters so they may be remade on demand
@@ -11,10 +37,8 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 // The industry itself is only the hook we use to put this class into the game
 class overgrownNanoforgeIndustryHandler(
     initMarket: MarketAPI,
-    initBaseSource: overgrownNanoforgeIndustrySource = createBaseSource()
-): overgrownNanoforgeHandler(initMarket, initBaseSource), EveryFrameScript {
+): overgrownNanoforgeHandler(initMarket), EveryFrameScript {
 
-    override val baseSource: overgrownNanoforgeIndustrySource = initBaseSource
     val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
 
     val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
@@ -22,39 +46,96 @@ class overgrownNanoforgeIndustryHandler(
     var discovered: Boolean = false
         set(value: Boolean) {
             if (value != field) {
-                intel.hidden = !value
+                intel.isHidden = !value
             }
             field = value
         }
+
     val intel: overgrownNanoforgeIntel = createIntel()
 
-    private fun createBaseSource(): overgrownNanoforgeIndustrySource {
+    init {
+        if (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] == null) Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] = HashSet<overgrownNanoforgeIndustryHandler>()
+        (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>) += this
+    }
+
+    override fun createBaseSource(): overgrownNanoforgeIndustrySource {
         val baseScore = getBaseScore()
         val supplyEffect = getBaseEffectPrototype().getInstance(this, baseScore)
         if (supplyEffect == null) {
             displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
-            val source = overgrownNanoforgeIndustrySource(this, //shuld never happen
-                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500)))))
+            val source = overgrownNanoforgeIndustrySource(
+                this, //shuld never happen
+                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500))))
+            )
             return source
-        return source
+        }
+        return overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
     }
 
+    override fun init(initBaseSource: overgrownNanoforgeEffectSource?) {
+        super.init(initBaseSource)
+        if (market.getOvergrownNanoforgeIndustryHandler() != this) {
+            displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
+        }
+    }
+
+    var fuck: Boolean = false
+
     override fun advance(amount: Float) {
-        junkSpreader.advance(amount)
+        val adjustedAmount = getAdjustedSpreadAmount(amount)
+        junkSpreader.advance(adjustedAmount)
+        if (!fuck && market.getOvergrownNanoforgeIndustryHandler() != this) {
+            displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
+            fuck = true
+        }
+    }
+
+    fun getAdjustedSpreadAmount(amount: Float): Float {
+        var adjustedAmount = amount
+        val isInhabited = market.isInhabited()
+        if (!isInhabited) adjustedAmount *= OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
+        return adjustedAmount
     }
 
     override fun isDone(): Boolean {
         return deleted
     }
 
+    override fun runWhilePaused(): Boolean {
+        return false
+    }
+
     override fun apply() {
         super.apply()
         Global.getSector().addScript(this)
+        if (market.getOvergrownNanoforgeIndustryHandler() != this) {
+            displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
+        }
+    }
+
+    override fun delete() {
+        super.delete()
+
+        (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>) -= this
     }
 
     override fun unapply() {
         super.unapply()
         Global.getSector().removeScript(this)
+    }
+
+    override fun addSelfToMarket(market: MarketAPI) {
+        market.setOvergrownNanoforgeIndustryHandler(this)
+        super.addSelfToMarket(market)
+    }
+
+    override fun removeSelfFromMarket(market: MarketAPI) {
+        val currHandler = market.getOvergrownNanoforgeIndustryHandler()
+        if (currHandler != this) {
+            niko_MPC_debugUtils.displayError("bad deletion attempt for overgrown nanoforge handler on ${market.name}")
+        }
+        market.removeOvergrownNanoforgeIndustryHandler()
+        super.removeSelfFromMarket(market)
     }
 
     private fun getBaseEffectPrototype(): overgrownNanoforgeEffectPrototypes {
@@ -64,17 +145,42 @@ class overgrownNanoforgeIndustryHandler(
     }
 
     override fun getStructure(): overgrownNanoforgeIndustry? {
-        val ourMarket = market ?: return null
-        return ourMarket.getOvergrownNanoforge()
+        return market.getOvergrownNanoforge()
     }
 
     override fun getNewStructureId(): String {
-        return niko_MPC_ids.overgrownNanoforgeIndustryId
+        return overgrownNanoforgeIndustryId
+    }
+
+    override fun getCoreHandler(): overgrownNanoforgeIndustryHandler {
+        return this
     }
 
     fun createIntel(): overgrownNanoforgeIntel {
-        val intel: overgrownNanoforgeIntel = overgrownNanoforgeIntel(this)
+        val intel = overgrownNanoforgeIntel(this)
         intel.init()
+        return intel
+    }
+
+    fun getJunkSources(): MutableSet<overgrownNanoforgeEffectSource> {
+        val sources: MutableSet<overgrownNanoforgeEffectSource> = HashSet()
+        for (handler in junkHandlers) {
+            sources.add(handler.baseSource)
+        }
+        return sources
+    }
+
+    fun getSupply(commodityId: String): Int { //TODO: convert to a int var that updates when any of the values change
+        if (getStructure() != null) return getStructure()!!.getSupply(commodityId).quantity.modifiedInt
+        var supply: Int = 0
+        for (source in getAllSources()) {
+            for (effect in source.effects) {
+                if (effect is overgrownNanoforgeAlterSupplySource) {
+                    effect.positiveSupply[commodityId]?.let { supply += it }
+                }
+            }
+        }
+        return supply
     }
 
     companion object {
@@ -83,9 +189,3 @@ class overgrownNanoforgeIndustryHandler(
         }
     }
 }
-
-Before the collapse, the Domain kept tabs on all Nanoforges. Being a dangerous (and lucrative) technology, they kept a Domain engineer on site of each Nanoforge, along with (either officially or unofficially) a small projection of force to ensure it's proper use, dictated by them. Each Nanoforge would only produce exactly what the owner (often the government of a caste-world) is supposed to output, and exactly what they need to produce it. Any other usage would have been a slippery slope to a grey goo scenario, as claimed by the Domain COMSEC. 
-
-Why this particular one seems to have fulfilled that prophecy is up for debate. Maybe the Domain was right, and it was used improperly, to fill more roles than intended, creating food for a foundry world? Maybe it was the on-hang engineer - desperate for a foothold in the new world, using their knowhow to disable the growth safeties in a way that bypasses the thousands of DRM protections? Or was it done with full knowledge of the consequences in a clear head, done for the sole purpose of destruction? One thing's for sure - This was no accident. 
-
-The fact it's still running with nobody around most certainly is, though, as only someone completely insane or mind-bogglingly destructive would willingly induce a grey goo scenario on a planet. Right?

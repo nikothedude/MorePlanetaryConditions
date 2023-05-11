@@ -2,7 +2,9 @@ package data.utilities
 
 object niko_MPC_ids {
     const val overgrownNanoforgeConditionId = "niko_MPC_overgrownNanoforgeCondition"
+    const val overgrownNanoforgeHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeHandler"
     const val overgrownNanoforgeItemId = "niko_MPC_overgrownNanoforgeItem"
+    const val INTEL_OVERGROWN_NANOFORGES = "Overgrown Nanoforges"
     const val conditionLinkedHandlerMemoryId = "\$conditionLinkedMemoryHandlerId"
     const val niko_MPC_modId = "niko_morePlanetaryConditions"
     const val niko_MPC_masterConfig = "niko_MPC_settings.json"

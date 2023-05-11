@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Barrage",
   "goalVariant": false,
-  "fluxCapacitors": 13,
+  "fluxCapacitors": 14,
   "fluxVents": 38,
   "quality": 1,
   "permaMods": [],
@@ -21,15 +21,14 @@
       "mode": "LINKED",
       "weapons": {
         "WS0009": "heavymauler",
-        "WS0015": "heavymauler"
+        "WS0015": "heavymauler",
+        "WS0019": "swarmer"
       }
     },
     {
       "autofire": false,
       "mode": "ALTERNATING",
-      "weapons": {
-        "WS0019": "harpoon"
-      }
+      "weapons": {}
     },
     {
       "autofire": true,

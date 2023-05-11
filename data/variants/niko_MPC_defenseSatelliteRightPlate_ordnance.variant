@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteRightPlate",
   "displayName": "Ordnance",
   "goalVariant": false,
-  "fluxCapacitors": 10,
+  "fluxCapacitors": 13,
   "fluxVents": 36,
   "quality": 1,
   "permaMods": [],
@@ -20,7 +20,11 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0016": "hammerrack"
+        "WS0003": "jackhammer",
+        "WS0005": "swarmer",
+        "WS0010": "harpoonpod",
+        "WS0016": "hammerrack",
+        "WS0020": "swarmer"
       }
     },
     {
@@ -41,9 +45,6 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0003": "annihilatorpod",
-        "WS0005": "harpoon",
-        "WS0010": "harpoonpod",
         "WS0011": "breachpod",
         "WS0015": "shredder"
       }
@@ -61,8 +62,7 @@
         "WS0013": "dualflak",
         "WS0014": "niko_MPC_LR_heavyburst",
         "WS0017": "lightdualmg",
-        "WS0018": "vulcan",
-        "WS0020": "swarmer"
+        "WS0018": "vulcan"
       }
     },
     {

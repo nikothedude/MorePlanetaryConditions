@@ -1,11 +1,14 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.spreading
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeSourceTypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import data.utilities.niko_MPC_marketUtils
@@ -28,24 +31,24 @@ class overgrownNanoforgeJunkSpreader(
 
     enum class advancementAlteration() {
         TOO_MANY_STRUCTURES() {
-            override fun getText(nanoforge: overgrownNanoforgeIndustry): String {
+            override fun getText(nanoforgeHandler: overgrownNanoforgeIndustryHandler): String {
                 val market = nanoforgeHandler.market
                 return "${market.name} has exceeded the structure limit by ${market.getVisibleIndustries().size - niko_MPC_marketUtils.maxStructureAmount}"
             }
-            override fun shouldApply(nanoforge: overgrownNanoforgeIndustry): Boolean {
+            override fun shouldApply(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Boolean {
                 val spreadingScript = nanoforgeHandler.junkSpreader.spreadingScript ?: return false
                 return spreadingScript.marketExceedsMaxStructuresAndDoWeCare()
             }
-            override fun getMult(nanoforge: overgrownNanoforgeIndustry): Float = -1f //halt all growth but not recession
+            override fun getMult(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = -1f //halt all growth but not recession
         };
 
 
-        abstract fun getText(nanoforge: overgrownNanoforgeIndustry): String
-        abstract fun shouldApply(nanoforge: overgrownNanoforgeIndustry): Boolean
-        open fun getMult(nanoforge: overgrownNanoforgeIndustry): Float = 0f // think this is more of a mult increment?
-        open fun getPositiveIncrement(nanoforge: overgrownNanoforgeIndustry): Float = 0f
-        open fun getNegativeMult(nanoforge: overgrownNanoforgeIndustry): Float = 0f
-        open fun getNegativeIncrement(nanoforge: overgrownNanoforgeIndustry): Float = 0f
+        abstract fun getText(nanoforgeHandler: overgrownNanoforgeIndustryHandler): String
+        abstract fun shouldApply(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Boolean
+        open fun getMult(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = 0f // think this is more of a mult increment?
+        open fun getPositiveIncrement(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = 0f
+        open fun getNegativeMult(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = 0f
+        open fun getNegativeIncrement(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = 0f
 
 
         companion object {
@@ -64,7 +67,7 @@ class overgrownNanoforgeJunkSpreader(
 
     fun updateAdvancementAlterations() {
         advancementAlterations.clear()
-        for (entry in advancementAlteration.alterations) if (entry.shouldApply(nanoforge)) advancementAlterations += entry
+        for (entry in advancementAlteration.alterations) if (entry.shouldApply(nanoforgeHandler)) advancementAlterations += entry
     }
 
     class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
@@ -92,7 +95,8 @@ class overgrownNanoforgeJunkSpreader(
     fun tryToSpreadJunk(dayAmount: Float) {
         timeTilSpread.advance(dayAmount)
         if (timeTilSpread.intervalElapsed()) {
-            spreadJunk()
+            Global.getSector().campaignUI.addMessage("spreaded!")
+            //spreadJunk()
         }
     }
 
@@ -121,22 +125,22 @@ class overgrownNanoforgeJunkSpreader(
     }
     fun getMult(): Float {
         var mult = 1f
-        for (entry in advancementAlterations) mult += entry.getMult(nanoforge)
+        for (entry in advancementAlterations) mult += entry.getMult(nanoforgeHandler)
         return mult
     }
     fun getPositiveIncrement(): Float {
         var increment = baseSpreadRate
-        for (entry in advancementAlterations) increment += entry.getPositiveIncrement(nanoforge)
+        for (entry in advancementAlterations) increment += entry.getPositiveIncrement(nanoforgeHandler)
         return increment
     }
     fun getNegativeIncrement(): Float {
         var decrement = 0f
-        for (entry in advancementAlterations) decrement += entry.getNegativeIncrement(nanoforge)
+        for (entry in advancementAlterations) decrement += entry.getNegativeIncrement(nanoforgeHandler)
         return decrement
     }
     fun getNegativeMult(): Float {
         var negativeMult = 1f
-        for (entry in advancementAlterations) negativeMult += entry.getNegativeMult(nanoforge)
+        for (entry in advancementAlterations) negativeMult += entry.getNegativeMult(nanoforgeHandler)
         return negativeMult
     }
 
@@ -152,10 +156,7 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     private fun getSourceType(): overgrownNanoforgeSourceTypes? {
-        val picker = WeightedRandomPicker<overgrownNanoforgeSourceTypes>()
-        picker.addAll(getAdjustedTypeChances())
-
-        return picker.pick()
+        return overgrownNanoforgeSourceTypes.adjustedPick()
     }
 
     fun getMinSpreadingDays(): Float {
@@ -168,14 +169,14 @@ class overgrownNanoforgeJunkSpreader(
 
     fun generateSourceParams(): overgrownNanoforgeRandomizedSourceParams? {
         val chosenSourceType = getSourceType() ?: return null
-        return overgrownNanoforgeRandomizedSourceParams(nanoforge, chosenSourceType)
+        return overgrownNanoforgeRandomizedSourceParams(nanoforgeHandler, chosenSourceType)
     }
 
     fun createSpreadingScriptInstance(
         timeTilSpread: Float,
         sourceParams: overgrownNanoforgeRandomizedSourceParams,
     ): overgrownNanoforgeJunkSpreadingScript {
-        return overgrownNanoforgeJunkSpreadingScript(nanoforge, timeTilSpread, this, sourceParams)
+        return overgrownNanoforgeJunkSpreadingScript(nanoforgeHandler, timeTilSpread, this, sourceParams)
     }
 
     private fun getAdjustedTypeChances(): MutableList<overgrownNanoforgeSourceTypes> {
@@ -207,7 +208,7 @@ class overgrownNanoforgeJunkSpreader(
         TODO()
     }
 
-    fun getExistingJunk(): MutableSet<overgrownNanoforgeJunk> {
-        return nanoforgeHandler.junk
+    fun getExistingJunk(): MutableSet<overgrownNanoforgeJunkHandler> {
+        return nanoforgeHandler.junkHandlers
     }
 }

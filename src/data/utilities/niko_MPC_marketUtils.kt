@@ -1,5 +1,7 @@
 package data.utilities
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
@@ -7,14 +9,23 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.campaign.econ.Market
+import com.fs.starfarer.campaign.econ.PlanetConditionMarket
+import com.fs.starfarer.campaign.rules.Memory
+import com.sun.org.apache.xpath.internal.operations.Bool
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.overgrownNanoforgeRandomizedSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
+import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
 import lunalib.lunaExtensions.getMarketsCopy
+import org.lwjgl.util.vector.Vector2f
+import java.lang.NullPointerException
 
 object niko_MPC_marketUtils {
 
@@ -187,10 +198,9 @@ object niko_MPC_marketUtils {
             return null
         }
         val junkIndustry = industry as overgrownNanoforgeJunk
-        junkIndustry.source = source
-        junkIndustry.properlyAdded = true
         return junkIndustry
     }
+
     fun MarketAPI.hasJunkStructures(): Boolean {
         return getOvergrownJunk().isNotEmpty()
     }
@@ -210,10 +220,54 @@ object niko_MPC_marketUtils {
         return buildings
     }
 
-    fun MarketAPI.getOvergrownHandler(): overgrownNanoforgeHandler {
-        if (memKeyHasIncorrectType<overgrownNanoforgeHandler>(this, niko_MPC_ids.overgrownNanoforgeHandlerMemoryId)) {
-            memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] = overgrownNanoforgeHandler()
+    fun MarketAPI.getOvergrownNanoforgeIndustryHandler(): overgrownNanoforgeIndustryHandler? {
+        return memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] as? overgrownNanoforgeIndustryHandler
+    }
+
+    fun MarketAPI.setOvergrownNanoforgeIndustryHandler(handler: overgrownNanoforgeIndustryHandler) {
+        val currHandler = getOvergrownNanoforgeIndustryHandler()
+        if (currHandler != null) {
+            niko_MPC_debugUtils.displayError("replacement attempt for overgrown nanoforge handler on ${this.name}")
         }
-        return memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] as HashMap<String, niko_MPC_satelliteHandlerCore?>
+        memoryWithoutUpdate[overgrownNanoforgeHandlerMemoryId] = handler
+    }
+    fun MarketAPI.removeOvergrownNanoforgeIndustryHandler() {
+        memoryWithoutUpdate.unset(overgrownNanoforgeHandlerMemoryId)
+    }
+
+    fun MarketAPI.isValidTargetForOvergrownHandler(): Boolean {
+        return (id != "fake_Colonize" && (!(isConvertingToMarket() || isConvertingToCondition())))
+    }
+
+    fun MarketAPI.isConvertingToMarket(): Boolean {
+        return (this is Market && primaryEntity == null && location == Vector2f(0f, 0f) && factionId == null)
+    }
+    fun MarketAPI.isConvertingToCondition(): Boolean {
+        return (this is PlanetConditionMarket && primaryEntity == null && location == Vector2f(0f, 0f))
+    }
+
+    fun MarketAPI.shouldHaveOvergrownNanoforgeIndustry(): Boolean {
+        return (isInhabited() && getOvergrownNanoforge() == null)
+    }
+
+    fun MarketAPI.isInhabited(): Boolean {
+        return  (!isPlanetConditionMarketOnly && id != "fake_Colonize" && isInEconomy)
+    }
+
+    // i want to fucking obliterate this function
+    fun MarketAPI.isDeserializing(): Boolean {
+
+        var result: Boolean = false
+        try {
+            memoryWithoutUpdate.isEmpty
+        } catch (ex: NullPointerException) {
+            result = true
+        }
+        return result ||
+                industries == null ||
+                surveyLevel == null ||
+                stats == null ||
+                hazard == null ||
+                conditions == null
     }
 }

@@ -1,5 +1,14 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
+import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+
 // The data store and "permament" representation of junk spawned by a overgrown nanoforge
 
 // WHAT THIS CLSAS SHOULD HOLD
@@ -7,9 +16,9 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 // 2. Okay just everything the junk should hold
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
-    initBaseSource: overgrownNanoforgeRandomizedSource,
+    val masterHandler: overgrownNanoforgeIndustryHandler,
     initBuildingId: String?
-): overgrownNanoforgeHandler(initMarket, initBaseSource) {
+): overgrownNanoforgeHandler(initMarket) {
 
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
     var cachedBuildingId: String? = initBuildingId ?: getNewStructureId()
@@ -17,8 +26,12 @@ class overgrownNanoforgeJunkHandler(
             if (value == null) {
                 handleNullBuildingId()
             }
-            field == value
+            field = value
         }
+
+    private fun handleNullBuildingId() {
+        delete()
+    }
 
     override fun createStructure() {
         super.createStructure()
@@ -31,7 +44,17 @@ class overgrownNanoforgeJunkHandler(
         return market.getNextOvergrownJunkId()
     }
 
+    override fun getCoreHandler(): overgrownNanoforgeIndustryHandler {
+        return masterHandler
+    }
+
+    override fun createBaseSource(): overgrownNanoforgeEffectSource {
+        val sourceType = overgrownNanoforgeSourceTypes.adjustedPick() ?: overgrownNanoforgeSourceTypes.STRUCTURE
+        val params = overgrownNanoforgeRandomizedSourceParams(masterHandler, sourceType)
+        return overgrownNanoforgeRandomizedSource(masterHandler, params)
+    }
+
     override fun getStructure(): overgrownNanoforgeJunk? {
-        return (market?.getIndustry(currentStructureId) as? overgrownNanoforgeJunk) 
+        return (market.getIndustry(currentStructureId) as? overgrownNanoforgeJunk)
     }
 }

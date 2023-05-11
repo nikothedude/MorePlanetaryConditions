@@ -4,7 +4,7 @@
   "displayName": "Standard",
   "goalVariant": false,
   "fluxCapacitors": 36,
-  "fluxVents": 33,
+  "fluxVents": 35,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -20,15 +20,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0009": "heavymauler",
-        "WS0016": "heavymauler"
+        "WS0015": "miningblaster",
+        "WS0016": "heavymauler",
+        "WS0019": "swarmer_fighter"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {
-        "WS0015": "heavyblaster"
-      }
+      "weapons": {}
     },
     {
       "autofire": true,
@@ -73,9 +73,7 @@
     {
       "autofire": false,
       "mode": "ALTERNATING",
-      "weapons": {
-        "WS0019": "harpoon"
-      }
+      "weapons": {}
     }
   ],
   "modules": [],

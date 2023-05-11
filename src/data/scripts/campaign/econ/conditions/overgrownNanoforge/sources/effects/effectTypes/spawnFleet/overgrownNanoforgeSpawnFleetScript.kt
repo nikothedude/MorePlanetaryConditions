@@ -1,4 +1,4 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes.spawnFleet
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI

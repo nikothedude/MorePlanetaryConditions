@@ -1,14 +1,13 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.effectTypes
+package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.sources.effects.overgrownNanoforgeRandomizedSourceParams
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 
 class overgrownNanoforgeAlterSupplySource(
-    nanoforge: overgrownNanoforgeIndustry,
+    handler: overgrownNanoforgeHandler,
     val supply: MutableMap<String, Int> = HashMap()
-): overgrownNanoforgeRandomizedEffect(nanoforge) {
+): overgrownNanoforgeRandomizedEffect(handler) {
 
     val negativeSupply: MutableMap<String, Int> = HashMap()
     val positiveSupply: MutableMap<String, Int> = HashMap()
@@ -54,36 +53,40 @@ class overgrownNanoforgeAlterSupplySource(
     }
 
     override fun applyBenefits() {
+        val structure = getStructure() ?: return
         for (entry in positiveSupply.entries) {
             val commodityId = entry.key
             val quantity = entry.value
 
-            getIndustry().supply(getId(), commodityId, quantity, getName())
+            structure.supply(getId(), commodityId, quantity, getName())
         }
     }
 
     override fun unapplyBenefits() {
+        val structure = getStructure() ?: return
         for (entry in positiveSupply.entries) {
             val commodityId = entry.key
 
-            getIndustry().supply(getId(), commodityId, 0, getName())
+            structure.supply(getId(), commodityId, 0, getName())
         }
     }
 
     override fun applyDeficits() {
+        val structure = getStructure() ?: return
         for (entry in negativeSupply.entries) {
             val commodityId = entry.key
             val quantity = entry.value
 
-            getIndustry().supply(getId(), commodityId, quantity, getName())
+            structure.supply(getId(), commodityId, quantity, getName())
         }
     }
 
     override fun unapplyDeficits() {
+        val structure = getStructure() ?: return
         for (entry in negativeSupply.entries) {
             val commodityId = entry.key
 
-            getIndustry().supply(getId(), commodityId, 0, getName())
+            structure.supply(getId(), commodityId, 0, getName())
         }
     }
 }
