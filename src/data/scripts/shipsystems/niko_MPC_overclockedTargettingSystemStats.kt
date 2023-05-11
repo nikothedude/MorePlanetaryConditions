@@ -12,8 +12,7 @@ class niko_MPC_overclockedTargettingSystemStats: BaseShipSystemScript() {
     companion object publicStats {
         val rangeMult = 10f
     }
-    val overloadTime = 10f
-    val beamSpeedMult = 10f
+    val overloadTime = 12f
 
     override fun apply(stats: MutableShipStatsAPI?, id: String?, state: ShipSystemStatsScript.State?, effectLevel: Float) {
         super.apply(stats, id, state, effectLevel)

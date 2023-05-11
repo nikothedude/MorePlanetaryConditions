@@ -18,7 +18,7 @@ class niko_MPC_overclockedTargettingSystemAI: ShipSystemAIScript {
     private val runOnce = false
     val interval: IntervalUtil = IntervalUtil(0.5f, 0.5f)
 
-    val usageThreshold = 1.0
+    val usageThreshold = 0.90f
 
     override fun init(ship: ShipAPI?, system: ShipSystemAPI?, flags: ShipwideAIFlags?, engine: CombatEngineAPI?) {
         this.ship = ship
@@ -70,7 +70,7 @@ class niko_MPC_overclockedTargettingSystemAI: ShipSystemAIScript {
                 val distance = Misc.getDistance(this.ship!!.location, ship.location)
                 if (distance > highestModifiedRange) continue
                 var scoreMult = 1f
-                if (ship.isFighter) scoreMult /= 2f
+                if (ship.isFighter) scoreMult /= 5f
                 if (ship == this.ship!!.shipTarget) scoreMult *= 100f
                 val anchor = highestRange * 1.05
                 score += ((distance / anchor)-1) * scoreMult

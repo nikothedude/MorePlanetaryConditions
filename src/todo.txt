@@ -1,3 +1,9 @@
+LOW PRIORITY {
+
+Refactor satellites to follow overgrown nanoforge architecture
+
+}
+
 
 please fucking improve the advancement alteration shit thats wacky as fuck
 
@@ -5,7 +11,9 @@ Figure out why sync check failures are happening with null new markets
 
 Make the volatile effect print out an intel report detailing damages
 
-Figure out why dialog satellite fleets are being cloned and given modular fleet ai instead of ours
+Finish overgrown intel
+
+Refactor junk spreader to just be a little saner (sane at fucking all my god what is this code)
 
 IN PROGRESS 
 
@@ -21,3 +29,6 @@ Figure out why ore is always picked as the supply alteration
 
 Figure out why satellite handelrs are deleting multiple times
     Maybe done by making customentityremovalscript not delete if handler is deleted
+
+Figure out why dialog satellite fleets are being cloned and given modular fleet ai instead of ours
+    Just a quirk of vanilla, a dialog plugin is REQUIRED, see campaignplugin

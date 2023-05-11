@@ -1,8 +1,45 @@
 3.0.0:
-INSERT COMPATIBILITY NOTE HERE
+VERY LIKELY INCOMPATABLE WITH PREVIOUS SAVES
+Update to Starsector 0.96a-RC8
 
-New condition: Overgrown Nanoforge
-<Insert effects here>
+New condition: Overgrown Nanoforge:
+    A old abandoned industial nanoforge, endlessly expanding in a grey-goo scenario. 
+Adds industry: Overgrown Nanoforge
+    Has a inherent costless and demandless output of goods
+    Will continuously generate structures that augment it's stats
+        Ex. A structure that increases the industry's supply output by 3, but increases upkeep by 2000 credits.
+        A structure that increases accessibility, but lowers fuel output by 1.
+    These structures do not instantly deconstruct, and the process of creation cannot be instantly stopped
+        It takes time and money to do so
+    Prior to construction, the effects of the structures become progressively more known as it nears the end
+        Encourages you to make early judgements on if you want to start destroying it before it's made, at less cost
+    
+    The main industry is only destroyable once all connected structures are destroyed
+        Once destroyed, you receive a unique nanoforge item that massively increases commodity output of any structure it's inserted into,
+        but has various negative effects
+    
+    This encourages you to treat this as a sort of bonsai tree, constantly minmaxing the effects, minimizing negatives, maximizing positives
+    Extremely rare - only 1-2 if any will spawn in a given game
+
+Anti-Asteroid Satellites:
+
+Re-introduced interaction plugin to make fleets always fight back
+
+Ships
+    Overclocked targetting (Frontal plate system) now 1. Has a lower threshold for activation 2. Overloads for far longer 3. Lasts for far less
+    Harpoon MRM small removed from most variants, as it was way too spammy
+    Variants
+        Ordnance
+            Replaced annihilator pods with jackhammer/typhoon respectively
+            Variant weight drastically reduced
+        Beamer
+            Replaced most missiles with DEMs
+            Variant weight moderately reduced
+        Shielded
+            Connector module Locust replaced with hellbore to reduce spam
+            Variant weight slightly reduced
+    Core
+        Do not fire through added - modules will no longer fire through the core, enhancing flank capabilities
 
 2.1.1a:
 SAVE COMPATABLE
