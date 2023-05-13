@@ -10,8 +10,9 @@ import org.json.JSONException
 import java.io.IOException
 
 object niko_MPC_settings {
-
     const val overgrownNanoforgeBaseJunkSpreadTargettingChance = 500f
+    const val OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS = 500
+    const val OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS = 10
 
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
@@ -88,6 +89,8 @@ object niko_MPC_settings {
     @JvmField
     var SATELLITE_FLEET_FP_BONUS_MULT = 0.0
 
+    var USE_SATELLITE_INTERACTION_PLUGIN: Boolean = true
+
     var OVERGROWN_NANOFORGE_IS_INDUSTRY = true
 
     var OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON = true
@@ -117,4 +120,6 @@ object niko_MPC_settings {
 
     var OVERGROWN_NANOFORGE_BASE_SCORE_MIN = randomizedSourceBudgets.HIGH.value*OVERGROWN_NANOFORGE_OVERALL_BUDGET_MULT
     var OVERGROWN_NANOFORGE_BASE_SCORE_MAX = randomizedSourceBudgets.EXTREMELY_HIGH.value*OVERGROWN_NANOFORGE_OVERALL_BUDGET_MULT
+
+    var OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED: Boolean = false
 }

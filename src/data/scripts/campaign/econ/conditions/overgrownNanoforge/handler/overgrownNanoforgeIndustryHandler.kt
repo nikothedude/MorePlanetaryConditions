@@ -3,7 +3,6 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.campaign.econ.MutableCommodityQuantity
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
@@ -11,7 +10,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownN
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading.overgrownNanoforgeJunkSpreader
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
@@ -20,7 +19,6 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
-import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
@@ -41,7 +39,7 @@ class overgrownNanoforgeIndustryHandler(
 
     val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
 
-    val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
+    //val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
 
     var discovered: Boolean = false
         set(value: Boolean) {
@@ -79,15 +77,9 @@ class overgrownNanoforgeIndustryHandler(
         }
     }
 
-    var fuck: Boolean = false
-
     override fun advance(amount: Float) {
         val adjustedAmount = getAdjustedSpreadAmount(amount)
-        junkSpreader.advance(adjustedAmount)
-        if (!fuck && market.getOvergrownNanoforgeIndustryHandler() != this) {
-            displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
-            fuck = true
-        }
+        //junkSpreader.advance(adjustedAmount)
     }
 
     fun getAdjustedSpreadAmount(amount: Float): Float {
@@ -111,17 +103,26 @@ class overgrownNanoforgeIndustryHandler(
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
         }
+        for (ourJunk in junkHandlers) {
+            ourJunk.apply()
+        }
     }
 
     override fun delete() {
         super.delete()
 
         (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>) -= this
+        for (ourJunk in junkHandlers) {
+            ourJunk.delete()
+        }
     }
 
     override fun unapply() {
         super.unapply()
         Global.getSector().removeScript(this)
+        for (ourJunk in junkHandlers) {
+            ourJunk.unapply()
+        }
     }
 
     override fun addSelfToMarket(market: MarketAPI) {
@@ -132,7 +133,7 @@ class overgrownNanoforgeIndustryHandler(
     override fun removeSelfFromMarket(market: MarketAPI) {
         val currHandler = market.getOvergrownNanoforgeIndustryHandler()
         if (currHandler != this) {
-            niko_MPC_debugUtils.displayError("bad deletion attempt for overgrown nanoforge handler on ${market.name}")
+            displayError("bad deletion attempt for overgrown nanoforge handler on ${market.name}")
         }
         market.removeOvergrownNanoforgeIndustryHandler()
         super.removeSelfFromMarket(market)

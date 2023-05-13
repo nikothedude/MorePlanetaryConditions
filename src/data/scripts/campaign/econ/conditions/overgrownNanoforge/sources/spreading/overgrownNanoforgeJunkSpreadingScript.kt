@@ -1,4 +1,5 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading
+/*
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
@@ -8,12 +9,15 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
+import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
+import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
 import data.utilities.niko_MPC_marketUtils.hasMaxStructures
 import data.utilities.niko_MPC_marketUtils.isApplied
 import data.utilities.niko_MPC_marketUtils.isJunkStructure
@@ -33,9 +37,8 @@ class overgrownNanoforgeJunkSpreadingScript(
 
     class junkSpreadScriptTimer(minInterval: Float, maxInterval: Float, val script: overgrownNanoforgeJunkSpreadingScript): IntervalUtil(minInterval, maxInterval) {
         override fun advance(amount: Float) {
-            val days = Misc.getDays(amount)
             updateAdvancementAlterations()
-            val finalAmount = getAdvancement(days)
+            val finalAmount = getAdvancement(amount)
             super.advance(finalAmount)
         }
 
@@ -55,7 +58,8 @@ class overgrownNanoforgeJunkSpreadingScript(
 
     override fun advance(amount: Float) {
         updateTarget()
-        timer.advance(amount)
+        val days = Misc.getDays(amount)
+        timer.advance(days)
         if (timer.intervalElapsed()) {
             spreadJunk()
         } else if (areWeReverted()) { // negative means it was reverted
@@ -68,8 +72,13 @@ class overgrownNanoforgeJunkSpreadingScript(
         return (timer.elapsed < 0f)
     }
 
-    private fun culled() {
-        TODO("Not yet implemented")
+    fun culled() {
+        nanoforgeHandler.junkCulledBeforeCreation(this)
+        delete()
+    }
+
+    fun getIntel(): overgrownNanoforgeIntel {
+        return nanoforgeHandler.intel
     }
 
     fun updateTarget() {
@@ -117,18 +126,28 @@ class overgrownNanoforgeJunkSpreadingScript(
             delete()
             return null
         }
+        reportJunkSpreadedBeforeCreation()
 
         val source = createSource()
-        source.init()
+        val handler = createHandler()
+        handler.init(source)
 
-        reportJunkSpreaded()
+        reportJunkSpreadedAfterCreation(source)
 
         delete()
         return source
     }
 
-    private fun reportJunkSpreaded() {
-        TODO("Not yet implemented")
+    fun createHandler(): overgrownNanoforgeJunkHandler {
+        return overgrownNanoforgeJunkHandler(getMarket(), nanoforgeHandler, getMarket().getNextOvergrownJunkDesignation())
+    }
+
+    fun reportJunkSpreadedBeforeCreation() {
+        nanoforgeHandler.junkSpreadedBeforeCreation(this)
+    }
+
+    fun reportJunkSpreadedAfterCreation(source: overgrownNanoforgeRandomizedSource) {
+        nanoforgeHandler.junkSpreadedAfterCreation(this, source)
     }
 
     fun marketExceedsMaxStructuresAndDoWeCare(): Boolean {
@@ -155,3 +174,4 @@ class overgrownNanoforgeJunkSpreadingScript(
         Global.getSector().removeScript(this)
     }
 }
+*/

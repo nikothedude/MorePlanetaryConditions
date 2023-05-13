@@ -26,7 +26,7 @@ Anti-Asteroid Satellites:
 Re-introduced interaction plugin to make fleets always fight back
 
 Ships
-    Overclocked targetting (Frontal plate system) now 1. Has a lower threshold for activation 2. Overloads for far longer 3. Lasts for far less
+    Overclocked targetting (Frontal plate system) now 1. Overloads for far longer 2. Lasts for far less
     Harpoon MRM small removed from most variants, as it was way too spammy
     Variants
         Ordnance

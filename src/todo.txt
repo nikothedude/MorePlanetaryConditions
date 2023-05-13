@@ -4,6 +4,7 @@ Refactor satellites to follow overgrown nanoforge architecture
 
 }
 
+improve satellite overclock ai, its too eager to attack at close range and too hesitant to use at long
 
 please fucking improve the advancement alteration shit thats wacky as fuck
 

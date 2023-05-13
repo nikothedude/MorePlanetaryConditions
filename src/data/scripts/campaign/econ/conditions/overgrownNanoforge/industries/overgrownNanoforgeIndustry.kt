@@ -16,19 +16,6 @@ import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
 
-    //use this one
-    override fun apply(withIncomeUpdate: Boolean) {
-        super.apply(withIncomeUpdate)
-
-        applyConditions()
-    }
-
-    private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
-        if (market.hasCondition(Conditions.HABITABLE) && !market.hasCondition(Conditions.POLLUTION)) {
-            market.addCondition(Conditions.POLLUTION)
-        }
-    }
-
     override fun unapply() {
         super.unapply()
         val condition = market.getOvergrownNanoforgeCondition()
@@ -89,5 +76,13 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         fun getBaseScore(): Float {
             return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_BASE_SCORE_MIN, OVERGROWN_NANOFORGE_BASE_SCORE_MAX)
         }
+    }
+
+    override fun isAvailableToBuild(): Boolean {
+        return false
+    }
+
+    override fun showWhenUnavailable(): Boolean {
+        return false
     }
 }

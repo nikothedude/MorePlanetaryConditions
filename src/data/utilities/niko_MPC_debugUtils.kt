@@ -215,7 +215,8 @@ object niko_MPC_debugUtils {
     }
     @JvmStatic
     private fun MarketAPI.logMarketData() {
-        doLogOf(this, arrayListOf("$this, ${this.name}", "Entity: ${this.primaryEntity}, Faction: ${factionId}",
+        doLogOf(this, arrayListOf(
+            this.name, "Entity: ${this.primaryEntity}, Faction: ${factionId}",
             "Our location: ${this.containingLocation}, ${this.containingLocation?.name}, is star system: " +
             "${this.containingLocation is StarSystemAPI}", "Handlers: ${this.getSatelliteHandlers()}")
         )

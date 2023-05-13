@@ -1,0 +1,84 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteRightPlate_mining",
+  "hullId": "niko_MPC_defenseSatelliteRightPlate",
+  "displayName": "Miner",
+  "goalVariant": false,
+  "fluxCapacitors": 40,
+  "fluxVents": 39,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull",
+    "autorepair",
+    "armoredweapons",
+    "magazines"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "niko_MPC_LR_mininglaser",
+        "WS0004": "niko_MPC_LR_mininglaser",
+        "WS0009": "miningblaster",
+        "WS0013": "miningblaster",
+        "WS0014": "miningblaster",
+        "WS0018": "niko_MPC_LR_mininglaser"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0015": "gravitonbeam"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0002": "lightag",
+        "WS0008": "lightag",
+        "WS0010": "harpoonpod",
+        "WS0017": "lightag"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0003": "jackhammer"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0005": "swarmer",
+        "WS0007": "swarmer",
+        "WS0011": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0006": "dualflak",
+        "WS0012": "niko_MPC_LR_pdburst",
+        "WS0019": "niko_MPC_LR_pdburst"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0016": "guardian"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

@@ -6,6 +6,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
+import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 
@@ -17,11 +18,11 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
     val masterHandler: overgrownNanoforgeIndustryHandler,
-    initBuildingId: String?
+    junkDesignation: Int? = null
 ): overgrownNanoforgeHandler(initMarket) {
 
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
-    var cachedBuildingId: String? = initBuildingId ?: getNewStructureId()
+    var cachedBuildingId: String? = if (junkDesignation == null) { market.getNextOvergrownJunkId() } else { overgrownNanoforgeJunkHandlerMemoryId + junkDesignation }
         set(value: String?) {
             if (value == null) {
                 handleNullBuildingId()
@@ -41,7 +42,7 @@ class overgrownNanoforgeJunkHandler(
     // Shouldn't cause issues, since this is only called during the building's instantiation, right? Riiiiiight?
     // No we still need to keep a copy of our structure ID so we can actually grab it huhgh
     override fun getNewStructureId(): String? {
-        return market.getNextOvergrownJunkId()
+        return cachedBuildingId
     }
 
     override fun getCoreHandler(): overgrownNanoforgeIndustryHandler {

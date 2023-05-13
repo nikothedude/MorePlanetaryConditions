@@ -4,8 +4,9 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 
-//todo: consider removing, now that i have it so that satellites flip to the other side of the map on pursuits
-class niko_MPC_satelliteInteractionDialogPlugin : FleetInteractionDialogPluginImpl() {
+// cant be used as for some godforsaken reason we cant just implement goddamn fleet interacton dialogs
+// wed need to override marketcmd
+class niko_MPC_satelliteFleetInteractionDialogPlugin : FleetInteractionDialogPluginImpl() {
     override fun fleetWantsToDisengage(fleet: CampaignFleetAPI, other: CampaignFleetAPI): Boolean {
         val result = super.fleetWantsToDisengage(fleet, other)
         val battle = context.battle

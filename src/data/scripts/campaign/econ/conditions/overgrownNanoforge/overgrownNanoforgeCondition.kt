@@ -4,6 +4,7 @@ import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.thoughtworks.xstream.mapper.Mapper.Null
 import data.scripts.campaign.econ.conditions.hasDeletionScript
@@ -33,13 +34,18 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
         val ourMarket = getMarket() ?: return
         if (ourMarket.isDeserializing()) return
-
+        applyConditions()
 
         if (ourMarket.shouldHaveOvergrownNanoforgeIndustry()) {
             ourMarket.addIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId)
         }
         updateHandlerValues()
+    }
 
+    private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
+        if (market.hasCondition(Conditions.HABITABLE) && !market.hasCondition(Conditions.POLLUTION)) {
+            market.addCondition(Conditions.POLLUTION)
+        }
     }
 
     private fun updateHandlerValues() {

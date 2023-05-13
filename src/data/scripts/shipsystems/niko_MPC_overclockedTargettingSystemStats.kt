@@ -10,9 +10,9 @@ import com.fs.starfarer.api.plugins.ShipSystemStatsScript
 class niko_MPC_overclockedTargettingSystemStats: BaseShipSystemScript() {
 
     companion object publicStats {
-        val rangeMult = 10f
+        val rangeMult = 50f
     }
-    val overloadTime = 12f
+    val overloadTime = 10f
 
     override fun apply(stats: MutableShipStatsAPI?, id: String?, state: ShipSystemStatsScript.State?, effectLevel: Float) {
         super.apply(stats, id, state, effectLevel)

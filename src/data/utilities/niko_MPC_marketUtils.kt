@@ -1,7 +1,5 @@
 package data.utilities
 
-import com.fs.starfarer.api.GameState
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
@@ -11,9 +9,8 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
-import com.fs.starfarer.campaign.rules.Memory
-import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
@@ -22,7 +19,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanofor
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
-import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
+import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
+import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
 import java.lang.NullPointerException
@@ -151,18 +150,24 @@ object niko_MPC_marketUtils {
 
     @JvmStatic
     fun MarketAPI.getNextOvergrownJunkId(): String? {
+        val designation = getNextOvergrownJunkDesignation() ?: return null
+        return overgrownNanoforgeJunkStructureId + designation
+    }
+
+    fun MarketAPI.getNextOvergrownJunkDesignation(): Int? {
         if (exceedsMaxStructures()) return null
         val existingDesignations = HashSet<Int>()
         val existingJunk = getOvergrownJunk()
-            for (junk in existingJunk) {
-                val junkId = junk.id
-                existingDesignations += (junkId.filter { it.isDigit() }.toInt())
-            }
+        for (junk in existingJunk) {
+            val junkId = junk.id
+            existingDesignations += (junkId.filter { it.isDigit() }.toInt())
+        }
         for (designation: Int in 1..maxStructureAmount) {
-            if (!existingDesignations.contains(designation)) return niko_MPC_industryIds.overgrownNanoforgeJunkStructureId + designation
+            if (!existingDesignations.contains(designation)) return designation
         }
         return null
     }
+
     fun MarketAPI.getOvergrownJunk(): HashSet<overgrownNanoforgeJunk> {
         val junk = HashSet<overgrownNanoforgeJunk>()
         for (structure in industries) {
@@ -269,5 +274,10 @@ object niko_MPC_marketUtils {
                 stats == null ||
                 hazard == null ||
                 conditions == null
+    }
+
+    fun MarketAPI.getOvergrownJunkHandler(designation: Int): overgrownNanoforgeJunkHandler? {
+        val modifiedId = overgrownNanoforgeJunkHandlerMemoryId + designation
+        return memoryWithoutUpdate[modifiedId] as? overgrownNanoforgeJunkHandler
     }
 }

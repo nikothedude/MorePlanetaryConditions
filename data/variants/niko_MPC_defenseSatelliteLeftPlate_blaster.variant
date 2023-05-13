@@ -1,0 +1,85 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteLeftPlate_blaster",
+  "hullId": "niko_MPC_defenseSatelliteLeftPlate",
+  "displayName": "Blaster",
+  "goalVariant": false,
+  "fluxCapacitors": 44,
+  "fluxVents": 36,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "armoredweapons",
+    "autorepair",
+    "missleracks",
+    "magazines",
+    "comp_armor",
+    "comp_storage",
+    "reinforcedhull"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0014": "plasma"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0015": "heavyblaster",
+        "WS0016": "heavyblaster",
+        "WS0017": "heavyblaster"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0012": "swarmer",
+        "WS0013": "swarmer",
+        "WS0018": "swarmer",
+        "WS0019": "swarmer_fighter",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0009": "miningblaster"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0001": "amblaster",
+        "WS0002": "amblaster",
+        "WS0008": "amblaster"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0003": "irpulse",
+        "WS0006": "irpulse"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0004": "niko_MPC_LR_pdburst",
+        "WS0005": "niko_MPC_LR_pdburst",
+        "WS0007": "irpulse",
+        "WS0010": "niko_MPC_LR_heavyburst",
+        "WS0011": "niko_MPC_LR_heavyburst"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

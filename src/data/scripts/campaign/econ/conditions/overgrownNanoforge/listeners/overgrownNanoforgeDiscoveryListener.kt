@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners
 import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.listeners.SurveyPlanetListener
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 
 class overgrownNanoforgeDiscoveryListener(): SurveyPlanetListener {
 
@@ -10,9 +11,8 @@ class overgrownNanoforgeDiscoveryListener(): SurveyPlanetListener {
         if (planet == null) return
 
         val surveyedMarket = planet.market ?: return
-        val nanoforge = surveyedMarket.getOvergrownNanoforge() ?: return
+        val handler = surveyedMarket.getOvergrownNanoforgeIndustryHandler() ?: return
 
-        val handler = nanoforge.getHandlerWithUpdate()
         handler.discovered = true
     }
 

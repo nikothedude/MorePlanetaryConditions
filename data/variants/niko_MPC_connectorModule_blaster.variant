@@ -1,9 +1,9 @@
 {
-  "variantId": "niko_MPC_connectorModule_standard",
+  "variantId": "niko_MPC_connectorModule_blaster",
   "hullId": "niko_MPC_connectorModule",
-  "displayName": "Standard",
+  "displayName": "Blaster",
   "goalVariant": false,
-  "fluxCapacitors": 34,
+  "fluxCapacitors": 22,
   "fluxVents": 20,
   "quality": 1,
   "permaMods": [],
@@ -13,9 +13,9 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "hellbore",
-        "WS0002": "lightdualmg",
-        "WS0003": "lightdualmg"
+        "WS0001": "plasma",
+        "WS0002": "niko_MPC_LR_taclaser",
+        "WS0003": "niko_MPC_LR_taclaser"
       }
     },
     {

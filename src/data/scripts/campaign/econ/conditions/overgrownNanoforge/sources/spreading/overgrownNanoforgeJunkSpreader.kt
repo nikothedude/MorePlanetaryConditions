@@ -1,16 +1,15 @@
-package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading
+/*package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.spreading
+
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_marketUtils
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.getVisibleIndustries
@@ -18,14 +17,14 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_SPREADING_DAYS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_SPREADING_DAYS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeJunkSpreader(
     val nanoforgeHandler: overgrownNanoforgeIndustryHandler
 ) {
 
-    val timeTilSpread = spreadTimer(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
+    var deleted: Boolean = false
+    val spreadTimer = IntervalUtil(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
     var spreadingScript: overgrownNanoforgeJunkSpreadingScript? = null
     val baseSpreadRate = 1f
 
@@ -36,8 +35,7 @@ class overgrownNanoforgeJunkSpreader(
                 return "${market.name} has exceeded the structure limit by ${market.getVisibleIndustries().size - niko_MPC_marketUtils.maxStructureAmount}"
             }
             override fun shouldApply(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Boolean {
-                val spreadingScript = nanoforgeHandler.junkSpreader.spreadingScript ?: return false
-                return spreadingScript.marketExceedsMaxStructuresAndDoWeCare()
+                return false
             }
             override fun getMult(nanoforgeHandler: overgrownNanoforgeIndustryHandler): Float = -1f //halt all growth but not recession
         };
@@ -70,19 +68,23 @@ class overgrownNanoforgeJunkSpreader(
         for (entry in advancementAlteration.alterations) if (entry.shouldApply(nanoforgeHandler)) advancementAlterations += entry
     }
 
-    class spreadTimer(minInterval: Float, maxInterval: Float): IntervalUtil(minInterval, maxInterval) {
-    }
-
     fun advance(amount: Float) {
+        if (deleted) {
+            displayError("junk spreader on ${getMarket()?.name} advance called while deleted")
+            return
+        }
+        if (!shouldSpreadJunk()) {
+            return
+        }
         val dayAmount = Misc.getDays(amount)
-        if (shouldSpreadJunk()) {
-            tryToSpreadJunk(dayAmount) //only increment the timer if we should even try
+        spreadTimer.advance(dayAmount)
+        if (spreadTimer.intervalElapsed()) {
+            tryToSpreadJunk(dayAmount)
         }
     }
 
     fun shouldSpreadJunk(): Boolean {
         if (spreadingScript != null || spreadingSuppressed() || getMarket().exceedsMaxStructures()) {
-            timeTilSpread.elapsed = 0f
             return false
         }
         return true
@@ -93,8 +95,8 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun tryToSpreadJunk(dayAmount: Float) {
-        timeTilSpread.advance(dayAmount)
-        if (timeTilSpread.intervalElapsed()) {
+        spreadTimer.advance(dayAmount)
+        if (spreadTimer.intervalElapsed()) {
             Global.getSector().campaignUI.addMessage("spreaded!")
             //spreadJunk()
         }
@@ -103,6 +105,9 @@ class overgrownNanoforgeJunkSpreader(
     fun spreadJunk(): overgrownNanoforgeJunkSpreadingScript? {
         val script = createSpreadingScript()
         script?.start()
+        if (script != null) {
+            nanoforgeHandler.spreadingStarted(script)
+        }
         return script
     }
 
@@ -118,12 +123,12 @@ class overgrownNanoforgeJunkSpreader(
     }
 
     fun getProgress(days: Float = 1f): Float {
-        return (getPositiveIncrement()*days) * (days * getMult())
+        return (getPositiveIncrement()*days) * (days * getMultIncrement())
     }
     fun getRegression(days: Float = 1f): Float {
-        return ((getNegativeIncrement()*days) * getNegativeMult())
+        return ((getNegativeIncrement()*days) * getNegativeMultIncrement())
     }
-    fun getMult(): Float {
+    fun getMultIncrement(): Float {
         var mult = 1f
         for (entry in advancementAlterations) mult += entry.getMult(nanoforgeHandler)
         return mult
@@ -138,7 +143,7 @@ class overgrownNanoforgeJunkSpreader(
         for (entry in advancementAlterations) decrement += entry.getNegativeIncrement(nanoforgeHandler)
         return decrement
     }
-    fun getNegativeMult(): Float {
+    fun getNegativeMultIncrement(): Float {
         var negativeMult = 1f
         for (entry in advancementAlterations) negativeMult += entry.getNegativeMult(nanoforgeHandler)
         return negativeMult
@@ -179,36 +184,18 @@ class overgrownNanoforgeJunkSpreader(
         return overgrownNanoforgeJunkSpreadingScript(nanoforgeHandler, timeTilSpread, this, sourceParams)
     }
 
-    private fun getAdjustedTypeChances(): MutableList<overgrownNanoforgeSourceTypes> {
-        val types = overgrownNanoforgeSourceTypes.values().toMutableList()
-        val iterator = types.iterator()
-        while (iterator.hasNext()) {
-            if (types.size <= 1) break
-            val type = iterator.next()
-            when (type) {
-                overgrownNanoforgeSourceTypes.STRUCTURE -> {
-                    if (!OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES) {
-                        iterator.remove()
-                        continue
-                    }
-                }
-                overgrownNanoforgeSourceTypes.INTERNAL -> {
-                    iterator.remove() // TODO return to this
-                }
-            }
-        }
-        return types
-    }
-
     fun getMarket(): MarketAPI {
         return nanoforgeHandler.market
     }
 
     fun delete() {
-        TODO()
+        spreadingScript?.delete()
+        deleted = true
     }
 
     fun getExistingJunk(): MutableSet<overgrownNanoforgeJunkHandler> {
         return nanoforgeHandler.junkHandlers
     }
 }
+
+******/
