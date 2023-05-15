@@ -13,6 +13,7 @@ object niko_MPC_settings {
     const val overgrownNanoforgeBaseJunkSpreadTargettingChance = 500f
     const val OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS = 500
     const val OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS = 10
+    const val OVERGROWN_NANOFORGE_INTEL_TOGGLE_VIEWMODE_ID = "toggleViewmode"
 
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
