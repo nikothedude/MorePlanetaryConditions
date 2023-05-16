@@ -129,6 +129,8 @@ class overgrownNanoforgeIntel(
         addStage(overgrownStages.START, 0, false)
         addStage(overgrownStages.CULL, 0, true, StageIconSize.LARGE)
         addStage(overgrownStages.JUNK_SPAWNED, OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS, true, StageIconSize.LARGE)
+
+        addFactor(overgrownNanoforgeIntelFactorCountermeasures(this))
     }
 
     override fun advanceImpl(amount: Float) {
@@ -404,6 +406,8 @@ class overgrownNanoforgeIntel(
             externalSupportInput = info.addTextField(60f, 5f)
             externalSupportInput!!.position.rightOfMid(externalSupportProgressBar!!.elementPanel, 5f)
         }
+        info.addPara("Current cost: ")
+        info.add
     }
 
     private fun getMinimumExternalSupport(): Float {
@@ -582,6 +586,10 @@ class overgrownNanoforgeIntel(
 
     override fun isEventProgressANegativeThingForThePlayer(): Boolean {
         return true
+    }
+
+    fun getSuppressionRating(): Int {
+        return -suppressionIntensity.toInt()
     }
 
     companion object cullingStrengthValues {
