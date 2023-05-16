@@ -10,6 +10,10 @@ import org.json.JSONException
 import java.io.IOException
 
 object niko_MPC_settings {
+    const val OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD = 100
+    const val OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT = 150f
+    const val OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT = 100f
+
     const val overgrownNanoforgeBaseJunkSpreadTargettingChance = 500f
     const val OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS = 500
     const val OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS = 10

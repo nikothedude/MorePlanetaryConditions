@@ -17,7 +17,7 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 // 2. Okay just everything the junk should hold
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
-    val masterHandler: overgrownNanoforgeIndustryHandler,
+    val masterHandler: overgrownNanoforgeIndustryHandler = market.getOvergrownNanoforgeIndustryHandler(),
     junkDesignation: Int? = null
 ): overgrownNanoforgeHandler(initMarket) {
 

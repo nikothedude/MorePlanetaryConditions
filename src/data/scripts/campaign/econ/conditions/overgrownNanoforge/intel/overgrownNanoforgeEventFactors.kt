@@ -118,6 +118,6 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
     }
 
     private fun getUsedStrengthPercent(): Float {
-        return abs(overgrownIntel.suppressionIntensity)
+        return overgrownIntel.getUsedStrengthPercent()
     }
 }

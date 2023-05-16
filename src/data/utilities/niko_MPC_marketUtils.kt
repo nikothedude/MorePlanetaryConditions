@@ -277,7 +277,10 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.getOvergrownJunkHandler(designation: Int): overgrownNanoforgeJunkHandler? {
+        return getOvergrownJunkHandler(modifiedId)
+    }
+    fun MarketAPI.getOvergrownJunkHandler(id: String): overgrownNanoforgeJunkHandler? {
         val modifiedId = overgrownNanoforgeJunkHandlerMemoryId + designation
-        return memoryWithoutUpdate[modifiedId] as? overgrownNanoforgeJunkHandler
+        return memoryWithoutUpdate[id] as? overgrownNanoforgeJunkHandler
     }
 }

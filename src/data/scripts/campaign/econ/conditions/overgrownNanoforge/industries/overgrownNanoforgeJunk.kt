@@ -32,7 +32,7 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
     }
 
     override fun getHandler(): overgrownNanoforgeJunkHandler? {
-        return market.getOvergrownJunkHandler(getDesignation())
+        return market.getOvergrownJunkHandler(id)
     }
 
     fun getDesignation(): Int {

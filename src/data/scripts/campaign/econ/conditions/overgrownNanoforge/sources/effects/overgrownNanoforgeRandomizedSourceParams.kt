@@ -101,4 +101,17 @@ class overgrownNanoforgeRandomizedSourceParams(
     fun getMarket(): MarketAPI {
         return handler.market
     }
+
+    fun createJunk(): overgrownNanoforgeJunkHandler? {
+        val market = getMarket()
+        val source = createSource()
+        val newHandler = overgrownNanoforgeJunkHandler(market, market.getOvergrownNanoforgeIndustryHandler(), market.getNextOvergrownJunkDesignation())
+        newHandler.init(source)
+
+        return newHandler
+    }
+
+    fun createSource(): overgrownNanoforgeRandomizedSource {
+        return overgrownNanoforgeRandomizedSource(handler, this)
+    }
 }

@@ -46,6 +46,8 @@ class overgrownNanoforgeIntel(
         SPECIFICS,
     }
 
+    val strengthHolder: overgrownNanoforgeIntelStrengthHolder = overgrownNanoforgeIntelStrengthHolder(this)
+
     @Transient
     var externalSupportInput: TextFieldAPI? = null
         set(value) {
@@ -74,13 +76,16 @@ class overgrownNanoforgeIntel(
             if (field != null) inputScanner.start()
         }
     val inputScanner: overgrownNanoforgeIntelInputScanner = overgrownNanoforgeIntelInputScanner(this)
+    var suppressionCreditCost: Float = 0f
     var suppressionIntensity: Float = getDefaultSuppressionIntensity()
         set(value) {
             val sanitizedValue = MathUtils.clamp(value, getMinimumSuppressionIntensity(), getMaximumSuppressionIntensity())
             field = sanitizedValue
 
             intensityProgressBar?.changeValue(field)
+            suppressionCreditCost = calculateSuppressionCost()
         }
+
 
     private fun getDefaultSuppressionIntensity(): Float {
         return 0f
@@ -119,6 +124,69 @@ class overgrownNanoforgeIntel(
         CULL,
         JUNK_SPAWNED,
     }
+
+    enum class spreadingStates {
+        SPREADING {
+            override fun apply(intel: overgrownNanoforgeIntel) {
+                Global.getSector().campaignUI.addMessage("Spread started at ${intel.getMarket().name}")
+
+                intel.setMaxProgress(OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS)
+                intel.setProgress(intel.getStartingProgress())
+
+                intel.getDataFor(overgrownStages.CULL).hideIconWhenPastStageUnlessLastActive = false
+                intel.getDataFor(overgrownStages.CULL).keepIconBrightWhenLaterStageReached = false
+                intel.getDataFor(overgrownStages.CULL).isRepeatable = true
+
+                intel.addFactor(baseFactor)
+                intel.addFactor(overgrownNanoforgeIntelFactorUndiscovered(intel))
+                intel.addFactor(overgrownNanoforgeIntelFactorTooManyStructures(intel))
+
+                intel.paramsToUse = intel.generateSourceParams()
+
+                Global.getSector().listenerManager.addListener(intel)
+            }
+            override fun unapply(intel: overgrownNanoforgeIntel) {
+                super.unapply(intel)
+
+                Global.getSector().campaignUI.addMessage("Spread stopped at ${intel.getMarket().name}")
+
+                //intel.stages.clear() // TODO: bad idea?
+
+                val iterator = intel.factors.iterator()
+                while (iterator.hasNext()) {
+                    val castedFactor = iterator.next() as? baseOvergrownNanoforgeEventFactor ?: continue
+                    if (castedFactor.shouldBeRemovedWhenSpreadingStops()) iterator.remove()
+                }
+            }
+        },
+        IN_COOLDOWN{
+            override fun apply(intel: overgrownNanoforgeIntel) {
+                super.unapply(intel)
+                intel.setMaxProgress(OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS)
+
+                Global.getSector().campaignUI.addMessage("Spread stopped at ${intel.getMarket().name}")
+
+                //intel.stages.clear() // TODO: bad idea?
+
+                Global.getSector().listenerManager.removeListener(intel)
+                intel.paramsToUse = null
+                intel.baseFactor = null
+            }
+        };
+
+        abstract fun apply(intel: overgrownNanoforgeIntel)
+        open fun unapply(intel: overgrownNanoforgeIntel) {
+            intel.setProgress(0)
+        }
+    }
+    var spreadingState: spreadingStates = spreadingStates.IN_COOLDOWN
+        set(value: spreadingStates) {
+            if (value != field) {
+                field.unapply(this)
+                value.apply(this)
+            }
+            field = value
+        }
 
     init {
         isHidden = hidden
@@ -181,52 +249,46 @@ class overgrownNanoforgeIntel(
         return (spreading && progress <= 0)
     }
 
+    override fun notifyStageReached(stage: EventStageData?) {
+        super.notifyStageReached(stage)
+        if (stage == null) return
+
+        when (stage.id) {
+            overgrownStages.JUNK_SPAWNED -> {
+                junkSpawned()
+            }
+        }
+    }
+
+    private fun junkSpawned() {
+        if (getMarket().exceedsMaxStructures()) {
+            niko_MPC_debugUtils.displayError("intel for ${getMarket().name} spawned junk despite market exceeding max structures")
+            culled()
+        }
+        paramsToUse.createJunk()
+        stopSpreading()
+        if (shouldReportSpreaded()) reportSpreaded()
+    }
+
+    fun shouldReportSpreaded(): Boolean {
+        return (playerControlsMarket())
+    }
+
+    fun reportSpreaded() {
+        Global.getSector().campaignUI.addMessage("junk spreaded on ${getMarket().name}")  
+    }
+
     fun startSpreading() {
-        spreading = true
-
-        Global.getSector().campaignUI.addMessage("Spread started at ${getMarket().name}")
-
-        setMaxProgress(OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS)
-        setProgress(getStartingProgress())
-
-        getDataFor(overgrownStages.CULL).hideIconWhenPastStageUnlessLastActive = false
-        getDataFor(overgrownStages.CULL).keepIconBrightWhenLaterStageReached = false
-        getDataFor(overgrownStages.CULL).isRepeatable = true
-
-        addFactor(baseFactor)
-        addFactor(overgrownNanoforgeIntelFactorUndiscovered(this))
-        addFactor(overgrownNanoforgeIntelFactorTooManyStructures(this))
-
-        paramsToUse = generateSourceParams()
-
-        Global.getSector().listenerManager.addListener(this)
+        spreadingState = spreadingStates.SPREADING
     }
 
     fun stopSpreading() {
-        spreading = false
-        setMaxProgress(OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS)
-        setProgress(0)
-
-        Global.getSector().campaignUI.addMessage("Spread stopped at ${getMarket().name}")
-
-        //stages.clear() // TODO: bad idea?
-
-        val iterator = factors.iterator()
-        while (iterator.hasNext()) {
-            val castedFactor = iterator.next() as? baseOvergrownNanoforgeEventFactor ?: continue
-            if (castedFactor.shouldBeRemovedWhenSpreadingStops()) iterator.remove()
-        }
-
-        Global.getSector().listenerManager.removeListener(this)
-        paramsToUse = null
-        baseFactor = null
+        spreadingState = spreadingStates.IN_COOLDOWN
     }
 
     private fun getStartingProgress(): Int = 10
 
-    fun init() {
-
-    }
+    // vvvvvvv PANELS, DESCRIPTIONS, TOOLTIPS
 
     override fun createLargeDescription(panel: CustomPanelAPI?, width: Float, height: Float) {
         if (panel == null) return
@@ -346,11 +408,6 @@ class overgrownNanoforgeIntel(
         }
     }
 
-    /** This is where we tell the player information about the to-be-made structure. */
-    private fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-
-    }
-
     private fun addSuppressionInfo(
         info: TooltipMakerAPI,
         width: Float,
@@ -374,13 +431,18 @@ class overgrownNanoforgeIntel(
                 super.createTooltip(tooltip, expanded, tooltipParam)
                 if (tooltip == null) return
 
-                tooltip.addPara("This statistic represents intensity and direction of manipulation being applied to the growth.", 5f)
+                val standardMult = (OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT * 0.01f)
+                val extraMult = (OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT * 0.01f)
+
+                tooltip.addPara("This statistic represents the percent of culling strength being used to either suppress or cultivate nanoforge growth.", 2f)
+                tooltip.addPara("Each percent of strength used will increase the monthly cost of the nanoforge by (%s) credits.", 2f, Misc.getHighlightColor(), "$standardMult * culling strength")
+                tooltip.addPara("Surpassing %s percent usage in either direction will add an extra (%s) credits to the cost.", 2f, Misc.getHighlightColor(), "$extraMult * culling strength")
             }
         }, TooltipLocation.BELOW)
 
         info.addSpacer(10f)
 
-        externalSupportProgressBar = info.addLunaProgressBar(
+        /*externalSupportProgressBar = info.addLunaProgressBar(
             externalSupportRating,
             getMinimumExternalSupport(),
             getMaximumExternalSupport(),
@@ -395,40 +457,44 @@ class overgrownNanoforgeIntel(
                 super.createTooltip(tooltip, expanded, tooltipParam)
                 if (tooltip == null) return
 
-                tooltip.addPara("This statistic represents intensity and direction of manipulation being applied to the growth.", 5f)
+                tooltip.addPara("This statistic represents how much external cash is being injec", 5f)
             }
-        }, TooltipLocation.BELOW)
+        }, TooltipLocation.BELOW) */
 
         if (playerControlsMarket()) {
             intensityInput = info.addTextField(60f, 5f)
             intensityInput!!.position.rightOfMid(intensityProgressBar!!.elementPanel, 5f)
 
-            externalSupportInput = info.addTextField(60f, 5f)
-            externalSupportInput!!.position.rightOfMid(externalSupportProgressBar!!.elementPanel, 5f)
+            //externalSupportInput = info.addTextField(60f, 5f)
+            //externalSupportInput!!.position.rightOfMid(externalSupportProgressBar!!.elementPanel, 5f)
         }
-        info.addPara("Current cost: ")
-        info.add
+        generateCostGraphic(info)
     }
 
-    private fun getMinimumExternalSupport(): Float {
-        return 0f
+    private fun generateCostGraphic(info: TooltipMakerAPI) {
+        info.addPara("Current cost: %s credits", 5f, getHighlightForSuppressionCost(), suppressionCreditCost)
     }
 
-    private fun getMaximumExternalSupport(): Float {
-        return 150f
+    fun calculateSuppressionCost(): Float {
+        val overallStrength = getOverallCullingStrength(getMarket())
+        val absIntensity = abs(suppressionIntensity)
+        val standardCost = (absIntensity * OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT)
+        val extraCost = (((absIntensity - OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD).coerceAtLeast(0f)) * OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT)
+
+        return (standardCost + extraCost)*getOverallCullingStrength(getMarket())
     }
 
-    fun playerControlsMarket(): Boolean {
-        return getMarket().isPlayerOwned
+    private fun getHighlightForSuppressionCost(): Color {
+        return if (suppressionCreditCost > 0f) Misc.getNegativeHighlightColor() else Misc.getHighlightColor()
     }
 
-    private fun getMinimumSuppressionIntensity(): Float {
-        return -150f
-    }
+    fun getMinimumExternalSupport(): Float = 0f
+    fun getMaximumExternalSupport(): Float = 150f
 
-    private fun getMaximumSuppressionIntensity(): Float {
-        return 150f
-    }
+    fun playerControlsMarket(): Boolean = getMarket().isPlayerOwned
+
+    private fun getMinimumSuppressionIntensity(): Float = -150f
+    private fun getMaximumSuppressionIntensity(): Float = 150f
 
     private fun addColonyMarkerAndMap(info: TooltipMakerAPI): UIPanelAPI {
         val systemW = 230f
@@ -484,6 +550,13 @@ class overgrownNanoforgeIntel(
 
         ui?.recreateIntelUI()
     }
+
+        /** This is where we tell the player information about the to-be-made structure. */
+    private fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+
+    }
+
+    // ^^^^^^^^^ PANELS, DESCRIPTIONS, TOOLTIPS
 
     override fun getName(): String {
         return "Overgrown Nanoforge on ${ourNanoforgeHandler.market.name}"
@@ -550,10 +623,6 @@ class overgrownNanoforgeIntel(
         return true
     }
 
-   /* fun getSpreader(): overgrownNanoforgeJunkSpreader {
-        return ourNanoforgeHandler.junkSpreader
-    } */
-
     private fun toggleVisibility(hidden: Boolean?) {
         if (hidden == false) {
             Global.getSector().intelManager.addIntel(this, false)
@@ -619,7 +688,9 @@ class overgrownNanoforgeIntel(
         )
 
         enum class cullingStrengthReasons {
-            SHORTAGES { //TODO: return to this, maybe have a crew/marine/heavy machinery req idfk
+            //TODO: return to this, maybe have a crew/marine/heavy machinery req idfk
+            /* 
+            SHORTAGES {
                 override fun getName(): String = "Shortages"
 
                 override fun getDesc(): String = "Insufficient supply, such as crew or heavy machinery, can thwart culling efforts."
@@ -630,7 +701,7 @@ class overgrownNanoforgeIntel(
                 override fun getScoreForMarket(market: MarketAPI): Float {
                     return 0f
                 }
-            },
+            }, */
             STABILITY {
                 override fun getDesc(): String {
                     return "For each point of stability above or below $STABILITY_ANCHOR, culling strength will increase " +
@@ -796,6 +867,12 @@ class overgrownNanoforgeIntel(
                 map[entry] = score
             }
             return map
+        }
+
+        fun getOverallCullingStrength(market: MarketAPI): Float {
+            var strength = 0f
+            getCullingStrengthReasonsForMarket(market).values.forEach { strength += it }
+            return strength
         }
 
         fun getCullingStrengthFromScore(score: Float): cullingStrength {

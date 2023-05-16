@@ -31,6 +31,8 @@ class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : 
 
         intel.suppressionIntensity = sanitizeFloat(intel.intensityInput!!, intel.suppressionIntensity)
         intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)
+
+        intel.intensityInput?.intelUI?.recreateIntelUI()
     }
 
     private fun sanitizeFloat(intensityInput: TextFieldAPI, defaultReturn: Float): Float {
