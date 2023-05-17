@@ -33,6 +33,24 @@ class overgrownNanoforgeRandomizedSourceParams(
         return 0f
     }
 
+    var cullingResistance = getInitialCullingResistance()
+
+    fun getInitialCullingResistance(): Int {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE,
+            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
+        )
+    }
+
+    var cullingResistanceRegeneration = getInitialCullingResistanceRegen()
+
+    fun createBaseCullingResistanceRegeneration(): Int {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN,
+            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
+        )
+    }
+
     class budgetHolder(var budget: Float)
 
     private fun generateRandomizedEffects(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
@@ -105,12 +123,12 @@ class overgrownNanoforgeRandomizedSourceParams(
         return handler.market
     }
 
-    fun createJunk(resistance: Int? = null, resistanceRegen: Int? = null): overgrownNanoforgeJunkHandler? {
+    fun createJunk(resistance: Int = cullingResistance, resistanceRegen: Int = cullingResistanceRegeneration): overgrownNanoforgeJunkHandler? {
         val market = getMarket()
         val source = createSource()
         val newHandler =
             market.getOvergrownNanoforgeIndustryHandler()?.let { overgrownNanoforgeJunkHandler(market, it, market.getNextOvergrownJunkDesignation()) }
-        newHandler?.init(source, resistance, resistanceRegen)
+        newHandler?.init(source, resistanec, resistanceRegen)
 
         return newHandler
     }

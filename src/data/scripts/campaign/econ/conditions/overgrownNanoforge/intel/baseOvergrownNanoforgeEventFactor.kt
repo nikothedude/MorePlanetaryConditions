@@ -26,4 +26,6 @@ abstract class baseOvergrownNanoforgeEventFactor(
 
         info.addTooltipToAddedRow(tooltip, TooltipMakerAPI.TooltipLocation.RIGHT, false)
     }
+
+    open fun isNaturalGrowthFactor(): Boolean = false
 }

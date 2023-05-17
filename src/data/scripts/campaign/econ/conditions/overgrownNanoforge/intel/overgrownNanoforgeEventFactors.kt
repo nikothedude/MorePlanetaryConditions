@@ -13,10 +13,10 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class overgrownNanoforgeBaseIntelFactor(
-    val baseProgress: Int, overgrownIntel: overgrownNanoforgeIntel
+    overgrownIntel: overgrownNanoforgeIntel
 ): baseOvergrownNanoforgeEventFactor(overgrownIntel) {
     override fun getProgress(intel: BaseEventIntel?): Int {
-        return baseProgress
+        return intel.paramsToUse?.cullingResistanceRegeneration ?: return 1f
     }
 
     override fun getDesc(intel: BaseEventIntel?): String {
@@ -35,6 +35,7 @@ class overgrownNanoforgeBaseIntelFactor(
             }
         }
     }
+    override fun isNaturalGrowthFactor(): Boolean = true
 }
 
 class overgrownNanoforgeIntelFactorUndiscovered(overgrownIntel: overgrownNanoforgeIntel) :

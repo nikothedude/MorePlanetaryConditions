@@ -187,7 +187,7 @@ class overgrownNanoforgeIntel(
 
                 intel.addStage(overgrownStages.JUNK_SPAWNED, maxProgress, true, StageIconSize.LARGE)
 
-                intel.addFactor(intel.baseFactor)
+                intel.addFactor(overgrownNanoforgeBaseIntelFactor(intel))
                 intel.addFactor(overgrownNanoforgeIntelFactorUndiscovered(intel))
                 intel.addFactor(overgrownNanoforgeIntelFactorTooManyStructures(intel))
             }
@@ -196,12 +196,11 @@ class overgrownNanoforgeIntel(
 
                 Global.getSector().campaignUI.addMessage("Spread stopped at ${intel.getMarket().name}")
 
-                intel.removeFactor(intel.baseFactor)
+                intel.removeFactor(overgrownNanoforgeBaseIntelFactor::class.java as Class<EventFactor>)
                 intel.removeFactorOfClass(overgrownNanoforgeIntelFactorUndiscovered::class.java as Class<EventFactor>)
                 intel.removeFactorOfClass(overgrownNanoforgeIntelFactorTooManyStructures::class.java as Class<EventFactor>)
 
                 intel.paramsToUse = null
-                intel.baseFactor = null
             }
         },
         IN_COOLDOWN {
@@ -510,8 +509,8 @@ class overgrownNanoforgeIntel(
                 super.createTooltip(tooltip, expanded, tooltipParam)
                 if (tooltip == null) return
 
-                val standardMult = (OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT * 0.01f)
-                val extraMult = (OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT * 0.01f)
+                val standardMult = (OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT * 0.1f)
+                val extraMult = (OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT * 0.1f)
 
                 tooltip.addPara("This statistic represents the percent of culling strength being used to either suppress or cultivate nanoforge growth.", 2f)
                 tooltip.addPara("Each percent of strength used will increase the monthly cost of the nanoforge by (%s) credits.", 2f, Misc.getHighlightColor(), "$standardMult * culling strength")
@@ -610,6 +609,24 @@ class overgrownNanoforgeIntel(
         return table
     }
 
+        /** This is where we tell the player information about the to-be-made structure. */
+    private fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        if (paramsToUse == null) return
+        val table = info.beginTable(factionForUIColors, 20f, "Target", 200f, "Overall Score", 80f, "Positive effects", 800f, "Negative effects," 800f)
+        info.addTableHeaderTooltip(0, "test")
+
+        val target = getVisibleSpreadTarget()
+        val score = getVisibleOverallScore()
+        val positives = getVisiblePositiveParamEffects()
+        val negatives = getVisibleNegativeParamEffects(true)
+
+        info.addRowWithGlow(Alignment.LMID, Misc.getBasePlayerColor, )
+    }
+
+    fun getVisibleSpreadTarget(): String {
+        
+    }
+
     override fun tableRowClicked(ui: IntelUIAPI, data: TableRowClickData) {
         val id = data.rowId
         if (id is MarketAPI) {
@@ -619,7 +636,6 @@ class overgrownNanoforgeIntel(
 
             ui.showOnMap(focus)
         } else if (id is viewMode) {
-
             toggleViewmode(id)
 
             ui.recreateIntelUI()
@@ -630,11 +646,6 @@ class overgrownNanoforgeIntel(
         viewingMode = newViewMode
 
         ui?.recreateIntelUI()
-    }
-
-        /** This is where we tell the player information about the to-be-made structure. */
-    private fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-
     }
 
     // ^^^^^^^^^ PANELS, DESCRIPTIONS, TOOLTIPS
@@ -709,7 +720,12 @@ class overgrownNanoforgeIntel(
     }
 
     fun getNaturalGrowthFactors(): MutableSet<baseOvergrownNanoforgeEventFactor> {
-        return mutableSetOf(baseFactor!!)
+        val naturalFactors: MutableSet<baseOvergrownNanoforgeEventFactor> = HashSet()
+        for (factor in factors) {
+            if (factor !is baseOvergrownNanoforgeEventFactor) continue
+            if (factor.isNaturalGrowthFactor()) naturalFactors += factor
+        }
+        return naturalFactors
     }
 
     override fun isEventProgressANegativeThingForThePlayer(): Boolean {
