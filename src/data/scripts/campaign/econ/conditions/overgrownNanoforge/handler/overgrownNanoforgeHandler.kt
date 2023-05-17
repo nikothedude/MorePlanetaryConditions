@@ -42,10 +42,10 @@ abstract class overgrownNanoforgeHandler(
         addSelfToMarket(newMarket)
     }
 
-    open fun init(initBaseSource: overgrownNanoforgeEffectSource? = null) {
+    open fun init(initBaseSource: overgrownNanoforgeEffectSource? = null, resistance: Int? = null, resistanceRegen: Int? = null) {
         baseSource = initBaseSource ?: createBaseSource()
-        cullingResistance = createBaseCullingResistance()
-        cullingResistanceRegeneration = createBaseCullingResistanceRegeneration()
+        cullingResistance = resistance ?: createBaseCullingResistance()
+        cullingResistanceRegeneration = resistanceRegen ?: createBaseCullingResistanceRegeneration()
         addSelfToMarket(market)
     }
 

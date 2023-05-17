@@ -105,12 +105,12 @@ class overgrownNanoforgeRandomizedSourceParams(
         return handler.market
     }
 
-    fun createJunk(): overgrownNanoforgeJunkHandler? {
+    fun createJunk(resistance: Int? = null, resistanceRegen: Int? = null): overgrownNanoforgeJunkHandler? {
         val market = getMarket()
         val source = createSource()
         val newHandler =
             market.getOvergrownNanoforgeIndustryHandler()?.let { overgrownNanoforgeJunkHandler(market, it, market.getNextOvergrownJunkDesignation()) }
-        newHandler?.init(source)
+        newHandler?.init(source, resistance, resistanceRegen)
 
         return newHandler
     }

@@ -108,9 +108,13 @@ class overgrownNanoforgeIntel(
     }
 
     var spreading: Boolean = false
-    var paramsToUse: overgrownNanoforgeRandomizedSourceParams? = null
+    var paramsToUse: overgrownNanoforgeJunkCreationParams? = null
     @Transient
     var viewingMode = viewMode.DEFAULT
+    fun generateCreationParams(): overgrownNanoforgeJunkCreationParams {
+        val sourceParams = generateSourceParams()
+        return overgrownNanoforgeJunkCreationParams(sourceParams)
+    }
     fun generateSourceParams(): overgrownNanoforgeRandomizedSourceParams {
         val chosenSourceType = getSourceType()
         return overgrownNanoforgeRandomizedSourceParams(ourNanoforgeHandler, chosenSourceType)
@@ -132,7 +136,7 @@ class overgrownNanoforgeIntel(
     }
 
     private fun getBaseProgress(): Int {
-        return 1
+        return paramsToUse.cullingResistanceRegeneration ?: 1
     }
 
     enum class overgrownStages {
@@ -171,22 +175,21 @@ class overgrownNanoforgeIntel(
             override fun apply(intel: overgrownNanoforgeIntel) {
                 Global.getSector().campaignUI.addMessage("Spread started at ${intel.getMarket().name}")
 
-                intel.setMaxProgress(OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS)
+                intel.paramsToUse = intel.generateCreationParams()
+
+                val maxProgress = intel.paramsToUse.cullingResistance
+                intel.setMaxProgress(maxProgress)
                 intel.setProgress(intel.getStartingProgress())
 
                 intel.getDataFor(overgrownStages.CULL).hideIconWhenPastStageUnlessLastActive = false
                 intel.getDataFor(overgrownStages.CULL).keepIconBrightWhenLaterStageReached = false
                 intel.getDataFor(overgrownStages.CULL).isRepeatable = true
 
-                intel.addStage(overgrownStages.JUNK_SPAWNED, OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS, true, StageIconSize.LARGE)
+                intel.addStage(overgrownStages.JUNK_SPAWNED, maxProgress, true, StageIconSize.LARGE)
 
                 intel.addFactor(intel.baseFactor)
                 intel.addFactor(overgrownNanoforgeIntelFactorUndiscovered(intel))
                 intel.addFactor(overgrownNanoforgeIntelFactorTooManyStructures(intel))
-
-                intel.paramsToUse = intel.generateSourceParams()
-
-                Global.getSector().listenerManager.addListener(intel)
             }
             override fun unapply(intel: overgrownNanoforgeIntel) {
                 super.unapply(intel)
@@ -196,9 +199,12 @@ class overgrownNanoforgeIntel(
                 intel.removeFactor(intel.baseFactor)
                 intel.removeFactorOfClass(overgrownNanoforgeIntelFactorUndiscovered::class.java as Class<EventFactor>)
                 intel.removeFactorOfClass(overgrownNanoforgeIntelFactorTooManyStructures::class.java as Class<EventFactor>)
+
+                intel.paramsToUse = null
+                intel.baseFactor = null
             }
         },
-        IN_COOLDOWN{
+        IN_COOLDOWN {
             override fun apply(intel: overgrownNanoforgeIntel) {
                 super.unapply(intel)
                 intel.setMaxProgress(OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS)
@@ -206,8 +212,6 @@ class overgrownNanoforgeIntel(
                 Global.getSector().campaignUI.addMessage("Spread stopped at ${intel.getMarket().name}")
 
                 Global.getSector().listenerManager.removeListener(intel)
-                intel.paramsToUse = null
-                intel.baseFactor = null
             }
 
             override fun advance(intel: overgrownNanoforgeIntel, amount: Float) {
@@ -235,6 +239,8 @@ class overgrownNanoforgeIntel(
 
                 intel.spreadIntervalTimer.forceIntervalElapsed()
                 intel.spreadIntervalTimer.advance(0f)
+
+                Global.getSector().listenerManager.addListener(intel)
             }
         },
         DESTROYING {
@@ -270,14 +276,10 @@ class overgrownNanoforgeIntel(
             val oldValue = value
             field = value
             if (oldValue != field) {
-                field.unapply(this)
-                oldValue.apply(this)
+                oldValue.unapply(this)
+                field.apply(this)
             }
         }
-
-    fun init() {
-
-    }
 
     init {
         isHidden = hidden
@@ -289,6 +291,10 @@ class overgrownNanoforgeIntel(
         addStage(overgrownStages.CULL, 0, true, StageIconSize.LARGE)
 
         addFactor(overgrownNanoforgeIntelFactorCountermeasures(this))
+    }
+
+    fun init() {
+
     }
 
     override fun advanceImpl(amount: Float) {
