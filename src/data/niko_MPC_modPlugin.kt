@@ -3,9 +3,11 @@ package data
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.listeners.TestIndustryOptionProvider
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
@@ -18,7 +20,6 @@ import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
-import org.lazywizard.console.Console
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
@@ -77,6 +78,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             generatePredefinedSatellites()
         }
         clearNanoforgesFromCoreWorlds()
+        Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
     }
 
     private fun clearNanoforgesFromCoreWorlds() {

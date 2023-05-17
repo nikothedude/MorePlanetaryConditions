@@ -1,14 +1,15 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.SpecialItemData
-import com.fs.starfarer.api.impl.campaign.ids.Conditions
+import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider.Companion.OVERGROWN_NANOFORGE_INDUSTRY_DECONSTRUCTION_ID
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_IS_INDUSTRY
@@ -43,6 +44,15 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
     override fun getHandler(): overgrownNanoforgeIndustryHandler? {
         return market.getOvergrownNanoforgeIndustryHandler()
+    }
+
+    override fun createDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData {
+        return IndustryOptionProvider.IndustryOptionData(
+            "Deconstruct",
+            OVERGROWN_NANOFORGE_INDUSTRY_DECONSTRUCTION_ID,
+            this,
+            provider
+        )
     }
 
     override fun instantiateNewHandler(): overgrownNanoforgeIndustryHandler {

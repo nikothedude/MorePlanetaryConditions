@@ -19,6 +19,7 @@ class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : 
 
         intel.externalSupportInput = null
         intel.externalSupportProgressBar = null
+        intel.numericTooltipAPI = null
     }
 
     override fun runWhilePaused(): Boolean {
@@ -27,12 +28,12 @@ class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : 
 
     override fun advance(amount: Float) {
         if (!Global.getSector().isPaused) return stop()
-        if (intel.intensityInput == null) return stop()
+        val resolvedReference = intel.intensityInput?.get() ?: return stop()
 
-        intel.suppressionIntensity = sanitizeFloat(intel.intensityInput!!, intel.suppressionIntensity)
-        intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)
+        intel.suppressionIntensity = sanitizeFloat(resolvedReference, intel.suppressionIntensity)
+        //intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)
 
-        intel.intensityInput?.intelUI?.recreateIntelUI()
+        intel.numericTooltipAPI?.get()?.intelUI?.updateUIForItem(intel)
     }
 
     private fun sanitizeFloat(intensityInput: TextFieldAPI, defaultReturn: Float): Float {

@@ -3,10 +3,13 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
+import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
 
@@ -105,8 +108,9 @@ class overgrownNanoforgeRandomizedSourceParams(
     fun createJunk(): overgrownNanoforgeJunkHandler? {
         val market = getMarket()
         val source = createSource()
-        val newHandler = overgrownNanoforgeJunkHandler(market, market.getOvergrownNanoforgeIndustryHandler(), market.getNextOvergrownJunkDesignation())
-        newHandler.init(source)
+        val newHandler =
+            market.getOvergrownNanoforgeIndustryHandler()?.let { overgrownNanoforgeJunkHandler(market, it, market.getNextOvergrownJunkDesignation()) }
+        newHandler?.init(source)
 
         return newHandler
     }

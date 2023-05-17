@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.utilities.niko_MPC_debugUtils.displayError
@@ -45,5 +46,14 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
 
     override fun showWhenUnavailable(): Boolean {
         return false
+    }
+
+    override fun createDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData {
+        return IndustryOptionProvider.IndustryOptionData(
+            "Deconstruct",
+            overgrownNanoforgeOptionsProvider.OVERGROWN_NANOFORGE_JUNK_DECONSTRUCTION_ID,
+            this,
+            provider
+        )
     }
 }

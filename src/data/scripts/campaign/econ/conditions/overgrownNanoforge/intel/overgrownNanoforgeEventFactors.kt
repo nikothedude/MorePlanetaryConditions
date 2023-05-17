@@ -8,6 +8,7 @@ import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED
 import java.awt.Color
+import kotlin.math.IEEErem
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -79,8 +80,16 @@ class overgrownNanoforgeIntelFactorTooManyStructures(overgrownIntel: overgrownNa
 class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
     overgrownIntel
 ) {
+
+    override fun shouldShow(intel: BaseEventIntel?): Boolean {
+        return true
+    }
+
     override fun getProgress(intel: BaseEventIntel?): Int {
-        return overgrownIntel.getSuppressionRating()
+        val initial = overgrownNanoforgeIntel.getOverallCullingStrength(getMarket())
+        val initialTwo = overgrownIntel.getSuppressionRating()/100f
+        val result = initial * initialTwo
+        return result.toInt()
     }
 
     private fun isCulling(): Boolean {
@@ -92,7 +101,7 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
     }
 
     override fun getDescColor(intel: BaseEventIntel?): Color {
-        return Misc.getPositiveHighlightColor()
+        return if (isCulling()) Misc.getPositiveHighlightColor() else (Misc.getHighlightColor())
     }
 
     override fun shouldBeRemovedWhenSpreadingStops(): Boolean {
@@ -100,13 +109,14 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
     }
 
     override fun createTooltip(): BaseFactorTooltip {
-        return object: BaseFactorTooltip() {
+        return object : BaseFactorTooltip() {
             override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
                 if (tooltip == null) return
                 val opad = 10f
 
-                val stringToAdd = "${getMarket().name}'s government is currently using ${getUsedStrengthPercent()}% of its" +
-                        " culling strength towards ${cullingOrCultivating()} the ${overgrownIntel.ourNanoforgeHandler.getCurrentName()}'s growth."
+                val stringToAdd =
+                    "${getMarket().name}'s government is currently using ${getUsedStrengthPercent()}% of its" +
+                            " culling strength towards ${cullingOrCultivating()} the ${overgrownIntel.ourNanoforgeHandler.getCurrentName()}'s growth."
 
                 tooltip.addPara(stringToAdd, opad)
             }
@@ -119,5 +129,31 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
 
     private fun getUsedStrengthPercent(): Float {
         return overgrownIntel.getUsedStrengthPercent()
+    }
+}
+
+class overgrownNanoforgeIntelFactorDestroyingStructure(overgrownIntel: overgrownNanoforgeIntel) :
+    baseOvergrownNanoforgeEventFactor(overgrownIntel) {
+    override fun getProgress(intel: BaseEventIntel?): Int {
+        return overgrownIntel.destroyingStructure?.cullingResistanceRegeneration ?: 0
+    }
+
+    override fun createTooltip(): BaseFactorTooltip {
+        return object : BaseFactorTooltip() {
+            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                if (tooltip == null) return
+                if (overgrownIntel.destroyingStructure == null) return
+                val opad = 10f
+
+                val stringToAdd = "The ${overgrownIntel.destroyingStructure!!.getCurrentName()} on ${getMarket().name} is" +
+                        " passively regrowing by ${getProgress(overgrownIntel)} every month."
+
+                tooltip.addPara(stringToAdd, opad)
+            }
+        }
+    }
+
+    override fun getProgressColor(intel: BaseEventIntel?): Color {
+        return Misc.getNegativeHighlightColor()
     }
 }

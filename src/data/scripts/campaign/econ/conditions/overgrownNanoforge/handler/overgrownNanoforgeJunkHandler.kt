@@ -9,6 +9,11 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN
+import org.lazywizard.lazylib.MathUtils
 
 // The data store and "permament" representation of junk spawned by a overgrown nanoforge
 
@@ -17,7 +22,7 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 // 2. Okay just everything the junk should hold
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
-    val masterHandler: overgrownNanoforgeIndustryHandler = market.getOvergrownNanoforgeIndustryHandler(),
+    val masterHandler: overgrownNanoforgeIndustryHandler,
     junkDesignation: Int? = null
 ): overgrownNanoforgeHandler(initMarket) {
 
@@ -57,5 +62,19 @@ class overgrownNanoforgeJunkHandler(
 
     override fun getStructure(): overgrownNanoforgeJunk? {
         return (market.getIndustry(currentStructureId) as? overgrownNanoforgeJunk)
+    }
+
+    override fun createBaseCullingResistance(): Int {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE,
+            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
+        )
+    }
+
+    override fun createBaseCullingResistanceRegeneration(): Int {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN,
+            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
+        )
     }
 }

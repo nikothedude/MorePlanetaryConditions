@@ -3,15 +3,18 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.CommMessageAPI.MessageClickAction
 import com.fs.starfarer.api.campaign.econ.Industry
+import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
 import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
+import java.awt.Color
 
 abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
 
@@ -42,13 +45,18 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
     }
 
     override fun canUpgrade(): Boolean {
-        return canBeDestroyed()
+        return false
     }
+
     open fun canBeDestroyed(): Boolean {
         if (playerNotNearAndDoWeCare()) return false
         if (market.hasJunkStructures()) return false
 
         return true
+    }
+
+    override fun getCanNotShutDownReason(): String {
+        return "It is not a simple process to remove a structure such as this."
     }
 
     fun playerNotNearAndDoWeCare(): Boolean {
@@ -101,5 +109,21 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
     abstract fun createNewHandlerInstance(): overgrownNanoforgeHandler
 
     abstract fun getHandler(): overgrownNanoforgeHandler?
+    fun getDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData {
+        val option = createDestructionOption(provider)
+        modifyDestructionOption(option)
+        return option
+    }
 
+    open fun modifyDestructionOption(option: IndustryOptionProvider.IndustryOptionData) {
+        val enabled = canBeDestroyed() && market.isPlayerOwned
+        option.enabled = enabled
+        option.color = Color.GREEN
+    }
+
+    abstract fun createDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData
+    fun startDestroying() {
+        val handler = getHandlerWithUpdate() ?: return delete()
+        getHandlerWithUpdate()?.startDestroyingStructure()
+    }
 }
