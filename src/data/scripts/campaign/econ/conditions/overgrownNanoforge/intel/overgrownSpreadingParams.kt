@@ -18,7 +18,7 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RES
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownSpreadingParams(
-    val handler: overgrownNanoforgeHandler,
+    val handler: overgrownNanoforgeJunkHandler,
     target: Industry? = null
 ) {
 

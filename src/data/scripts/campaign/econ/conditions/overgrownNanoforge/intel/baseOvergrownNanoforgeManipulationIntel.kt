@@ -5,26 +5,54 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 
 open class baseOvergrownNanoforgeManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
-    nanoforge: overgrownNanoforgeHandler
+    nanoforge: overgrownNanoforgeHandler,
+    open val ourHandler: overgrownNanoforgeHandler
 ) : baseOvergrownNanoforgeIntel(brain, nanoforge) {
 
-    override fun addStages() {
-        super.addStages()
-        
-        
+    override fun addStartStage() {
+        super.addStartStage()
+        addStage(overgrownNanoforgeIntelCullStage(brain, this), 0, false)
+    }
+
+    override fun addFactors() {
+        super.addFactors()
+        addRegenFactor()
+        addCountermeasuresFactor()
+    }
+
+    open fun addRegenFactor() {
+        addFactor(overgrownNanoforgeIntelFactorStructureRegeneration(brain, ourHandler))
+    }
+
+    open fun addCountermeasuresFactor() {
+        addFactor(overgrownNanoforgeIntelFactorCountermeasures(brain, ourHandler))
     }
 
     fun culled() {
         if (shouldReportCulled()) reportCulled()
         
-        handler.delete()
-        if (shouldDeleteIfCulled()) delete()
+        ourHandler.culled()
     }
 
-    private fun shouldDeleteIfCulled(): Boolean {
-
+    fun shouldReportCulled(): Boolean = getMarket().isPlayerOwned
+    fun reportCulled() {
+        Global.getSector().getCampaignUI().addMessage("thing culled lol")
     }
 
+    open fun shouldDeleteIfCulled(): Boolean {
+        return true
+    }
+
+    override fun setProgress(progress: Int?) {
+        super.setProgress(progress)
+        if (areWeCulled()) {
+            culled()
+        }
+    }
+
+    fun areWeCulled() {
+        return (getProgress() <= 0)
+    }
 }
 
 class overgrownNanoforgeCullStage(brain: overgrownNanoforgeSpreadingBrain, intel: baseOvergrownNanoforgeManipulationIntel)

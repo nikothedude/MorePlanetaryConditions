@@ -156,8 +156,6 @@ abstract class baseOvergrownNanoforgeIntel(
 
     open fun addFactors() {
         addFactor(overgrownNanoforgeIntelFactorCountermeasures(brain))
-        addFactor(overgrownNanoforgeIntelFactorTooManyStructures(brain))
-        addFactor(overgrownNanoforgeIntelFactorStructureRegeneration(brain, handler))
     }
     open fun addStages() {
         addStartStage()
@@ -166,7 +164,6 @@ abstract class baseOvergrownNanoforgeIntel(
     open fun addStartStage() {
         addStage(overgrownNanoforgeIntelDummyStartingStage(brain, this), 0, false)
     }
-
     open fun addEndStage() { return }
 
     override fun notifyStageReached(stage: EventStageData?) {
@@ -314,7 +311,7 @@ abstract class baseOvergrownNanoforgeIntel(
 
         info.addSpacer(10f)
 
-        if (playerControlsMarket()) {
+        if (playerCanManipulateGrowth()) {
             val localIntensityInputVal = info.addTextField(60f, 5f)
             manipulationInput = WeakReference(localIntensityInputVal)
             localIntensityInputVal.position.rightOfMid(intensityProgressBarLocalVal.elementPanel, 5f)
@@ -331,6 +328,10 @@ abstract class baseOvergrownNanoforgeIntel(
         val overallCost = calculateOverallCreditCost()
         val overallCostGraphicLocalVal = info.addPara("Overall cost: %s credits", 5f, getHighlightForCreditCost(overallCost), overallCost.toString())
         overallCostGraphic = WeakReference(overallCostGraphicLocalVal)
+    }
+
+    open fun playerCanManipulateGrowth(): Boolean {
+        return getMarket().isPlayerOwned
     }
 
     fun calculateOverallCreditCost(): Float {

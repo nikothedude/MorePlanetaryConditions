@@ -13,12 +13,13 @@ import org.lazywizard.lazylib.MathUtils
 
 // This should be considered the actual overgrown nanoforge structure. The building itself is only our hook into the API.
 abstract class overgrownNanoforgeHandler(
-    initMarket: MarketAPI,
-    var instantiated: Boolean = false
+    initMarket: MarketAPI
 ) {
+    open var growing: Boolean = true
     var currentStructureId: String? = null
 
     lateinit var baseSource: overgrownNanoforgeEffectSource
+    var manipulationIntel: baseOvergrownNanoforgeManipulationIntel?
 
     var cullingResistance: Int = 0
     var cullingResistanceRegeneration: Int = 0
@@ -48,8 +49,18 @@ abstract class overgrownNanoforgeHandler(
         baseSource = initBaseSource ?: createBaseSource()
         cullingResistance = resistance ?: createBaseCullingResistance()
         cullingResistanceRegeneration = resistanceRegen ?: createBaseCullingResistanceRegeneration()
-        addSelfToMarket(market)
+
+        if (!growing) {
+            initWithGrowing()
+        }
     }
+
+    open fun initWithGrowing() {
+        manipulationIntel = createManipulationIntel()
+        addSelfToMarket(market)  
+    }
+
+    abstract fun createManipulationIntel(): baseOvergrownNanoforgeManipulationIntel
 
     open fun createBaseCullingResistance(): Int {
         return MathUtils.getRandomNumberInRange(
@@ -68,13 +79,19 @@ abstract class overgrownNanoforgeHandler(
         deleting = true
         removeSelfFromMarket(market)
 
+        manipulationIntel?.delete()
+
         for (source in getAllSources()) source.delete() // TODO: this will cause issues if delete calls unapply since this callchain calls source.unapply
         deleted = true
         deleting = false
     }
 
-    fun apply(): Boolean {
-        if (!instantiated) return false
+    open fun culled() {
+        delete()
+    }
+
+    open fun apply(): Boolean {
+        if (growing) return false
         applyEffects()
         return true
     }

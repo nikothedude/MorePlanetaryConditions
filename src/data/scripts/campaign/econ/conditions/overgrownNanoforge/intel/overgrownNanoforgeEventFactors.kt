@@ -76,7 +76,7 @@ class overgrownNanoforgeIntelFactorTooManyStructures(overgrownIntel: baseOvergro
     }
 }
 
-class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOvergrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
+open class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOvergrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
     overgrownIntel
 ) {
 
@@ -85,13 +85,13 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOvergrown
     }
 
     override fun getProgress(intel: BaseEventIntel?): Int {
-        val initial = baseOvergrownNanoforgeIntel.getOverallCullingStrength(getMarket())
-        val initialTwo = overgrownIntel.getSuppressionRating()/100f
+        val initial = overgrownIntel.getOverallCullingStrength(getMarket())
+        val initialTwo = overgrownIntel.growthManipulation/100f
         val result = initial * initialTwo
         return result.toInt()
     }
 
-    private fun isCulling(): Boolean {
+    protected fun isCulling(): Boolean {
         return getProgress(overgrownIntel) <= 0
     }
 
@@ -122,11 +122,11 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOvergrown
         }
     }
 
-    private fun cullingOrCultivating(): String {
+    protected fun cullingOrCultivating(): String {
         return if (isCulling()) "culling" else "cultivating"
     }
 
-    private fun getUsedStrengthPercent(): Float {
+    protected fun getUsedStrengthPercent(): Float {
         return overgrownIntel.getUsedStrengthPercent()
     }
 }

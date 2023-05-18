@@ -34,9 +34,18 @@ class overgrownNanoforgeIndustryHandler(
     initMarket: MarketAPI,
 ): overgrownNanoforgeHandler(initMarket), EveryFrameScript {
 
-    val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
+    override var growing: Boolean = false
 
-    //val junkSpreader: overgrownNanoforgeJunkSpreader = overgrownNanoforgeJunkSpreader(this)
+    var exposed: Boolean = false
+        set(value) {
+            val oldField = field
+            field = value
+            if (oldField != field) {
+                getCastedManipulationIntel()?.updateExposed()
+            }
+        }
+
+    val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
 
     var discovered: Boolean = false
         set(value: Boolean) {
@@ -72,6 +81,7 @@ class overgrownNanoforgeIndustryHandler(
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
         }
+        toggleExposed()
     }
 
     override fun advance(amount: Float) {
@@ -108,9 +118,32 @@ class overgrownNanoforgeIndustryHandler(
         super.delete()
 
         (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>) -= this
-        for (ourJunk in junkHandlers) {
+        for (ourJunk in junkHandlers.copy()) {
             ourJunk.delete()
         }
+    }
+
+    override fun notifyJunkDeleted(junk: overgrownNanoforgeJunkHandler) {
+        toggleExposed()
+    }
+    fun notifyJunkAdded(junk: overgrownNanoforgeJunkHandler) {
+        toggleExposed()
+    }
+
+    fun notifySpreadingStarted() {
+        toggleExposed()
+    }
+    fun notifySpreadingStopped() {
+        toggleExposed()
+    }
+
+    fun shouldExposeSelf(): Boolean {
+        if (junkHandlers.isEmpty() && spreadingState != SPREADING) return true
+
+        return false
+    }
+    fun toggleExposed() {
+        exposed = shouldExposeSelf()
     }
 
     override fun unapply() {
@@ -178,6 +211,16 @@ class overgrownNanoforgeIndustryHandler(
             }
         }
         return supply
+    }
+
+    override fun createManipulationIntel(): overgrownNanoforgeIndustryManipulationIntel {
+        val intel = overgrownNanoforgeIndustryManipulationIntel(brain, this, this)
+        intel.init()
+        return intel
+    }
+
+    fun getCastedManipulationIntel(): overgrownNanoforgeIndustryManipulationIntel? {
+        return (manipulationIntel as? overgrownNanoforgeIndustryManipulationIntel)
     }
 
     companion object {

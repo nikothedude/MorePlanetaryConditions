@@ -17,6 +17,15 @@ class overgrownNanoforgeSpreadingBrain(
     val industryNanoforge: overgrownNanoforgeIndustryHandler
 ) {
 
+    var spreadingState: spreadingStates = spreadingStates.PREPARING
+        set(value) {
+            if (value != field) {
+                field.unapply(this)
+                value.apply(this)
+            }
+            field = value
+        }
+
     var viewingMode = viewMode.DEFAULT
 
     var maxGrowthManipulation: Float = OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION
@@ -40,9 +49,10 @@ class overgrownNanoforgeSpreadingBrain(
         getAllIntel().forEach { it.isHidden = value }
     }
     private fun getAllIntel(): Set<baseOvergrownNanoforgeManipulationIntel> {
-        return (intelInstances + spreadingIntel)
+        return (intelInstances.copy().addAll(spreadingIntel, growthIntel))
     }
-    val spreadingIntel: overgrownNanoforgeGrowthIntel = createBaseSpreadingIntel()
+    val spreadingIntel: overgrownNanoforgeSpreadingIntel = createBaseSpreadingIntel()
+    var growthIntel: overgrownNanoforgeGrowthIntel? = null
 
     private fun createBaseSpreadingIntel(): overgrownNanoforgeGrowthIntel {
         return overgrownNanoforgeGrowthIntel(this, industryNanoforge)
@@ -51,6 +61,35 @@ class overgrownNanoforgeSpreadingBrain(
 
     fun init() {
 
+    }
+
+    fun startSpreading(): Boolean {
+        val handlerParams = createNewCreationParams() ?: return false
+        growthIntel = createNewGrowthIntel(handlerParams)
+
+        return true
+    }
+
+    fun stopSpreading() {
+        growthIntel?.delete()
+    }
+
+    fun createNewGrowthIntel(params: overgrownSpreadingParams): overgrownNanoforgeGrowthIntel {
+        val intel = overgrownNanoforgeGrowthIntel(this, industryNanoforge, params.handler, params)
+        intel.init()
+        return intel
+    }
+
+    fun createNewCreationParams(): overgrownSpreadingParams? {
+        val handler: overgrownNanoforgeHandler = createHandlerForParams() ?: return null
+        handler.init()
+        return overgrownSpreadingParams(handler)
+    }
+
+    fun createHandlerForParams(): overgrownNanoforgeJunkHandler? {
+        val designation = market.getNextOvergrownJunkDesignation() ?: return null
+        val newHandler = overgrownNanoforgeJunkHandler(market, industryNanoforge, designation)
+        return newHandler
     }
 
     private fun updateUIs() {
@@ -82,4 +121,48 @@ class overgrownNanoforgeSpreadingBrain(
 
         return (standardCost + extraCost)* baseOvergrownNanoforgeIntel.getOverallCullingStrength(getMarket())
     }
+}
+
+enum class spreadingStates {
+    PREPARING {
+        override fun apply(brain: overgrownNanoforgeSpreadingBrain) {
+            val spreadingIntel = brain.spreadingIntel
+
+            spreadingIntel.startPreparingToSpread()
+        }
+
+        override fun unapply(brain: overgrownNanoforgeSpreadingBrain) {
+            val spreadingIntel = brain.spreadingIntel
+
+            spreadingIntel.stopPreparing()
+        }
+
+        private fun getAdjustedAmount(amount: Float, brain: overgrownNanoforgeSpreadingBrain): Float {
+            if (!OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED && intel.isHidden) return 0f
+            var adjustedAmount = amount
+            if (!intel.getMarket().isInhabited()) adjustedAmount *= OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
+
+            val dayAmount = Misc.getDays(adjustedAmount)
+
+            return dayAmount
+        }
+    },
+    SPREADING {
+        override fun apply(brain: overgrownNanoforgeSpreadingBrain) {
+            val result = brain.startSpreading()
+            if (!result) {
+                return niko_MPC_debugUtils.displayError("failed start spreading on a brain")
+            }
+            brain.industryNanoforge.notifySpreadingStarted()
+        }
+
+        override fun unapply(brain: overgrownNanoforgeSpreadingBrain) {
+            brain.stopSpreading()
+            brain.industryNanoforge.notifySpreadingStopped()
+        }
+    };
+
+    open fun advance(amount: Float, brain: overgrownNanoforgeSpreadingBrain) { return }
+    abstract fun apply(brain: overgrownNanoforgeSpreadingBrain)
+    abstract fun unapply(brain: overgrownNanoforgeSpreadingBrain)
 }

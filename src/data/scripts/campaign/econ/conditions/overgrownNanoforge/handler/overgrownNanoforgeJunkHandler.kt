@@ -26,6 +26,8 @@ class overgrownNanoforgeJunkHandler(
     junkDesignation: Int? = null
 ): overgrownNanoforgeHandler(initMarket) {
 
+    var growing: Boolean = true
+
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
     var cachedBuildingId: String? = if (junkDesignation == null) { market.getNextOvergrownJunkId() } else { overgrownNanoforgeJunkHandlerMemoryId + junkDesignation }
         set(value: String?) {
@@ -39,9 +41,28 @@ class overgrownNanoforgeJunkHandler(
         delete()
     }
 
+    override fun delete() {
+        super.delete()
+
+        masterHandler.junk -= this
+        masterHandler.notifyJunkDeleted(this)
+    }
+
+    fun instantiate() {
+        growing = false
+        initWithGrowing()
+    }
+
     override fun createStructure() {
         super.createStructure()
         cachedBuildingId = currentStructureId
+    }
+
+    override fun addSelfToMarket() {
+        if (growing) return
+        super.addSelfToMarket()
+
+        masterHandler.notifyJunkAdded(this)
     }
 
     // Shouldn't cause issues, since this is only called during the building's instantiation, right? Riiiiiight?

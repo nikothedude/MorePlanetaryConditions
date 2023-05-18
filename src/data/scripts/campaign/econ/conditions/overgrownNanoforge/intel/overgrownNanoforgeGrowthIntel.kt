@@ -19,90 +19,39 @@ import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeGrowthIntel(
     brain: overgrownNanoforgeSpreadingBrain,
-    nanoforge: overgrownNanoforgeHandler
-) : baseOvergrownNanoforgeManipulationIntel(brain, nanoforge) {
+    nanoforge: overgrownNanoforgeHandler,
+    ourHandler: overgrownNanoforgeHandler
+    val params: overgrownSpreadingParams
+) : baseOvergrownNanoforgeManipulationIntel(brain, nanoforge, ourHandler) {
 
-    enum class spreadingStates {
-        IN_BETWEEN {
-            override fun apply(intel: overgrownNanoforgeGrowthIntel) {
-                intel.addFactor(overgrownNanoforgeGrowthCooldownFactor(this))
-                val max = MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
-                intel.setMaxProgress(max)
-                intel.addStage(overgrownNanoforgeBeginSpreadingStage(intel.brain, intel), intel.getMaxProgress())
-            }
-
-            override fun unapply(intel: overgrownNanoforgeGrowthIntel) {
-                intel.removeFactorOfClass(overgrownNanoforgeGrowthCooldownFactor::class.java as Class<EventFactor>)
-                val iterator = intel.stages.iterator()
-                while (iterator.hasNext()) {
-                    val stage = iterator.next()
-                    if (stage is overgrownNanoforgeBeginSpreadingStage) iterator.remove()
-                }
-                intel.spreadIntervalTimer.advance(Float.MAX_VALUE)
-            }
-
-            private fun getAdjustedAmount(amount: Float, intel: overgrownNanoforgeGrowthIntel): Float {
-                if (!OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED && intel.isHidden) return 0f
-                var adjustedAmount = amount
-                if (!intel.getMarket().isInhabited()) adjustedAmount *= OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
-
-                val dayAmount = Misc.getDays(adjustedAmount)
-
-                return dayAmount
-            }
-        },
-        SPREADING {
-            override fun apply(intel: overgrownNanoforgeGrowthIntel) {
-                intel.paramsForSpreading = intel.createNewParamsForSpreading() ?: return
-                val newHandler = intel.paramsForSpreading!!.handler
-                intel.setMaxProgress(newHandler.cullingResistance)
-                intel.addStage(overgrownNanoforgeCompleteSpreadStage(intel.brain, intel), intel.getMaxProgress())
-                intel.addFactor(overgrownNanoforgePassiveRegenerationFactor(intel.brain, intel, newHandler))
-            }
-
-            override fun unapply(intel: overgrownNanoforgeGrowthIntel) {
-                intel.removeFactorOfClass(overgrownNanoforgePassiveRegenerationFactor::class.java as Class<EventFactor>)
-                val iterator = intel.stages.iterator()
-                while (iterator.hasNext()) {
-                    val stage = iterator.next()
-                    if (stage is overgrownNanoforgeCompleteSpreadStage) iterator.remove()
-                }
-            }
-        };
-        open fun advance(amount: Float, intel: overgrownNanoforgeGrowthIntel) { return }
-        abstract fun apply(intel: overgrownNanoforgeGrowthIntel)
-        abstract fun unapply(intel: overgrownNanoforgeGrowthIntel)
+    override fun addEndStage() {
+        addStage(overgrownNanoforgeFinishGrowthStage(brain, this))
     }
 
-    var spreadingState: spreadingStates = spreadingStates.IN_BETWEEN
-        set(value) {
-            if (value != field) {
-                field.unapply(this)
-                value.apply(this)
-            }
-            field = value
-        }
+    fun growingComplete() {
+        params.handler.instantiate()
 
-    val spreadIntervalTimer: IntervalUtil = IntervalUtil(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
-    var paramsForSpreading: overgrownSpreadingParams? = null
-    private fun createNewParamsForSpreading(): overgrownSpreadingParams? {
-        val coreHandler = getMarket().getOvergrownNanoforgeIndustryHandler() ?: return null
-        val designation = getMarket().getNextOvergrownJunkDesignation() ?: return null
-        val handler = overgrownNanoforgeJunkHandler(getMarket(), coreHandler, designation)
-        val params = overgrownSpreadingParams(handler)
-        params.init()
-        return overgrownSpreadingParams(handler)
+        brain.spreadingState = spreadingStates.PREPARING
     }
 
-    override fun advanceImpl(amount: Float) {
-        super.advanceImpl(amount)
-
-        spreadingState.advance(amount, this)
+    override fun delete() {
+        super.delete()
+        params.handler.delete()
+        brain.spreadingState = spreadingStates.PREPARING
     }
 
-    override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        super.addMiddleDescriptionText(info, width, stageId)
-        addParamsInfo(info, width, stageId)
+}
+
+class overgrownNanoforgeFinishGrowthStage(brain: overgrownNanoforgeSpreadingBrain, intel: overgrownNanoforgeGrowthIntel)
+    : overgrownNanoforgeIntelStage(brain, intel) {
+    
+    val castedIntel: overgrownNanoforgeGrowthIntel = intel
+    
+    override fun getName(): String = "Culled"
+    override fun getDesc(): String = "et9iujpafwuijo"
+
+    override fun stageReached() {
+        castedIntel.growingComplete()
     }
 
 }
