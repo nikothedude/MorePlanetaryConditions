@@ -8,12 +8,10 @@ import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED
 import java.awt.Color
-import kotlin.math.IEEErem
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class overgrownNanoforgeBaseIntelFactor(
-    overgrownIntel: overgrownNanoforgeIntel
+    overgrownIntel: baseOvergrownNanoforgeIntel
 ): baseOvergrownNanoforgeEventFactor(overgrownIntel) {
     override fun getProgress(intel: BaseEventIntel?): Int {
         return intel.paramsToUse?.cullingResistanceRegeneration ?: return 1f
@@ -38,7 +36,7 @@ class overgrownNanoforgeBaseIntelFactor(
     override fun isNaturalGrowthFactor(): Boolean = true
 }
 
-class overgrownNanoforgeIntelFactorUndiscovered(overgrownIntel: overgrownNanoforgeIntel) :
+class overgrownNanoforgeIntelFactorUndiscovered(overgrownIntel: baseOvergrownNanoforgeIntel) :
     baseOvergrownNanoforgeEventFactor(overgrownIntel), EventFactor {
 
     override fun getProgress(intel: BaseEventIntel?): Int {
@@ -52,7 +50,7 @@ class overgrownNanoforgeIntelFactorUndiscovered(overgrownIntel: overgrownNanofor
     }
 }
 
-class overgrownNanoforgeIntelFactorTooManyStructures(overgrownIntel: overgrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
+class overgrownNanoforgeIntelFactorTooManyStructures(overgrownIntel: baseOvergrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
     overgrownIntel
 ) {
     override fun getProgress(intel: BaseEventIntel?): Int {
@@ -78,7 +76,7 @@ class overgrownNanoforgeIntelFactorTooManyStructures(overgrownIntel: overgrownNa
     }
 }
 
-class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
+class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOvergrownNanoforgeIntel) : baseOvergrownNanoforgeEventFactor(
     overgrownIntel
 ) {
 
@@ -87,7 +85,7 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
     }
 
     override fun getProgress(intel: BaseEventIntel?): Int {
-        val initial = overgrownNanoforgeIntel.getOverallCullingStrength(getMarket())
+        val initial = baseOvergrownNanoforgeIntel.getOverallCullingStrength(getMarket())
         val initialTwo = overgrownIntel.getSuppressionRating()/100f
         val result = initial * initialTwo
         return result.toInt()
@@ -133,7 +131,7 @@ class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: overgrownNano
     }
 }
 
-class overgrownNanoforgeIntelFactorDestroyingStructure(overgrownIntel: overgrownNanoforgeIntel) :
+class overgrownNanoforgeIntelFactorDestroyingStructure(overgrownIntel: baseOvergrownNanoforgeIntel) :
     baseOvergrownNanoforgeEventFactor(overgrownIntel) {
     override fun getProgress(intel: BaseEventIntel?): Int {
         return overgrownIntel.destroyingStructure?.cullingResistanceRegeneration ?: 0

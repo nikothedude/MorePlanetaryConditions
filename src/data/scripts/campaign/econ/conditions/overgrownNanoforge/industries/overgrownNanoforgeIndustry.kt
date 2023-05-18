@@ -9,7 +9,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
-import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_IS_INDUSTRY

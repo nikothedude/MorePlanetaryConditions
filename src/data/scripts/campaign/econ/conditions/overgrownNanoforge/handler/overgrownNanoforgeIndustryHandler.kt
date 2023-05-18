@@ -6,12 +6,9 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
@@ -44,12 +41,12 @@ class overgrownNanoforgeIndustryHandler(
     var discovered: Boolean = false
         set(value: Boolean) {
             if (value != field) {
-                intel.isHidden = !value
+                intelBrain.hidden = !value
             }
             field = value
         }
 
-    val intel: overgrownNanoforgeIntel = createIntel()
+    val intelBrain: overgrownNanoforgeSpreadingBrain = createIntelBrain()
 
     init {
         if (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] == null) Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] = HashSet<overgrownNanoforgeIndustryHandler>()
@@ -70,15 +67,14 @@ class overgrownNanoforgeIndustryHandler(
         return overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
     }
 
-    override fun init(initBaseSource: overgrownNanoforgeEffectSource?) {
-        super.init(initBaseSource)
+    override fun init(initBaseSource: overgrownNanoforgeEffectSource?, resistance: Int?, resistanceRegen: Int?) {
+        super.init(initBaseSource, resistance, resistanceRegen)
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
         }
     }
 
     override fun advance(amount: Float) {
-        val adjustedAmount = getAdjustedSpreadAmount(amount)
         //junkSpreader.advance(adjustedAmount)
     }
 
@@ -97,8 +93,8 @@ class overgrownNanoforgeIndustryHandler(
         return false
     }
 
-    override fun apply() {
-        super.apply()
+    override fun applyEffects() {
+        super.applyEffects()
         Global.getSector().addScript(this)
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
@@ -157,10 +153,10 @@ class overgrownNanoforgeIndustryHandler(
         return this
     }
 
-    fun createIntel(): overgrownNanoforgeIntel {
-        val intel = overgrownNanoforgeIntel(this)
-        intel.init()
-        return intel
+    fun createIntelBrain(): overgrownNanoforgeSpreadingBrain {
+        val brain = overgrownNanoforgeSpreadingBrain(this)
+        brain.init()
+        return brain
     }
 
     fun getJunkSources(): MutableSet<overgrownNanoforgeEffectSource> {

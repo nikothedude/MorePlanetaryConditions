@@ -1,27 +1,29 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
-import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE_REGEN
 import org.lazywizard.lazylib.MathUtils
-import kotlin.properties.Delegates
 
 /* The structure that creates this isnt guranteed to exist, this class exists to store data between decivs and shit so it's "consistant" */
 
 // This should be considered the actual overgrown nanoforge structure. The building itself is only our hook into the API.
 abstract class overgrownNanoforgeHandler(
     initMarket: MarketAPI,
+    var instantiated: Boolean = false
 ) {
     var currentStructureId: String? = null
+
     lateinit var baseSource: overgrownNanoforgeEffectSource
+
     var cullingResistance: Int = 0
     var cullingResistanceRegeneration: Int = 0
+    var growthRating: Int = 0
+
     var unapplying: Boolean = false
     var deleting: Boolean = false
 
@@ -71,9 +73,15 @@ abstract class overgrownNanoforgeHandler(
         deleting = false
     }
 
-    open fun apply() {
+    fun apply(): Boolean {
+        if (!instantiated) return false
+        applyEffects()
+        return true
+    }
+
+    open fun applyEffects() {
         if (shouldCreateNewStructure()) {
-           createStructure()
+            createStructure()
         }
         for (source in getAllSources()) source.apply()
     }
@@ -147,8 +155,7 @@ abstract class overgrownNanoforgeHandler(
     /** Should return the "master" handler, AKA the nanoforge industry's handler. */
     abstract fun getCoreHandler(): overgrownNanoforgeIndustryHandler
     fun startDestroyingStructure() {
-
-        getCoreHandler().intel.destroyingStructure = this
+        getCoreHandler().intelBrain.startDestroyingStructure(this)
     }
 
 }

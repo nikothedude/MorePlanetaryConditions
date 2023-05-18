@@ -5,7 +5,7 @@ import com.fs.starfarer.api.ui.TextFieldAPI
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import java.lang.NumberFormatException
 
-class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : niko_MPC_baseNikoScript() {
+class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel) : niko_MPC_baseNikoScript() {
 
     override fun start() {
         Global.getSector().addScript(this)
@@ -14,8 +14,8 @@ class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : 
     override fun stop() {
         Global.getSector().removeScript(this)
 
-        intel.intensityInput = null
-        intel.intensityProgressBar = null
+        intel.manipulationInput = null
+        intel.growthManipulationMeter = null
 
         intel.externalSupportInput = null
         intel.externalSupportProgressBar = null
@@ -28,7 +28,7 @@ class overgrownNanoforgeIntelInputScanner(val intel: overgrownNanoforgeIntel) : 
 
     override fun advance(amount: Float) {
         if (!Global.getSector().isPaused) return stop()
-        val resolvedReference = intel.intensityInput?.get() ?: return stop()
+        val resolvedReference = intel.manipulationInput?.get() ?: return stop()
 
         intel.suppressionIntensity = sanitizeFloat(resolvedReference, intel.suppressionIntensity)
         //intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)

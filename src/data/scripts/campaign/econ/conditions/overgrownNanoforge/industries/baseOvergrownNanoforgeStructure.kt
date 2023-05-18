@@ -9,7 +9,6 @@ import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
-import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
 import data.utilities.niko_MPC_settings

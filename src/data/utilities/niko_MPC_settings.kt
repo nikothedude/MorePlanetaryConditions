@@ -10,6 +10,10 @@ import org.json.JSONException
 import java.io.IOException
 
 object niko_MPC_settings {
+
+    const val OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION = 150f
+    const val OVERGROWN_NANOFORGE_MINIMUM_GROWTH_MANIPULATION = -150f
+
     const val OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD = 100
     const val OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT = 30f
     const val OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT = 15f
@@ -126,9 +130,9 @@ object niko_MPC_settings {
     var OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX = 1.2f
 
     // this is so completely inaccurate because the api methods are useless
-    const val multToConvertFloatToDays = 100f
-    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = 120f * multToConvertFloatToDays
-    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = 200f * multToConvertFloatToDays
+    const val multToConvertFloatToDays = 100
+    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS: Int = 120 * multToConvertFloatToDays
+    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS: Int = 200 * multToConvertFloatToDays
 
     var OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT = 3f
     var VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT = 5f

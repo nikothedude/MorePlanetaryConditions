@@ -6,7 +6,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 
 abstract class baseOvergrownNanoforgeEventFactor(
-    val overgrownIntel: overgrownNanoforgeIntel
+    val overgrownIntel: baseOvergrownNanoforgeIntel
 ): baseNikoEventFactor() {
     open fun shouldBeRemovedWhenSpreadingStops(): Boolean {
         return true

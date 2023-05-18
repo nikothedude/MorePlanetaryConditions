@@ -6,7 +6,7 @@ import data.scripts.campaign.intel.baseNikoIntelPlugin
 
 class overgrownNanoforgeSpecificReasonIntelPlugin(
     val market: MarketAPI,
-    val specifics: MutableSet<overgrownNanoforgeIntel.cullingStrengthValues.cullingStrengthReasons>,
+    val specifics: MutableSet<baseOvergrownNanoforgeIntel.cullingStrengthValues.cullingStrengthReasons>,
 ): baseNikoIntelPlugin() {
 
     override fun hasLargeDescription(): Boolean {
