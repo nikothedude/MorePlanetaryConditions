@@ -4,9 +4,10 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
 
 abstract class baseOvergrownNanoforgeEventFactor(
-    val overgrownIntel: baseOvergrownNanoforgeIntel
+    open val overgrownIntel: baseOvergrownNanoforgeIntel
 ): baseNikoEventFactor() {
     open fun shouldBeRemovedWhenSpreadingStops(): Boolean {
         return true
@@ -18,13 +19,17 @@ abstract class baseOvergrownNanoforgeEventFactor(
 
     open fun createTooltip(): BaseFactorTooltip? = null
 
-    fun getNanoforgeName(): String = overgrownIntel.ourNanoforgeHandler.getCurrentName()
+    open fun getNanoforgeName(): String = overgrownIntel.brain.industryNanoforge.getCurrentName()
 
     override fun addExtraRows(info: TooltipMakerAPI?, intel: BaseEventIntel?) {
         if (info == null) return
         val tooltip = createTooltip() ?: return
 
         info.addTooltipToAddedRow(tooltip, TooltipMakerAPI.TooltipLocation.RIGHT, false)
+    }
+
+    override fun delete() {
+        overgrownIntel.removeFactor(this)
     }
 
     open fun isNaturalGrowthFactor(): Boolean = false

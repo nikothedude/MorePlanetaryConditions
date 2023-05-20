@@ -1,20 +1,17 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.PopulationAndInfrastructure
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
-import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.utilities.niko_MPC_marketUtils.hasMaxStructures
+import data.utilities.niko_MPC_marketUtils.hasNonJunkStructures
 import data.utilities.niko_MPC_marketUtils.isApplied
 import data.utilities.niko_MPC_marketUtils.isJunkStructure
 import data.utilities.niko_MPC_marketUtils.isOrbital
 import data.utilities.niko_MPC_settings
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN
 import org.lazywizard.lazylib.MathUtils
 
 class overgrownSpreadingParams(
@@ -22,14 +19,24 @@ class overgrownSpreadingParams(
     target: Industry? = null
 ) {
 
-    var industryTarget = target ?: getIndustryTarget()
+    var nameKnown: Boolean = false
+
+    val percentThresholdToTotalScoreKnowledge = MathUtils.getRandomNumberInRange(30, 60)
+
+    var ourIndustryTarget = target ?: getIndustryTarget()
         set(value) {
             alertPlayerTargetChanged(value)
             field = value
         }
 
-    fun alertPlayerTargetChanged(newIndustry: Industry?) {
+    fun getIndustryName(): String {
+        if (nameKnown) return ourIndustryTarget?.currentName ?: "None"
 
+        return "Unknown"
+    }
+
+    fun alertPlayerTargetChanged(newIndustry: Industry?) {
+        Global.getSector().campaignUI.addMessage("industry changed to $newIndustry")
     }
 
     fun getIndustryTarget(): Industry? {
@@ -60,28 +67,39 @@ class overgrownSpreadingParams(
     }
 
     fun getMarket(): MarketAPI = handler.market
-    fun getIntel(): baseOvergrownNanoforgeIntel = getMarket().getOvergrownNanoforgeIndustryHandler()!!.intel
-
-    var cullingResistance = getInitialCullingResistance()
-
-    fun getInitialCullingResistance(): Int {
-        return MathUtils.getRandomNumberInRange(
-            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE,
-            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
-        )
-    }
-
-    var cullingResistanceRegeneration = createBaseCullingResistanceRegeneration()
-
-    fun createBaseCullingResistanceRegeneration(): Int {
-        return MathUtils.getRandomNumberInRange(
-            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN,
-            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
-        )
-    }
 
     fun init() {
-        TODO("Not yet implemented")
+
+    }
+
+    fun spread() {
+        destroyTarget()
+        handler.instantiate()
+
+        reportSpreaded()
+    }
+
+    private fun reportSpreaded() {
+        Global.getSector().campaignUI.addMessage("spread complete woo")
+    }
+
+    fun destroyTarget() {
+        if (ourIndustryTarget != null) {
+            getMarket().removeIndustry(ourIndustryTarget!!.id, null, false)
+        }
+    }
+
+    fun updateIndustryTarget() {
+        if (shouldRetarget()) ourIndustryTarget = getIndustryTarget()
+    }
+
+    private fun shouldRetarget(): Boolean {
+      if (ourIndustryTarget == null && getMarket().hasMaxStructures()) return true
+        if (ourIndustryTarget != null) {
+            if (!getMarket().hasMaxStructures()) return true
+            if (ourIndustryTarget is PopulationAndInfrastructure && getMarket().hasNonJunkStructures()) return true
+        }
+        return false
     }
 }
 

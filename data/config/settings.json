@@ -7,4 +7,9 @@
 		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_newSatelliteDeployerScript",
 		"niko_MPC_campaignPlugin":"data.scripts.campaign.plugins.niko_MPC_campaignPlugin",
 	},
+	"graphics":{
+		"intel":{
+			"niko_MPC_priceUpdate":"graphics/icons/intel/price_update.png",
+		},
+	},
  }

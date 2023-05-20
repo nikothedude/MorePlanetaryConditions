@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.ui.TextFieldAPI
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import java.lang.NumberFormatException
 
@@ -16,10 +17,10 @@ class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel
 
         intel.manipulationInput = null
         intel.growthManipulationMeter = null
+        intel.overallManipulationMeter = null
 
-        intel.externalSupportInput = null
-        intel.externalSupportProgressBar = null
-        intel.numericTooltipAPI = null
+        intel.individualCostGraphic = null
+        intel.overallCostGraphic = null
     }
 
     override fun runWhilePaused(): Boolean {
@@ -30,15 +31,13 @@ class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel
         if (!Global.getSector().isPaused) return stop()
         val resolvedReference = intel.manipulationInput?.get() ?: return stop()
 
-        intel.suppressionIntensity = sanitizeFloat(resolvedReference, intel.suppressionIntensity)
+        intel.growthManipulation = sanitizeFloat(resolvedReference, intel.growthManipulation)
         //intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)
-
-        intel.numericTooltipAPI?.get()?.intelUI?.updateUIForItem(intel)
     }
 
     private fun sanitizeFloat(intensityInput: TextFieldAPI, defaultReturn: Float): Float {
         val text = intensityInput.text ?: return defaultReturn
-        if (text.isEmpty()) return defaultReturn
+        if (text.isEmpty()) return 0f
         val negative = text.first() == '-'
         val filteredString = (text.filter { it == '.' || it.isDigit() })
         if (filteredString.isEmpty()) return defaultReturn

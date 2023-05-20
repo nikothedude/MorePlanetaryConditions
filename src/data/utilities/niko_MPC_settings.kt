@@ -1,15 +1,19 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.SectorEntityToken
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
-import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.randomizedSourceBudgets
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import org.json.JSONException
 import java.io.IOException
 
 object niko_MPC_settings {
+
+    const val OVERGROWN_NANOFORGE_MIN_SCORE_ESTIMATION_VARIANCE = 0.2f
+    const val OVERGROWN_NANOFORGE_MAX_SCORE_ESTIMATION_VARIANCE = 5f
+
+    const val OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE = 20f
+    const val OVERGROWN_NANOFORGE_SPREADING_PROGRESS = 50
 
     const val OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION = 150f
     const val OVERGROWN_NANOFORGE_MINIMUM_GROWTH_MANIPULATION = -150f
@@ -32,7 +36,7 @@ object niko_MPC_settings {
 
     const val overgrownNanoforgeBaseJunkSpreadTargettingChance = 500f
     const val OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS = 500
-    const val OVERGROWN_NANOFORGE_NOT_SPREADING_PROGRESS = 10
+    const val OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT = 0.1f
     const val OVERGROWN_NANOFORGE_INTEL_TOGGLE_VIEWMODE_ID = "toggleViewmode"
 
     @JvmStatic
@@ -131,8 +135,8 @@ object niko_MPC_settings {
 
     // this is so completely inaccurate because the api methods are useless
     const val multToConvertFloatToDays = 100
-    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS: Int = 120 * multToConvertFloatToDays
-    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS: Int = 200 * multToConvertFloatToDays
+    var OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS: Int = 30
+    var OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS: Int = 90
 
     var OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT = 3f
     var VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT = 5f

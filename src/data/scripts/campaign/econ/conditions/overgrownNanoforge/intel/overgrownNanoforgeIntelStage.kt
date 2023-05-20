@@ -5,10 +5,10 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
 
 abstract class overgrownNanoforgeIntelStage(
-    val brain: overgrownNanoforgeSpreadingBrain,
-    val intel: baseOvergrownNanoforgeIntel
+    open val intel: baseOvergrownNanoforgeIntel
 ) {
 
     abstract fun getName(): String
@@ -30,8 +30,8 @@ abstract class overgrownNanoforgeIntelStage(
     open fun getIconId(): String? = null
 }
 
-class overgrownNanoforgeIntelDummyStartingStage(brain: overgrownNanoforgeSpreadingBrain, intel: baseOvergrownNanoforgeIntel):
-    overgrownNanoforgeIntelStage(brain, intel) {
+class overgrownNanoforgeIntelDummyStartingStage(intel: baseOvergrownNanoforgeIntel):
+    overgrownNanoforgeIntelStage(intel) {
     override fun getName(): String = "Start"
     override fun stageReached() { return }
 }

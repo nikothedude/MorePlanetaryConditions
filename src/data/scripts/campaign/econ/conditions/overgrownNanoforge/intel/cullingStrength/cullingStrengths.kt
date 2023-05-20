@@ -9,7 +9,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStr
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthsValues.THRESHOLD_MULT_MINIMAL
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthsValues.THRESHOLD_MULT_VERY_HIGH
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthsValues.THRESHOLD_MULT_VERY_LOW
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrengthValues
 import java.awt.Color
 
 object cullingStrengthsValues {

@@ -11,7 +11,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStr
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.PATROL_TAG_SCORE
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.STABILITY_ANCHOR
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.STABILITY_DIFFERENCE_INCREMENT
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrengthValues
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import java.awt.Color
@@ -200,7 +199,7 @@ enum class cullingStrengthReasons {
         fun getScoreFromReasons(reasons: MutableMap<cullingStrengthReasons, Float>): Float {
             var score = 0f
             reasons.values.forEach { score += it }
-            return score
+            return score.coerceAtLeast(0f)
         }
     }
 }

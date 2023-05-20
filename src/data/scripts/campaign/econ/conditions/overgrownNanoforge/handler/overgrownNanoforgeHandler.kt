@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN
@@ -19,7 +20,7 @@ abstract class overgrownNanoforgeHandler(
     var currentStructureId: String? = null
 
     lateinit var baseSource: overgrownNanoforgeEffectSource
-    var manipulationIntel: baseOvergrownNanoforgeManipulationIntel?
+    var manipulationIntel: baseOvergrownNanoforgeManipulationIntel? = null
 
     var cullingResistance: Int = 0
     var cullingResistanceRegeneration: Int = 0
@@ -53,6 +54,10 @@ abstract class overgrownNanoforgeHandler(
         if (!growing) {
             initWithGrowing()
         }
+    }
+
+    fun getOurBrain(): overgrownNanoforgeSpreadingBrain {
+        return getCoreHandler().intelBrain
     }
 
     open fun initWithGrowing() {

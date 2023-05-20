@@ -12,6 +12,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
+import org.lazywizard.lazylib.MathUtils
 
 class overgrownNanoforgeRandomizedSourceParams(
     val handler: overgrownNanoforgeIndustryHandler,
@@ -20,8 +23,8 @@ class overgrownNanoforgeRandomizedSourceParams(
     var positiveBudgetHolder: budgetHolder
     var negativeBudgetHolder: budgetHolder
     var specialBudgetHolder: budgetHolder
+    val budget = getInitialBudget(handler)
     init {
-        val budget = getInitialBudget(handler)
         positiveBudgetHolder = budgetHolder(budget)
         negativeBudgetHolder = budgetHolder(-budget)
         specialBudgetHolder = budgetHolder(getSpecialBudget())
@@ -31,24 +34,6 @@ class overgrownNanoforgeRandomizedSourceParams(
 
     private fun getSpecialBudget(): Float {
         return 0f
-    }
-
-    var cullingResistance = getInitialCullingResistance()
-
-    fun getInitialCullingResistance(): Int {
-        return MathUtils.getRandomNumberInRange(
-            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE,
-            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
-        )
-    }
-
-    var cullingResistanceRegeneration = getInitialCullingResistanceRegen()
-
-    fun createBaseCullingResistanceRegeneration(): Int {
-        return MathUtils.getRandomNumberInRange(
-            OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN,
-            OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
-        )
     }
 
     class budgetHolder(var budget: Float)
@@ -123,12 +108,12 @@ class overgrownNanoforgeRandomizedSourceParams(
         return handler.market
     }
 
-    fun createJunk(resistance: Int = cullingResistance, resistanceRegen: Int = cullingResistanceRegeneration): overgrownNanoforgeJunkHandler? {
+    fun createJunk(): overgrownNanoforgeJunkHandler? {
         val market = getMarket()
         val source = createSource()
         val newHandler =
             market.getOvergrownNanoforgeIndustryHandler()?.let { overgrownNanoforgeJunkHandler(market, it, market.getNextOvergrownJunkDesignation()) }
-        newHandler?.init(source, resistanec, resistanceRegen)
+        newHandler?.init(source)
 
         return newHandler
     }

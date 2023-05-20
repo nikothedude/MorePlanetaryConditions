@@ -6,5 +6,6 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
     open fun delete() {
         ended = true
+        hidden = true
     }
 }

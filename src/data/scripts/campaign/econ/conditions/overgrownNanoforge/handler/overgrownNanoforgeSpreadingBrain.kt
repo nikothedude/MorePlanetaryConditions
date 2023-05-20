@@ -1,31 +1,28 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.CommMessageAPI.MessageClickAction
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.listeners.EconomyTickListener
+import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.baseOvergrownNanoforgeIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeGrowthIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.baseOvergrownNanoforgeManipulationIntel
-import data.utilities.niko_MPC_settings
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasons
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeGrowthIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeSpreadingIntel
+import data.utilities.niko_MPC_debugUtils
+import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
+import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT
-import lunalib.lunaUI.elements.LunaProgressBar
-import org.lazywizard.lazylib.MathUtils
-import java.lang.Math.abs
 
 class overgrownNanoforgeSpreadingBrain(
     val industryNanoforge: overgrownNanoforgeIndustryHandler
-) {
+): EconomyTickListener {
 
-    var spreadingState: spreadingStates = spreadingStates.PREPARING
-        set(value) {
-            if (value != field) {
-                field.unapply(this)
-                value.apply(this)
-            }
-            field = value
-        }
-
+    var totalCosts: Float = 0f
     var viewingMode = viewMode.DEFAULT
 
     var maxGrowthManipulation: Float = OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION
@@ -48,19 +45,48 @@ class overgrownNanoforgeSpreadingBrain(
     private fun updateIntelHiddenStatus(value: Boolean) {
         getAllIntel().forEach { it.isHidden = value }
     }
-    private fun getAllIntel(): Set<baseOvergrownNanoforgeManipulationIntel> {
-        return (intelInstances.copy().addAll(spreadingIntel, growthIntel))
+    private fun getAllIntel(): MutableSet<baseOvergrownNanoforgeIntel> {
+        val allIntel = HashSet<baseOvergrownNanoforgeIntel>()
+        allIntel.addAll(intelInstances)
+        allIntel += spreadingIntel
+        growthIntel?.let { allIntel += it }
+
+        for (entry in getAllHandlers()) {
+            entry.manipulationIntel?.let { allIntel += it }
+        }
+        return allIntel
     }
+
+    private fun getAllHandlers(): Set<overgrownNanoforgeHandler> {
+        return (industryNanoforge.junkHandlers.toMutableSet() + industryNanoforge)
+    }
+
     val spreadingIntel: overgrownNanoforgeSpreadingIntel = createBaseSpreadingIntel()
     var growthIntel: overgrownNanoforgeGrowthIntel? = null
 
-    private fun createBaseSpreadingIntel(): overgrownNanoforgeGrowthIntel {
-        return overgrownNanoforgeGrowthIntel(this, industryNanoforge)
+    var spreadingState: spreadingStates = spreadingStates.PREPARING
+        set(value) {
+            val oldField = field
+            field = value
+            if (oldField != value) {
+                oldField.unapply(this)
+                value.apply(this)
+            }
+        }
+
+    init {
+        spreadingState.apply(this)
+    }
+
+    private fun createBaseSpreadingIntel(): overgrownNanoforgeSpreadingIntel {
+        val intel = overgrownNanoforgeSpreadingIntel(this, hidden)
+        intel.init()
+        return intel
     }
     val intelInstances: MutableSet<baseOvergrownNanoforgeManipulationIntel> = HashSet()
 
     fun init() {
-
+        Global.getSector().listenerManager.addListener(this, false)
     }
 
     fun startSpreading(): Boolean {
@@ -75,20 +101,20 @@ class overgrownNanoforgeSpreadingBrain(
     }
 
     fun createNewGrowthIntel(params: overgrownSpreadingParams): overgrownNanoforgeGrowthIntel {
-        val intel = overgrownNanoforgeGrowthIntel(this, industryNanoforge, params.handler, params)
+        val intel = overgrownNanoforgeGrowthIntel(this, params.handler, params, hidden)
         intel.init()
         return intel
     }
 
     fun createNewCreationParams(): overgrownSpreadingParams? {
-        val handler: overgrownNanoforgeHandler = createHandlerForParams() ?: return null
+        val handler: overgrownNanoforgeJunkHandler = createHandlerForParams() ?: return null
         handler.init()
         return overgrownSpreadingParams(handler)
     }
 
     fun createHandlerForParams(): overgrownNanoforgeJunkHandler? {
-        val designation = market.getNextOvergrownJunkDesignation() ?: return null
-        val newHandler = overgrownNanoforgeJunkHandler(market, industryNanoforge, designation)
+        val designation = getMarket().getNextOvergrownJunkDesignation() ?: return null
+        val newHandler = overgrownNanoforgeJunkHandler(getMarket(), industryNanoforge, designation)
         return newHandler
     }
 
@@ -106,20 +132,110 @@ class overgrownNanoforgeSpreadingBrain(
     }
 
     fun delete() {
+        Global.getSector().listenerManager.removeListener(this)
         getAllIntel().forEach { it.delete() }
     }
 
     fun getMarket(): MarketAPI = industryNanoforge.market
     fun getManipulationBudget(intel: baseOvergrownNanoforgeIntel): Float {
-        return (maxGrowthManipulation - (getOverallGrowthManipulation() - intel.growthManipulation))
+        return (maxGrowthManipulation - (getOverallGrowthManipulation() - kotlin.math.abs(intel.growthManipulation)))
     }
 
     fun calculateOverallCreditCost(): Float {
-        val absIntensity = kotlin.math.abs(getOverallGrowthManipulation())
-        val standardCost = (absIntensity * OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT)
-        val extraCost = (((absIntensity - OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD).coerceAtLeast(0f)) * niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT)
+        var amount = 0f
 
-        return (standardCost + extraCost)* baseOvergrownNanoforgeIntel.getOverallCullingStrength(getMarket())
+        for (intel in getAllIntel()) {
+            if (!intel.shouldDeductCredits()) continue
+
+            amount += intel.calculateCreditCost()
+        }
+
+        return amount
+    }
+
+    fun getOverallCullingStrength(): Float {
+        return cullingStrengthReasons.getScoreFromReasons(cullingStrengthReasons.getReasons(getMarket()))
+    }
+
+    fun getUsedStrengthPercent(): Float {
+        return (getOverallGrowthManipulation())
+    }
+
+    override fun reportEconomyTick(iterIndex: Int) {
+        applyCosts()
+    }
+
+    private fun applyCosts() {
+
+        val iterations = Global.getSettings().getFloat("economyIterPerMonth")
+        val iterationMult = 1f / iterations
+
+        if (getMarket().isPlayerOwned) return deductCredits(iterationMult)
+        if (getMarket().isInhabited()) return deductNPCPoints(iterationMult)
+    }
+
+    private fun deductNPCPoints(iterationMult: Float) {
+        return
+    }
+
+    private fun deductCredits(iterationMult: Float) {
+
+        val rawCost = calculateOverallCreditCost()
+        val credits = Global.getSector().playerFleet.cargo.credits
+
+        val creditsAvailable = credits.get()
+        val multipliedCost = (rawCost * iterationMult)
+
+        if (multipliedCost > creditsAvailable) {
+            return insufficientCredits()
+            // fun fact! returning is okay here since order of operations says we manipulate progress AFTER this!
+        }
+
+        if (multipliedCost != 0f) {
+            credits.subtract(multipliedCost)
+            totalCosts += multipliedCost
+            //Global.getSector().campaignUI.addMessage("Deducted $finalCost credits due to ${industryNanoforge.getCurrentName()}")
+        }
+    }
+
+    private fun insufficientCredits() {
+        resetManipulation()
+
+        val marketName = getMarket().name
+        val title = "Insufficient credits has led to all growth manipulation attempts on $marketName to be discontinued, " +
+                "to avoid putting you in debt."
+        val highlight = Misc.getNegativeHighlightColor()
+        val intel = MessageIntel(
+            title,
+            Misc.getBasePlayerColor(), arrayOf<String>(marketName, "discontinued"), highlight
+        )
+        intel.icon = Global.getSettings().getSpriteName("intel", "niko_MPC_priceUpdate")
+        Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f)
+
+        Global.getSector().campaignUI.addMessage(intel)
+    }
+
+    private fun resetManipulation() {
+        getAllIntel().forEach { it.growthManipulation = 0f }
+    }
+
+    override fun reportEconomyMonthEnd() {
+        if (totalCosts != 0f) {
+            val totalStr = Misc.getDGSCredits(totalCosts)
+
+            val title = "Monthly cost of ${getMarket().name}'s ${industryNanoforge.getCurrentName()} culling efforts: $totalStr"
+
+            val highlight = Misc.getNegativeHighlightColor()
+
+            val intel = MessageIntel(
+                title,
+                Misc.getBasePlayerColor(), arrayOf(totalStr.toString()), highlight
+            )
+            intel.icon = Global.getSettings().getSpriteName("intel", "monthly_income_report")
+
+            Global.getSector().campaignUI.addMessage(intel, MessageClickAction.INCOME_TAB, Tags.INCOME_REPORT)
+        }
+        totalCosts = 0f
     }
 }
 
@@ -137,7 +253,7 @@ enum class spreadingStates {
             spreadingIntel.stopPreparing()
         }
 
-        private fun getAdjustedAmount(amount: Float, brain: overgrownNanoforgeSpreadingBrain): Float {
+        /*private fun getAdjustedAmount(amount: Float, brain: overgrownNanoforgeSpreadingBrain): Float {
             if (!OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED && intel.isHidden) return 0f
             var adjustedAmount = amount
             if (!intel.getMarket().isInhabited()) adjustedAmount *= OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
@@ -145,7 +261,7 @@ enum class spreadingStates {
             val dayAmount = Misc.getDays(adjustedAmount)
 
             return dayAmount
-        }
+        }*/
     },
     SPREADING {
         override fun apply(brain: overgrownNanoforgeSpreadingBrain) {

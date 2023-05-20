@@ -2,13 +2,13 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
-import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
@@ -26,8 +26,6 @@ class overgrownNanoforgeJunkHandler(
     junkDesignation: Int? = null
 ): overgrownNanoforgeHandler(initMarket) {
 
-    var growing: Boolean = true
-
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
     var cachedBuildingId: String? = if (junkDesignation == null) { market.getNextOvergrownJunkId() } else { overgrownNanoforgeJunkHandlerMemoryId + junkDesignation }
         set(value: String?) {
@@ -44,7 +42,7 @@ class overgrownNanoforgeJunkHandler(
     override fun delete() {
         super.delete()
 
-        masterHandler.junk -= this
+        masterHandler.junkHandlers -= this
         masterHandler.notifyJunkDeleted(this)
     }
 
@@ -58,10 +56,9 @@ class overgrownNanoforgeJunkHandler(
         cachedBuildingId = currentStructureId
     }
 
-    override fun addSelfToMarket() {
+    override fun addSelfToMarket(market: MarketAPI) {
         if (growing) return
-        super.addSelfToMarket()
-
+        super.addSelfToMarket(market)
         masterHandler.notifyJunkAdded(this)
     }
 
@@ -81,6 +78,12 @@ class overgrownNanoforgeJunkHandler(
         return overgrownNanoforgeRandomizedSource(masterHandler, params)
     }
 
+    override fun createManipulationIntel(): baseOvergrownNanoforgeManipulationIntel {
+        val intel = baseOvergrownNanoforgeManipulationIntel(getCoreHandler().intelBrain, this, getOurBrain().hidden)
+        intel.init()
+        return intel
+    }
+
     override fun getStructure(): overgrownNanoforgeJunk? {
         return (market.getIndustry(currentStructureId) as? overgrownNanoforgeJunk)
     }
@@ -97,5 +100,9 @@ class overgrownNanoforgeJunkHandler(
             OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE_REGEN,
             OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
         )
+    }
+
+    fun getBaseBudget(): Float? {
+        return (baseSource as? overgrownNanoforgeRandomizedSource)?.params?.budget
     }
 }
