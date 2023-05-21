@@ -1,12 +1,16 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CoreUITabId
 import com.fs.starfarer.api.campaign.comm.CommMessageAPI.MessageClickAction
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
 import data.utilities.niko_MPC_marketUtils.hasJunkStructures
@@ -15,7 +19,9 @@ import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 import java.awt.Color
 
-abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
+abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionScript<overgrownStructureDeletionScript> {
+
+    override var deletionScript: overgrownStructureDeletionScript? = null
 
     override fun canShutDown(): Boolean {
         return false
@@ -31,11 +37,9 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         val handler = getHandlerWithUpdate()
         handler?.apply()
     }
-
     override fun unapply() {
         super.unapply()
-        val handler = getHandlerWithUpdate()
-        handler?.apply()
+        startDeletionScript()
     }
 
     override fun delete() {
@@ -73,6 +77,10 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         return false
     }
 
+    override fun createDeletionScriptInstance(vararg args: Any): overgrownStructureDeletionScript {
+        return overgrownStructureDeletionScript(this, this, market)
+    }
+
     override fun upgradeFinished(previous: Industry?) {
         super.upgradeFinished(previous)
         reportDestroyed()
@@ -105,24 +113,50 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry() {
         return null
     }
 
+    override fun createTooltip(mode: Industry.IndustryTooltipMode?, tooltip: TooltipMakerAPI?, expanded: Boolean) {
+        super.createTooltip(mode, tooltip, expanded)
+        if (mode == null || mode != Industry.IndustryTooltipMode.NORMAL) return
+        if (tooltip == null) return
+
+        val handler = getHandlerWithUpdate() ?: return
+        val positives = handler.getFormattedPositives()
+        val negatives = handler.getFormattedNegatives()
+
+        if (positives.isNotEmpty()) {
+            tooltip.addSectionHeading("Positives", Alignment.MID, 5f)
+            tooltip.addPara(positives, 20f)
+        }
+        if (negatives.isNotEmpty()) {
+            tooltip.addSectionHeading("Negatives", Alignment.MID, 5f)
+            tooltip.addPara(negatives, 20f)
+        }
+    }
+
     abstract fun createNewHandlerInstance(): overgrownNanoforgeHandler
 
     abstract fun getHandler(): overgrownNanoforgeHandler?
-    fun getDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData {
-        val option = createDestructionOption(provider)
-        modifyDestructionOption(option)
+    fun getIntelOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData? {
+        val option = createIntelOption(provider) ?: return null
+        modifyIntelOption(option)
         return option
     }
 
-    open fun modifyDestructionOption(option: IndustryOptionProvider.IndustryOptionData) {
-        val enabled = canBeDestroyed() && market.isPlayerOwned
-        option.enabled = enabled
-        option.color = Color.GREEN
+    open fun modifyIntelOption(option: IndustryOptionProvider.IndustryOptionData) {
     }
 
-    abstract fun createDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData
-    fun startDestroying() {
-        val handler = getHandlerWithUpdate() ?: return delete()
-        getHandlerWithUpdate()?.startDestroyingStructure()
+    open fun createIntelOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData? {
+        if (getHandlerWithUpdate()?.manipulationIntel == null) return null
+        return IndustryOptionProvider.IndustryOptionData(
+            "Open Intel",
+            overgrownNanoforgeOptionsProvider.OVERGROWN_NANOFORGE_INDUSTRY_OPEN_INTEL_OPTION_ID,
+            this,
+            provider
+        )
+    }
+    fun openIntel() {
+        val handler = getHandlerWithUpdate() ?: return
+        val intel = handler.manipulationIntel ?: return
+        Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
+        Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
     }
 }

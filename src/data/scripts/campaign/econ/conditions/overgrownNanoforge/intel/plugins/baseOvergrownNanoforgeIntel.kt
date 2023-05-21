@@ -88,7 +88,6 @@ abstract class baseOvergrownNanoforgeIntel(
         }
     override fun createLargeDescription(panel: CustomPanelAPI?, width: Float, height: Float) {
         if (panel == null) return
-        //testVar = WeakReference(panel.intelUI)
         when (getViewingMode()) {
             viewMode.SPECIFICS -> {
                 val outer = panel.createUIElement(width, height, true) ?: return
@@ -156,6 +155,16 @@ abstract class baseOvergrownNanoforgeIntel(
 
     abstract fun initializeProgress()
 
+    open fun addStages() {
+        addStartStage()
+        addEndStage()
+    }
+
+    open fun addStartStage() {
+        addStage(overgrownNanoforgeIntelDummyStartingStage(this), 0, false)
+    }
+    open fun addEndStage() { return }
+
     open fun addFactors() {
         addCountermeasuresFactor()
     }
@@ -178,15 +187,6 @@ abstract class baseOvergrownNanoforgeIntel(
         addFactor(factor)
     }
 
-    open fun addStages() {
-        addStartStage()
-        addEndStage()
-    }
-    open fun addStartStage() {
-        addStage(overgrownNanoforgeIntelDummyStartingStage(this), 0, false)
-    }
-    open fun addEndStage() { return }
-
     override fun notifyStageReached(stage: EventStageData?) {
         super.notifyStageReached(stage)
         if (stage == null) return
@@ -206,7 +206,7 @@ abstract class baseOvergrownNanoforgeIntel(
     }
 
     override fun getStageIconImpl(stageId: Any?): String {
-        val defaultReturn = Global.getSector().getFaction(Factions.LUDDIC_PATH).getCrest()
+        val defaultReturn = icon
         if (stageId == null) return defaultReturn
         val data = getDataFor(stageId) ?: return defaultReturn
 
@@ -331,17 +331,6 @@ abstract class baseOvergrownNanoforgeIntel(
         generateCostGraphic(info, overallSuppressionBarLocalVal)
     }
 
-    open fun createCantInteractWithInputTooltip(): TooltipMakerAPI.TooltipCreator {
-        return object : BaseFactorTooltip() {
-            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
-                super.createTooltip(tooltip, expanded, tooltipParam)
-                if (tooltip == null) return
-
-                tooltip.addPara("You are not in control of ${getMarket().name}'s government, disallowing you from interacting from the statistics.", 5f)
-            }
-        }
-    }
-
     private fun createGrowthManipulationMeter(info: TooltipMakerAPI, width: Float = 0f): LunaProgressBar {
         val previousMeter = growthManipulationMeter?.get()
         //previousMeter?.let { info.removeComponent(it.elementPanel) }
@@ -409,8 +398,29 @@ abstract class baseOvergrownNanoforgeIntel(
         label.setHighlight(beginning, end)
     }
 
+    /** If false, should grey out manipulation inputs. */
     open fun playerCanManipulateGrowth(): Boolean {
         return getMarket().isPlayerOwned
+    }
+
+    fun createCantInteractWithInputTooltip(): TooltipMakerAPI.TooltipCreator {
+        return object : BaseFactorTooltip() {
+            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                super.createTooltip(tooltip, expanded, tooltipParam)
+                if (tooltip == null) return
+
+                for (reason in getCantInteractWithInputReasons()) {
+                    tooltip.addPara(reason, 5f)
+                }
+            }
+        }
+    }
+
+    open fun getCantInteractWithInputReasons(): MutableSet<String> {
+        val reasons = HashSet<String>()
+        if (!getMarket().isPlayerOwned) reasons += "You are not in control of ${getMarket().name}'s government, disallowing you from interacting from the statistics."
+
+        return reasons
     }
 
     open fun getHighlightForCreditCost(cost: Float): Color {
@@ -511,10 +521,6 @@ abstract class baseOvergrownNanoforgeIntel(
         return true
     }
 
-    open fun updateUI() {
-
-    }
-
     override fun getBarColor(): Color {
         var color = Misc.getNegativeHighlightColor()
         color = Misc.interpolateColor(color, Color.black, 0.25f)
@@ -523,5 +529,9 @@ abstract class baseOvergrownNanoforgeIntel(
 
     fun shouldDeductCredits(): Boolean {
         return playerCanManipulateGrowth()
+    }
+
+    override fun getIcon(): String {
+        return "graphics/icons/cargo/nanoforge_decayed.png"
     }
 }

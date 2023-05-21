@@ -17,8 +17,12 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_INDUSTRY_NAME
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_PREDEFINED_JUNK
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_PREDEFINED_JUNK
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
 import org.lazywizard.lazylib.MathUtils
 
@@ -33,9 +37,14 @@ import org.lazywizard.lazylib.MathUtils
 // The industry itself is only the hook we use to put this class into the game
 class overgrownNanoforgeIndustryHandler(
     initMarket: MarketAPI,
-): overgrownNanoforgeHandler(initMarket), EveryFrameScript {
-
     override var growing: Boolean = false
+): overgrownNanoforgeHandler(initMarket, growing), EveryFrameScript {
+
+    override fun migrateToNewMarket(newMarket: MarketAPI) {
+        super.migrateToNewMarket(newMarket)
+
+        junkHandlers.forEach { it.market = newMarket }
+    }
 
     var exposed: Boolean = false
         set(value) {
@@ -83,10 +92,38 @@ class overgrownNanoforgeIndustryHandler(
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
         }
         toggleExposed()
+
+        generatePreexistingJunk()
+    }
+
+    private fun generatePreexistingJunk() {
+        var completeJunkToInstantiate = getInitialJunkNumber()
+
+        while (completeJunkToInstantiate-- > 0) {
+            instantiateJunk()
+        }
+    }
+
+    private fun instantiateJunk(): overgrownNanoforgeJunkHandler {
+        val handler = overgrownNanoforgeJunkHandler(market, this, growing = false)
+        handler.init()
+
+        return handler
+    }
+
+    private fun getInitialJunkNumber(): Int {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_MIN_PREDEFINED_JUNK,
+            OVERGROWN_NANOFORGE_MAX_PREDEFINED_JUNK
+        )
     }
 
     override fun advance(amount: Float) {
         //junkSpreader.advance(adjustedAmount)
+    }
+
+    override fun shouldCreateNewStructure(): Boolean {
+        return (market.shouldHaveOvergrownNanoforgeIndustry() && super.shouldCreateNewStructure())
     }
 
     fun getAdjustedSpreadAmount(amount: Float): Float {
@@ -115,13 +152,15 @@ class overgrownNanoforgeIndustryHandler(
         }
     }
 
-    override fun delete() {
-        super.delete()
+    override fun delete(): Boolean {
+        if (!super.delete()) return false
 
         (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>) -= this
         for (ourJunk in junkHandlers.toMutableSet()) {
             ourJunk.delete()
         }
+
+        return true
     }
 
     fun notifyJunkDeleted(junk: overgrownNanoforgeJunkHandler) {
@@ -147,15 +186,22 @@ class overgrownNanoforgeIndustryHandler(
         exposed = shouldExposeSelf()
     }
 
-    override fun unapply() {
-        super.unapply()
+    override fun unapply(): Boolean {
+        if (super.unapply()) return false
         Global.getSector().removeScript(this)
         for (ourJunk in junkHandlers) {
             ourJunk.unapply()
         }
+        return true
     }
 
     override fun addSelfToMarket(market: MarketAPI) {
+        val preExistingHandler = market.getOvergrownNanoforgeIndustryHandler()
+        if (preExistingHandler != null && preExistingHandler != this) {
+            displayError("duplicate industy handler on ${market.name}")
+            delete()
+            return
+        }
         market.setOvergrownNanoforgeIndustryHandler(this)
         super.addSelfToMarket(market)
     }
@@ -181,6 +227,10 @@ class overgrownNanoforgeIndustryHandler(
 
     override fun getNewStructureId(): String {
         return overgrownNanoforgeIndustryId
+    }
+
+    override fun getDefaultName(): String {
+        return OVERGROWN_NANOFORGE_INDUSTRY_NAME
     }
 
     override fun getCoreHandler(): overgrownNanoforgeIndustryHandler {
@@ -224,9 +274,32 @@ class overgrownNanoforgeIndustryHandler(
         return (manipulationIntel as? overgrownNanoforgeIndustryManipulationIntel)
     }
 
+    fun isSpreading(): Boolean {
+        return intelBrain.spreadingState == spreadingStates.SPREADING
+    }
+
     companion object {
         fun getBaseScore(): Float {
             return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_BASE_SCORE_MIN, OVERGROWN_NANOFORGE_BASE_SCORE_MAX)
+        }
+
+        fun allHandlerMarketsSynced(): Boolean {
+            return (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>).all {
+                it.market.primaryEntity?.market == it.market }
+        }
+
+        fun allHandlerMemorySynced(): Boolean {
+            return (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>).all {
+                it.market.primaryEntity?.market?.getOvergrownNanoforgeIndustryHandler() == it}
+        }
+
+        fun getUnsyncedMarkets(): List<MarketAPI> {
+            val handlers = Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as HashSet<overgrownNanoforgeIndustryHandler>
+            val unsyncedMarkets = ArrayList<MarketAPI>()
+            for (handler in handlers) {
+                if (handler.market.primaryEntity?.market != handler.market) unsyncedMarkets += handler.market
+            }
+            return unsyncedMarkets
         }
     }
 }

@@ -10,6 +10,7 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunkHandler
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_JUNK_NAME
 
 class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
 
@@ -25,7 +26,6 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
             market.removeIndustry(id, null, false)
             return
         }
-        val handler = instantiateNewHandler()
     }
 
     override fun createNewHandlerInstance(): overgrownNanoforgeJunkHandler {
@@ -48,12 +48,7 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
         return false
     }
 
-    override fun createDestructionOption(provider: overgrownNanoforgeOptionsProvider): IndustryOptionProvider.IndustryOptionData {
-        return IndustryOptionProvider.IndustryOptionData(
-            "Deconstruct",
-            overgrownNanoforgeOptionsProvider.OVERGROWN_NANOFORGE_JUNK_DECONSTRUCTION_ID,
-            this,
-            provider
-        )
+    override fun getCurrentName(): String {
+        return OVERGROWN_NANOFORGE_JUNK_NAME
     }
 }

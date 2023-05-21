@@ -118,10 +118,6 @@ class overgrownNanoforgeSpreadingBrain(
         return newHandler
     }
 
-    private fun updateUIs() {
-        getAllIntel().forEach { it.updateUI() }
-    }
-
     fun startDestroyingStructure(handler: overgrownNanoforgeHandler) {
         val newIntel = createDestructionIntel(handler)
         newIntel.init()

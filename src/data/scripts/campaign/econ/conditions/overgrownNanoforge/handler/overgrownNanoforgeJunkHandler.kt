@@ -8,7 +8,11 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
+import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
+import data.utilities.niko_MPC_marketUtils.maxStructureAmount
+import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeJunkHandler
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_JUNK_NAME
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
@@ -23,11 +27,16 @@ import org.lazywizard.lazylib.MathUtils
 class overgrownNanoforgeJunkHandler(
     initMarket: MarketAPI,
     val masterHandler: overgrownNanoforgeIndustryHandler,
-    junkDesignation: Int? = null
-): overgrownNanoforgeHandler(initMarket) {
+    junkDesignation: Int? = null,
+    growing: Boolean = false,
+): overgrownNanoforgeHandler(initMarket, growing) {
 
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
-    var cachedBuildingId: String? = if (junkDesignation == null) { market.getNextOvergrownJunkId() } else { overgrownNanoforgeJunkHandlerMemoryId + junkDesignation }
+    var cachedBuildingId: String? = if (junkDesignation == null) {
+        market.getNextOvergrownJunkId()
+    } else {
+        baseStructureId + junkDesignation
+    }
         set(value: String?) {
             if (value == null) {
                 handleNullBuildingId()
@@ -39,16 +48,26 @@ class overgrownNanoforgeJunkHandler(
         delete()
     }
 
-    override fun delete() {
-        super.delete()
+    override fun delete(): Boolean {
+        if (!super.delete()) return false
 
         masterHandler.junkHandlers -= this
         masterHandler.notifyJunkDeleted(this)
+
+        return true
     }
 
     fun instantiate() {
-        growing = false
-        initWithGrowing()
+        if (growing) {
+            growing = false
+            initWithGrowing()
+        }
+    }
+
+    override fun initWithGrowing() {
+        super.initWithGrowing()
+
+        masterHandler.junkHandlers += this
     }
 
     override fun createStructure() {
@@ -58,6 +77,7 @@ class overgrownNanoforgeJunkHandler(
 
     override fun addSelfToMarket(market: MarketAPI) {
         if (growing) return
+        market.setOvergrownNanoforgeJunkHandler(this)
         super.addSelfToMarket(market)
         masterHandler.notifyJunkAdded(this)
     }
@@ -85,7 +105,7 @@ class overgrownNanoforgeJunkHandler(
     }
 
     override fun getStructure(): overgrownNanoforgeJunk? {
-        return (market.getIndustry(currentStructureId) as? overgrownNanoforgeJunk)
+        return currentStructureId?.let { (market.getIndustry(it) as? overgrownNanoforgeJunk) }
     }
 
     override fun createBaseCullingResistance(): Int {
@@ -104,5 +124,19 @@ class overgrownNanoforgeJunkHandler(
 
     fun getBaseBudget(): Float? {
         return (baseSource as? overgrownNanoforgeRandomizedSource)?.params?.budget
+    }
+
+    override fun getDefaultName(): String {
+        return OVERGROWN_NANOFORGE_JUNK_NAME
+    }
+
+    fun getOurDesignation(): Int? {
+        if (cachedBuildingId == null) return null // shouldnt happen since this deletes if this is null i believe
+        return (cachedBuildingId!!.filter { it.isDigit() }.toInt())
+    }
+
+    companion object {
+        val maxStructuresPossible: Int = maxStructureAmount
+        val baseStructureId: String = overgrownNanoforgeJunkStructureId
     }
 }

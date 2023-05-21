@@ -151,21 +151,29 @@ object niko_MPC_marketUtils {
     @JvmStatic
     fun MarketAPI.getNextOvergrownJunkId(): String? {
         val designation = getNextOvergrownJunkDesignation() ?: return null
-        return overgrownNanoforgeJunkStructureId + designation
+        return overgrownNanoforgeJunkHandler.baseStructureId + designation
     }
 
     fun MarketAPI.getNextOvergrownJunkDesignation(): Int? {
         if (exceedsMaxStructures()) return null
+        val existingJunkHandlers = getOvergrownJunkHandlers()
         val existingDesignations = HashSet<Int>()
-        val existingJunk = getOvergrownJunk()
-        for (junk in existingJunk) {
-            val junkId = junk.id
-            existingDesignations += (junkId.filter { it.isDigit() }.toInt())
+        for (handler in existingJunkHandlers) {
+            existingDesignations += handler.getOurDesignation() ?: continue
         }
-        for (designation: Int in 1..maxStructureAmount) {
+        for (designation: Int in 1..overgrownNanoforgeJunkHandler.maxStructuresPossible) {
             if (!existingDesignations.contains(designation)) return designation
         }
         return null
+    }
+
+    fun MarketAPI.getOvergrownJunkHandlers(): MutableSet<overgrownNanoforgeJunkHandler> {
+        val handlers = HashSet<overgrownNanoforgeJunkHandler>()
+        for (designation: Int in 1..overgrownNanoforgeJunkHandler.maxStructuresPossible) {
+            val handler = getOvergrownJunkHandler(designation) ?: continue
+            handlers += handler
+        }
+        return handlers
     }
 
     fun MarketAPI.getOvergrownJunk(): HashSet<overgrownNanoforgeJunk> {
@@ -214,7 +222,7 @@ object niko_MPC_marketUtils {
         val iterator = this.getOvergrownNanoforgeBuildings().iterator()
         while (iterator.hasNext()) {
             val building = iterator.next()
-            building.unapply()
+            building.delete()
         }
     }
     fun MarketAPI.getOvergrownNanoforgeBuildings(): MutableSet<baseOvergrownNanoforgeStructure> {
@@ -241,7 +249,9 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.isValidTargetForOvergrownHandler(): Boolean {
-        return (id != "fake_Colonize" && (!(isConvertingToMarket() || isConvertingToCondition())))
+        return (id != "fake_Colonize"
+                && (!(isConvertingToMarket() || isConvertingToCondition()))
+                && (primaryEntity.market == this))
     }
 
     fun MarketAPI.isConvertingToMarket(): Boolean {
@@ -277,10 +287,19 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.getOvergrownJunkHandler(designation: Int): overgrownNanoforgeJunkHandler? {
-        val modifiedId = overgrownNanoforgeJunkHandlerMemoryId + designation
+        val modifiedId = overgrownNanoforgeJunkHandler.baseStructureId + designation
         return getOvergrownJunkHandler(modifiedId)
     }
     fun MarketAPI.getOvergrownJunkHandler(id: String): overgrownNanoforgeJunkHandler? {
-        return memoryWithoutUpdate[id] as? overgrownNanoforgeJunkHandler
+        return memoryWithoutUpdate[convertToMemKey(id)] as? overgrownNanoforgeJunkHandler
+    }
+
+    fun MarketAPI.setOvergrownNanoforgeJunkHandler(handler: overgrownNanoforgeJunkHandler) {
+        val id = handler.cachedBuildingId ?: return
+        memoryWithoutUpdate[convertToMemKey(id)] = handler
+    }
+
+    private fun convertToMemKey(id: String): String {
+        return "\$" + id
     }
 }

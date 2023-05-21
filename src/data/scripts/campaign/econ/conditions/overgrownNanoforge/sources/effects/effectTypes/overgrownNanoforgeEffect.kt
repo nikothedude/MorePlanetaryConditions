@@ -8,7 +8,7 @@ import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 
 abstract class overgrownNanoforgeEffect(
     val handler: overgrownNanoforgeHandler
-) {
+): simpleFormat {
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories
     abstract fun getName(): String
@@ -36,5 +36,30 @@ abstract class overgrownNanoforgeEffect(
 
     fun getMarket(): MarketAPI = handler.market
     fun getStructure(): baseOvergrownNanoforgeStructure? = handler.getStructure()
-    open fun getId(): String = handler.toString() + this.toString()
+    open fun getId(): String = this.toString()
+    open fun getNameForModifier(): String = "${handler.getCurrentName()}: ${getName()}"
+
+    override fun getFormattedEffect(format: String, positive: Boolean, vararg args: Any): String {
+        var effect = super.getFormattedEffect(format, positive, *args)
+        if (effect.isNotEmpty()) effect = "${getName()}: $effect"
+        return effect
+    }
+
+    companion object {
+        fun format(formattedEffects: MutableList<String>): String {
+            var addNewLine = false
+            var finalString = ""
+
+            for (string in formattedEffects) {
+                var mutatedString = string
+                if (addNewLine) {
+                    mutatedString = "\n" + mutatedString
+                }
+                addNewLine = true // the first string gets no newline
+                finalString += mutatedString
+            }
+            if (finalString.isEmpty()) finalString = "None"
+            return finalString
+        }
+    }
 }

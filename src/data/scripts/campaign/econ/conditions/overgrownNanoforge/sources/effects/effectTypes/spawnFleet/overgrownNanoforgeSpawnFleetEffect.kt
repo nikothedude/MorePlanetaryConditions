@@ -43,4 +43,11 @@ class overgrownNanoforgeSpawnFleetEffect(
         spawningScript.delete()
         super.delete()
     }
+
+    override val baseFormat: String
+        get() = "5"
+
+    override fun getChange(positive: Boolean, vararg args: Any): String {
+        return "52"
+    }
 }

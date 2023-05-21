@@ -39,6 +39,10 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
         tracker.removeBattle(battle)
     }
 
+    override fun reportBattleOccurred(primaryWinner: CampaignFleetAPI?, battle: BattleAPI?) {
+        super.reportBattleOccurred(primaryWinner, battle)
+    }
+
     //if this fails, we can add a script on fleet usage of jump point, which is a method in here
     override fun reportFleetReachedEntity(fleet: CampaignFleetAPI?, entity: SectorEntityToken?) {
         super.reportFleetReachedEntity(fleet, entity)

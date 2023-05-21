@@ -5,12 +5,15 @@ import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_SCORE_ESTIMATION_VARIANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_SCORE_ESTIMATION_VARIANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE
@@ -30,7 +33,14 @@ class overgrownNanoforgeGrowthIntel(
     }
 
     private fun getInitialProgress(): Int {
-        return ((1f/100f)*getMaxProgress()).roundToInt()
+        return ((getStartingProgressPercent()/100f)*getMaxProgress()).roundToInt()
+    }
+
+    private fun getStartingProgressPercent(): Float {
+        return MathUtils.getRandomNumberInRange(
+            OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN,
+            OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
+        )
     }
 
     var estimatedScore: String = "Error"
@@ -73,13 +83,13 @@ class overgrownNanoforgeGrowthIntel(
     override fun addStages() {
         super.addStages()
 
-        growthDiscoveryStages.TARGET.getChildren(this).forEach { addStage(it, it.getThreshold()) }
+        growthDiscoveryStages.TARGET.getChildren(this).forEach { addStage(it, it.getThreshold(), true) }
     }
 
     fun growingComplete() {
         params.spread()
 
-        brain.spreadingState = spreadingStates.PREPARING
+        delete()
     }
 
     override fun delete() {
@@ -87,40 +97,32 @@ class overgrownNanoforgeGrowthIntel(
         brain.spreadingState = spreadingStates.PREPARING
     }
 
-    override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        super.addMiddleDescriptionText(info, width, stageId)
+    override fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
+        val prevTable = super.addParamsInfo(info, width, stageId)
 
-        addParamsInfo(info, width, stageId)
-    }
-
-    private fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?) {
         val targetWidth = 180f
         val scoreWidth = 100f
-        val effectWidth = 300f
+
         info.beginTable(factionForUIColors, 20f,
     "Target", targetWidth,
             "Overall Score", scoreWidth,
-            "Positives", effectWidth,
-            "Negatives", effectWidth,)
-
-        info.makeTableItemsClickable()
+        )
 
         val targetData = getTargetData()
 
         val baseAlignment = Alignment.LMID
         val baseColor = Misc.getBasePlayerColor()
-        val positiveEffects: String = getFormattedPositives()
-        val negativeEffects: String = getFormattedNegatives()
 
-        info.addRowWithGlow(baseAlignment, baseColor, targetData.name,
-                            baseAlignment, baseColor, estimatedScore,
-                            baseAlignment, baseColor, positiveEffects,
-                            baseAlignment, baseColor, negativeEffects)
+        info.addRowWithGlow(
+            baseAlignment, baseColor, targetData.name,
+            baseAlignment, baseColor, estimatedScore)
         targetData.industry?.let { info.setIdForAddedRow(it) }
 
         val opad = 5f
         info.addTable("None", -1, opad)
         info.addSpacer(3f)
+
+        return info.prev
     }
 
     override fun tableRowClicked(ui: IntelUIAPI, data: IntelInfoPlugin.TableRowClickData) {
@@ -131,14 +133,6 @@ class overgrownNanoforgeGrowthIntel(
             val market = id.market
             // TODO open market screen
         }
-    }
-
-    private fun getFormattedNegatives(): String {
-        return "placeholdernegative"
-    }
-
-    private fun getFormattedPositives(): String {
-        return "placeholderpositive"
     }
 
     private fun getTargetData(): targetData {

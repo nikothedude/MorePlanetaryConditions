@@ -3,8 +3,8 @@ package data.scripts.campaign.plugins
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.PluginPick
 import com.fs.starfarer.api.campaign.*
-import com.fs.starfarer.api.campaign.CampaignPlugin.PickPriority
-import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.ai.ModularFleetAIAPI
+import com.fs.starfarer.api.campaign.ai.TacticalModulePlugin
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.*
@@ -16,8 +16,6 @@ import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import data.utilities.niko_MPC_satelliteUtils.hasSatellites
 import data.utilities.niko_MPC_satelliteUtils.isSatelliteEntity
 import org.lwjgl.util.vector.Vector2f
-import data.utilities.niko_MPC_miscUtils.getStationsInOrbit
-import data.utilities.niko_MPC_satelliteUtils.getSatelliteBattleTracker
 
 class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
     override fun getId(): String {
@@ -101,6 +99,41 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
     private fun SectorEntityToken.shouldSkip(): Boolean {
         return (isSatelliteEntity())
     }
+    // order is this, then reportFleetSpawned/pick autoresolve/reportbattleoccured
+    override fun pickTacticalAIModule(fleet: CampaignFleetAPI?, ai: ModularFleetAIAPI?): PluginPick<TacticalModulePlugin>? {
+
+        if (fleet == null) return null
+
+        val playerFleet = Global.getSector().playerFleet ?: return null
+        val battle = playerFleet.battle
+
+        if (!fleet.isCombiningFromBattle()) return null
+
+        ai.tacticalModule
+
+
+        if (battle.isCombining()) {
+            "d"
+        }
+
+        return super.pickTacticalAIModule(fleet, ai)
+    }
+
+    private fun BattleAPI.isCombining(): Boolean {
+        val combiningCheck = (combinedOne == null || combinedTwo == null)
+        return combiningCheck
+    }
+
+    private fun CampaignFleetAPI.isCombiningFromBattle(): Boolean { // this is so fucking rickety and can fail so easily
+        return (fleetData.isOnlySyncMemberLists
+                && isAIMode)
+    }
+
+    override fun pickBattleAutoresolverPlugin(battle: BattleAPI?): PluginPick<BattleAutoresolverPlugin>? {
+        if (battle == null) return null
+        return super.pickBattleAutoresolverPlugin(battle)
+    }
+
     private fun spawnSatelliteFleetsOnPlayerIfAble(interactionTarget: SectorEntityToken, fleet: CampaignFleetAPI?, battle: BattleAPI?, entityToAlwaysTryToSpawnFrom: SectorEntityToken?)
     : List<CampaignFleetAPI> {
 

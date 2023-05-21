@@ -3,7 +3,12 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.utilities.niko_MPC_marketUtils.isDeserializing
+import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE
@@ -14,18 +19,18 @@ import org.lazywizard.lazylib.MathUtils
 
 // This should be considered the actual overgrown nanoforge structure. The building itself is only our hook into the API.
 abstract class overgrownNanoforgeHandler(
-    initMarket: MarketAPI
-) {
+    initMarket: MarketAPI,
     open var growing: Boolean = true
+) {
     var currentStructureId: String? = null
-
     lateinit var baseSource: overgrownNanoforgeEffectSource
+
     var manipulationIntel: baseOvergrownNanoforgeManipulationIntel? = null
-
     var cullingResistance: Int = 0
-    var cullingResistanceRegeneration: Int = 0
-    var growthRating: Int = 0
 
+    var cullingResistanceRegeneration: Int = 0
+
+    var applying: Boolean = false
     var unapplying: Boolean = false
     var deleting: Boolean = false
 
@@ -33,9 +38,9 @@ abstract class overgrownNanoforgeHandler(
 
     var deleted: Boolean = false
 
-    var market: MarketAPI = initMarket
+    open var market: MarketAPI = initMarket
         set(value: MarketAPI) {
-             if (field != value) {
+             if (field !== value) { //shit breaks if we dont do reference checking, hence the extra =
                 migrateToNewMarket(value)
             }
             field = value
@@ -79,8 +84,8 @@ abstract class overgrownNanoforgeHandler(
             OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN)
     }
 
-    open fun delete() {
-        if (deleted || deleting) return
+    open fun delete(): Boolean {
+        if (deleted || deleting) return false
         deleting = true
         removeSelfFromMarket(market)
 
@@ -89,6 +94,8 @@ abstract class overgrownNanoforgeHandler(
         for (source in getAllSources()) source.delete() // TODO: this will cause issues if delete calls unapply since this callchain calls source.unapply
         deleted = true
         deleting = false
+
+        return true
     }
 
     open fun culled() {
@@ -96,8 +103,13 @@ abstract class overgrownNanoforgeHandler(
     }
 
     open fun apply(): Boolean {
+        if (applying) return false
         if (growing) return false
+        applying = true
+
         applyEffects()
+
+        applying = false
         return true
     }
 
@@ -108,13 +120,15 @@ abstract class overgrownNanoforgeHandler(
         for (source in getAllSources()) source.apply()
     }
 
-    open fun unapply() {
-        if (unapplying) return
+    open fun unapply(): Boolean {
+        if (unapplying) return false
         unapplying = true
         removeStructure()
 
         for (source in getAllSources()) source.unapply()
         unapplying = false
+
+        return true
     }
 
     open fun addSelfToMarket(market: MarketAPI) {
@@ -142,7 +156,7 @@ abstract class overgrownNanoforgeHandler(
     }
 
     open fun shouldCreateNewStructure(): Boolean {
-        return (structurePresent())
+        return (!market.isDeserializing() && market.isInhabited() && market.isValidTargetForOvergrownHandler() && !structurePresent())
     }
 
     protected open fun createStructure() {
@@ -154,6 +168,24 @@ abstract class overgrownNanoforgeHandler(
     open fun removeStructure() {
         market.removeIndustry(currentStructureId, null, false)
         currentStructureId = null
+    }
+
+    fun getFormattedPositives(): String {
+        return getFormattedEffects(overgrownNanoforgeEffectCategories.BENEFIT)
+    }
+
+    fun getFormattedNegatives(): String {
+        return getFormattedEffects(overgrownNanoforgeEffectCategories.DEFICIT)
+    }
+
+    protected open fun getFormattedEffects(category: overgrownNanoforgeEffectCategories): String {
+        val effects = baseSource.effects
+        if (effects.isEmpty()) return "None"
+        var strings: MutableList<String> = ArrayList()
+        for (effect in effects) {
+            strings += effect.getAllFormattedEffects(category == overgrownNanoforgeEffectCategories.BENEFIT)
+        }
+        return overgrownNanoforgeEffect.format(strings)
     }
 
     open fun getAllSources(): MutableSet<overgrownNanoforgeEffectSource> {
@@ -171,8 +203,10 @@ abstract class overgrownNanoforgeHandler(
 
     open fun getCurrentName(): String {
         if (getStructure() != null) return getStructure()!!.currentName
-        return "placeholder"
+        return getDefaultName()
     }
+
+    abstract fun getDefaultName(): String
 
     /** Should return the "master" handler, AKA the nanoforge industry's handler. */
     abstract fun getCoreHandler(): overgrownNanoforgeIndustryHandler

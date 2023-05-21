@@ -14,7 +14,9 @@ import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_NEGATIVE_EFFECT_BUDGET_MULT
 import org.lazywizard.lazylib.MathUtils
+import kotlin.math.abs
 
 class overgrownNanoforgeRandomizedSourceParams(
     val handler: overgrownNanoforgeIndustryHandler,
@@ -26,7 +28,7 @@ class overgrownNanoforgeRandomizedSourceParams(
     val budget = getInitialBudget(handler)
     init {
         positiveBudgetHolder = budgetHolder(budget)
-        negativeBudgetHolder = budgetHolder(-budget)
+        negativeBudgetHolder = budgetHolder((-budget*OVERGROWN_NANOFORGE_NEGATIVE_EFFECT_BUDGET_MULT))
         specialBudgetHolder = budgetHolder(getSpecialBudget())
     }
 
@@ -80,12 +82,18 @@ class overgrownNanoforgeRandomizedSourceParams(
             initialPrototypes -= pickedPrototype
         }
         if (potentialPrototypes.isEmpty()) return HashSet()
+        val negative = initialBudget < 0
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
-            initialBudget,
+            abs(initialBudget),
             { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler.getCoreHandler()) ?: 0f},
         )
-        for (entry in weightedPrototypes) positiveBudgetHolder.budget -= entry.value
+        if (negative) {
+            for (entry in weightedPrototypes) {
+                weightedPrototypes[entry.key] = entry.value * -1f
+            }
+        }
+        for (entry in weightedPrototypes) holder.budget -= entry.value
         for (entry in weightedPrototypes) {
             val prototype = entry.key
             val score = entry.value

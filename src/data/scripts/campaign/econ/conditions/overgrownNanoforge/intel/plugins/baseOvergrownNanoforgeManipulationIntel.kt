@@ -1,11 +1,20 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.UIComponentAPI
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorStructureRegeneration
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import org.lazywizard.lazylib.MathUtils
+import kotlin.math.max
 
 open class baseOvergrownNanoforgeManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
@@ -31,6 +40,51 @@ open class baseOvergrownNanoforgeManipulationIntel(
     open fun addRegenFactor() {
         addFactorWrapped(overgrownNanoforgeIntelFactorStructureRegeneration(this))
     }
+
+    override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addMiddleDescriptionText(info, width, stageId)
+
+        addParamsInfo(info, width, stageId)
+    }
+
+    open fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
+        val positiveEffects: String = getFormattedPositives()
+        val negativeEffects: String = getFormattedNegatives()
+        val positiveWidth = info.computeStringWidth(positiveEffects) * 1.2f
+        val negativeWidth = info.computeStringWidth(negativeEffects) * 1.2f
+        val sizePerEffect = 15f
+        val size = (sizePerEffect * (max(positiveEffects.lines().size, negativeEffects.lines().size)))
+        info.beginTable(
+            factionForUIColors, size,
+            "Positives", positiveWidth,
+            "Negatives", negativeWidth,
+        )
+        info.makeTableItemsClickable()
+
+        val baseAlignment = Alignment.LMID
+        val baseColor = Misc.getBasePlayerColor()
+
+        info.addRowWithGlow(
+            baseAlignment, baseColor, positiveEffects,
+            baseAlignment, baseColor, negativeEffects
+        )
+
+        val opad = 5f
+        info.addTable("None", -1, opad)
+        val table = info.prev
+        info.addSpacer(3f)
+
+        return table
+    }
+
+    open fun getFormattedPositives(): String {
+        return ourHandler.getFormattedPositives()
+    }
+
+    open fun getFormattedNegatives(): String {
+        return ourHandler.getFormattedNegatives()
+    }
+
     open fun culled() {
         if (shouldReportCulled()) reportCulled()
         

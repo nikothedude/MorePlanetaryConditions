@@ -3,11 +3,18 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import kotlin.math.abs
 
 class overgrownNanoforgeAlterUpkeepEffect(
     handler: overgrownNanoforgeHandler,
     val mult: Float
 ): overgrownNanoforgeRandomizedEffect(handler) {
+
+    override val baseFormat: String = "Nanoforge upkeep $adjectiveChar by $changeChar"
+    override fun getChange(positive: Boolean, vararg args: Any): String {
+        return "${abs(mult * 100)}"
+    }
+
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         return if (isUpkeepNegative()) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
     }
@@ -29,13 +36,13 @@ class overgrownNanoforgeAlterUpkeepEffect(
     override fun applyBenefits() {
         val structure = getStructure() ?: return
         if (isUpkeepNegative()) return
-        structure.upkeep.modifyMult(getId(), mult)
+        structure.upkeep.modifyMult(getId(), mult, getNameForModifier())
     }
 
     override fun applyDeficits() {
         val structure = getStructure() ?: return
         if (!isUpkeepNegative()) return
-        structure.upkeep.modifyMult(getId(), mult)
+        structure.upkeep.modifyMult(getId(), mult, getNameForModifier())
     }
 
     override fun unapplyBenefits() {
@@ -52,5 +59,12 @@ class overgrownNanoforgeAlterUpkeepEffect(
 
     override fun delete() {
         unapply()
+    }
+
+    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
+        val list = ArrayList<String>()
+        if (positive && isUpkeepNegative()) return list
+        if (!positive && !isUpkeepNegative()) return list
+        return super.getAllFormattedEffects(positive)
     }
 }

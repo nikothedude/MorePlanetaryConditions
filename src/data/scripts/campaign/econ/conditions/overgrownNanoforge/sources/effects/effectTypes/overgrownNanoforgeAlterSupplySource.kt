@@ -1,13 +1,17 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
+import com.fs.starfarer.api.Global
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import kotlin.math.abs
 
 class overgrownNanoforgeAlterSupplySource(
     handler: overgrownNanoforgeHandler,
     val supply: MutableMap<String, Int> = HashMap()
 ): overgrownNanoforgeRandomizedEffect(handler) {
+
+    override val baseFormat: String = "Nanoforge supply $adjectiveChar by $changeChar"
 
     val negativeSupply: MutableMap<String, Int> = HashMap()
     val positiveSupply: MutableMap<String, Int> = HashMap()
@@ -88,5 +92,23 @@ class overgrownNanoforgeAlterSupplySource(
 
             structure.supply(getId(), commodityId, 0, getName())
         }
+    }
+
+    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
+        val effects = ArrayList<String>()
+        val toLoopThrough = if (positive) positiveSupply else negativeSupply
+
+        for (entry in toLoopThrough) {
+            val spec = Global.getSettings().getCommoditySpec(entry.key) ?: continue
+            val nameOfKey = spec.name
+            val modifiedFormat = "Nanoforge supply of $nameOfKey %b by %c"
+            effects += getFormattedEffect(modifiedFormat, positive, entry)
+        }
+        return effects
+    }
+
+    override fun getChange(positive: Boolean, vararg args: Any): String {
+        val pair = args[0] as MutableMap.MutableEntry<String, Int>
+        return "${abs(pair.value)}"
     }
 }

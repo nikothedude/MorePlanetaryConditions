@@ -6,6 +6,7 @@ import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
 
 class niko_MPC_overgrownNanoforgeRemovalScript(

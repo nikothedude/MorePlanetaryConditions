@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
+import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
@@ -26,7 +27,6 @@ class overgrownNanoforgeIndustryManipulationIntel(
 
     fun updateExposed() {
         updateFactors()
-        updateUI()
 
         if (!exposed) growthManipulation = 0f
     }
@@ -39,23 +39,20 @@ class overgrownNanoforgeIndustryManipulationIntel(
         return (exposed && super.playerCanManipulateGrowth())
     }
 
+    override fun getCantInteractWithInputReasons(): MutableSet<String> {
+        val reasons = super.getCantInteractWithInputReasons()
+
+        if (!exposed) reasons += "The nanoforge itself is protected by its growths, remove them first."
+
+        return reasons
+    }
+
     fun updateFactors() {
         addFactors()
     }
 
     override fun addCountermeasuresFactor() {
         addFactorWrapped(overgrownNanoforgeIndustryIntelCountermeasures(this))
-    }
-
-    override fun createCantInteractWithInputTooltip(): TooltipMakerAPI.TooltipCreator {
-        return object : BaseFactorTooltip() {
-            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
-                super.createTooltip(tooltip, expanded, tooltipParam)
-                if (tooltip == null) return
-
-                tooltip.addPara("The nanoforge itself is protected by its growths, remove them first.", 5f)
-            }
-        }
     }
 }
 

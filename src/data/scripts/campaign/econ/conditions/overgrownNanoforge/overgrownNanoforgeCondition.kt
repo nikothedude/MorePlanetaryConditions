@@ -4,8 +4,10 @@ import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.econ.MarketConditionAPI
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
 import com.thoughtworks.xstream.mapper.Mapper.Null
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
@@ -34,12 +36,13 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
         val ourMarket = getMarket() ?: return
         if (ourMarket.isDeserializing()) return
+
         applyConditions()
 
+        updateHandlerValues()
         if (ourMarket.shouldHaveOvergrownNanoforgeIndustry()) {
             ourMarket.addIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId)
         }
-        updateHandlerValues()
     }
 
     private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
@@ -52,7 +55,11 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
         val handler = getHandlerWithUpdate()
 
-        if (handler?.market?.isDeserializing() != false) return
+        if (handler?.market?.isDeserializing() != false) return // if it is deserializing, return
+
+        if (market.getOvergrownNanoforgeIndustryHandler() == null) {
+            Global.getSector().campaignUI.addMessage("it happened")
+        }
 
         handler.market = this.market
     }
@@ -71,7 +78,8 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
     override fun delete() {
         super.delete()
         val ourMarket = getMarket() ?: return
-        ourMarket.purgeOvergrownNanoforgeBuildings()
+ //       ourMarket.purgeOvergrownNanoforgeBuildings()
+        // disabling experimentally to see if this will fix a commoddification error
 
         getHandler()?.delete()
         //TODO()
@@ -79,8 +87,21 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI?, expanded: Boolean) {
         super.createTooltipAfterDescription(tooltip, expanded)
+        if (tooltip == null) return
+
+        val handler = getHandlerWithUpdate() ?: return
+        val growthNum = handler.junkHandlers.size
+        val s = if (growthNum > 1) "s" else ""
+        var spreadingOrNot = if (handler.isSpreading()) ", one of which is currently spreading" else ""
+        tooltip.addPara("${market.name} currently has %s growth$s$spreadingOrNot.", 5f, Misc.getHighlightColor(), "$growthNum")
+        //"...currently has x growth(s)[, one of which is currently spreading].
+
+        tooltip.addPara("Further details, such as purpose of the growths, or the traits of the nanoforge, are not determinable " +
+                "without establishing a long-term prescense such as a colony.", 5f)
         //TODO()
     }
+
+
 
     fun getHandler(): overgrownNanoforgeIndustryHandler? {
         return market.getOvergrownNanoforgeIndustryHandler()

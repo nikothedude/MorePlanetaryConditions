@@ -66,8 +66,8 @@ enum class overgrownNanoforgeEffectPrototypes(
                     iterator.remove()
                     continue
                 }
-                val weight = overgrownNanoforgeCommodityDataStore.getWeightForCommodity(commodityId, nanoforge)
-                picker.add(commodityId, weight)
+                val weight = overgrownNanoforgeCommodityDataStore.getWeightForCommodity(commodityId, nanoforge, shouldInvert)
+                if (weight != 0f) picker.add(commodityId, weight)
             }
 
             var timesToPick = getTimesToPickCommodities(nanoforge, maxBudget, picker)
@@ -83,6 +83,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             val effect = overgrownNanoforgeAlterSupplySource(nanoforge, themeToScore)
             return effect
         }
+
         private fun getTimesToPickCommodities(nanoforge: overgrownNanoforgeIndustryHandler, availableBudget: Float, picker: WeightedRandomPicker<String>): Int {
             var times: Int = OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
             val threshold = 0.7f
@@ -91,8 +92,8 @@ enum class overgrownNanoforgeEffectPrototypes(
             return times.coerceAtMost(picker.items.size)
         }
     },
-        ALTER_UPKEEP(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
-            override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 10f
+        /*ALTER_UPKEEP(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
+            override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0f //TODO: disabled
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCostPerPointOneIncrement(nanoforge) //TODO: this is bad
             fun getCostPerPointOneIncrement(nanoforge: overgrownNanoforgeIndustryHandler): Float = 25f
             
@@ -109,8 +110,8 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return overgrownNanoforgeAlterUpkeepEffect(nanoforge, mult)
             }
 
-        },
-        ALTER_ACCESSIBILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
+        },*/
+        ALTER_ACCESSIBILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 10f
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCostPerOnePercentAccessability(nanoforge)
             fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeIndustryHandler): Float = 5f
@@ -124,7 +125,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 var remainingBudget = maxBudget.absoluteValue
                 var increment = 0f
                 while (canAfford(nanoforge, remainingBudget)) {
-                    increment++
+                    increment += 0.01f
                     val cost = getCostPerOnePercentAccessability(nanoforge)
                     remainingBudget -= cost
                 }
@@ -157,7 +158,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 var remainingBudget = maxBudget.absoluteValue
                 var increment = 0f
                 while (canAfford(nanoforge, remainingBudget)) {
-                    increment++
+                    increment += 0.01f
                     val cost = getCostPerOneDefenseRating(nanoforge)
                     remainingBudget -= cost
                 }
@@ -167,8 +168,8 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
         },
 
-        ALTER_STABILITY(setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)) {
-            fun getCostPerStability(nanoforge: overgrownNanoforgeIndustryHandler): Float = 25f
+        ALTER_STABILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
+            fun getCostPerStability(nanoforge: overgrownNanoforgeIndustryHandler): Float = 60f
 
             override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float {
                 val weight = 20f
@@ -203,8 +204,8 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return timesToIncrement
             }
         },
-        ALTER_HAZARD(setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)) {
-            override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 5f
+        ALTER_HAZARD(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
+            override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0.5f
 
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float {
                 return getCostPerOnePercent(nanoforge)
@@ -216,7 +217,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 nanoforge: overgrownNanoforgeIndustryHandler,
                 maxBudget: Float
             ): overgrownNanoforgeAlterHazardEffect? {
-                if (!canAfford(nanoforge, maxBudget)) return null
+                if (!canAfford(nanoforge, maxBudget)) return null //worth noting: positive alterations should return a NEGATIVE value
                 val shouldInvert = maxBudget < 0
                 var maxBudget = maxBudget.absoluteValue
                 var instance: overgrownNanoforgeAlterHazardEffect? = null
@@ -233,7 +234,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 while (canAfford(nanoforge, availableBudget)) {
                     val cost = getCostPerOnePercent(nanoforge)
                     availableBudget -= cost
-                    timesToIncrement++
+                    timesToIncrement -= 0.01f
                 }
                 return timesToIncrement
             }

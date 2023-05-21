@@ -7,8 +7,11 @@ import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.COMMAND_TAG_SCORE
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.GROUND_DEFENSES_TAG_SCORE
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.MILITARY_TAG_SCORE
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.PATROL_TAG_SCORE
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.POPULATION_ANCHOR
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.POPULATION_INCREMENT
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.STABILITY_ANCHOR
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasonsVariables.STABILITY_DIFFERENCE_INCREMENT
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
@@ -18,6 +21,10 @@ import java.util.*
 import kotlin.collections.HashMap
 
 object cullingStrengthReasonsVariables{
+
+    const val POPULATION_ANCHOR = 2
+    const val POPULATION_INCREMENT = 35
+
     const val STABILITY_ANCHOR = 8
 
     const val STABILITY_DIFFERENCE_INCREMENT = 15f
@@ -25,6 +32,8 @@ object cullingStrengthReasonsVariables{
     const val PATROL_TAG_SCORE = 50f
     const val MILITARY_TAG_SCORE = 80f
     const val COMMAND_TAG_SCORE = 120f
+
+    const val GROUND_DEFENSES_TAG_SCORE = 50f
 }
 
 enum class cullingStrengthReasons {
@@ -43,6 +52,25 @@ enum class cullingStrengthReasons {
             return 0f
         }
     }, */
+    POPULATION {
+        override fun getName(): String = "Population"
+
+        override fun getDesc(): String {
+            return "For each level of population above $POPULATION_ANCHOR, culling strength will increase by $POPULATION_INCREMENT."
+        }
+
+        override fun getScoreForMarket(market: MarketAPI): Float {
+            val anchor = POPULATION_ANCHOR
+            val stepsAbove = market.size - anchor
+            if (stepsAbove <= 0) return 0f
+
+            return (stepsAbove * POPULATION_INCREMENT).toFloat()
+        }
+
+        override fun getBaseColor(): Color {
+            return Misc.getPositiveHighlightColor()
+        }
+    },
     STABILITY {
         override fun getDesc(): String {
             return "For each point of stability above or below ${STABILITY_ANCHOR}, culling strength will increase " +
@@ -58,6 +86,7 @@ enum class cullingStrengthReasons {
         override fun getBaseColor(): Color = Misc.getHighlightColor()
     },
     GROUND_FORCE_PRESENCE {
+        val itemInstalledMult: Float = 1.3f
         val tagMap = HashMap<String, Float>()
         val coreMap = HashMap<String, Float>()
         val improvementMult = 1.2f
@@ -65,6 +94,8 @@ enum class cullingStrengthReasons {
             tagMap[Industries.TAG_PATROL] = PATROL_TAG_SCORE
             tagMap[Industries.TAG_MILITARY] = MILITARY_TAG_SCORE
             tagMap[Industries.TAG_COMMAND] = COMMAND_TAG_SCORE
+
+            tagMap[Industries.TAG_GROUNDDEFENSES] = GROUND_DEFENSES_TAG_SCORE
 
             coreMap[Commodities.ALPHA_CORE] = 1.5f
             coreMap[Commodities.BETA_CORE] = 1.3f
@@ -92,6 +123,8 @@ enum class cullingStrengthReasons {
                 if (industry.isImproved) totalMult += improvementMult - 1
                 coreMap[industry.aiCoreId]?.let { totalMult += it - 1 }
 
+                if (industry.specialItem != null) totalMult += itemInstalledMult
+
                 val finalScore = industryScore * totalMult
 
                 totalScore += finalScore
@@ -102,8 +135,10 @@ enum class cullingStrengthReasons {
         override fun getSpecificInfo(): String {
             return "Patrol HQs, Military Bases, and High Commands increase score by " +
                     "${tagMap[Industries.TAG_PATROL]}, ${tagMap[Industries.TAG_MILITARY]}, and ${tagMap[Industries.TAG_COMMAND]} respectively." +
+                    "\nGround defenses and heavy batteries also increase score by ${tagMap[Industries.TAG_GROUNDDEFENSES]}." +
                     "\n     When improved: Contribution multiplied by $improvementMult." +
-                    "\n     When a AI core is installed, Contribution multiplied by ${coreMap[Commodities.GAMMA_CORE]}, ${coreMap[Commodities.BETA_CORE]}, and ${coreMap[Commodities.ALPHA_CORE]} respectively." +
+                    "\n     When a AI core is installed, contribution is multiplied by ${coreMap[Commodities.GAMMA_CORE]}, ${coreMap[Commodities.BETA_CORE]}, and ${coreMap[Commodities.ALPHA_CORE]} respectively." +
+                    "\n     If a special item is installed, contribution is multipled by $itemInstalledMult." +
                     "\nModded industries, provided they are tagged correctly, will also contribute to this score."
         }
     },

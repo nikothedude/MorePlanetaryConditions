@@ -6,15 +6,19 @@ Refactor satellites to follow overgrown nanoforge architecture
 
 improve satellite overclock ai, its too eager to attack at close range and too hesitant to use at long
 
-please fucking improve the advancement alteration shit thats wacky as fuck
-
 Figure out why sync check failures are happening with null new markets
 
 Make the volatile effect print out an intel report detailing damages
 
 Finish overgrown intel
 
-Refactor junk spreader to just be a little saner (sane at fucking all my god what is this code)
+Improve effects, for some reason alter supply isnt being done with negatives,w eirdly enough
+
+HIGH PRIORITY {
+
+FUCKING TEST THE CHANGES TO TACTICALAI MODULE IN FUCKING CAMPAIGN PLUGIN HOLY SHIT
+
+}
 
 IN PROGRESS 
 

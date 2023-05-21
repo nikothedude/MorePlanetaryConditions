@@ -72,11 +72,11 @@ object niko_MPC_mathUtils {
         getMin: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _, -> if (budget <= 0) budget else 0f},
         getMax: (budget: Float, remainingRuns: Int, entry: T) -> Float = { budget, _, _ -> if (budget > 0) budget else 0f },
         modifyScoreForMap: (budget: Float, entry: T) -> Float = { budget, _ -> budget.coerceAtLeast(0f) }
-    ): MutableMap<T, Float> {
+    ): HashMap<T, Float> {
 
         var remainingScore = remainingScore
         var remainingRuns = entries.size
-        val entriesToScore: MutableMap<T, Float> = HashMap()
+        val entriesToScore: HashMap<T, Float> = HashMap()
         for (entry in entries) {
             remainingRuns--
             if (remainingScore <= 0) {

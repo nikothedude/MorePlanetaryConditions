@@ -10,6 +10,8 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
+import data.scripts.campaign.listeners.niko_MPC_interationDialogShownListener
+import data.scripts.campaign.listeners.niko_MPC_pickFleetAIListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -56,6 +58,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
+        Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
+        Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())
+        Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
@@ -78,7 +83,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             generatePredefinedSatellites()
         }
         clearNanoforgesFromCoreWorlds()
-        Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
     }
 
     private fun clearNanoforgesFromCoreWorlds() {

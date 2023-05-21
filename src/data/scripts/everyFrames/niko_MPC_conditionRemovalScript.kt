@@ -38,7 +38,10 @@ abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, v
             }
             return false
         }
-        return (entity != null && (entity.isExpired || entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)) || !market.hasCondition(conditionId))
+        return (entity != null && (entity.isExpired
+                || entity.hasTag(Tags.FADING_OUT_AND_EXPIRING)
+                || market != entity.market) //happens far less than youd think tbqh due to loose equality
+                || !market.hasCondition(conditionId))
     }
 
     override fun start() {

@@ -49,6 +49,16 @@ class overgrownNanoforgeVolatileEffect(
         super.delete()
     }
 
+    override val baseFormat: String = "whatever"
+
+    override fun getChange(positive: Boolean, vararg args: Any): String {
+        return ""
+    }
+
+    override fun getFormattedEffect(format: String, positive: Boolean, vararg args: Any): String {
+        return "If this structure is culled, it will explode violently and damage other structures"
+    }
+
     private fun Industry.isValidTarget(): Boolean {
         return (!this.isJunkStructure())
     }
