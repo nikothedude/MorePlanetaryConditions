@@ -3,12 +3,13 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterStabilityEffect(
     handler: overgrownNanoforgeHandler,
-    val increment: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
+    val increment: Float, source: overgrownNanoforgeEffectSource
+): overgrownNanoforgeRandomizedEffect(handler, source) {
 
     override val baseFormat: String = "Market stability $adjectiveChar by $changeChar"
     override fun getChange(positive: Boolean, vararg args: Any): String {

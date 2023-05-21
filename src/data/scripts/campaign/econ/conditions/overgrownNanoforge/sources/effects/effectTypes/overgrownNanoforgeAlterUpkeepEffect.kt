@@ -3,12 +3,13 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterUpkeepEffect(
     handler: overgrownNanoforgeHandler,
-    val mult: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
+    val mult: Float, source: overgrownNanoforgeEffectSource
+): overgrownNanoforgeRandomizedEffect(handler, source) {
 
     override val baseFormat: String = "Nanoforge upkeep $adjectiveChar by $changeChar"
     override fun getChange(positive: Boolean, vararg args: Any): String {

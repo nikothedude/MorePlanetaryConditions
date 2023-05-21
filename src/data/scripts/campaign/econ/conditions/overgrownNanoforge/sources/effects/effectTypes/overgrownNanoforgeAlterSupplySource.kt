@@ -4,12 +4,13 @@ import com.fs.starfarer.api.Global
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterSupplySource(
     handler: overgrownNanoforgeHandler,
-    val supply: MutableMap<String, Int> = HashMap()
-): overgrownNanoforgeRandomizedEffect(handler) {
+    val supply: MutableMap<String, Int> = HashMap(), source: overgrownNanoforgeEffectSource
+): overgrownNanoforgeRandomizedEffect(handler, source) {
 
     override val baseFormat: String = "Nanoforge supply $adjectiveChar by $changeChar"
 

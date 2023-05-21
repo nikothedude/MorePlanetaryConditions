@@ -14,6 +14,7 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.ai.ModularFleetAI
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener
 import data.scripts.everyFrames.*

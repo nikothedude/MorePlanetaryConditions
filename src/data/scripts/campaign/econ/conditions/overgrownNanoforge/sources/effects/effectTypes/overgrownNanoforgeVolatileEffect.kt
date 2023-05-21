@@ -4,13 +4,14 @@ import com.fs.starfarer.api.campaign.econ.Industry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_marketUtils.getVisibleIndustries
 import data.utilities.niko_MPC_marketUtils.isJunkStructure
 import data.utilities.niko_MPC_settings.VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT
 
 class overgrownNanoforgeVolatileEffect(
-    handler: overgrownNanoforgeHandler
-): overgrownNanoforgeRandomizedEffect(handler) {
+    handler: overgrownNanoforgeHandler, source: overgrownNanoforgeEffectSource
+): overgrownNanoforgeRandomizedEffect(handler, source) {
 
     companion object {
         const val VOLATILE_EXPLOSION_DURATION = 90f

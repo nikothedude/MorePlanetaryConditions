@@ -10,6 +10,7 @@ import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_satelliteUtils.getConditionLinkedHandler
 import data.utilities.niko_MPC_satelliteUtils.hasSatelliteHandler
 import data.utilities.niko_MPC_satelliteUtils.setConditionLinkedHandler
@@ -39,7 +40,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         val ourMarket = getMarket() ?: return
         val ourEntity: SectorEntityToken? = ourMarket.primaryEntity
 
-        val isValidTargetForHandler = (ourMarket.id != "fake_Colonize") // markets made during loading have null tags
+        val isValidTargetForHandler = (!ourMarket.isDeserializing() && ourMarket.id != "fake_Colonize") // markets made during loading have null tags
         if (isValidTargetForHandler) {
             val satelliteHandler: niko_MPC_satelliteHandlerCore? = getHandlerWithUpdate()
             // DO NOT REMOVE THIS NULLCHECK THIS PREVENTS THE HANDLER BEING ACCESSED BEFORE ITS DESERIALIZED!!!!

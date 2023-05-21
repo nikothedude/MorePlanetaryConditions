@@ -13,6 +13,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
+import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
@@ -159,6 +160,8 @@ class overgrownNanoforgeIndustryHandler(
         for (ourJunk in junkHandlers.toMutableSet()) {
             ourJunk.delete()
         }
+
+        market.getOvergrownNanoforgeCondition()?.delete()
 
         return true
     }

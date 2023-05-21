@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
@@ -128,8 +127,7 @@ abstract class baseOvergrownNanoforgeIntel(
     }
 
     open fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        info.addPara("blah blah blah If progress is reverted to 0, the growth will be " +
-                "removed and the process will begin again.", 0f)
+        addTextAboveColonyMarker(info, width, stageId)
 
         val colonyMarker = addColonyMarkerAndMap(info)
         val strengthTable = addColonyCullingStrengthInfo(info, colonyMarker)
@@ -137,6 +135,12 @@ abstract class baseOvergrownNanoforgeIntel(
         info.addSpacer(10f)
 
         addSuppressionInfo(info, width, stageId, colonyMarker, strengthTable)
+    }
+
+    open fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        val marketName = getMarket().name
+        info.addPara("A Overgrown Nanoforge is present on $marketName, continuously spreading and enhancing it's own " +
+                "output at the cost of the market's capabilities.", 5f)
     }
 
     init {
@@ -312,6 +316,18 @@ abstract class baseOvergrownNanoforgeIntel(
             20f,
             Misc.getBasePlayerColor()
         )
+        info.addTooltipToPrevious(object : BaseFactorTooltip() {
+            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                super.createTooltip(tooltip, expanded, tooltipParam)
+                if (tooltip == null) return
+
+                val standardMult = (OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT * 0.1f)
+                val extraMult = (OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT * 0.1f)
+
+                tooltip.addPara("This statistic represents how much culling strength has been used, overall.", 2f)
+                tooltip.addPara("The local manipulation is limited to the absolute maximum allowed value minus this.", 5f)
+            }
+        }, TooltipLocation.BELOW)
         overallManipulationMeter = WeakReference(overallSuppressionBarLocalVal)
         overallSuppressionBarLocalVal.changePrefix("Overall growth manipulation percent: ")
         overallSuppressionBarLocalVal.position.belowLeft(intensityProgressBarLocalVal.elementPanel, 5f)

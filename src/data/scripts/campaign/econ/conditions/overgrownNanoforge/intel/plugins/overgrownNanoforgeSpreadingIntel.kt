@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
@@ -35,6 +36,16 @@ class overgrownNanoforgeSpreadingIntel(
 
     override fun initializeProgress() {
         setProgress(0)
+    }
+
+    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addTextAboveColonyMarker(info, width, stageId)
+
+        info.addPara("This panel represents the nanoforge's constant attempts at spreading. When progress reaches %s, " +
+                "a %s will begin, spawning a new intel panel representing a %s.", 5f,
+            Misc.getHighlightColor(), "max", "new spreading attempt", "growth in progress")
+        info.addPara("Keeping progress locked at %s is, while expensive, %s at %s.", 5f,
+            Misc.getHighlightColor(), "0%", "effective", "suppressing the nanoforge")
     }
 
     fun startPreparingToSpread() {
@@ -108,7 +119,7 @@ class overgrownNanoforgePrepareGrowthFactor(
     }
 
     override fun getDesc(intel: BaseEventIntel?): String {
-        return "awdhjuwad"
+        return "The Overgrown Nanoforge on ${getMarket().name} is preparing for a growth at a rate of ${getProgress(overgrownIntel)} per month."
     }
 
     override fun getProgressColor(intel: BaseEventIntel?): Color {

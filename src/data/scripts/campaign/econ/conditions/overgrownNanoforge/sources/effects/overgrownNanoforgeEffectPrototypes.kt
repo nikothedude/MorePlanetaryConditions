@@ -158,7 +158,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 var remainingBudget = maxBudget.absoluteValue
                 var increment = 0f
                 while (canAfford(nanoforge, remainingBudget)) {
-                    increment += 0.01f
+                    increment += 1f
                     val cost = getCostPerOneDefenseRating(nanoforge)
                     remainingBudget -= cost
                 }
@@ -211,7 +211,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return getCostPerOnePercent(nanoforge)
             }
 
-            fun getCostPerOnePercent(nanoforge: overgrownNanoforgeIndustryHandler): Float = 20f
+            fun getCostPerOnePercent(nanoforge: overgrownNanoforgeIndustryHandler): Float = 2f
 
             override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustryHandler,
@@ -222,7 +222,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 var maxBudget = maxBudget.absoluteValue
                 var instance: overgrownNanoforgeAlterHazardEffect? = null
                 var hazardIncrement = getTimesToIncrement(nanoforge, maxBudget)
-                if (shouldInvert) hazardIncrement = -hazardIncrement.absoluteValue
+                if (shouldInvert) hazardIncrement = -(hazardIncrement)
                 if (hazardIncrement != 0f) instance = overgrownNanoforgeAlterHazardEffect(nanoforge, hazardIncrement)
 
                 return instance

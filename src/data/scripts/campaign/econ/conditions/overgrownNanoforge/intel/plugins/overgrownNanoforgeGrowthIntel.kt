@@ -152,6 +152,14 @@ class overgrownNanoforgeGrowthIntel(
         return "Growth on ${getMarket().name}"
     }
 
+    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addTextAboveColonyMarker(info, width, stageId)
+
+        info.addPara("This specific ${ourHandler.getCurrentName()} is %s and is %s. As such, its" +
+                " abilities and characteristics are %s, and they will %s until it is %s.", 5f,
+        Misc.getHighlightColor(), "not established", "still growing", "unknown", "not take effect", "fully grown")
+    }
+
     override fun culled() {
         super.culled()
 

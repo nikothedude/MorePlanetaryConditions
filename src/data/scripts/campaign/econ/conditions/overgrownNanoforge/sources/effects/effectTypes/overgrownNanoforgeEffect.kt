@@ -4,10 +4,12 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 
 abstract class overgrownNanoforgeEffect(
-    val handler: overgrownNanoforgeHandler
+    val handler: overgrownNanoforgeHandler,
+    val id: overgrownNanoforgeEffectSource
 ): simpleFormat {
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories

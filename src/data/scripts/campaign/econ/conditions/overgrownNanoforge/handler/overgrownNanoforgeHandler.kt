@@ -6,6 +6,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.ba
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
@@ -13,6 +14,8 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE_REGEN
+import org.apache.log4j.Level
+import org.apache.log4j.Priority
 import org.lazywizard.lazylib.MathUtils
 
 /* The structure that creates this isnt guranteed to exist, this class exists to store data between decivs and shit so it's "consistant" */
@@ -161,13 +164,15 @@ abstract class overgrownNanoforgeHandler(
 
     protected open fun createStructure() {
         val newStructureId = getNewStructureId()
+        if (newStructureId == null) {
+            niko_MPC_debugUtils.log.log(Level.ERROR, "remove this message later")
+        }
         market.addIndustry(newStructureId)
         currentStructureId = newStructureId
     }
 
     open fun removeStructure() {
-        market.removeIndustry(currentStructureId, null, false)
-        currentStructureId = null
+        getStructure()?.delete()
     }
 
     fun getFormattedPositives(): String {

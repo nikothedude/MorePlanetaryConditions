@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.comms.v2.EventsPanel
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
@@ -43,8 +44,9 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
     }
 
     override fun delete() {
-        val handler = getHandlerWithUpdate()
-        handler?.delete()
+        super.delete()
+        getHandler()?.unapply()
+        getHandler()?.currentStructureId = null
     }
 
     override fun canUpgrade(): Boolean {
@@ -123,12 +125,13 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         val negatives = handler.getFormattedNegatives()
 
         if (positives.isNotEmpty()) {
-            tooltip.addSectionHeading("Positives", Alignment.MID, 5f)
-            tooltip.addPara(positives, 20f)
+            tooltip.addSpacer(5f)
+            tooltip.addSectionHeading("Positives", Alignment.MID, 0f)
+            tooltip.addPara(positives, 5f)
         }
         if (negatives.isNotEmpty()) {
             tooltip.addSectionHeading("Negatives", Alignment.MID, 5f)
-            tooltip.addPara(negatives, 20f)
+            tooltip.addPara(negatives, 5f)
         }
     }
 
@@ -157,6 +160,6 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         val handler = getHandlerWithUpdate() ?: return
         val intel = handler.manipulationIntel ?: return
         Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
-        Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
+       // Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
     }
 }

@@ -9,6 +9,12 @@ class overgrownNanoforgeAlterHazardEffect(
     handler: overgrownNanoforgeHandler,
     val increment: Float
 ): overgrownNanoforgeRandomizedEffect(handler) {
+
+    override val negativeAdjective: String
+        get() = "increased"
+    override val positiveAdjective: String
+        get() = "decreased"
+
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         if (!hazardIsNegative()) return overgrownNanoforgeEffectCategories.DEFICIT else return overgrownNanoforgeEffectCategories.BENEFIT
     }

@@ -7,13 +7,8 @@ import com.fs.starfarer.api.ui.UIComponentAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorStructureRegeneration
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
-import org.lazywizard.lazylib.MathUtils
 import kotlin.math.max
 
 open class baseOvergrownNanoforgeManipulationIntel(
@@ -47,11 +42,19 @@ open class baseOvergrownNanoforgeManipulationIntel(
         addParamsInfo(info, width, stageId)
     }
 
+    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addTextAboveColonyMarker(info, width, stageId)
+
+        info.addPara("This panel represents the integrity/growth status of a specific growth.", 5f)
+        info.addPara("If the ${ourHandler.getCurrentName()}'s integrity reaches %s, it will be %s.", 5f,
+            Misc.getHighlightColor(), "zero", "removed from the market")
+    }
+
     open fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
         val positiveEffects: String = getFormattedPositives()
         val negativeEffects: String = getFormattedNegatives()
-        val positiveWidth = info.computeStringWidth(positiveEffects) * 1.2f
-        val negativeWidth = info.computeStringWidth(negativeEffects) * 1.2f
+        val positiveWidth = (info.computeStringWidth(positiveEffects)) + 30f
+        val negativeWidth = (info.computeStringWidth(negativeEffects)) + 30f
         val sizePerEffect = 15f
         val size = (sizePerEffect * (max(positiveEffects.lines().size, negativeEffects.lines().size)))
         info.beginTable(
@@ -109,6 +112,10 @@ open class baseOvergrownNanoforgeManipulationIntel(
 
     override fun getName(): String {
         return "${ourHandler.getCurrentName()} on ${getMarket().name}"
+    }
+
+    override fun notifyPlayerAboutToOpenIntelScreen() {
+        super.notifyPlayerAboutToOpenIntelScreen()
     }
 }
 
