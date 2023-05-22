@@ -6,8 +6,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overg
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 
 abstract class overgrownNanoforgeRandomizedEffect(
-    handler: overgrownNanoforgeHandler, source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeEffect(handler, source) {
+    handler: overgrownNanoforgeHandler
+): overgrownNanoforgeEffect(handler) {
 
 
 }

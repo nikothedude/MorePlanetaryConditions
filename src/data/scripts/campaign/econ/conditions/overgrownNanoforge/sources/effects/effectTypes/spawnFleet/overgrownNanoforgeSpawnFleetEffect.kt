@@ -7,8 +7,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overg
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 
 class overgrownNanoforgeSpawnFleetEffect(
-    nanoforgeHandler: overgrownNanoforgeIndustryHandler, source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeRandomizedEffect(nanoforgeHandler, source) {
+    nanoforgeHandler: overgrownNanoforgeIndustryHandler
+): overgrownNanoforgeRandomizedEffect(nanoforgeHandler) {
     val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(this)
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {

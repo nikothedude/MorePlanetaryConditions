@@ -268,8 +268,8 @@ class overgrownNanoforgeIndustryHandler(
     }
 
     override fun createManipulationIntel(): overgrownNanoforgeIndustryManipulationIntel {
-        val intel = overgrownNanoforgeIndustryManipulationIntel(intelBrain, this, intelBrain.hidden)
-        intel.init()
+        val intel = overgrownNanoforgeIndustryManipulationIntel(intelBrain, this)
+        intel.init(intelBrain.hidden)
         return intel
     }
 

@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
@@ -22,16 +23,11 @@ import kotlin.math.roundToInt
 
 class overgrownNanoforgeSpreadingIntel(
     brain: overgrownNanoforgeSpreadingBrain,
-    hidden: Boolean = true,
-) : baseOvergrownNanoforgeIntel(brain, hidden) {
+) : baseOvergrownNanoforgeIntel(brain) {
 
 
     fun getTimeTilNextSpread(): Int {
         return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
-    }
-
-    override fun init() {
-        super.init()
     }
 
     override fun initializeProgress() {
@@ -64,6 +60,8 @@ class overgrownNanoforgeSpreadingIntel(
     fun stopPreparing() {
         Global.getSector().intelManager.removeIntel(this)
         removeFactorOfClass(overgrownNanoforgePrepareGrowthFactor::class.java as Class<EventFactor>)
+
+        growthManipulation = 0f
 /*        val iterator = stages.iterator()
         while (iterator.hasNext()) {
             val stage = iterator.next().id
@@ -89,7 +87,7 @@ class overgrownNanoforgeStartSpreadStage(override val intel: overgrownNanoforgeS
     : overgrownNanoforgeIntelStage(intel) {
 
     override fun getName(): String = "Spread starts"
-    override fun getDesc(): String = "et9iujpafwuijo"
+    override fun getDesc(): String = "Growth begins, creating a new growth that must be culled or cultivated."
 
     override fun stageReached() {
         intel.startSpreading()
@@ -119,7 +117,19 @@ class overgrownNanoforgePrepareGrowthFactor(
     }
 
     override fun getDesc(intel: BaseEventIntel?): String {
-        return "The Overgrown Nanoforge on ${getMarket().name} is preparing for a growth at a rate of ${getProgress(overgrownIntel)} per month."
+        return "Spreading preparation"
+    }
+
+    override fun createTooltip(): BaseFactorTooltip {
+        return object : BaseFactorTooltip() {
+            override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                if (tooltip == null) return
+                val opad = 10f
+
+                val stringToAdd = "The Overgrown Nanoforge on ${getMarket().name} is preparing for a growth at a rate of ${getProgress(overgrownIntel)} per month."
+                tooltip.addPara(stringToAdd, opad)
+            }
+        }
     }
 
     override fun getProgressColor(intel: BaseEventIntel?): Color {

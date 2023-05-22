@@ -2,7 +2,6 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterHazardEffect(
@@ -33,22 +32,22 @@ class overgrownNanoforgeAlterHazardEffect(
 
     override fun applyBenefits() {
         if (!hazardIsNegative()) return
-        getMarket().hazard.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().hazard.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun applyDeficits() {
         if (hazardIsNegative()) return
-        getMarket().hazard.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().hazard.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun unapplyBenefits() {
         if (hazardIsNegative()) return
-        getMarket().hazard.unmodifyFlat(getId())
+        getMarket().hazard.unmodifyFlat(getOurId())
     }
 
     override fun unapplyDeficits() {
         if (!hazardIsNegative()) return
-        getMarket().hazard.unmodifyFlat(getId())
+        getMarket().hazard.unmodifyFlat(getOurId())
     }
 
     override val baseFormat: String = "Market hazard $adjectiveChar by $changeChar"

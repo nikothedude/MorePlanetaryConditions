@@ -13,8 +13,7 @@ import java.awt.Color
 class overgrownNanoforgeIndustryManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
     override val ourHandler: overgrownNanoforgeIndustryHandler,
-    hidden: Boolean = true,
-): baseOvergrownNanoforgeManipulationIntel(brain, ourHandler, hidden) {
+): baseOvergrownNanoforgeManipulationIntel(brain, ourHandler) {
 
     var exposed: Boolean = false
         set(value) {

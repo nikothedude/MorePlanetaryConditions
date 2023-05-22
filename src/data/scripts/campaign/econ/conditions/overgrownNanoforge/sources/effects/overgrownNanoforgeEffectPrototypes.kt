@@ -114,7 +114,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         ALTER_ACCESSIBILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 10f
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCostPerOnePercentAccessability(nanoforge)
-            fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeIndustryHandler): Float = 5f
+            fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeIndustryHandler): Float = 2f
             
             override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustryHandler,
@@ -147,7 +147,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return weight*mult
             }
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float = getCostPerOneDefenseRating(nanoforge)
-            fun getCostPerOneDefenseRating(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0.5f
+            fun getCostPerOneDefenseRating(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0.15f
             
             override fun getInstance(
                 nanoforge: overgrownNanoforgeIndustryHandler,

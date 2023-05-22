@@ -14,8 +14,7 @@ import kotlin.math.max
 open class baseOvergrownNanoforgeManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
     open val ourHandler: overgrownNanoforgeHandler,
-    hidden: Boolean = true,
-    ) : baseOvergrownNanoforgeIntel(brain, hidden) {
+    ) : baseOvergrownNanoforgeIntel(brain) {
 
     override fun addStartStage() {
         super.addStartStage()

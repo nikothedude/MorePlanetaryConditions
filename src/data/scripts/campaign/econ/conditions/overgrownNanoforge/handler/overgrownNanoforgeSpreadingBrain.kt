@@ -48,7 +48,7 @@ class overgrownNanoforgeSpreadingBrain(
     private fun getAllIntel(): MutableSet<baseOvergrownNanoforgeIntel> {
         val allIntel = HashSet<baseOvergrownNanoforgeIntel>()
         allIntel.addAll(intelInstances)
-        allIntel += spreadingIntel
+        spreadingIntel?.let { allIntel += it } //dont remove, order of initialization is fucked
         growthIntel?.let { allIntel += it }
 
         for (entry in getAllHandlers()) {
@@ -61,6 +61,7 @@ class overgrownNanoforgeSpreadingBrain(
         return (industryNanoforge.junkHandlers.toMutableSet() + industryNanoforge)
     }
 
+    val intelInstances: MutableSet<baseOvergrownNanoforgeManipulationIntel> = HashSet()
     val spreadingIntel: overgrownNanoforgeSpreadingIntel = createBaseSpreadingIntel()
     var growthIntel: overgrownNanoforgeGrowthIntel? = null
 
@@ -74,18 +75,14 @@ class overgrownNanoforgeSpreadingBrain(
             }
         }
 
-    init {
-        spreadingState.apply(this)
-    }
-
     private fun createBaseSpreadingIntel(): overgrownNanoforgeSpreadingIntel {
-        val intel = overgrownNanoforgeSpreadingIntel(this, hidden)
-        intel.init()
+        val intel = overgrownNanoforgeSpreadingIntel(this)
+        intel.init(hidden)
         return intel
     }
-    val intelInstances: MutableSet<baseOvergrownNanoforgeManipulationIntel> = HashSet()
 
     fun init() {
+        spreadingState.apply(this)
         Global.getSector().listenerManager.addListener(this, false)
     }
 
@@ -101,8 +98,8 @@ class overgrownNanoforgeSpreadingBrain(
     }
 
     fun createNewGrowthIntel(params: overgrownSpreadingParams): overgrownNanoforgeGrowthIntel {
-        val intel = overgrownNanoforgeGrowthIntel(this, params.handler, params, hidden)
-        intel.init()
+        val intel = overgrownNanoforgeGrowthIntel(this, params.handler, params)
+        intel.init(hidden)
         return intel
     }
 
@@ -114,7 +111,7 @@ class overgrownNanoforgeSpreadingBrain(
 
     fun createHandlerForParams(): overgrownNanoforgeJunkHandler? {
         val designation = getMarket().getNextOvergrownJunkDesignation() ?: return null
-        val newHandler = overgrownNanoforgeJunkHandler(getMarket(), industryNanoforge, designation)
+        val newHandler = overgrownNanoforgeJunkHandler(getMarket(), industryNanoforge, designation, true)
         return newHandler
     }
 

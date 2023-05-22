@@ -29,7 +29,12 @@ class overgrownSpreadingParams(
             field = value
         }
 
+    init {
+        nameKnown = ourIndustryTarget == null
+    }
+
     fun getIndustryName(): String {
+        if (ourIndustryTarget == null) return "None"
         if (nameKnown) return ourIndustryTarget?.currentName ?: "None"
 
         return "Unknown"
@@ -90,7 +95,9 @@ class overgrownSpreadingParams(
     }
 
     fun updateIndustryTarget() {
-        if (shouldRetarget()) ourIndustryTarget = getIndustryTarget()
+        if (shouldRetarget())  {
+            ourIndustryTarget = getIndustryTarget()
+        }
     }
 
     private fun shouldRetarget(): Boolean {

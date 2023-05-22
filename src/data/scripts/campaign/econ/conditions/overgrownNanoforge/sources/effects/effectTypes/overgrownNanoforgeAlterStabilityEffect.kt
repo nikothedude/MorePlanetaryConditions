@@ -2,14 +2,12 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterStabilityEffect(
     handler: overgrownNanoforgeHandler,
-    val increment: Float, source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeRandomizedEffect(handler, source) {
+    val increment: Float
+): overgrownNanoforgeRandomizedEffect(handler) {
 
     override val baseFormat: String = "Market stability $adjectiveChar by $changeChar"
     override fun getChange(positive: Boolean, vararg args: Any): String {
@@ -42,22 +40,22 @@ class overgrownNanoforgeAlterStabilityEffect(
 
     override fun applyBenefits() {
         if (stabilityIsNegative()) return
-        getMarket().stability.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().stability.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun applyDeficits() {
         if (!stabilityIsNegative()) return
-        getMarket().stability.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().stability.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun unapplyBenefits() {
         if (stabilityIsNegative()) return
-        getMarket().stability.unmodifyFlat(getId())
+        getMarket().stability.unmodifyFlat(getOurId())
     }
 
     override fun unapplyDeficits() {
         if (!stabilityIsNegative()) return
-        getMarket().stability.unmodifyFlat(getId())
+        getMarket().stability.unmodifyFlat(getOurId())
     }
 
 }

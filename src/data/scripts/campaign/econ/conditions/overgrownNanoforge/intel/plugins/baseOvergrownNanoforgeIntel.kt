@@ -17,6 +17,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStr
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengths
 import data.scripts.campaign.intel.baseNikoEventIntelPlugin
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES
+import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES_MARKET
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT
@@ -30,7 +31,6 @@ import kotlin.math.roundToInt
 
 abstract class baseOvergrownNanoforgeIntel(
     val brain: overgrownNanoforgeSpreadingBrain,
-    hidden: Boolean = true
 ): baseNikoEventIntelPlugin() {
 
     protected var creditDeltaRemainder: Float = 0f
@@ -143,16 +143,13 @@ abstract class baseOvergrownNanoforgeIntel(
                 "output at the cost of the market's capabilities.", 5f)
     }
 
-    init {
-        isHidden = hidden
-    }
+    open fun init(hidden: Boolean = true) {
+        initializeProgress()
 
-    open fun init() {
         addStages()
         addFactors()
 
-        initializeProgress()
-
+        isHidden = hidden
         Global.getSector().intelManager.addIntel(this, true)
         uiUpdater = overgrownNanoforgeIntelInputScanner(this)
     }
@@ -189,6 +186,12 @@ abstract class baseOvergrownNanoforgeIntel(
             return factor.delete()
         }
         addFactor(factor)
+    }
+
+    override fun delete() {
+        super.delete()
+
+        growthManipulation = 0f
     }
 
     override fun notifyStageReached(stage: EventStageData?) {
@@ -500,6 +503,7 @@ abstract class baseOvergrownNanoforgeIntel(
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
         val tags = super.getIntelTags(map)
         tags += INTEL_OVERGROWN_NANOFORGES
+        tags += INTEL_OVERGROWN_NANOFORGES_MARKET + getMarket().name
         return tags
     }
 
@@ -549,5 +553,13 @@ abstract class baseOvergrownNanoforgeIntel(
 
     override fun getIcon(): String {
         return "graphics/icons/cargo/nanoforge_decayed.png"
+    }
+
+    override fun setHidden(hidden: Boolean) {
+        super.setHidden(hidden)
+
+        if (isHidden) {
+            growthManipulation = 0f
+        }
     }
 }

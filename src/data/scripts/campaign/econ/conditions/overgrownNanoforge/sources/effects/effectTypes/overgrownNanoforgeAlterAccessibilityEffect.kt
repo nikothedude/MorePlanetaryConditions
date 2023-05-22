@@ -1,15 +1,15 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
+import com.fs.starfarer.api.Global
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.utilities.niko_MPC_debugUtils.memKeyHasIncorrectType
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterAccessibilityEffect(
     handler: overgrownNanoforgeHandler,
-    val increment: Float, source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeRandomizedEffect(handler, source) {
+    val increment: Float
+): overgrownNanoforgeRandomizedEffect(handler) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         if (isAccessabilityNegative()) return overgrownNanoforgeEffectCategories.DEFICIT else return overgrownNanoforgeEffectCategories.BENEFIT
     }
@@ -31,22 +31,22 @@ class overgrownNanoforgeAlterAccessibilityEffect(
 
     override fun applyBenefits() {
         if (isAccessabilityNegative()) return
-        getMarket().accessibilityMod.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().accessibilityMod.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun applyDeficits() {
         if (!isAccessabilityNegative()) return
-        getMarket().accessibilityMod.modifyFlat(getId(), increment, getNameForModifier())
+        getMarket().accessibilityMod.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
     override fun unapplyBenefits() {
         if (isAccessabilityNegative()) return
-        getMarket().accessibilityMod.unmodifyFlat(getId())
+        getMarket().accessibilityMod.unmodifyFlat(getOurId())
     }
 
     override fun unapplyDeficits() {
         if (!isAccessabilityNegative()) return
-        getMarket().accessibilityMod.unmodifyFlat(getId())
+        getMarket().accessibilityMod.unmodifyFlat(getOurId())
     }
 
     override val baseFormat: String = "Market accessibility $adjectiveChar by $changeChar"

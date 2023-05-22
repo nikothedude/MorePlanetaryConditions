@@ -10,8 +10,8 @@ import data.utilities.niko_MPC_marketUtils.isJunkStructure
 import data.utilities.niko_MPC_settings.VOLATILE_EFFECT_INDUSTRIES_TO_DISRUPT
 
 class overgrownNanoforgeVolatileEffect(
-    handler: overgrownNanoforgeHandler, source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeRandomizedEffect(handler, source) {
+    handler: overgrownNanoforgeHandler
+): overgrownNanoforgeRandomizedEffect(handler) {
 
     companion object {
         const val VOLATILE_EXPLOSION_DURATION = 90f

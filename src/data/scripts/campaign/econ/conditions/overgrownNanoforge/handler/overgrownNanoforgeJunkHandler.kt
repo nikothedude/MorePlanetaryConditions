@@ -99,8 +99,8 @@ class overgrownNanoforgeJunkHandler(
     }
 
     override fun createManipulationIntel(): baseOvergrownNanoforgeManipulationIntel {
-        val intel = baseOvergrownNanoforgeManipulationIntel(getCoreHandler().intelBrain, this, getOurBrain().hidden)
-        intel.init()
+        val intel = baseOvergrownNanoforgeManipulationIntel(getCoreHandler().intelBrain, this)
+        intel.init(getOurBrain().hidden)
         return intel
     }
 

@@ -1,22 +1,27 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
+import org.lazywizard.lazylib.MathUtils
+import java.util.UUID
 
 abstract class overgrownNanoforgeEffect(
-    val handler: overgrownNanoforgeHandler,
-    val id: overgrownNanoforgeEffectSource
-): simpleFormat {
+    val handler: overgrownNanoforgeHandler): simpleFormat {
+
+    open var id: String = Misc.genUID()
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories
     abstract fun getName(): String
     abstract fun getDescription(): String
 
     open fun apply() {
+        //if (Global.getCurrentState() == GameState.TITLE) return //PLEASE WORK
         if (!getMarket().exceedsMaxStructures()) applyBenefits()
         applyDeficits()
     }
@@ -25,6 +30,7 @@ abstract class overgrownNanoforgeEffect(
     abstract fun applyDeficits()
 
     open fun unapply() {
+        //if (Global.getCurrentState() == GameState.TITLE) return //PLEASE WORK
         unapplyBenefits()
         unapplyDeficits()
     }
@@ -38,7 +44,7 @@ abstract class overgrownNanoforgeEffect(
 
     fun getMarket(): MarketAPI = handler.market
     fun getStructure(): baseOvergrownNanoforgeStructure? = handler.getStructure()
-    open fun getId(): String = this.toString()
+    open fun getOurId(): String = id
     open fun getNameForModifier(): String = "${handler.getCurrentName()}: ${getName()}"
 
     override fun getFormattedEffect(format: String, positive: Boolean, vararg args: Any): String {

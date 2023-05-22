@@ -14,11 +14,10 @@ Finish overgrown intel
 
 Improve effects, for some reason alter supply isnt being done with negatives,w eirdly enough
 
-HIGH PRIORITY {
+Figure out why growth intel and its handlers are having growing set to false and thus their shit gets added prematurely
 
-FUCKING TEST THE CHANGES TO TACTICALAI MODULE IN FUCKING CAMPAIGN PLUGIN HOLY SHIT
-
-}
+Overgrown intel in general needs a refactor, its too rigid
+Shit like addstage should be handled on the stage class itself, things just in general need a reordering to be less clumsy
 
 IN PROGRESS 
 

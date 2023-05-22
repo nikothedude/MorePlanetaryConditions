@@ -13,11 +13,11 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
     // Weight (Float)
     // Demand (HashMap of (Commodity ID (String) -> Ratio of demand to supply (Float)))
 
-    val supplyData = overgrownNanoforgeCommoditySetupData(Commodities.SUPPLIES, 35f, 20f, hashMapOf(Pair(Commodities.METALS, 0.25f), Pair(Commodities.ORGANICS, 0.2f), Pair(Commodities.HEAVY_MACHINERY, 0.5f)))
+    val supplyData = overgrownNanoforgeCommoditySetupData(Commodities.SUPPLIES, 25f, 10f, hashMapOf(Pair(Commodities.METALS, 0.25f), Pair(Commodities.ORGANICS, 0.2f), Pair(Commodities.HEAVY_MACHINERY, 0.5f)))
 
-    val metalData = overgrownNanoforgeCommoditySetupData(Commodities.METALS, 20f, 10f, hashMapOf(Pair(Commodities.ORE, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.1f)))
-    val rareMetalData = overgrownNanoforgeCommoditySetupData(Commodities.RARE_METALS, 30f, 5f, hashMapOf(Pair(Commodities.RARE_ORE, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
-    val machineryData = overgrownNanoforgeCommoditySetupData(Commodities.HEAVY_MACHINERY, 35f, 10f, hashMapOf(Pair(Commodities.METALS, 0.2f), Pair(Commodities.RARE_METALS, 0.08f)))
+    val metalData = overgrownNanoforgeCommoditySetupData(Commodities.METALS, 35f, 10f, hashMapOf(Pair(Commodities.ORE, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.1f)))
+    val rareMetalData = overgrownNanoforgeCommoditySetupData(Commodities.RARE_METALS, 40f, 5f, hashMapOf(Pair(Commodities.RARE_ORE, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
+    val machineryData = overgrownNanoforgeCommoditySetupData(Commodities.HEAVY_MACHINERY, 30f, 10f, hashMapOf(Pair(Commodities.METALS, 0.2f), Pair(Commodities.RARE_METALS, 0.08f)))
     val shipData = overgrownNanoforgeCommoditySetupData(Commodities.SHIPS, 30f, 2f, hashMapOf(Pair(Commodities.METALS, 0.5f), Pair(Commodities.RARE_METALS, 0.3f), Pair(Commodities.HEAVY_MACHINERY, 0.5f), Pair(Commodities.SUPPLIES, 0.4f)))
     val weaponsData = overgrownNanoforgeCommoditySetupData(Commodities.HAND_WEAPONS, 25f, 5f, hashMapOf(Pair(Commodities.METALS, 0.5f), Pair(Commodities.RARE_METALS, 0.4f), Pair(Commodities.HEAVY_MACHINERY, 0.5f)))
     val drugsData = overgrownNanoforgeCommoditySetupData(Commodities.DRUGS, 50f, 1f, hashMapOf(Pair(Commodities.ORGANICS, 0.5f)))
@@ -25,7 +25,7 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
     val luxuryGoodsData = overgrownNanoforgeCommoditySetupData(Commodities.LUXURY_GOODS, 17f, 2f, hashMapOf(Pair(Commodities.ORGANICS, 0.5f), Pair(Commodities.HEAVY_MACHINERY, 0.1f)))
     val fuelData = overgrownNanoforgeCommoditySetupData(Commodities.FUEL, 40f, 3f, hashMapOf(Pair(Commodities.VOLATILES, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
     val foodData = overgrownNanoforgeCommoditySetupData(Commodities.FOOD, 35f, 1f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
-    val oreData = overgrownNanoforgeCommoditySetupData(Commodities.ORE, 5f, 10f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.34f)))
+    val oreData = overgrownNanoforgeCommoditySetupData(Commodities.ORE, 5f, 5f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.34f)))
     val rareOreData = overgrownNanoforgeCommoditySetupData(Commodities.RARE_ORE, 8f, 8f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.4f)))
 
     val organicsData = overgrownNanoforgeCommoditySetupData(Commodities.ORGANICS, 12f, 10f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.35f)))

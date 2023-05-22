@@ -4,13 +4,12 @@ import com.fs.starfarer.api.Global
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterSupplySource(
     handler: overgrownNanoforgeHandler,
-    val supply: MutableMap<String, Int> = HashMap(), source: overgrownNanoforgeEffectSource
-): overgrownNanoforgeRandomizedEffect(handler, source) {
+    val supply: MutableMap<String, Int> = HashMap()
+): overgrownNanoforgeRandomizedEffect(handler) {
 
     override val baseFormat: String = "Nanoforge supply $adjectiveChar by $changeChar"
 
@@ -63,7 +62,7 @@ class overgrownNanoforgeAlterSupplySource(
             val commodityId = entry.key
             val quantity = entry.value
 
-            structure.supply(getId(), commodityId, quantity, getName())
+            structure.supply(getOurId(), commodityId, quantity, getName())
         }
     }
 
@@ -72,7 +71,7 @@ class overgrownNanoforgeAlterSupplySource(
         for (entry in positiveSupply.entries) {
             val commodityId = entry.key
 
-            structure.supply(getId(), commodityId, 0, getName())
+            structure.supply(getOurId(), commodityId, 0, getName())
         }
     }
 
@@ -82,7 +81,7 @@ class overgrownNanoforgeAlterSupplySource(
             val commodityId = entry.key
             val quantity = entry.value
 
-            structure.supply(getId(), commodityId, quantity, getName())
+            structure.supply(getOurId(), commodityId, quantity, getName())
         }
     }
 
@@ -91,7 +90,7 @@ class overgrownNanoforgeAlterSupplySource(
         for (entry in negativeSupply.entries) {
             val commodityId = entry.key
 
-            structure.supply(getId(), commodityId, 0, getName())
+            structure.supply(getOurId(), commodityId, 0, getName())
         }
     }
 
