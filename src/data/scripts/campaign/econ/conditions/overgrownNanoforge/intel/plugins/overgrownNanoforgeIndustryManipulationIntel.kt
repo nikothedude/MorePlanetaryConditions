@@ -1,14 +1,10 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
-import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
-import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
-import java.awt.Color
 
 class overgrownNanoforgeIndustryManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
@@ -27,7 +23,7 @@ class overgrownNanoforgeIndustryManipulationIntel(
     fun updateExposed() {
         updateFactors()
 
-        if (!exposed) growthManipulation = 0f
+        if (!exposed) localGrowthManipulationPercent = 0f
     }
 
     override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
@@ -47,11 +43,11 @@ class overgrownNanoforgeIndustryManipulationIntel(
     }
 
     fun updateFactors() {
-        addFactors()
+        addInitialFactors()
     }
 
     override fun addCountermeasuresFactor() {
-        addFactorWrapped(overgrownNanoforgeIndustryIntelCountermeasures(this))
+        overgrownNanoforgeIndustryIntelCountermeasures(this).init()
     }
 }
 

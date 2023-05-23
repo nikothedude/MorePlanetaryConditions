@@ -10,7 +10,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.ov
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED
 import java.awt.Color
-import kotlin.math.roundToInt
 
 class overgrownNanoforgeIntelFactorStructureRegeneration(
     override val overgrownIntel: baseOvergrownNanoforgeManipulationIntel
@@ -92,7 +91,7 @@ open class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOver
 
     override fun getProgress(intel: BaseEventIntel?): Int {
         val initial = overgrownIntel.getOverallCullingStrength(getMarket())
-        val initialTwo = -(overgrownIntel.growthManipulation/100f)
+        val initialTwo = -(overgrownIntel.localGrowthManipulationPercent/100f)
         val result = initial * initialTwo
         return result.toInt()
     }

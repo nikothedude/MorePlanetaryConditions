@@ -30,7 +30,7 @@ class overgrownNanoforgeSpreadingBrain(
 
     fun getOverallGrowthManipulation(): Float {
         var amount = 0f
-        getAllIntel().forEach { amount += kotlin.math.abs(it.growthManipulation) }
+        getAllIntel().forEach { amount += kotlin.math.abs(it.localGrowthManipulationPercent) }
         return amount
     }
 
@@ -131,7 +131,7 @@ class overgrownNanoforgeSpreadingBrain(
 
     fun getMarket(): MarketAPI = industryNanoforge.market
     fun getManipulationBudget(intel: baseOvergrownNanoforgeIntel): Float {
-        return (maxGrowthManipulation - (getOverallGrowthManipulation() - kotlin.math.abs(intel.growthManipulation)))
+        return (maxGrowthManipulation - (getOverallGrowthManipulation() - kotlin.math.abs(intel.localGrowthManipulationPercent)))
     }
 
     fun calculateOverallCreditCost(): Float {
@@ -209,7 +209,7 @@ class overgrownNanoforgeSpreadingBrain(
     }
 
     private fun resetManipulation() {
-        getAllIntel().forEach { it.growthManipulation = 0f }
+        getAllIntel().forEach { it.localGrowthManipulationPercent = 0f }
     }
 
     override fun reportEconomyMonthEnd() {

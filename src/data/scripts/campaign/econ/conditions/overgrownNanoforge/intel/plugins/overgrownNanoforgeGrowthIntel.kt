@@ -35,13 +35,14 @@ class overgrownNanoforgeGrowthIntel(
         return ((getStartingProgressPercent()/100f)*getMaxProgress()).roundToInt()
     }
 
+    /** Treated as a percent of max progress. */
     private fun getStartingProgressPercent(): Float {
         return MathUtils.getRandomNumberInRange(
             OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN,
             OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
         )
     }
-
+    var knowExactEffects: Boolean = false
     var estimatedScore: String = "Error"
         get() {
             if (estimatedScoreNeedsUpdate()) field = updateEstimatedScore()
@@ -56,33 +57,34 @@ class overgrownNanoforgeGrowthIntel(
 
     fun updateEstimatedScore(): String {
         val anchor = params.percentThresholdToTotalScoreKnowledge
-        val percentComplete = progressFraction
-
-        val percentToAnchor = (percentComplete/anchor) * 100
-
         lastProgressCheckedForEstimatedScore = getProgress()
+        val percentComplete = progressFraction * 100
+        if (percentComplete <= OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE) return "Unknown"
+        val percentToAnchor = (percentComplete/anchor) * 100
 
         val score = ourHandler.getBaseBudget() ?: return "Error"
         if (percentToAnchor >= 100) return score.toString()
-        if (percentToAnchor <= OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE) return "Unknown"
 
-        val variance = MathUtils.getRandomNumberInRange(0.7f, 1.3f)
+        val testVal = 100 / percentToAnchor
 
-        val min = (score*(OVERGROWN_NANOFORGE_MIN_SCORE_ESTIMATION_VARIANCE * percentToAnchor)*variance).coerceAtLeast(0f)
-        val max = score*(OVERGROWN_NANOFORGE_MAX_SCORE_ESTIMATION_VARIANCE * percentToAnchor)*variance
+        val minVar = MathUtils.getRandomNumberInRange(0.8f, 1.2f)
+        val maxVar = MathUtils.getRandomNumberInRange(0.8f, 1.2f)
+
+        val min = (score*(1 / testVal)*minVar).coerceAtLeast(0f)
+        val max = score*(1 * testVal)*maxVar
 
         return "$min - $max"
     }
 
-
     override fun addEndStage() {
-        addStage(overgrownNanoforgeFinishGrowthStage(this), getMaxProgress())
+        overgrownNanoforgeFinishGrowthStage(this).init()
     }
 
-    override fun addStages() {
-        super.addStages()
+    override fun addInitialStages() {
+        super.addInitialStages()
 
-        growthDiscoveryStages.TARGET.getChildren(this).forEach { addStage(it, it.getThreshold(), true) }
+        growthDiscoveryStages.TARGET.getChildren(this).forEach { it.init() }
+        growthDiscoveryStages.EFFECTS.getChildren(this).forEach { it.init() }
     }
 
     fun growingComplete() {
@@ -100,11 +102,10 @@ class overgrownNanoforgeGrowthIntel(
         val prevTable = super.addParamsInfo(info, width, stageId)
 
         val targetWidth = 180f
-        val scoreWidth = 100f
+        val scoreWidth = 300f
 
         info.beginTable(factionForUIColors, 20f,
     "Target", targetWidth,
-            "Overall Score", scoreWidth,
         )
 
         val targetData = getTargetData()
@@ -113,15 +114,34 @@ class overgrownNanoforgeGrowthIntel(
         val baseColor = Misc.getBasePlayerColor()
 
         info.addRowWithGlow(
-            baseAlignment, baseColor, targetData.name,
-            baseAlignment, baseColor, estimatedScore)
+            baseAlignment, baseColor, targetData.name)
         targetData.industry?.let { info.setIdForAddedRow(it) }
 
         val opad = 5f
         info.addTable("None", -1, opad)
         info.addSpacer(3f)
 
+        info.beginTable(factionForUIColors, 20f,
+            "Overall score", scoreWidth)
+        info.addTableHeaderTooltip(0, "An estimation of the overall score of the growth. " +
+                "A higher score means more intense effects, both negative and positive.")
+        info.addRowWithGlow(
+            Alignment.MID, baseColor, estimatedScore
+        )
+
         return info.prev
+    }
+
+    override fun getFormattedPositives(): String {
+        if (knowExactEffects) return super.getFormattedPositives()
+
+        return "Unknown"
+    }
+
+    override fun getFormattedNegatives(): String {
+        if (knowExactEffects) return super.getFormattedNegatives()
+
+        return "Unknown"
     }
 
     override fun tableRowClicked(ui: IntelUIAPI, data: IntelInfoPlugin.TableRowClickData) {
@@ -151,12 +171,14 @@ class overgrownNanoforgeGrowthIntel(
         return "Growth on ${getMarket().name}"
     }
 
-    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        super.addTextAboveColonyMarker(info, width, stageId)
+    override fun addBasicDescription(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addBasicDescription(info, width, stageId)
 
         info.addPara("This specific ${ourHandler.getCurrentName()} is %s and is %s. As such, its" +
                 " abilities and characteristics are %s, and they will %s until it is %s.", 5f,
         Misc.getHighlightColor(), "not established", "still growing", "unknown", "not take effect", "fully grown")
+        info.addPara("As the ${ourHandler.getCurrentName()} grows, more details will reveal themselves, such as " +
+                "the effects of the structure, the target it seeks to destroy, or the overall score of it.", 5f)
     }
 
     override fun culled() {
@@ -183,5 +205,5 @@ class overgrownNanoforgeFinishGrowthStage(override val intel: overgrownNanoforge
     override fun stageReached() {
         intel.growingComplete()
     }
-
+    override fun getThreshold(): Int = intel.maxProgress
 }

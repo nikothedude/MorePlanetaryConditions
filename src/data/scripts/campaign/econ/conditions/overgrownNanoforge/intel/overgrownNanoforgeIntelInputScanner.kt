@@ -31,7 +31,7 @@ class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel
         if (!Global.getSector().isPaused) return stop()
         val resolvedReference = intel.manipulationInput?.get() ?: return stop()
 
-        intel.growthManipulation = sanitizeFloat(resolvedReference, intel.growthManipulation)
+        intel.localGrowthManipulationPercent = sanitizeFloat(resolvedReference, intel.localGrowthManipulationPercent)
         //intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)
     }
 

@@ -154,7 +154,7 @@ abstract class overgrownNanoforgeHandler(
     }
 
     open fun getStructureWithUpdate(): baseOvergrownNanoforgeStructure? {
-        if (!structurePresent()) createStructure()
+        if (!structurePresent() && shouldCreateNewStructure()) createStructure()
         return getStructure()
     }
 

@@ -2,21 +2,25 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import org.lazywizard.lazylib.MathUtils
+import kotlin.math.roundToInt
 
 abstract class overgrownNanoforgeGrowthStage(override val intel: overgrownNanoforgeGrowthIntel) : overgrownNanoforgeIntelStage(intel) {
-    abstract fun getThreshold(): Int
 
 }
 
 abstract class overgrownNanoforgeTargetDiscoveryStage(intel: overgrownNanoforgeGrowthIntel):
     overgrownNanoforgeGrowthStage(intel)
 
+abstract class overgrownNanoforgeEffectDiscoveryStage(intel: overgrownNanoforgeGrowthIntel): overgrownNanoforgeGrowthStage(intel)
+
 class overgrownNanoforgeDiscoverTargetNameStage(intel: overgrownNanoforgeGrowthIntel):
     overgrownNanoforgeTargetDiscoveryStage(intel) {
+
+    val anchor = MathUtils.getRandomNumberInRange(5, 30)
+
     override fun getThreshold(): Int {
-        val anchor = MathUtils.getRandomNumberInRange(5, 30)
-        val threshold = (anchor/100) * intel.maxProgress
-        return threshold
+        val threshold = (anchor/100f) * intel.maxProgress
+        return threshold.roundToInt()
     }
 
     override fun getName(): String {
@@ -29,6 +33,22 @@ class overgrownNanoforgeDiscoverTargetNameStage(intel: overgrownNanoforgeGrowthI
 
 }
 
+class overgrownNanoforgeDiscoverEffectStage(intel: overgrownNanoforgeGrowthIntel): overgrownNanoforgeEffectDiscoveryStage(intel) {
+
+    val anchor = 30f
+    override fun getName(): String = "dsicover effects"
+
+    override fun stageReached() {
+        intel.knowExactEffects = true
+    }
+
+    override fun getThreshold(): Int {
+        val threshold = (anchor/100f) * intel.maxProgress
+        return threshold.roundToInt()
+    }
+
+}
+
 enum class growthDiscoveryStages() {
 
     TARGET {
@@ -37,11 +57,16 @@ enum class growthDiscoveryStages() {
 
             return setOf(nameStage)
         }
+    },
+
+    EFFECTS {
+        override fun createChildren(intel: overgrownNanoforgeGrowthIntel): Set<overgrownNanoforgeEffectDiscoveryStage> {
+            val masterStage = overgrownNanoforgeDiscoverEffectStage(intel)
+
+            return setOf(masterStage)
+        }
+
     };
-
-    /*EFFECTS {
-
-    },*/
 
     fun getChildren(intel: overgrownNanoforgeGrowthIntel): Set<overgrownNanoforgeGrowthStage> {
         return sanitizeChildren(intel)

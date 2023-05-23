@@ -10,12 +10,14 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
+import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.viewMode
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasons
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengths
 import data.scripts.campaign.intel.baseNikoEventIntelPlugin
+import data.scripts.campaign.intel.baseNikoEventStage
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES_MARKET
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT
@@ -33,8 +35,13 @@ abstract class baseOvergrownNanoforgeIntel(
     val brain: overgrownNanoforgeSpreadingBrain,
 ): baseNikoEventIntelPlugin() {
 
+    //TODO: do i need this var at all?
     protected var creditDeltaRemainder: Float = 0f
-    var growthManipulation: Float = 0f
+    /** The percent of overall manipulation capacity being used on our market.
+     *  Captures the direction of manipulation through the sign: Positive = Culling, Negative = Cultivating.
+     *  Overall manipulation capacity usage is calculated through iterating all instances of a market's manipulation intels
+     *  and summing this value.*/
+    var localGrowthManipulationPercent: Float = 0f
         set(value) {
             val budget = getGrowthBudget()
             val clampedValue = MathUtils.clamp(value, -budget, budget)
@@ -74,7 +81,7 @@ abstract class baseOvergrownNanoforgeIntel(
     var growthManipulationMeter: WeakReference<LunaProgressBar>? = null
         set(value) {
             field = value
-            field?.get()?.changeValue(growthManipulation)
+            field?.get()?.changeValue(localGrowthManipulationPercent)
             if (field != null) uiUpdater?.start()
         }
 
@@ -82,7 +89,7 @@ abstract class baseOvergrownNanoforgeIntel(
     var manipulationInput: WeakReference<TextFieldAPI>? = null
         set(value) {
             field = value
-            field?.get()?.text = growthManipulation.toString()
+            field?.get()?.text = localGrowthManipulationPercent.toString()
             if (field != null) uiUpdater?.start()
         }
     override fun createLargeDescription(panel: CustomPanelAPI?, width: Float, height: Float) {
@@ -96,6 +103,13 @@ abstract class baseOvergrownNanoforgeIntel(
             }
             viewMode.DEFAULT -> super.createLargeDescription(panel, width, height)
         }
+    }
+
+    override fun init(hidden: Boolean): baseOvergrownNanoforgeIntel {
+        uiUpdater = overgrownNanoforgeIntelInputScanner(this)
+        super.init(hidden)
+
+        return this
     }
 
     private fun createSpecificsPanel(outer: TooltipMakerAPI, panel: CustomPanelAPI) {
@@ -119,15 +133,8 @@ abstract class baseOvergrownNanoforgeIntel(
         outer.addButton("Return", viewMode.DEFAULT, 100f, 20f, 10f)
     }
 
-    override fun addStageDescriptionText(info: TooltipMakerAPI?, width: Float, stageId: Any?) {
-        if (info == null) return
-        if (isStageActiveAndLast(stageId)) {
-            addMiddleDescriptionText(info, width, stageId)
-        }
-    }
-
-    open fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        addTextAboveColonyMarker(info, width, stageId)
+    override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addMiddleDescriptionText(info, width, stageId)
 
         val colonyMarker = addColonyMarkerAndMap(info)
         val strengthTable = addColonyCullingStrengthInfo(info, colonyMarker)
@@ -137,90 +144,44 @@ abstract class baseOvergrownNanoforgeIntel(
         addSuppressionInfo(info, width, stageId, colonyMarker, strengthTable)
     }
 
-    open fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+    override fun addBasicDescription(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addBasicDescription(info, width, stageId)
         val marketName = getMarket().name
         info.addPara("A Overgrown Nanoforge is present on $marketName, continuously spreading and enhancing it's own " +
                 "output at the cost of the market's capabilities.", 5f)
     }
 
-    open fun init(hidden: Boolean = true) {
-        initializeProgress()
-
-        addStages()
-        addFactors()
-
-        isHidden = hidden
-        Global.getSector().intelManager.addIntel(this, true)
-        uiUpdater = overgrownNanoforgeIntelInputScanner(this)
+    override fun addStartStage() {
+        super.addStartStage()
+        overgrownNanoforgeIntelDummyStartingStage(this).init()
     }
 
-    abstract fun initializeProgress()
-
-    open fun addStages() {
-        addStartStage()
-        addEndStage()
-    }
-
-    open fun addStartStage() {
-        addStage(overgrownNanoforgeIntelDummyStartingStage(this), 0, false)
-    }
-    open fun addEndStage() { return }
-
-    open fun addFactors() {
+    override fun addInitialFactors() {
+        super.addInitialFactors()
         addCountermeasuresFactor()
     }
 
     open fun addCountermeasuresFactor() {
-        addFactorWrapped(overgrownNanoforgeIntelFactorCountermeasures(this))
-    }
-
-    private fun hasFactorOfClass(clazz: Class<baseOvergrownNanoforgeEventFactor>): Boolean {
-        for (factor in factors) {
-            if (factor.javaClass.isAssignableFrom(clazz)) return true
-        }
-        return false
-    }
-
-    fun addFactorWrapped(factor: baseOvergrownNanoforgeEventFactor) {
-        if (hasFactorOfClass(factor.javaClass)) {
-            return factor.delete()
-        }
-        addFactor(factor)
+        overgrownNanoforgeIntelFactorCountermeasures(this).init()
     }
 
     override fun delete() {
         super.delete()
 
-        growthManipulation = 0f
+        resetLocalManipulation()
+        localGrowthManipulationPercent = 0f
     }
 
-    override fun notifyStageReached(stage: EventStageData?) {
-        super.notifyStageReached(stage)
-        if (stage == null) return
+    override fun setHidden(hidden: Boolean) {
+        super.setHidden(hidden)
 
-        val id = stage.id
-        if (id is overgrownNanoforgeIntelStage) id.stageReached()
+        if (isHidden) {
+            resetLocalManipulation()
+        }
     }
 
-    override fun getStageTooltipImpl(stageId: Any?): TooltipMakerAPI.TooltipCreator? {
-        if (stageId == null) return null
-        val data = getDataFor(stageId) ?: return null
-
-        val id = data.id
-        if (id is overgrownNanoforgeIntelStage) return id.getTooltip(data)
-
-        return null
-    }
-
-    override fun getStageIconImpl(stageId: Any?): String {
-        val defaultReturn = icon
-        if (stageId == null) return defaultReturn
-        val data = getDataFor(stageId) ?: return defaultReturn
-
-        val id = data.id
-        if (id is overgrownNanoforgeIntelStage) return id.getIconId() ?: defaultReturn
-
-        return defaultReturn
+    open fun resetLocalManipulation() {
+        localGrowthManipulationPercent = 0f
     }
 
     open fun addColonyMarkerAndMap(info: TooltipMakerAPI): UIPanelAPI {
@@ -419,7 +380,7 @@ abstract class baseOvergrownNanoforgeIntel(
 
     /** If false, should grey out manipulation inputs. */
     open fun playerCanManipulateGrowth(): Boolean {
-        return getMarket().isPlayerOwned
+        return (!isHidden && getMarket().isPlayerOwned)
     }
 
     fun createCantInteractWithInputTooltip(): TooltipMakerAPI.TooltipCreator {
@@ -446,16 +407,16 @@ abstract class baseOvergrownNanoforgeIntel(
         return if (cost > 0f) Misc.getNegativeHighlightColor() else Misc.getHighlightColor()
     }
 
-    fun calculateOverallCreditCost(): Float {
-        return brain.calculateOverallCreditCost()
-    }
-
-    fun calculateCreditCost(): Float {
-        val absIntensity = abs(growthManipulation)
+    open fun calculateCreditCost(): Float {
+        val absIntensity = abs(localGrowthManipulationPercent)
         val standardCost = (absIntensity * OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT)
         val extraCost = (((absIntensity - OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD).coerceAtLeast(0f)) * OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT)
 
         return (standardCost + extraCost)*getOverallCullingStrength(getMarket())
+    }
+
+    fun calculateOverallCreditCost(): Float {
+        return brain.calculateOverallCreditCost()
     }
 
     fun getOverallCullingStrength(market: MarketAPI): Float {
@@ -547,6 +508,7 @@ abstract class baseOvergrownNanoforgeIntel(
         return color
     }
 
+    /** See brain.reporteconomytick. */
     fun shouldDeductCredits(): Boolean {
         return playerCanManipulateGrowth()
     }
@@ -555,11 +517,4 @@ abstract class baseOvergrownNanoforgeIntel(
         return "graphics/icons/cargo/nanoforge_decayed.png"
     }
 
-    override fun setHidden(hidden: Boolean) {
-        super.setHidden(hidden)
-
-        if (isHidden) {
-            growthManipulation = 0f
-        }
-    }
 }

@@ -11,11 +11,11 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadin
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.baseOvergrownNanoforgeEventFactor
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.utilities.niko_MPC_marketUtils.isInhabited
-import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SPREADING_MAX_PROGRESS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SPREADING_PROGRESS
 import org.lazywizard.lazylib.MathUtils
 import java.awt.Color
@@ -34,8 +34,8 @@ class overgrownNanoforgeSpreadingIntel(
         setProgress(0)
     }
 
-    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        super.addTextAboveColonyMarker(info, width, stageId)
+    override fun addBasicDescription(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addBasicDescription(info, width, stageId)
 
         info.addPara("This panel represents the nanoforge's constant attempts at spreading. When progress reaches %s, " +
                 "a %s will begin, spawning a new intel panel representing a %s.", 5f,
@@ -47,10 +47,11 @@ class overgrownNanoforgeSpreadingIntel(
     fun startPreparingToSpread() {
         Global.getSector().intelManager.addIntel(this, true)
         setProgress(0)
-        addFactorWrapped(overgrownNanoforgePrepareGrowthFactor(this, getBaseProgress()))
+        overgrownNanoforgePrepareGrowthFactor(this, getBaseProgress()).init()
+
         val max = getTimeTilNextSpread()
         setMaxProgress(max)
-        addStage(overgrownNanoforgeStartSpreadStage(this), getMaxProgress())
+        overgrownNanoforgeStartSpreadStage(this).init()
     }
 
     fun getBaseProgress(): Int {
@@ -61,7 +62,7 @@ class overgrownNanoforgeSpreadingIntel(
         Global.getSector().intelManager.removeIntel(this)
         removeFactorOfClass(overgrownNanoforgePrepareGrowthFactor::class.java as Class<EventFactor>)
 
-        growthManipulation = 0f
+        localGrowthManipulationPercent = 0f
 /*        val iterator = stages.iterator()
         while (iterator.hasNext()) {
             val stage = iterator.next().id
@@ -92,6 +93,8 @@ class overgrownNanoforgeStartSpreadStage(override val intel: overgrownNanoforgeS
     override fun stageReached() {
         intel.startSpreading()
     }
+
+    override fun getThreshold(): Int = intel.maxProgress
 
 }
 

@@ -8,7 +8,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.ba
 
 abstract class baseOvergrownNanoforgeEventFactor(
     open val overgrownIntel: baseOvergrownNanoforgeIntel
-): baseNikoEventFactor() {
+): baseNikoEventFactor(overgrownIntel) {
     open fun shouldBeRemovedWhenSpreadingStops(): Boolean {
         return true
     }

@@ -18,7 +18,7 @@ open class baseOvergrownNanoforgeManipulationIntel(
 
     override fun addStartStage() {
         super.addStartStage()
-        addStage(overgrownNanoforgeIntelCullStage(this), 0, false)
+        overgrownNanoforgeIntelCullStage(this).init()
     }
 
     override fun initializeProgress() {
@@ -26,13 +26,13 @@ open class baseOvergrownNanoforgeManipulationIntel(
         setProgress(getMaxProgress())
     }
 
-    override fun addFactors() {
+    override fun addInitialFactors() {
         addRegenFactor()
-        super.addFactors()
+        super.addInitialFactors()
     }
 
     open fun addRegenFactor() {
-        addFactorWrapped(overgrownNanoforgeIntelFactorStructureRegeneration(this))
+        overgrownNanoforgeIntelFactorStructureRegeneration(this).init()
     }
 
     override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
@@ -41,8 +41,8 @@ open class baseOvergrownNanoforgeManipulationIntel(
         addParamsInfo(info, width, stageId)
     }
 
-    override fun addTextAboveColonyMarker(info: TooltipMakerAPI, width: Float, stageId: Any?) {
-        super.addTextAboveColonyMarker(info, width, stageId)
+    override fun addBasicDescription(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addBasicDescription(info, width, stageId)
 
         info.addPara("This panel represents the integrity/growth status of a specific growth.", 5f)
         info.addPara("If the ${ourHandler.getCurrentName()}'s integrity reaches %s, it will be %s.", 5f,
@@ -87,13 +87,13 @@ open class baseOvergrownNanoforgeManipulationIntel(
         return ourHandler.getFormattedNegatives()
     }
 
+    /** Called when our progress goes to 0 or below. Should destroy the handler and structure as well as this. */
     open fun culled() {
         if (shouldReportCulled()) reportCulled()
         
         ourHandler.culled()
     }
-
-    fun shouldReportCulled(): Boolean = getMarket().isPlayerOwned
+    fun shouldReportCulled(): Boolean = playerCanManipulateGrowth()
     fun reportCulled() {
         Global.getSector().campaignUI.addMessage("thing culled lol")
     }
@@ -112,10 +112,6 @@ open class baseOvergrownNanoforgeManipulationIntel(
     override fun getName(): String {
         return "${ourHandler.getCurrentName()} on ${getMarket().name}"
     }
-
-    override fun notifyPlayerAboutToOpenIntelScreen() {
-        super.notifyPlayerAboutToOpenIntelScreen()
-    }
 }
 
 class overgrownNanoforgeIntelCullStage(
@@ -129,4 +125,8 @@ class overgrownNanoforgeIntelCullStage(
         intel.culled()
     }
 
+    override fun isOneOffEvent(): Boolean = true
+    override fun getThreshold(): Int {
+        return intel.maxProgress
+    }
 }
