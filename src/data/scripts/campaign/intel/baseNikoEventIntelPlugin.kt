@@ -94,9 +94,12 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         val stagesCopy = stages.toSet()
         for (iteratedStage in stagesCopy) {
             val stageId = iteratedStage.id
-            if (stagesToRemove.contains(stageId) && (stageId is baseNikoEventStage)) { //shouldve smart casted - but it didnt
-                stageId.delete()
+            if (stagesToRemove.contains(stageId)) {
+                stages.remove(stageId)
             }
+            /*if (stagesToRemove.contains(stageId) && (stageId is baseNikoEventStage)) { //shouldve smart casted - but it didnt
+                stageId.delete()
+            }*/
         }
     }
 
