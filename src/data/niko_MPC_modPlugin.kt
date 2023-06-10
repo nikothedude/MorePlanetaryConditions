@@ -17,6 +17,10 @@ import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
+import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
+import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
+import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
@@ -44,8 +48,20 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     private fun addSpecialItemsToItemRepo() {
 
         //add special items
-        ItemEffectsRepo.ITEM_EFFECTS[niko_MPC_ids.overgrownNanoforgeItemId] = overgrownNanoforgeItemInstance
+        ItemEffectsRepo.ITEM_EFFECTS[overgrownNanoforgeItemId] = overgrownNanoforgeItemInstance
+        val spec = Global.getSettings().getSpecialItemSpec(overgrownNanoforgeItemId) ?: return
+        val strictBlacklist = setOf(overgrownNanoforgeIndustryId)
+        val looseBlacklist = setOf(overgrownNanoforgeJunkStructureId)
+        for (industry in Global.getSettings().allIndustrySpecs) {
+            val id = industry.id
+            if (id in spec.params) continue
 
+            if (strictBlacklist.contains(id)) continue
+            if (looseBlacklist.any { id.contains(it) }) continue
+
+            if (spec.params.isNotEmpty()) spec.params += ", "
+            spec.params += id
+        }
     }
 
     /* @Override

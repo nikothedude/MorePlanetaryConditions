@@ -56,7 +56,6 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, null)
         Misc.getStorage(market).cargo.addSpecial(overgrownNanoforgeData, 1f)
         super.reportDestroyed()
-        //TODO("this will not work")
     }
 
     override fun canInstallAICores(): Boolean {

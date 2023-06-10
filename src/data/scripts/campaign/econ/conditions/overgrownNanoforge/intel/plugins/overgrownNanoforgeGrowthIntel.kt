@@ -12,6 +12,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
+import data.utilities.niko_MPC_marketUtils.maxStructureAmount
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_SCORE_ESTIMATION_VARIANCE
@@ -56,24 +57,29 @@ class overgrownNanoforgeGrowthIntel(
     }
 
     fun updateEstimatedScore(): String {
-        val anchor = params.percentThresholdToTotalScoreKnowledge
+        val score = ourHandler.getBaseBudget() ?: return "Error"
+        if (knowExactEffects) return "$score"
+        val anchor = getScoreDiscoveryProgressPercent()
         lastProgressCheckedForEstimatedScore = getProgress()
         val percentComplete = progressFraction * 100
         if (percentComplete <= OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE) return "Unknown"
-        val percentToAnchor = (percentComplete/anchor) * 100
+        val percentToAnchor = (percentComplete/anchor) * 100f
 
-        val score = ourHandler.getBaseBudget() ?: return "Error"
-        if (percentToAnchor >= 100) return score.toString()
+        if (percentToAnchor >= 100) return "$score"
 
-        val testVal = 100 / percentToAnchor
+        val discoveryMult = 100 / percentToAnchor
 
         val minVar = MathUtils.getRandomNumberInRange(0.8f, 1.2f)
         val maxVar = MathUtils.getRandomNumberInRange(0.8f, 1.2f)
 
-        val min = (score*(1 / testVal)*minVar).coerceAtLeast(0f)
-        val max = score*(1 * testVal)*maxVar
+        val min = (score*(1 / discoveryMult)*minVar).coerceAtLeast(0f)
+        val max = score*(1 * discoveryMult)*maxVar
 
         return "$min - $max"
+    }
+
+    private fun getScoreDiscoveryProgressPercent(): Int {
+        return params.percentThresholdToTotalScoreKnowledge
     }
 
     override fun addEndStage() {
@@ -107,6 +113,9 @@ class overgrownNanoforgeGrowthIntel(
         info.beginTable(factionForUIColors, 20f,
     "Target", targetWidth,
         )
+        info.addTableHeaderTooltip(0, "The structure this growth is targeting. Guaranteed to be nothing if " +
+                "the market does not have ${maxStructureAmount} visible structures. If this growth completes with an active target, " +
+                "the target structure will be destroyed and replaced by the growth.")
 
         val targetData = getTargetData()
 
@@ -128,6 +137,7 @@ class overgrownNanoforgeGrowthIntel(
         info.addRowWithGlow(
             Alignment.MID, baseColor, estimatedScore
         )
+        info.addTable("None", -1, opad)
 
         return info.prev
     }
@@ -186,6 +196,8 @@ class overgrownNanoforgeGrowthIntel(
 
         delete() // needed since the junk handler has no ref to us
     }
+
+    override fun getSpreadingAdjective(): String = "spreading"
 }
 
 class targetData(
@@ -199,8 +211,8 @@ class targetData(
 class overgrownNanoforgeFinishGrowthStage(override val intel: overgrownNanoforgeGrowthIntel)
     : overgrownNanoforgeIntelStage(intel) {
 
-    override fun getName(): String = "Culled"
-    override fun getDesc(): String = "et9iujpafwuijo"
+    override fun getName(): String = "Growth Finished"
+    override fun getDesc(): String = "Once reached, the growth will become permanent and begin applying its effects."
 
     override fun stageReached() {
         intel.growingComplete()

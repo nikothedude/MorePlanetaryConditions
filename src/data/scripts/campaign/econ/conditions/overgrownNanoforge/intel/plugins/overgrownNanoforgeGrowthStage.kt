@@ -1,5 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import org.lazywizard.lazylib.MathUtils
 import kotlin.math.roundToInt
@@ -27,6 +29,8 @@ class overgrownNanoforgeDiscoverTargetNameStage(intel: overgrownNanoforgeGrowthI
         return "name learn"
     }
 
+    override fun getDesc(): String = "Once reached, the name of the target industry will be revealed, if it exists."
+
     override fun stageReached() {
         intel.params.nameKnown = true
     }
@@ -35,8 +39,13 @@ class overgrownNanoforgeDiscoverTargetNameStage(intel: overgrownNanoforgeGrowthI
 
 class overgrownNanoforgeDiscoverEffectStage(intel: overgrownNanoforgeGrowthIntel): overgrownNanoforgeEffectDiscoveryStage(intel) {
 
-    val anchor = 30f
+    val anchor: Int
+        get() {
+            return intel.params.percentThresholdToTotalScoreKnowledge //TODO: ugly as fuck please refactor this
+        }
     override fun getName(): String = "dsicover effects"
+    override fun getDesc(): String = "Once reached, the specific and exact effects of this structure will be revealed. " +
+            "As it is approached, the score estimate will become more accurate."
 
     override fun stageReached() {
         intel.knowExactEffects = true

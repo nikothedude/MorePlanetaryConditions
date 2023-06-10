@@ -16,11 +16,6 @@ open class baseOvergrownNanoforgeManipulationIntel(
     open val ourHandler: overgrownNanoforgeHandler,
     ) : baseOvergrownNanoforgeIntel(brain) {
 
-    override fun addStartStage() {
-        super.addStartStage()
-        overgrownNanoforgeIntelCullStage(this).init()
-    }
-
     override fun initializeProgress() {
         setMaxProgress(ourHandler.cullingResistance)
         setProgress(getMaxProgress())
@@ -112,6 +107,8 @@ open class baseOvergrownNanoforgeManipulationIntel(
     override fun getName(): String {
         return "${ourHandler.getCurrentName()} on ${getMarket().name}"
     }
+
+    open fun getSpreadingAdjective(): String = "regenerating"
 }
 
 class overgrownNanoforgeIntelCullStage(

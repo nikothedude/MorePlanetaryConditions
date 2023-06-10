@@ -16,6 +16,7 @@ abstract class overgrownNanoforgeIntelStage(
 
 class overgrownNanoforgeIntelDummyStartingStage(intel: baseOvergrownNanoforgeIntel):
     overgrownNanoforgeIntelStage(intel) {
+
     override fun getName(): String = "Start"
     override fun stageReached() { return }
 

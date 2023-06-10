@@ -468,13 +468,6 @@ abstract class baseOvergrownNanoforgeIntel(
         return tags
     }
 
-    override fun createIntelInfo(info: TooltipMakerAPI, mode: ListInfoMode?) {
-        val c = getTitleColor(mode)
-        // i would love to do this modularly, alex, but youve fucking. forced my hand with a LOCAL VARIABLE
-        info.addPara(name, c, 0f)
-        addBulletPoints(info, mode)
-    }
-
     override fun getStages(): MutableList<EventStageData> {
         return super.getStages()
     }
@@ -516,5 +509,4 @@ abstract class baseOvergrownNanoforgeIntel(
     override fun getIcon(): String {
         return "graphics/icons/cargo/nanoforge_decayed.png"
     }
-
 }

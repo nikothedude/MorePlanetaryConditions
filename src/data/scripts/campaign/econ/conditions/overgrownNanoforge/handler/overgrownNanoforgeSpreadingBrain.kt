@@ -45,7 +45,7 @@ class overgrownNanoforgeSpreadingBrain(
     private fun updateIntelHiddenStatus(value: Boolean) {
         getAllIntel().forEach { it.isHidden = value }
     }
-    private fun getAllIntel(): MutableSet<baseOvergrownNanoforgeIntel> {
+    fun getAllIntel(): MutableSet<baseOvergrownNanoforgeIntel> {
         val allIntel = HashSet<baseOvergrownNanoforgeIntel>()
         allIntel.addAll(intelInstances)
         spreadingIntel?.let { allIntel += it } //dont remove, order of initialization is fucked

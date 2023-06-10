@@ -50,7 +50,7 @@ class overgrownNanoforgeAlterHazardEffect(
         getMarket().hazard.unmodifyFlat(getOurId())
     }
 
-    override val baseFormat: String = "Market hazard $adjectiveChar by $changeChar"
+    override val baseFormat: String = "Market hazard $adjectiveChar by $changeChar%"
 
     override fun getChange(positive: Boolean, vararg args: Any): String {
         return "${abs(increment * 100)}"

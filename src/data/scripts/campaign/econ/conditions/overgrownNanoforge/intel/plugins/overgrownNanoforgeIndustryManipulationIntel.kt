@@ -49,6 +49,8 @@ class overgrownNanoforgeIndustryManipulationIntel(
     override fun addCountermeasuresFactor() {
         overgrownNanoforgeIndustryIntelCountermeasures(this).init()
     }
+
+    override fun isLargeIntel(): Boolean = true
 }
 
 open class overgrownNanoforgeIndustryIntelCountermeasures(override val overgrownIntel: overgrownNanoforgeIndustryManipulationIntel

@@ -1,6 +1,7 @@
 package data.scripts.campaign.intel
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
@@ -130,4 +131,20 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
             id.updateThreshold()
         }
     }
+
+    override fun createIntelInfo(info: TooltipMakerAPI, mode: IntelInfoPlugin.ListInfoMode?) {
+        val c = getTitleColor(mode)
+        // i would love to do this modularly, alex, but youve fucking. forced my hand with a LOCAL VARIABLE
+        info.addPara(name, c, 0f)
+
+        if (isLargeIntel()) info.setParaFontDefault()
+
+        addBulletPoints(info, mode)
+    }
+
+    /**
+     * If true, the name of this intel, as shown in the intel tab (Not in the panel itself) will be large and bold, like
+     * hostile activity.
+     * */
+    open fun isLargeIntel(): Boolean = false
 }

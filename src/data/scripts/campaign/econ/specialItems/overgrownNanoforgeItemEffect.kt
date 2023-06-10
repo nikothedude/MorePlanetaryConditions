@@ -110,11 +110,11 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         val market = industry.market ?: return
         val dynamicStats = market.stats.dynamic
         val desc = getDesc(industry)
-        dynamicStats.getStat(Stats.CUSTOM_PRODUCTION_MOD).modifyFlat(id, 0f) //just be safe
-        dynamicStats.getStat(Stats.CUSTOM_PRODUCTION_MOD).modifyMultAlways(id, getShipProductionMult(), desc)
-        dynamicStats.getStat(Stats.CUSTOM_PRODUCTION_MOD).modifyFlatAlways(id, getShipProductionIncrement(market), desc)
+        dynamicStats.getMod(Stats.CUSTOM_PRODUCTION_MOD).modifyFlat(id, 0f) //just be safe
+        dynamicStats.getMod(Stats.CUSTOM_PRODUCTION_MOD).modifyMultAlways(id, getShipProductionMult(), desc)
+        dynamicStats.getMod(Stats.CUSTOM_PRODUCTION_MOD).modifyFlatAlways(id, getShipProductionIncrement(market), desc)
 
-        dynamicStats.getStat(Stats.PRODUCTION_QUALITY_MOD).modifyMultAlways(id, getProductionQualityMult(), desc)
+        dynamicStats.getMod(Stats.PRODUCTION_QUALITY_MOD).modifyMultAlways(id, getProductionQualityMult(), desc)
 
         val shouldIncreaseFleetsize: Boolean = industry.isPrimaryHeavyIndustry()
         val faction = market.faction ?: return
@@ -128,8 +128,14 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun increaseFleetSize(factionMarket: MarketAPI, desc: String) {
-        factionMarket.stats.dynamic.getStat(Stats.COMBAT_FLEET_SIZE_MULT).modifyMultAlways(id, getShipSizeMult(), desc)
+        factionMarket.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMultAlways(id, getShipSizeMult(), desc)
+        factionMarket.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyMultAlways(getFleetQualityId(), getProductionQualityMult(), desc)
+        // TODO: for some fucking reason this quality mod isnt showing up in the fuckin descriptionnnn of the damn quality screen
         fleetSizeRemover.trackMarket(factionMarket)
+    }
+
+    private fun getFleetQualityId(): String {
+        return id + 1
     }
 
     private fun resetFleetSize(factionMarket: MarketAPI) {
@@ -165,12 +171,13 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         val market = industry.market ?: return
         val dynamicStats = market.stats.dynamic
 
-        dynamicStats.getStat(Stats.CUSTOM_PRODUCTION_MOD).unmodify(id)
-        dynamicStats.getStat(Stats.PRODUCTION_QUALITY_MOD).unmodify(id)
+        dynamicStats.getMod(Stats.CUSTOM_PRODUCTION_MOD).unmodify(id)
+        dynamicStats.getMod(Stats.PRODUCTION_QUALITY_MOD).unmodify(id)
+        dynamicStats.getMod(Stats.FLEET_QUALITY_MOD).unmodify(getFleetQualityId())
         val faction = market.faction ?: return
         for (factionMarket in faction.getMarketsCopy()) {
             resetFleetSize(factionMarket)
-            factionMarket.stats.dynamic.getStat(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
+            factionMarket.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
         }
         fleetSizeRemover.delete()
 
@@ -178,14 +185,14 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     private fun getDesc(industry: Industry): String {
         val market = industry.market ?: return "weirder error. you shouldnt see this"
 
-        return "$market ${industry.nameForModifier} ${getName()}"
+        return "${market.name} ${industry.nameForModifier} ${getName()}"
     }
 
     override fun addItemDescriptionImpl(industry: Industry?, text: TooltipMakerAPI?, data: SpecialItemData?,
         mode: InstallableIndustryItemPlugin.InstallableItemDescriptionMode?, pre: String?, pad: Float
     ) {
         if (text == null) return
-        val description = "$pre Increases all supply and demand on installed industries by %s and %s,all demand by " +
+        val description = "$pre Increases all supply and demand on installed industries by %s and %s, all demand by " +
                 "%s and %s, increases upkeep by %s and %s." +
                 "If installed in a heavy industry, increases production capacity by %s and %s." +
                 "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s." +
@@ -230,7 +237,8 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         }
 
         fun unapplyFleetsize(market: MarketAPI) {
-            market.stats.dynamic.getStat(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
+            market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify(getFleetQualityId())
+            market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
             untrackMarket(market)
         }
 
@@ -245,5 +253,9 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
             return (isPlanetConditionMarketOnly)
         }
 
+    }
+
+    override fun getRequirements(industry: Industry?): MutableList<String> {
+        return super.getRequirements(industry)
     }
 }

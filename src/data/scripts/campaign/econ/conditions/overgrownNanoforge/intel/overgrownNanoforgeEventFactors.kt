@@ -32,7 +32,7 @@ class overgrownNanoforgeIntelFactorStructureRegeneration(
                 if (tooltip == null) return
                 val opad = 10f
 
-                val stringToAdd = "The ${getNanoforgeName()} on ${getMarket().name} is spreading " +
+                val stringToAdd = "The ${getNanoforgeName()} on ${getMarket().name} is ${overgrownIntel.getSpreadingAdjective()} " +
                         "at a rate of ${getProgress(overgrownIntel)} per month."
                 tooltip.addPara(stringToAdd, opad)
             }

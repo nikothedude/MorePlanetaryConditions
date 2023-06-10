@@ -1,15 +1,13 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.utilities.niko_MPC_debugUtils
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterDefensesEffect(
     handler: overgrownNanoforgeHandler,
-    val increment: Float
+    val mult: Float
 
 ): overgrownNanoforgeRandomizedEffect(handler) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
@@ -17,7 +15,7 @@ class overgrownNanoforgeAlterDefensesEffect(
     }
 
     private fun defenseIsNegative(): Boolean {
-        return increment < 0f
+        return mult < 1f
     }
 
     override fun getName(): String {
@@ -30,27 +28,28 @@ class overgrownNanoforgeAlterDefensesEffect(
 
     override fun applyBenefits() {
         if (defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(getOurId(), increment, getNameForModifier())
+        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(getOurId(), mult, getNameForModifier())
     }
 
     override fun applyDeficits() {
         if (!defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(getOurId(), increment, getNameForModifier())
+        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(getOurId(), mult, getNameForModifier())
     }
 
     override fun unapplyBenefits() {
         if (defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodifyFlat(getOurId())
+        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(getOurId())
     }
 
     override fun unapplyDeficits() {
         if (!defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodifyFlat(getOurId())    }
+        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(getOurId())
+    }
 
-    override val baseFormat: String = "Market defense rating $adjectiveChar by $changeChar"
+    override val baseFormat: String = "Market defense rating $adjectiveChar by ${changeChar}x"
 
     override fun getChange(positive: Boolean, vararg args: Any): String {
-        return "${abs(increment)}"
+        return "${abs(mult)}"
     }
 
     override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {

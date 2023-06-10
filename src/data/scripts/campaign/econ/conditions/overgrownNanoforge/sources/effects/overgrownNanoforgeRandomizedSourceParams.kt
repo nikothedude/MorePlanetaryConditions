@@ -1,21 +1,19 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getWeightedPotentialPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_JUNK_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_NEGATIVE_EFFECT_BUDGET_MULT
-import org.lazywizard.lazylib.MathUtils
 import kotlin.math.abs
 
 class overgrownNanoforgeRandomizedSourceParams(
@@ -75,18 +73,26 @@ class overgrownNanoforgeRandomizedSourceParams(
 
         val potentialPrototypes: MutableSet<overgrownNanoforgeEffectPrototypes> = HashSet()
 
-        val initialPrototypes = getPotentialPrototypes(this, holder, allowedCategories)
+        val initialPrototypes = getWeightedPotentialPrototypes(this, holder, allowedCategories, handler)
+        val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
+        for (entry in initialPrototypes) {
+            picker.add(entry.key, entry.value)
+        }
         while (maxToPick-- > 0) {
-            val pickedPrototype = getPotentialPrototypes(this, holder, allowedCategories).randomOrNull() ?: break
+            val pickedPrototype = picker.pick() ?: break
+            //TODO: add support for unique things
             potentialPrototypes += pickedPrototype
-            initialPrototypes -= pickedPrototype
+            //initialPrototypes -= pickedPrototype
         }
         if (potentialPrototypes.isEmpty()) return HashSet()
         val negative = initialBudget < 0
+        val getMax = { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, ->
+            (entry.getMaximumCost(handler.getCoreHandler()))?.coerceAtMost(budget) ?: budget}
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
             abs(initialBudget),
             { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler.getCoreHandler()) ?: 0f},
+            getMax,
         )
         if (negative) {
             for (entry in weightedPrototypes) {
