@@ -2,7 +2,10 @@ package data.hullmods
 
 import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.MutableShipStatsAPI
+import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipAPI.HullSize
+import com.fs.starfarer.api.combat.WeaponAPI
+import com.fs.starfarer.api.combat.WeaponAPI.*
 
 class niko_MPC_graviticSupercomputer : BaseHullMod() {
     val rangeMult = 50f
@@ -10,8 +13,9 @@ class niko_MPC_graviticSupercomputer : BaseHullMod() {
     val missileRangeMalice = 0.7f
     val visionIncrement = 9000f
     val recoilMult = 0.3f
-    val accuracyMult = 0.5f
     val autofireMult = 1f
+
+    val maxRecoilMult = 0.05f
     override fun applyEffectsBeforeShipCreation(hullSize: HullSize, stats: MutableShipStatsAPI, id: String) {
         stats.ballisticWeaponRangeBonus.modifyMult(id, rangeMult)
         stats.energyWeaponRangeBonus.modifyMult(id, rangeMult)
@@ -20,7 +24,7 @@ class niko_MPC_graviticSupercomputer : BaseHullMod() {
         stats.sightRadiusMod.modifyFlat(id, visionIncrement)
         stats.recoilPerShotMult.modifyMult(id, recoilMult)
         stats.recoilDecayMult.modifyMult(id, recoilMult)
-        stats.maxRecoilMult.modifyMult(id, accuracyMult)
+        stats.maxRecoilMult.modifyMult(id, maxRecoilMult)
         stats.autofireAimAccuracy.modifyFlat(id, autofireMult)
     }
 

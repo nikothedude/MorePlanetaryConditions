@@ -16,15 +16,16 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "chaingun",
-        "WS0002": "chaingun",
-        "WS0003": "lightmg",
-        "WS0004": "lightmg"
+        "WS0002": "chaingun"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0003": "lightmg",
+        "WS0004": "lightmg"
+		}
     },
     {
       "autofire": true,

@@ -14,14 +14,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "plasma",
-        "WS0002": "niko_MPC_LR_taclaser",
-        "WS0003": "niko_MPC_LR_taclaser"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0002": "niko_MPC_LR_taclaser",
+        "WS0003": "niko_MPC_LR_taclaser"
+	  }
     }
   ],
   "modules": [],

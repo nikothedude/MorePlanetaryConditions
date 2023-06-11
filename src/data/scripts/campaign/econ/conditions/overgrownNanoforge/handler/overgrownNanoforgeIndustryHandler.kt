@@ -2,8 +2,10 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.SpecialItemData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeIndustryManipulationIntel
@@ -11,7 +13,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_debugUtils.displayError
+import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
+import data.utilities.niko_MPC_marketUtils
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
@@ -279,6 +283,21 @@ class overgrownNanoforgeIndustryHandler(
 
     fun isSpreading(): Boolean {
         return intelBrain.spreadingState == spreadingStates.SPREADING
+    }
+
+    override fun culled() {
+        spawnSpecialItem()
+        super.culled()
+    }
+
+    private fun spawnSpecialItem() {
+        val overgrownNanoforgeData = SpecialItemData(niko_MPC_ids.overgrownNanoforgeItemId, null)
+        Misc.getStorage(market).cargo.addSpecial(overgrownNanoforgeData, 1f)
+    }
+
+    fun getMaxJunkAllowed(): Int {
+        if (market.isInhabited()) return niko_MPC_marketUtils.maxStructureAmount - 1
+        return niko_MPC_marketUtils.maxStructureAmount - 2
     }
 
     companion object {

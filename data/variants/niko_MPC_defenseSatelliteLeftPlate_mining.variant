@@ -20,8 +20,6 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0006": "niko_MPC_LR_mininglaser",
-        "WS0007": "niko_MPC_LR_mininglaser",
         "WS0010": "miningblaster",
         "WS0015": "miningblaster",
         "WS0016": "miningblaster",
@@ -50,7 +48,7 @@
       "weapons": {
         "WS0013": "swarmer",
         "WS0018": "swarmer",
-        "WS0019": "swarmer_fighter",
+        "WS0019": "swarmer",
         "WS0020": "swarmer"
       }
     },
@@ -65,7 +63,8 @@
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0008": "lightdualmg"
+        "WS0008": "lightdualmg",
+		"WS0011": "dualflak"
       }
     },
     {
@@ -75,7 +74,8 @@
         "WS0003": "pdburst",
         "WS0004": "niko_MPC_LR_pdburst",
         "WS0005": "niko_MPC_LR_pdburst",
-        "WS0011": "dualflak"
+		"WS0006": "niko_MPC_LR_mininglaser",
+        "WS0007": "niko_MPC_LR_mininglaser",
       }
     }
   ],

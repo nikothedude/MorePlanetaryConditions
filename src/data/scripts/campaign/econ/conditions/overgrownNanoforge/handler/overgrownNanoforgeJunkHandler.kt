@@ -31,6 +31,11 @@ class overgrownNanoforgeJunkHandler(
     growing: Boolean = false,
 ): overgrownNanoforgeHandler(initMarket, growing) {
 
+    /**
+     * Is our structure an industry?
+     */
+    var industry: Boolean = false
+
     /* Should be the String ID of the building we currently have active, or will instantiate later. */
     var cachedBuildingId: String? = if (junkDesignation == null) {
         market.getNextOvergrownJunkId()
@@ -94,8 +99,8 @@ class overgrownNanoforgeJunkHandler(
 
     override fun createBaseSource(): overgrownNanoforgeEffectSource {
         val sourceType = overgrownNanoforgeSourceTypes.adjustedPick() ?: overgrownNanoforgeSourceTypes.STRUCTURE
-        val params = overgrownNanoforgeRandomizedSourceParams(masterHandler, sourceType)
-        return overgrownNanoforgeRandomizedSource(masterHandler, params)
+        val params = overgrownNanoforgeRandomizedSourceParams(this, sourceType)
+        return overgrownNanoforgeRandomizedSource(this, params)
     }
 
     override fun createManipulationIntel(): baseOvergrownNanoforgeManipulationIntel {
@@ -133,6 +138,10 @@ class overgrownNanoforgeJunkHandler(
     fun getOurDesignation(): Int? {
         if (cachedBuildingId == null) return null // shouldnt happen since this deletes if this is null i believe
         return (cachedBuildingId!!.filter { it.isDigit() }.toInt())
+    }
+
+    fun isIndustry(): Boolean {
+        return industry
     }
 
     companion object {

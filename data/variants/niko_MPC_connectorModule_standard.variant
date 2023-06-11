@@ -14,14 +14,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "hellbore",
-        "WS0002": "lightdualmg",
-        "WS0003": "lightdualmg"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0002": "lightdualmg",
+        "WS0003": "lightdualmg"
+	  }
     }
   ],
   "modules": [],

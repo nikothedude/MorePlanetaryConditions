@@ -5,7 +5,7 @@
     "utility":"false",
 	"version":"3.0.0",
 	"description":"Adds a bunch of misc. planetary conditions to the game, many, if not most, with custom scripted effects that go beyond what most other conditions, vanilla or modded, do.",
-    "gameVersion": "0.96a-RC7", 
+    "gameVersion": "0.96a-RC10",
   	"jars":["jars/niko_morePlanetaryConditions.jar"],
   	"modPlugin":"data.niko_MPC_modPlugin",
 	  	"dependencies": [

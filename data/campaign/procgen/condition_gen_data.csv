@@ -3,4 +3,4 @@ niko_MPC_satellites_no_pick,niko_MPC_satellites,5,25,,,,,,,600,800,800,650,335,7
 niko_MPC_antiAsteroidSatellites_derelict,niko_MPC_satellites,5,25,,FALSE,25,,,,5,4,6,5,11,6,8,8,5,3,4,7,11,11,12,12,11,11,12,11,10,,,,1.5,0.5,,,,,0.8,,,,,,,3.5
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 niko_MPC_overgrownNanoforge_no_pick,niko_MPC_overgrownNanoforge,5,30,,,,,,,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,1000,,,,,,,,,,,,,,,,,
-niko_MPC_overgrownNanoforgeCondition,niko_MPC_overgrownNanoforge,5,30,,TRUE,90,,,,5,1,15,20,40,40,40,25,15,25,25,30,20,20,20,20,20,20,20,20,20,,0.9,0.5,,,,,,,,,,,,,,
+niko_MPC_overgrownNanoforgeCondition,niko_MPC_overgrownNanoforge,5,30,,TRUE,90,,,,3,1,10,15,30,30,30,15,5,15,20,25,10,10,10,10,10,10,10,10,10,,0.9,0.5,,,,,,,,,,,,,,

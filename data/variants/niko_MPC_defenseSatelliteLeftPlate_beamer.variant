@@ -20,11 +20,7 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0012": "dragon",
-        "WS0013": "gazer",
         "WS0014": "niko_MPC_LR_tachyonlance",
-        "WS0018": "gorgon",
-        "WS0019": "swarmer"
       }
     },
     {
@@ -47,7 +43,10 @@
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0020": "swarmer"
+        "WS0020": "swarmer",
+		"WS0018": "gorgon",
+		"WS0019": "swarmer",
+		"WS0013": "gazer"
       }
     },
     {
@@ -69,13 +68,15 @@
         "WS0007": "lightdualmg",
         "WS0008": "lightdualmg",
         "WS0010": "niko_MPC_LR_heavyburst",
-        "WS0011": "niko_MPC_LR_heavyburst"
+        "WS0011": "niko_MPC_LR_heavyburst",
+		"WS0012": "dragon",
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+	  }
     }
   ],
   "modules": [],

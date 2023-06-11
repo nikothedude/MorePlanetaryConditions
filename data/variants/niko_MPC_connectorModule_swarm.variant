@@ -15,14 +15,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "locust",
-        "WS0002": "vulcan",
-        "WS0003": "vulcan"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0002": "vulcan",
+        "WS0003": "vulcan"
+	  }
     }
   ],
   "modules": [],

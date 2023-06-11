@@ -1,7 +1,7 @@
 {
 	"combatSmall":{
 		"niko_MPC_defenseSatelliteCore_barrage":30,
-		"niko_MPC_defenseSatelliteCore_standard":80,
+		"niko_MPC_defenseSatelliteCore_standard":50,
 		"niko_MPC_defenseSatelliteCore_shielded":30,
 		"niko_MPC_defenseSatelliteCore_ordnance":5,
 		"niko_MPC_defenseSatelliteCore_beamer":3,
@@ -11,18 +11,17 @@
 	},
 	"combatMedium":{
 		"niko_MPC_defenseSatelliteCore_barrage":30,
-		"niko_MPC_defenseSatelliteCore_standard":80,
+		"niko_MPC_defenseSatelliteCore_standard":50,
 		"niko_MPC_defenseSatelliteCore_shielded":30,
 		"niko_MPC_defenseSatelliteCore_ordnance":5,
 		"niko_MPC_defenseSatelliteCore_beamer":3,
 		"niko_MPC_defenseSatelliteCore_swarm":0.5,
 		"niko_MPC_defenseSatelliteCore_mining":0.5,
 		"niko_MPC_defenseSatelliteCore_blaster":0.5,
-
 	},
 	"combatLarge":{
 		"niko_MPC_defenseSatelliteCore_barrage":30,
-		"niko_MPC_defenseSatelliteCore_standard":80,
+		"niko_MPC_defenseSatelliteCore_standard":50,
 		"niko_MPC_defenseSatelliteCore_shielded":30,
 		"niko_MPC_defenseSatelliteCore_ordnance":5,
 		"niko_MPC_defenseSatelliteCore_beamer":3,
@@ -32,7 +31,7 @@
 	},
 	"combatCapital":{
 		"niko_MPC_defenseSatelliteCore_barrage":30,
-		"niko_MPC_defenseSatelliteCore_standard":80,
+		"niko_MPC_defenseSatelliteCore_standard":50,
 		"niko_MPC_defenseSatelliteCore_shielded":30,
 		"niko_MPC_defenseSatelliteCore_ordnance":5,
 		"niko_MPC_defenseSatelliteCore_beamer":3,

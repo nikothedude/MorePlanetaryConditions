@@ -18,9 +18,11 @@
   ],
   "weaponGroups": [
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0014": "locust"
+	  }
     },
     {
       "autofire": true,
@@ -40,41 +42,41 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0008": "vulcan"
+        "WS0008": "vulcan",
+		"WS0005": "vulcan",
+		"WS0002": "lightdualmg",
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "lrpdlaser",
-        "WS0002": "lightdualmg",
-        "WS0003": "lrpdlaser",
-        "WS0005": "vulcan",
         "WS0009": "flak",
         "WS0010": "flak",
         "WS0011": "flak",
-        "WS0012": "swarmer",
-        "WS0013": "swarmer",
-        "WS0014": "locust",
         "WS0016": "flak",
         "WS0017": "flak",
-        "WS0018": "swarmer",
-        "WS0019": "swarmer",
-        "WS0020": "swarmer"
       }
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0012": "swarmer",
+        "WS0013": "swarmer",
+		"WS0018": "swarmer",
+        "WS0019": "swarmer",
+        "WS0020": "swarmer",
+	  }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
         "WS0006": "niko_MPC_LR_taclaser",
-        "WS0007": "niko_MPC_LR_taclaser"
+        "WS0007": "niko_MPC_LR_taclaser",
+		"WS0001": "niko_MPC_LR_taclaser",
+        "WS0003": "niko_MPC_LR_taclaser",
       }
     }
   ],

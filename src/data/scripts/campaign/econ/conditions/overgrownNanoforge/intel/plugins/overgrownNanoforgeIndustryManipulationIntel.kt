@@ -51,6 +51,21 @@ class overgrownNanoforgeIndustryManipulationIntel(
     }
 
     override fun isLargeIntel(): Boolean = true
+
+    override fun getTextForCulled(): String {
+        val original = super.getTextForCulled()
+        return "$original Due to the fact this was the core of the nanoforge, the %s on said market has been destroyed, and " +
+                "a %s has been deposited into it's storage."
+    }
+
+    override fun getCulledTextHighlights(): Array<String> {
+        val original = super.getCulledTextHighlights()
+        return (arrayOf(*original, ourHandler.getCurrentName(), "special item"))
+    }
+
+    override fun getIntelToLinkWhenCulled(): baseOvergrownNanoforgeIntel? {
+        return null
+    }
 }
 
 open class overgrownNanoforgeIndustryIntelCountermeasures(override val overgrownIntel: overgrownNanoforgeIndustryManipulationIntel

@@ -1,6 +1,9 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.CommMessageAPI
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
+import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.UIComponentAPI
@@ -9,6 +12,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorStructureRegeneration
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
+import data.scripts.campaign.intel.baseNikoEventStage
+import java.awt.Color
 import kotlin.math.max
 
 open class baseOvergrownNanoforgeManipulationIntel(
@@ -89,8 +94,66 @@ open class baseOvergrownNanoforgeManipulationIntel(
         ourHandler.culled()
     }
     fun shouldReportCulled(): Boolean = playerCanManipulateGrowth()
-    fun reportCulled() {
-        Global.getSector().campaignUI.addMessage("thing culled lol")
+    open fun reportCulled() {
+        brain.intelCulled(this)
+
+        sendCulledMessage()
+    }
+
+    open fun sendCulledMessage() {
+        val linkedIntel = getIntelToLinkWhenCulled()
+        val messageIntel = getCulledIntel()
+
+        if (linkedIntel != null) {
+            Global.getSector().campaignUI.addMessage(messageIntel, CommMessageAPI.MessageClickAction.INTEL_TAB, linkedIntel)
+        } else {
+            Global.getSector().campaignUI.addMessage(messageIntel)
+        }
+    }
+
+    protected fun getCulledIntel(): MessageIntel {
+        val intel = instantiateMessageIntelForCulled()
+        return modifyCulledMessageIntel(intel)
+    }
+
+    protected open fun modifyCulledMessageIntel(intel: MessageIntel): MessageIntel {
+        intel.icon = icon
+
+        return intel
+    }
+
+    private fun instantiateMessageIntelForCulled(): MessageIntel {
+        val text = getTextForCulled()
+        val color = getCulledTextBaseColor()
+        val highlights = getCulledTextHighlights()
+        val highlightColors = getCulledTextHighlightColors()
+        val messageIntel = MessageIntel(
+            text,
+            color,
+            highlights,
+            *highlightColors
+        )
+        return messageIntel
+    }
+
+    open fun getCulledTextBaseColor(): Color {
+        return Misc.getTextColor()
+    }
+
+    protected open fun getTextForCulled(): String {
+        return "%s on %s culled."
+    }
+
+    open fun getCulledTextHighlights(): Array<String> {
+        return arrayOf(ourHandler.getCurrentName(), getMarket().name)
+    }
+
+    private fun getCulledTextHighlightColors(): Array<Color> {
+        return arrayOf(Misc.getHighlightColor())
+    }
+
+    open fun getIntelToLinkWhenCulled(): baseOvergrownNanoforgeIntel? {
+        return brain.spreadingIntel
     }
 
     override fun setProgress(progress: Int) {

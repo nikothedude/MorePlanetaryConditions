@@ -4,9 +4,12 @@ import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
+import com.fs.starfarer.api.impl.campaign.econ.impl.Spaceport
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Industries
+import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
@@ -301,5 +304,17 @@ object niko_MPC_marketUtils {
 
     private fun convertToMemKey(id: String): String {
         return "\$" + id
+    }
+
+    fun MarketAPI.getMaxIndustries(): Int {
+        return stats.dynamic.getStat(Stats.MAX_INDUSTRIES).modifiedInt
+    }
+
+    fun Industry.isPopulationAndInfrastructure(): Boolean {
+        return id == Industries.POPULATION
+    }
+
+    fun Industry.isSpacePort(): Boolean {
+        return this is Spaceport
     }
 }

@@ -12,7 +12,7 @@ import org.lazywizard.lazylib.MathUtils
 import java.util.UUID
 
 abstract class overgrownNanoforgeEffect(
-    val handler: overgrownNanoforgeHandler): simpleFormat {
+    open val handler: overgrownNanoforgeHandler): simpleFormat {
 
     open var id: String = Misc.genUID()
 
@@ -43,7 +43,7 @@ abstract class overgrownNanoforgeEffect(
     }
 
     fun getMarket(): MarketAPI = handler.market
-    fun getStructure(): baseOvergrownNanoforgeStructure? = handler.getStructure()
+    open fun getStructure(): baseOvergrownNanoforgeStructure? = handler.getStructure()
     open fun getOurId(): String = id
     open fun getNameForModifier(): String = "${handler.getCurrentName()}: ${getName()}"
 

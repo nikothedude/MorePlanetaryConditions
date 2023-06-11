@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -493,6 +494,23 @@ abstract class baseOvergrownNanoforgeIntel(
 
     override fun isEventProgressANegativeThingForThePlayer(): Boolean {
         return true
+    }
+
+    override fun addBulletPoints(
+        info: TooltipMakerAPI?,
+        mode: ListInfoMode?,
+        isUpdate: Boolean,
+        tc: Color?,
+        initPad: Float
+    ) {
+        val updateParams = listInfoParam
+        if (info != null && isUpdate && updateParams != null) {
+            if (updateParams is EventStageData && updateParams.id is baseNikoEventStage) {
+                val stage: baseNikoEventStage = updateParams.id as baseNikoEventStage
+                if (stage.modifyIntelUpdateWhenStageReached(info, mode, tc, initPad)) return
+            }
+        }
+        super.addBulletPoints(info, mode, isUpdate, tc, initPad)
     }
 
     override fun getBarColor(): Color {

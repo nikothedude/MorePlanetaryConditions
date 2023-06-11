@@ -16,19 +16,20 @@
   ],
   "weaponGroups": [
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "LINKED",
       "weapons": {
         "WS0009": "heavymauler",
-        "WS0015": "miningblaster",
         "WS0016": "heavymauler",
-        "WS0019": "swarmer_fighter"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0003": "irpulse",
+		"WS0007": "irpulse"
+	  }
     },
     {
       "autofire": true,
@@ -36,9 +37,7 @@
       "weapons": {
         "WS0001": "lightag",
         "WS0002": "lightag",
-        "WS0003": "irpulse",
         "WS0006": "lightag",
-        "WS0007": "irpulse"
       }
     },
     {
@@ -67,13 +66,16 @@
         "WS0012": "swarmer",
         "WS0013": "swarmer",
         "WS0018": "swarmer",
-        "WS0020": "swarmer"
+        "WS0020": "swarmer",
+		"WS0019": "swarmer"
       }
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "ALTERNATING",
-      "weapons": {}
+      "weapons": {
+		"WS0015": "miningblaster"
+	  }
     }
   ],
   "modules": [],

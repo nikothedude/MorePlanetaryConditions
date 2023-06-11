@@ -16,14 +16,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "niko_MPC_LR_hil",
-        "WS0002": "niko_MPC_LR_mininglaser",
-        "WS0003": "niko_MPC_LR_mininglaser"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0002": "niko_MPC_LR_mininglaser",
+        "WS0003": "niko_MPC_LR_mininglaser"
+	  }
     }
   ],
   "modules": [],

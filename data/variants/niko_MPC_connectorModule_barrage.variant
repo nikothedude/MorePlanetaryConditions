@@ -14,14 +14,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "hephag",
-        "WS0002": "lightmg",
-        "WS0003": "lightmg"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0002": "lightmg",
+        "WS0003": "lightmg"
+	  }
     }
   ],
   "modules": [],

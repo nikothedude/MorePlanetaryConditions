@@ -15,8 +15,6 @@
       "weapons": {
         "WS0001": "heavymauler",
         "WS0002": "heavymauler",
-        "WS0005": "niko_MPC_LR_heavyburst",
-        "WS0006": "niko_MPC_LR_heavyburst"
       }
     },
     {
@@ -30,7 +28,10 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0005": "niko_MPC_LR_heavyburst",
+        "WS0006": "niko_MPC_LR_heavyburst"
+		}
     }
   ],
   "modules": [

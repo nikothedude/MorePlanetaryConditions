@@ -20,7 +20,8 @@
     "pointdefenseai",
     "niko_MPC_cheapDeployment",
     "turretgyros",
-    "do_not_fire_through"
+    "do_not_fire_through",
+	"niko_MPC_superPDComputer"
   ],
   "weaponSlots": [
     {

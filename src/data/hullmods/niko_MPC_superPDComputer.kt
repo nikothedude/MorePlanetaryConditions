@@ -1,30 +1,28 @@
-package data.hullmods;
+package data.hullmods
 
-import com.fs.starfarer.api.combat.BaseHullMod;
-import com.fs.starfarer.api.combat.MutableShipStatsAPI;
-import com.fs.starfarer.api.combat.ShipAPI;
-import com.fs.starfarer.api.impl.campaign.ids.Stats;
+import com.fs.starfarer.api.combat.BaseHullMod
+import com.fs.starfarer.api.combat.MutableShipStatsAPI
+import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.combat.ShipAPI.HullSize
+import com.fs.starfarer.api.combat.WeaponAPI
+import com.fs.starfarer.api.impl.campaign.ids.Stats
+import data.utilities.niko_MPC_battleUtils.isPD
 
-public class niko_MPC_superPDComputer extends BaseHullMod {
+class niko_MPC_superPDComputer : BaseHullMod() {
 
-    public final float missileDamagePercent = 50f;
-    public final float rangePercent = 5000f;
+    override fun applyEffectsAfterShipCreation(ship: ShipAPI?, id: String?) {
+        super.applyEffectsAfterShipCreation(ship, id)
 
-    @Override
-    public void applyEffectsBeforeShipCreation(ShipAPI.HullSize hullSize, MutableShipStatsAPI stats, String id) {
-
-        stats.getNonBeamPDWeaponRangeBonus().modifyPercent(id, rangePercent);
-        stats.getBeamPDWeaponRangeBonus().modifyPercent(id, rangePercent);
-
-        stats.getDynamic().getMod(Stats.PD_IGNORES_FLARES).modifyFlat(id, 1f);
-        stats.getDynamic().getMod(Stats.PD_BEST_TARGET_LEADING).modifyFlat(id, 1f);
-        stats.getDamageToMissiles().modifyPercent(id, missileDamagePercent);
+        val weapons: List<WeaponAPI> = ship!!.allWeapons
+        val iter = weapons.iterator()
+        while (iter.hasNext()) {
+            val weapon = iter.next()
+            if (weapon.isPD()) continue
+            if (weapon.size == WeaponAPI.WeaponSize.SMALL) {
+                weapon.setPD(true)
+            } else {
+                weapon.setPDAlso(true) //CHAOS
+            }
+        }
     }
-
-    public String getDescriptionParam(int index, ShipAPI.HullSize hullSize) {
-        if (index == 1) return "" + (int)Math.round(rangePercent) + "%";
-        else if (index == 0) return "" + (int)Math.round(missileDamagePercent) + "%";
-        return null;
-    }
-
 }

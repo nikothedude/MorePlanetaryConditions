@@ -17,21 +17,23 @@
       "weapons": {
         "WS0001": "miningblaster",
         "WS0002": "miningblaster",
-        "WS0003": "niko_MPC_LR_mininglaser",
-        "WS0004": "niko_MPC_LR_mininglaser",
-        "WS0005": "niko_MPC_LR_heavyburst",
-        "WS0006": "niko_MPC_LR_heavyburst"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0003": "niko_MPC_LR_mininglaser",
+        "WS0004": "niko_MPC_LR_mininglaser"
+	  }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0005": "niko_MPC_LR_heavyburst",
+        "WS0006": "niko_MPC_LR_heavyburst"
+	  }
     }
   ],
   "modules": [

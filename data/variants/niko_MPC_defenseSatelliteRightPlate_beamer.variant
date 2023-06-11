@@ -21,12 +21,7 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0005": "gorgon",
-        "WS0007": "swarmer",
-        "WS0010": "gorgon",
-        "WS0011": "dragon",
         "WS0019": "amblaster",
-        "WS0020": "swarmer"
       }
     },
     {
@@ -47,7 +42,10 @@
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0020": "swarmer",
+		"WS0007": "swarmer",
+	  }
     },
     {
       "autofire": true,
@@ -63,18 +61,23 @@
         "WS0012": "niko_MPC_LR_pdburst",
         "WS0015": "niko_MPC_LR_heavyburst",
         "WS0017": "niko_MPC_LR_pdburst",
-        "WS0018": "niko_MPC_LR_pdburst"
+        "WS0018": "niko_MPC_LR_pdburst",
+		"WS0011": "dragon",
       }
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
-      "weapons": {}
+      "mode": "LINKED",
+      "weapons": {
+		"WS0005": "gorgon",
+        "WS0010": "gorgon",
+		}
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+	  }
     }
   ],
   "modules": [],

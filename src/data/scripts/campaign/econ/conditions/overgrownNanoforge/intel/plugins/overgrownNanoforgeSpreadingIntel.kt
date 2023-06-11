@@ -109,6 +109,8 @@ class overgrownNanoforgePrepareGrowthFactor(
 
     private fun getAdjustedProgress(): Int {
         val industryHandler = overgrownIntel.brain.industryNanoforge
+        val maxJunk = industryHandler.getMaxJunkAllowed()
+        if (getMarket().industries.size >= maxJunk) return 0
         val discovered = industryHandler.discovered
         var adjustedProgress: Float = baseProgress.toFloat()
         if (!discovered) {

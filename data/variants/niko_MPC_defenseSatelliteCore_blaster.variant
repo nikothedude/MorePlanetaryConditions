@@ -17,21 +17,23 @@
       "weapons": {
         "WS0001": "heavyblaster",
         "WS0002": "heavyblaster",
-        "WS0003": "amblaster",
-        "WS0004": "amblaster",
-        "WS0005": "niko_MPC_LR_heavyburst",
-        "WS0006": "niko_MPC_LR_heavyburst"
       }
     },
     {
-      "autofire": true,
-      "mode": "LINKED",
-      "weapons": {}
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+		"WS0003": "amblaster",
+        "WS0004": "amblaster",
+		}
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+		"WS0005": "niko_MPC_LR_heavyburst",
+        "WS0006": "niko_MPC_LR_heavyburst"
+		}
     }
   ],
   "modules": [

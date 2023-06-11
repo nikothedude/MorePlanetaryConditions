@@ -3,6 +3,7 @@ package data.scripts.campaign.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
 import org.jetbrains.annotations.Contract
@@ -104,7 +105,7 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         }
     }
 
-    fun hasFactorOfClass(clazz: Class<baseNikoEventFactor>): Boolean {
+    fun hasFactorOfClass(clazz: Class<EventFactor>): Boolean {
         for (factor in factors) {
             if (factor.javaClass.isAssignableFrom(clazz)) return true
         }
@@ -113,7 +114,7 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
     fun hasStageOfClass(clazz: Class<baseNikoEventStage>): Boolean {
         for (stage in stages) {
-            if (stage.javaClass.isAssignableFrom(clazz)) return true
+            if (stage.id.javaClass.isAssignableFrom(clazz)) return true
         }
         return false
     }
@@ -135,9 +136,13 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
     override fun createIntelInfo(info: TooltipMakerAPI, mode: IntelInfoPlugin.ListInfoMode?) {
         val c = getTitleColor(mode)
         // i would love to do this modularly, alex, but youve fucking. forced my hand with a LOCAL VARIABLE
+        if (isLargeIntel()) {
+            info.setParaSmallInsignia()
+        }
         info.addPara(name, c, 0f)
-
-        if (isLargeIntel()) info.setParaFontDefault()
+        if (isLargeIntel()) {
+            info.setParaFontDefault()
+        }
 
         addBulletPoints(info, mode)
     }

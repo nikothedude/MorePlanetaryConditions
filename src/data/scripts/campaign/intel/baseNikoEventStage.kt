@@ -1,9 +1,12 @@
 package data.scripts.campaign.intel
 
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
 import org.jetbrains.annotations.Contract
+import java.awt.Color
 
 abstract class baseNikoEventStage(
     open val intel: baseNikoEventIntelPlugin
@@ -107,5 +110,16 @@ abstract class baseNikoEventStage(
      */
     open fun getIconSize(): BaseEventIntel.StageIconSize? {
         return BaseEventIntel.StageIconSize.MEDIUM
+    }
+
+    open fun modifyIntelUpdateWhenStageReached(
+        info: TooltipMakerAPI,
+        mode: IntelInfoPlugin.ListInfoMode?,
+        tc: Color?,
+        initPad: Float
+    ): Boolean {
+
+        info.addPara("Stage reached: ${getName()}", initPad, Misc.getTextColor())
+        return true
     }
 }

@@ -2,6 +2,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
 import com.fs.starfarer.api.Global
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import kotlin.math.abs
@@ -92,6 +93,10 @@ class overgrownNanoforgeAlterSupplySource(
 
             structure.supply(getOurId(), commodityId, 0, getName())
         }
+    }
+
+    override fun getStructure(): baseOvergrownNanoforgeStructure? {
+        return handler.getCoreHandler().getStructure()
     }
 
     override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {

@@ -1,9 +1,13 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
-import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
+import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
 import org.lazywizard.lazylib.MathUtils
+import java.awt.Color
 import kotlin.math.roundToInt
 
 abstract class overgrownNanoforgeGrowthStage(override val intel: overgrownNanoforgeGrowthIntel) : overgrownNanoforgeIntelStage(intel) {
@@ -26,13 +30,31 @@ class overgrownNanoforgeDiscoverTargetNameStage(intel: overgrownNanoforgeGrowthI
     }
 
     override fun getName(): String {
-        return "name learn"
+        return "Learn name of target industry"
     }
 
     override fun getDesc(): String = "Once reached, the name of the target industry will be revealed, if it exists."
 
     override fun stageReached() {
         intel.params.nameKnown = true
+    }
+
+    override fun modifyIntelUpdateWhenStageReached(
+        info: TooltipMakerAPI,
+        mode: IntelInfoPlugin.ListInfoMode?,
+        tc: Color?,
+        initPad: Float
+    ): Boolean {
+        super.modifyIntelUpdateWhenStageReached(info, mode, tc, initPad)
+        val target = intel.params.ourIndustryTarget
+        val highlightColor = if (target == null) Misc.getPositiveHighlightColor() else Misc.getNegativeHighlightColor()
+        val targetName = if (target == null) "None" else target.currentName
+        info.addPara("Target: %s", initPad, highlightColor, targetName)
+        if (target != null) {
+            val soundId = if (target.isPopulationAndInfrastructure()) "cr_playership_critical" else "cr_playership_warning"
+            Global.getSoundPlayer().playUISound(soundId, 1f, 1f)
+        }
+        return true
     }
 
 }
@@ -43,7 +65,7 @@ class overgrownNanoforgeDiscoverEffectStage(intel: overgrownNanoforgeGrowthIntel
         get() {
             return intel.params.percentThresholdToTotalScoreKnowledge //TODO: ugly as fuck please refactor this
         }
-    override fun getName(): String = "dsicover effects"
+    override fun getName(): String = "Discover effects"
     override fun getDesc(): String = "Once reached, the specific and exact effects of this structure will be revealed. " +
             "As it is approached, the score estimate will become more accurate."
 

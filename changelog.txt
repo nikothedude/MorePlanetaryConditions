@@ -1,6 +1,6 @@
 3.0.0:
-VERY LIKELY INCOMPATABLE WITH PREVIOUS SAVES
-Update to Starsector 0.96a-RC8
+INCOMPATABLE WITH PREVIOUS SAVES
+Update to Starsector 0.96a-RC10
 
 New condition: Overgrown Nanoforge:
     A old abandoned industial nanoforge, endlessly expanding in a grey-goo scenario. 
@@ -17,13 +17,12 @@ Adds industry: Overgrown Nanoforge
     The main industry is only destroyable once all connected structures are destroyed
         Once destroyed, you receive a unique nanoforge item that massively increases commodity output of any structure it's inserted into,
         but has various negative effects
+        If installed in heavy industry, increases faction-wide fleet size by 400% but reduces ship quality by 400% as well
     
     This encourages you to treat this as a sort of bonsai tree, constantly minmaxing the effects, minimizing negatives, maximizing positives
     Extremely rare - only 1-2 if any will spawn in a given game
 
 Anti-Asteroid Satellites:
-
-Re-introduced interaction plugin to make fleets always fight back
 
 Ships
     Overclocked targetting (Frontal plate system) now 1. Overloads for far longer 2. Lasts for far less
@@ -40,6 +39,11 @@ Ships
             Variant weight slightly reduced
     Core
         Do not fire through added - modules will no longer fire through the core, enhancing flank capabilities
+        Weapons adjusted in general
+        All weapons either now have secondary or primary PD capabilties
+            PD_ALSO and PD tags respectively
+        Max recoil of weapons reduced to 10%
+            Sounds like a buff, but is actually a fat nerf as it makes it way easier to dodge projectiles
 
 2.1.1a:
 SAVE COMPATABLE

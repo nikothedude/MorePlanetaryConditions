@@ -19,7 +19,8 @@
     "niko_MPC_noExplosionDamage",
     "niko_MPC_connectorWeakness",
     "always_detaches",
-    "turretgyros"
+    "turretgyros",
+	"niko_MPC_superPDComputer"
   ],
   "weaponSlots": [
     {

@@ -51,4 +51,13 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
     override fun getCurrentName(): String {
         return OVERGROWN_NANOFORGE_JUNK_NAME
     }
+
+    override fun canInstallAICores(): Boolean {
+        return false
+    }
+
+    override fun isIndustry(): Boolean {
+        val handler = getHandler() ?: return false
+        return handler.isIndustry()
+    }
 }

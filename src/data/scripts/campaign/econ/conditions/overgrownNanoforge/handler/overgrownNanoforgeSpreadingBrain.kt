@@ -9,10 +9,7 @@ import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasons
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeGrowthIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeSpreadingIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.*
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_marketUtils.isInhabited
@@ -106,7 +103,7 @@ class overgrownNanoforgeSpreadingBrain(
     fun createNewCreationParams(): overgrownSpreadingParams? {
         val handler: overgrownNanoforgeJunkHandler = createHandlerForParams() ?: return null
         handler.init()
-        return overgrownSpreadingParams(handler)
+        return overgrownSpreadingParams(handler, this)
     }
 
     fun createHandlerForParams(): overgrownNanoforgeJunkHandler? {
@@ -180,7 +177,7 @@ class overgrownNanoforgeSpreadingBrain(
         val multipliedCost = (rawCost * iterationMult)
 
         if (multipliedCost > creditsAvailable) {
-            return insufficientCredits()
+            insufficientCredits() //the below comment is wrong :(
             // fun fact! returning is okay here since order of operations says we manipulate progress AFTER this!
         }
 
@@ -203,7 +200,7 @@ class overgrownNanoforgeSpreadingBrain(
             Misc.getBasePlayerColor(), arrayOf<String>(marketName, "discontinued"), highlight
         )
         intel.icon = Global.getSettings().getSpriteName("intel", "niko_MPC_priceUpdate")
-        Global.getSoundPlayer().playUISound("cr_playership_critical", 1f, 1f)
+        Global.getSoundPlayer().playUISound("cr_playership_malfunction", 1f, 1f)
 
         Global.getSector().campaignUI.addMessage(intel)
     }
@@ -229,6 +226,14 @@ class overgrownNanoforgeSpreadingBrain(
             Global.getSector().campaignUI.addMessage(intel, MessageClickAction.INCOME_TAB, Tags.INCOME_REPORT)
         }
         totalCosts = 0f
+    }
+
+    fun intelCulled(intel: baseOvergrownNanoforgeManipulationIntel) {
+
+    }
+
+    fun getIndustryIntel(): overgrownNanoforgeIndustryManipulationIntel? {
+        return industryNanoforge.manipulationIntel as? overgrownNanoforgeIndustryManipulationIntel
     }
 }
 

@@ -21,14 +21,17 @@
       "mode": "LINKED",
       "weapons": {
         "WS0003": "heavymauler",
-        "WS0005": "swarmer",
         "WS0015": "heavymauler"
       }
     },
     {
-      "autofire": false,
-      "mode": "ALTERNATING",
-      "weapons": {}
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+		"WS0001": "lightdualmg",
+		"WS0008": "lightdualmg",
+		"WS0012": "vulcan",
+	  }
     },
     {
       "autofire": true,
@@ -52,13 +55,9 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "lightdualmg",
-        "WS0006": "dualflak",
-        "WS0008": "lightdualmg",
+		"WS0006": "dualflak",
         "WS0009": "dualflak",
-        "WS0012": "vulcan",
         "WS0013": "dualflak",
-        "WS0014": "heavymg"
       }
     },
     {
@@ -68,13 +67,16 @@
         "WS0007": "swarmer",
         "WS0010": "swarmer",
         "WS0011": "swarmer",
-        "WS0020": "swarmer"
+        "WS0020": "swarmer",
+		"WS0005": "swarmer",
       }
     },
     {
-      "autofire": false,
+      "autofire": true,
       "mode": "ALTERNATING",
-      "weapons": {}
+      "weapons": {
+		"WS0014": "heavymg"
+	  }
     }
   ],
   "modules": [],

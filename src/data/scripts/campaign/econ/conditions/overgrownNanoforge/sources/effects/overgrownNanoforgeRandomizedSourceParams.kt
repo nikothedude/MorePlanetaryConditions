@@ -17,7 +17,7 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_NEGATIVE_EFFECT_BUDG
 import kotlin.math.abs
 
 class overgrownNanoforgeRandomizedSourceParams(
-    val handler: overgrownNanoforgeIndustryHandler,
+    val handler: overgrownNanoforgeJunkHandler,
     val type: overgrownNanoforgeSourceTypes,
 ): overgrownNanoforgeSourceParams() {
     var positiveBudgetHolder: budgetHolder
@@ -87,11 +87,11 @@ class overgrownNanoforgeRandomizedSourceParams(
         if (potentialPrototypes.isEmpty()) return HashSet()
         val negative = initialBudget < 0
         val getMax = { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, ->
-            (entry.getMaximumCost(handler.getCoreHandler()))?.coerceAtMost(budget) ?: budget}
+            (entry.getMaximumCost(handler))?.coerceAtMost(budget) ?: budget}
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
             potentialPrototypes,
             abs(initialBudget),
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler.getCoreHandler()) ?: 0f},
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler) ?: 0f},
             getMax,
         )
         if (negative) {
@@ -103,7 +103,7 @@ class overgrownNanoforgeRandomizedSourceParams(
         for (entry in weightedPrototypes) {
             val prototype = entry.key
             val score = entry.value
-            val instance = prototype.getInstance(handler.market.getOvergrownNanoforgeIndustryHandler()!!, score) ?: continue //TODO: this fucking sucks
+            val instance = prototype.getInstance(handler, score) ?: continue
             effects += instance
         }
         return effects

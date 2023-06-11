@@ -19,7 +19,6 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0005": "swarmer",
         "WS0016": "hephag"
       }
     },
@@ -53,28 +52,30 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "lightdualmg",
-        "WS0004": "niko_MPC_LR_pdburst",
         "WS0006": "dualflak",
         "WS0009": "dualflak",
-        "WS0014": "niko_MPC_LR_heavyburst",
         "WS0017": "lightdualmg",
         "WS0018": "lightdualmg"
       }
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
         "WS0007": "swarmer",
         "WS0010": "swarmer",
         "WS0011": "swarmer",
-        "WS0020": "swarmer"
+        "WS0020": "swarmer",
+		"WS0005": "swarmer",
       }
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
-      "weapons": {}
+      "mode": "LINKED",
+      "weapons": {
+		"WS0014": "niko_MPC_LR_heavyburst",
+		"WS0004": "niko_MPC_LR_pdburst",
+	  }
     }
   ],
   "modules": [],

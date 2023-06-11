@@ -22,7 +22,6 @@
       "weapons": {
         "WS0009": "heavymauler",
         "WS0015": "heavymauler",
-        "WS0019": "swarmer"
       }
     },
     {
@@ -68,7 +67,8 @@
         "WS0012": "swarmer",
         "WS0013": "swarmer",
         "WS0018": "swarmer",
-        "WS0020": "swarmer"
+        "WS0020": "swarmer",
+		"WS0019": "swarmer"
       }
     },
     {

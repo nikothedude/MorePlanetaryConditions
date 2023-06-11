@@ -1,7 +1,11 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.comm.CommMessageAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.Industry
+import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
+import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -12,11 +16,10 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
+import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
 import data.utilities.niko_MPC_marketUtils.maxStructureAmount
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_SCORE_ESTIMATION_VARIANCE
-import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_SCORE_ESTIMATION_VARIANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE
 import org.lazywizard.lazylib.MathUtils
 import kotlin.math.roundToInt
@@ -116,14 +119,17 @@ class overgrownNanoforgeGrowthIntel(
         info.addTableHeaderTooltip(0, "The structure this growth is targeting. Guaranteed to be nothing if " +
                 "the market does not have ${maxStructureAmount} visible structures. If this growth completes with an active target, " +
                 "the target structure will be destroyed and replaced by the growth.")
+        info.addTableHeaderTooltip(1, "If Population and Infrastructure is destroyed by the growth, the market will be " +
+                "decivilized. Do not let this happen.")
 
         val targetData = getTargetData()
 
         val baseAlignment = Alignment.LMID
         val baseColor = Misc.getBasePlayerColor()
 
+        val targetColor = if (params.ourIndustryTarget == null) baseColor else Misc.getNegativeHighlightColor()
         info.addRowWithGlow(
-            baseAlignment, baseColor, targetData.name)
+            baseAlignment, targetColor, targetData.name)
         targetData.industry?.let { info.setIdForAddedRow(it) }
 
         val opad = 5f
@@ -198,6 +204,68 @@ class overgrownNanoforgeGrowthIntel(
     }
 
     override fun getSpreadingAdjective(): String = "spreading"
+
+    override fun getTextForCulled(): String {
+        return "The growth of the %s on %s has been stopped, restarting the process."
+    }
+
+    override fun getCulledTextHighlights(): Array<String> {
+        return (arrayOf(ourHandler.getCurrentName(), getMarket().name))
+    }
+
+    override fun getIntelToLinkWhenCulled(): baseOvergrownNanoforgeIntel {
+        return brain.spreadingIntel
+    }
+
+    fun alertPlayerTargetChanged(newIndustry: Industry?) {
+        if (!playerCanManipulateGrowth()) return
+        val suffix = if (newIndustry == null) "nothing" else newIndustry.currentName
+        val base = "Growth on %s now targetting %s"
+        val targetColor = if (newIndustry == null) Misc.getPositiveHighlightColor() else Misc.getNegativeHighlightColor()
+        val intel = MessageIntel(
+            base,
+            Misc.getBasePlayerColor(),
+            arrayOf(getMarket().name, suffix),
+            Misc.getHighlightColor(), targetColor
+        )
+        intel.icon = icon
+        if (newIndustry != null) {
+            val soundId = if (newIndustry.isPopulationAndInfrastructure()) "cr_playership_critical" else "cr_playership_warning"
+            Global.getSoundPlayer().playUISound(soundId, 1f, 1f)
+        }
+        Global.getSector().campaignUI.addMessage(intel, CommMessageAPI.MessageClickAction.INTEL_TAB, this)
+    }
+
+    fun destroyTarget(): Boolean {
+        val target = params.ourIndustryTarget
+        if (target != null) {
+            if (!isHidden) sendTargetDestroyedMessage(target)
+            if (target.isPopulationAndInfrastructure()) {
+                DecivTracker.decivilize(getMarket(), false)
+                return true
+            }
+            getMarket().removeIndustry(target.id, null, false)
+        }
+        return false
+    }
+
+    protected fun sendTargetDestroyedMessage(target: Industry) {
+        var message = "The ${ourHandler.getCurrentName()} on ${getMarket().name} has successfully %s, overtaking and %s the %s."
+        var highlights = arrayOf("spreaded", "destroying", target.currentName)
+        if (target.isPopulationAndInfrastructure()) {
+            message += " The government has lost its final stronghold against the nanoforge menace, and the population has scattered. " +
+                    "%s."
+            highlights += "The colony is lost"
+        }
+        val intel = MessageIntel(
+            message,
+            Misc.getBasePlayerColor(),
+            highlights,
+            Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor()
+        )
+        intel.icon = icon
+        Global.getSector().campaignUI.addMessage(intel, CommMessageAPI.MessageClickAction.INTEL_TAB, brain.getIndustryIntel())
+    }
 }
 
 class targetData(
