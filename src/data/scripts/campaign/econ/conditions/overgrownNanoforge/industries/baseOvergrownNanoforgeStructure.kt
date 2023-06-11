@@ -24,9 +24,7 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
 
     override var deletionScript: overgrownStructureDeletionScript? = null
 
-    override fun canShutDown(): Boolean {
-        return false
-    }
+    override fun canShutDown(): Boolean = false // You must go through [getHandler]'s [manipulationIntel].
 
     override fun apply() {
         apply(true)
@@ -49,20 +47,18 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         getHandler()?.currentStructureId = null
     }
 
-    override fun canUpgrade(): Boolean {
-        return false
-    }
+    override fun canUpgrade(): Boolean = false
 
-    open fun canBeDestroyed(): Boolean {
+    override fun getCanNotShutDownReason(): String = "It is not a simple process to remove a structure such as this."
+
+    /*open fun canBeDestroyed(): Boolean {
         if (playerNotNearAndDoWeCare()) return false
         if (market.hasJunkStructures()) return false
 
         return true
     }
 
-    override fun getCanNotShutDownReason(): String {
-        return "It is not a simple process to remove a structure such as this."
-    }
+    
 
     fun playerNotNearAndDoWeCare(): Boolean {
         if (!niko_MPC_settings.OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON) return false
@@ -77,42 +73,48 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         val distance = MathUtils.getDistance(marketLocation, playerLocation)
         if (distance > niko_MPC_settings.OVERGROWN_NANOFORGE_INTERACTION_DISTANCE) return true
         return false
-    }
-
-    override fun createDeletionScriptInstance(vararg args: Any): overgrownStructureDeletionScript {
-        return overgrownStructureDeletionScript(this, this, market)
-    }
-
+    } 
+    
     override fun upgradeFinished(previous: Industry?) {
         super.upgradeFinished(previous)
         reportDestroyed()
-    }
-
-    override fun sendBuildOrUpgradeMessage() {
-        if (market.isPlayerOwned) {
-            val intel = MessageIntel(currentName + " at " + market.name, Misc.getBasePlayerColor())
-            intel.addLine(BaseIntelPlugin.BULLET + "dasfxgjjy")
-            intel.icon = Global.getSector().playerFaction.crest
-            intel.sound = BaseIntelPlugin.getSoundStandardUpdate()
-            Global.getSector().campaignUI.addMessage(intel, MessageClickAction.COLONY_INFO, market)
-        }
     }
 
     open fun reportDestroyed() {
         delete()
     }
 
-    open fun getHandlerWithUpdate(): overgrownNanoforgeHandler? {
-        return getHandler() ?: instantiateNewHandler()
+    override fun sendBuildOrUpgradeMessage() {
+        if (market.isPlayerOwned) {
+            val intel = MessageIntel(currentName + " at " + market.name, Misc.getBasePlayerColor())
+            intel.addLine(BaseIntelPlugin.BULLET + "dasfxgjjy") // dont think this is used
+            intel.icon = Global.getSector().playerFaction.crest
+            intel.sound = BaseIntelPlugin.getSoundStandardUpdate()
+            Global.getSector().campaignUI.addMessage(intel, MessageClickAction.COLONY_INFO, market)
+        }
     }
 
-    open fun instantiateNewHandler(): overgrownNanoforgeHandler? {
-        if (market.isValidTargetForOvergrownHandler()) {
-            val newHandler = createNewHandlerInstance()
-            newHandler.init()
-            return newHandler
+    */ unused
+
+    override fun createDeletionScriptInstance(vararg args: Any): overgrownStructureDeletionScript {
+        return overgrownStructureDeletionScript(this, this, market)
+    }
+
+    open fun getHandlerWithUpdate(): overgrownNanoforgeHandler? {
+        updateHandler()
+        return getHandler()
+    }
+
+    fun updateHandler() {
+        if (getHandler() == null && market.isValidTargetForOvergrownHandler()) {
+            instantiateNewHandler()
         }
-        return null
+    }
+
+    open fun instantiateNewHandler(): overgrownNanoforgeHandler {
+        val newHandler = createNewHandlerInstance()
+        newHandler.init()
+        return newHandler
     }
 
     override fun createTooltip(mode: Industry.IndustryTooltipMode?, tooltip: TooltipMakerAPI?, expanded: Boolean) {
@@ -161,5 +163,6 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         val intel = handler.manipulationIntel ?: return
         Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
        // Global.getSector().campaignUI.showCoreUITab(CoreUITabId.INTEL, intel)
+       //TODO: nonfunctional
     }
 }

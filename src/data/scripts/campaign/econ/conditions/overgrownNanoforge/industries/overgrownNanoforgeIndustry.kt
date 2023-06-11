@@ -26,14 +26,14 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     }
 
     fun getAllSources(): Set<overgrownNanoforgeEffectSource> {
-        return getSources() + getBaseSource()
+        return getJunkSources() + getBaseSource()
     }
 
     fun getBaseSource(): overgrownNanoforgeEffectSource {
         return getHandlerWithUpdate().baseSource
     }
 
-    fun getSources(): MutableSet<overgrownNanoforgeEffectSource> {
+    fun getJunkSources(): MutableSet<overgrownNanoforgeEffectSource> {
         return getHandlerWithUpdate().getJunkSources()
     }
 
@@ -56,41 +56,21 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
         return false
     }
 
-    override fun getVisibleInstalledItems(): MutableList<SpecialItemData> {
-        return super.getVisibleInstalledItems()
-    }
+    override fun isIndustry(): Boolean = OVERGROWN_NANOFORGE_IS_INDUSTRY
 
-    override fun isIndustry(): Boolean {
-        return OVERGROWN_NANOFORGE_IS_INDUSTRY
-    }
+    override fun isAvailableToBuild(): Boolean = false
+    override fun showWhenUnavailable(): Boolean = false
 
-    companion object {
-        fun getBaseScore(): Float {
-            return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_BASE_SCORE_MIN, OVERGROWN_NANOFORGE_BASE_SCORE_MAX)
-        }
-    }
+    override fun getCurrentName(): String = OVERGROWN_NANOFORGE_INDUSTRY_NAME
+    
 
-    override fun isAvailableToBuild(): Boolean {
-        return false
-    }
-
-    override fun showWhenUnavailable(): Boolean {
-        return false
-    }
-
-    override fun getCurrentName(): String {
-        return OVERGROWN_NANOFORGE_INDUSTRY_NAME
-    }
-
-    override fun isTooltipExpandable(): Boolean {
-        return true
-    }
+    override fun isTooltipExpandable(): Boolean = true
 
     override fun createTooltip(mode: Industry.IndustryTooltipMode?, tooltip: TooltipMakerAPI?, expanded: Boolean) {
         super.createTooltip(mode, tooltip, expanded)
 
         if (tooltip == null) return
-        if (expanded) {
+        if (expanded) { //lore
             tooltip.addPara("Before the collapse, the Domain kept tabs on all Nanoforges. Being a dangerous (and lucrative) technology, they kept a Domain engineer on site of each Nanoforge, along with (either officially or unofficially) a small projection of force to ensure it's proper use, dictated by them. Each Nanoforge would only produce exactly what the owner (often the government of a caste-world) is supposed to output, and exactly what they need to produce it. Any other usage would have been a slippery slope to a grey goo scenario, as claimed by the Domain COMSEC.\n" +
                     "\n" +
                     "Why this particular one seems to have fulfilled that prophecy is up for debate. Maybe the Domain was right, and it was used improperly, to fill more roles than intended, creating food for a foundry world? Maybe it was the on-hand engineer - desperate for a foothold in the new world, using their knowhow to disable the growth safeties in a way that bypasses the thousands of DRM protections? Or was it done with full knowledge of the consequences in a clear head, done for the sole purpose of destruction? One thing's for sure - This was no accident.\n" +

@@ -7,7 +7,7 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALREADY_PRODUCING_CO
 
 
 object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeCommodityDataStore.overgrownNanoforgeCommoditySetupData>() {
-
+    // TODO: nasty. make this an enum, or some shit, stop abusing pairs and hashmaps
     // FORMAT
     // Commodity ID (String)
     // Cost (Float)

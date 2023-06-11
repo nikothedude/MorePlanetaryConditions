@@ -21,11 +21,28 @@ import org.lazywizard.lazylib.MathUtils
 /* The structure that creates this isnt guranteed to exist, this class exists to store data between decivs and shit so it's "consistant" */
 
 // This should be considered the actual overgrown nanoforge structure. The building itself is only our hook into the API.
+/**
+ * The backend representation of the "growth" that may or may not hold a corresponding [baseOvergrownNanoforgeStructure] instance - 
+ * but always has the capabilities to create one.
+ *
+ * Due to the fact there any many states where the structure does not exist (Growing, market uncolonized), this class MUST exist.
+ * An added bonus is detaching from the API, which allows us to maintain code safety far more (fuck you deserialization).
+ */
 abstract class overgrownNanoforgeHandler(
     initMarket: MarketAPI,
     open var growing: Boolean = true
 ) {
+    /** The id of the structure we currently have instantiated. Nullable if there is no structure. Used for 
+     * getting our structure in [getStructure] - we get the industry with our ID.
+     * TODO: This can be changed to just holding a ref to our industry - but what about junk handlers? Still need to store our ID, or at lesat our designation.
+     */
     var currentStructureId: String? = null
+
+    /**
+     * The source of the effect we will apply. 
+     * A bit of boilerplate right now. The original plan with this was to have a source list var that could hold multiple sources, but
+     * its not totally needed. Low priority to change.
+     */
     lateinit var baseSource: overgrownNanoforgeEffectSource
 
     var manipulationIntel: baseOvergrownNanoforgeManipulationIntel? = null
@@ -37,18 +54,30 @@ abstract class overgrownNanoforgeHandler(
     var unapplying: Boolean = false
     var deleting: Boolean = false
 
+    /*val aiCoreEffects: MutableMap<String, overgrownNanoforgeAICoreEffect> = HashMap()
+
+    init {
+        aiCoreEffects[Commodities.ALPHA_CORE] = overgrownNanoforgeAlphaCoreEffect(this)
+        aiCoreEffects[Commodities.BETA_CORE] = overgrownNanoforgeBetaCoreEffect(this)
+        aiCoreEffects[Commodities.GAMMA_CORE] = overgrownNanoforgeGammaCoreEffect(this)
+    }*/ 
+    // TODO: future mechanics
+
     abstract fun createBaseSource(): overgrownNanoforgeEffectSource
 
     var deleted: Boolean = false
 
+    /** The [MarketAPI] instance we are beholden to. The market we apply our effects to, and around. */
     open var market: MarketAPI = initMarket
         set(value: MarketAPI) {
              if (field !== value) { //shit breaks if we dont do reference checking, hence the extra =
-                migrateToNewMarket(value)
+             // while loose equivilancy works a lot of the time (simple clones), sometimes it breaks shit terribly
+                migrateToNewMarket(value) //changed markets
             }
             field = value
         }
 
+    /** Called when [market] is changed. */
     protected open fun migrateToNewMarket(newMarket: MarketAPI) {
         removeSelfFromMarket(market)
         addSelfToMarket(newMarket)
@@ -148,14 +177,20 @@ abstract class overgrownNanoforgeHandler(
         removeSelfFromMarket(ourMarket)
     }
 
-    /* Returns the structure this handler stores data of. Can be null if the structure doesn't exist. */
+    /** Returns the structure this handler stores data of. Can be null if the structure doesn't exist. */
     open fun getStructure(): baseOvergrownNanoforgeStructure? {
         return (market.getIndustry(currentStructureId) as? baseOvergrownNanoforgeStructure)
     }
 
     open fun getStructureWithUpdate(): baseOvergrownNanoforgeStructure? {
-        if (!structurePresent() && shouldCreateNewStructure()) createStructure()
+        updateStructure()
         return getStructure()
+    }
+
+    fun updateStructure() {
+        if (!structurePresent() && shouldCreateNewStructure()) {
+            createStructure()
+        }
     }
 
     open fun shouldCreateNewStructure(): Boolean {
@@ -164,9 +199,7 @@ abstract class overgrownNanoforgeHandler(
 
     protected open fun createStructure() {
         val newStructureId = getNewStructureId()
-        if (newStructureId == null) {
-            niko_MPC_debugUtils.log.log(Level.ERROR, "remove this message later")
-        }
+        if (newStructureId == null) return
         market.addIndustry(newStructureId)
         currentStructureId = newStructureId
     }

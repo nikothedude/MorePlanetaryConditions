@@ -14,5 +14,10 @@
             "name": "LazyLib",
 			"version": "2.7b"
         },
+		{
+			"id": "lunalib",
+			"name": "LunaLib",
+			"version": "1.7.7"
+		},
     ],
 }

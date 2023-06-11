@@ -27,9 +27,7 @@ import java.lang.NullPointerException
 class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScript<niko_MPC_overgrownNanoforgeRemovalScript?> {
 
     override var deletionScript: niko_MPC_overgrownNanoforgeRemovalScript? = null
-    override fun isTransient(): Boolean {
-        return false
-    }
+    override fun isTransient(): Boolean = false
 
     override fun apply(id: String) {
         super.apply(id)
@@ -40,9 +38,7 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
         applyConditions()
 
         updateHandlerValues()
-        if (ourMarket.shouldHaveOvergrownNanoforgeIndustry()) {
-            ourMarket.addIndustry(niko_MPC_industryIds.overgrownNanoforgeIndustryId)
-        }
+        getHandler()?.updateStructure()
     }
 
     private fun applyConditions() { // learned it the hard way, you can add multiple versions of the same condition in a infinite loop :)
@@ -113,7 +109,9 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
     }
 
     fun updateHandler() {
-        if (getHandler() == null && market.isValidTargetForOvergrownHandler()) instantiateNewHandler()
+        if (getHandler() == null && market.isValidTargetForOvergrownHandler()) {
+            instantiateNewHandler()
+        }
     }
 
     fun instantiateNewHandler(): overgrownNanoforgeIndustryHandler {

@@ -40,17 +40,10 @@ class overgrownNanoforgeJunk: baseOvergrownNanoforgeStructure() {
         return (id.filter { it.isDigit() }.toInt())
     }
 
-    override fun isAvailableToBuild(): Boolean {
-        return false
-    }
+    override fun isAvailableToBuild(): Boolean = false
+    override fun showWhenUnavailable(): Boolean = false
 
-    override fun showWhenUnavailable(): Boolean {
-        return false
-    }
-
-    override fun getCurrentName(): String {
-        return OVERGROWN_NANOFORGE_JUNK_NAME
-    }
+    override fun getCurrentName(): String = OVERGROWN_NANOFORGE_JUNK_NAME
 
     override fun canInstallAICores(): Boolean {
         return false
