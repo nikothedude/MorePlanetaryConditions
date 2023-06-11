@@ -10,6 +10,14 @@ import org.jetbrains.annotations.Contract
 
 abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
+    /**
+     *  Exists to make it possible to call non-final methods on construction of this.
+     *  Should always be called if an instance of this class is created.
+     *
+     *  @param hidden Default: True. isHidden is set to this.
+     *
+     *  @return this
+     * */
     @Contract("_ -> this")
     open fun init(hidden: Boolean = true): baseNikoEventIntelPlugin {
         initializeProgress()
@@ -23,6 +31,9 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         return this
     }
 
+    /**
+     * Called in [init]. Sets max progress and current progress on initialization of the intel.
+     */
     open fun initializeProgress() { return }
 
     open fun addInitialStages() {

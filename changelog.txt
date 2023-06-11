@@ -18,6 +18,13 @@ Adds industry: Overgrown Nanoforge
         Once destroyed, you receive a unique nanoforge item that massively increases commodity output of any structure it's inserted into,
         but has various negative effects
         If installed in heavy industry, increases faction-wide fleet size by 400% but reduces ship quality by 400% as well
+    The growths cease to grow if the visible structure amount exceeds the vanilla cap
+        Sorry grand sector
+    At max structures (NOT ABOVE!), growths will begin to destroy and overtake existing structures
+        A really needy bonsai tree
+        Encourages you to stay on top of it
+        Always targets pop&infra last
+            If it is destroyed, the market decivs
     
     This encourages you to treat this as a sort of bonsai tree, constantly minmaxing the effects, minimizing negatives, maximizing positives
     Extremely rare - only 1-2 if any will spawn in a given game
@@ -27,6 +34,8 @@ Anti-Asteroid Satellites:
 Ships
     Overclocked targetting (Frontal plate system) now 1. Overloads for far longer 2. Lasts for far less
     Harpoon MRM small removed from most variants, as it was way too spammy
+    All weapons either now have secondary or primary PD capabilties
+        PD_ALSO and PD tags respectively
     Variants
         Ordnance
             Replaced annihilator pods with jackhammer/typhoon respectively
@@ -37,11 +46,20 @@ Ships
         Shielded
             Connector module Locust replaced with hellbore to reduce spam
             Variant weight slightly reduced
+        New:
+        Blaster
+            Overfluxed, overgunned
+            Energy focus
+            Plasma cannons, heavy blasters, and antimatter blasters
+            Fucking terrifying -- But with a very small variant spawn chance
+        Mining
+            About 20 mining blasters in total, is capable of stripping armor off anything
+            General mining theme
+            Pretty rare
     Core
         Do not fire through added - modules will no longer fire through the core, enhancing flank capabilities
         Weapons adjusted in general
-        All weapons either now have secondary or primary PD capabilties
-            PD_ALSO and PD tags respectively
+    Core/Connector
         Max recoil of weapons reduced to 10%
             Sounds like a buff, but is actually a fat nerf as it makes it way easier to dodge projectiles
 
