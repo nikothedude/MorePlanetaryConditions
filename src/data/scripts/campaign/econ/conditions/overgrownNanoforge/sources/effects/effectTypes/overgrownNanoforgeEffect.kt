@@ -21,16 +21,18 @@ abstract class overgrownNanoforgeEffect(
     abstract fun getDescription(): String
 
     open fun apply() {
-        //if (Global.getCurrentState() == GameState.TITLE) return //PLEASE WORK
-        if (!getMarket().exceedsMaxStructures()) applyBenefits()
-        applyDeficits()
+        if (shouldApplyBenefits()) applyBenefits()
+        if (shouldApplyDeficits()) applyDeficits()
     }
+
+    protected open fun shouldApplyBenefits(): Boolean = (!getMarket().exceedsMaxStructures())
+
+    protected open fun shouldApplyDeficits(): Boolean = true
 
     abstract fun applyBenefits()
     abstract fun applyDeficits()
 
     open fun unapply() {
-        //if (Global.getCurrentState() == GameState.TITLE) return //PLEASE WORK
         unapplyBenefits()
         unapplyDeficits()
     }
