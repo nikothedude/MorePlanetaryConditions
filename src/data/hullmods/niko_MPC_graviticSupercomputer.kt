@@ -8,9 +8,8 @@ import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.combat.WeaponAPI.*
 
 class niko_MPC_graviticSupercomputer : BaseHullMod() {
-    val rangeMult = 50f
+    val rangeMult = 3f
     val pdRangeMult = 1f
-    val missileRangeMalice = 0.7f
     val visionIncrement = 9000f
     val recoilMult = 0.3f
     val autofireMult = 1f
@@ -19,7 +18,7 @@ class niko_MPC_graviticSupercomputer : BaseHullMod() {
     override fun applyEffectsBeforeShipCreation(hullSize: HullSize, stats: MutableShipStatsAPI, id: String) {
         stats.ballisticWeaponRangeBonus.modifyMult(id, rangeMult)
         stats.energyWeaponRangeBonus.modifyMult(id, rangeMult)
-        stats.missileWeaponRangeBonus.modifyMult(id, (rangeMult * missileRangeMalice))
+        stats.missileWeaponRangeBonus.modifyMult(id, (rangeMult))
         stats.nonBeamPDWeaponRangeBonus.modifyMult(id, pdRangeMult)
         stats.sightRadiusMod.modifyFlat(id, visionIncrement)
         stats.recoilPerShotMult.modifyMult(id, recoilMult)
