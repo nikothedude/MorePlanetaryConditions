@@ -10,7 +10,7 @@ import data.utilities.niko_MPC_battleUtils.isPD
 import org.lazywizard.lazylib.combat.AIUtils
 import org.lwjgl.util.vector.Vector2f
 
-class niko_MPC_overclockedTargettingSystemAI: ShipSystemAIScript {
+class niko_MPC_overclockedTargettingSystemAI: niko_MPC_coreOverclockedTargettingSystemAI {
 
     private var engine: CombatEngineAPI = Global.getCombatEngine()
     private var system: ShipSystemAPI? = null
