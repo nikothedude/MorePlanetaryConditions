@@ -39,12 +39,31 @@ open class niko_MPC_coreOverclockedTargettingSystemAI: ShipSystemAIScript {
 
         interval.advance(amount)
         if (interval.intervalElapsed()) {
-            tryToActivate()
-            if (activateIfPossible(score)) return
+            tryToActivate(amount, missileDangerDir, collisionDangerDir, target)
         }
     }
 
-    open fun tryToActivate() {
+    open fun tryToActivate(amount: Float, missileDangerDir: Vector2f?, collisionDangerDir: Vector2f?, target: ShipAPI?) {
+        doLogic(amount, missileDangerDir, collisionDangerDir, target)
+    }
+
+    open fun doLogic(amount: Float, missileDangerDir: Vector2f?, collisionDangerDir: Vector2f?, target: ShipAPI?) {
+        if (target == null) {
+            val ships = AIUtils.getEnemiesOnMap(ship)
+            val missiles = AIUtils.getEnemyMissilesOnMap(ship)
+            if (ships.isEmpty() && missiles.isEmpty()) return 
+            activateIfPossible(usageThreshold)
+            return
+        }
+        var lowestRange: Float? = null
+        for (weapon in ship!!.usableWeapons) {
+            if (lowestRange == null) lowestRange = weapon.range
+            if (lowestRange > weapon.range) lowestRange = weapon.range
+        }
+
+        val distance = Misc.getDistance(this.ship!!.location, target.location)
+        if (distance < lowestRange) return
+        activateIfPossible(usageThreshold)
         
     }
 

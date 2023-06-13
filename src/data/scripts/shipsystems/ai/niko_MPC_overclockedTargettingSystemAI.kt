@@ -12,20 +12,9 @@ import org.lwjgl.util.vector.Vector2f
 
 class niko_MPC_overclockedTargettingSystemAI: niko_MPC_coreOverclockedTargettingSystemAI {
 
-    private var engine: CombatEngineAPI = Global.getCombatEngine()
-    private var system: ShipSystemAPI? = null
-    private var ship: ShipAPI? = null
-    private val runOnce = false
-    val interval: IntervalUtil = IntervalUtil(0.5f, 0.5f)
+    override val overloadTime = 10f
 
-    val usageThreshold = 1.02f
-
-    override fun init(ship: ShipAPI?, system: ShipSystemAPI?, flags: ShipwideAIFlags?, engine: CombatEngineAPI?) {
-        this.ship = ship
-        this.system = system
-    }
-
-    override fun advance(amount: Float, missileDangerDir: Vector2f?, collisionDangerDir: Vector2f?, target: ShipAPI?) {
+    override fun doLogic(amount: Float, missileDangerDir: Vector2f?, collisionDangerDir: Vector2f?, target: ShipAPI?) {
         if (engine.isPaused || ship == null || ship!!.shipAI == null) {
             return
         }
@@ -86,13 +75,5 @@ class niko_MPC_overclockedTargettingSystemAI: niko_MPC_coreOverclockedTargetting
             }
             if (activateIfPossible(score)) return
         }
-    }
-
-    private fun activateIfPossible(score: Double): Boolean {
-        if (score >= usageThreshold) {
-            ship!!.useSystem()
-            return true
-        }
-        return false
     }
 }
