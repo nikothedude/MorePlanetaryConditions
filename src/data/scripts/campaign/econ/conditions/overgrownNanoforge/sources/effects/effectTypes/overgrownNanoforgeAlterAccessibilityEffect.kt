@@ -9,7 +9,7 @@ import kotlin.math.abs
 class overgrownNanoforgeAlterAccessibilityEffect(
     handler: overgrownNanoforgeHandler,
     val increment: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
+): overgrownNanoforgeFormattedEffect(handler) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         if (isAccessabilityNegative()) return overgrownNanoforgeEffectCategories.DEFICIT else return overgrownNanoforgeEffectCategories.BENEFIT
     }
@@ -20,45 +20,19 @@ class overgrownNanoforgeAlterAccessibilityEffect(
 
     override fun getName(): String = if (isAccessabilityNegative()) "Eerie" else "Pleasant"
 
-
-    override fun getDescription(): String {
-        if (isAccessabilityNegative()) {
-            return "This area is filled with eerie sounds, structures, and is all around uninviting, reducing accessibility by ${increment}%."
-        } else {
-            return "This area is surprisingly tame and easy to traverse, increasing accessibility by ${increment}%."
-        }
-    }
-
-    override fun applyBenefits() {
-        if (isAccessabilityNegative()) return
+    override fun applyEffects() {
         getMarket().accessibilityMod.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
-    override fun applyDeficits() {
-        if (!isAccessabilityNegative()) return
-        getMarket().accessibilityMod.modifyFlat(getOurId(), increment, getNameForModifier())
-    }
-
-    override fun unapplyBenefits() {
-        if (isAccessabilityNegative()) return
+    override fun unapplyEffects() {
         getMarket().accessibilityMod.unmodifyFlat(getOurId())
     }
 
-    override fun unapplyDeficits() {
-        if (!isAccessabilityNegative()) return
-        getMarket().accessibilityMod.unmodifyFlat(getOurId())
+    override fun getBaseFormat(): String {
+        return "Market accessibility $adjectiveChar by $changeChar"
     }
 
-    override val baseFormat: String = "Market accessibility $adjectiveChar by $changeChar"
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive && isAccessabilityNegative()) return list
-        if (!positive && !isAccessabilityNegative()) return list
-        return super.getAllFormattedEffects(positive)
-    }
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
+    override fun getChange(positive: Boolean): String {
         return "${abs(increment * 100)}"
     }
 

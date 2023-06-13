@@ -11,18 +11,12 @@ interface simpleFormat {
     open val changeChar: String
         get() = "%c"
 
-    abstract val baseFormat: String
-
-    open fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        return arrayListOf(getFormattedEffect(positive = positive))
-    }
-
-    open fun getFormattedEffect(format: String = baseFormat, positive: Boolean, vararg args: Any): String {
+    fun formatDesc(format: String, positive: Boolean): String {
         val adjectiveReplaced = format.replace(adjectiveChar, getAdjective(positive))
-        return adjectiveReplaced.replace(changeChar, getChange(positive, *args))
+        return adjectiveReplaced.replace(changeChar, getChange(positive))
     }
 
-    fun getChange(positive: Boolean, vararg args: Any): String
+    fun getChange(positive: Boolean): String
 
     fun getAdjective(positive: Boolean): String {
         return if (positive) positiveAdjective else negativeAdjective

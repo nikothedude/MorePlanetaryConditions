@@ -38,6 +38,15 @@ enum class overgrownNanoforgeEffectPrototypes(
             val market = growth.market
             return (superValue && market.getProducableCommoditiesForOvergrownNanoforge().isNotEmpty())
         }
+
+        override fun getIdealTimesToCreate(growth: overgrownNanoforgeHandler, maxBudget: Float): Int {
+            var times: Int = OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
+            val threshold = 0.7f
+            val randomFloat = MathUtils.getRandom().nextFloat()
+            if (randomFloat > threshold) times++
+            return times
+        }
+
         override fun getWeight(growth: overgrownNanoforgeHandler): Float = 45f
         override fun getMinimumCost(growth: overgrownNanoforgeHandler): Float? {
             val market = growth.market
@@ -75,17 +84,15 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (weight != 0f) picker.add(commodityId, weight)
             }
 
-            var timesToPick = getTimesToPickCommodities(growth, maxBudget, picker)
-            val pickedCommodities = HashSet<String>()
-            while (timesToPick-- > 0 && !picker.isEmpty) pickedCommodities += picker.pickAndRemove()
-            val themeToScore = randomlyDistributeBudgetAcrossCommodities(pickedCommodities, maxBudget) //assign quantities to the things
+            val pickedCommodity = picker.pickAndRemove()
+            val themeToScore = randomlyDistributeBudgetAcrossCommodities(setOf(pickedCommodity), maxBudget) //assign quantities to the things
             if (shouldInvert) {
                 for (entry in themeToScore.entries) {
                     val commodityId = entry.key
                     themeToScore[commodityId] = -themeToScore[commodityId]!!.absoluteValue
                 }
             }
-            val effect = overgrownNanoforgeAlterSupplySource(growth, themeToScore)
+            val effect = themeToScore[pickedCommodity]?.let { overgrownNanoforgeAlterSupplySource(growth, pickedCommodity, it) }
             return effect
         }
 
@@ -336,6 +343,7 @@ enum class overgrownNanoforgeEffectPrototypes(
     abstract fun getMinimumCost(growth: overgrownNanoforgeHandler): Float?
     open fun getMaximumCost(growth: overgrownNanoforgeHandler): Float? = Float.MAX_VALUE
     abstract fun getInstance(growth: overgrownNanoforgeHandler, maxBudget: Float): overgrownNanoforgeEffect?
+    open fun getIdealTimesToCreate(growth: overgrownNanoforgeHandler, maxBudget: Float): Int = 1
 
     companion object {
         val ANCHOR_POINT_FOR_STABILITY: Int = 2

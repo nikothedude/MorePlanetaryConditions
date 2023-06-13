@@ -13,6 +13,8 @@ class overgrownNanoforgeVolatileEffect(
     handler: overgrownNanoforgeHandler
 ): overgrownNanoforgeRandomizedEffect(handler) {
 
+    var canExplode: Boolean = true
+
     companion object {
         const val VOLATILE_EXPLOSION_DURATION = 90f
     }
@@ -26,45 +28,29 @@ class overgrownNanoforgeVolatileEffect(
     }
 
     override fun getDescription(): String {
-        return "Volatile"
+        return "Apon destruction, a random industry will be disrupted for $VOLATILE_EXPLOSION_DURATION days"
     }
 
-    override fun applyBenefits() {
-        return
+    override fun applyEffects() {
+        canExplode = true
     }
 
-    override fun applyDeficits() {
-        return
+    override fun unapplyEffects() {
+        canExplode = false
     }
 
-    override fun unapplyBenefits() {
-        return
-    }
-
-    override fun unapplyDeficits() {
-        return
-    }
 
     override fun delete() {
         explode()
         super.delete()
     }
 
-    override val baseFormat: String = "whatever"
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
-        return ""
-    }
-
-    override fun getFormattedEffect(format: String, positive: Boolean, vararg args: Any): String {
-        return "If this structure is culled, it will explode violently and damage other structures"
-    }
-
     private fun Industry.isValidTarget(): Boolean {
-        return (!this.isJunkStructure())
+        return (canExplode && !this.isJunkStructure())
     }
 
     private fun explode() {
+        if (!canExplode) return
         val validTargets = HashSet<Industry>()
         for (possibleTarget in getMarket().getVisibleIndustries()) {
             if (possibleTarget.isValidTarget()) validTargets += possibleTarget

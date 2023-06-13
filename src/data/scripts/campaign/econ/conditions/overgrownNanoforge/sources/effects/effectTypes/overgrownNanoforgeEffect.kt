@@ -12,33 +12,50 @@ import org.lazywizard.lazylib.MathUtils
 import java.util.UUID
 
 abstract class overgrownNanoforgeEffect(
-    open val handler: overgrownNanoforgeHandler): simpleFormat {
+    open val handler: overgrownNanoforgeHandler
+) {
 
     open var id: String = Misc.genUID()
+
+    var enabled: Boolean = true
+        set(value) {
+            val oldField = field
+            field = value
+            if (value != oldField) {
+                if (value) {
+                    apply()
+                } else unapply()
+            }
+        }
+    lateinit var category: overgrownNanoforgeEffectCategories
+
+    open fun init() {
+        category = getCategory()
+    }
+
+    // Should only have a single noticable effect, should not mix positives or negatives
 
     abstract fun getCategory(): overgrownNanoforgeEffectCategories
     abstract fun getName(): String
     abstract fun getDescription(): String
 
     open fun apply() {
-        if (shouldApplyBenefits()) applyBenefits()
-        if (shouldApplyDeficits()) applyDeficits()
+
+        if (shouldApply()) {
+            applyEffects()
+        }
     }
 
-    protected open fun shouldApplyBenefits(): Boolean = (!getMarket().exceedsMaxStructures())
+    //TODO: market max strcuture check
+    protected open fun shouldApply(): Boolean = (enabled)
 
-    protected open fun shouldApplyDeficits(): Boolean = true
-
-    abstract fun applyBenefits()
-    abstract fun applyDeficits()
+    protected abstract fun applyEffects()
 
     open fun unapply() {
-        unapplyBenefits()
-        unapplyDeficits()
+        unapplyEffects()
     }
 
-    abstract fun unapplyBenefits()
-    abstract fun unapplyDeficits()
+    protected abstract fun unapplyEffects()
 
     open fun delete() {
         unapply()
@@ -49,27 +66,7 @@ abstract class overgrownNanoforgeEffect(
     open fun getOurId(): String = id
     open fun getNameForModifier(): String = "${handler.getCurrentName()}: ${getName()}"
 
-    override fun getFormattedEffect(format: String, positive: Boolean, vararg args: Any): String {
-        var effect = super.getFormattedEffect(format, positive, *args)
-        if (effect.isNotEmpty()) effect = "${getName()}: $effect"
-        return effect
-    }
-
-    companion object {
-        fun format(formattedEffects: MutableList<String>): String {
-            var addNewLine = false
-            var finalString = ""
-
-            for (string in formattedEffects) {
-                var mutatedString = string
-                if (addNewLine) {
-                    mutatedString = "\n" + mutatedString
-                }
-                addNewLine = true // the first string gets no newline
-                finalString += mutatedString
-            }
-            if (finalString.isEmpty()) finalString = "None"
-            return finalString
-        }
+    fun isPositive(): Boolean {
+        return category == overgrownNanoforgeEffectCategories.BENEFIT
     }
 }

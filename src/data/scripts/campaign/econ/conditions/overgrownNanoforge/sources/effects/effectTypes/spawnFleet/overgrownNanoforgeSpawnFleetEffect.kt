@@ -9,6 +9,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 class overgrownNanoforgeSpawnFleetEffect(
     nanoforgeHandler: overgrownNanoforgeIndustryHandler
 ): overgrownNanoforgeRandomizedEffect(nanoforgeHandler) {
+    var fleetsAllowed: Boolean = true
     val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(this)
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {
@@ -20,35 +21,20 @@ class overgrownNanoforgeSpawnFleetEffect(
     }
 
     override fun getDescription(): String {
-        return "Derelict aruhi8oawui"
+        return "TODO"
     }
 
-    override fun applyBenefits() {
-        return
+    override fun applyEffects() {
+        fleetsAllowed = true
     }
 
-    override fun applyDeficits() {
-        return
-    }
-
-    override fun unapplyBenefits() {
-        return
-    }
-
-    override fun unapplyDeficits() {
-        return
+    override fun unapplyEffects() {
+        fleetsAllowed = false
     }
 
     override fun delete() {
         spawningScript.spawnBombardmentFleet()
         spawningScript.delete()
         super.delete()
-    }
-
-    override val baseFormat: String
-        get() = "5"
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
-        return "52"
     }
 }

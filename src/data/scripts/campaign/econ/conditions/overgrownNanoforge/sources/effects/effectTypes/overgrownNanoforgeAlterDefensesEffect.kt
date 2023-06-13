@@ -9,7 +9,7 @@ class overgrownNanoforgeAlterDefensesEffect(
     handler: overgrownNanoforgeHandler,
     val mult: Float
 
-): overgrownNanoforgeRandomizedEffect(handler) {
+): overgrownNanoforgeFormattedEffect(handler) {
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         if (defenseIsNegative()) return overgrownNanoforgeEffectCategories.DEFICIT else return overgrownNanoforgeEffectCategories.BENEFIT
     }
@@ -22,41 +22,22 @@ class overgrownNanoforgeAlterDefensesEffect(
         if (defenseIsNegative()) return "Indefensible" else return "Exceptionally defensible"
     }
 
-    override fun getDescription(): String {
-        return "placeholder"
-    }
-
-    override fun applyBenefits() {
+    override fun applyEffects() {
         if (defenseIsNegative()) return
         getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(getOurId(), mult, getNameForModifier())
     }
 
-    override fun applyDeficits() {
-        if (!defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(getOurId(), mult, getNameForModifier())
-    }
-
-    override fun unapplyBenefits() {
+    override fun unapplyEffects() {
         if (defenseIsNegative()) return
         getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(getOurId())
     }
 
-    override fun unapplyDeficits() {
-        if (!defenseIsNegative()) return
-        getMarket().stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(getOurId())
+    override fun getBaseFormat(): String {
+        return "Market defense rating $adjectiveChar by ${changeChar}x"
     }
 
-    override val baseFormat: String = "Market defense rating $adjectiveChar by ${changeChar}x"
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
+    override fun getChange(positive: Boolean): String {
         return "${abs(mult)}"
-    }
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive && defenseIsNegative()) return list
-        if (!positive && !defenseIsNegative()) return list
-        return super.getAllFormattedEffects(positive)
     }
 
 }

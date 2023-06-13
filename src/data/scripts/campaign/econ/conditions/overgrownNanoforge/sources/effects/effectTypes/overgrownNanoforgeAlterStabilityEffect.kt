@@ -7,19 +7,13 @@ import kotlin.math.abs
 class overgrownNanoforgeAlterStabilityEffect(
     handler: overgrownNanoforgeHandler,
     val increment: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
+): overgrownNanoforgeFormattedEffect(handler) {
 
-    override val baseFormat: String = "Market stability $adjectiveChar by $changeChar"
-    override fun getChange(positive: Boolean, vararg args: Any): String {
-        if (positive && stabilityIsNegative()) return ""
-        return "${abs(increment)}"
+    override fun getBaseFormat(): String {
+        return "Market stability $adjectiveChar by $changeChar"
     }
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive && stabilityIsNegative()) return list
-        if (!positive && !stabilityIsNegative()) return list
-        return super.getAllFormattedEffects(positive)
+    override fun getChange(positive: Boolean): String {
+        return "${abs(increment)}"
     }
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {
@@ -34,27 +28,11 @@ class overgrownNanoforgeAlterStabilityEffect(
         if (stabilityIsNegative()) return "Ungovernable" else return "Establishment Stronghold"
     }
 
-    override fun getDescription(): String {
-        return "wdabuhiwdawu"
-    }
-
-    override fun applyBenefits() {
-        if (stabilityIsNegative()) return
+    override fun applyEffects() {
         getMarket().stability.modifyFlat(getOurId(), increment, getNameForModifier())
     }
 
-    override fun applyDeficits() {
-        if (!stabilityIsNegative()) return
-        getMarket().stability.modifyFlat(getOurId(), increment, getNameForModifier())
-    }
-
-    override fun unapplyBenefits() {
-        if (stabilityIsNegative()) return
-        getMarket().stability.unmodifyFlat(getOurId())
-    }
-
-    override fun unapplyDeficits() {
-        if (!stabilityIsNegative()) return
+    override fun unapplyEffects() {
         getMarket().stability.unmodifyFlat(getOurId())
     }
 

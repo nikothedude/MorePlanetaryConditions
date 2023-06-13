@@ -7,12 +7,7 @@ import kotlin.math.abs
 class overgrownNanoforgeAlterUpkeepEffect(
     handler: overgrownNanoforgeHandler,
     val mult: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
-
-    override val baseFormat: String = "Nanoforge upkeep $adjectiveChar by $changeChar"
-    override fun getChange(positive: Boolean, vararg args: Any): String {
-        return "${abs(mult * 100)}"
-    }
+): overgrownNanoforgeFormattedEffect(handler) {
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {
         return if (isUpkeepNegative()) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
@@ -24,46 +19,25 @@ class overgrownNanoforgeAlterUpkeepEffect(
 
     override fun getName(): String = if (isUpkeepNegative()) "Expensive maintenance" else "Cheap maintenance"
 
-    override fun getDescription(): String {
-        if (isUpkeepNegative()) {
-            return "This area of the overgrown nanoforge is irritatingly expensive to maintain, and as such raises maintenance costs of the primary industry by ${mult}x."
-        } else {
-            return "This area of the overgrown nanoforge is pleasantly cheap to maintain, and as such lowers maintenance costs of the primary industry by ${mult}x."
-        }
+    override fun getBaseFormat(): String {
+        return "Industry upkeep $adjectiveChar by ${changeChar}x"
     }
 
-    override fun applyBenefits() {
+    override fun getChange(positive: Boolean): String {
+        return "$mult"
+    }
+
+    override fun applyEffects() {
         val structure = getStructure() ?: return
-        if (isUpkeepNegative()) return
         structure.upkeep.modifyMult(getOurId(), mult, getNameForModifier())
     }
 
-    override fun applyDeficits() {
+    override fun unapplyEffects() {
         val structure = getStructure() ?: return
-        if (!isUpkeepNegative()) return
-        structure.upkeep.modifyMult(getOurId(), mult, getNameForModifier())
-    }
-
-    override fun unapplyBenefits() {
-        val structure = getStructure() ?: return
-        if (isUpkeepNegative()) return
-        structure.upkeep.unmodifyMult(getOurId())
-    }
-
-    override fun unapplyDeficits() {
-        val structure = getStructure() ?: return
-        if (!isUpkeepNegative()) return
         structure.upkeep.unmodifyMult(getOurId())
     }
 
     override fun delete() {
         unapply()
-    }
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive && isUpkeepNegative()) return list
-        if (!positive && !isUpkeepNegative()) return list
-        return super.getAllFormattedEffects(positive)
     }
 }

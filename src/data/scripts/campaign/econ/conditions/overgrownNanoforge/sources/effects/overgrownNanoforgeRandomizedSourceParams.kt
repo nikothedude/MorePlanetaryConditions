@@ -71,7 +71,7 @@ class overgrownNanoforgeRandomizedSourceParams(
 
         val effects = HashSet<overgrownNanoforgeEffect>()
 
-        val potentialPrototypes: MutableSet<overgrownNanoforgeEffectPrototypes> = HashSet()
+        val potentialPrototypes: MutableList<overgrownNanoforgeEffectPrototypes> = ArrayList()
 
         val initialPrototypes = getWeightedPotentialPrototypes(this, holder, allowedCategories, handler)
         val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
@@ -81,7 +81,10 @@ class overgrownNanoforgeRandomizedSourceParams(
         while (maxToPick-- > 0) {
             val pickedPrototype = picker.pick() ?: break
             //TODO: add support for unique things
-            potentialPrototypes += pickedPrototype
+            var timesToPick = pickedPrototype.getIdealTimesToCreate(handler, initialBudget)
+            while (timesToPick-- > 0) {
+                potentialPrototypes += pickedPrototype
+            }
             //initialPrototypes -= pickedPrototype
         }
         if (potentialPrototypes.isEmpty()) return HashSet()

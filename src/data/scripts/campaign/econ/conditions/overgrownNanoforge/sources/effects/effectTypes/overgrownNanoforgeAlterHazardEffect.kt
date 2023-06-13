@@ -7,7 +7,7 @@ import kotlin.math.abs
 class overgrownNanoforgeAlterHazardEffect(
     handler: overgrownNanoforgeHandler,
     val increment: Float
-): overgrownNanoforgeRandomizedEffect(handler) {
+): overgrownNanoforgeFormattedEffect(handler) {
 
     override val negativeAdjective: String
         get() = "increased"
@@ -26,41 +26,20 @@ class overgrownNanoforgeAlterHazardEffect(
         if (!hazardIsNegative()) return "Hazardous" else return "Safe"
     }
 
-    override fun getDescription(): String {
-        return "wdabuhiwdawu"
-    }
-
-    override fun applyBenefits() {
+    override fun applyEffects() {
         if (!hazardIsNegative()) return
         getMarket().hazard.modifyFlat(getOurId(), increment, getNameForModifier())
     }
-
-    override fun applyDeficits() {
-        if (hazardIsNegative()) return
-        getMarket().hazard.modifyFlat(getOurId(), increment, getNameForModifier())
-    }
-
-    override fun unapplyBenefits() {
+    override fun unapplyEffects() {
         if (hazardIsNegative()) return
         getMarket().hazard.unmodifyFlat(getOurId())
     }
 
-    override fun unapplyDeficits() {
-        if (!hazardIsNegative()) return
-        getMarket().hazard.unmodifyFlat(getOurId())
+    override fun getBaseFormat(): String {
+        return "Market hazard $adjectiveChar by $changeChar%"
     }
 
-    override val baseFormat: String = "Market hazard $adjectiveChar by $changeChar%"
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
+    override fun getChange(positive: Boolean): String {
         return "${abs(increment * 100)}"
     }
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive && !hazardIsNegative()) return list
-        if (!positive && hazardIsNegative()) return list
-        return super.getAllFormattedEffects(positive)
-    }
-
 }

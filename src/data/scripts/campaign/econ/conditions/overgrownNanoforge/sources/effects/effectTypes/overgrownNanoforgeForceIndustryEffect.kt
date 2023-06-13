@@ -13,34 +13,12 @@ class overgrownNanoforgeForceIndustryEffect(override val handler: overgrownNanof
 
     override fun getName(): String = "Industrial"
 
-    override fun getDescription(): String = "awdawdw"
-
-    override fun applyBenefits() {
-        return
-    }
-
-    override fun applyDeficits() {
+    override fun getDescription(): String = "Structure forced to be an industry"
+    override fun applyEffects() {
         handler.industry = true
     }
 
-    override fun unapplyBenefits() {
-        return
-    }
-
-    override fun unapplyDeficits() {
+    override fun unapplyEffects() {
         handler.industry = false
-    }
-
-    override val baseFormat: String
-        get() = "Structure forced to be an industry"
-
-    override fun getChange(positive: Boolean, vararg args: Any): String {
-        return ""
-    }
-
-    override fun getAllFormattedEffects(positive: Boolean): MutableList<String> {
-        val list = ArrayList<String>()
-        if (positive) return list
-        return super.getAllFormattedEffects(positive)
     }
 }
