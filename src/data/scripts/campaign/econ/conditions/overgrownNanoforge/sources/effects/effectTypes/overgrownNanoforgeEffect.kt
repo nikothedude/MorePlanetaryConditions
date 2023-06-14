@@ -38,11 +38,15 @@ abstract class overgrownNanoforgeEffect(
         return stringData(getDescription, getHighlights())
     }
 
-    fun getHighlights(): MutableMap<String, Color> {
+    open fun getHighlights(): MutableMap<String, Color> {
         return hashMapOf(Pair<String, Color>(getName(), getNameHighlight()))
     }
 
     fun getNameHighlight(): Color {
+        return getPositiveOrNegativeColor()
+    }
+
+    fun getPositiveOrNegativeColor(): Color {
         return if (isPositive()) Misc.getPositiveHighlightColor else Misc.getHighlightColor()
     }
 

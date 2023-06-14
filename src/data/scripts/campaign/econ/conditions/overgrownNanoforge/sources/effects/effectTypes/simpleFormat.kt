@@ -11,10 +11,13 @@ interface simpleFormat {
     open val changeChar: String
         get() = "%c"
 
-    fun formatDesc(format: String, positive: Boolean): String {
-        val adjectiveReplaced = format.replace(adjectiveChar, getAdjective(positive))
-        return adjectiveReplaced.replace(changeChar, getChange(positive))
+    open fun formatDesc(format: String, positive: Boolean): String {
+        val adjectiveReplaced = format.replace(adjectiveChar, getAdjectiveCharReplacement(positive))
+        return adjectiveReplaced.replace(changeChar, getChangeCharReplacement(positive))
     }
+
+    open fun getAdjectiveCharReplacement(positive: Boolean): String = getAdjective(positive)
+    open fun getChangeCharReplacement(positive: Boolean): String = getChange(positive)
 
     fun getChange(positive: Boolean): String
 
