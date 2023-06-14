@@ -34,6 +34,18 @@ abstract class overgrownNanoforgeEffect(
     abstract fun getName(): String
     abstract fun getDescription(): String
 
+    fun getStringData(): stringData {
+        return stringData(getDescription, getHighlights())
+    }
+
+    fun getHighlights(): MutableMap<String, Color> {
+        return hashMapOf(Pair<String, Color>(getName(), getNameHighlight()))
+    }
+
+    fun getNameHighlight(): Color {
+        return if (isPositive()) Misc.getPositiveHighlightColor else Misc.getHighlightColor()
+    }
+
     open fun apply() {
 
         if (shouldApply()) {
@@ -64,22 +76,3 @@ abstract class overgrownNanoforgeEffect(
     fun isPositive(): Boolean {
         return getCategory() == overgrownNanoforgeEffectCategories.BENEFIT
     }
-
-    companion object {
-        fun format(formattedEffects: MutableList<String>): String {
-            var addNewLine = false
-            var finalString = ""
-
-            for (string in formattedEffects) {
-                var mutatedString = string
-                if (addNewLine) {
-                    mutatedString = "\n" + mutatedString
-                }
-                addNewLine = true // the first string gets no newline
-                finalString += mutatedString
-            }
-            if (finalString.isEmpty()) finalString = "None"
-            return finalString
-        }
-    }
-}

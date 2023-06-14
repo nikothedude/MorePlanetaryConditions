@@ -148,16 +148,16 @@ class overgrownNanoforgeGrowthIntel(
         return info.prev
     }
 
-    override fun getFormattedPositives(): String {
-        if (knowExactEffects) return super.getFormattedPositives()
+    override fun getPositiveStringData(): MutableSet<stringData> {
+        if (knowExactEffects) return super.getPositiveStringData()
 
-        return "Unknown"
+        return setOf(stringData("Unknown"))
     }
 
-    override fun getFormattedNegatives(): String {
-        if (knowExactEffects) return super.getFormattedNegatives()
+    override fun getNegativeStringData(): MutableSet<stringData> {
+        if (knowExactEffects) return super.getNegativeStringData()
 
-        return "Unknown"
+        return setOf(stringData("Unknown"))
     }
 
     override fun tableRowClicked(ui: IntelUIAPI, data: IntelInfoPlugin.TableRowClickData) {

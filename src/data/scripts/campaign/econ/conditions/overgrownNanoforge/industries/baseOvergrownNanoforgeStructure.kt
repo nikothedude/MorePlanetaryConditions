@@ -123,17 +123,22 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         if (tooltip == null) return
 
         val handler = getHandlerWithUpdate() ?: return
-        val positives = handler.getFormattedPositives()
-        val negatives = handler.getFormattedNegatives()
 
-        if (positives.isNotEmpty()) {
+        val positiveEffects: MutableSet<stringData> = handler.getPositiveStringData()
+        val negativeEffects: MutableSet<stringData> = handler.getNegativeStringData()
+
+        val formattedPositives = stringData.format(positiveEffects)
+        val formattedNegatives = stringData.format(negativeEffects)
+        )
+
+        if (formattedPositives.isNotEmpty()) {
             tooltip.addSpacer(5f)
             tooltip.addSectionHeading("Positives", Alignment.MID, 0f)
-            tooltip.addPara(positives, 5f)
+            tooltip.addPara(formattedPositives, 5f, arrayOf(positiveEffects.highlights.values), *arrayOf(positiveEffects.highlights.keys))
         }
-        if (negatives.isNotEmpty()) {
+        if (formattedNegatives.isNotEmpty()) {
             tooltip.addSectionHeading("Negatives", Alignment.MID, 5f)
-            tooltip.addPara(negatives, 5f)
+            tooltip.addPara(formattedNegatives, 5f, arrayOf(negativeEffects.highlights.values), *arrayOf(negativeEffects.highlights.keys))
         }
     }
 

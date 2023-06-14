@@ -84,26 +84,10 @@ class overgrownNanoforgeIndustryHandler(
     override fun createBaseSource(): overgrownNanoforgeIndustrySource {
         val baseScore = getBaseScore()
         val basePrototype = getBaseEffectPrototype()
-        var idealTimes = basePrototype.getIdealTimesToCreate(this, baseScore)
-        val effectHolders = HashSet<overgrownNanoforgeRandomizedSourceParams.prototypeHolder>()
-        while (idealTimes-- > 0) {
-            effectHolders += overgrownNanoforgeRandomizedSourceParams.prototypeHolder(basePrototype)
-        }
-        val distributedPrototypes = niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries(
-            effectHolders,
-            abs(baseScore),
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeRandomizedSourceParams.prototypeHolder, ->
-                entry.prototype.getMinimumCost(this, true) ?: 0f
-            },
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeRandomizedSourceParams.prototypeHolder, ->
-                (entry.prototype.getMaximumCost(this, true))?.coerceAtMost(budget) ?: budget},
-        )
-        val effects = HashSet<overgrownNanoforgeEffect>()
-        for (entry in distributedPrototypes) {
-            val holder = entry.key
-            val score = entry.value
-            holder.prototype.getInstance(this, score)?.let { effects += it }
-        }
+        val wrappedPrototypes = getWrappedInstantiationList(basePrototype, this, baseScore)
+        val scoredPrototypes = overgrownNanoforgeEffectPrototypes.getScoredWrappedPrototypes(this, baseScore, wrappedPrototypes = wrappedPrototypes)
+        var effects = overgrownNanoforgeEffectPrototypes.generateEffects(this, baseScore, scoredPrototypes)
+
         if (effects.isEmpty()) {
             displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
             val source = overgrownNanoforgeIndustrySource(

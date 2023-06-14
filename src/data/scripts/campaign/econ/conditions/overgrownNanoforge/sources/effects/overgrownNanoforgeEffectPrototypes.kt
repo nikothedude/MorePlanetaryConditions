@@ -64,7 +64,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             return overgrownNanoforgeCommodityDataStore[commodityId]?.cost
         }
         override fun getInstance(growth: overgrownNanoforgeHandler, maxBudget: Float): overgrownNanoforgeAlterSupplySource? {
-            if (!canAfford(growth, maxBudget)) return null
+            if (!canBeAppliedTo(growth, maxBudget)) return null
             val shouldInvert = maxBudget < 0
             val maxBudget = maxBudget.absoluteValue
             val market = growth.market
@@ -136,7 +136,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 growth: overgrownNanoforgeHandler,
                 maxBudget: Float
             ): overgrownNanoforgeForceIndustryEffect? {
-                if (!canAfford(growth, maxBudget)) return null
+                if (!canBeAppliedTo(growth, maxBudget)) return null
                 val castedGrowth = growth as? overgrownNanoforgeJunkHandler ?: return null
 
                 return overgrownNanoforgeForceIndustryEffect(castedGrowth)
@@ -149,7 +149,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             fun getCostPerPointOneIncrement(nanoforge: overgrownNanoforgeIndustryHandler): Float = 25f
             
             override fun getInstance(nanoforge: overgrownNanoforgeIndustryHandler, maxBudget: Float): overgrownNanoforgeAlterUpkeepEffect? {
-                if (!canAfford(nanoforge, maxBudget)) return null
+                if (!canBeAppliedTo(nanoforge, maxBudget)) return null
                 val shouldInvert = maxBudget < 0
                 var maxBudget = maxBudget.absoluteValue
                 var mult = 0f
@@ -171,7 +171,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             growth: overgrownNanoforgeHandler,
             maxBudget: Float
         ): overgrownNanoforgeAlterAccessibilityEffect? {
-            if (!canAfford(growth, maxBudget)) return null
+            if (!canBeAppliedTo(growth, maxBudget)) return null
             val shouldInvert = maxBudget < 0
             var remainingBudget = maxBudget.absoluteValue
             var increment = 0f
@@ -208,7 +208,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             growth: overgrownNanoforgeHandler,
             maxBudget: Float
         ): overgrownNanoforgeAlterDefensesEffect? {
-            if (!canAfford(growth, maxBudget)) return null
+            if (!canBeAppliedTo(growth, maxBudget)) return null
             val shouldInvert = maxBudget < 0
             var remainingBudget = maxBudget.absoluteValue
             var mult = 1f
@@ -241,7 +241,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCostPerStability(growth)
 
         override fun getInstance(growth: overgrownNanoforgeHandler, maxBudget: Float): overgrownNanoforgeAlterStabilityEffect? {
-            if (!canAfford(growth, maxBudget)) return null
+            if (!canBeAppliedTo(growth, maxBudget)) return null
             val shouldInvert = maxBudget < 0
             var maxBudget = maxBudget.absoluteValue
             var instance: overgrownNanoforgeAlterStabilityEffect? = null
@@ -275,7 +275,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             growth: overgrownNanoforgeHandler,
             maxBudget: Float
         ): overgrownNanoforgeAlterHazardEffect? {
-            if (!canAfford(growth, maxBudget)) return null //worth noting: positive alterations should return a NEGATIVE value
+            if (!canBeAppliedTo(growth, maxBudget)) return null //worth noting: positive alterations should return a NEGATIVE value
             val shouldInvert = maxBudget < 0
             var maxBudget = maxBudget.absoluteValue
             var instance: overgrownNanoforgeAlterHazardEffect? = null
@@ -313,7 +313,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             growth: overgrownNanoforgeHandler,
             maxBudget: Float
         ): overgrownNanoforgeVolatileEffect? {
-            if (!canAfford(growth, maxBudget)) return null
+            if (!canBeAppliedTo(growth, maxBudget)) return null
             return overgrownNanoforgeVolatileEffect(growth)
         }
     };
@@ -330,7 +330,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             nanoforge: overgrownNanoforgeIndustryHandler,
             maxBudget: Float
         ): overgrownNanoforgeSpawnFleetEffect? {
-            if (!canAfford(nanoforge, maxBudget)) return null
+            if (!canBeAppliedTo(nanoforge, maxBudget)) return null
             return overgrownNanoforgeSpawnFleetEffect(nanoforge)
         }
     }; */
@@ -364,25 +364,23 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
         }
         fun getPotentialPrototypes(
-            params: overgrownNanoforgeRandomizedSourceParams,
-            holder: overgrownNanoforgeRandomizedSourceParams.budgetHolder,
-            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)): MutableSet<overgrownNanoforgeEffectPrototypes>
-        {
+            handler: overgrownNanoforgeHandler,
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
+            budget: Float): MutableSet<overgrownNanoforgeEffectPrototypes> {
             val potentialPrototypes = HashSet<overgrownNanoforgeEffectPrototypes>()
             for (prototype in ArrayList(allPrototypes)) {
                 if (!prototype.possibleCategories.any { allowedCategories.contains(it) }) continue
-                if (prototype.canBeAppliedTo(params.handler, holder.budget)) potentialPrototypes += prototype
+                if (prototype.canBeAppliedTo(handler, budget)) potentialPrototypes += prototype
             }
             return potentialPrototypes
         }
 
         fun getWeightedPotentialPrototypes(
-            params: overgrownNanoforgeRandomizedSourceParams,
-            holder: overgrownNanoforgeRandomizedSourceParams.budgetHolder,
+            handler: overgrownNanoforgeHandler,
             allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
-            nanoforge: overgrownNanoforgeHandler): MutableMap<overgrownNanoforgeEffectPrototypes, Float>
+            budget: Float): MutableMap<overgrownNanoforgeEffectPrototypes, Float>
         {
-            val potentialPrototypes = getPotentialPrototypes(params, holder, allowedCategories)
+            val potentialPrototypes = getPotentialPrototypes(handler, allowedCategories, budget)
 
             val weightedPrototypes = HashMap<overgrownNanoforgeEffectPrototypes, Float>()
             for (prototype in potentialPrototypes) {
@@ -391,6 +389,107 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
             return weightedPrototypes
         }
+
+        fun getWrappedPotentialPrototypes(
+            handler: overgrownNanoforgeHandler,
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
+            budget: Float,
+            timesToPick: Int): MutableList<prototypeHolder> {
+                
+            var picksLeft: Int = timesToPick
+
+            val wrappedPrototypes = ArrayList<prototypeHolder>()
+            val weightedPrototypes = getWeightedPotentialPrototypes(handler, allowedCategories, budget)
+
+            val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
+            for (entry in weightedPrototypes) {
+                if (entry.value == 0) continue
+                picker.add(entry.key, entry.value)
+            }
+
+            while (picksLeft-- > 0) {
+                val picked = picker.pick() ?: break
+                val prototypes = getPrototypeInstantiationList(picked, handler, budget)
+                for (entry in prototypes) {
+                    wrappedPrototypes += prototypeHolder(entry)
+                }
+            }
+            return wrappedPrototypes
+        }
+
+        fun getScoredWrappedPrototypes(
+            handler: overgrownNanoforgeHandler,
+            budget: Float,
+            timesToPick: Int = 1,
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
+            wrappedPrototypes: MutableList<prototypeHolder> = getWrappedPotentialPrototypes(handler, allowedCategories, budget, timesToPick)
+        ): MutableMap<prototypeHolder, Float> {
+
+            val negative = budget < 0
+            val scoredWrappedPrototypes = randomlyDistributeNumberAcrossEntries(
+                wrappedPrototypes,
+                abs(budget),
+                { budget: Float, remainingRuns: Int, entry: prototypeHolder, -> entry.prototype.getMinimumCost(handler, !negative) ?: 0f},
+                { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
+                (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget},
+            )
+            return scoredWrappedPrototypes
+        }
+
+        fun generateEffects(
+            handler: overgrownNanoforgeHandler,
+            scoredPrototypes: MutableMap<prototypeHolder, Float>)
+        ): MutableSet<overgrownNanoforgeEffect> {
+
+            val effects: MutableSet<overgrownNanoforgeEffect> = HashSet()
+            for (entry in scoredPrototypes) {
+                val prototype = entry.key.prototype
+                val score = entry.value
+                val instance = prototype.getInstance(handler, score) ?: continue
+                effects += instance
+            }
+
+            return effects
+        }
+
+        fun getPrototypeInstantiationList(
+            prototype: overgrownNanoforgeEffectPrototypes,
+            handler: overgrownNanoforgeHandler,
+            budget: Float
+        ): MutableList<overgrownNanoforgeEffectPrototypes> {
+
+            if (!prototype.canBeAppliedTo(handler, budget)) return ArrayList()
+
+            val prototypeCopies = ArrayList<overgrownNanoforgeEffectPrototypes>()
+            
+            var idealTimes = basePrototype.getIdealTimesToCreate(this, baseScore)
+
+            while (idealTimes-- > 0) {
+                prototypeCopies += prototype
+            }
+
+            return prototypeCopies
+        }
+
+        fun getWrappedInstantiationList(
+            prototype: overgrownNanoforgeEffectPrototypes,
+            handler: overgrownNanoforgeHandler,
+            budget: Float
+        ): MutableSet<prototypeHolder> {
+            
+            val instantionList = getPrototypeInstantiationList(prototype, handler, budget)
+            val holders = HashSet<prototypeHolder>()
+
+            for (entry in instantionList) {
+                holders += prototypeHolder(entry)
+            }
+            return holders
+        }
+
+        // some jank to let us hold duplicates in hashmaps
+        class prototypeHolder(
+            val prototype: overgrownNanoforgeEffectPrototypes
+        )
 
     }
 }

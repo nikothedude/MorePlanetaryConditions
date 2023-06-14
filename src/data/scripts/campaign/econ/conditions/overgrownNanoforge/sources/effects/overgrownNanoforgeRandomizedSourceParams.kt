@@ -69,55 +69,18 @@ class overgrownNanoforgeRandomizedSourceParams(
 
         val effects = HashSet<overgrownNanoforgeEffect>()
 
-        val potentialPrototypes: MutableList<overgrownNanoforgeEffectPrototypes> = ArrayList()
-
-        val initialPrototypes = getWeightedPotentialPrototypes(this, holder, allowedCategories, handler)
-        val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
-        for (entry in initialPrototypes) {
-            picker.add(entry.key, entry.value)
-        }
-        while (maxToPick-- > 0) {
-            val pickedPrototype = picker.pick() ?: break
-            //TODO: add support for unique things
-            var timesToPick = pickedPrototype.getIdealTimesToCreate(handler, initialBudget)
-            while (timesToPick-- > 0) {
-                potentialPrototypes += pickedPrototype
-            }
-            //initialPrototypes -= pickedPrototype
-        }
-        if (potentialPrototypes.isEmpty()) return HashSet()
-        val wrappedPrototypes: MutableSet<prototypeHolder> = HashSet()
-        for (entry in potentialPrototypes) {
-            wrappedPrototypes += prototypeHolder(entry)
-        }
         val negative = initialBudget < 0
-        val getMax = { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
-            (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget}
-        val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
-            wrappedPrototypes,
-            abs(initialBudget),
-            { budget: Float, remainingRuns: Int, entry: prototypeHolder, -> entry.prototype.getMinimumCost(handler, !negative) ?: 0f},
-            getMax,
-        )
-        if (negative) {
-            for (entry in weightedPrototypes) {
-                weightedPrototypes[entry.key] = entry.value * -1f
-            }
-        }
-        for (entry in weightedPrototypes) holder.budget -= entry.value
-        for (entry in weightedPrototypes) {
-            val prototype = entry.key.prototype
-            val score = entry.value
-            val instance = prototype.getInstance(handler, score) ?: continue
-            effects += instance
-        }
+        val category = if (negative) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
+
+        val effects = generateEffects(handler, getScoredWrappedPrototypes(
+            handler, 
+            initialBudget,
+            maxToPick,
+            setOf(category)
+        ))
+
         return effects
     }
-
-    // some jank to let us hold duplicates in hashmaps
-    class prototypeHolder(
-        val prototype: overgrownNanoforgeEffectPrototypes
-    )
 
     private fun getMaxEffectsToPick(): Float {
         return 1f

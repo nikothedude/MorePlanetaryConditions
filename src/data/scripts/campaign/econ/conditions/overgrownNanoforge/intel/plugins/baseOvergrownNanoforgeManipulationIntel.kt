@@ -50,12 +50,19 @@ open class baseOvergrownNanoforgeManipulationIntel(
     }
 
     open fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
-        val positiveEffects: String = getFormattedPositives()
-        val negativeEffects: String = getFormattedNegatives()
-        val positiveWidth = (info.computeStringWidth(positiveEffects)) + 30f
-        val negativeWidth = (info.computeStringWidth(negativeEffects)) + 30f
+        val positiveEffects: MutableSet<stringData> = getPositiveStringData()
+        val negativeEffects: MutableSet<stringData> = getNegativeStringData()
+
+        val formattedPositives = stringData.format(positiveEffects)
+        val formattedNegatives = stringData.format(negativeEffects)
+
+        var positiveLines = formattedPositives.lines().size
+        var negativeLines = formattedNegatives.lines().size
+
+        var positiveWidth = (info.computeStringWidth(formattedPositives)) + 30f
+        val negativeWidth = (info.computeStringWidth(formattedNegatives)) + 30f
         val sizePerEffect = 15f
-        val size = (sizePerEffect * (max(positiveEffects.lines().size, negativeEffects.lines().size)))
+        val size = (sizePerEffect * (max(positiveLines, negativeLines)))
         info.beginTable(
             factionForUIColors, size,
             "Positives", positiveWidth,
@@ -66,9 +73,16 @@ open class baseOvergrownNanoforgeManipulationIntel(
         val baseAlignment = Alignment.LMID
         val baseColor = Misc.getBasePlayerColor()
 
+        val positiveLabel = info.createLabel(formattedPositives, baseColor)
+        positiveLabel.setHighlight(*arrayOf(positiveEffects.highlights.keys))
+        positiveLabel.setHighlightColors(*arrayOf(positiveEffects.highlights.values))
+        val negativeLabel = info.createLabel(formattedNegatives, baseColor)
+        negativeLabel.setHighlight(*arrayOf(negativeEffects.highlights.keys))
+        negativeLabel.setHighlightColors(*arrayOf(negativeEffects.highlights.values))
+
         info.addRowWithGlow(
-            baseAlignment, baseColor, positiveEffects,
-            baseAlignment, baseColor, negativeEffects
+            baseAlignment, baseColor, positiveLabel,
+            baseAlignment, baseColor, negativeLabel
         )
 
         val opad = 5f

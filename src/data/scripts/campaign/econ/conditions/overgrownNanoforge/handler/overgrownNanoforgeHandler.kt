@@ -208,22 +208,24 @@ abstract class overgrownNanoforgeHandler(
         getStructure()?.delete()
     }
 
-    fun getFormattedPositives(): String {
-        return getFormattedEffects(overgrownNanoforgeEffectCategories.BENEFIT)
+    fun getPositiveStringData(): MutableSet<stringData> {
+        return getStringData(overgrownNanoforgeEffectCategories.BENEFIT)
     }
 
-    fun getFormattedNegatives(): String {
-        return getFormattedEffects(overgrownNanoforgeEffectCategories.DEFICIT)
+    fun getNegativeStringData(): MutableSet<stringData> {
+        return getStringData(overgrownNanoforgeEffectCategories.DEFICIT)
     }
 
-    protected open fun getFormattedEffects(category: overgrownNanoforgeEffectCategories): String {
+    protected fun getStringData(category: overgrownNanoforgeEffectCategories): MutableSet<stringData> {
         val effects = baseSource.effects
-        if (effects.isEmpty()) return "None"
-        var strings: MutableList<String> = ArrayList()
+        if (effects.isEmpty()) return HashSet()
+        val data: MutableSet<stringData> = HashSet()
         for (effect in effects) {
-            if (effect.getCategory() == category) strings += effect.getDescription()
+            if (effect.getCategory() == category) {
+                data += effect.getStringData()
+            }
         }
-        return overgrownNanoforgeEffect.format(strings)
+        return data
     }
 
     open fun getAllSources(): MutableSet<overgrownNanoforgeEffectSource> {
