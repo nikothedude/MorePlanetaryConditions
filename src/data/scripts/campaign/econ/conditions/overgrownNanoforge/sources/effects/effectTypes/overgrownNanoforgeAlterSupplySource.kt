@@ -45,6 +45,6 @@ class overgrownNanoforgeAlterSupplySource(
     }
 
     override fun getChange(positive: Boolean): String {
-        return "$amount"
+        return "${abs(amount)}"
     }
 }

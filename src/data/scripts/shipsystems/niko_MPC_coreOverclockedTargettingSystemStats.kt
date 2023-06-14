@@ -12,7 +12,7 @@ open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript()
     companion object {
         val rangeMult = 50f
     }
-    open val overloadTime = 10f
+    open val overloadTime = 0f
 
     override fun apply(stats: MutableShipStatsAPI?, id: String?, state: ShipSystemStatsScript.State?, effectLevel: Float) {
         super.apply(stats, id, state, effectLevel)
@@ -35,7 +35,7 @@ open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript()
 
         if (Global.getCurrentState() != GameState.COMBAT) return
 
-        if (overloadTime != 0) {
+        if (overloadTime != 0f) {
             val ship = stats.entity
             if (ship is ShipAPI) {
                 Global.getCombatEngine().addPlugin(niko_MPC_overclockedTargettingSystemOverloadScript(ship, overloadTime))

@@ -6,9 +6,32 @@ Refactor satellites to follow overgrown nanoforge architecture
 
 improve satellite overclock ai, its too eager to attack at close range and too hesitant to use at long
 
-Figure out why sync check failures are happening with null new markets
-
 Make the volatile effect print out an intel report detailing damages
+
+
+HIGH PRIORITY {
+
+Refactor satellite AI to be its own thing and not extending off a jar class, since :)))))))))))))
+
+}
+IN PROGRESS 
+
+Finish the nanoforgeeffect refactor
+    cachedCategory, namely
+    Offload some responsibilities to the source, shit like, applyPositives
+        Add conditions to effects to allow them to force the source to stop applying benefits if a deficit is disabled or useless
+
+Generify the basesource creation code and effect creation code in industryhandler and randomizedsource
+    Copy pasted, just fuckin slap it somewhere on an object
+
+DONE:::
+Figure out why ore is always picked as the supply alteration
+
+Figure out why satellite handelrs are deleting multiple times
+    Maybe done by making customentityremovalscript not delete if handler is deleted
+
+Figure out why dialog satellite fleets are being cloned and given modular fleet ai instead of ours
+    Just a quirk of vanilla, a dialog plugin is REQUIRED, see campaignplugin
 
 Finish overgrown intel
 
@@ -19,20 +42,8 @@ Figure out why growth intel and its handlers are having growing set to false and
 Overgrown intel in general needs a refactor, its too rigid
 Shit like addstage should be handled on the stage class itself, things just in general need a reordering to be less clumsy
 
-IN PROGRESS 
-
 Store pre-generated junk apon generation (Once the market is no longer onlyforplanetarycondition or whatever, that is when
 it is "properly" generated. do the shit then)
 Store core variables in memory so its consistant across decivs
 Migrate vars from industry to memory AGAIN for fuck SAKE
     See overgrownNanoforgeHandler
-
-
-DONE:::
-Figure out why ore is always picked as the supply alteration
-
-Figure out why satellite handelrs are deleting multiple times
-    Maybe done by making customentityremovalscript not delete if handler is deleted
-
-Figure out why dialog satellite fleets are being cloned and given modular fleet ai instead of ours
-    Just a quirk of vanilla, a dialog plugin is REQUIRED, see campaignplugin

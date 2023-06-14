@@ -10,7 +10,7 @@ import com.fs.starfarer.api.combat.WeaponAPI.*
 class niko_MPC_graviticSupercomputer : BaseHullMod() {
     val rangeMult = 3f
     val pdRangeMult = 1f
-    val visionIncrement = 9000f
+    val visionIncrement = 10000f
     val recoilMult = 0.3f
     val autofireMult = 1f
 

@@ -1,15 +1,10 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
-import com.fs.starfarer.api.GameState
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
-import org.lazywizard.lazylib.MathUtils
-import java.util.UUID
 
 abstract class overgrownNanoforgeEffect(
     open val handler: overgrownNanoforgeHandler
@@ -27,11 +22,11 @@ abstract class overgrownNanoforgeEffect(
                 } else unapply()
             }
         }
-    lateinit var category: overgrownNanoforgeEffectCategories
+    /*lateinit var cachedCategory: overgrownNanoforgeEffectCategories
 
     open fun init() {
-        category = getCategory()
-    }
+        cachedCategory = getCategory()
+    }*/
 
     // Should only have a single noticable effect, should not mix positives or negatives
 
@@ -67,6 +62,24 @@ abstract class overgrownNanoforgeEffect(
     open fun getNameForModifier(): String = "${handler.getCurrentName()}: ${getName()}"
 
     fun isPositive(): Boolean {
-        return category == overgrownNanoforgeEffectCategories.BENEFIT
+        return getCategory() == overgrownNanoforgeEffectCategories.BENEFIT
+    }
+
+    companion object {
+        fun format(formattedEffects: MutableList<String>): String {
+            var addNewLine = false
+            var finalString = ""
+
+            for (string in formattedEffects) {
+                var mutatedString = string
+                if (addNewLine) {
+                    mutatedString = "\n" + mutatedString
+                }
+                addNewLine = true // the first string gets no newline
+                finalString += mutatedString
+            }
+            if (finalString.isEmpty()) finalString = "None"
+            return finalString
+        }
     }
 }

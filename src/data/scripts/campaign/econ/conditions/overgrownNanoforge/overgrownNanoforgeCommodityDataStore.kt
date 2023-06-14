@@ -26,7 +26,7 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
     val luxuryGoodsData = overgrownNanoforgeCommoditySetupData(Commodities.LUXURY_GOODS, 17f, 2f, hashMapOf(Pair(Commodities.ORGANICS, 0.5f), Pair(Commodities.HEAVY_MACHINERY, 0.1f)))
     val fuelData = overgrownNanoforgeCommoditySetupData(Commodities.FUEL, 40f, 3f, hashMapOf(Pair(Commodities.VOLATILES, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
     val foodData = overgrownNanoforgeCommoditySetupData(Commodities.FOOD, 35f, 1f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.2f)))
-    val oreData = overgrownNanoforgeCommoditySetupData(Commodities.ORE, 5f, 5f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.34f)))
+    val oreData = overgrownNanoforgeCommoditySetupData(Commodities.ORE, 5f, 2f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.34f)))
     val rareOreData = overgrownNanoforgeCommoditySetupData(Commodities.RARE_ORE, 8f, 8f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.4f)))
 
     val organicsData = overgrownNanoforgeCommoditySetupData(Commodities.ORGANICS, 12f, 10f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.35f)))

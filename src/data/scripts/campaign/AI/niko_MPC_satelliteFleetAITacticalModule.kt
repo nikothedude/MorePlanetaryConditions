@@ -15,6 +15,10 @@ class niko_MPC_satelliteFleetAITacticalModule(fleet: CampaignFleet?, ai: Modular
 
     val ourFleet = fleet
 
+    override fun advance(p0: Float) {
+        super.advance(p0)
+    }
+
     override fun wantsToJoin(battle: BattleAPI?, considerPlayTransponderStatus: Boolean): Boolean {
         val handler: niko_MPC_satelliteHandlerCore = ourFleet?.getSatelliteEntityHandler() ?: return false
         val tracker = niko_MPC_satelliteUtils.getSatelliteBattleTracker() ?: return false

@@ -12,7 +12,7 @@
 	"satelliteInterferenceDistanceBase":90, #the higher, the further away satellites will interfere in battles from. base, applied before mult. default: 120
 	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself. default: 1
 
-	"maxSatelliteFpBonus":30, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 0
+	"maxSatelliteFpBonus":10, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 0
 	"maxSatelliteFpBonusMult":1, #multipled onto base to determine amount of battle satellites. default: 1
 	
 	#enter the id of a pre-generated entity and a key word to generate satellites onto it

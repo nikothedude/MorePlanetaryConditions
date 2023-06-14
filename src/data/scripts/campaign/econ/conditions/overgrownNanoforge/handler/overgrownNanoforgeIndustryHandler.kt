@@ -10,7 +10,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeIndustryManipulationIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids
@@ -23,6 +25,7 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
+import data.utilities.niko_MPC_mathUtils
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_INDUSTRY_NAME
@@ -30,6 +33,7 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_PREDEFINED_JUNK
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_PREDEFINED_JUNK
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
 import org.lazywizard.lazylib.MathUtils
+import kotlin.math.abs
 
 // WHAT THIS CLASS SHOULD HOLD
 // 1. The base source of the industry
@@ -79,16 +83,36 @@ class overgrownNanoforgeIndustryHandler(
 
     override fun createBaseSource(): overgrownNanoforgeIndustrySource {
         val baseScore = getBaseScore()
-        val supplyEffect = getBaseEffectPrototype().getInstance(this, baseScore)
-        if (supplyEffect == null) {
+        val basePrototype = getBaseEffectPrototype()
+        var idealTimes = basePrototype.getIdealTimesToCreate(this, baseScore)
+        val effectHolders = HashSet<overgrownNanoforgeRandomizedSourceParams.prototypeHolder>()
+        while (idealTimes-- > 0) {
+            effectHolders += overgrownNanoforgeRandomizedSourceParams.prototypeHolder(basePrototype)
+        }
+        val distributedPrototypes = niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries(
+            effectHolders,
+            abs(baseScore),
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeRandomizedSourceParams.prototypeHolder, ->
+                entry.prototype.getMinimumCost(this, true) ?: 0f
+            },
+            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeRandomizedSourceParams.prototypeHolder, ->
+                (entry.prototype.getMaximumCost(this, true))?.coerceAtMost(budget) ?: budget},
+        )
+        val effects = HashSet<overgrownNanoforgeEffect>()
+        for (entry in distributedPrototypes) {
+            val holder = entry.key
+            val score = entry.value
+            holder.prototype.getInstance(this, score)?.let { effects += it }
+        }
+        if (effects.isEmpty()) {
             displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")
             val source = overgrownNanoforgeIndustrySource(
                 this, //shuld never happen
-                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, hashMapOf(Pair(Commodities.ORGANS, 500))))
+                mutableSetOf(overgrownNanoforgeAlterSupplySource(this, Commodities.ORGANS, 500))
             )
             return source
         }
-        return overgrownNanoforgeIndustrySource(this, mutableSetOf(supplyEffect))
+        return overgrownNanoforgeIndustrySource(this, effects)
     }
 
     override fun init(initBaseSource: overgrownNanoforgeEffectSource?, resistance: Int?, resistanceRegen: Int?) {
@@ -263,8 +287,8 @@ class overgrownNanoforgeIndustryHandler(
         var supply: Int = 0
         for (source in getAllSources()) {
             for (effect in source.effects) {
-                if (effect is overgrownNanoforgeAlterSupplySource) {
-                    effect.positiveSupply[commodityId]?.let { supply += it }
+                if (effect is overgrownNanoforgeAlterSupplySource && effect.commodityId == commodityId) {
+                    supply += effect.amount
                 }
             }
         }

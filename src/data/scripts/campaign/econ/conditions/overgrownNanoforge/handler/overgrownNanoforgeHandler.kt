@@ -221,7 +221,7 @@ abstract class overgrownNanoforgeHandler(
         if (effects.isEmpty()) return "None"
         var strings: MutableList<String> = ArrayList()
         for (effect in effects) {
-            strings += effect.getAllFormattedEffects(category == overgrownNanoforgeEffectCategories.BENEFIT)
+            if (effect.getCategory() == category) strings += effect.getDescription()
         }
         return overgrownNanoforgeEffect.format(strings)
     }

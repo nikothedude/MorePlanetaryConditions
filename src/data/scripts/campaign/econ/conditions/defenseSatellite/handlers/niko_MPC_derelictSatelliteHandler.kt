@@ -6,8 +6,10 @@ import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleet
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAI
+import data.scripts.campaign.AI.niko_MPC_satelliteFleetAITacticalModule
 import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
@@ -39,6 +41,8 @@ class niko_MPC_derelictSatelliteHandler private constructor(
     }
 
     override fun createSatelliteFleetAI(satelliteFleet: CampaignFleetAPI): CampaignFleetAIAPI {
-        return niko_MPC_satelliteFleetAI(satelliteFleet as CampaignFleet)
+        val ai = ModularFleetAI(satelliteFleet as CampaignFleet)
+        ai.tacticalModule = niko_MPC_satelliteFleetAITacticalModule(satelliteFleet, ai)
+        return ai
     }
 }

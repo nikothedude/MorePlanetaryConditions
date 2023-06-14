@@ -48,11 +48,16 @@ open class niko_MPC_coreOverclockedTargettingSystemAI: ShipSystemAIScript {
     }
 
     open fun doLogic(amount: Float, missileDangerDir: Vector2f?, collisionDangerDir: Vector2f?, target: ShipAPI?) {
+        val parent = ship!!.parentStation
+        if (parent != null && parent != ship) {
+            if (!parent.system.isActive) return
+        }
+
         if (target == null) {
             val ships = AIUtils.getEnemiesOnMap(ship)
             val missiles = AIUtils.getEnemyMissilesOnMap(ship)
             if (ships.isEmpty() && missiles.isEmpty()) return 
-            activateIfPossible(usageThreshold)
+            activateIfPossible(usageThreshold.toDouble())
             return
         }
         var lowestRange: Float? = null
@@ -60,14 +65,15 @@ open class niko_MPC_coreOverclockedTargettingSystemAI: ShipSystemAIScript {
             if (lowestRange == null) lowestRange = weapon.range
             if (lowestRange > weapon.range) lowestRange = weapon.range
         }
+        if (lowestRange == null) return
 
         val distance = Misc.getDistance(this.ship!!.location, target.location)
         if (distance < lowestRange) return
-        activateIfPossible(usageThreshold)
+        activateIfPossible(usageThreshold.toDouble())
         
     }
 
-    private fun activateIfPossible(score: Double): Boolean {
+    fun activateIfPossible(score: Double): Boolean {
         if (score >= usageThreshold) {
             ship!!.useSystem()
             return true

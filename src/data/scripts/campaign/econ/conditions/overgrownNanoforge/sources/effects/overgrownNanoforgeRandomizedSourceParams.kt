@@ -3,11 +3,9 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getPotentialPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getWeightedPotentialPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
@@ -88,13 +86,17 @@ class overgrownNanoforgeRandomizedSourceParams(
             //initialPrototypes -= pickedPrototype
         }
         if (potentialPrototypes.isEmpty()) return HashSet()
+        val wrappedPrototypes: MutableSet<prototypeHolder> = HashSet()
+        for (entry in potentialPrototypes) {
+            wrappedPrototypes += prototypeHolder(entry)
+        }
         val negative = initialBudget < 0
-        val getMax = { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, ->
-            (entry.getMaximumCost(handler))?.coerceAtMost(budget) ?: budget}
+        val getMax = { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
+            (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget}
         val weightedPrototypes = randomlyDistributeNumberAcrossEntries(
-            potentialPrototypes,
+            wrappedPrototypes,
             abs(initialBudget),
-            { budget: Float, remainingRuns: Int, entry: overgrownNanoforgeEffectPrototypes, -> entry.getMinimumCost(handler) ?: 0f},
+            { budget: Float, remainingRuns: Int, entry: prototypeHolder, -> entry.prototype.getMinimumCost(handler, !negative) ?: 0f},
             getMax,
         )
         if (negative) {
@@ -104,13 +106,18 @@ class overgrownNanoforgeRandomizedSourceParams(
         }
         for (entry in weightedPrototypes) holder.budget -= entry.value
         for (entry in weightedPrototypes) {
-            val prototype = entry.key
+            val prototype = entry.key.prototype
             val score = entry.value
             val instance = prototype.getInstance(handler, score) ?: continue
             effects += instance
         }
         return effects
     }
+
+    // some jank to let us hold duplicates in hashmaps
+    class prototypeHolder(
+        val prototype: overgrownNanoforgeEffectPrototypes
+    )
 
     private fun getMaxEffectsToPick(): Float {
         return 1f

@@ -94,7 +94,7 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         }
     }
 
-    */ unused
+   unused */
 
     override fun createDeletionScriptInstance(vararg args: Any): overgrownStructureDeletionScript {
         return overgrownStructureDeletionScript(this, this, market)
