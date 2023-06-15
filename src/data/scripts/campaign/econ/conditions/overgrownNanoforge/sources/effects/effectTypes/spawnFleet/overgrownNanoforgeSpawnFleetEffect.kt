@@ -9,7 +9,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 class overgrownNanoforgeSpawnFleetEffect(
     nanoforgeHandler: overgrownNanoforgeIndustryHandler
 ): overgrownNanoforgeRandomizedEffect(nanoforgeHandler) {
-    var fleetsAllowed: Boolean = true
     val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(this)
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {
@@ -25,11 +24,11 @@ class overgrownNanoforgeSpawnFleetEffect(
     }
 
     override fun applyEffects() {
-        fleetsAllowed = true
+        spawningScript.start()
     }
 
     override fun unapplyEffects() {
-        fleetsAllowed = false
+        spawningScript.stop()
     }
 
     override fun delete() {

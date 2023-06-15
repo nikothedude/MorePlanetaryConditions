@@ -319,12 +319,12 @@ enum class overgrownNanoforgeEffectPrototypes(
     };
 
     // FIXME: disabled, finish later
-    /*SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.SPECIAL)) {
+    /*SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
         override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0.05f
 
         override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCost(nanoforge)
 
-        fun getCost(nanoforge: overgrownNanoforgeIndustryHandler) = 100f
+        fun getCost(nanoforge: overgrownNanoforgeIndustryHandler) = 50f
 
         override fun getInstance(
             nanoforge: overgrownNanoforgeIndustryHandler,

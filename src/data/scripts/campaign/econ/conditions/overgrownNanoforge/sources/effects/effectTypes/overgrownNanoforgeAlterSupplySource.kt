@@ -47,4 +47,14 @@ class overgrownNanoforgeAlterSupplySource(
     override fun getChange(positive: Boolean): String {
         return "${abs(amount)}"
     }
+
+    override fun getDisabledCriteria(): Boolean {
+        val structure = getStructure() ?: return true
+        val supplyStats = structure.getSupply(commodityId).quantity
+
+        val unmodifiedQuantity = quantity.modifiedValue - amount
+        if (unmodifiedQuantity <= 0) return true
+
+        return super.getDisabledCriteria()
+    }
 }

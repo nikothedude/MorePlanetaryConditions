@@ -10,6 +10,18 @@ abstract class overgrownNanoforgeEffectSource(
     val handler: overgrownNanoforgeHandler,
     val effects: MutableSet<overgrownNanoforgeEffect>
     ) {
+
+    fun getEffectsOfCategory(category: overgrownNanoforgeEffectCategories): MutableSet<overgrownNanoforgeEffect> {
+        val effectsOfCategory: MutableList<overgrownNanoforgeEffect> = HashSet()
+
+        for (effect in effects) {
+            if (effect.getCategory() == category) {
+                effectsOfCategory += effect
+            }
+        }
+        return effectsOfCategory
+    }
+
     open fun delete() {
         unapply()
         return
@@ -19,20 +31,79 @@ abstract class overgrownNanoforgeEffectSource(
         return
     }
 
-    open fun apply() {
-        applyEffects()
+    fun apply() {
+        updateEffects()
     }
 
-    fun applyEffects() {
-        for (effect in effects) effect.apply()
+    private fun updateEffects() {
+        if (!shouldApplyPositives()) {
+            unapplyPositives()
+        } else {
+            applyPositives()
+        }
+        if (!shouldApplyNegatives()) {
+            unapplyNegatives()
+        } else {
+            applyNegatives()
+        }
     }
 
-    open fun unapply(unapplyEffects: Boolean = true) {
-        if (unapplyEffects) unapplyEffects()
+    fun applyPositives() {
+        applyEffects(overgrownNanoforgeEffectCategories.BENEFIT)
     }
 
-    fun unapplyEffects() {
-        for (effect in effects) effect.unapply()
+    fun unapplyPositives() {
+        unapplyEffects(overgrownNanoforgeEffectCategories.BENEFIT)
+    }
+
+    fun applyNegatives() {
+        applyEffects(overgrownNanoforgeEffectCategories.DEFICIT)
+    }
+
+    fun unapplyNegatives() {
+        unapplyEffects(overgrownNanoforgeEffectCategories.DEFICIT)
+    }
+
+    fun applyEffects(category: overgrownNanoforgeEffectCategories) {
+        for (effect in getEffectsOfCategory(category)) {
+            effect.apply()
+        }
+    }
+    
+    fun unapplyEffects(category: overgrownNanoforgeEffectCategories) {
+        for (effect in getEffectsOfCategory(category)) {
+            effect.unapply()
+        }
+    }
+
+    fun unapply(unapplyEffects: Boolean = true) {
+        if (unapplyEffects) {
+            unapplyAllEffects()
+        }
+    }
+
+    fun unapplyAllEffects() {
+        for (effect in effects) {
+            effect.unapply()
+        }
+    }
+
+    fun shouldApplyPositives(): Boolean {
+        if (getMarket().exceedsMaxStructures()) return false
+        val negativeBlocking = isNegativeEffectBlocking()
+
+        return !negativeBlocking
+    }
+
+    fun shouldApplyNegatives(): Boolean = true
+
+    fun isNegativeEffectBlocking(): Boolean {
+        val negativeEffects = getEffectsOfCategory(overgrownNanoforgeEffectCategories.DEFICIT)
+        for (negativeEffect in negativeEffects) {
+            val blocking = negativeEffect.shouldBlockPositives()
+            if (blocking) return true
+        }
+        return false
     }
 
     fun getMarket(): MarketAPI {

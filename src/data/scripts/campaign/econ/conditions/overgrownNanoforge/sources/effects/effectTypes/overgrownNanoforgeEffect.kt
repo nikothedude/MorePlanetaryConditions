@@ -58,7 +58,9 @@ abstract class overgrownNanoforgeEffect(
     }
 
     //TODO: market max strcuture check
-    protected open fun shouldApply(): Boolean = (enabled)
+    protected open fun shouldApply(): Boolean = (!isDisabled())
+
+    fun isDisabled(): Boolean = getDisabledCriteria()
 
     protected abstract fun applyEffects()
 
@@ -79,4 +81,20 @@ abstract class overgrownNanoforgeEffect(
 
     fun isPositive(): Boolean {
         return getCategory() == overgrownNanoforgeEffectCategories.BENEFIT
+    }
+
+    fun shouldBlockPositives() {
+        if (isPositive()) return false
+        if (!blockPositivesWhenDisabled()) return false
+
+        return getDisabledCriteria()
+    }
+
+    /** Used for determining if we should disable ourselves. */
+    open fun getDisabledCriteria(): Boolean { return false }
+    /** If [getDisabledCriteria] returns true, this is what controls the disabling of positive effects. */
+    open fun blockPositivesWhenDisabled() {
+        if (isPositive()) return false
+
+        return true
     }

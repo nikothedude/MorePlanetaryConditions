@@ -16,22 +16,46 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 
 class overgrownNanoforgeSpawnFleetScript(
-    val effect: overgrownNanoforgeSpawnFleetEffect
-): niko_MPC_baseNikoScript() {
+    val effect: overgrownNanoforgeSpawnFleetEffect,
+    val hostile: Boolean
+): niko_MPC_baseNikoScript(), FleetEventListener {
 
     companion object {
         const val NANOFORGE_BOMBARDMENT_FLEET_FACTION_ID = Factions.DERELICT
     }
 
-    val fleets: MutableSet<CampaignFleetAPI> = HashSet()
-    val bombardmentTimer = IntervalUtil(90f, 140f)
+    val fleets: MutableMap<CampaignFleetAPI, Int> = HashMap()
+    val idealFleets: Int = 5
+
+    val maxFleetPoints: Int = 550
+    val minPoints: Int = 3
+    val maxPoints: Int = (maxFleetPoints/idealFleets).toInt()
+
+    val bombardmentTimer = IntervalUtil(25f, 35f)
+
+    var fleetFactionId: String = getEffectiveFactionId()
+        set(value) {
+            if (field != value) {
+                updateFaction(value)
+            }
+            field = value
+        }
+
+    fun updateFaction(newId: String) {
+        val faction = Global.getSector().getFaction(newId) ?: return
+        for (fleet in fleets.keys) {
+            fleet.setFaction(faction)
+        }
+    }
 
     override fun start() {
         Global.getSector().addScript(this)
+        updateFactionId()
     }
 
     override fun stop() {
         Global.getSector().removeScript(this)
+        updateFactionId()
     }
 
     override fun delete(): Boolean {
@@ -40,8 +64,11 @@ class overgrownNanoforgeSpawnFleetScript(
     }
 
     private fun killFleets() {
-        for (fleet in fleets) {
-            fleet.despawn()
+        val iterator = fleets.keys.iterator()
+        while (iterator.hasNext()) {
+            val fleetHolder = iterator.next()
+            fleetHolder.fleet.despawn()
+            iterator.remove()
         }
     }
 
@@ -53,8 +80,6 @@ class overgrownNanoforgeSpawnFleetScript(
         if (bombardmentTimer.intervalElapsed()) {
             spawnBombardmentFleet()
         }
-
-        TODO("Not yet implemented")
     }
 
     fun getMarket(): MarketAPI {
@@ -67,29 +92,48 @@ class overgrownNanoforgeSpawnFleetScript(
         return days
     }
 
-    fun spawnBombardmentFleet(): CampaignFleetAPI {
+    fun spawnBombardmentFleet(): CampaignFleetAPI? {
+
+        updateFactionId()
 
         val market = getMarket()
+        val location = market.containingLocation ?: return null
+
+        val random = MathUtils.getRandom()
+        var points = (MathUtils.getRandomNumberBetween(minPoints, maxPoints))
+
+        val remainder = (getUsedPoints() + points) - maxFleetPoints
+        points -= (remainder.coerceAtLeast(0f))
+
+        if (points < minPoints) return null
+
+        var type = FleetTypes.PATROL_SMALL
+        if (points > 8) type = FleetTypes.PATROL_MEDIUM
+        if (points > 16) type = FleetTypes.PATROL_LARGE
+
         val params = FleetParamsV3(
             market,
-            market.location,
-            NANOFORGE_BOMBARDMENT_FLEET_FACTION_ID,
+            location,
+            fleetFactionId,
             null,
-            FleetTypes.PATROL_LARGE,
-            100f, 0f, 0f, 0f, 0f, 0f, 0f)
-        val fleet = FleetFactoryV3.createFleet(params)
+            type,
+            points, 0f, 0f, 0f, 0f, 0f, 0f)
+        val fleet = FleetFactoryV3.createFleet(params) ?: return null
 
         setFleetProperties(fleet)
 
-        fleets += fleet
+        fleets[fleet] = points 
+
+        location.addEntity(fleet)
+        fleet.setFacing(MathUtils.getRandomNumberBetween(0f, 360f))
+
         return fleet //FIXME: nonfunctional! untested! hell yaeh
     }
 
-    private fun setFleetProperties(fleet: CampaignFleetAPI?) {
-        if (fleet == null) return
-
-        fleet.removeAbility(Abilities.GO_DARK)
-
+    private fun setFleetProperties(fleet: CampaignFleetAPI) {
+        fleet.removeAbility(Abilities.EMERGENCY_BURN);
+        fleet.removeAbility(Abilities.SENSOR_BURST);
+        fleet.removeAbility(Abilities.GO_DARK);
 
         // to make sure they attack the player on sight when player's transponder is off
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE] = true
@@ -100,13 +144,44 @@ class overgrownNanoforgeSpawnFleetScript(
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true
 
-        fleet.addScript(RemnantAssignmentAI(fleet, getSystem(), null))
+        fleet.addScript(RemnantAssignmentAI(fleet, getSystem(), getMarket().primaryEntity))
+        fleet.addEventListener(this)
+    }
 
+    fun getUsedPoints(): Float {
+        var points = 0f
+        for (entry in fleets) {
+            points += entry.points
+        }
+        return points
+    }
 
+    fun updateFactionId() {
+        fleetFactionId = getEffectiveFactionId()
+    }
+
+    fun getEffectiveFactionId(): String {
+        if (!getMarket().isInhabited()) return Factions.DERELICT
+        return if (isHostile()) Factions.DERELICT else getMarket.getFaction().getId()
+    }
+
+    fun isHostile(): Boolean {
+        if (hostile) return true 
+        if (!getMarket().isInhabited()) return true
+
+        return false
     }
 
     private fun getSystem(): StarSystemAPI {
         return (getMarket().starSystem)
     }
+
+    override fun reportFleetDespawnedToListener(fleet: CampaignFleetAPI?, reason: FleetDespawnReason?, param: Object?) {
+        if (fleet == null) return
+
+        fleets -= fleet
+    }
+
+    override fun reportBattleOccurred(fleet: CampaignFleetAPI?, primaryWinner: CampaignFleetAPI?, battle: BattleAPI?) {}
 
 }
