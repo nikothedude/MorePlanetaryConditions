@@ -3,10 +3,9 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
@@ -14,8 +13,6 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_INDUSTRY_CULLING_RESISTANCE_REGEN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_INDUSTRY_CULLING_RESISTANCE_REGEN
-import org.apache.log4j.Level
-import org.apache.log4j.Priority
 import org.lazywizard.lazylib.MathUtils
 
 /* The structure that creates this isnt guranteed to exist, this class exists to store data between decivs and shit so it's "consistant" */
@@ -208,24 +205,16 @@ abstract class overgrownNanoforgeHandler(
         getStructure()?.delete()
     }
 
-    fun getPositiveStringData(): MutableSet<stringData> {
-        return getStringData(overgrownNanoforgeEffectCategories.BENEFIT)
+    fun getPositiveEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        return getEffectDescData(overgrownNanoforgeEffectCategories.BENEFIT)
     }
 
-    fun getNegativeStringData(): MutableSet<stringData> {
-        return getStringData(overgrownNanoforgeEffectCategories.DEFICIT)
+    fun getNegativeEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        return getEffectDescData(overgrownNanoforgeEffectCategories.DEFICIT)
     }
 
-    protected fun getStringData(category: overgrownNanoforgeEffectCategories): MutableSet<stringData> {
-        val effects = baseSource.effects
-        if (effects.isEmpty()) return HashSet()
-        val data: MutableSet<stringData> = HashSet()
-        for (effect in effects) {
-            if (effect.getCategory() == category) {
-                data += effect.getStringData()
-            }
-        }
-        return data
+    fun getEffectDescData(category: overgrownNanoforgeEffectCategories): MutableList<overgrownNanoforgeEffectDescData> {
+        return baseSource.getEffectDescData(category)
     }
 
     open fun getAllSources(): MutableSet<overgrownNanoforgeEffectSource> {
@@ -252,6 +241,10 @@ abstract class overgrownNanoforgeHandler(
     abstract fun getCoreHandler(): overgrownNanoforgeIndustryHandler
     fun startDestroyingStructure() {
         getCoreHandler().intelBrain.startDestroyingStructure(this)
+    }
+
+    fun getCategoryDisabledReasons(): MutableMap<String, Array<String>> {
+        return baseSource.getCategoryDisabledReasons()
     }
 
 }

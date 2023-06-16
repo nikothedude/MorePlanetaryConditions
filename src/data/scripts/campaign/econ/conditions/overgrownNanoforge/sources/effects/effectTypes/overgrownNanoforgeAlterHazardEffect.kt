@@ -27,16 +27,14 @@ class overgrownNanoforgeAlterHazardEffect(
     }
 
     override fun applyEffects() {
-        if (!hazardIsNegative()) return
         getMarket().hazard.modifyFlat(getOurId(), increment, getNameForModifier())
     }
     override fun unapplyEffects() {
-        if (hazardIsNegative()) return
         getMarket().hazard.unmodifyFlat(getOurId())
     }
 
     override fun getBaseFormat(): String {
-        return "Market hazard $adjectiveChar by $changeChar%"
+        return "Market hazard $adjectiveChar by $changeChar percent"
     }
 
     override fun getChange(positive: Boolean): String {

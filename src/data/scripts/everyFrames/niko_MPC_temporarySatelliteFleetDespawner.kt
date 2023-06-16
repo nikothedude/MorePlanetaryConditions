@@ -58,11 +58,11 @@ class niko_MPC_temporarySatelliteFleetDespawner(
         return true
     }
 
-    override fun start() {
+    override fun startImpl() {
         fleet.addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         fleet.removeScript(this)
     }
 

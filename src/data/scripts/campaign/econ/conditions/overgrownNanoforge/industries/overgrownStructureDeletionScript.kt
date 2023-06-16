@@ -17,11 +17,11 @@ class overgrownStructureDeletionScript(hasDeletionScript: hasDeletionScript<out 
         return (!market.hasIndustry(structure.id))
     }
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

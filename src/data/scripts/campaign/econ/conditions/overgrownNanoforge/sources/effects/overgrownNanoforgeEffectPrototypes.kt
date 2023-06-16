@@ -1,17 +1,24 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetEffect
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_marketUtils.getMaxIndustries
 import data.utilities.niko_MPC_marketUtils.getProducableCommoditiesForOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.hasNonJunkStructures
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_mathUtils.ensureIsJsonValidFloat
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
+import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
 import data.utilities.niko_MPC_settings.ANCHOR_POINT_FOR_DEFENSE
 import data.utilities.niko_MPC_settings.HARD_LIMIT_FOR_DEFENSE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
@@ -19,6 +26,7 @@ import org.lazywizard.lazylib.MathUtils
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 
 enum class overgrownNanoforgeEffectPrototypes(
@@ -46,7 +54,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             return times
         }
 
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float = 45f
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float = 45f
         override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float? {
             val market = growth.market
             val producableCommodities = market.getProducableCommoditiesForOvergrownNanoforge()
@@ -113,7 +121,7 @@ enum class overgrownNanoforgeEffectPrototypes(
                 if (growth !is overgrownNanoforgeJunkHandler) return false
                 return super.canBeAppliedTo(growth, maxBudget)
             }
-            override fun getWeight(growth: overgrownNanoforgeHandler): Float {
+            override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
 
                 val market = growth.market
                 val industries = market.industries.size
@@ -126,7 +134,8 @@ enum class overgrownNanoforgeEffectPrototypes(
                 return (base/divisor)
             }
 
-            override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float? = getCost()
+            override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
+            override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
 
             private fun getCost(): Float {
                 return 50f
@@ -163,7 +172,7 @@ enum class overgrownNanoforgeEffectPrototypes(
 
         },*/
     ALTER_ACCESSIBILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float = 19f
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float = 19f
         override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float? = getCostPerOnePercentAccessability(growth)
         fun getCostPerOnePercentAccessability(nanoforge: overgrownNanoforgeHandler): Float = 2f
 
@@ -187,7 +196,7 @@ enum class overgrownNanoforgeEffectPrototypes(
 
     },
     ALTER_DEFENSES(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float {
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
             val weight = 20f
             val market = growth.market
             val groundDefense = market.stats.dynamic.getStat(Stats.GROUND_DEFENSES_MOD).modifiedValue
@@ -226,12 +235,11 @@ enum class overgrownNanoforgeEffectPrototypes(
     },
 
     ALTER_STABILITY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
-        fun getCostPerStability(nanoforge: overgrownNanoforgeHandler): Float = 40f
+        fun getCostPerStability(nanoforge: overgrownNanoforgeHandler): Float = 30f
 
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float {
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
             val weight = 20f
             val market = growth.market
-            val inhabited = market.isInhabited()
             val stability: Float = if (!market.isInhabited()) ANCHOR_POINT_FOR_STABILITY.toFloat() else market.stability.modifiedValue
             val stabilityAnchorMult: Float = (stability/ANCHOR_POINT_FOR_STABILITY).coerceAtMost(1f)
             // TODO: can i store a variable directly on a enum? ex. store anchor point in val
@@ -263,7 +271,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         }
     },
     ALTER_HAZARD(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float = 15f
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float = 15f
 
         override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float {
             return getCostPerOnePercent(growth)
@@ -301,7 +309,7 @@ enum class overgrownNanoforgeEffectPrototypes(
 
     // SPECIAL
     EXPLODE_UPON_DESTRUCTION(setOf(overgrownNanoforgeEffectCategories.SPECIAL)) {
-        override fun getWeight(growth: overgrownNanoforgeHandler): Float = 5f
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float = 5f
         override fun canBeAppliedTo(growth: overgrownNanoforgeHandler, maxBudget: Float): Boolean {
             val superValue = super.canBeAppliedTo(growth, maxBudget)
             val market = growth.market
@@ -316,24 +324,56 @@ enum class overgrownNanoforgeEffectPrototypes(
             if (!canBeAppliedTo(growth, maxBudget)) return null
             return overgrownNanoforgeVolatileEffect(growth)
         }
-    };
+    },
 
-    // FIXME: disabled, finish later
-    /*SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
-        override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0.05f
+    SPAWN_HOSTILE_FLEETS(setOf(overgrownNanoforgeEffectCategories.DEFICIT, overgrownNanoforgeEffectCategories.BENEFIT)) {
 
-        override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCost(nanoforge)
+        private val POPULATION_SIZE_ANCHOR: Int = 6
+        private val POPULATION_SIZE_MULT_DIVISOR: Float = 2f
 
-        fun getCost(nanoforge: overgrownNanoforgeIndustryHandler) = 50f
+        override fun canBeAppliedTo(growth: overgrownNanoforgeHandler, maxBudget: Float): Boolean {
 
+            val system = growth.market.starSystem
+            if (system != null && shouldntApplyFleetScript(system)) return false
+
+            return super.canBeAppliedTo(growth, maxBudget)
+        }
+
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
+
+            val negative = budget <= 0
+            val negativeMult = if (!negative) 0.05f else 1f
+
+            val weight = 30f //30f
+            val market = growth.market
+            val popSize: Int = if (!market.isInhabited()) POPULATION_SIZE_ANCHOR else market.size
+            val popDivided = (popSize/POPULATION_SIZE_ANCHOR.toFloat())
+            val popsizeAnchorMult: Float = (popDivided).coerceAtMost(1f)
+            var mult = ((1*popsizeAnchorMult).ensureIsJsonValidFloat()).toFloat()
+            return (weight*mult)*negativeMult
+        }
+
+        override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth)
+        override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth)
+        fun getCost(nanoforge: overgrownNanoforgeHandler): Float = 80f //80f
         override fun getInstance(
-            nanoforge: overgrownNanoforgeIndustryHandler,
+            growth: overgrownNanoforgeHandler,
             maxBudget: Float
         ): overgrownNanoforgeSpawnFleetEffect? {
-            if (!canBeAppliedTo(nanoforge, maxBudget)) return null
-            return overgrownNanoforgeSpawnFleetEffect(nanoforge)
+            if (!canBeAppliedTo(growth, maxBudget)) return null
+
+            var availableBudget = maxBudget
+            val hostile = availableBudget <= 0
+
+            val clock = Global.getSector().clock
+            return overgrownNanoforgeSpawnFleetEffect(
+                growth,
+                hostile,
+                clock.convertToSeconds(15f),
+                clock.convertToSeconds(25f),
+                500f)
         }
-    }; */
+    };
 
 
 
@@ -344,18 +384,28 @@ enum class overgrownNanoforgeEffectPrototypes(
         val minimumCost = getMinimumCost(growth, !shouldInvert) ?: return false
         return (minimumCost <= maxBudget)
     }
-    abstract fun getWeight(growth: overgrownNanoforgeHandler): Float
+    abstract fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float
     abstract fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float?
     open fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float? = Float.MAX_VALUE
     abstract fun getInstance(growth: overgrownNanoforgeHandler, maxBudget: Float): overgrownNanoforgeEffect?
     open fun getIdealTimesToCreate(growth: overgrownNanoforgeHandler, maxBudget: Float): Int = 1
 
     companion object {
+        val blacklistedFleetSpawnerSystemTags = mutableSetOf<String>(
+            Tags.THEME_RUINS,
+            Tags.PK_SYSTEM,
+            Tags.THEME_SPECIAL,
+            Tags.THEME_REMNANT_RESURGENT,
+            Tags.THEME_REMNANT_SECONDARY,
+            Tags.THEME_CORE_POPULATED
+        )
+
         val ANCHOR_POINT_FOR_STABILITY: Int = 2
         val allPrototypes = overgrownNanoforgeEffectPrototypes.values().toSet()
 
         val prototypesByCategory: MutableMap<overgrownNanoforgeEffectCategories, MutableSet<overgrownNanoforgeEffectPrototypes>> =
             EnumMap(overgrownNanoforgeEffectCategories::class.java)
+
         init {
             for (category in overgrownNanoforgeEffectCategories.values()) prototypesByCategory[category] = HashSet()
 
@@ -363,10 +413,25 @@ enum class overgrownNanoforgeEffectPrototypes(
                 for (category in entry.possibleCategories) prototypesByCategory[category]!! += entry
             }
         }
-        fun getPotentialPrototypes(
+
+        fun shouldntApplyFleetScript(system: StarSystemAPI): Boolean {
+            if (Global.getCurrentState() == GameState.TITLE) {
+                if (!system.isProcgen) return true
+                for (tag in blacklistedFleetSpawnerSystemTags) {
+                    if (system.hasTag(tag)) return true
+                }
+            }
+            return false
+        }
+
+            fun getPotentialPrototypes(
             handler: overgrownNanoforgeHandler,
-            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
-            budget: Float): MutableSet<overgrownNanoforgeEffectPrototypes> {
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(
+                overgrownNanoforgeEffectCategories.BENEFIT,
+                overgrownNanoforgeEffectCategories.DEFICIT
+            ),
+            budget: Float
+        ): MutableSet<overgrownNanoforgeEffectPrototypes> {
             val potentialPrototypes = HashSet<overgrownNanoforgeEffectPrototypes>()
             for (prototype in ArrayList(allPrototypes)) {
                 if (!prototype.possibleCategories.any { allowedCategories.contains(it) }) continue
@@ -377,69 +442,150 @@ enum class overgrownNanoforgeEffectPrototypes(
 
         fun getWeightedPotentialPrototypes(
             handler: overgrownNanoforgeHandler,
-            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
-            budget: Float): MutableMap<overgrownNanoforgeEffectPrototypes, Float>
-        {
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(
+                overgrownNanoforgeEffectCategories.BENEFIT,
+                overgrownNanoforgeEffectCategories.DEFICIT
+            ),
+            budget: Float
+        ): MutableMap<overgrownNanoforgeEffectPrototypes, Float> {
             val potentialPrototypes = getPotentialPrototypes(handler, allowedCategories, budget)
 
             val weightedPrototypes = HashMap<overgrownNanoforgeEffectPrototypes, Float>()
             for (prototype in potentialPrototypes) {
-                val weight = prototype.getWeight(nanoforge)
+                val weight = prototype.getWeight(handler, budget)
                 weightedPrototypes[prototype] = weight
             }
             return weightedPrototypes
         }
 
-        fun getWrappedPotentialPrototypes(
+        fun wrapPrototypes(
             handler: overgrownNanoforgeHandler,
-            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
             budget: Float,
-            timesToPick: Int): MutableList<prototypeHolder> {
-                
-            var picksLeft: Int = timesToPick
+            prototypes: MutableSet<overgrownNanoforgeEffectPrototypes>
+        ): MutableSet<prototypeHolder> {
 
-            val wrappedPrototypes = ArrayList<prototypeHolder>()
-            val weightedPrototypes = getWeightedPotentialPrototypes(handler, allowedCategories, budget)
+            val wrappedPrototypes = HashSet<prototypeHolder>()
 
-            val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
-            for (entry in weightedPrototypes) {
-                if (entry.value == 0) continue
-                picker.add(entry.key, entry.value)
-            }
-
-            while (picksLeft-- > 0) {
-                val picked = picker.pick() ?: break
-                val prototypes = getPrototypeInstantiationList(picked, handler, budget)
-                for (entry in prototypes) {
-                    wrappedPrototypes += prototypeHolder(entry)
-                }
+            for (entry in prototypes) {
+                val duplicatePrototypes = getPrototypeInstantiationList(entry, handler, budget)
+                for (prototype in duplicatePrototypes) wrappedPrototypes += prototypeHolder(prototype)
             }
             return wrappedPrototypes
         }
 
-        fun getScoredWrappedPrototypes(
+        fun scorePrototypes(
             handler: overgrownNanoforgeHandler,
-            budget: Float,
-            timesToPick: Int = 1,
-            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT),
-            wrappedPrototypes: MutableList<prototypeHolder> = getWrappedPotentialPrototypes(handler, allowedCategories, budget, timesToPick)
+            budgetHolder: budgetHolder,
+            allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(
+                overgrownNanoforgeEffectCategories.BENEFIT,
+                overgrownNanoforgeEffectCategories.DEFICIT
+            ),
+            wrappedPrototypes: MutableSet<prototypeHolder> = wrapPrototypes(
+                handler,
+                budgetHolder.budget,
+                getPotentialPrototypes(handler, allowedCategories, budgetHolder.budget)
+            )
         ): MutableMap<prototypeHolder, Float> {
 
+            val budget = budgetHolder.budget
             val negative = budget < 0
             val scoredWrappedPrototypes = randomlyDistributeNumberAcrossEntries(
                 wrappedPrototypes,
                 abs(budget),
-                { budget: Float, remainingRuns: Int, entry: prototypeHolder, -> entry.prototype.getMinimumCost(handler, !negative) ?: 0f},
                 { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
-                (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget},
+                    entry.prototype.getMinimumCost(
+                        handler,
+                        !negative
+                    ) ?: 0f
+                },
+                { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
+                    (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget
+                },
             )
+
+            if (negative) {
+                for (entry in scoredWrappedPrototypes) {
+                    scoredWrappedPrototypes[entry.key] = entry.value * -1f
+                }
+            }
+
+            for (entry in scoredWrappedPrototypes) {
+                budgetHolder.budget -= entry.value
+            }
+
             return scoredWrappedPrototypes
         }
 
+        fun getRandomPrototypes(
+            handler: overgrownNanoforgeHandler,
+            budgetHolder: budgetHolder,
+            allowedCategories: Set<overgrownNanoforgeEffectCategories>,
+            timesToPick: Int
+        ): MutableMap<prototypeHolder, Float> {
+
+            val weightedPotentialPrototypes =
+                getWeightedPotentialPrototypes(handler, allowedCategories, budgetHolder.budget)
+            val pickedPrototypes = pickPrototypes(handler, budgetHolder, timesToPick, weightedPotentialPrototypes)
+
+            val scoredPrototypes = scorePrototypes(handler, budgetHolder, allowedCategories, pickedPrototypes)
+            return scoredPrototypes
+        }
+
+        private fun pickPrototypes(
+            handler: overgrownNanoforgeHandler,
+            budgetHolder: budgetHolder,
+            timesToPick: Int,
+            weightedPrototypes: MutableMap<overgrownNanoforgeEffectPrototypes, Float>
+        ): MutableSet<prototypeHolder> {
+            val pickedList: MutableSet<prototypeHolder> = HashSet()
+            var picksLeft = timesToPick
+            var remainingBudget = budgetHolder.budget
+
+            var absBudget = abs(remainingBudget)
+
+            val picker = WeightedRandomPicker<overgrownNanoforgeEffectPrototypes>()
+
+            for (entry in weightedPrototypes) {
+                picker.add(entry.key, entry.value)
+            }
+
+            var index: Int = 0
+            val threshold = 20
+            while (true) {
+                index++
+
+                while (picksLeft > 0) {
+                    picksLeft--
+                    val picked = picker.pickAndRemove() ?: break
+
+                    val maxCost = picked.getMaximumCost(handler, budgetHolder.budget > 0)
+                    if (maxCost == null) {
+                        displayError("null maxcost during pickPrototypes")
+                        continue // this is chaos if this happens
+                    }
+                    absBudget -= maxCost
+                    pickedList += prototypeHolder(picked)
+                }
+
+                if (picker.isEmpty) break
+
+                if (absBudget > 0) {
+                    picksLeft++ //try again
+                } else break
+
+                if (index >= threshold) {
+                    displayError("anti-loop failsafe triggered during pickprototypes")
+                    break
+                }
+            }
+
+            return pickedList
+        }
+
+
         fun generateEffects(
             handler: overgrownNanoforgeHandler,
-            scoredPrototypes: MutableMap<prototypeHolder, Float>)
-        ): MutableSet<overgrownNanoforgeEffect> {
+            scoredPrototypes: MutableMap<prototypeHolder, Float>): MutableSet<overgrownNanoforgeEffect> {
 
             val effects: MutableSet<overgrownNanoforgeEffect> = HashSet()
             for (entry in scoredPrototypes) {
@@ -448,7 +594,6 @@ enum class overgrownNanoforgeEffectPrototypes(
                 val instance = prototype.getInstance(handler, score) ?: continue
                 effects += instance
             }
-
             return effects
         }
 
@@ -462,7 +607,7 @@ enum class overgrownNanoforgeEffectPrototypes(
 
             val prototypeCopies = ArrayList<overgrownNanoforgeEffectPrototypes>()
             
-            var idealTimes = basePrototype.getIdealTimesToCreate(this, baseScore)
+            var idealTimes = prototype.getIdealTimesToCreate(handler, budget)
 
             while (idealTimes-- > 0) {
                 prototypeCopies += prototype

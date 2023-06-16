@@ -8,11 +8,11 @@ import java.lang.NumberFormatException
 
 class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel) : niko_MPC_baseNikoScript() {
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
 
         intel.manipulationInput = null
@@ -28,8 +28,8 @@ class overgrownNanoforgeIntelInputScanner(val intel: baseOvergrownNanoforgeIntel
     }
 
     override fun advance(amount: Float) {
-        if (!Global.getSector().isPaused) return stop()
-        val resolvedReference = intel.manipulationInput?.get() ?: return stop()
+        if (!Global.getSector().isPaused) return stopImpl()
+        val resolvedReference = intel.manipulationInput?.get() ?: return stopImpl()
 
         intel.localGrowthManipulationPercent = sanitizeFloat(resolvedReference, intel.localGrowthManipulationPercent)
         //intel.externalSupportRating = sanitizeFloat(intel.externalSupportInput!!, intel.externalSupportRating)

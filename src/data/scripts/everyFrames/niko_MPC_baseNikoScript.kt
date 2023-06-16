@@ -1,13 +1,12 @@
 package data.scripts.everyFrames
 
-import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.EveryFrameScriptWithCleanup
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import data.utilities.niko_MPC_debugUtils
 
 /** A generic base class filled with funcs and vars that I use a lot in my common scripting. */
 abstract class niko_MPC_baseNikoScript: EveryFrameScriptWithCleanup{
+    private var started: Boolean = false
     private var done: Boolean = false
     private var deleted: Boolean = false
 
@@ -34,6 +33,16 @@ abstract class niko_MPC_baseNikoScript: EveryFrameScriptWithCleanup{
         return null
     }
 
-    abstract fun start()
-    abstract fun stop()
+    protected abstract fun startImpl()
+    protected abstract fun stopImpl()
+
+    open fun start() {
+        if (!started) startImpl()
+        started = true
+    }
+
+    fun stop() {
+        stopImpl()
+        started = false
+    }
 }

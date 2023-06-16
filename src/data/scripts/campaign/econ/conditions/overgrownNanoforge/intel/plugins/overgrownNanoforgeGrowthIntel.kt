@@ -16,6 +16,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
 import data.utilities.niko_MPC_marketUtils.maxStructureAmount
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
@@ -118,8 +119,8 @@ class overgrownNanoforgeGrowthIntel(
         )
         info.addTableHeaderTooltip(0, "The structure this growth is targeting. Guaranteed to be nothing if " +
                 "the market does not have ${maxStructureAmount} visible structures. If this growth completes with an active target, " +
-                "the target structure will be destroyed and replaced by the growth.")
-        info.addTableHeaderTooltip(1, "If Population and Infrastructure is destroyed by the growth, the market will be " +
+                "the target structure will be destroyed and replaced by the growth." +
+                "\nIf Population and Infrastructure is destroyed by the growth, the market will be " +
                 "decivilized. Do not let this happen.")
 
         val targetData = getTargetData()
@@ -148,16 +149,16 @@ class overgrownNanoforgeGrowthIntel(
         return info.prev
     }
 
-    override fun getPositiveStringData(): MutableSet<stringData> {
-        if (knowExactEffects) return super.getPositiveStringData()
+    override fun getPositiveEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        if (knowExactEffects) return super.getPositiveEffectDescData()
 
-        return setOf(stringData("Unknown"))
+        return mutableListOf(overgrownNanoforgeEffectDescData("Unknown"))
     }
 
-    override fun getNegativeStringData(): MutableSet<stringData> {
-        if (knowExactEffects) return super.getNegativeStringData()
+    override fun getNegativeEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        if (knowExactEffects) return super.getNegativeEffectDescData()
 
-        return setOf(stringData("Unknown"))
+        return mutableListOf(overgrownNanoforgeEffectDescData("Unknown"))
     }
 
     override fun tableRowClicked(ui: IntelUIAPI, data: IntelInfoPlugin.TableRowClickData) {

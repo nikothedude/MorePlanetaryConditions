@@ -18,21 +18,37 @@ Adds industry: Overgrown Nanoforge
         Once destroyed, you receive a unique nanoforge item that massively increases commodity output of any structure it's inserted into,
         but has various negative effects
         If installed in heavy industry, increases faction-wide fleet size by 400% but reduces ship quality by 400% as well
-    The growths cease to grow if the visible structure amount exceeds the vanilla cap
+    The growths cease to grow and benefits are unapplied if the visible structure amount exceeds the vanilla cap
         Sorry grand sector
     At max structures (NOT ABOVE!), growths will begin to destroy and overtake existing structures
         A really needy bonsai tree
         Encourages you to stay on top of it
         Always targets pop&infra last
             If it is destroyed, the market decivs
-    
+    Effects
+        Alter Supply: Increases/Decreases core industry output of a random commodity by x amount
+        Alter hazard: Increases hazard by x
+        Alter accessability: Decreases accessability by x
+        Alter stability: Decreases stability by x
+        Alter defense: Decreases ground defense by x
+        Spawn hostile fleets: Periodically spawns a friendly/hostile derelict fleet (no guardians) that patrols the system, up to x fp
+
     This encourages you to treat this as a sort of bonsai tree, constantly minmaxing the effects, minimizing negatives, maximizing positives
     Extremely rare - only 1-2 if any will spawn in a given game
 
 Anti-Asteroid Satellites:
 
+Bugfixes
+    Fixed a rare bug taht caused a crash in campaign due to ai
+
+Num of satellites per planet reduced to 2
+    FAR less oppressive, now, yet still very helpful
+
 Ships
     Overclocked targetting (Frontal plate system) now 1. Overloads for far longer 2. Lasts for far less
+    Infinite range removed from core and connector, replaced with a long-lasting infintie range system that doesnt overload
+        Works on a cycle of, say, 23 secs of infinite range and 7 secs of normal
+        Gives you a bit of breathing room
     Harpoon MRM small removed from most variants, as it was way too spammy
     All weapons either now have secondary or primary PD capabilties
         PD_ALSO and PD tags respectively

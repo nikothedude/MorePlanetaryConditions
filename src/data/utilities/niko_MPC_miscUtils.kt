@@ -80,4 +80,21 @@ object niko_MPC_miscUtils {
     fun SectorEntityToken.isDespawning(): Boolean {
         return (!isAlive || hasTag(Tags.FADING_OUT_AND_EXPIRING))
     }
+
+    fun formatStringsToLines(data: Collection<String>): String {
+        var addNewLine = false
+        var finalString = ""
+
+        for (entry in data) {
+            var string = entry
+            if (addNewLine) {
+                string = "\n" + string
+            }
+            addNewLine = true // the first string gets no newline
+            finalString += string
+        }
+        if (finalString.isEmpty()) finalString = "None"
+        return finalString
+
+    }
 }

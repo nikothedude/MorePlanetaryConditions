@@ -9,9 +9,11 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeIndustryManipulationIntel
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.budgetHolder
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeAlterSupplySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getWrappedInstantiationList
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.utilities.niko_MPC_debugUtils.displayError
@@ -85,8 +87,8 @@ class overgrownNanoforgeIndustryHandler(
         val baseScore = getBaseScore()
         val basePrototype = getBaseEffectPrototype()
         val wrappedPrototypes = getWrappedInstantiationList(basePrototype, this, baseScore)
-        val scoredPrototypes = overgrownNanoforgeEffectPrototypes.getScoredWrappedPrototypes(this, baseScore, wrappedPrototypes = wrappedPrototypes)
-        var effects = overgrownNanoforgeEffectPrototypes.generateEffects(this, baseScore, scoredPrototypes)
+        val scoredPrototypes = overgrownNanoforgeEffectPrototypes.scorePrototypes(this, budgetHolder(baseScore), wrappedPrototypes = wrappedPrototypes)
+        var effects = overgrownNanoforgeEffectPrototypes.generateEffects(this, scoredPrototypes)
 
         if (effects.isEmpty()) {
             displayError("null supplyeffect on basestats oh god oh god oh god oh god oh god help")

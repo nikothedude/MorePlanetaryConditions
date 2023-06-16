@@ -44,11 +44,11 @@ abstract class niko_MPC_conditionRemovalScript(val entity: SectorEntityToken?, v
                 || !market.hasCondition(conditionId))
     }
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

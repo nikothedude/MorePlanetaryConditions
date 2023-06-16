@@ -9,11 +9,11 @@ class niko_MPC_entityStatusChecker(val handler: niko_MPC_satelliteHandlerCore): 
     override val thresholdForAdvancement: Float = 1f
     override val onlyUseDeltaIfPlayerNotNear = true
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

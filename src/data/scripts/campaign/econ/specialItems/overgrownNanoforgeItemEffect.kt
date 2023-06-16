@@ -212,11 +212,11 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         var industry: Industry? = null
         val trackedMarkets = HashSet<MarketAPI>()
 
-        override fun start() {
+        override fun startImpl() {
             Global.getSector().addScript(this)
         }
 
-        override fun stop() {
+        override fun stopImpl() {
             Global.getSector().removeScript(this)
         }
 

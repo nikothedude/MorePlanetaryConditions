@@ -4,6 +4,9 @@ Refactor satellites to follow overgrown nanoforge architecture
 
 }
 
+rework condition code to not use procgen and instead use custom code god please
+    important for shit like detecting tags
+
 improve satellite overclock ai, its too eager to attack at close range and too hesitant to use at long
 
 Make the volatile effect print out an intel report detailing damages
@@ -11,7 +14,7 @@ Make the volatile effect print out an intel report detailing damages
 
 HIGH PRIORITY {
 
-Refactor satellite AI to be its own thing and not extending off a jar class, since :)))))))))))))
+Convert the overgrown fleet script to use seededfleetmanager or at least take the despawn code
 
 }
 IN PROGRESS 

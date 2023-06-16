@@ -37,11 +37,11 @@ open class niko_MPC_satelliteCustomEntityRemovalScript(
                 || !entity.hasSatelliteHandler(handler)))
     }
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

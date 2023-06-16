@@ -10,6 +10,7 @@ object niko_MPC_ids {
     const val conditionLinkedHandlerMemoryId = "\$conditionLinkedMemoryHandlerId"
     const val niko_MPC_modId = "niko_morePlanetaryConditions"
     const val niko_MPC_masterConfig = "niko_MPC_settings.json"
+    const val overgrownNanoforgeFleetScriptListMemoryId = "\$niko_MPC_overgrownFleetSpawnScripts"
     /**
      * A list of all possible satellite condition Ids. PLEASE UPDATE THIS IF YOU ADD A NEW ONE
      */
@@ -37,6 +38,7 @@ object niko_MPC_ids {
     const val satelliteFactionId = "niko_MPC_satelliteFaction"
     const val temporaryFleetDespawnerId = "\$niko_MPC_temporaryFleetDespawner"
     const val derelictSatelliteFakeFactionId = "derelictSatelliteBuilder"
+    const val overgrownNanoforgeFleetFactionId = "overgrownNanoforgeFleet"
     const val satelliteTagId = "niko_MPC_satellite"
     const val scriptAdderId = "\$niko_MPC_scriptAdderId"
     const val satelliteCustomEntityRemoverScriptId = "\$niko_MPC_satelliteCustomEntityRemoverScriptId"

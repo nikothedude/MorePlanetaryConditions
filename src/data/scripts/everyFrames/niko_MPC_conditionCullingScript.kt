@@ -6,11 +6,11 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 class niko_MPC_conditionCullingScript(var handler: niko_MPC_satelliteHandlerCore): niko_MPC_deltaTimeScript() {
     override val thresholdForAdvancement: Float = 60f
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

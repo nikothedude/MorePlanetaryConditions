@@ -18,11 +18,11 @@ class niko_MPC_satelliteFleetProximityChecker(var handler: niko_MPC_satelliteHan
     override val onlyUseDeltaIfPlayerNotNear: Boolean
         get() = true
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

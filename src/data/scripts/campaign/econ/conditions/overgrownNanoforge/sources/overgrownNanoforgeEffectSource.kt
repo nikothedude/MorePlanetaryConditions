@@ -5,6 +5,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
+import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 
 abstract class overgrownNanoforgeEffectSource(
     val handler: overgrownNanoforgeHandler,
@@ -12,7 +15,7 @@ abstract class overgrownNanoforgeEffectSource(
     ) {
 
     fun getEffectsOfCategory(category: overgrownNanoforgeEffectCategories): MutableSet<overgrownNanoforgeEffect> {
-        val effectsOfCategory: MutableList<overgrownNanoforgeEffect> = HashSet()
+        val effectsOfCategory: MutableSet<overgrownNanoforgeEffect> = HashSet()
 
         for (effect in effects) {
             if (effect.getCategory() == category) {
@@ -23,7 +26,7 @@ abstract class overgrownNanoforgeEffectSource(
     }
 
     open fun delete() {
-        unapply()
+        for (effect in effects) effect.delete()
         return
     }
 
@@ -66,7 +69,7 @@ abstract class overgrownNanoforgeEffectSource(
 
     fun applyEffects(category: overgrownNanoforgeEffectCategories) {
         for (effect in getEffectsOfCategory(category)) {
-            effect.apply()
+            effect.apply(this)
         }
     }
     
@@ -88,6 +91,14 @@ abstract class overgrownNanoforgeEffectSource(
         }
     }
 
+    fun shouldApplyCategory(category: overgrownNanoforgeEffectCategories): Boolean {
+        return when (category) {
+            overgrownNanoforgeEffectCategories.BENEFIT -> shouldApplyPositives()
+            overgrownNanoforgeEffectCategories.DEFICIT -> shouldApplyNegatives()
+            else -> true
+        }
+    }
+
     fun shouldApplyPositives(): Boolean {
         if (getMarket().exceedsMaxStructures()) return false
         val negativeBlocking = isNegativeEffectBlocking()
@@ -100,7 +111,7 @@ abstract class overgrownNanoforgeEffectSource(
     fun isNegativeEffectBlocking(): Boolean {
         val negativeEffects = getEffectsOfCategory(overgrownNanoforgeEffectCategories.DEFICIT)
         for (negativeEffect in negativeEffects) {
-            val blocking = negativeEffect.shouldBlockPositives()
+            val blocking = negativeEffect.shouldBlockPositives(this)
             if (blocking) return true
         }
         return false
@@ -116,6 +127,26 @@ abstract class overgrownNanoforgeEffectSource(
 
     open fun getDesc(): String {
         return handler.getCurrentName()
+    }
+
+    fun getEffectDescData(category: overgrownNanoforgeEffectCategories): MutableList<overgrownNanoforgeEffectDescData> {
+        val data: MutableList<overgrownNanoforgeEffectDescData> = ArrayList()
+        for (effect in getEffectsOfCategory(category)) {
+            data += effect.getDescData(this)
+        }
+        return data
+    }
+
+    fun getCategoryDisabledReasons(): MutableMap<String, Array<String>> {
+        val reasons = HashMap<String, Array<String>>()
+        if (getMarket().exceedsMaxStructures()) {
+            reasons["Because %s exceeds max structures, %s."] = arrayOf(getMarket().name, "benefits are disabled")
+        }
+        if (isNegativeEffectBlocking()) {
+            reasons["Benefits are disabled due to a negative that blocks positives on disable being disabled."] = emptyArray()
+        }
+
+        return reasons
     }
 
 }

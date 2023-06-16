@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.campaign.SpecialItemData
+import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -65,6 +66,8 @@ class overgrownNanoforgeIndustry: baseOvergrownNanoforgeStructure() {
     
 
     override fun isTooltipExpandable(): Boolean = true
+
+    override fun isSupplyLegal(com: CommodityOnMarketAPI?): Boolean = true
 
     override fun createTooltip(mode: Industry.IndustryTooltipMode?, tooltip: TooltipMakerAPI?, expanded: Boolean) {
         super.createTooltip(mode, tooltip, expanded)

@@ -1,39 +1,63 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet
 
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.listeners.ColonyDecivListener
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeRandomizedEffect
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 
 class overgrownNanoforgeSpawnFleetEffect(
-    nanoforgeHandler: overgrownNanoforgeIndustryHandler
+    nanoforgeHandler: overgrownNanoforgeHandler,
+    val hostile: Boolean,
+    val respawnMin: Float,
+    val respawnMax: Float,
+    val fpMax: Float,
+    spawnAll: Boolean = shouldSpawnAll(nanoforgeHandler.market.containingLocation)
 ): overgrownNanoforgeRandomizedEffect(nanoforgeHandler) {
-    val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(this)
+    val spawningScript: overgrownNanoforgeSpawnFleetScript = overgrownNanoforgeSpawnFleetScript(
+        this,
+        hostile,
+        respawnMin,
+        respawnMax,
+        fpMax,
+        spawnAll)
 
     override fun getCategory(): overgrownNanoforgeEffectCategories {
-        return overgrownNanoforgeEffectCategories.DEFICIT
+        return if (hostile) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
     }
 
     override fun getName(): String {
-        return "Derelict auto-factory"
+        var name = "Derelict auto-factory"
+        if (isPositive()) name = "Hackable $name"
+        return name
     }
 
     override fun getDescription(): String {
-        return "TODO"
+        val clock = Global.getSector().clock
+        var desc = "Spawns a derelict fleet every ${clock.convertToDays(respawnMin)} - ${clock.convertToDays(respawnMax)} days, up to a max of $fpMax FP."
+        desc += if (isPositive()) "\nThe fleets are of the market's faction, derelict if unowned." else "\nThe fleets are always hostile."
+        return desc
     }
 
     override fun applyEffects() {
-        spawningScript.start()
+        spawningScript.apply()
     }
 
     override fun unapplyEffects() {
-        spawningScript.stop()
+        spawningScript.unapply()
     }
 
     override fun delete() {
-        spawningScript.spawnBombardmentFleet()
         spawningScript.delete()
         super.delete()
+    }
+
+    companion object {
+        fun shouldSpawnAll(location: LocationAPI): Boolean {
+            return Global.getCurrentState() == GameState.TITLE
+        }
     }
 }

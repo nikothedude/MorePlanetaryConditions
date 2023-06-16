@@ -21,11 +21,11 @@ class niko_MPC_satelliteStationBattleChecker(val handler: niko_MPC_satelliteHand
     override val doOneSecondDelayIfPlayerNotNear: Boolean
         get() = true
 
-    override fun start() {
+    override fun startImpl() {
         Global.getSector().addScript(this)
     }
 
-    override fun stop() {
+    override fun stopImpl() {
         Global.getSector().removeScript(this)
     }
 

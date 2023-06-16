@@ -1,7 +1,6 @@
 package data.scripts.campaign.econ.conditions
 
 import data.scripts.everyFrames.deletionScript
-import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 
 interface hasDeletionScript<T: deletionScript?> {
     var deletionScript: T?

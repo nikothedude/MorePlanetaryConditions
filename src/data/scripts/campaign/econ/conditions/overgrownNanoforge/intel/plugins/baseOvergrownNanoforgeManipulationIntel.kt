@@ -2,7 +2,6 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.CommMessageAPI
-import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -12,7 +11,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorStructureRegeneration
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
-import data.scripts.campaign.intel.baseNikoEventStage
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
+import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
+import data.utilities.niko_MPC_miscUtils.formatStringsToLines
 import java.awt.Color
 import kotlin.math.max
 
@@ -50,19 +51,27 @@ open class baseOvergrownNanoforgeManipulationIntel(
     }
 
     open fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
-        val positiveEffects: MutableSet<stringData> = getPositiveStringData()
-        val negativeEffects: MutableSet<stringData> = getNegativeStringData()
 
-        val formattedPositives = stringData.format(positiveEffects)
-        val formattedNegatives = stringData.format(negativeEffects)
+        val positiveEffects: MutableList<overgrownNanoforgeEffectDescData> = getPositiveEffectDescData()
+        val negativeEffects: MutableList<overgrownNanoforgeEffectDescData> = getNegativeEffectDescData()
 
-        var positiveLines = formattedPositives.lines().size
-        var negativeLines = formattedNegatives.lines().size
+        val positiveDesc = formatStringsToLines(positiveEffects.map { it.getFullString() })
+        val negativeDesc = formatStringsToLines(negativeEffects.map { it.getFullString() })
 
-        var positiveWidth = (info.computeStringWidth(formattedPositives)) + 30f
-        val negativeWidth = (info.computeStringWidth(formattedNegatives)) + 30f
+        val positiveLines = positiveDesc.lines().size
+        val negativeLines = negativeDesc.lines().size
+
+        val positiveWidth = (info.computeStringWidth(positiveDesc)) + 30f
+        val negativeWidth = (info.computeStringWidth(negativeDesc)) + 30f
         val sizePerEffect = 15f
         val size = (sizePerEffect * (max(positiveLines, negativeLines)))
+
+        val baseColor = Misc.getBasePlayerColor()
+
+        for (reason in ourHandler.getCategoryDisabledReasons()) {
+            info.addPara(reason.key, 5f, Misc.getHighlightColor(), *(reason.value))
+        }
+
         info.beginTable(
             factionForUIColors, size,
             "Positives", positiveWidth,
@@ -71,14 +80,9 @@ open class baseOvergrownNanoforgeManipulationIntel(
         info.makeTableItemsClickable()
 
         val baseAlignment = Alignment.LMID
-        val baseColor = Misc.getBasePlayerColor()
 
-        val positiveLabel = info.createLabel(formattedPositives, baseColor)
-        positiveLabel.setHighlight(*arrayOf(positiveEffects.highlights.keys))
-        positiveLabel.setHighlightColors(*arrayOf(positiveEffects.highlights.values))
-        val negativeLabel = info.createLabel(formattedNegatives, baseColor)
-        negativeLabel.setHighlight(*arrayOf(negativeEffects.highlights.keys))
-        negativeLabel.setHighlightColors(*arrayOf(negativeEffects.highlights.values))
+        val positiveLabel = info.createLabel(positiveDesc, baseColor)
+        val negativeLabel = info.createLabel(negativeDesc, baseColor)
 
         info.addRowWithGlow(
             baseAlignment, baseColor, positiveLabel,
@@ -93,12 +97,12 @@ open class baseOvergrownNanoforgeManipulationIntel(
         return table
     }
 
-    open fun getFormattedPositives(): String {
-        return ourHandler.getFormattedPositives()
+    open fun getPositiveEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        return ourHandler.getPositiveEffectDescData()
     }
 
-    open fun getFormattedNegatives(): String {
-        return ourHandler.getFormattedNegatives()
+    open fun getNegativeEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {
+        return ourHandler.getNegativeEffectDescData()
     }
 
     /** Called when our progress goes to 0 or below. Should destroy the handler and structure as well as this. */

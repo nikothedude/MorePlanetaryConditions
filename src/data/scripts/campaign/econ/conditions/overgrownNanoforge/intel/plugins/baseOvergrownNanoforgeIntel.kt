@@ -1,9 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
-import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -11,7 +9,6 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.Misc
-import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.viewMode
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*

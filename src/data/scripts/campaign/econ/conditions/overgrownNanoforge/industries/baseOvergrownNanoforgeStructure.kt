@@ -2,23 +2,18 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.industries
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CoreUITabId
-import com.fs.starfarer.api.campaign.comm.CommMessageAPI.MessageClickAction
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.listeners.IndustryOptionProvider
-import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
-import com.fs.starfarer.api.impl.campaign.intel.MessageIntel
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.comms.v2.EventsPanel
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.industries.baseNikoIndustry
-import data.utilities.niko_MPC_marketUtils.hasJunkStructures
+import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
-import data.utilities.niko_MPC_settings
-import org.lazywizard.lazylib.MathUtils
-import java.awt.Color
+import data.utilities.niko_MPC_miscUtils
+import data.utilities.niko_MPC_miscUtils.formatStringsToLines
 
 abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionScript<overgrownStructureDeletionScript> {
 
@@ -124,22 +119,34 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
 
         val handler = getHandlerWithUpdate() ?: return
 
-        val positiveEffects: MutableSet<stringData> = handler.getPositiveStringData()
-        val negativeEffects: MutableSet<stringData> = handler.getNegativeStringData()
+        val positiveEffects = handler.getPositiveEffectDescData()
+        val negativeEffects = handler.getNegativeEffectDescData()
 
-        val formattedPositives = stringData.format(positiveEffects)
-        val formattedNegatives = stringData.format(negativeEffects)
-        )
+        val positiveDesc = formatStringsToLines(positiveEffects.map { if (expanded) it.getFullString() else it.description })
+        val negativeDesc = formatStringsToLines(negativeEffects.map { if (expanded) it.getFullString() else it.description })
 
-        if (formattedPositives.isNotEmpty()) {
+        //val positiveHighlightData = stringData.getHighlightDataOf(positiveEffects)
+        //val negativeHighlightData = stringData.getHighlightDataOf(negativeEffects)
+
+        for (reason in handler.getCategoryDisabledReasons()) {
+            tooltip.addPara(reason.key, 5f, Misc.getHighlightColor(), *(reason.value))
+        }
+
+        tooltip.addPara("Press F1 to view extra details about effects, if available.", 5f)
+
+        if (positiveEffects.isNotEmpty()) {
             tooltip.addSpacer(5f)
             tooltip.addSectionHeading("Positives", Alignment.MID, 0f)
-            tooltip.addPara(formattedPositives, 5f, arrayOf(positiveEffects.highlights.values), *arrayOf(positiveEffects.highlights.keys))
+            tooltip.addPara(positiveDesc, 5f, /*positiveHighlightData.map { it.color }.toTypedArray(), *positiveHighlightData.map { it.string }.toTypedArray()*/)
         }
-        if (formattedNegatives.isNotEmpty()) {
+        if (negativeEffects.isNotEmpty()) {
             tooltip.addSectionHeading("Negatives", Alignment.MID, 5f)
-            tooltip.addPara(formattedNegatives, 5f, arrayOf(negativeEffects.highlights.values), *arrayOf(negativeEffects.highlights.keys))
+            tooltip.addPara(negativeDesc, 5f, /*negativeHighlightData.map { it.color }.toTypedArray(), *negativeHighlightData.map { it.string }.toTypedArray()*/)
         }
+    }
+
+    override fun isTooltipExpandable(): Boolean {
+        return true
     }
 
     abstract fun createNewHandlerInstance(): overgrownNanoforgeHandler

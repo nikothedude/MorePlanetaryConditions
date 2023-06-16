@@ -1,10 +1,12 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import java.awt.Color
 import kotlin.math.abs
 
 class overgrownNanoforgeAlterSupplySource(
@@ -24,8 +26,7 @@ class overgrownNanoforgeAlterSupplySource(
     override fun getName(): String = "Supply Alteration"
 
     override fun getBaseFormat(): String {
-        val spec = Global.getSettings().getCommoditySpec(commodityId) ?: return "error"
-        val nameOfKey = spec.name
+        val nameOfKey = getCommodityName()
         return "Nanoforge supply of $nameOfKey $adjectiveChar by $changeChar"
     }
 
@@ -48,13 +49,25 @@ class overgrownNanoforgeAlterSupplySource(
         return "${abs(amount)}"
     }
 
-    override fun getDisabledCriteria(): Boolean {
-        val structure = getStructure() ?: return true
-        val supplyStats = structure.getSupply(commodityId).quantity
+    /*override fun getDisabledCriteria(): Boolean {
+        /*if (!isPositive()) {
+            val structure = getStructure() ?: return true
+            val supplyStats = structure.getSupply(commodityId).quantity
 
-        val unmodifiedQuantity = quantity.modifiedValue - amount
-        if (unmodifiedQuantity <= 0) return true
+            val unmodifiedQuantity = supplyStats.modifiedValue - abs(amount)
+            if (unmodifiedQuantity <= 0) return true
+        }*/
 
         return super.getDisabledCriteria()
+    }*/
+
+    override fun getDisabledCriteriaString(): String? {
+        return if (!isPositive()) "production of ${getCommodityName()} falls below 0" else null
+    }
+
+    private fun getCommodityName(): String {
+        val spec = Global.getSettings().getCommoditySpec(commodityId) ?: return "Error"
+        val nameOfKey = spec.name
+        return nameOfKey
     }
 }

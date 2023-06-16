@@ -5,6 +5,8 @@ import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffect
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.generateEffects
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getRandomPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getWeightedPotentialPrototypes
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
@@ -34,8 +36,6 @@ class overgrownNanoforgeRandomizedSourceParams(
         return 0f
     }
 
-    class budgetHolder(var budget: Float)
-
     private fun generateRandomizedEffects(handler: overgrownNanoforgeHandler): MutableSet<overgrownNanoforgeEffect> {
         val effects = HashSet<overgrownNanoforgeEffect>()
 
@@ -62,28 +62,25 @@ class overgrownNanoforgeRandomizedSourceParams(
         handler: overgrownNanoforgeHandler,
         holder: budgetHolder,
         allowedCategories: Set<overgrownNanoforgeEffectCategories>,
-        maxToPick: Float = getMaxEffectsToPick()
+        maxToPick: Int = getMaxEffectsToPick()
     ): MutableSet<overgrownNanoforgeEffect> {
-        var maxToPick = maxToPick
         val initialBudget = holder.budget
-
-        val effects = HashSet<overgrownNanoforgeEffect>()
 
         val negative = initialBudget < 0
         val category = if (negative) overgrownNanoforgeEffectCategories.DEFICIT else overgrownNanoforgeEffectCategories.BENEFIT
 
-        val effects = generateEffects(handler, getScoredWrappedPrototypes(
+        val effects = generateEffects(handler, getRandomPrototypes(
             handler, 
-            initialBudget,
-            maxToPick,
-            setOf(category)
+            holder,
+            setOf(category),
+            maxToPick
         ))
 
         return effects
     }
 
-    private fun getMaxEffectsToPick(): Float {
-        return 1f
+    private fun getMaxEffectsToPick(): Int {
+        return 1
         //TODO("Not yet implemented")
     }
 
@@ -109,3 +106,6 @@ class overgrownNanoforgeRandomizedSourceParams(
         return overgrownNanoforgeRandomizedSource(handler, this)
     }
 }
+
+class budgetHolder(var budget: Float)
+
