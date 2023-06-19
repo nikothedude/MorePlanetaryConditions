@@ -31,6 +31,10 @@ class overgrownNanoforgeGrowthIntel(
     val params: overgrownSpreadingParams,
 ) : baseOvergrownNanoforgeManipulationIntel(brain, ourHandler) {
 
+    init {
+        isImportant = true
+    }
+
     override fun initializeProgress() {
         setMaxProgress(ourHandler.cullingResistance)
         setProgress(getInitialProgress())

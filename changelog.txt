@@ -53,6 +53,9 @@ Ships
     All weapons either now have secondary or primary PD capabilties
         PD_ALSO and PD tags respectively
     Variants
+        Standard
+            Rebalanced the frontal plates to be far more ballistics-focused
+            To compensate for the lost OP, the left plate now has harpoon doubles
         Ordnance
             Replaced annihilator pods with jackhammer/typhoon respectively
             Variant weight drastically reduced
