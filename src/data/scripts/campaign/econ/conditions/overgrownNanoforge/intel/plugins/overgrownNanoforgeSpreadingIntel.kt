@@ -26,6 +26,10 @@ class overgrownNanoforgeSpreadingIntel(
 ) : baseOvergrownNanoforgeIntel(brain) {
 
 
+    init {
+        isImportant = true
+    }
+
     fun getTimeTilNextSpread(): Int {
         return MathUtils.getRandomNumberInRange(OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS, OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS)
     }

@@ -15,6 +15,7 @@ Make the volatile effect print out an intel report detailing damages
 HIGH PRIORITY {
 
 Convert the overgrown fleet script to use seededfleetmanager or at least take the despawn code
+Convert manipulation intel input to lunalib double input
 
 }
 IN PROGRESS 

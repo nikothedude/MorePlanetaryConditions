@@ -34,6 +34,7 @@ import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
+import lunalib.lunaSettings.LunaSettings
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)

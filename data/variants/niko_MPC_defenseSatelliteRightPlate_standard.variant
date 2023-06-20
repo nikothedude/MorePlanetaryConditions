@@ -3,8 +3,8 @@
   "hullId": "niko_MPC_defenseSatelliteRightPlate",
   "displayName": "Standard",
   "goalVariant": false,
-  "fluxCapacitors": 27,
-  "fluxVents": 52,
+  "fluxCapacitors": 24,
+  "fluxVents": 53,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -26,7 +26,8 @@
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0003": "heavymauler"
+        "WS0003": "heavymauler",
+        "WS0015": "heavymauler"
       }
     },
     {
@@ -34,7 +35,7 @@
       "mode": "LINKED",
       "weapons": {
         "WS0002": "lightag",
-        "WS0008": "irpulse",
+        "WS0008": "lightag",
         "WS0012": "lightag",
         "WS0013": "heavymortar",
         "WS0019": "lightag"
@@ -44,8 +45,8 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0015": "pulselaser"
-      }
+		"WS0004": "niko_MPC_LR_pdburst",
+		}
     },
     {
       "autofire": true,
@@ -62,20 +63,19 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
+        "WS0005": "swarmer",
         "WS0007": "swarmer",
         "WS0010": "swarmer",
         "WS0011": "swarmer",
-        "WS0020": "swarmer",
-		"WS0005": "swarmer",
+        "WS0020": "swarmer"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0014": "niko_MPC_LR_heavyburst",
-		"WS0004": "niko_MPC_LR_pdburst",
-	  }
+        "WS0014": "niko_MPC_LR_heavyburst"
+      }
     }
   ],
   "modules": [],

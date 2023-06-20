@@ -470,10 +470,6 @@ abstract class baseOvergrownNanoforgeIntel(
         return super.getStages()
     }
 
-    override fun isImportant(): Boolean {
-        return true
-    }
-
     fun getNaturalGrowthInt(): Int {
         var rate = 0
         getNaturalGrowthFactors().forEach { rate += it.getProgress(this) }

@@ -25,5 +25,6 @@
     <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="src" level="project" />
     <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
+    <orderEntry type="library" name="CaptainsLog" level="project" />
   </component>
 </module>

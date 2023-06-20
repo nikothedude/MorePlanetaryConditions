@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Standard",
   "goalVariant": false,
-  "fluxCapacitors": 36,
+  "fluxCapacitors": 41,
   "fluxVents": 35,
   "quality": 1,
   "permaMods": [],
@@ -19,17 +19,19 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0009": "heavymauler",
-        "WS0016": "heavymauler",
+        "WS0014": "hephag"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0003": "irpulse",
-		"WS0007": "irpulse"
-	  }
+        "WS0009": "heavymauler",
+        "WS0012": "harpoon_single",
+        "WS0013": "harpoon_single",
+        "WS0016": "heavymauler",
+        "WS0017": "heavymauler"
+      }
     },
     {
       "autofire": true,
@@ -37,45 +39,43 @@
       "weapons": {
         "WS0001": "lightag",
         "WS0002": "lightag",
+        "WS0003": "lightag",
         "WS0006": "lightag",
+        "WS0008": "lightag"
       }
     },
     {
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0014": "mjolnir"
-      }
-    },
-    {
-      "autofire": true,
-      "mode": "ALTERNATING",
-      "weapons": {
         "WS0004": "lightdualmg",
         "WS0005": "lightdualmg",
-        "WS0008": "vulcan",
+        "WS0007": "lightdualmg"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
         "WS0010": "dualflak",
-        "WS0011": "dualflak",
-        "WS0017": "dualflak"
+        "WS0011": "dualflak"
       }
     },
     {
       "autofire": true,
-      "mode": "ALTERNATING",
+      "mode": "LINKED",
       "weapons": {
-        "WS0012": "swarmer",
-        "WS0013": "swarmer",
         "WS0018": "swarmer",
-        "WS0020": "swarmer",
-		"WS0019": "swarmer"
+        "WS0019": "swarmer",
+        "WS0020": "swarmer"
       }
     },
     {
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-		"WS0015": "miningblaster"
-	  }
+        "WS0015": "niko_MPC_LR_graviton"
+      }
     }
   ],
   "modules": [],
