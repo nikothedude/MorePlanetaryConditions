@@ -424,7 +424,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             return false
         }
 
-            fun getPotentialPrototypes(
+        fun getPotentialPrototypes(
             handler: overgrownNanoforgeHandler,
             allowedCategories: Set<overgrownNanoforgeEffectCategories> = setOf(
                 overgrownNanoforgeEffectCategories.BENEFIT,

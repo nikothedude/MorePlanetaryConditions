@@ -4,10 +4,11 @@ import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
-import com.fs.starfarer.api.campaign.listeners.TestIndustryOptionProvider
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.thoughtworks.xstream.XStream
+import data.campaign.ids.SKR_ids.THEME_PLAGUEBEARER
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
@@ -25,7 +26,6 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
-import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
@@ -34,7 +34,6 @@ import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
-import lunalib.lunaSettings.LunaSettings
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
@@ -83,15 +82,19 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
+
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
         Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())
         Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
+
         if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
             Global.getSector().listenerManager.addListener(niko_MPC_satelliteDiscoveredListener(), true)
         }
+
         Global.getSector().registerPlugin(niko_MPC_campaignPlugin())
+
         val globalMemory = Global.getSector().memory
         if (!globalMemory.contains(niko_MPC_ids.satelliteBattleTrackerId)) {
             createNewSatelliteTracker()
@@ -112,6 +115,20 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             knownShips -= "station_derelict_survey_mothership"
             nanoforgeFaction.clearShipRoleCache()
         }
+    }
+
+    override fun onEnabled(wasEnabledBefore: Boolean) {
+        //MPC_conditionManager.generateConditions(wasEnabledBefore)
+
+        super.onEnabled(wasEnabledBefore)
+    }
+
+    override fun configureXStream(x: XStream?) {
+        if (x == null) return
+
+        // TODO: aliases
+
+        super.configureXStream(x)
     }
 
     override fun onNewGameAfterEconomyLoad() {

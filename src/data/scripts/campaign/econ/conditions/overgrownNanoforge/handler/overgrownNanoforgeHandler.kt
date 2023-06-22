@@ -69,15 +69,23 @@ abstract class overgrownNanoforgeHandler(
         set(value: MarketAPI) {
              if (field !== value) { //shit breaks if we dont do reference checking, hence the extra =
              // while loose equivilancy works a lot of the time (simple clones), sometimes it breaks shit terribly
-                migrateToNewMarket(value) //changed markets
+                 if (field != null) {
+                     removeSelfFromMarket(field)
+                 }
+                 field = value
+                 addSelfToMarket(value)
+                 migrateToNewMarket(value) //changed markets
+                 return
             }
             field = value
         }
 
+    open fun readResolve(): Any? {
+        return this
+    }
+
     /** Called when [market] is changed. */
     protected open fun migrateToNewMarket(newMarket: MarketAPI) {
-        removeSelfFromMarket(market)
-        addSelfToMarket(newMarket)
     }
 
     open fun init(initBaseSource: overgrownNanoforgeEffectSource? = null, resistance: Int? = null, resistanceRegen: Int? = null) {
@@ -245,6 +253,10 @@ abstract class overgrownNanoforgeHandler(
 
     fun getCategoryDisabledReasons(): MutableMap<String, Array<String>> {
         return baseSource.getCategoryDisabledReasons()
+    }
+
+    open fun isCorrupted(): Boolean {
+        return (market == null)
     }
 
 }

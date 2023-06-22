@@ -240,7 +240,7 @@ object niko_MPC_marketUtils {
         return memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] as? overgrownNanoforgeIndustryHandler
     }
 
-    fun MarketAPI.setOvergrownNanoforgeIndustryHandler(handler: overgrownNanoforgeIndustryHandler) {
+    fun MarketAPI.setOvergrownNanoforgeIndustryHandler(handler: overgrownNanoforgeIndustryHandler?) {
         val currHandler = getOvergrownNanoforgeIndustryHandler()
         if (currHandler != null) {
             niko_MPC_debugUtils.displayError("replacement attempt for overgrown nanoforge handler on ${this.name}")

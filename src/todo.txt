@@ -17,6 +17,10 @@ HIGH PRIORITY {
 Convert the overgrown fleet script to use seededfleetmanager or at least take the despawn code
 Convert manipulation intel input to lunalib double input
 
+shit is completely fucking broken. unstable. what the fuck.w ahtthefu ck
+
+handlers have null markets, null junkhandler lists. conditions have market.primaryentity.market == null. WHAT
+
 }
 IN PROGRESS 
 

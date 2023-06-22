@@ -51,12 +51,6 @@ class overgrownNanoforgeIndustryHandler(
     override var growing: Boolean = false
 ): overgrownNanoforgeHandler(initMarket, growing), EveryFrameScript {
 
-    override fun migrateToNewMarket(newMarket: MarketAPI) {
-        super.migrateToNewMarket(newMarket)
-
-        junkHandlers.forEach { it.market = newMarket }
-    }
-
     var exposed: Boolean = false
         set(value) {
             val oldField = field
@@ -67,6 +61,12 @@ class overgrownNanoforgeIndustryHandler(
         }
 
     val junkHandlers: MutableSet<overgrownNanoforgeJunkHandler> = HashSet()
+
+    override fun migrateToNewMarket(newMarket: MarketAPI) {
+        super.migrateToNewMarket(newMarket)
+
+        junkHandlers.forEach { it.market = newMarket }
+    }
 
     var discovered: Boolean = false
         set(value: Boolean) {
@@ -333,5 +333,9 @@ class overgrownNanoforgeIndustryHandler(
             }
             return unsyncedMarkets
         }
+    }
+
+    override fun isCorrupted(): Boolean {
+        return (super.isCorrupted() || junkHandlers == null)
     }
 }

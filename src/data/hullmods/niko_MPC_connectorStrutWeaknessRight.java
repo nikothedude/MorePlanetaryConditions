@@ -1,6 +1,7 @@
 package data.hullmods;
 
 import com.fs.starfarer.api.Global;
+import com.fs.starfarer.api.campaign.FactionAPI;
 import com.fs.starfarer.api.combat.ShipAPI;
 import com.fs.starfarer.api.fleet.FleetMemberAPI;
 import data.hullmods.everyframes.niko_MPC_structuralWeaknessBaseInitScript;
