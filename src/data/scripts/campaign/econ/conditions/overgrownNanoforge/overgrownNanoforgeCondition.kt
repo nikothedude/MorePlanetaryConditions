@@ -37,6 +37,10 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
     override fun apply(id: String) {
         super.apply(id)
 
+        if (market.primaryEntity?.market != market) {
+            return //TODO: remove
+        }
+
         val ourMarket = getMarket() ?: return
         if (ourMarket.isDeserializing()) return
 
@@ -99,7 +103,6 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
         catch (ex: NullPointerException) {
             niko_MPC_debugUtils.log.log(Level.ERROR, ex)
         }
-
         updateHandler()
     }
 

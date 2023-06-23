@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.thoughtworks.xstream.XStream
 import data.campaign.ids.SKR_ids.THEME_PLAGUEBEARER
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
@@ -26,9 +27,12 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
+import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
+import data.utilities.niko_MPC_marketUtils.purgeOvergrownNanoforgeBuildings
+import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_satelliteUtils
 import data.utilities.niko_MPC_settings
@@ -115,6 +119,24 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             knownShips -= "station_derelict_survey_mothership"
             nanoforgeFaction.clearShipRoleCache()
         }
+
+        /*val list = Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as? HashSet<overgrownNanoforgeIndustryHandler>
+        if (list != null) {
+            for (entry in list.toMutableSet()) {
+                entry.delete()
+            }
+        }
+
+        for (system in Global.getSector().starSystems) {
+            for (planet in system.planets) {
+                val market = planet.market ?: continue
+                market.purgeOvergrownNanoforgeBuildings()
+                market.removeOvergrownNanoforgeIndustryHandler()
+                for (i in 0..12) {
+                    market.memoryWithoutUpdate.unset(overgrownNanoforgeJunkStructureId + i)
+                }
+            }
+        }*/
     }
 
     override fun onEnabled(wasEnabledBefore: Boolean) {

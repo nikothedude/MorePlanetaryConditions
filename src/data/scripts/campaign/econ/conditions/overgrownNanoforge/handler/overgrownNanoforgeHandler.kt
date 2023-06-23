@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
@@ -63,6 +64,10 @@ abstract class overgrownNanoforgeHandler(
     abstract fun createBaseSource(): overgrownNanoforgeEffectSource
 
     var deleted: Boolean = false
+
+    init {
+        Global.getSector() //todo: remove
+    }
 
     /** The [MarketAPI] instance we are beholden to. The market we apply our effects to, and around. */
     open var market: MarketAPI = initMarket

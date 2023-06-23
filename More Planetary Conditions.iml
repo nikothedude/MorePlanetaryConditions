@@ -27,5 +27,6 @@
     <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
     <orderEntry type="library" name="CaptainsLog" level="project" />
     <orderEntry type="library" name="seeker" level="project" />
+    <orderEntry type="library" name="DynamicTariffs" level="project" />
   </component>
 </module>

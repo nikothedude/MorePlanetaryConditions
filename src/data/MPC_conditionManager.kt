@@ -4,16 +4,21 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 
 object MPC_conditionManager {}
 
-/*    fun generateConditions(wasEnabledBefore: Boolean) {
-        TODO("Not yet implemented")
+    /*fun generateConditions(wasEnabledBefore: Boolean) {
+        for (conditionData in MPC_conditionGenDataStore.getGeneratable(wasEnabledBefore)) {
+            generateConditionsOf(conditionData)
+        }
+    }
+
+    fun generateConditionsOf(conditionData: MPC_conditionGenDataStore) {
+
     }
 
 }
 
-enum class MPC_conditionGenDataStore {
-
-    DEFENSE_SATELLITES,
-    OVERGROWN_NANOFORGE;
+enum class MPC_conditionGenDataStore(
+    private val planetSpecWeights: MutableMap<String, Float>
+) {
 
     fun shouldGenerate(): Boolean {
         return (isEnabled())
@@ -34,5 +39,4 @@ enum class MPC_conditionGenDataStore {
             return generatable
         }
     }
-}
-*/
+}*/
