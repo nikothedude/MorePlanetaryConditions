@@ -94,7 +94,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
                 entityToExpandRadiusFrom = dugUpEntity //lets make it so the station's entity knows to deploy satellites
             }
         }
-        (spawnSatelliteFleetsOnPlayerIfAble(interactionTarget, targetFleet, battle, entityToExpandRadiusFrom).isNotEmpty())
+        spawnSatelliteFleetsOnPlayerIfAble(interactionTarget, targetFleet, battle, entityToExpandRadiusFrom)
         return null
     }
 
