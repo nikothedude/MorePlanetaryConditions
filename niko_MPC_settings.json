@@ -21,4 +21,11 @@
 		#"sindria":"DERELICT",
 		"raesvelg":"DERELICT",
 	},
+	
+	#NANOFORGE CONFIG
+	
+	#If a market is above this number of structures, nanoforges will cease to provide benefits or grow. 
+	#I highly advise keeping this as is, as the core of the risk reward system of overgrown nanoforges is asking "how much space am I willing to give it?"
+	#However, if you want, you can increase it.
+	"maxStructuresForNanoforge": 12,
 }

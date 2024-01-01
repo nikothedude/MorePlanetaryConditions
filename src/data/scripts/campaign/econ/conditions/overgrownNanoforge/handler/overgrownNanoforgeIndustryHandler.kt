@@ -28,6 +28,7 @@ import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandl
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
 import data.utilities.niko_MPC_mathUtils
+import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_INDUSTRY_NAME
@@ -176,6 +177,7 @@ class overgrownNanoforgeIndustryHandler(
         }
 
         market.getOvergrownNanoforgeCondition()?.delete()
+        intelBrain.delete()
 
         return true
     }
@@ -306,8 +308,8 @@ class overgrownNanoforgeIndustryHandler(
     }
 
     fun getMaxJunkAllowed(): Int {
-        if (market.isInhabited()) return niko_MPC_marketUtils.maxStructureAmount - 1
-        return niko_MPC_marketUtils.maxStructureAmount - 2
+        if (market.isInhabited()) return MAX_STRUCTURES_ALLOWED - 1
+        return MAX_STRUCTURES_ALLOWED - 2
     }
 
     companion object {

@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
@@ -18,6 +19,8 @@ import data.scripts.campaign.intel.baseNikoEventIntelPlugin
 import data.scripts.campaign.intel.baseNikoEventStage
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES_MARKET
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_THRESHOLD
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_THRESHOLD
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_RATING_TO_CREDITS_MULT
@@ -53,7 +56,7 @@ abstract class baseOvergrownNanoforgeIntel(
                 //testVar?.get()?.updateUIForItem(this)
 
                 //manipulationInput?.get()?.text = field.toString()
-                individualCostGraphic?.get()?.let { updateCreditCostContents(it, "Current monthly cost: ", calculateCreditCost()) }
+                individualCostGraphic?.get()?.let { updateCreditCostContents(it, "Local monthly cost: ", calculateCreditCost() * brain.getGlobalCreditMult()) }
                 overallCostGraphic?.get()?.let { updateCreditCostContents(it, "Overall monthly cost: ", calculateOverallCreditCost()) }
             }
         }
@@ -73,14 +76,14 @@ abstract class baseOvergrownNanoforgeIntel(
         set(value) {
             field = value
             field?.get()?.changeValue(brain.getOverallGrowthManipulation())
-            if (field != null) uiUpdater?.start()
+            if (field != null) Global.getSector().addScript(uiUpdater)
         }
     @Transient
     var growthManipulationMeter: WeakReference<LunaProgressBar>? = null
         set(value) {
             field = value
             field?.get()?.changeValue(localGrowthManipulationPercent)
-            if (field != null) uiUpdater?.start()
+            if (field != null) Global.getSector().addScript(uiUpdater)
         }
 
     @Transient
@@ -88,7 +91,7 @@ abstract class baseOvergrownNanoforgeIntel(
         set(value) {
             field = value
             field?.get()?.text = localGrowthManipulationPercent.toString()
-            if (field != null) uiUpdater?.start()
+            if (field != null) Global.getSector().addScript(uiUpdater)
         }
     override fun createLargeDescription(panel: CustomPanelAPI?, width: Float, height: Float) {
         if (panel == null) return
@@ -288,6 +291,8 @@ abstract class baseOvergrownNanoforgeIntel(
 
                 tooltip.addPara("This statistic represents how much culling strength has been used, overall.", 2f)
                 tooltip.addPara("The local manipulation is limited to the absolute maximum allowed value minus this.", 5f)
+                tooltip.addPara("Utilizing less than %s of the market's culling power in total will result in a %s discount to all manipulation cost.", 5f, Misc.getHighlightColor(),
+                "${(OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_THRESHOLD).toInt()}%", "${((1 - OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT) * 100).toInt()}%")
             }
         }, TooltipLocation.BELOW)
         overallManipulationMeter = WeakReference(overallSuppressionBarLocalVal)
@@ -348,14 +353,14 @@ abstract class baseOvergrownNanoforgeIntel(
     }
 
     open fun generateCostGraphic(info: TooltipMakerAPI, orientingBar: LunaProgressBar) {
-        val localCost = calculateCreditCost()
+        val localCost = calculateCreditCost() * brain.getGlobalCreditMult()
         val DGSlocalCost = Misc.getDGSCredits(localCost)
-        val individualCostGraphicLocalVal = info.addPara("Current monthly cost: %s credits", 5f, getHighlightForCreditCost(localCost), DGSlocalCost)
+        val individualCostGraphicLocalVal = info.addPara("Local monthly cost: %s credits", 5f, getHighlightForCreditCost(localCost), DGSlocalCost)
 
         individualCostGraphicLocalVal.position.belowMid(orientingBar.elementPanel, 5f)
         individualCostGraphic = WeakReference(individualCostGraphicLocalVal)
 
-        updateCreditCostContents(individualCostGraphicLocalVal, "Current monthly cost: ", localCost)
+        updateCreditCostContents(individualCostGraphicLocalVal, "Local monthly cost: ", localCost)
 
         val overallCost = calculateOverallCreditCost()
         val DGSoverallCost = Misc.getDGSCredits(overallCost)

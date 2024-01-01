@@ -25,13 +25,13 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
+import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
 import java.lang.NullPointerException
 
 object niko_MPC_marketUtils {
 
-    const val maxStructureAmount = 12
     val commodities = hashSetOf(Commodities.FUEL, Commodities.DRUGS, Commodities.FOOD, Commodities.DOMESTIC_GOODS,
     Commodities.HEAVY_MACHINERY, Commodities.HAND_WEAPONS, Commodities.METALS, Commodities.ORE, Commodities.RARE_METALS, Commodities.RARE_ORE,
     Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES)
@@ -104,7 +104,7 @@ object niko_MPC_marketUtils {
 
     @JvmStatic
     fun MarketAPI.hasMaxStructures(): Boolean {
-        return (getVisibleIndustries().size == maxStructureAmount)
+        return (getVisibleIndustries().size == MAX_STRUCTURES_ALLOWED)
     }
 
     fun MarketAPI.getVisibleIndustries(): MutableList<Industry> {
@@ -121,7 +121,7 @@ object niko_MPC_marketUtils {
 
     @JvmStatic
     fun MarketAPI.exceedsMaxStructures(): Boolean {
-        return (getVisibleIndustries().size > maxStructureAmount)
+        return (getVisibleIndustries().size > MAX_STRUCTURES_ALLOWED)
     }
 
 
@@ -302,7 +302,7 @@ object niko_MPC_marketUtils {
         memoryWithoutUpdate[convertToMemKey(id)] = handler
     }
 
-    private fun convertToMemKey(id: String): String {
+    fun convertToMemKey(id: String): String {
         return "\$" + id
     }
 

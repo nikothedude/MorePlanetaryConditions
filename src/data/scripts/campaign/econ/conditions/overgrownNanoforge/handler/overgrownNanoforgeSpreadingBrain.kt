@@ -14,6 +14,8 @@ import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAXIMUM_GROWTH_MANIPULATION
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT
+import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_THRESHOLD
 
 class overgrownNanoforgeSpreadingBrain(
     val industryNanoforge: overgrownNanoforgeIndustryHandler
@@ -140,7 +142,15 @@ class overgrownNanoforgeSpreadingBrain(
             amount += intel.calculateCreditCost()
         }
 
-        return amount
+        return amount * getGlobalCreditMult()
+    }
+
+    fun getGlobalCreditMult(): Float {
+        var mult = 1f
+        if (getOverallGrowthManipulation() <= OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_THRESHOLD) {
+            mult *= OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT
+        }
+        return mult
     }
 
     fun getOverallCullingStrength(): Float {

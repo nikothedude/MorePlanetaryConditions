@@ -13,10 +13,12 @@ import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_industryIds
+import data.utilities.niko_MPC_marketUtils.convertToMemKey
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunkHandlers
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
@@ -77,6 +79,16 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
         if (ourMarket != null) {
             handler.market = this.market
         }
+        when (market.surveyLevel) {
+            MarketAPI.SurveyLevel.FULL -> {handler.discovered = true}
+            else -> {handler.discovered = false}
+        }
+
+        for (junkHandler: overgrownNanoforgeJunkHandler in market.getOvergrownJunkHandlers())
+            if (junkHandler.deleted) {
+                market.memoryWithoutUpdate.unset(convertToMemKey(junkHandler.cachedBuildingId!!))
+                continue
+            }
     }
 
     private fun replaceHandler(originalHandler: overgrownNanoforgeIndustryHandler) { //assumes handler is corrupted
@@ -120,7 +132,7 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
     override fun delete() {
         super.delete()
         val ourMarket = getMarket() ?: return
- //       ourMarket.purgeOvergrownNanoforgeBuildings()
+        ourMarket.purgeOvergrownNanoforgeBuildings()
         // disabling experimentally to see if this will fix a commoddification error
 
         getHandler()?.delete()

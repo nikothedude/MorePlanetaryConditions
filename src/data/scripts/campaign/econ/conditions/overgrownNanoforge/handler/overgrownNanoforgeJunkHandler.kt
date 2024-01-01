@@ -7,11 +7,10 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeSourceTypes
-import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkId
-import data.utilities.niko_MPC_marketUtils.maxStructureAmount
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeJunkHandler
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_JUNK_NAME
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_JUNK_CULLING_RESISTANCE_REGEN
@@ -145,7 +144,7 @@ class overgrownNanoforgeJunkHandler(
     }
 
     companion object {
-        val maxStructuresPossible: Int = maxStructureAmount
+        val maxStructuresPossible: Int = niko_MPC_settings.MAX_STRUCTURES_ALLOWED
         val baseStructureId: String = overgrownNanoforgeJunkStructureId
     }
 }

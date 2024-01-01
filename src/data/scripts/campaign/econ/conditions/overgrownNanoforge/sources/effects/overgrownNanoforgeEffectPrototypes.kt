@@ -197,7 +197,7 @@ enum class overgrownNanoforgeEffectPrototypes(
     },
     ALTER_DEFENSES(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
         override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
-            val weight = 20f
+            val weight = 30f
             val market = growth.market
             val groundDefense = market.stats.dynamic.getStat(Stats.GROUND_DEFENSES_MOD).modifiedValue
             val hardLimit: Float = HARD_LIMIT_FOR_DEFENSE //if we are at this or below, we will never ever be picked
@@ -344,7 +344,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             val negative = budget <= 0
             val negativeMult = if (!negative) 0.05f else 1f
 
-            val weight = 30f //30f
+            val weight = 40f //30f
             val market = growth.market
             val popSize: Int = if (!market.isInhabited()) POPULATION_SIZE_ANCHOR else market.size
             val popDivided = (popSize/POPULATION_SIZE_ANCHOR.toFloat())

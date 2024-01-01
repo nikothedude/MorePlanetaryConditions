@@ -10,6 +10,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.baseOvergrownNanoforgeEventFactor
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
+import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
+import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS
@@ -112,9 +114,8 @@ class overgrownNanoforgePrepareGrowthFactor(
     }
 
     private fun getAdjustedProgress(): Int {
+        if (getMarket().exceedsMaxStructures()) return 0
         val industryHandler = overgrownIntel.brain.industryNanoforge
-        val maxJunk = industryHandler.getMaxJunkAllowed()
-        if (getMarket().industries.size >= maxJunk) return 0
         val discovered = industryHandler.discovered
         var adjustedProgress: Float = baseProgress.toFloat()
         if (!discovered) {

@@ -138,7 +138,7 @@ enum class cullingStrengthReasons {
                     "\nGround defenses and heavy batteries also increase score by ${tagMap[Industries.TAG_GROUNDDEFENSES]}." +
                     "\n     When improved: Contribution multiplied by $improvementMult." +
                     "\n     When a AI core is installed, contribution is multiplied by ${coreMap[Commodities.GAMMA_CORE]}, ${coreMap[Commodities.BETA_CORE]}, and ${coreMap[Commodities.ALPHA_CORE]} respectively." +
-                    "\n     If a special item is installed, contribution is multipled by $itemInstalledMult." +
+                    "\n     If a special item is installed, contribution is multiplied by $itemInstalledMult." +
                     "\nModded industries, provided they are tagged correctly, will also contribute to this score."
         }
     },

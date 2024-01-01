@@ -18,7 +18,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownN
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
-import data.utilities.niko_MPC_marketUtils.maxStructureAmount
+import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_GROWTH_STARTING_PROGRESS_PERCENT_MIN
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_THRESHOLD_FOR_UNKNOWN_SCORE
@@ -122,7 +122,7 @@ class overgrownNanoforgeGrowthIntel(
     "Target", targetWidth,
         )
         info.addTableHeaderTooltip(0, "The structure this growth is targeting. Guaranteed to be nothing if " +
-                "the market does not have ${maxStructureAmount} visible structures. If this growth completes with an active target, " +
+                "the market does not have ${MAX_STRUCTURES_ALLOWED} visible structures. If this growth completes with an active target, " +
                 "the target structure will be destroyed and replaced by the growth." +
                 "\nIf Population and Infrastructure is destroyed by the growth, the market will be " +
                 "decivilized. Do not let this happen.")
