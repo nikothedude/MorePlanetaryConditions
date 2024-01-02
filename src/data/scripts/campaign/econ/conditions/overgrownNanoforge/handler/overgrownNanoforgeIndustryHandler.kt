@@ -49,7 +49,8 @@ import kotlin.math.abs
 // The industry itself is only the hook we use to put this class into the game
 class overgrownNanoforgeIndustryHandler(
     initMarket: MarketAPI,
-    override var growing: Boolean = false
+    override var growing: Boolean = false,
+    var generateJunk: Boolean = true
 ): overgrownNanoforgeHandler(initMarket, growing), EveryFrameScript {
 
     var exposed: Boolean = false
@@ -109,7 +110,9 @@ class overgrownNanoforgeIndustryHandler(
         }
         toggleExposed()
 
-        generatePreexistingJunk()
+        if (generateJunk) {
+            generatePreexistingJunk()
+        }
     }
 
     private fun generatePreexistingJunk() {

@@ -259,7 +259,6 @@ class overgrownNanoforgeSpawnFleetScript(
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE] = false
-        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_PREVENT_DISENGAGE] = true
 
         fleet.memoryWithoutUpdate[MemFlags.FLEET_FIGHT_TO_THE_LAST] = true
 

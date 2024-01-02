@@ -1,5 +1,5 @@
 name,id,tags,tech/manufacturer,rarity,base price,stack size,cargo space,baseRaidDanger,icon,sound id,sound id drop,plugin,plugin params,desc,order
 # industry-slotted items,,,,,,,,,,,,,,,
-Overgrown Nanoforge,niko_MPC_overgrownNanoforgeItem,"nanoforge, pather10",Domain Forbidden,,500000,1000,1,EXTREME,graphics/icons/cargo/nanoforge_decayed.png,ui_cargo_special_industrial_pickup,ui_cargo_special_industrial_drop,com.fs.starfarer.api.campaign.impl.items.GenericSpecialItemPlugin,"heavyindustry, orbitalworks","A powerful and versatile manufacturing ""black box"", capable of building itself out to an industrial scale, given the necessary raw materials and human assistance.
+Overgrown Nanoforge,niko_MPC_overgrownNanoforgeItem,"nanoforge, pather10",Domain Forbidden,,1000000,1000,1,EXTREME,graphics/icons/cargo/nanoforge_decayed.png,ui_cargo_special_industrial_pickup,ui_cargo_special_industrial_drop,com.fs.starfarer.api.campaign.impl.items.GenericSpecialItemPlugin,"heavyindustry, orbitalworks","A powerful and versatile manufacturing ""black box"", capable of building itself out to an industrial scale, given the necessary raw materials and human assistance.
 
-This one has seen better days, and is incapable of reliably producing defect-free components. Nonetheless, having access to a nanoforge at all is a step up as far as starship construction goes.",139
+This one has had its production safeties disabled somehow, and is capable of producing a downright obscene amount of material, provided it is sufficiently supplied.",139

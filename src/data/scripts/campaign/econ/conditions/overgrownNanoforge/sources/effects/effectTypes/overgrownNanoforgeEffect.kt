@@ -10,7 +10,7 @@ import data.utilities.niko_MPC_miscUtils.formatStringsToLines
 import java.awt.Color
 
 abstract class overgrownNanoforgeEffect(
-    open val handler: overgrownNanoforgeHandler
+    open var handler: overgrownNanoforgeHandler
 ) {
 
     open var id: String = Misc.genUID()

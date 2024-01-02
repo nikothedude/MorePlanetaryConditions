@@ -10,7 +10,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 
 abstract class overgrownNanoforgeEffectSource(
-    val handler: overgrownNanoforgeHandler,
+    var handler: overgrownNanoforgeHandler,
     val effects: MutableSet<overgrownNanoforgeEffect>
     ) {
 

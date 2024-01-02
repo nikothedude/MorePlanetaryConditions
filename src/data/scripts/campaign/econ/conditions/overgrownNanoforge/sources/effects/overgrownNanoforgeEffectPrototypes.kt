@@ -344,7 +344,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             val negative = budget <= 0
             val negativeMult = if (!negative) 0.05f else 1f
 
-            val weight = 40f //30f
+            val weight = 40f //40f
             val market = growth.market
             val popSize: Int = if (!market.isInhabited()) POPULATION_SIZE_ANCHOR else market.size
             val popDivided = (popSize/POPULATION_SIZE_ANCHOR.toFloat())
@@ -353,9 +353,11 @@ enum class overgrownNanoforgeEffectPrototypes(
             return (weight*mult)*negativeMult
         }
 
-        override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth)
-        override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth)
-        fun getCost(nanoforge: overgrownNanoforgeHandler): Float = 80f //80f
+        override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth, positive)
+        override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost(growth, positive)
+        fun getCost(nanoforge: overgrownNanoforgeHandler, positive: Boolean): Float {
+            return if (positive) 80f else 60f
+        }
         override fun getInstance(
             growth: overgrownNanoforgeHandler,
             maxBudget: Float

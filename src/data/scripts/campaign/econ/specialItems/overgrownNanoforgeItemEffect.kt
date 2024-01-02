@@ -74,7 +74,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun getSupplyMult(): Float {
-        return 2f
+        return 2.5f
     }
 
     private fun getSupplyIncrement(): Float {
@@ -99,11 +99,11 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun getUpkeepMult(): Float {
-        return 2.5f
+        return 1.5f
     }
 
     private fun getUpkeepIncrement(): Float {
-        return 5000f
+        return 750f
     }
 
     private fun modifyShipProduction(industry: Industry) {
@@ -192,15 +192,15 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         mode: InstallableIndustryItemPlugin.InstallableItemDescriptionMode?, pre: String?, pad: Float
     ) {
         if (text == null) return
-        val description = "$pre Increases all supply and demand on installed industries by %s and %s, all demand by " +
+        val description = pre + "Increases all supply and demand on installed industries by %s and %s, all demand by " +
                 "%s and %s, increases upkeep by %s and %s." +
                 "If installed in a heavy industry, increases production capacity by %s and %s." +
-                "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s." +
+                "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s. " +
                 "On habitable worlds, causes pollution which becomes permanent."
         text.addPara(description, pad, Misc.getHighlightColor(),
             "${getSupplyMult()}x", "+${getSupplyIncrement()}", "x${getDemandMult()}", "+${getDemandIncrement()}",
         "${getUpkeepMult()}x", "+${getUpkeepIncrement()}", "${getShipProductionMult()}x", "$shipProductionBaseIncrement * Market Size",
-        "${getShipSizeMult()}", "${getProductionQualityMult()}")
+        "${getShipSizeMult()}x", "${getProductionQualityMult()}x")
     }
 
     private fun getName(): String {

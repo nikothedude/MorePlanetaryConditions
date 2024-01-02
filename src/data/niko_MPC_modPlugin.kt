@@ -55,7 +55,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         addSpecialItemsToItemRepo()
     }
 
-    val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(niko_MPC_ids.overgrownNanoforgeItemId, 0, 0)
+    val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)
 
     private fun addSpecialItemsToItemRepo() {
 
