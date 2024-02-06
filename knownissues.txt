@@ -1,6 +1,0 @@
-Overgrown nanoforge item doesnt show quality change on fleet size/quality tooltip, but it does show fleet size
-Industry show intel button doesnt work
-UI is a bit barebones in some places
-
-
-a lot others but i literally cant think of them for some fucked up reason
