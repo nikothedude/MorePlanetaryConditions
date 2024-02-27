@@ -192,7 +192,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         mode: InstallableIndustryItemPlugin.InstallableItemDescriptionMode?, pre: String?, pad: Float
     ) {
         if (text == null) return
-        val description = pre + "Increases all supply and demand on installed industries by %s and %s, all demand by " +
+        val description = pre + "Increases all supply on installed industries by %s and %s, and all demand by " +
                 "%s and %s, increases upkeep by %s and %s." +
                 "If installed in a heavy industry, increases production capacity by %s and %s." +
                 "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s. " +

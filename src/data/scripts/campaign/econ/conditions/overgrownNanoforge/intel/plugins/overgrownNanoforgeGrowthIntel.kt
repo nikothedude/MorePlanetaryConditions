@@ -14,7 +14,6 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownSpreadingParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
@@ -34,6 +33,8 @@ class overgrownNanoforgeGrowthIntel(
     init {
         isImportant = true
     }
+
+    val discoverTargetAnchor = MathUtils.getRandomNumberInRange(5, 30)
 
     override fun initializeProgress() {
         setMaxProgress(ourHandler.cullingResistance)
@@ -90,15 +91,22 @@ class overgrownNanoforgeGrowthIntel(
         return params.percentThresholdToTotalScoreKnowledge
     }
 
+    override fun addStartStage() {
+        overgrownNanoforgeGrowthStages.START.init(this)
+    }
+
     override fun addEndStage() {
-        overgrownNanoforgeFinishGrowthStage(this).init()
+        overgrownNanoforgeGrowthStages.END.init(this)
     }
 
     override fun addInitialStages() {
         super.addInitialStages()
 
-        growthDiscoveryStages.TARGET.getChildren(this).forEach { it.init() }
-        growthDiscoveryStages.EFFECTS.getChildren(this).forEach { it.init() }
+        overgrownNanoforgeGrowthStages.DISCOVER_TARGET.init(this)
+        overgrownNanoforgeGrowthStages.DISCOVER_EFFECTS.init(this)
+
+        //growthDiscoveryStages.TARGET.getChildren(this).forEach { it.init() }
+        //growthDiscoveryStages.EFFECTS.getChildren(this).forEach { it.init() }
     }
 
     fun growingComplete() {
@@ -273,22 +281,7 @@ class overgrownNanoforgeGrowthIntel(
     }
 }
 
-class targetData(
+data class targetData(
     var industry: Industry?,
     val name: String = industry?.currentName ?: "None"
-) {
-
-}
-
-
-class overgrownNanoforgeFinishGrowthStage(override val intel: overgrownNanoforgeGrowthIntel)
-    : overgrownNanoforgeIntelStage(intel) {
-
-    override fun getName(): String = "Growth Finished"
-    override fun getDesc(): String = "Once reached, the growth will become permanent and begin applying its effects."
-
-    override fun stageReached() {
-        intel.growingComplete()
-    }
-    override fun getThreshold(): Int = intel.maxProgress
-}
+)

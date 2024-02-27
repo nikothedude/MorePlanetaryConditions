@@ -10,7 +10,6 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorStructureRegeneration
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_miscUtils.formatStringsToLines
@@ -46,8 +45,10 @@ open class baseOvergrownNanoforgeManipulationIntel(
         super.addBasicDescription(info, width, stageId)
 
         info.addPara("This panel represents the integrity/growth status of a specific growth.", 5f)
-        info.addPara("If the ${ourHandler.getCurrentName()}'s integrity reaches %s, it will be %s.", 5f,
-            Misc.getHighlightColor(), "zero", "removed from the market")
+        info.addPara(
+            "If the ${ourHandler.getCurrentName()}'s integrity reaches %s, it will be %s.", 5f,
+            Misc.getHighlightColor(), "zero", "removed from the market"
+        )
     }
 
     open fun addParamsInfo(info: TooltipMakerAPI, width: Float, stageId: Any?): UIComponentAPI {
@@ -108,9 +109,10 @@ open class baseOvergrownNanoforgeManipulationIntel(
     /** Called when our progress goes to 0 or below. Should destroy the handler and structure as well as this. */
     open fun culled() {
         if (shouldReportCulled()) reportCulled()
-        
+
         ourHandler.culled()
     }
+
     fun shouldReportCulled(): Boolean = playerCanManipulateGrowth()
     open fun reportCulled() {
         brain.intelCulled(this)
@@ -123,7 +125,11 @@ open class baseOvergrownNanoforgeManipulationIntel(
         val messageIntel = getCulledIntel()
 
         if (linkedIntel != null) {
-            Global.getSector().campaignUI.addMessage(messageIntel, CommMessageAPI.MessageClickAction.INTEL_TAB, linkedIntel)
+            Global.getSector().campaignUI.addMessage(
+                messageIntel,
+                CommMessageAPI.MessageClickAction.INTEL_TAB,
+                linkedIntel
+            )
         } else {
             Global.getSector().campaignUI.addMessage(messageIntel)
         }
@@ -190,21 +196,4 @@ open class baseOvergrownNanoforgeManipulationIntel(
     }
 
     open fun getSpreadingAdjective(): String = "regenerating"
-}
-
-class overgrownNanoforgeIntelCullStage(
-    override val intel: baseOvergrownNanoforgeManipulationIntel
-    ): overgrownNanoforgeIntelStage(intel) {
-
-    override fun getName(): String = "Culled"
-    override fun getDesc(): String = "et9iujpafwuijo"
-
-    override fun stageReached() {
-        intel.culled()
-    }
-
-    override fun isOneOffEvent(): Boolean = true
-    override fun getThreshold(): Int {
-        return intel.maxProgress
-    }
 }

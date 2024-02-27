@@ -8,24 +8,21 @@ import com.fs.starfarer.api.util.Misc
 import org.jetbrains.annotations.Contract
 import java.awt.Color
 
-abstract class baseNikoEventStage(
-    open val intel: baseNikoEventIntelPlugin
-) {
-
+interface baseNikoEventStageInterface<T: baseNikoEventIntelPlugin> {
     /** The title of the tooltip. */
-    abstract fun getName(): String
+    fun getName(): String
     /** The body of the tooltip. */
-    open fun getDesc(): String? = null
+    fun getDesc(): String? = null
 
     /**
      * If the intel with this stage is a subtype of [baseNikoEventIntelPlugin], this will be called when [intel]'s progress
      * surpasses [getThreshold].
      */
-    abstract fun stageReached()
+    fun stageReached(intel: T)
     /**
      * Adds the hover-over tooltip to the stage icon. By default, adds title as name, para as desc, and adds a progress req.
      */
-    open fun getTooltip(data: BaseEventIntel.EventStageData): TooltipMakerAPI.TooltipCreator? {
+    fun getTooltip(data: BaseEventIntel.EventStageData): TooltipMakerAPI.TooltipCreator? {
         val desc = getDesc() ?: return null
         return object : BaseFactorTooltip() {
             override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
@@ -40,27 +37,27 @@ abstract class baseNikoEventStage(
     /**
      * Returns the string ID of our icon.
      */
-    open fun getIconId(): String = intel.icon
+    fun getIconId(intel: T): String = intel.icon
 
     /**
      * Should always return this.
      * Should be used for calling non-final functions important to our initialization.
      */
     @Contract("_ -> this")
-    open fun init(): baseNikoEventStage {
-        addSelfToIntel()
+    fun init(intel: T): baseNikoEventStageInterface<T> {
+        addSelfToIntel(intel)
         return this
     }
 
-    open fun delete() {
+    fun delete(intel: T) {
         intel.removeStage(this)
     }
 
-    open fun addSelfToIntel() {
+    fun addSelfToIntel(intel: T) {
         if (!duplicatesAllowed() && intel.hasStageOfClass(this.javaClass)) {
-            return delete()
+            return delete(intel)
         }
-        intel.addStage(this, getThreshold(), isOneOffEvent(), getIconSize())
+        intel.addStage(this, getThreshold(intel), isOneOffEvent(), getIconSize())
         val data = intel.getDataFor(this) ?: return
         modifyStageData(data)
     }
@@ -68,7 +65,7 @@ abstract class baseNikoEventStage(
     /**
      * Modifies the stagedata for our corresponding stagedata, if it exists.
      */
-    open fun modifyStageData(data: BaseEventIntel.EventStageData) {
+    fun modifyStageData(data: BaseEventIntel.EventStageData) {
         data.keepIconBrightWhenLaterStageReached = keepIconBrightWhenComplete()
 
         data.hideIconWhenPastStageUnlessLastActive = hideIconWhenComplete()
@@ -77,46 +74,47 @@ abstract class baseNikoEventStage(
     /**
      * Used in [modifyStageData]
      */
-    open fun doWeReportWhenReached(): Boolean = true
+    fun doWeReportWhenReached(): Boolean = true
     /** If false, we check to see if intel has a stage of our class. If yes, we don't apply ourselves.*/
     fun duplicatesAllowed(): Boolean = false
     /**
      * Used in [modifyStageData]
      */
-    open fun hideIconWhenComplete(): Boolean = true
+    fun hideIconWhenComplete(): Boolean = true
     /**
      * Used in [modifyStageData]
      */
-    open fun keepIconBrightWhenComplete(): Boolean = false
+    fun keepIconBrightWhenComplete(): Boolean = false
 
     /**
      * Used in [addSelfToIntel]
      */
-    open fun isOneOffEvent(): Boolean = false
+    fun isOneOffEvent(): Boolean = false
 
     /** Returns the threshold of progress our intel must surpass for [stageReached] to be called. */
-    abstract fun getThreshold(): Int
+    fun getThreshold(intel: T): Int
 
     /**
      * Updates the progress req. for our data. Called whenever [intel] changes max progress.
      */
-    fun updateThreshold() {
+    fun updateThreshold(intel: T) {
         val data = intel.getDataFor(this) ?: return
-        data.progress = getThreshold()
+        data.progress = getThreshold(intel)
     }
 
     /**
      * Returns the size of our icon.
      */
-    open fun getIconSize(): BaseEventIntel.StageIconSize? {
+    fun getIconSize(): BaseEventIntel.StageIconSize? {
         return BaseEventIntel.StageIconSize.MEDIUM
     }
 
-    open fun modifyIntelUpdateWhenStageReached(
+    fun modifyIntelUpdateWhenStageReached(
         info: TooltipMakerAPI,
         mode: IntelInfoPlugin.ListInfoMode?,
         tc: Color?,
-        initPad: Float
+        initPad: Float,
+        intel: T
     ): Boolean {
 
         info.addPara("Stage reached: ${getName()}", initPad, Misc.getTextColor())

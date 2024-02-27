@@ -9,7 +9,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.spreadingStates
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.baseOvergrownNanoforgeEventFactor
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
+import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
 import data.utilities.niko_MPC_marketUtils.isInhabited
@@ -57,7 +57,7 @@ class overgrownNanoforgeSpreadingIntel(
 
         val max = getTimeTilNextSpread()
         setMaxProgress(max)
-        overgrownNanoforgeStartSpreadStage(this).init()
+        overgrownNanoforgeStartSpreadStages.END.init(this)
     }
 
     fun getBaseProgress(): Int {
@@ -90,18 +90,17 @@ class overgrownNanoforgeSpreadingIntel(
 
 }
 
-class overgrownNanoforgeStartSpreadStage(override val intel: overgrownNanoforgeSpreadingIntel)
-    : overgrownNanoforgeIntelStage(intel) {
+enum class overgrownNanoforgeStartSpreadStages: baseNikoEventStageInterface<overgrownNanoforgeSpreadingIntel> {
+    END {
+        override fun getName(): String = "Spread starts"
+        override fun getDesc(): String = "Growth begins, creating a new growth that must be culled or cultivated."
 
-    override fun getName(): String = "Spread starts"
-    override fun getDesc(): String = "Growth begins, creating a new growth that must be culled or cultivated."
+        override fun stageReached(intel: overgrownNanoforgeSpreadingIntel) {
+            intel.startSpreading()
+        }
 
-    override fun stageReached() {
-        intel.startSpreading()
-    }
-
-    override fun getThreshold(): Int = intel.maxProgress
-
+        override fun getThreshold(intel: overgrownNanoforgeSpreadingIntel): Int = intel.maxProgress
+    };
 }
 
 class overgrownNanoforgePrepareGrowthFactor(

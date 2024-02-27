@@ -1,3 +1,4 @@
 command,class,tags,syntax,help
 FindPlanetsWithConditionId,data.console.commands.niko_MPC_findPlanetsWithCondition,"campaign, planets, conditions",FindPlanetsWithConditionId (conditionId),Returns a list of planets with the given planetary condition and their location.
 niko_MPC_loadSettings,data.console.commands.niko_MPC_loadSettings,"debug, settings",niko_MPC_loadSettings,Forces a reload of the MPC settings .json.
+niko_MPC_convertStagesToEnum,data.console.commands.niko_MPC_convertStagesToEnum,"debug, campaign",niko_MPC_convertStagesToEnum,Converts intel stages to enums. Used for compatability.

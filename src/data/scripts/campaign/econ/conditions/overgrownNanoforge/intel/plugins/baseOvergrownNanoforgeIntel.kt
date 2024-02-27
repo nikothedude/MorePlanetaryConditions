@@ -16,7 +16,8 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengthReasons
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.cullingStrength.cullingStrengths
 import data.scripts.campaign.intel.baseNikoEventIntelPlugin
-import data.scripts.campaign.intel.baseNikoEventStage
+import data.scripts.campaign.intel.baseNikoEventStageInterface
+import data.scripts.campaign.intel.baseNikoIntelPlugin
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES_MARKET
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT
@@ -152,14 +153,13 @@ abstract class baseOvergrownNanoforgeIntel(
                 "output at the cost of the market's capabilities.", 5f)
     }
 
-    override fun addStartStage() {
-        super.addStartStage()
-        overgrownNanoforgeIntelDummyStartingStage(this).init()
-    }
-
     override fun addInitialFactors() {
         super.addInitialFactors()
         addCountermeasuresFactor()
+    }
+
+    override fun addStartStage() {
+        manipulationIntelStages.START.init(this)
     }
 
     open fun addCountermeasuresFactor() {
@@ -466,7 +466,6 @@ abstract class baseOvergrownNanoforgeIntel(
 
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
         val tags = super.getIntelTags(map)
-        tags += INTEL_OVERGROWN_NANOFORGES
         tags += INTEL_OVERGROWN_NANOFORGES_MARKET + getMarket().name
         return tags
     }
@@ -503,9 +502,9 @@ abstract class baseOvergrownNanoforgeIntel(
     ) {
         val updateParams = listInfoParam
         if (info != null && isUpdate && updateParams != null) {
-            if (updateParams is EventStageData && updateParams.id is baseNikoEventStage) {
-                val stage: baseNikoEventStage = updateParams.id as baseNikoEventStage
-                if (stage.modifyIntelUpdateWhenStageReached(info, mode, tc, initPad)) return
+            if (updateParams is EventStageData && updateParams.id is baseNikoEventStageInterface<*>) { // volatile code, if this breaks we know why
+                val stage: baseNikoEventStageInterface<baseNikoEventIntelPlugin> = updateParams.id as baseNikoEventStageInterface<baseNikoEventIntelPlugin>
+                if (stage.modifyIntelUpdateWhenStageReached(info, mode, tc, initPad, this)) return
             }
         }
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
@@ -525,4 +524,18 @@ abstract class baseOvergrownNanoforgeIntel(
     override fun getIcon(): String {
         return "graphics/icons/cargo/nanoforge_decayed.png"
     }
+}
+
+enum class manipulationIntelStages: baseNikoEventStageInterface<baseOvergrownNanoforgeIntel> {
+    START {
+        override fun getName(): String = "Start"
+        override fun stageReached(intel: baseOvergrownNanoforgeIntel) { return }
+
+        override fun getThreshold(intel: baseOvergrownNanoforgeIntel): Int = 0
+        override fun isOneOffEvent(): Boolean = false
+
+        override fun hideIconWhenComplete(): Boolean = false
+        override fun keepIconBrightWhenComplete(): Boolean = false
+
+    };
 }

@@ -75,7 +75,10 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         if (stage == null) return
 
         val id = stage.id
-        if (id is baseNikoEventStage) id.stageReached()
+        if (id is baseNikoEventStageInterface<*>) {
+            val castedId = id as baseNikoEventStageInterface<baseNikoEventIntelPlugin>
+            castedId.stageReached(this)
+        }
     }
 
     override fun getStageTooltipImpl(stageId: Any?): TooltipMakerAPI.TooltipCreator? {
@@ -83,7 +86,7 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         val data = getDataFor(stageId) ?: return null
 
         val id = data.id
-        if (id is baseNikoEventStage) return id.getTooltip(data)
+        if (id is baseNikoEventStageInterface<*>) return id.getTooltip(data)
 
         return null
     }
@@ -94,16 +97,18 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         val data = getDataFor(stageId) ?: return defaultReturn
 
         val id = data.id
-        if (id is baseNikoEventStage) return id.getIconId() ?: defaultReturn
-
+        if (id is baseNikoEventStageInterface<*>) {
+            val castedId = id as baseNikoEventStageInterface<baseNikoEventIntelPlugin>
+            return castedId.getIconId(this)
+        }
         return defaultReturn
     }
 
-    fun removeStage(stage: baseNikoEventStage) {
+    fun removeStage(stage: baseNikoEventStageInterface<*>) {
         removeStages(setOf(stage))
     }
 
-    fun removeStages(stagesToRemove: Set<baseNikoEventStage>) {
+    fun removeStages(stagesToRemove: Set<baseNikoEventStageInterface<*>>) {
         val stagesCopy = stages.toSet()
         for (iteratedStage in stagesCopy) {
             val stageId = iteratedStage.id
@@ -123,7 +128,7 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         return false
     }
 
-    fun hasStageOfClass(clazz: Class<baseNikoEventStage>): Boolean {
+    fun hasStageOfClass(clazz: Class<baseNikoEventStageInterface<*>>): Boolean {
         for (stage in stages) {
             if (stage.id.javaClass.isAssignableFrom(clazz)) return true
         }
@@ -139,8 +144,9 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
     open fun updateStageThresholds() {
         for (stage in stages) {
             val id = stage.id
-            if (id !is baseNikoEventStage) continue
-            id.updateThreshold()
+            if (id !is baseNikoEventStageInterface<*>) continue
+            val castedId = id as baseNikoEventStageInterface<baseNikoEventIntelPlugin>
+            castedId.updateThreshold(this)
         }
     }
 

@@ -1,3 +1,8 @@
+3.0.2:
+Fixes intel crashes, use niko_MPC_convertObjectsToEnum command if updating from previous versions
+Makes overgrown nanoforges a bit rarer
+Overgrown nanoforges have 1 less intel tab
+
 3.0.1:
 Update to Starsector 0.97a
 

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
+import data.scripts.campaign.intel.baseNikoEventStageInterface
 
 class overgrownNanoforgeIndustryManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
