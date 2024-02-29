@@ -5,8 +5,12 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import data.compatability.baseNikoEventStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
+import data.utilities.niko_MPC_debugUtils
 import org.jetbrains.annotations.Contract
+import java.lang.Exception
 
 abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
@@ -29,6 +33,47 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
         Global.getSector().intelManager.addIntel(this, true)
         return this
+    }
+
+    enum class enumsConvertedStatus {
+        NO_NEED, // instantiated post 3.0.1
+        NO,
+        YES;
+    }
+
+    var enumsConverted: enumsConvertedStatus? = enumsConvertedStatus.NO_NEED
+
+    open fun readResolve(): Any? {
+        if (enumsConverted == null || enumsConverted == enumsConvertedStatus.NO) {
+            try {
+                convertToEnum()
+                enumsConverted = enumsConvertedStatus.YES
+            } catch (ex: Exception) {
+                niko_MPC_debugUtils.log.error(ex)
+            }
+        }
+        return this
+    }
+
+    private fun convertToEnum(): Boolean {
+        var needToRegenerateStages = false
+        for (stage: EventStageData in stages) {
+            if (stage.id !is baseNikoEventStage) continue
+            val stages = stages
+            val stagesCopy = stages.toSet()
+            for (iteratedStage in stagesCopy) {
+                val stageId = iteratedStage.id
+                if (stages.contains(stageId)) {
+                    needToRegenerateStages = true
+                    break
+                }
+            }
+            if (needToRegenerateStages) {
+                stages.clear()
+                addInitialStages()
+            }
+        }
+        return needToRegenerateStages
     }
 
     /**

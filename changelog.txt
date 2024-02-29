@@ -1,3 +1,6 @@
+3.0.3:
+Removes the niko_MPC_convertObjectsToEnum command, the game should now automatically fix the bug
+
 3.0.2:
 Fixes intel crashes, use niko_MPC_convertObjectsToEnum command if updating from previous versions
 Makes overgrown nanoforges a bit rarer
