@@ -5,13 +5,12 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import data.compatability.baseNikoEventStage
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.*
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeIntel
 import data.utilities.niko_MPC_debugUtils
 import org.jetbrains.annotations.Contract
 import java.lang.Exception
 
+@Deprecated("broken in curent version of SS, use the enums instead. kept for 3.0.1 -> forward compatability, remove later")
 abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
 
     /**
@@ -59,21 +58,18 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
         var needToRegenerateStages = false
         for (stage: EventStageData in stages) {
             if (stage.id !is baseNikoEventStage) continue
-            val stages = stages
-            val stagesCopy = stages.toSet()
-            for (iteratedStage in stagesCopy) {
-                val stageId = iteratedStage.id
-                if (stages.contains(stageId)) {
-                    needToRegenerateStages = true
-                    break
-                }
-            }
-            if (needToRegenerateStages) {
-                stages.clear()
-                addInitialStages()
-            }
+            needToRegenerateStages = true
+            break
+        }
+        if (needToRegenerateStages) {
+            stages.clear()
+            postEnumConversionCleanup()
         }
         return needToRegenerateStages
+    }
+
+    open fun postEnumConversionCleanup() {
+        addInitialStages()
     }
 
     /**
@@ -160,7 +156,7 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
             if (stagesToRemove.contains(stageId)) {
                 stages.remove(stageId)
             }
-            /*if (stagesToRemove.contains(stageId) && (stageId is baseNikoEventStage)) { //shouldve smart casted - but it didnt
+            /*if (stagesToRemove.contains(stageId) && (stageId is data.scripts.campaign.intel.baseNikoEventStage)) { //shouldve smart casted - but it didnt
                 stageId.delete()
             }*/
         }

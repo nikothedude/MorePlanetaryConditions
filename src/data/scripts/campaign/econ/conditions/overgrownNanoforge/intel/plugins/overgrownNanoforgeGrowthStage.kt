@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelStage
 import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.utilities.niko_MPC_marketUtils.isPopulationAndInfrastructure
 import java.awt.Color
@@ -111,3 +112,17 @@ enum class overgrownNanoforgeGrowthStages: baseNikoEventStageInterface<overgrown
     }
     protected abstract fun createChildren(intel: overgrownNanoforgeGrowthIntel): Set<overgrownNanoforgeGrowthStage>
 }*/
+
+class overgrownNanoforgeStartSpreadStage(override val intel: overgrownNanoforgeSpreadingIntel)
+    : overgrownNanoforgeIntelStage(intel) {
+
+    override fun getName(): String = "Spread starts"
+    override fun getDesc(): String = "Growth begins, creating a new growth that must be culled or cultivated."
+
+    override fun stageReached() {
+        intel.startSpreading()
+    }
+
+    override fun getThreshold(): Int = intel.maxProgress
+
+}

@@ -88,6 +88,11 @@ class overgrownNanoforgeSpreadingIntel(
         return "Spreading progress of ${brain.industryNanoforge.getCurrentName()} on ${getMarket().name}"
     }
 
+    override fun postEnumConversionCleanup() {
+        super.postEnumConversionCleanup()
+        overgrownNanoforgeStartSpreadStages.END.init(this)
+    }
+
 }
 
 enum class overgrownNanoforgeStartSpreadStages: baseNikoEventStageInterface<overgrownNanoforgeSpreadingIntel> {
