@@ -1,5 +1,7 @@
 package data.utilities
 
+import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
@@ -25,6 +27,7 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
+import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
@@ -287,6 +290,16 @@ object niko_MPC_marketUtils {
                 stats == null ||
                 hazard == null ||
                 conditions == null
+    }
+
+    fun LocationAPI.isDeserializing(): Boolean {
+        var result: Boolean = false
+        try {
+            terrainCopy
+        } catch (ex: NullPointerException) {
+            result = true
+        }
+        return result
     }
 
     fun MarketAPI.getOvergrownJunkHandler(designation: Int): overgrownNanoforgeJunkHandler? {

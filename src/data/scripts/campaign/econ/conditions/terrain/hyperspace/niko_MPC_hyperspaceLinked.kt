@@ -55,11 +55,13 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
     override fun apply(id: String) {
         super.apply(id)
+
         val market = getMarket() ?: return
+        val contaningLocation = market.containingLocation ?: return
         applyConditionAttributes(id)
 
-        val isValidTargetForTerrain = (!applied) // markets made during loading have null tags
-        if (isValidTargetForTerrain) {
+        val notDeserializing = (!market.isDeserializing() && !contaningLocation.isDeserializing() && market.id != "fake_Colonize")
+        if (!applied && notDeserializing) {
             linkToHyperspace(id)
             applied = true
         }
@@ -157,9 +159,6 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         entryPoint?.addDestination(fromSystemToHyper)
         exitPoint?.addDestination(fromHyperToSystem)
 
-        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = entryPoint
-        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = exitPoint
-
         val nebula = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
             0f, 0f, containingLocation, "terrain", "deep_hyperspace", 4, 4, "MPC_realspaceHyperspace", starSystem.age) as? CampaignTerrainAPI ?: return
 
@@ -220,7 +219,6 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
         val plugin = nebula.plugin as niko_MPC_realspaceHyperspace
         terrain = plugin
-        market.memory[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] = terrain
 
         val nebulaEditor = NebulaEditor(plugin)
         nebulaEditor.setArc(level, arcSource.x, arcSource.y,  innerRadius, outerRadius, 0f, 360f)
@@ -311,11 +309,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         entryPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
         exitPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
 
-        market.memory[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = null
-        market.memory[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = null
-
         terrain?.entity?.containingLocation?.removeEntity(terrain?.entity)
-        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] = null
     }
 
     override fun createDeletionScriptInstance(vararg args: Any): niko_MPC_hyperspaceLinkedDeletionScript {
