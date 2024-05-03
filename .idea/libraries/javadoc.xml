@@ -1,7 +1,6 @@
 <component name="libraryTable">
   <library name="javadoc" type="kotlin.js">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../LazyLib/javadoc.zip!/" />
       <root url="jar://$PROJECT_DIR$/../LazyLib/jars/LazyLib-Kotlin.jar!/" />
     </CLASSES>
     <JAVADOC />

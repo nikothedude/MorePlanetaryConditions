@@ -55,6 +55,8 @@ abstract class baseNikoEventIntelPlugin: BaseEventIntel() {
     }
 
     private fun convertToEnum(): Boolean {
+
+
         var needToRegenerateStages = false
         for (stage: EventStageData in stages) {
             if (stage.id !is baseNikoEventStage) continue

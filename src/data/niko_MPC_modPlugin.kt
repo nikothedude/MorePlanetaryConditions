@@ -4,11 +4,11 @@ import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.thoughtworks.xstream.XStream
-import data.campaign.ids.SKR_ids.THEME_PLAGUEBEARER
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
@@ -22,24 +22,24 @@ import data.scripts.campaign.listeners.niko_MPC_pickFleetAIListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
 import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
+import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
-import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
-import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
+import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.purgeOvergrownNanoforgeBuildings
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
-import data.utilities.niko_MPC_satelliteUtils
-import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
+import org.lazywizard.console.Console
 
 class niko_MPC_modPlugin : BaseModPlugin() {
+
     @Throws(RuntimeException::class)
     override fun onApplicationLoad() {
         val isLazyLibEnabled = Global.getSettings().modManager.isModEnabled("lw_lazylib")
@@ -51,7 +51,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } catch (ex: Exception) {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
-
         addSpecialItemsToItemRepo()
     }
 
@@ -118,6 +117,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             knownShips -= "guardian" //no super special ship
             knownShips -= "station_derelict_survey_mothership"
             nanoforgeFaction.clearShipRoleCache()
+            
         }
 
         /*val list = Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as? HashSet<overgrownNanoforgeIndustryHandler>

@@ -1,5 +1,8 @@
 package data.console.commands
 
+import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignTerrainAPI
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import data.utilities.niko_MPC_settings.loadSettings
 import org.apache.log4j.Level
 import org.lazywizard.console.BaseCommand
@@ -17,6 +20,7 @@ class niko_MPC_loadSettings : BaseCommand {
             return CommandResult.ERROR
         }
         Console.showMessage("Success! Settings have been reloaded.")
+
         return CommandResult.SUCCESS
     }
 }

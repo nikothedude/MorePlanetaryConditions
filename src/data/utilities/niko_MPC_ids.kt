@@ -1,6 +1,10 @@
 package data.utilities
 
 object niko_MPC_ids {
+    const val hyperspaceLinkedTerrainMemoryId = "\$niko_MPC_hyperspaceLinkedTerrain"
+    const val hyperspaceLinkedJumpPointEntryMemoryId = "\$niko_MPC_hyperspaceLinkedJumpPointEntry"
+    const val hyperspaceLinkedJumpPointExitMemoryId = "\$hyperspaceLinkedJumpPointExitMemoryId"
+
     const val overgrownNanoforgeConditionId = "niko_MPC_overgrownNanoforgeCondition"
     const val overgrownNanoforgeHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeHandler"
     const val overgrownNanoforgeJunkHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeJunkHandler_"

@@ -1,5 +1,6 @@
 package data.utilities
 
+import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.BattleAPI
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
@@ -15,7 +16,7 @@ object niko_MPC_battleUtils {
     }
     @JvmStatic
     fun BattleAPI.getContainingLocation(): LocationAPI? {
-        if (!Global.getCombatEngine().isInCampaign) {
+        if (Global.getCurrentState() != GameState.CAMPAIGN && !Global.getCombatEngine().isInCampaign) {
             niko_MPC_debugUtils.log.info("$this not in campaign, returning null for getContainingLocation()")
             return null //todo: is this a bad idea
         }

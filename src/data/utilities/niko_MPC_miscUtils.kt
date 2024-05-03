@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
@@ -12,9 +13,12 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
+import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
 import com.fs.starfarer.api.loading.HullModSpecAPI
+import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import lunalib.lunaExtensions.getMarketsCopy
+import org.lwjgl.util.vector.Vector2f
 
 object niko_MPC_miscUtils {
     @JvmStatic
@@ -97,4 +101,66 @@ object niko_MPC_miscUtils {
         return finalString
 
     }
+
+    fun NebulaEditor.setArc(
+        value: Int,
+        x: Float,
+        y: Float,
+        innerRadius: Float,
+        outerRadius: Float,
+        startAngle: Float,
+        endAngle: Float,
+        endRadiusMult: Float = 1f,
+        noiseThresholdToClear: Float = 0f
+    ) {
+        val circumference = Math.PI.toFloat() * 2f * outerRadius
+        val ts: Float = niko_MPC_reflectionUtils.get("ts", this) as Float
+        val degreesPerIteration: Float = 360f / (circumference / (ts * 0.5f))
+        var angle = startAngle
+        while (angle < endAngle) {
+            val dir = Misc.getUnitVectorAtDegreeAngle(angle)
+            var distMult = 1f
+            if (endAngle > startAngle) {
+                val p = (angle - startAngle) / (endAngle - startAngle)
+                distMult = 1f + (endRadiusMult - 1f) * p
+            }
+
+            //for (float dist = innerRadius; dist <= outerRadius; dist += ts * 0.5f) {
+            var dist = innerRadius * distMult
+            while (dist <= innerRadius * distMult + (outerRadius - innerRadius)) {
+                val curr = Vector2f(dir)
+                //curr.scale(dist * distMult);
+                curr.scale(dist)
+                curr.x += x
+                curr.y += y
+                setTileAt(curr.x, curr.y, value, noiseThresholdToClear, isSetToOrigInsteadOfClear)
+                dist += ts * 0.5f
+            }
+            angle += degreesPerIteration
+        }
+    }
+
+    fun SectorEntityToken.getApproximateHyperspaceLoc(
+
+    ): Vector2f {
+        if (isInHyperspace) return location
+        if (containingLocation !is StarSystemAPI) return Vector2f()
+        val starSystem = containingLocation as StarSystemAPI
+
+        val offset = Vector2f.sub(location, starSystem.center.location, Vector2f()) // taken from transverse jump
+        val maxInSystem = 20000f
+        val maxInHyper = 2000f
+        var f = offset.length() / maxInSystem
+        if (f > 0.5f) f = 0.5f
+
+        val angle = Misc.getAngleInDegreesStrict(offset)
+
+        val destOffset = Misc.getUnitVectorAtDegreeAngle(angle)
+        destOffset.scale(f * maxInHyper)
+
+        Vector2f.add(starSystem.location, destOffset, destOffset)
+
+        return destOffset
+    }
+
 }

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="orders from thje boss">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../Order from the Boss EN/jars" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Order from the Boss EN/src" />
+      <root url="file://$PROJECT_DIR$/../Order from the Boss EN/src" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../Order from the Boss EN/jars" recursive="false" />
+  </library>
+</component>

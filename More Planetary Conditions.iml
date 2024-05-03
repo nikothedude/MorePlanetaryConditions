@@ -23,10 +23,17 @@
     <orderEntry type="library" name="Console Commands" level="project" />
     <orderEntry type="library" name="javadoc" level="project" />
     <orderEntry type="library" name="LunaLib" level="project" />
-    <orderEntry type="library" name="indevo" level="project" />
     <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
     <orderEntry type="library" name="CaptainsLog" level="project" />
-    <orderEntry type="library" name="seeker" level="project" />
     <orderEntry type="library" name="DynamicTariffs" level="project" />
+    <orderEntry type="library" name="orders from thje boss" level="project" />
+    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="unknown skies" level="project" />
+    <orderEntry type="library" name="Knights of Ludd" level="project" />
+    <orderEntry type="library" name="Illustrated.Entities1.1" level="project" />
+    <orderEntry type="library" name="ExerelinCore" level="project" />
+    <orderEntry type="library" name="src1" level="project" />
+    <orderEntry type="library" name="sotf" level="project" />
+    <orderEntry type="library" name="Interstellar Imperium" level="project" />
   </component>
 </module>

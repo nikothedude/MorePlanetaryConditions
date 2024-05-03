@@ -1,0 +1,45 @@
+{
+	#
+	# terrain with gameplay effects
+	#
+	#"niko_MPC_defenseSatelliteBarrage":{
+	#	"plugin":"data.scripts.campaign.terrain.satelliteBarrage.niko_MPC_defenseSatelliteBarrageTerrainPlugin",
+	#},
+	"MPC_realspaceHyperspace":{
+		"plugin":"data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace",
+		"musicSuppression":1,
+		# open hyperspace, optional
+		#"loopOne":"terrain_hyperspace_open",
+		# deep hyperspace
+		"loopTwo":"terrain_hyperspace_deep",
+		# Orion-Perseus Abyss
+		"loopThree":"terrain_hyperspace_abyss",
+		# storm in deep hyperspace
+		"loopFour":"terrain_hyperspace_storm",
+		"custom":{
+			# lightning strikes
+			"stormSound":"terrain_hyperspace_lightning",
+			
+			# for abyssal sound filter
+			"gain":0.75,
+			"gainHF":0.1,
+		},
+	},
+	"MPC_magnetic_field_hyper":{
+		"plugin":"data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_hyperMagField",
+		"musicSuppression":0.5,
+		# inside field
+		"loopOne":"terrain_magfield",
+		# inside active aurora/magnetic storm
+		"loopTwo":"terrain_magstorm",
+	},
+	#"MPC_mesonField":{
+	#	"plugin":"data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_mesonField",
+	#	"musicSuppression":0,
+	#	# inside field
+	#	"loopOne":"terrain_corona_am",
+		# inside active aurora/magnetic storm
+	#	"loopTwo":"terrain_corona_am_flare",
+	#}
+}
+

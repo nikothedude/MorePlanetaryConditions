@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Interstellar Imperium">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Interstellar Imperium/jars/II.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Interstellar Imperium" />
+    </SOURCES>
+  </library>
+</component>

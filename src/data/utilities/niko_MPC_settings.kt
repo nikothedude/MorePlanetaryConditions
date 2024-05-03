@@ -8,6 +8,7 @@ import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import dynamictariffs.util.SettingsUtil
 import dynamictariffs.util.SettingsUtil.readSettings
 import org.json.JSONException
+import java.awt.Color
 import java.io.IOException
 
 object niko_MPC_settings {
@@ -55,6 +56,12 @@ object niko_MPC_settings {
     const val OVERGROWN_NANOFORGE_MAX_INTEL_PROGRESS = 500
     const val OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT = 0.0f
     const val OVERGROWN_NANOFORGE_INTEL_TOGGLE_VIEWMODE_ID = "toggleViewmode"
+
+    val hyperMagFieldColors: MutableSet<Color> = hashSetOf(
+        Color(144, 44, 152, 100),
+        Color(50, 25, 100, 100),
+        //Color(38, 155, 130, 100),
+    )
 
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
