@@ -16,11 +16,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overg
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
-import data.scripts.campaign.listeners.niko_MPC_interationDialogShownListener
-import data.scripts.campaign.listeners.niko_MPC_pickFleetAIListener
-import data.scripts.campaign.listeners.niko_MPC_satelliteDiscoveredListener
-import data.scripts.campaign.listeners.niko_MPC_satelliteEventListener
+import data.scripts.campaign.listeners.*
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
@@ -139,6 +137,14 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }*/
     }
 
+    override fun beforeGameSave() {
+        super.beforeGameSave()
+
+        for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
+            listener.beforeGameSave()
+        }
+    }
+
     override fun onEnabled(wasEnabledBefore: Boolean) {
         //MPC_conditionManager.generateConditions(wasEnabledBefore)
 
@@ -148,7 +154,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun configureXStream(x: XStream?) {
         if (x == null) return
 
-        // TODO: aliases
+        x.alias("niko_MPC_realspaceHyperspace", niko_MPC_realspaceHyperspace.javaClass)
 
         super.configureXStream(x)
     }

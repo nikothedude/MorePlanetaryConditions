@@ -1,5 +1,7 @@
 package data.scripts.campaign.econ.conditions.terrain.magfield
 
+import com.fs.starfarer.api.GameState
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -16,6 +18,8 @@ import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
+import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings
 
 class niko_MPC_hyperMagneticField:
@@ -23,28 +27,38 @@ class niko_MPC_hyperMagneticField:
 
     override var deletionScript: niko_MPC_magfieldConditionDeletionScript? = null
 
-    var applied = false
-
     var hazardRatingIncrement = 0.5f
     var accessabilityIncrement = -0.25f
-    var defenseRatingIncrement = 5000f
-    var defenseRatingMult = 2f
+    var defenseRatingIncrement = 2000f
+    var defenseRatingMult = 1.2f
 
-    lateinit var terrainPlugin: niko_MPC_hyperMagField
+    var terrainPlugin: niko_MPC_hyperMagField? = null
 
     override fun apply(id: String) {
         super.apply(id)
 
         applyconditionAttributes(id)
 
-        if (applied) return
-        if (addTerrain()) applied = true
-        applied = true
+        val market = getMarket() ?: return
+        val containingLocation = market.containingLocation ?: return
+
+        val marketDeserializing = market.isDeserializing()
+        if (!marketDeserializing) {
+            if (terrainPlugin == null) {
+                terrainPlugin = market.memoryWithoutUpdate[niko_MPC_ids.hyperMagneticFieldMemoryId] as? niko_MPC_hyperMagField
+            }
+        }
+        val notDeserializing = (!marketDeserializing && !containingLocation.isDeserializing() && market.id != "fake_Colonize")
+        if (notDeserializing && terrainPlugin == null) {
+            addTerrain()
+        }
     }
 
     private fun addTerrain(): Boolean {
         val market = getMarket() ?: return false
         val primaryEntity = market.primaryEntity ?: return false
+
+        if (Global.getCurrentState() == GameState.TITLE) return false
 
         val middleRadius = primaryEntity.radius + 400f
         val innerRadius = 80f
@@ -91,7 +105,7 @@ class niko_MPC_hyperMagneticField:
         val market = getMarket()
         val containingLocaiton = market?.containingLocation
 
-        containingLocaiton?.removeEntity(terrainPlugin.entity)
+        containingLocaiton?.removeEntity(terrainPlugin?.entity)
 
         super.delete()
     }
@@ -145,6 +159,13 @@ class niko_MPC_hyperMagneticField:
         )
 
         tooltip.addPara(
+            "%s accessibility",
+            10f,
+            Misc.getHighlightColor(),
+            "${accessabilityIncrement*100}%"
+        )
+
+        tooltip.addPara(
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
@@ -164,13 +185,6 @@ class niko_MPC_hyperMagneticField:
             10f,
             Misc.getHighlightColor(),
             "mining producing refined metals and transplutonics", "ore and rare ore production"
-        )
-
-        tooltip.addPara(
-            "%s accessibility",
-            10f,
-            Misc.getHighlightColor(),
-            "${accessabilityIncrement*100}"
         )
 
     }

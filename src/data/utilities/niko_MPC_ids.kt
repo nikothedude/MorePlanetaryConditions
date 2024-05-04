@@ -1,9 +1,11 @@
 package data.utilities
 
 object niko_MPC_ids {
+    const val hyperMagneticFieldMemoryId = "\$niko_MPC_hyperMagneticFieldMemoryId"
     const val hyperspaceLinkedTerrainMemoryId = "\$niko_MPC_hyperspaceLinkedTerrain"
     const val hyperspaceLinkedJumpPointEntryMemoryId = "\$niko_MPC_hyperspaceLinkedJumpPointEntry"
     const val hyperspaceLinkedJumpPointExitMemoryId = "\$hyperspaceLinkedJumpPointExitMemoryId"
+    const val hyperspaceLinkedSavedCellsMemoryId = "\$hyperspaceLinkedSavedCellsId"
 
     const val overgrownNanoforgeConditionId = "niko_MPC_overgrownNanoforgeCondition"
     const val overgrownNanoforgeHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeHandler"

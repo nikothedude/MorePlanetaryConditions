@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
+import com.fs.starfarer.api.campaign.OrbitAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -15,11 +16,10 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin.CellStateTracker
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.JumpPoint
-import com.fs.starfarer.campaign.StarSystem
-import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.everyFrames.deletionScript
@@ -28,15 +28,17 @@ import data.scripts.everyFrames.niko_MPC_delayedEntityRemovalScript
 import data.scripts.everyFrames.niko_MPC_jumpPointStaplingScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
+import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_memoryUtils
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_miscUtils.setArc
+import javafx.scene.control.Cell
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.MathUtils.getDistance
 import org.lwjgl.util.vector.Vector2f
+import kotlin.math.roundToInt
 
 class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScript<niko_MPC_hyperspaceLinkedDeletionScript> {
-
-    var applied = false
 
     var terrain: niko_MPC_realspaceHyperspace? = null
 
@@ -45,10 +47,10 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
     override var deletionScript: niko_MPC_hyperspaceLinkedDeletionScript? = null
 
-    var slipstreamDetectionBonus: Float = 8f // very very big
+    var slipstreamDetectionBonus: Float = 7f // very very big
     var accessabilityBonus: Float = 0.5f
-    var hazardBonus: Float = 0.5f
-    var volatilesBonus = 4 // its seriously a lot
+    var hazardBonus: Float = 0.75f
+    var volatilesBonus = 3 // its seriously a lot
 
     var defenseIncrement = 200f
     var defenseMult = 2f
@@ -57,13 +59,35 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         super.apply(id)
 
         val market = getMarket() ?: return
-        val contaningLocation = market.containingLocation ?: return
+        val containingLocation = market.containingLocation ?: return
         applyConditionAttributes(id)
 
-        val notDeserializing = (!market.isDeserializing() && !contaningLocation.isDeserializing() && market.id != "fake_Colonize")
-        if (!applied && notDeserializing) {
-            linkToHyperspace(id)
-            applied = true
+        val marketDeserializing = market.isDeserializing()
+        if (!marketDeserializing) {
+            if (terrain == null) {
+                terrain =
+                    market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] as? niko_MPC_realspaceHyperspace
+            }
+            if (entryPoint == null) {
+                entryPoint =
+                    market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] as? JumpPointAPI
+            }
+            if (exitPoint == null) {
+                exitPoint =
+                    market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] as? JumpPointAPI
+            }
+        }
+        val appliedTerrain = (terrain != null || entryPoint != null || exitPoint != null)
+
+        val notDeserializing = (!marketDeserializing && !containingLocation.isDeserializing() && market.id != "fake_Colonize")
+        if (notDeserializing) {
+            if (!appliedTerrain) linkToHyperspace(id)
+            /*if (terrain != null) {
+                if (terrain!!.activeCells.all { cell -> cell.all { it == null } }) {
+                    createArc()
+                    //terrain!!.loadCells(getCachedCells())
+                }
+            }*/
         }
     }
 
@@ -76,11 +100,14 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     }
 
     private fun applyConditionAttributes(id: String) {
-        val intel = HyperspaceTopographyEventIntel.get()
-        if (intel != null && intel.isStageActive(HyperspaceTopographyEventIntel.Stage.SLIPSTREAM_DETECTION)) {
-            market.stats.dynamic.getMod(Stats.SLIPSTREAM_REVEAL_RANGE_LY_MOD).modifyFlat(
-                id, getAdjustedSlipstreamDetectionBonus(), "${market.name} ${name}"
-            )
+        val market = getMarket() ?: return
+        if (market.isPlayerOwned) {
+            val intel = HyperspaceTopographyEventIntel.get()
+            if (intel != null && intel.isStageActive(HyperspaceTopographyEventIntel.Stage.SLIPSTREAM_DETECTION)) {
+                market.stats.dynamic.getMod(Stats.SLIPSTREAM_REVEAL_RANGE_LY_MOD).modifyFlat(
+                    id, getAdjustedSlipstreamDetectionBonus(), "${market.name} $name"
+                )
+            }
         }
         market.accessibilityMod.modifyFlat(id, accessabilityBonus, name)
 
@@ -116,17 +143,19 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val primaryEntity = market.primaryEntity
 
         val anchor = 3
-        val effectiveSize = ((market.size) - anchor) * 2
-        val divisor = if (primaryEntity.orbit != null) 3 else 1
+        val marketSize = if (market.isInhabited()) market.size else anchor
+        val effectiveSize = ((marketSize + 1) - anchor) * 1.2
+        val divisor = if (!containedByHyperclouds()) 3 else 1
 
-        return ((volatilesBonus + effectiveSize) / divisor)
+        return ((volatilesBonus + effectiveSize) / divisor).roundToInt()
     }
 
     private fun getAdjustedSlipstreamDetectionBonus(): Float {
         val market = getMarket() ?: return 0f
 
         val anchor = 3
-        val effectiveSize = ((market.size) - anchor)
+        val marketSize = if (market.isInhabited()) market.size else anchor
+        val effectiveSize = ((marketSize + 1) - anchor)
 
         return ((slipstreamDetectionBonus * effectiveSize))
     }
@@ -159,14 +188,33 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         entryPoint?.addDestination(fromSystemToHyper)
         exitPoint?.addDestination(fromHyperToSystem)
 
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = entryPoint
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = exitPoint
+
         val nebula = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
             0f, 0f, containingLocation, "terrain", "deep_hyperspace", 4, 4, "MPC_realspaceHyperspace", starSystem.age) as? CampaignTerrainAPI ?: return
+        val plugin = nebula.plugin as niko_MPC_realspaceHyperspace
+        terrain = plugin
+        terrain!!.sourceJumpPoint = entryPoint
+        terrain!!.exitJumpPoint = exitPoint
+        Global.getSector().listenerManager.addListener(terrain, false)
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] = terrain
+        Global.getSector().memoryWithoutUpdate["\$niko_MPC_hyperspaceLinkedWithTerrain"]
+
+        createArc()
+    }
+
+    fun createArc() {
+        val market = getMarket() ?: return
+        val primaryEntity = market.primaryEntity ?: return
+
+        val containingLocation = primaryEntity.containingLocation ?: return
 
         var arcTarget = primaryEntity
-        val orbit = primaryEntity.orbit
-        var orbitFocus = orbit.focus
+        val orbit: OrbitAPI? = primaryEntity.orbit
+        var orbitFocus: SectorEntityToken? = orbit?.focus
         val radius = primaryEntity.radius
-        val buffer = radius * 4f
+        val buffer = radius * 2.5f
         var sizeBonus = 0f
 
         val arcSource = Vector2f()
@@ -179,17 +227,20 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         } else {
             arcSource.set(orbitFocus.location)
 
+            val starSystem = containingLocation as? StarSystemAPI
+
             var recursiveFocus: SectorEntityToken? = orbitFocus.orbitFocus
-            if (recursiveFocus != null && containingLocation.star != null) { // otherwise? fuck it. we ball. seriously, where do you find a orbit with 3 layers of recursion
+            if (recursiveFocus != null && starSystem?.star != null) { // otherwise? fuck it. we ball. seriously, where do you find a orbit with 3 layers of recursion
                 val extraDist = getDistance(primaryEntity, orbitFocus) + primaryEntity.radius + orbitFocus.radius
                 sizeBonus += extraDist
 
-                val star = containingLocation.star
+                val star = starSystem.star
                 arcSource.set(star.location)
                 arcTarget = orbitFocus
                 orbitFocus = star
             }
-            dist = getDistance(arcTarget, orbitFocus) + orbitFocus.radius + primaryEntity.radius
+            dist = getDistance(arcTarget, orbitFocus) + primaryEntity.radius // i dont know how these 2 lines work
+            if (orbitFocus != null) dist += orbitFocus.radius
 
             /*var lastFocus: SectorEntityToken = orbitFocus
             var recursiveFocus: SectorEntityToken? = orbitFocus.orbitFocus
@@ -217,11 +268,23 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val outerRadius = (dist + buffer + sizeBonus)
         val level = 100
 
-        val plugin = nebula.plugin as niko_MPC_realspaceHyperspace
-        terrain = plugin
+        val nebulaEditor = NebulaEditor(terrain)
+        nebulaEditor?.setArc(level, arcSource.x, arcSource.y,  innerRadius, outerRadius, 0f, 360f)
+        val baseTimesToRemove = 50
+        val widthOfArc = (outerRadius - innerRadius)
+        var timesToRemove = (baseTimesToRemove * (widthOfArc)).roundToInt()
+        val tiles = nebulaEditor.tiles
+        while(timesToRemove-- > 0) {
+            val randXDepth = MathUtils.getRandomNumberInRange(0f, widthOfArc)
+            val preOffsetX = if (MathUtils.getRandom().nextFloat() >= 0.5f) randXDepth * -1 else randXDepth
+            val randX = preOffsetX + arcSource.x
 
-        val nebulaEditor = NebulaEditor(plugin)
-        nebulaEditor.setArc(level, arcSource.x, arcSource.y,  innerRadius, outerRadius, 0f, 360f)
+            val randYDepth = MathUtils.getRandomNumberInRange(0f, widthOfArc)
+            val preOffsetY = if (MathUtils.getRandom().nextFloat() >= 0.5f) randXDepth * -1 else randXDepth
+            val randY = preOffsetX + arcSource.y
+
+            nebulaEditor.setTileAt(randX, randY, -1, 0f, false)
+        }
     }
 
     fun isEligibleForSystem(starSystem: StarSystemAPI): Boolean {
@@ -241,7 +304,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             "%s slipstream detection radius (based on population size)",
             10f,
             Misc.getHighlightColor(),
-            "+${getAdjustedVolatilesBonus()}"
+            "+${getAdjustedSlipstreamDetectionBonus()} ly"
         )
 
         tooltip.addPara(
@@ -294,22 +357,57 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         return plugin.containsEntity(primaryEntity)
     }
 
-    /*private fun getTerrain(): niko_MPC_realspaceHyperspace? {
+    fun getCachedCells(): MutableList<CellStateTracker> {
+        val market = getMarket() ?: return ArrayList()
+        if (market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedSavedCellsMemoryId] !is MutableList<*>) {
+            market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedSavedCellsMemoryId] = ArrayList<CellStateTracker>()
+        }
+        return market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedSavedCellsMemoryId] as? MutableList<CellStateTracker> ?: return ArrayList()
+    }
+
+    /*fun getTerrain(): niko_MPC_realspaceHyperspace? {
         val market = getMarket() ?: return null
 
         val memory = market.memoryWithoutUpdate ?: return null
         return memory[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] as? niko_MPC_realspaceHyperspace
     }*/
 
+    fun cacheCells() {
+        if (terrain == null) return
+        niko_MPC_realspaceHyperspace.clearCellsNotNearPlayerNonStatic(terrain!!)
+        terrain!!.cacheCells(getCachedCells())
+    }
+
     override fun delete() {
         super.delete()
 
         val market = getMarket() ?: return
 
-        entryPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
-        exitPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
+        if (entryPoint == null) { // this is so sloppy aaa
+            entryPoint = market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] as? JumpPointAPI
+        }
+        if (entryPoint == null) {
+            entryPoint = terrain?.sourceJumpPoint
+        }
+        if (exitPoint == null) {
+            exitPoint = market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] as? JumpPointAPI
+        }
+        if (exitPoint == null) {
+            exitPoint = terrain?.exitJumpPoint
+        }
+        if (terrain == null) {
+            terrain = market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] as? niko_MPC_realspaceHyperspace
+        }
 
+        entryPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = null
+        exitPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = null
+
+        Global.getSector().listenerManager.removeListener(terrain)
         terrain?.entity?.containingLocation?.removeEntity(terrain?.entity)
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] = null
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedSavedCellsMemoryId] = null
     }
 
     override fun createDeletionScriptInstance(vararg args: Any): niko_MPC_hyperspaceLinkedDeletionScript {

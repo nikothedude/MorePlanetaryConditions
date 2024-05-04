@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.terrain.hyperspace
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
@@ -11,10 +12,15 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.scripts.campaign.listeners.niko_MPC_saveListener
+import org.lazywizard.console.commands.Jump
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 
-class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin() {
+class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveListener {
+    var sourceJumpPoint: JumpPointAPI? = null
+    var exitJumpPoint: JumpPointAPI? = null
+
     override fun containsEntity(other: SectorEntityToken?): Boolean {
         return isInClouds(other)
     }
@@ -69,7 +75,6 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin() {
                 )
             }
         }
-
 
         var x = entity.location.x
         var y = entity.location.y
@@ -173,46 +178,48 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin() {
         extraDistanceAroundPlayerToAdvanceStormCells = 0f
     }
 
-    protected fun clearCellsNotNearPlayerNonStatic(plugin: HyperspaceTerrainPlugin) {
-        val playerFleet = Global.getSector().playerFleet ?: return
-        var test = Vector2f()
-        if (playerFleet != null) {
-            test = playerFleet.location
-        }
-        var x = plugin.entity.location.x
-        var y = plugin.entity.location.y
-        val size = plugin.tileSize
-        val w = plugin.tiles.size * size
-        val h = plugin.tiles[0].size * size
-        x -= w / 2f
-        y -= h / 2f
-        var xIndex = ((test.x - x) / size).toInt()
-        var yIndex = ((test.y - y) / size).toInt()
-        if (xIndex < 0) xIndex = 0
-        if (yIndex < 0) yIndex = 0
-        if (xIndex >= plugin.tiles.size) xIndex = plugin.tiles.size - 1
-        if (yIndex >= plugin.tiles[0].size) yIndex = plugin.tiles[0].size - 1
-        val subgridSize = ((10000 / size + 1) * 2f).toInt()
-        val minX = Math.max(0, xIndex - subgridSize / 2)
-        val maxX = xIndex + subgridSize / 2
-        val minY = Math.max(0, yIndex - subgridSize / 2)
-        val maxY = yIndex + subgridSize / 2
-
-        // clean up area around the "active" area so that as the player moves around,
-        // they don't leave frozen storm cells behind (which would then make it into the savefile)
-        val pad = Math.max(plugin.tiles.size, plugin.tiles[0].size) * 2
-        var i = minX - pad
-        while (i <= maxX + pad && i < plugin.tiles.size) {
-            var j = minY - pad
-            while (j <= maxY + pad && j < plugin.tiles[0].size) {
-                if (i < minX || (j < minY) || i > maxX || j > maxY) {
-                    if (i >= 0 && j >= 0) {
-                        plugin.activeCells[i][j] = null
-                    }
-                }
-                j++
+    companion object {
+        fun clearCellsNotNearPlayerNonStatic(plugin: HyperspaceTerrainPlugin) {
+            val playerFleet = Global.getSector().playerFleet ?: return
+            var test = Vector2f()
+            if (playerFleet != null) {
+                test = playerFleet.location
             }
-            i++
+            var x = plugin.entity.location.x
+            var y = plugin.entity.location.y
+            val size = plugin.tileSize
+            val w = plugin.tiles.size * size
+            val h = plugin.tiles[0].size * size
+            x -= w / 2f
+            y -= h / 2f
+            var xIndex = ((test.x - x) / size).toInt()
+            var yIndex = ((test.y - y) / size).toInt()
+            if (xIndex < 0) xIndex = 0
+            if (yIndex < 0) yIndex = 0
+            if (xIndex >= plugin.tiles.size) xIndex = plugin.tiles.size - 1
+            if (yIndex >= plugin.tiles[0].size) yIndex = plugin.tiles[0].size - 1
+            val subgridSize = ((10000 / size + 1) * 2f).toInt()
+            val minX = Math.max(0, xIndex - subgridSize / 2)
+            val maxX = xIndex + subgridSize / 2
+            val minY = Math.max(0, yIndex - subgridSize / 2)
+            val maxY = yIndex + subgridSize / 2
+
+            // clean up area around the "active" area so that as the player moves around,
+            // they don't leave frozen storm cells behind (which would then make it into the savefile)
+            val pad = Math.max(plugin.tiles.size, plugin.tiles[0].size) * 2
+            var i = minX - pad
+            while (i <= maxX + pad && i < plugin.tiles.size) {
+                var j = minY - pad
+                while (j <= maxY + pad && j < plugin.tiles[0].size) {
+                    if (i < minX || (j < minY) || i > maxX || j > maxY) {
+                        if (i >= 0 && j >= 0) {
+                            plugin.activeCells[i][j] = null
+                        }
+                    }
+                    j++
+                }
+                i++
+            }
         }
     }
 
@@ -315,6 +322,18 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin() {
         }
     }
 
+    fun cacheCells(list: MutableList<CellStateTracker>): MutableList<CellStateTracker> {
+        for (i in activeCells.indices) {
+            for (j in activeCells[0].indices) {
+                val curr: CellStateTracker? = activeCells[i][j]
+                if (curr != null && isTileVisible(i, j)) {
+                    list.add(curr)
+                }
+            }
+        }
+        return list
+    }
+
     override fun getAbyssalDepth(loc: Vector2f?): Float {
         return 0f
     }
@@ -329,6 +348,33 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin() {
 
     override fun getAbyssalSystems(): List<StarSystemAPI?>? {
         return ArrayList()
+    }
+
+    fun loadCells(cachedCells: MutableList<CellStateTracker>) {
+        for (curr in cachedCells) {
+            activeCells[curr.i][curr.j] = curr
+        }
+    }
+
+    fun cacheOwnCells() {
+        cacheCells(savedActiveCells)
+    }
+
+    override fun beforeGameSave() {
+        params.tiles = null
+        savedTiles = encodeTiles(tiles)
+
+        clearCellsNotNearPlayerNonStatic(this)
+
+        savedActiveCells = ArrayList<CellStateTracker>()
+        for (i in activeCells.indices) {
+            for (j in activeCells[0].indices) {
+                val curr: CellStateTracker? = activeCells[i][j]
+                if (curr != null && isTileVisible(i, j)) {
+                    savedActiveCells.add(curr)
+                }
+            }
+        }
     }
 }
 

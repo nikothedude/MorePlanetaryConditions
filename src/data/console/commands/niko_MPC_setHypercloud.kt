@@ -4,14 +4,19 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.impl.campaign.procgen.MagFieldGenPlugin
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.terrain.BaseTiledTerrain
+import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.StarSystem
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
+import data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_hyperMagField
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_miscUtils.setArc
 import data.utilities.niko_MPC_reflectionUtils
+import data.utilities.niko_MPC_settings
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console
 import org.lazywizard.lazylib.MathUtils
@@ -147,6 +152,27 @@ class niko_MPC_setHypercloud: BaseCommand {
         val nebulaEditor = NebulaEditor(plugin)
 
         nebulaEditor.setArc(level, arcSource.x, arcSource.y,  innerRadius, outerRadius, 0f, 360f)
+
+        val middleRadius = randPlanet.radius + 400f
+        val innerMagRadius = 80f
+        val outerMagRadius = 1600f
+        val bandwidth = outerRadius
+
+        val auroraProbability = 0.25f + 0.75f * StarSystemGenerator.random.nextFloat()
+
+        val auroraIndex = (MagFieldGenPlugin.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
+
+        val ringParams = MagneticFieldTerrainPlugin.MagneticFieldParams(
+            bandwidth, middleRadius,
+            randPlanet,
+            innerMagRadius, outerMagRadius,
+            niko_MPC_settings.hyperMagFieldColors.random(),
+            auroraProbability,
+            *MagFieldGenPlugin.auroraColors[auroraIndex],
+        )
+        val magField = randPlanet.containingLocation.addTerrain("MPC_magnetic_field_hyper", ringParams)
+        magField.setCircularOrbit(randPlanet, 0f, 0f, 10f)
+
 
         Console.showMessage("done")
         return BaseCommand.CommandResult.SUCCESS
