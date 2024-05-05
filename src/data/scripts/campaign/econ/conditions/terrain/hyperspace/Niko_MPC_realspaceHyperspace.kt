@@ -10,12 +10,17 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.abilities.EmergencyBurnAbility
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
+import com.fs.starfarer.api.impl.combat.BattleCreationPluginImpl
+import com.fs.starfarer.api.loading.Description
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.listeners.niko_MPC_saveListener
-import org.lazywizard.console.commands.Jump
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveListener {
     var sourceJumpPoint: JumpPointAPI? = null
@@ -238,7 +243,7 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
 
         fleet.addScript(niko_MPC_realspaceHyperspaceBoost(this, cell, fleet))
 
-        val key = STORM_STRIKE_TIMEOUT_KEY
+        val key = "\$MPC_hyperstormStrikeTimeout"
         val mem = fleet.memoryWithoutUpdate
         if (mem.contains(key)) return
         mem[key, true] = (STORM_MIN_TIMEOUT + (STORM_MAX_TIMEOUT - STORM_MIN_TIMEOUT) * Math.random()).toFloat()
@@ -322,16 +327,139 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
         }
     }
 
-    fun cacheCells(list: MutableList<CellStateTracker>): MutableList<CellStateTracker> {
-        for (i in activeCells.indices) {
-            for (j in activeCells[0].indices) {
-                val curr: CellStateTracker? = activeCells[i][j]
-                if (curr != null && isTileVisible(i, j)) {
-                    list.add(curr)
-                }
+    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {
+        if (tooltip == null) return
+
+        val pad = 10f
+        val small = 5f
+        val gray = Misc.getGrayColor()
+        val highlight = Misc.getHighlightColor()
+        val bad = Misc.getNegativeHighlightColor()
+
+        val player = Global.getSector().playerFleet
+        val inCloud = isInClouds(player)
+        val depth = getAbyssalDepth(player)
+        val inAbyss = depth > 0f
+        val tile = getTilePreferStorm(player.location, player.radius)
+        var cell: CellStateTracker? = null
+        if (tile != null) {
+            cell = activeCells[tile[0]][tile[1]]
+        }
+
+        tooltip.addTitle(terrainName)
+        if (inAbyss) {
+            //abyssal
+            tooltip.addPara(
+                Global.getSettings().getDescription(getTerrainId() + "_abyssal", Description.Type.TERRAIN).text1, pad
+            )
+        } else if (!inCloud) {
+            // open
+            tooltip.addPara(
+                Global.getSettings().getDescription(getTerrainId() + "_normal", Description.Type.TERRAIN).text1, pad
+            )
+        } else if (cell == null || !cell.isStorming) {
+            // deep
+            tooltip.addPara(
+                Global.getSettings().getDescription(getTerrainId() + "_deep", Description.Type.TERRAIN).text1, pad
+            )
+        } else if (cell.isStorming) {
+            // storm
+            tooltip.addPara(
+                Global.getSettings().getDescription(getTerrainId() + "_storm", Description.Type.TERRAIN).text1, pad
+            )
+        }
+
+
+        var nextPad = pad
+        if (expanded) {
+            tooltip.addSectionHeading("Travel", Alignment.MID, pad)
+            nextPad = small
+        }
+
+        if (inAbyss) {
+            tooltip.addPara(
+                "Reduces the sensor range and sensor profile of fleets inside it by %s. "
+                        + "Also reduces the maximum burn level by %s. The reduction is gradual and based "
+                        + "on the \"depth\" the fleet has reached.",
+                pad,
+                highlight,
+                "" + Math.round((1f - ABYSS_VISIBLITY_MULT) * 100f) + "%",
+                "" + Math.round((1f - ABYSS_BURN_MULT) * 100f) + "%"
+            )
+            if (ABYSS_NAVIGATION_EFFECT <= 0) {
+                tooltip.addPara(
+                    ("Skill in navigation is of little use, and does not provide its "
+                            + "normal benefit in countering terrain-specific maximum burn penalties."), pad,
+                    highlight,
+                    "" + (ABYSS_NAVIGATION_EFFECT * 100f).roundToInt() + "%"
+                )
+            } else {
+                tooltip.addPara(
+                    ("Skill in navigation is of limited use, and only provides %s of its "
+                            + "normal benefit in countering the maximum burn penalty."), pad,
+                    highlight,
+                    "" + (ABYSS_NAVIGATION_EFFECT * 100f).roundToInt() + "%"
+                )
+            }
+        } else if (inCloud) {
+            tooltip.addPara(
+                "Reduces the range at which fleets inside can be detected by %s.",
+                pad,
+                highlight,
+                "" + ((1f - VISIBLITY_MULT) * 100f).roundToInt() + "%"
+            )
+            tooltip.addPara(
+                "Reduces the speed of fleets inside by up to %s. Larger fleets are slowed down more.",
+                nextPad,
+                highlight,
+                "" + Math.round((Misc.BURN_PENALTY_MULT) * 100f) + "%"
+            )
+            val penalty = Misc.getBurnMultForTerrain(Global.getSector().playerFleet)
+            tooltip.addPara(
+                "Your fleet's speed is reduced by %s.", pad,
+                highlight,
+                "" + Math.round((1f - penalty) * 100f) + "%" //Strings.X + penaltyStr
+            )
+            tooltip.addSectionHeading("Hyperspace storms", Alignment.MID, pad)
+            var stormDescColor = Misc.getTextColor()
+            if (cell != null && cell.isStorming) {
+                stormDescColor = bad
+            }
+            tooltip.addPara(
+                ("Being caught in a storm causes storm strikes to damage ships " +
+                        "and reduce their combat readiness. " +
+                        "Larger fleets attract more damaging strikes."), stormDescColor, pad
+            )
+            tooltip.addPara(
+                ("In addition, storm strikes toss the fleet's drive bubble about " +
+                        "with great violence, often causing a loss of control. " +
+                        "Some commanders are known to use these to gain additional " +
+                        "speed, and to save fuel - a practice known as \"storm riding\"."), Misc.getTextColor(), pad
+            )
+            tooltip.addPara("\"Slow-moving\" fleets do not attract storm strikes.", Misc.getTextColor(), pad)
+        }
+
+        if (expanded) {
+            tooltip.addSectionHeading("Combat", Alignment.MID, pad)
+            //			if (inCloud) {
+//				tooltip.addPara("Numerous patches of nebula-like hyperfragments present on the battlefield, slowing ships down to a percentage of their top speed.", small);
+//			} else {
+//				tooltip.addPara("No effect.", small);
+//			}
+            if (inAbyss) {
+//				public static float ABYSS_SHIP_SPEED_PENALTY = 20f;
+//				public static float ABYSS_MISSILE_SPEED_PENALTY = 20f;
+                tooltip.addPara(
+                    ("Reduces top speed of ships by up to %s, and the top speed and range "
+                            + "of missiles by up to %s."), pad,
+                    highlight,
+                    "" + Math.round(BattleCreationPluginImpl.ABYSS_SHIP_SPEED_PENALTY) + "%",
+                    "" + Math.round(BattleCreationPluginImpl.ABYSS_MISSILE_SPEED_PENALTY) + "%"
+                )
+            } else {
+                tooltip.addPara("No combat effects.", nextPad)
             }
         }
-        return list
     }
 
     override fun getAbyssalDepth(loc: Vector2f?): Float {
@@ -346,18 +474,8 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
         return false
     }
 
-    override fun getAbyssalSystems(): List<StarSystemAPI?>? {
+    override fun getAbyssalSystems(): List<StarSystemAPI?> {
         return ArrayList()
-    }
-
-    fun loadCells(cachedCells: MutableList<CellStateTracker>) {
-        for (curr in cachedCells) {
-            activeCells[curr.i][curr.j] = curr
-        }
-    }
-
-    fun cacheOwnCells() {
-        cacheCells(savedActiveCells)
     }
 
     override fun beforeGameSave() {
@@ -437,15 +555,15 @@ class niko_MPC_realspaceHyperspaceBoost(
 
         var boost = Misc.getUnitVectorAtDegreeAngle(angle)
 
-        var mult = 1f - elapsed / niko_MPC_realspaceHyperspaceBoost.DURATION_SECONDS
-        mult *= Math.pow(Math.min(1f, elapsed / 0.25f).toDouble(), 2.0).toFloat()
+        var mult = 1f - elapsed / DURATION_SECONDS
+        mult *= 1f.coerceAtMost(elapsed / 0.25f).toDouble().pow(2.0).toFloat()
         if (mult < 0) {
             mult = 0f
         }
         if (mult > 1) {
             mult = 1f
         }
-        boost.scale(niko_MPC_realspaceHyperspaceBoost.STORM_SPEED_BURST * amount * mult)
+        boost.scale(niko_MPC_realspaceHyperspaceBoost.STORM_SPEED_BURST * amount * mult * 3) // *3 mult added because it feels weird otherwise
 
         val v = fleet.velocity
 

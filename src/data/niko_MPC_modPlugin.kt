@@ -10,13 +10,18 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.thoughtworks.xstream.XStream
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
+import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
+import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_hyperspaceLinked
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
+import data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_hyperMagneticField
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -38,6 +43,15 @@ import org.lazywizard.console.Console
 
 class niko_MPC_modPlugin : BaseModPlugin() {
 
+    companion object {
+        val conditionsNotAllowedInCoreWorlds: MutableSet<String> = hashSetOf(
+            overgrownNanoforgeConditionId,
+            "niko_MPC_antiAsteroidSatellites_derelict",
+            "niko_MPC_ultraMagneticField",
+            "niko_MPC_hyperspaceBipartisan"
+        )
+    }
+
     @Throws(RuntimeException::class)
     override fun onApplicationLoad() {
         val isLazyLibEnabled = Global.getSettings().modManager.isModEnabled("lw_lazylib")
@@ -50,6 +64,15 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
         addSpecialItemsToItemRepo()
+
+        // TODO
+        /*throw java.lang.RuntimeException(
+            "Resize spy arrays and STC and overgrown nanoforge icons so they arent huge when you survey" +
+            "Do some work on magnetic fields so they look better, their inner ring needs to hug the radius" +
+            "Balance magfield defense bonus" +
+            "Add 3 ways to bypass defense satellites: ECM, Sensor profile, and phase" +
+            "check attribution.txt theres things some of your images need you to do, like use hrefs"
+        )*/
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)
@@ -164,12 +187,29 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) {
             niko_MPC_satelliteUtils.obliterateSatellites()
         } else {
-            clearSatellitesFromCoreWorlds()
-
             generatePredefinedSatellites()
         }
         clearNanoforgesFromCoreWorlds()
+
+        clearCoreWorldsOfInappropiateConditions()
+
         clearInappropiateOvergrownFleetSpawners()
+    }
+
+    private fun clearCoreWorldsOfInappropiateConditions() {
+        val systems = Global.getSector().starSystems
+        for (system in systems) {
+            if (!system.hasTag(Tags.THEME_CORE)) continue
+            for (planet in system.planets) {
+                val foundMarket = planet.market ?: continue
+                for (id in conditionsNotAllowedInCoreWorlds) {
+                    if (foundMarket.hasCondition(id)) foundMarket.removeCondition(id)
+                }
+                if (foundMarket.hasCondition(overgrownNanoforgeConditionId)) {
+                    foundMarket.removeCondition(overgrownNanoforgeConditionId)
+                }
+            }
+        }
     }
 
     private fun clearInappropiateOvergrownFleetSpawners() {

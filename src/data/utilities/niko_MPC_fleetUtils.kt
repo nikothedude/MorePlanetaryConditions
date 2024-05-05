@@ -2,13 +2,17 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.impl.campaign.DModManager
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes.*
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
+import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_FleetRequest.FleetType
 import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
@@ -151,5 +155,17 @@ object niko_MPC_fleetUtils {
 
     fun CampaignFleetAPI.getTemporaryFleetDespawner(): niko_MPC_temporarySatelliteFleetDespawner? {
         return memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] as? niko_MPC_temporarySatelliteFleetDespawner
+    }
+
+    fun CampaignFleetAPI.getRepLevelForArrayBonus(): RepLevel {
+        val level: RepLevel
+        val fleetType: String = memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_TYPE] as? String ?: return RepLevel.FRIENDLY
+        when (fleetType) {
+            TRADE, TRADE_SMUGGLER, TRADE_SMALL, TRADE_LINER, FOOD_RELIEF_FLEET, SHRINE_PILGRIMS, ACADEMY_FLEET -> {
+                level = RepLevel.SUSPICIOUS
+            }
+            else -> level = RepLevel.FRIENDLY
+        }
+        return level
     }
 }

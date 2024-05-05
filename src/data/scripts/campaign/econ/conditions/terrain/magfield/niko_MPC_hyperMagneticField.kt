@@ -16,11 +16,13 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
+import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings
+import kotlin.math.roundToInt
 
 class niko_MPC_hyperMagneticField:
     niko_MPC_baseNikoCondition(), hasDeletionScript<niko_MPC_magfieldConditionDeletionScript> {
@@ -29,7 +31,7 @@ class niko_MPC_hyperMagneticField:
 
     var hazardRatingIncrement = 0.5f
     var accessabilityIncrement = -0.25f
-    var defenseRatingIncrement = 2000f
+    var defenseRatingIncrement = 500f
     var defenseRatingMult = 1.2f
 
     var terrainPlugin: niko_MPC_hyperMagField? = null
@@ -80,16 +82,20 @@ class niko_MPC_hyperMagneticField:
         val magField: CampaignTerrainAPI = primaryEntity.containingLocation.addTerrain("MPC_magnetic_field_hyper", ringParams) as? CampaignTerrainAPI
             ?: return false
         val plugin: niko_MPC_hyperMagField = magField.plugin as? niko_MPC_hyperMagField ?: return false
+        terrainPlugin = plugin
 
         for (terrain in primaryEntity.containingLocation.terrainCopy) {
             if (terrain.plugin !is MagneticFieldTerrainPlugin) continue
             if (terrain.orbitFocus != primaryEntity) continue
+
+            if (terrain.name != "Magnetic Field") terrainPlugin!!.terrainName = terrain.name
             primaryEntity.containingLocation.removeEntity(terrain)
         }
 
-        terrainPlugin = plugin
         magField.location.set(primaryEntity.location)
         magField.setCircularOrbit(primaryEntity, 0f, 0f, 100f)
+        Global.getSector().listenerManager.addListener(terrainPlugin!!, false)
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperMagneticFieldMemoryId] = terrainPlugin
         return true
     }
 
@@ -102,10 +108,12 @@ class niko_MPC_hyperMagneticField:
     }
 
     override fun delete() {
-        val market = getMarket()
-        val containingLocaiton = market?.containingLocation
+        val market = getMarket() ?: return
+        val containingLocaiton = market.containingLocation ?: return
 
-        containingLocaiton?.removeEntity(terrainPlugin?.entity)
+        containingLocaiton.removeEntity(terrainPlugin?.entity)
+        market.memoryWithoutUpdate[niko_MPC_ids.hyperMagneticFieldMemoryId] = null
+        Global.getSector().listenerManager.removeListener(terrainPlugin)
 
         super.delete()
     }
@@ -119,6 +127,10 @@ class niko_MPC_hyperMagneticField:
 
         val mining = market.getIndustry(Industries.MINING)
         if (mining is Mining) {
+            mining.supply(id, Commodities.ORE, (mining.getSupply(Commodities.ORE).quantity.modifiedInt * -0.5f).roundToInt(), name)
+            mining.supply(id, Commodities.RARE_ORE, (mining.getSupply(Commodities.RARE_ORE).quantity.modifiedInt * -0.5f).roundToInt(), name)
+            mining.getSupply(Commodities.ORE).quantity.modifyMult(id, 0.5f, name)
+            mining.getSupply(Commodities.RARE_ORE).quantity.modifyMult(id, 0.5f, name)
             if (mining.isFunctional) {
                 mining.supply(id, Commodities.METALS, mining.getSupply(Commodities.ORE).quantity.modifiedInt, name)
                 mining.supply(id, Commodities.RARE_METALS, mining.getSupply(Commodities.RARE_ORE).quantity.modifiedInt, name)
@@ -137,6 +149,8 @@ class niko_MPC_hyperMagneticField:
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id)
         val mining = market.getIndustry(Industries.MINING)
         if (mining is Mining) {
+            mining.getSupply(Commodities.RARE_ORE).quantity.unmodify(id)
+            mining.getSupply(Commodities.ORE).quantity.unmodify(id)
             mining.getSupply(Commodities.RARE_METALS).quantity.unmodify(id)
             mining.getSupply(Commodities.METALS).quantity.unmodify(id)
         }
@@ -181,10 +195,10 @@ class niko_MPC_hyperMagneticField:
         )
 
         tooltip.addPara(
-            "Ferrite metals are naturally compressed by the magnetic field, resulting in %s equal to %s",
+            "Ferrite metals are naturally compressed by the magnetic field, resulting in %s",
             10f,
             Misc.getHighlightColor(),
-            "mining producing refined metals and transplutonics", "ore and rare ore production"
+            "half of the ore/rare ore output of mining being converted into metals/transplutonics"
         )
 
     }

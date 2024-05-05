@@ -5,6 +5,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 import data.utilities.niko_MPC_marketUtils.isInhabited
 
 class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
@@ -28,7 +29,8 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
         val id = modId
         for (fleet in containingLocation.fleets) {
             if (fleet.isInHyperspaceTransition) continue
-            if (fleet.faction.getRelationshipLevel(market.faction) >= RepLevel.FRIENDLY) {
+            val reqRep = fleet.getRepLevelForArrayBonus()
+            if (fleet.faction.getRelationshipLevel(market.faction) >= reqRep) {
                 val burnMod = fleet.stats.fleetwideMaxBurnMod.getFlatBonus(id + "_burnBonus")
                 if (burnMod == null || burnMod.value <= sameFactionSpeedBonus) {
                     fleet.stats.addTemporaryModFlat(
@@ -59,7 +61,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
             val intel = HyperspaceTopographyEventIntel.get()
             if (intel != null && intel.isStageActive(HyperspaceTopographyEventIntel.Stage.SLIPSTREAM_DETECTION)) {
                 market.stats.dynamic.getMod(Stats.SLIPSTREAM_REVEAL_RANGE_LY_MOD).modifyFlat(
-                    id, baseSlipstreamDetectionRadius, "${market.name} $name"
+                    id, baseSlipstreamDetectionRadius, name
                 )
             }
         }
@@ -95,7 +97,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
         )
 
         tooltip.addPara(
-            "Friendly fleets in system get %s and %s",
+            "Friendly/Trade fleets in system get %s and %s",
             10f,
             Misc.getHighlightColor(),
             "+$sameFactionSpeedBonus max burn", "+$sameFactionSensorBonus sensor range"

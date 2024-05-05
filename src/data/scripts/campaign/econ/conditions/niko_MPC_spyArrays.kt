@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 import data.utilities.niko_MPC_marketUtils.isInhabited
 
 class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
@@ -24,7 +25,8 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
         val id = modId
         for (fleet in containingLocation.fleets) {
             if (fleet.isInHyperspaceTransition) continue
-            if (fleet.faction.getRelationshipLevel(market.faction) >= RepLevel.FRIENDLY) {
+            val reqRep = fleet.getRepLevelForArrayBonus()
+            if (fleet.faction.getRelationshipLevel(market.faction) >= reqRep) {
                 val profileMod = fleet.stats.detectedRangeMod.getMultBonus(id)
                 if (profileMod == null || profileMod.value >= sameFactionSensorProfileMult) {
                     fleet.stats.addTemporaryModMult(
@@ -75,7 +77,7 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
         )
 
         tooltip.addPara(
-            "Friendly fleets in system get %s",
+            "Friendly/Trade fleets in system get %s",
             10f,
             Misc.getHighlightColor(),
             "${sameFactionSensorProfileMult}x detected-at range"

@@ -52,8 +52,8 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     var hazardBonus: Float = 0.75f
     var volatilesBonus = 3 // its seriously a lot
 
-    var defenseIncrement = 200f
-    var defenseMult = 2f
+    var defenseIncrement = 50f
+    var defenseMult = 1.1f
 
     override fun apply(id: String) {
         super.apply(id)
@@ -80,7 +80,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val appliedTerrain = (terrain != null || entryPoint != null || exitPoint != null)
 
         val notDeserializing = (!marketDeserializing && !containingLocation.isDeserializing() && market.id != "fake_Colonize")
-        if (notDeserializing) {
+        if (Global.getCurrentState() != GameState.TITLE && notDeserializing) {
             if (!appliedTerrain) linkToHyperspace(id)
             /*if (terrain != null) {
                 if (terrain!!.activeCells.all { cell -> cell.all { it == null } }) {
@@ -105,7 +105,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             val intel = HyperspaceTopographyEventIntel.get()
             if (intel != null && intel.isStageActive(HyperspaceTopographyEventIntel.Stage.SLIPSTREAM_DETECTION)) {
                 market.stats.dynamic.getMod(Stats.SLIPSTREAM_REVEAL_RANGE_LY_MOD).modifyFlat(
-                    id, getAdjustedSlipstreamDetectionBonus(), "${market.name} $name"
+                    id, getAdjustedSlipstreamDetectionBonus(), name
                 )
             }
         }
@@ -139,15 +139,17 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
 
     private fun getAdjustedVolatilesBonus(): Int {
-        val market = getMarket() ?: return 0
+        return volatilesBonus
+
+       /* val market = getMarket() ?: return 0
         val primaryEntity = market.primaryEntity
 
         val anchor = 3
         val marketSize = if (market.isInhabited()) market.size else anchor
-        val effectiveSize = ((marketSize + 1) - anchor) * 1.2
+        val effectiveSize = ((marketSize + 1) - anchor) / 2
         val divisor = if (!containedByHyperclouds()) 3 else 1
 
-        return ((volatilesBonus + effectiveSize) / divisor).roundToInt()
+        return ((volatilesBonus + effectiveSize) / divisor)*/
     }
 
     private fun getAdjustedSlipstreamDetectionBonus(): Float {
@@ -174,7 +176,10 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         entryPoint?.relatedPlanet = primaryEntity
         entryPoint?.setStandardWormholeToHyperspaceVisual()
         containingLocation.addEntity(entryPoint)
-        entryPoint?.setCircularOrbit(primaryEntity, 0f, primaryEntity.radius, primaryEntity.radius * 0.2f)
+
+        val orbitDays = (primaryEntity.radius * 0.2f) * MathUtils.getRandomNumberInRange(0.5f, 1.5f)
+
+        entryPoint?.setCircularOrbit(primaryEntity, 0f, primaryEntity.radius, orbitDays)
 
         exitPoint = Global.getFactory().createJumpPoint("MPC_hyperJumpPointExit $id", primaryEntity.name + " Bipartisan Jump Point")
         exitPoint!!.setStandardWormholeToStarOrPlanetVisual(primaryEntity)
@@ -273,15 +278,14 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val baseTimesToRemove = 50
         val widthOfArc = (outerRadius - innerRadius)
         var timesToRemove = (baseTimesToRemove * (widthOfArc)).roundToInt()
-        val tiles = nebulaEditor.tiles
         while(timesToRemove-- > 0) {
             val randXDepth = MathUtils.getRandomNumberInRange(0f, widthOfArc)
             val preOffsetX = if (MathUtils.getRandom().nextFloat() >= 0.5f) randXDepth * -1 else randXDepth
             val randX = preOffsetX + arcSource.x
 
             val randYDepth = MathUtils.getRandomNumberInRange(0f, widthOfArc)
-            val preOffsetY = if (MathUtils.getRandom().nextFloat() >= 0.5f) randXDepth * -1 else randXDepth
-            val randY = preOffsetX + arcSource.y
+            val preOffsetY = if (MathUtils.getRandom().nextFloat() >= 0.5f) randYDepth * -1 else randYDepth
+            val randY = preOffsetY + arcSource.y
 
             nebulaEditor.setTileAt(randX, randY, -1, 0f, false)
         }
@@ -344,7 +348,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         )
 
         tooltip.addPara(
-            "%s mining volatiles production (based on population size)",
+            "%s mining volatiles production",
             10f,
             Misc.getHighlightColor(),
             "+${getAdjustedVolatilesBonus()}"
@@ -371,12 +375,6 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val memory = market.memoryWithoutUpdate ?: return null
         return memory[niko_MPC_ids.hyperspaceLinkedTerrainMemoryId] as? niko_MPC_realspaceHyperspace
     }*/
-
-    fun cacheCells() {
-        if (terrain == null) return
-        niko_MPC_realspaceHyperspace.clearCellsNotNearPlayerNonStatic(terrain!!)
-        terrain!!.cacheCells(getCachedCells())
-    }
 
     override fun delete() {
         super.delete()

@@ -15,7 +15,7 @@ niko_MPC_baseNikoCondition(), hasDeletionScript<niko_MPC_mesonConditionDeletionS
     override var deletionScript: niko_MPC_mesonConditionDeletionScript? = null
 
     var applied = false
-    var plugin: niko_MPC_mesonField? = null
+    //var plugin: niko_MPC_mesonField? = null
 
     val slipstreamDetectionRadius = 2
     val defenseRatingIncrement = 300

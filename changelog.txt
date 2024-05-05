@@ -1,3 +1,47 @@
+3.1.0:
+Four new conditions
+    Hyperspace Bipartisan
+        A rift between realspace and hyperspace
+        Creates a ring of deep hyperspace in the planet orbits path
+            Does its best to predict all possible positions the planet could be at if the orbit is recursive
+            If no orbit, just spawns a ring around the planet
+        Spawns a jump point that tightly orbits around the planets radius
+
+        Significantly increases slipstream detection radius, increasing with pop size
+        Significantly increases defense rating
+        +75% hazard, +50% access
+        +3 volatiles production
+
+        Very very rare
+
+    Hypermagnetic field
+        Spawns a massive magnetic field that storms a lot
+            Good for hiding in hostile systems
+
+        Significantly increases defense rating
+        +50% hazard, -25% access
+        Makes mining convert half its ore/rare ore output into metals/transplutonics
+
+        Very rare
+
+    Pre-Collapse STC Districts
+        +3 slipstream detection radius
+        +100 defense rating
+        +1 max burn and +350 sensor range to all friendly/trade fleets in system
+
+        Uncommon
+
+    Pre-Collapse Spy Arrays
+        +400 defense rating
+        +1 stability
+
+        0.75x sensor profile to all friendly/trade fleets in system
+
+        Uncommon
+
+Bug fixes
+    Overgrown nanoforge icon is now properly sized
+
 3.0.3:
 Removes the niko_MPC_convertObjectsToEnum command, the game should now automatically fix the bug
 

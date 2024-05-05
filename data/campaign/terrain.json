@@ -33,13 +33,14 @@
 		# inside active aurora/magnetic storm
 		"loopTwo":"terrain_magstorm",
 	},
+	#UNUSED
 	#"MPC_mesonField":{
-	#	"plugin":"data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_mesonField",
-	#	"musicSuppression":0,
-	#	# inside field
-	#	"loopOne":"terrain_corona_am",
+		#"plugin":"data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField",
+		#"musicSuppression":0,
+		# inside field
+		#"loopOne":"terrain_corona_am",
 		# inside active aurora/magnetic storm
-	#	"loopTwo":"terrain_corona_am_flare",
+		#"loopTwo":"terrain_corona_am_flare",
 	#}
 }
 
