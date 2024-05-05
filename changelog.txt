@@ -42,6 +42,9 @@ Four new conditions
 Bug fixes
     Overgrown nanoforge icon is now properly sized
 
+Satellites
+
+
 3.0.3:
 Removes the niko_MPC_convertObjectsToEnum command, the game should now automatically fix the bug
 

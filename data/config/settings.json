@@ -12,4 +12,9 @@
 			"niko_MPC_priceUpdate":"graphics/icons/intel/price_update.png",
 		},
 	},
+	
+	"bonusXP":{
+		"niko_MPC_phaseThroughOptionThreshOne":0,
+		"niko_MPC_phaseThroughOptionThreshTwo":0,
+	}
  }

@@ -168,4 +168,14 @@ object niko_MPC_fleetUtils {
         }
         return level
     }
+
+    /// Returns a float from 0 to 1, representing a percentage of phase ships.
+    fun CampaignFleetAPI.getPhaseShipPercent(): Float {
+        var numPhaseShips = 0
+        for (member in fleetData.membersListCopy) { //excludes fighers, hopefully
+            if (member.isPhaseShip) numPhaseShips++
+        }
+
+        return (numMembersFast / numPhaseShips).toFloat()
+    }
 }

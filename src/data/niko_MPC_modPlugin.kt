@@ -45,8 +45,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     companion object {
         val conditionsNotAllowedInCoreWorlds: MutableSet<String> = hashSetOf(
-            overgrownNanoforgeConditionId,
-            "niko_MPC_antiAsteroidSatellites_derelict",
+            //overgrownNanoforgeConditionId, // these two have special handling
+            //"niko_MPC_antiAsteroidSatellites_derelict",
             "niko_MPC_ultraMagneticField",
             "niko_MPC_hyperspaceBipartisan"
         )
@@ -66,12 +66,12 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         addSpecialItemsToItemRepo()
 
         // TODO
-        /*throw java.lang.RuntimeException(
-            "Resize spy arrays and STC and overgrown nanoforge icons so they arent huge when you survey" +
+       /* throw java.lang.RuntimeException(
             "Do some work on magnetic fields so they look better, their inner ring needs to hug the radius" +
             "Balance magfield defense bonus" +
             "Add 3 ways to bypass defense satellites: ECM, Sensor profile, and phase" +
-            "check attribution.txt theres things some of your images need you to do, like use hrefs"
+            "check attribution.txt theres things some of your images need you to do, like use hrefs" +
+            "Rules to note: SetEnabled, SetStoryOption, setTooltip"
         )*/
     }
 
@@ -189,11 +189,12 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } else {
             generatePredefinedSatellites()
         }
-        clearNanoforgesFromCoreWorlds()
-
         clearCoreWorldsOfInappropiateConditions()
 
+        clearNanoforgesFromCoreWorlds()
         clearInappropiateOvergrownFleetSpawners()
+
+        clearSatellitesFromCoreWorlds()
     }
 
     private fun clearCoreWorldsOfInappropiateConditions() {
