@@ -7,10 +7,8 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_debugUtils
-import data.utilities.niko_MPC_fleetUtils.getApproximateECMValue
-import data.utilities.niko_MPC_fleetUtils.getPhaseShipPercent
 
-class niko_MPC_fleetECMCheck: BaseCommandPlugin() {
+class niko_MPC_fleetSensorRangeCheck: BaseCommandPlugin() {
     override fun execute(
         ruleId: String,
         dialog: InteractionDialogAPI,
@@ -28,14 +26,14 @@ class niko_MPC_fleetECMCheck: BaseCommandPlugin() {
         val operator: String = params[1].getString(memoryMap) ?: return false
         val threshold: Float = params[2].getFloat(memoryMap) ?: return false
 
-        val ecmValue = fleet.getApproximateECMValue()
+        val strength = fleet.sensorStrength
 
         when (operator) {
-            "==" -> return (ecmValue == threshold)
-            ">" -> return (ecmValue > threshold)
-            ">=" -> return (ecmValue >= threshold)
-            "<" -> return (ecmValue < threshold)
-            "<=" -> return (ecmValue <= threshold)
+            "==" -> return (strength == threshold)
+            ">" -> return (strength > threshold)
+            ">=" -> return (strength >= threshold)
+            "<" -> return (strength < threshold)
+            "<=" -> return (strength <= threshold)
             else -> {
                 niko_MPC_debugUtils.log.error("niko_MPC_fleetSensorProfileCheck has invalid operator of $operator passed")
                 return false

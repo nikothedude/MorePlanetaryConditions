@@ -11,7 +11,7 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
         if (name == "Magnetic Field") {
-            name = "Ultra-magnetic Field"
+            name = "Ultra-Magnetic Field"
         }
     }
 

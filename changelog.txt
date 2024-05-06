@@ -35,7 +35,7 @@ Four new conditions
         +400 defense rating
         +1 stability
 
-        0.75x sensor profile to all friendly/trade fleets in system
+        0.7x sensor profile to all friendly/trade fleets in system
 
         Uncommon
 
@@ -43,6 +43,26 @@ Bug fixes
     Overgrown nanoforge icon is now properly sized
 
 Satellites
+    2 ways to bypass satellites as things like smuggling were just impossible in places like raesvelg
+
+    Phase Ships
+        Based on the percent of phase ships in your fleet, you have 5 modes
+            Sub 30%-Cant bypass
+            30%+: 3 SP
+            50%+: 2 SP
+            70%+: 1 SP
+            95%+: 0 SP
+
+    ECM
+        Based on the ECM percent of the fleet
+            Yes, the ECM skill works
+            <10%: Cant bypass
+            >10%: 3 SP
+            >=25%: 2 SP
+            >=40%: 1 SP
+
+        Reduces rep with the market owner, massively increases smuggling suspicion, and sends fleets to investigate you
+        Easier to get than phase percent so harsher
 
 
 3.0.3:

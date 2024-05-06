@@ -16,5 +16,11 @@
 	"bonusXP":{
 		"niko_MPC_phaseThroughOptionThreshOne":0,
 		"niko_MPC_phaseThroughOptionThreshTwo":0,
+		"niko_MPC_phaseThroughOptionThreshThree":0,
+		
+		"niko_MPC_ecmOptionModThreshOne":0,
+		"niko_MPC_ecmOptionModThreshTwo":0,
+		"niko_MPC_ecmOptionModThreshThree":0,
+		"niko_MPC_ecmOptionModThreshFour":0,
 	}
  }

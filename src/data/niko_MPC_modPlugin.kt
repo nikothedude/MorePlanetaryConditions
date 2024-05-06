@@ -48,7 +48,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             //overgrownNanoforgeConditionId, // these two have special handling
             //"niko_MPC_antiAsteroidSatellites_derelict",
             "niko_MPC_ultraMagneticField",
-            "niko_MPC_hyperspaceBipartisan"
+            "niko_MPC_hyperspaceBipartisan",
+            "niko_MPC_ftcDistricts",
+            "niko_MPC_spyArrays",
         )
     }
 
@@ -187,14 +189,14 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) {
             niko_MPC_satelliteUtils.obliterateSatellites()
         } else {
+            clearSatellitesFromCoreWorlds()
+
             generatePredefinedSatellites()
         }
         clearCoreWorldsOfInappropiateConditions()
 
         clearNanoforgesFromCoreWorlds()
         clearInappropiateOvergrownFleetSpawners()
-
-        clearSatellitesFromCoreWorlds()
     }
 
     private fun clearCoreWorldsOfInappropiateConditions() {
@@ -205,9 +207,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                 val foundMarket = planet.market ?: continue
                 for (id in conditionsNotAllowedInCoreWorlds) {
                     if (foundMarket.hasCondition(id)) foundMarket.removeCondition(id)
-                }
-                if (foundMarket.hasCondition(overgrownNanoforgeConditionId)) {
-                    foundMarket.removeCondition(overgrownNanoforgeConditionId)
                 }
             }
         }

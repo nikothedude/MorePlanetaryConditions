@@ -11,6 +11,7 @@ import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.impl.campaign.DModManager
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes.*
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
 import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_FleetRequest.FleetType
 import com.fs.starfarer.api.loading.HullModSpecAPI
@@ -171,11 +172,25 @@ object niko_MPC_fleetUtils {
 
     /// Returns a float from 0 to 1, representing a percentage of phase ships.
     fun CampaignFleetAPI.getPhaseShipPercent(): Float {
-        var numPhaseShips = 0
+        var numPhaseShips = 0f
         for (member in fleetData.membersListCopy) { //excludes fighers, hopefully
+            if (member.isMothballed) continue
             if (member.isPhaseShip) numPhaseShips++
         }
+        val numMembers = numMembersFast.toFloat()
+        if (numPhaseShips == 0f || numMembers == 0f) return 0f
 
-        return (numMembersFast / numPhaseShips).toFloat()
+        return (numPhaseShips / numMembers)
+    }
+
+    fun CampaignFleetAPI.getApproximateECMValue(): Float{
+        var ecmValue = 0f
+
+        for (member in fleetData.membersListCopy) {
+            if (member.isMothballed) continue
+            ecmValue += member.stats.dynamic.getValue(Stats.ELECTRONIC_WARFARE_FLAT, 0f)
+        }
+
+        return ecmValue
     }
 }
