@@ -160,6 +160,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                 }
             }
         }*/
+
+        for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
+            listener.onGameLoad()
+        }
     }
 
     override fun beforeGameSave() {

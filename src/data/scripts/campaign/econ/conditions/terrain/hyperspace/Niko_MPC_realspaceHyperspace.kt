@@ -10,6 +10,7 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.abilities.EmergencyBurnAbility
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin.CellStateTracker
 import com.fs.starfarer.api.impl.combat.BattleCreationPluginImpl
 import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
@@ -17,6 +18,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import javafx.scene.control.Cell
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import kotlin.math.pow
@@ -494,6 +497,16 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
             }
         }
     }
+
+    override fun onGameLoad() {
+        niko_MPC_delayedHyperspaceSync(this, ArrayList(savedActiveCells)).start()
+    }
+
+    fun syncCells(newCells: MutableList<CellStateTracker>) {
+        for (curr in newCells) { // WHY THE FUCK DO CELLS GET RESET ON THIS CLASS BUT NOTHING ELSE???????????????
+            activeCells[curr.i][curr.j] = curr
+        }
+    }
 }
 
 class niko_MPC_realspaceHyperspaceBoost(
@@ -590,5 +603,26 @@ class niko_MPC_realspaceHyperspaceBoost(
                 view.windEffectColor.shift(modId, glowColor, durIn, durOut, intensity)
             }
         }
+    }
+}
+
+class niko_MPC_delayedHyperspaceSync(
+    val terrain: niko_MPC_realspaceHyperspace,
+    val savedCells: MutableList<CellStateTracker>
+): niko_MPC_baseNikoScript() {
+    override fun startImpl() {
+        Global.getSector().addScript(this)
+    }
+
+    override fun stopImpl() {
+        Global.getSector().removeScript(this)
+    }
+
+    override fun runWhilePaused(): Boolean = true
+
+    override fun advance(amount: Float) {
+        terrain.syncCells(savedCells)
+
+        delete()
     }
 }

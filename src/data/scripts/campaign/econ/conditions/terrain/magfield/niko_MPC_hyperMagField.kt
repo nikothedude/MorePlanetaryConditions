@@ -73,4 +73,8 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
         return
     }
 
+    override fun onGameLoad() {
+        return
+    }
+
 }
