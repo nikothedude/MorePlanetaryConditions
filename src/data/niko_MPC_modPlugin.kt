@@ -68,13 +68,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         addSpecialItemsToItemRepo()
 
         // TODO
-       /* throw java.lang.RuntimeException(
-            "Do some work on magnetic fields so they look better, their inner ring needs to hug the radius" +
-            "Balance magfield defense bonus" +
-            "Add 3 ways to bypass defense satellites: ECM, Sensor profile, and phase" +
-            "check attribution.txt theres things some of your images need you to do, like use hrefs" +
-            "Rules to note: SetEnabled, SetStoryOption, setTooltip"
-        )*/
+       throw java.lang.RuntimeException(
+            "check attribution.txt theres things some of your images need you to do, like use hrefs"
+        )
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)

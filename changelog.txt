@@ -64,6 +64,8 @@ Satellites
         Reduces rep with the market owner, massively increases smuggling suspicion, and sends fleets to investigate you
         Easier to get than phase percent so harsher
 
+General
+    Conditions made more common, across the board
 
 3.0.3:
 Removes the niko_MPC_convertObjectsToEnum command, the game should now automatically fix the bug

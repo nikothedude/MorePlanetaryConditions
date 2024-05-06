@@ -86,21 +86,21 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
             "%s slipstream detection radius",
             10f,
             Misc.getHighlightColor(),
-            "+$baseSlipstreamDetectionRadius"
+            "+${baseSlipstreamDetectionRadius.toInt()}"
         )
 
         tooltip.addPara(
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+$groundDefenseIncrement"
+            "+${groundDefenseIncrement.toInt()}"
         )
 
         tooltip.addPara(
             "Friendly/Trade fleets in system get %s and %s",
             10f,
             Misc.getHighlightColor(),
-            "+$sameFactionSpeedBonus max burn", "+$sameFactionSensorBonus sensor range"
+            "+${sameFactionSpeedBonus.toInt()} max burn", "+${sameFactionSensorBonus.toInt()} sensor range"
         )
 
     }

@@ -47,7 +47,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
     override var deletionScript: niko_MPC_hyperspaceLinkedDeletionScript? = null
 
-    var slipstreamDetectionBonus: Float = 7f // very very big
+    var slipstreamDetectionBonus: Float = 6f // very very big
     var accessabilityBonus: Float = 0.5f
     var hazardBonus: Float = 0.75f
     var volatilesBonus = 3 // its seriously a lot
@@ -308,14 +308,14 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             "%s slipstream detection radius (based on population size)",
             10f,
             Misc.getHighlightColor(),
-            "+${getAdjustedSlipstreamDetectionBonus()} ly"
+            "+${getAdjustedSlipstreamDetectionBonus().toInt()} ly"
         )
 
         tooltip.addPara(
             "%s accessibility",
             10f,
             Misc.getHighlightColor(),
-            "+${accessabilityBonus*100}%"
+            "+${(accessabilityBonus*100).toInt()}%"
         )
 
         if (!containedByHyperclouds()) {
@@ -330,7 +330,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             "%s hazard rating",
             10f,
             Misc.getHighlightColor(),
-            "+${hazardBonus*100}%"
+            "+${(hazardBonus*100).toInt()}%"
         )
 
         tooltip.addPara(
@@ -344,11 +344,11 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+$defenseIncrement"
+            "+${defenseIncrement.toInt()}"
         )
 
         tooltip.addPara(
-            "%s mining volatiles production",
+            "%s volatiles production (mining(",
             10f,
             Misc.getHighlightColor(),
             "+${getAdjustedVolatilesBonus()}"

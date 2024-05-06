@@ -169,14 +169,14 @@ class niko_MPC_hyperMagneticField:
             "%s hazard rating",
             10f,
             Misc.getHighlightColor(),
-            "+${hazardRatingIncrement*100}%"
+            "+${(hazardRatingIncrement*100).toInt()}%"
         )
 
         tooltip.addPara(
             "%s accessibility",
             10f,
             Misc.getHighlightColor(),
-            "${accessabilityIncrement*100}%"
+            "${(accessabilityIncrement*100).toInt()}%"
         )
 
         tooltip.addPara(
@@ -191,7 +191,7 @@ class niko_MPC_hyperMagneticField:
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+$defenseRatingIncrement"
+            "+${(defenseRatingIncrement.toInt())}"
         )
 
         tooltip.addPara(

@@ -11,7 +11,7 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
 
     val sameFactionSensorProfileMult = 0.7f
     val stabilityIncrement = 1f
-    val groundDefenseIncrement = 400f
+    val groundDefenseIncrement = 200f
 
     override fun advance(amount: Float) {
         super.advance(amount)
@@ -66,14 +66,14 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
             "%s stability",
             10f,
             Misc.getHighlightColor(),
-            "+$stabilityIncrement"
+            "+${stabilityIncrement.toInt()}"
         )
 
         tooltip.addPara(
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+$groundDefenseIncrement"
+            "+${groundDefenseIncrement.toInt()}"
         )
 
         tooltip.addPara(
