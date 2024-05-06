@@ -44,6 +44,7 @@ import org.lazywizard.console.Console
 class niko_MPC_modPlugin : BaseModPlugin() {
 
     companion object {
+        const val modId = "niko_morePlanetaryConditions"
         val conditionsNotAllowedInCoreWorlds: MutableSet<String> = hashSetOf(
             //overgrownNanoforgeConditionId, // these two have special handling
             //"niko_MPC_antiAsteroidSatellites_derelict",
@@ -68,9 +69,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         addSpecialItemsToItemRepo()
 
         // TODO
-       throw java.lang.RuntimeException(
+       /*throw java.lang.RuntimeException(
             "check attribution.txt theres things some of your images need you to do, like use hrefs"
-        )
+        )*/
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)

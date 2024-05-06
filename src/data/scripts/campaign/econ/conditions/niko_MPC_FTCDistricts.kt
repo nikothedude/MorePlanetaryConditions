@@ -10,21 +10,22 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 
 class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
 
-    val sameFactionSpeedBonus = 1f
-    val sameFactionSensorBonus = 350f
+    companion object {
+        val sameFactionSpeedBonus = 1f
+        val sameFactionSensorBonus = 350f
 
-    val baseSlipstreamDetectionRadius = 3f
+        val baseSlipstreamDetectionRadius = 3f
 
-    val groundDefenseIncrement = 100f
+        val groundDefenseIncrement = 100f
+    }
 
     override fun advance(amount: Float) {
         super.advance(amount)
 
         val market = getMarket() ?: return
-        val containingLocation = market.containingLocation ?: return
-
         if (market.isInHyperspace) return
         if (!market.isInhabited()) return
+        val containingLocation = market.containingLocation ?: return
 
         val id = modId
         for (fleet in containingLocation.fleets) {

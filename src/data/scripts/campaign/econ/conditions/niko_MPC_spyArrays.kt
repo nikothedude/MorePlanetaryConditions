@@ -9,18 +9,19 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 
 class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
 
-    val sameFactionSensorProfileMult = 0.7f
-    val stabilityIncrement = 1f
-    val groundDefenseIncrement = 200f
+    companion object {
+        val sameFactionSensorProfileMult = 0.7f
+        val stabilityIncrement = 1f
+        val groundDefenseIncrement = 200f
+    }
 
     override fun advance(amount: Float) {
         super.advance(amount)
 
         val market = getMarket() ?: return
-        val containingLocation = market.containingLocation ?: return
-
         if (market.isInHyperspace) return
         if (!market.isInhabited()) return
+        val containingLocation = market.containingLocation ?: return
 
         val id = modId
         for (fleet in containingLocation.fleets) {

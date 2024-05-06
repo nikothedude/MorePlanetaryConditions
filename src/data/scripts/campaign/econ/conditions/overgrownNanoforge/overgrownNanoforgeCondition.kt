@@ -155,6 +155,7 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
     // the ultimate failsafe in case something goes really wrong
     private fun nukeHandler(originalHandler: overgrownNanoforgeIndustryHandler) {
+        niko_MPC_debugUtils.log.error("nukeHandler called. something has REALLY gone wrong")
         for (junkHandler in market.getOvergrownJunkHandlers()) {
             if (junkHandler.masterHandler == null || junkHandler.masterHandler == originalHandler) {
                 try {

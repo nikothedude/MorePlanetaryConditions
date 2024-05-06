@@ -47,13 +47,15 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
     override var deletionScript: niko_MPC_hyperspaceLinkedDeletionScript? = null
 
-    var slipstreamDetectionBonus: Float = 6f // very very big
-    var accessabilityBonus: Float = 0.5f
-    var hazardBonus: Float = 0.75f
-    var volatilesBonus = 3 // its seriously a lot
+    companion object {
+        var slipstreamDetectionBonus: Float = 6f // very very big
+        var accessabilityBonus: Float = 0.5f
+        var hazardBonus: Float = 0.75f
+        var volatilesBonus = 3 // its seriously a lot
 
-    var defenseIncrement = 50f
-    var defenseMult = 1.1f
+        var defenseIncrement = 50f
+        var defenseMult = 1.1f
+    }
 
     override fun apply(id: String) {
         super.apply(id)
@@ -82,12 +84,6 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         val notDeserializing = (!marketDeserializing && !containingLocation.isDeserializing() && market.id != "fake_Colonize")
         if (Global.getCurrentState() != GameState.TITLE && notDeserializing) {
             if (!appliedTerrain) linkToHyperspace(id)
-            /*if (terrain != null) {
-                if (terrain!!.activeCells.all { cell -> cell.all { it == null } }) {
-                    createArc()
-                    //terrain!!.loadCells(getCachedCells())
-                }
-            }*/
         }
     }
 

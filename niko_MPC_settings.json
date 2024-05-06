@@ -1,31 +1,8 @@
 {
-	#GENERAL CONFIG
-	"showErrorsInGame":true, #if true, whenever a custom error occurs, you will be notified by some text. default: true
-	
-	#CONDITION TOGGLES
-	"enableDefenseSatellites":true, #if false, removes all instances of defense satellite conditions after procgen, has no effect on current games. default: true
-
-	#SATELLITE CONFIG
-	"preventSatelliteTurning":true, #if true, satellites will not turn whatsoever. disabling may modestly improve performance in combat. default: true
-	"discoverSatellitesInBulk":false, #if true, apon discovering a satellite in orbit of an entity, all will be discovered. default: false
-	
-	"satelliteInterferenceDistanceBase":90, #the higher, the further away satellites will interfere in battles from. base, applied before mult. default: 120
-	"satelliteInterferenceDistanceMult":1, #this value will multiply the interferance distance by itself. default: 1
-
-	"maxSatelliteFpBonus":10, #the higher, the more satellites a planet will spawn when influencing a battle. applied before mult. default: 0
-	"maxSatelliteFpBonusMult":1, #multipled onto base to determine amount of battle satellites. default: 1
-	
 	#enter the id of a pre-generated entity and a key word to generate satellites onto it
 	#valid keys: DERELICT
 	"entitiesToAddSatellitesTo": {
 		#"sindria":"DERELICT",
 		"raesvelg":"DERELICT",
 	},
-	
-	#NANOFORGE CONFIG
-	
-	#If a market is above this number of structures, nanoforges will cease to provide benefits or grow. 
-	#I highly advise keeping this as is, as the core of the risk reward system of overgrown nanoforges is asking "how much space am I willing to give it?"
-	#However, if you want, you can increase it.
-	"maxStructuresForNanoforge": 12,
 }

@@ -1,12 +1,15 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
+import data.niko_MPC_modPlugin
+import data.niko_MPC_modPlugin.Companion.modId
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.randomizedSourceBudgets
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
 import dynamictariffs.util.SettingsUtil
 import dynamictariffs.util.SettingsUtil.readSettings
+import lunalib.lunaSettings.LunaSettings
 import org.json.JSONException
 import java.awt.Color
 import java.io.IOException
@@ -68,22 +71,23 @@ object niko_MPC_settings {
     fun loadSettings() {
         niko_MPC_debugUtils.log.debug("reloading settings")
         val configJson = Global.getSettings().loadJSON(niko_MPC_ids.niko_MPC_masterConfig)
-        DEFENSE_SATELLITES_ENABLED = configJson.getBoolean("enableDefenseSatellites")
-        SHOW_ERRORS_IN_GAME = configJson.getBoolean("showErrorsInGame")
-        PREVENT_SATELLITE_TURN = configJson.getBoolean("preventSatelliteTurning")
-        DISCOVER_SATELLITES_IN_BULK = configJson.getBoolean("discoverSatellitesInBulk")
-        SATELLITE_INTERFERENCE_DISTANCE_BASE = configJson.getDouble("satelliteInterferenceDistanceBase").toFloat()
-        SATELLITE_INTERFERENCE_DISTANCE_MULT = configJson.getDouble("satelliteInterferenceDistanceMult").toFloat()
-        SATELLITE_FLEET_FP_BONUS_INCREMENT = configJson.getInt("maxSatelliteFpBonus")
-        SATELLITE_FLEET_FP_BONUS_MULT = configJson.getDouble("maxSatelliteFpBonusMult")
 
-        MAX_STRUCTURES_ALLOWED = configJson.getInt("maxStructuresForNanoforge")
+        SHOW_ERRORS_IN_GAME = LunaSettings.getBoolean(modId,"MPC_showErrorsInGame")!!
+        DEFENSE_SATELLITES_ENABLED = LunaSettings.getBoolean(modId, "MPC_enableDefenseSatellites")!!
+        PREVENT_SATELLITE_TURN = LunaSettings.getBoolean(modId, "MPC_preventSatelliteTurning")!!
+        DISCOVER_SATELLITES_IN_BULK = LunaSettings.getBoolean(modId, "MPC_discoverSatellitesInBulk")!!
+        SATELLITE_INTERFERENCE_DISTANCE_BASE = LunaSettings.getFloat(modId, "MPC_satelliteInterferenceDistanceBase")!!
+        SATELLITE_INTERFERENCE_DISTANCE_MULT = LunaSettings.getFloat(modId, "MPC_satelliteInterferenceDistanceMult")!!
+        SATELLITE_FLEET_FP_BONUS_INCREMENT = LunaSettings.getInt(modId, "MPC_maxSatelliteFpBonus")!!
+        SATELLITE_FLEET_FP_BONUS_MULT = LunaSettings.getFloat(modId, "MPC_maxSatelliteFpBonusMult")!!
+
+        MAX_STRUCTURES_ALLOWED = LunaSettings.getInt(modId, "MPC_maxStructuresForNanoforge")!!
     }
 
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
     fun generatePredefinedSatellites() {
-        niko_MPC_debugUtils.log.debug("generating pre-defined satellites")
+        niko_MPC_debugUtils.log.info("generating pre-defined satellites")
         val configJson = Global.getSettings().loadJSON(niko_MPC_ids.niko_MPC_masterConfig)
         val objectOfEntityToHandler = configJson.getJSONObject("entitiesToAddSatellitesTo")
         val iterator = objectOfEntityToHandler.keys()
@@ -138,7 +142,7 @@ object niko_MPC_settings {
     @JvmField
     var SATELLITE_FLEET_FP_BONUS_INCREMENT = 0
     @JvmField
-    var SATELLITE_FLEET_FP_BONUS_MULT = 0.0
+    var SATELLITE_FLEET_FP_BONUS_MULT = 0f
 
     var USE_SATELLITE_INTERACTION_PLUGIN: Boolean = true
 

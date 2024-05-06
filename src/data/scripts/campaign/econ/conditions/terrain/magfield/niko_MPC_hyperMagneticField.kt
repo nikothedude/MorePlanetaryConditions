@@ -22,6 +22,7 @@ import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings
+import org.lazywizard.lazylib.MathUtils
 import kotlin.math.roundToInt
 
 class niko_MPC_hyperMagneticField:
@@ -29,12 +30,14 @@ class niko_MPC_hyperMagneticField:
 
     override var deletionScript: niko_MPC_magfieldConditionDeletionScript? = null
 
-    var hazardRatingIncrement = 0.5f
-    var accessabilityIncrement = -0.25f
-    var defenseRatingIncrement = 500f
-    var defenseRatingMult = 1.2f
+    companion object {
+        var hazardRatingIncrement = 0.5f
+        var accessabilityIncrement = -0.25f
+        var defenseRatingIncrement = 500f
+        var defenseRatingMult = 1.2f
 
-    var terrainPlugin: niko_MPC_hyperMagField? = null
+        var terrainPlugin: niko_MPC_hyperMagField? = null
+    }
 
     override fun apply(id: String) {
         super.apply(id)
@@ -64,7 +67,7 @@ class niko_MPC_hyperMagneticField:
 
         val middleRadius = primaryEntity.radius + 400f
         val innerRadius = 80f
-        val outerRadius = 1600f
+        val outerRadius = 1600f * MathUtils.getRandomNumberInRange(0.8f, 1.2f)
         val bandwidth = outerRadius
 
         val auroraProbability = 0.25f + 0.75f * StarSystemGenerator.random.nextFloat()
@@ -195,7 +198,7 @@ class niko_MPC_hyperMagneticField:
         )
 
         tooltip.addPara(
-            "Ferrite metals are naturally compressed by the magnetic field, resulting in %s",
+            "Ferromagnetic metals are naturally compressed by the magnetic field, resulting in %s",
             10f,
             Misc.getHighlightColor(),
             "half of the ore/rare ore output of mining being converted into metals/transplutonics"

@@ -26,11 +26,14 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
         suppressedConditions += Conditions.METEOR_IMPACTS //these things just fuck those things up
         industryIds += suppressorId
     }
-    var baseAccessibilityIncrement = -0.30f //also placeholder
-    var baseGroundDefenseIncrement = 400f
-    var baseStabilityIncrement = 2f
 
-    var baseGroundDefenseMult = 1.5f
+    companion object {
+        var baseAccessibilityIncrement = -0.30f //also placeholder
+        var baseGroundDefenseIncrement = 400f
+        var baseStabilityIncrement = 2f
+
+        var baseGroundDefenseMult = 1.5f
+    }
 
 
     override fun handleConditionAttributes(id: String, ourMarket: MarketAPI) {
