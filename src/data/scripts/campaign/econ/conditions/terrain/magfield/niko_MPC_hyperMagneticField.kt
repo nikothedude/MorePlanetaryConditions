@@ -36,8 +36,8 @@ class niko_MPC_hyperMagneticField:
         var defenseRatingIncrement = 500f
         var defenseRatingMult = 1.2f
 
-        var terrainPlugin: niko_MPC_hyperMagField? = null
     }
+    var terrainPlugin: niko_MPC_hyperMagField? = null
 
     override fun apply(id: String) {
         super.apply(id)
