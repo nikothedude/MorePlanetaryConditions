@@ -1,9 +1,7 @@
 package data.scripts.campaign.econ.conditions.defenseSatellite
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -11,10 +9,8 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
-import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_marketUtils.hasCustomControls
-import data.utilities.niko_MPC_scriptUtils.addScriptsAtValidTime
 
 
 class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBase() {
@@ -28,23 +24,28 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
     }
 
     companion object {
-        var baseAccessibilityIncrement = -0.30f //also placeholder
-        var baseGroundDefenseIncrement = 400f
-        var baseStabilityIncrement = 2f
+        var baseAccessibilityIncrementObj = -0.30f //also placeholder
+        var baseGroundDefenseIncrementObj = 400f
+        var baseStabilityIncrementObj = 2f
 
-        var baseGroundDefenseMult = 1.5f
+        var baseGroundDefenseMultObj = 1.5f
     }
 
+    // TODO: COMPATABILITY: these fields are only here so games load. remove post 3.1.0
+    var baseAccessibilityIncrement = -0.30f
+    var baseGroundDefenseIncrement = 400f
+    var baseStabilityIncrement = 2f
+    var baseGroundDefenseMult = 1.5f
 
     override fun handleConditionAttributes(id: String, ourMarket: MarketAPI) {
         for (suppressedCondition in suppressedConditions) {
             market.suppressCondition(suppressedCondition)
         }
 
-        market.accessibilityMod.modifyFlat(id, baseAccessibilityIncrement, name)
-        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, baseGroundDefenseMult, name)
-        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, baseGroundDefenseIncrement, name)
-        market.stability.modifyFlat(id, baseStabilityIncrement, name)
+        market.accessibilityMod.modifyFlat(id, baseAccessibilityIncrementObj, name)
+        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, baseGroundDefenseMultObj, name)
+        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, baseGroundDefenseIncrementObj, name)
+        market.stability.modifyFlat(id, baseStabilityIncrementObj, name)
     }
 
     override fun unapplyConditionAttributes(id: String, ourMarket: MarketAPI) {
@@ -71,10 +72,10 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "%s stability",
             10f,
             Misc.getHighlightColor(),
-            "+${baseStabilityIncrement.toInt()}"
+            "+${baseStabilityIncrementObj.toInt()}"
         )
 
-        val convertedAccessibilityBonus = (baseAccessibilityIncrement * 100).toInt() //times 100 to convert out of decimal
+        val convertedAccessibilityBonus = (baseAccessibilityIncrementObj * 100).toInt() //times 100 to convert out of decimal
 
         tooltip.addPara(
             "%s accessibility",
@@ -87,14 +88,14 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+${baseGroundDefenseIncrement.toInt()}"
+            "+${baseGroundDefenseIncrementObj.toInt()}"
         )
 
         tooltip.addPara(
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            ("+${baseGroundDefenseMult}x")
+            ("+${baseGroundDefenseMultObj}x")
         )
 
         tooltip.addPara(

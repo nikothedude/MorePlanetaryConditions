@@ -1,4 +1,6 @@
 3.1.0:
+PROBABLY SAVE COMPATABLE?
+
 Four new conditions
     Hyperspace Bipartisan
         A rift between realspace and hyperspace
@@ -32,7 +34,7 @@ Four new conditions
         Uncommon
 
     Pre-Collapse Spy Arrays
-        +400 defense rating
+        +200 defense rating
         +1 stability
 
         0.7x sensor profile to all friendly/trade fleets in system
@@ -64,8 +66,13 @@ Satellites
         Reduces rep with the market owner, massively increases smuggling suspicion, and sends fleets to investigate you
         Easier to get than phase percent so harsher
 
+Settings
+    Most settings converted to lunasettings
+    Extra overgrown nanoforge options added
+
 General
     Conditions made more common, across the board
+    Put a .kra file in a compressed archive, massively reducing the mod's filesize
 
 3.0.3:
 Removes the niko_MPC_convertObjectsToEnum command, the game should now automatically fix the bug

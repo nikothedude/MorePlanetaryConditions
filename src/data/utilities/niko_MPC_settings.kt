@@ -69,9 +69,7 @@ object niko_MPC_settings {
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
     fun loadSettings() {
-        niko_MPC_debugUtils.log.debug("reloading settings")
-        val configJson = Global.getSettings().loadJSON(niko_MPC_ids.niko_MPC_masterConfig)
-
+        niko_MPC_debugUtils.log.info("MPC reloading settings")
         SHOW_ERRORS_IN_GAME = LunaSettings.getBoolean(modId,"MPC_showErrorsInGame")!!
         DEFENSE_SATELLITES_ENABLED = LunaSettings.getBoolean(modId, "MPC_enableDefenseSatellites")!!
         PREVENT_SATELLITE_TURN = LunaSettings.getBoolean(modId, "MPC_preventSatelliteTurning")!!
@@ -82,6 +80,11 @@ object niko_MPC_settings {
         SATELLITE_FLEET_FP_BONUS_MULT = LunaSettings.getFloat(modId, "MPC_maxSatelliteFpBonusMult")!!
 
         MAX_STRUCTURES_ALLOWED = LunaSettings.getInt(modId, "MPC_maxStructuresForNanoforge")!!
+        OVERGROWN_NANOFORGE_IS_INDUSTRY = LunaSettings.getBoolean(modId, "MPC_nanoforgeIsIndustry")!!
+        OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MIN = LunaSettings.getFloat(modId, "MPC_nanoforgeBudgetMultMin")!!
+        OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX = LunaSettings.getFloat(modId, "MPC_nanoforgeBudgetMultMax")!!
+        OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMinTimeBetweenSpreads")!!
+        OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMaxTimeBetweenSpreads")!!
     }
 
     @JvmStatic
@@ -148,12 +151,9 @@ object niko_MPC_settings {
 
     var OVERGROWN_NANOFORGE_IS_INDUSTRY = false
 
-    var OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON = true
-    var OVERGROWN_NANOFORGE_INTERACTION_DISTANCE = 1000f //todo: adjust
+    //var OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON = true
+    //var OVERGROWN_NANOFORGE_INTERACTION_DISTANCE = 1000f //todo: adjust
     var OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES = true
-
-    var OVERGROWN_NANOFORGE_MIN_SPREADING_DAYS = 60f
-    var OVERGROWN_NANOFORGE_MAX_SPREADING_DAYS = 90f
 
     var HARD_LIMIT_FOR_DEFENSE = 500f
     var ANCHOR_POINT_FOR_DEFENSE = 2000f

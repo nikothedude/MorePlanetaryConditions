@@ -5,7 +5,7 @@
     "utility":"false",
 	"version":"3.1.0",
 	"description":"Adds a bunch of misc. planetary conditions to the game, many, if not most, with custom scripted effects that go beyond what most other conditions, vanilla or modded, do.",
-    "gameVersion": "0.97a",
+    "gameVersion": "0.97a-RC11",
   	"jars":["jars/niko_morePlanetaryConditions.jar"],
   	"modPlugin":"data.niko_MPC_modPlugin",
 	  	"dependencies": [
@@ -17,7 +17,7 @@
 		{
 			"id": "lunalib",
 			"name": "LunaLib",
-			"version": "1.7.7"
+			"version": "1.8.4"
 		},
     ],
 }
