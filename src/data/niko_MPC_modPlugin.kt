@@ -70,7 +70,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         // TODO
        /*throw java.lang.RuntimeException(
-            "check attribution.txt theres things some of your images need you to do, like use hrefs"
+            "IDEAS FOR NEXT CONDITIONS: +accessability for all markets in-system EXCEPT this one?"
         )*/
     }
 
