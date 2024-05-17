@@ -344,7 +344,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         )
 
         tooltip.addPara(
-            "%s volatiles production (mining(",
+            "%s volatiles production (mining)",
             10f,
             Misc.getHighlightColor(),
             "+${getAdjustedVolatilesBonus()}"

@@ -7,6 +7,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.ba
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.overgrownNanoforgeEffectDescData
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectCategories
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.isValidTargetForOvergrownHandler
@@ -209,7 +210,10 @@ abstract class overgrownNanoforgeHandler(
 
     protected open fun createStructure() {
         val newStructureId = getNewStructureId()
-        if (newStructureId == null) return
+        if (Global.getSettings().getIndustrySpec(newStructureId) == null) {
+            niko_MPC_debugUtils.displayError("invalid industry id ($newStructureId) during nanoforge handler createStructure, aborting")
+            return // whatever happens after this isnt exactly defined behavior, but its better than a crash
+        }
         market.addIndustry(newStructureId)
         currentStructureId = newStructureId
     }

@@ -1,3 +1,8 @@
+3.1.1:
+SAVE COMPATABLE
+
+Junk handlers no longer try to exceed the maximum amount of junk structures defined in industries (Caused a crash before)
+
 3.1.0:
 PROBABLY SAVE COMPATABLE?
 

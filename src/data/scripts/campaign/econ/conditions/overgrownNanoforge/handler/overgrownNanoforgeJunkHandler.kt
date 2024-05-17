@@ -144,7 +144,7 @@ class overgrownNanoforgeJunkHandler(
     }
 
     companion object {
-        val maxStructuresPossible: Int = niko_MPC_settings.MAX_STRUCTURES_ALLOWED
-        val baseStructureId: String = overgrownNanoforgeJunkStructureId
+        const val maxStructuresPossible: Int = niko_MPC_settings.MAX_JUNK_STRUCTURES_ALLOWED
+        const val baseStructureId: String = overgrownNanoforgeJunkStructureId
     }
 }
