@@ -7,6 +7,8 @@ object niko_MPC_ids {
     const val hyperspaceLinkedJumpPointExitMemoryId = "\$hyperspaceLinkedJumpPointExitMemoryId"
     const val hyperspaceLinkedSavedCellsMemoryId = "\$hyperspaceLinkedSavedCellsId"
 
+    const val mesonFieldGlobalMemoryId = "\$niko_MPC_mesonFieldGlobalMemoryId"
+
     const val overgrownNanoforgeConditionId = "niko_MPC_overgrownNanoforgeCondition"
     const val overgrownNanoforgeHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeHandler"
     const val overgrownNanoforgeJunkHandlerMemoryId = "\$niko_MPC_overgrownNanoforgeJunkHandler_"

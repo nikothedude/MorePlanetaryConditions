@@ -1,4 +1,4 @@
-/*package data.scripts.campaign.econ.conditions.terrain.meson
+package data.scripts.campaign.econ.conditions.terrain.meson
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignEngineLayers
@@ -7,11 +7,12 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.TerrainAIFlags
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.graphics.SpriteAPI
-import com.fs.starfarer.api.impl.campaign.ids.Stats
-import com.fs.starfarer.api.impl.campaign.terrain.*
+import com.fs.starfarer.api.impl.campaign.terrain.AuroraRenderer
 import com.fs.starfarer.api.impl.campaign.terrain.AuroraRenderer.AuroraRendererDelegate
+import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain
+import com.fs.starfarer.api.impl.campaign.terrain.FlareManager
 import com.fs.starfarer.api.impl.campaign.terrain.FlareManager.FlareManagerDelegate
-import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin.MagneticFieldParams
+import com.fs.starfarer.api.impl.campaign.terrain.RangeBlockerUtil
 import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -28,7 +29,7 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         relatedEntity: SectorEntityToken,
         var innerRadius: Float,
         var outerRadius: Float,
-        var baseColor: Color = Misc.getHighlightColor(),
+        var baseColor: Color = MESON_COLOR,
         var auroraColorRange: List<Color> = arrayListOf(Misc.getNegativeHighlightColor()),
 
         ): RingParams(bandWidthInEngine, middleRadius, relatedEntity, null) {
@@ -59,10 +60,59 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         val STORM_DETECTED_MULT = 0.5f
         val STORM_SENSOR_MULT = 3f
 
-        val SENSOR_INCREASE_MULT = 3.5f
-        val SENSOR_PROFILE_MULT = 1.5f
+        val MESON_COLOR = Color(237, 246, 5, 73)
 
-        val MESON_COLOR = Color(43, 239, 8, 45)
+        var auroraColors = arrayOf(
+            arrayOf(
+                Color(43, 239, 8, 45),
+                Color(180, 110, 210),
+                Color(150, 140, 190),
+                Color(140, 190, 210),
+                Color(90, 200, 170),
+                Color(65, 230, 160),
+                Color(20, 220, 70)
+            ), arrayOf(
+                Color(50, 20, 110, 130),
+                Color(150, 30, 120, 150),
+                Color(200, 50, 130, 190),
+                Color(250, 70, 150, 240),
+                Color(200, 80, 130, 255),
+                Color(75, 0, 160),
+                Color(127, 0, 255)
+            ), arrayOf(
+                Color(90, 180, 140),
+                Color(130, 145, 190),
+                Color(165, 110, 225),
+                Color(95, 55, 240),
+                Color(45, 0, 250),
+                Color(20, 0, 240),
+                Color(10, 0, 150)
+            ), arrayOf(
+                Color(90, 180, 40),
+                Color(130, 145, 90),
+                Color(165, 110, 145),
+                Color(95, 55, 160),
+                Color(45, 0, 130),
+                Color(20, 0, 130),
+                Color(10, 0, 150)
+            ), arrayOf(
+                Color(50, 20, 110, 130),
+                Color(150, 30, 120, 150),
+                Color(200, 50, 130, 190),
+                Color(250, 70, 150, 240),
+                Color(200, 80, 130, 255),
+                Color(75, 0, 160),
+                Color(127, 0, 255)
+            ), arrayOf(
+                Color(55, 60, 140),
+                Color(65, 85, 155),
+                Color(175, 105, 165),
+                Color(90, 130, 180),
+                Color(105, 150, 190),
+                Color(120, 175, 205),
+                Color(135, 200, 220)
+            )
+        )
     }
 
     //	public static float BURN_MULT = 0.5f;
@@ -102,8 +152,11 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         }
     }
 
-    override fun getNameForTooltip(): String? {
-        return "Meson Field"
+    override fun getNameForTooltip(): String {
+        return if (flareManager!!.isInActiveFlareArc(Global.getSector().playerFleet)) {
+            "Meson Storm"
+        }
+        else super.getNameForTooltip()
     }
 
     fun writeReplace(): Any {
@@ -489,4 +542,4 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     override fun getAuroraBlocker(): RangeBlockerUtil? {
         return null
     }
-}*/
+}

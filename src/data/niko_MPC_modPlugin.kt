@@ -22,11 +22,13 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_hyperspaceLinked
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
 import data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_hyperMagneticField
+import data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
+import data.utilities.niko_MPC_ids.mesonFieldGlobalMemoryId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
@@ -163,6 +165,14 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
     }
 
+    override fun onNewGame() { // happens early enough that we can plug a terraingenplugin in
+        super.onNewGame()
+    }
+
+    override fun onNewGameAfterProcGen() {
+        super.onNewGameAfterProcGen()
+    }
+
     override fun beforeGameSave() {
         super.beforeGameSave()
 
@@ -198,6 +208,29 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         clearNanoforgesFromCoreWorlds()
         clearInappropiateOvergrownFleetSpawners()
+
+        //doSpecialProcgen(true)
+    }
+
+    fun doSpecialProcgen(checkExisting: Boolean = false) {
+        generateMesonFields(checkExisting)
+    }
+
+    fun generateMesonFields(checkExisting: Boolean = false) { // doing this since i want to start moving away from natural procgen
+      /*  if (checkExisting && getMesonFields().isNotEmpty()) return
+
+        for (system in Global.getSector().starSystems) {
+            if (!system.isProcgen) return
+            for (planet in system.planets) {
+                if (planet.isStar)
+            }
+        }*/
+    }
+
+    private fun getMesonFields(): MutableSet<niko_MPC_mesonField> {
+        val memory = Global.getSector().memoryWithoutUpdate
+        if (memory[mesonFieldGlobalMemoryId] !is MutableSet<*>) memory[mesonFieldGlobalMemoryId] = HashSet<niko_MPC_mesonField>()
+        return memory[mesonFieldGlobalMemoryId] as MutableSet<niko_MPC_mesonField>
     }
 
     private fun clearCoreWorldsOfInappropiateConditions() {

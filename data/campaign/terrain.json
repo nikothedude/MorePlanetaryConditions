@@ -5,6 +5,11 @@
 	#"niko_MPC_defenseSatelliteBarrage":{
 	#	"plugin":"data.scripts.campaign.terrain.satelliteBarrage.niko_MPC_defenseSatelliteBarrageTerrainPlugin",
 	#},
+	
+	#
+	# normal terrain
+	#
+	
 	"MPC_realspaceHyperspace":{
 		"plugin":"data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace",
 		"musicSuppression":1,
@@ -33,14 +38,13 @@
 		# inside active aurora/magnetic storm
 		"loopTwo":"terrain_magstorm",
 	},
-	#UNUSED
-	#"MPC_mesonField":{
-		#"plugin":"data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField",
-		#"musicSuppression":0,
+	"MPC_mesonField":{
+		"plugin":"data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField",
+		"musicSuppression":0,
 		# inside field
-		#"loopOne":"terrain_corona_am",
+		"loopOne":"terrain_corona_am",
 		# inside active aurora/magnetic storm
-		#"loopTwo":"terrain_corona_am_flare",
-	#}
+		"loopTwo":"terrain_corona_am_flare",
+	}
 }
 

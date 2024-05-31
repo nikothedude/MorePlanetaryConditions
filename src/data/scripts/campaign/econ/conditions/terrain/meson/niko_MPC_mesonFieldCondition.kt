@@ -17,9 +17,10 @@ niko_MPC_baseNikoCondition(), hasDeletionScript<niko_MPC_mesonConditionDeletionS
     var applied = false
     //var plugin: niko_MPC_mesonField? = null
 
-    val slipstreamDetectionRadius = 2
-    val defenseRatingIncrement = 300
-
+    companion object {
+        val slipstreamDetectionRadius = 2
+        val defenseRatingIncrement = 300
+    }
     override fun apply(id: String) {
         super.apply(id)
 

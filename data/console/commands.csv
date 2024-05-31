@@ -2,3 +2,4 @@ command,class,tags,syntax,help
 FindPlanetsWithConditionId,data.console.commands.niko_MPC_findPlanetsWithCondition,"campaign, planets, conditions",FindPlanetsWithConditionId (conditionId),Returns a list of planets with the given planetary condition and their location.
 niko_MPC_loadSettings,data.console.commands.niko_MPC_loadSettings,"debug, settings",niko_MPC_loadSettings,Forces a reload of the MPC settings .json.
 niko_MPC_fillThingsWithNanoforges,data.console.commands.niko_MPC_fillThingsWithNanoforges,debug,niko_MPC_fillThingsWithNanoforges,Spawns 3 random overgrown nanoforges.
+niko_MPC_genericCommand,data.console.commands.niko_MPC_genericCommand,debug,niko_MPC_genericTest ...,Depends on what niko feels like
