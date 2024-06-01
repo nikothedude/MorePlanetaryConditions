@@ -1,6 +1,8 @@
 package data.utilities
 
 object niko_MPC_ids {
+    const val hyperspaceLinkedExitJumppoints = "\$niko_MPC_hyperspaceLinkedExitJumppoints" // used for scanning in hyperspace
+    const val hyperspaceLinkedJumpPointDesignationId = "\$niko_MPC_hyperspaceLinkedJumpPoint"
     const val hyperMagneticFieldMemoryId = "\$niko_MPC_hyperMagneticFieldMemoryId"
     const val hyperspaceLinkedTerrainMemoryId = "\$niko_MPC_hyperspaceLinkedTerrain"
     const val hyperspaceLinkedJumpPointEntryMemoryId = "\$niko_MPC_hyperspaceLinkedJumpPointEntry"

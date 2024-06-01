@@ -18,7 +18,6 @@ import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEv
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin.CellStateTracker
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
@@ -26,13 +25,12 @@ import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.scripts.everyFrames.niko_MPC_delayedEntityRemovalScript
 import data.scripts.everyFrames.niko_MPC_jumpPointStaplingScript
+import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
-import data.utilities.niko_MPC_memoryUtils
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_miscUtils.setArc
-import javafx.scene.control.Cell
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.MathUtils.getDistance
 import org.lwjgl.util.vector.Vector2f
@@ -48,7 +46,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     override var deletionScript: niko_MPC_hyperspaceLinkedDeletionScript? = null
 
     companion object {
-        var slipstreamDetectionBonus: Float = 6f // very very big
+        var slipstreamDetectionBonus: Float = 7f // very very big
         var accessabilityBonus: Float = 0.5f
         var hazardBonus: Float = 0.75f
         var volatilesBonus = 3 // its seriously a lot
@@ -149,13 +147,14 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     }
 
     private fun getAdjustedSlipstreamDetectionBonus(): Float {
-        val market = getMarket() ?: return 0f
+        /*val market = getMarket() ?: return 0f
 
         val anchor = 3
         val marketSize = if (market.isInhabited()) market.size else anchor
         val effectiveSize = ((marketSize + 1) - anchor)
 
-        return ((slipstreamDetectionBonus * effectiveSize))
+        return ((slipstreamDetectionBonus * effectiveSize))*/
+        return (slipstreamDetectionBonus)
     }
 
     private fun linkToHyperspace(id: String) {
@@ -182,12 +181,22 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         Global.getSector().hyperspace.addEntity(exitPoint)
         exitPoint?.location?.set(entryPoint!!.getApproximateHyperspaceLoc())
         exitPoint?.addScript(niko_MPC_jumpPointStaplingScript(toMove = exitPoint!!, target = entryPoint!!))
+        if (exitPoint?.isInHyperspace == false) {
+            displayError("for some reason, a hyperspace linked exit jump point was spawned outside of hyperspace")
+        }
 
         val fromSystemToHyper = JumpDestination(exitPoint, "hyperspace")
         val fromHyperToSystem = JumpDestination(entryPoint, primaryEntity.name + " Bipartisan Jump Point")
 
         entryPoint?.addDestination(fromSystemToHyper)
         exitPoint?.addDestination(fromHyperToSystem)
+        entryPoint?.memoryWithoutUpdate?.set(niko_MPC_ids.hyperspaceLinkedJumpPointDesignationId, true)
+        exitPoint?.memoryWithoutUpdate?.set(niko_MPC_ids.hyperspaceLinkedJumpPointDesignationId, true)
+
+        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedExitJumppoints] !is MutableSet<*>) {
+            Global.getSector().memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedExitJumppoints] = HashSet<JumpPointAPI>()
+        }
+        (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedExitJumppoints] as MutableSet<JumpPointAPI>) += exitPoint!!
 
         market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = entryPoint
         market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = exitPoint
@@ -301,7 +310,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         if (tooltip == null) return
 
         tooltip.addPara(
-            "%s slipstream detection radius (based on population size)",
+            "%s slipstream detection radius",
             10f,
             Misc.getHighlightColor(),
             "+${getAdjustedSlipstreamDetectionBonus().toInt()} ly"
@@ -397,6 +406,8 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointEntryMemoryId] = null
         exitPoint?.let { niko_MPC_delayedEntityRemovalScript(it, 30f).start() }
         market.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointExitMemoryId] = null
+        val jumpPointList: MutableSet<JumpPointAPI>? = (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedExitJumppoints] as? MutableSet<JumpPointAPI>)
+        if (exitPoint != null && jumpPointList != null) jumpPointList -= exitPoint!!
 
         Global.getSector().listenerManager.removeListener(terrain)
         terrain?.entity?.containingLocation?.removeEntity(terrain?.entity)

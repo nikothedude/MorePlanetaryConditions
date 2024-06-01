@@ -8,8 +8,8 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.*
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetEffect
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_marketUtils.getMaxIndustries
@@ -24,8 +24,6 @@ import data.utilities.niko_MPC_settings.HARD_LIMIT_FOR_DEFENSE
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES
 import org.lazywizard.lazylib.MathUtils
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
@@ -199,7 +197,7 @@ enum class overgrownNanoforgeEffectPrototypes(
         override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
             val weight = 30f
             val market = growth.market
-            val groundDefense = market.stats.dynamic.getStat(Stats.GROUND_DEFENSES_MOD).modifiedValue
+            val groundDefense = market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).computeEffective(0f)
             val hardLimit: Float = HARD_LIMIT_FOR_DEFENSE //if we are at this or below, we will never ever be picked
             val divisor: Float = (ANCHOR_POINT_FOR_DEFENSE/(groundDefense-hardLimit)).coerceAtLeast(0f)
             var mult = ((1f/divisor).ensureIsJsonValidFloat()).toFloat()
@@ -494,13 +492,13 @@ enum class overgrownNanoforgeEffectPrototypes(
             val scoredWrappedPrototypes = randomlyDistributeNumberAcrossEntries(
                 wrappedPrototypes,
                 abs(budget),
-                { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
+                { budget: Float, remainingRuns: Int, entry: prototypeHolder ->
                     entry.prototype.getMinimumCost(
                         handler,
                         !negative
                     ) ?: 0f
                 },
-                { budget: Float, remainingRuns: Int, entry: prototypeHolder, ->
+                { budget: Float, remainingRuns: Int, entry: prototypeHolder ->
                     (entry.prototype.getMaximumCost(handler, !negative))?.coerceAtMost(budget) ?: budget
                 },
             )

@@ -1,3 +1,39 @@
+3.2.0:
+PROBABLY SAVE COMPATABLE (IF THIS IS RELEASED WITHOUT THIS MESSAGE BEING CHANGED CRUSIFY ME)
+
+New terrain: Meson field
+    Magfield-like: Same texture, has storms, is a ring
+    Colored piss yellow
+    Has a wider orbit than magfields so they dont overlap
+
+    Spawns randomly via procgen
+
+    The normal meson field significantly increases the sensor profile of any fleets inside it
+    Meson storms are small, long-lasting, and have a fun little effect:
+    Instead of increasing sensor profile, they decrease it and massively increase sensor strength
+        Risk reward system: You find one in a remnant system and try to get into the storm to sensor burst and see everything around you
+
+All terrain can now be scanned for hyperspace topography
+    Hyperspace bipartisan
+        Scan the jump points
+    Ultramagnetic field
+    Meson field
+
+New command: niko_MPC_findTerrainWithId
+FindPlanetsWithCondition changed to niko_MPC_findPlanetsWithCondition
+
+Hyperspace Bipartisan
+    Slipstream detection radius no longer scales on pop size, is now a flat 7 ly
+
+STC districts
+    Spawn rate reduced
+
+Spy arrays
+    Spawn rate reduced
+
+Overgrown nanoforge
+    Adjust defense effect should now generate
+
 3.1.1:
 SAVE COMPATABLE
 

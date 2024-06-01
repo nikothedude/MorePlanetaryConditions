@@ -16,6 +16,8 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    var MCTE_loaded: Boolean = false
+
     const val OVERGROWN_NANOFORGE_INDUSTRY_NAME = "Overgrown Nanoforge"
     const val OVERGROWN_NANOFORGE_JUNK_NAME = "Nanoforge Growth"
 
@@ -156,7 +158,7 @@ object niko_MPC_settings {
     var OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES = true
 
     var HARD_LIMIT_FOR_DEFENSE = 500f
-    var ANCHOR_POINT_FOR_DEFENSE = 2000f
+    var ANCHOR_POINT_FOR_DEFENSE = 1200f
 
     var OVERGROWN_NANOFORGE_ALTER_SUPPLY_EFFECT_MIN_COMMODITY_TYPES = 1
 

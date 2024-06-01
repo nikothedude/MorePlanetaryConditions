@@ -39,7 +39,7 @@
 		"loopTwo":"terrain_magstorm",
 	},
 	"MPC_mesonField":{
-		"plugin":"data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField",
+		"plugin":"data.scripts.campaign.terrain.niko_MPC_mesonField",
 		"musicSuppression":0,
 		# inside field
 		"loopOne":"terrain_corona_am",

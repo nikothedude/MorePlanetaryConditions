@@ -4,25 +4,19 @@ import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
-import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.thoughtworks.xstream.XStream
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
-import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
-import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
-import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_hyperspaceLinked
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
-import data.scripts.campaign.econ.conditions.terrain.magfield.niko_MPC_hyperMagneticField
-import data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonField
+import data.scripts.campaign.terrain.niko_MPC_mesonField
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -35,13 +29,11 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
-import data.utilities.niko_MPC_marketUtils.isInhabited
-import data.utilities.niko_MPC_marketUtils.purgeOvergrownNanoforgeBuildings
-import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
-import org.lazywizard.console.Console
+import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
+import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 
 class niko_MPC_modPlugin : BaseModPlugin() {
 
@@ -69,11 +61,16 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
         addSpecialItemsToItemRepo()
+        StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
 
         // TODO
        /*throw java.lang.RuntimeException(
-            "IDEAS FOR NEXT CONDITIONS: +accessability for all markets in-system EXCEPT this one?"
+            "IDEAS FOR NEXT CONDITIONS: +accessability for all markets in-system EXCEPT this one? \n\
+            use unused aurorae2 t exture in graphics/planets to make a tachyon field that makes you go fast around stars? \n\
+            investigaet dark nebula in graphics/fx. good terrain sprite"
         )*/
+
+        niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)
@@ -165,14 +162,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
     }
 
-    override fun onNewGame() { // happens early enough that we can plug a terraingenplugin in
-        super.onNewGame()
-    }
-
-    override fun onNewGameAfterProcGen() {
-        super.onNewGameAfterProcGen()
-    }
-
     override fun beforeGameSave() {
         super.beforeGameSave()
 
@@ -182,7 +171,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     }
 
     override fun onEnabled(wasEnabledBefore: Boolean) {
-        //MPC_conditionManager.generateConditions(wasEnabledBefore)
+        Global.getSector().addScript(niko_MPC_HTFactorTracker())
 
         super.onEnabled(wasEnabledBefore)
     }

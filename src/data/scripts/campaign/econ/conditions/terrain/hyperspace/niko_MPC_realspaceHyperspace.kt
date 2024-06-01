@@ -6,9 +6,12 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.abilities.EmergencyBurnAbility
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HTScanFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin.CellStateTracker
 import com.fs.starfarer.api.impl.combat.BattleCreationPluginImpl
@@ -18,14 +21,17 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.campaign.terrain.niko_MPC_scannableTerrain
+import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
-import javafx.scene.control.Cell
+import data.utilities.niko_MPC_debugUtils
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveListener {
+class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveListener, niko_MPC_scannableTerrain {
+
     var sourceJumpPoint: JumpPointAPI? = null
     var exitJumpPoint: JumpPointAPI? = null
 
@@ -38,9 +44,6 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
     }
 
     override fun advance(amount: Float) {
-        //if (true) return;
-
-        //if (true) return;
         super.advance(amount)
 
         getAbyssPlugin().advance(amount)
@@ -187,6 +190,9 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
     }
 
     companion object {
+        const val HYPERSPACE_TOPOGRAPHY_STORM_POINTS = 20
+        const val HYPERSPACE_TOPOGRAPHY_REGULAR_POINTS = 5
+
         fun clearCellsNotNearPlayerNonStatic(plugin: HyperspaceTerrainPlugin) {
             val playerFleet = Global.getSector().playerFleet ?: return
             var test = Vector2f()
@@ -507,6 +513,47 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
             activeCells[curr.i][curr.j] = curr
         }
     }
+
+    override fun onScanned(
+        factorTracker: niko_MPC_HTFactorTracker,
+        playerFleet: CampaignFleetAPI,
+        sensorBurstAbility: AbilityPlugin
+    ) {
+        if (!containsEntity(playerFleet))
+            return
+
+        val cell = getCellAt(playerFleet, 50f)
+        if (cell == null) {
+            // this doesnt work rn but i dont know why?
+            //niko_MPC_debugUtils.log.error("playerfleet cell not found on onscanned during realspacehyperspace scan")
+            return
+        }
+        val storming = cell.isStorming
+
+        val idRegular = entity.id + "_regular"
+        val idStorm = entity.id + "_storm"
+
+        // you can scan both a normal cloud and storm at the same time
+        if (factorTracker.scanned.contains(idRegular)) {
+            factorTracker.reportNoDataAcquired("Bipartisan hypercloud (regular) already scanned") // clarify its regular to hint that you can scan storms
+        } else {
+            HyperspaceTopographyEventIntel.addFactorCreateIfNecessary(
+                HTScanFactor("Bipartisan hypercloud (regular) scanned", HYPERSPACE_TOPOGRAPHY_REGULAR_POINTS), null
+            )
+            factorTracker.scanned.add(idRegular)
+        }
+
+        if (storming) {
+            if (factorTracker.scanned.contains(idStorm)) {
+                factorTracker.reportNoDataAcquired("Bipartisan hyperstorm already scanned")
+            } else {
+                HyperspaceTopographyEventIntel.addFactorCreateIfNecessary(
+                    HTScanFactor("Bipartisan hyperstorm scanned", HYPERSPACE_TOPOGRAPHY_STORM_POINTS), null
+                )
+                factorTracker.scanned.add(idStorm)
+            }
+        }
+    }
 }
 
 class niko_MPC_realspaceHyperspaceBoost(
@@ -576,11 +623,11 @@ class niko_MPC_realspaceHyperspaceBoost(
         if (mult > 1) {
             mult = 1f
         }
-        boost.scale(niko_MPC_realspaceHyperspaceBoost.STORM_SPEED_BURST * amount * mult * 3) // *3 mult added because it feels weird otherwise
+        boost.scale(STORM_SPEED_BURST * amount * mult * 3) // *3 mult added because it feels weird otherwise
 
         val v = fleet.velocity
 
-        if (fleet.currBurnLevel < niko_MPC_realspaceHyperspaceBoost.MAX_BURN) {
+        if (fleet.currBurnLevel < MAX_BURN) {
             fleet.setVelocity(v.x + boost.x, v.y + boost.y)
         }
 

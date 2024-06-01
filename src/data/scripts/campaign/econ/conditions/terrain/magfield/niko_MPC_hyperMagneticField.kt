@@ -16,7 +16,6 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
-import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.everyFrames.deletionScript
 import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_ids

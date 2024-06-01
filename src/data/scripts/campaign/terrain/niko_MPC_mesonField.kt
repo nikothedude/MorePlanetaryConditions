@@ -1,12 +1,15 @@
-package data.scripts.campaign.econ.conditions.terrain.meson
+package data.scripts.campaign.terrain
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignEngineLayers
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.TerrainAIFlags
+import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.graphics.SpriteAPI
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HTScanFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
 import com.fs.starfarer.api.impl.campaign.terrain.AuroraRenderer
 import com.fs.starfarer.api.impl.campaign.terrain.AuroraRenderer.AuroraRendererDelegate
 import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain
@@ -17,11 +20,17 @@ import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.everyFrames.niko_MPC_HTFactorTracker
+import data.utilities.niko_MPC_settings
+import lunalib.lunaSettings.LunaSettings
+import niko.MCTE.scripts.everyFrames.combat.terrainEffects.mesonField.mesonFieldEffectScript
+import niko.MCTE.settings.MCTE_settings
+import niko.MCTE.utils.MCTE_ids
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import java.util.*
 
-class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManagerDelegate {
+class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManagerDelegate, niko_MPC_scannableTerrain {
 
     class mesonFieldParams(
         bandWidthInEngine: Float,
@@ -29,14 +38,13 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         relatedEntity: SectorEntityToken,
         var innerRadius: Float,
         var outerRadius: Float,
-        var baseColor: Color = MESON_COLOR,
-        var auroraColorRange: List<Color> = arrayListOf(Misc.getNegativeHighlightColor()),
+        var baseColor: Color = baseColors.random(),
+        var auroraFrequency: Float = 0f,
+        @Transient
+        var auroraColorRange: List<Color> = auroraColors.random().toList(),
 
         ): RingParams(bandWidthInEngine, middleRadius, relatedEntity, null) {
-        @Transient
         var c: String? = null
-
-        var auroraFrequency = 0f
 
         fun readResolve(): Any {
             auroraColorRange = if (c != null) {
@@ -55,16 +63,19 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     companion object {
-        val NORMAL_DETECTED_MULT = 3f
+        const val HYPERSPACE_TOPOGRAPHY_POINTS = 30
+
+        val NORMAL_DETECTED_MULT = 5f
 
         val STORM_DETECTED_MULT = 0.5f
-        val STORM_SENSOR_MULT = 3f
+        val STORM_SENSOR_MULT = 4f
 
-        val MESON_COLOR = Color(237, 246, 5, 73)
-
+        val baseColors = arrayOf(
+            Color(237, 246, 5, 43),
+            //Color(43, 239, 8, 45),
+        )
         var auroraColors = arrayOf(
             arrayOf(
-                Color(43, 239, 8, 45),
                 Color(180, 110, 210),
                 Color(150, 140, 190),
                 Color(140, 190, 210),
@@ -139,8 +150,8 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         return this
     }
 
-    fun getCastedParams(): mesonFieldParams? {
-        return params as? mesonFieldParams
+    fun getCastedParams(): mesonFieldParams {
+        return params as mesonFieldParams
     }
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
@@ -275,18 +286,19 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
 //			//extraText = " The sensor penalty is currently increased due to being inside a magnetic storm.";
 //			extraText = " The sensor and travel speed penalties are currently increased due to being inside a magnetic storm.";
 //		}
+        val isStorm = flareManager!!.isInActiveFlareArc(Global.getSector().playerFleet)
         var nextPad = pad
         if (expanded) {
             tooltip.addSectionHeading("Travel", Alignment.MID, pad)
             nextPad = small
         }
-        if (flareManager!!.isInActiveFlareArc(Global.getSector().playerFleet)) {
+        if (isStorm) {
             tooltip.addPara(
                 "The meson field is dense enough here to cross the Burivil Threshold, and thus boost sensor range of " +
                         "fleets in it by %s.",
                 pad,
                 highlight,
-                "" + ((1f - STORM_SENSOR_MULT) * 100).toInt() + "%"
+                "${(STORM_SENSOR_MULT * 100).toInt()}%"
             )
 
             tooltip.addPara(
@@ -294,18 +306,20 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
                         "the meson field, decreasing detected-at range of fleets inside by %s.",
                 pad,
                 highlight,
-                "" + ((1f - STORM_DETECTED_MULT) * 100).toInt() + "%"
+                "${(STORM_DETECTED_MULT * 100).toInt()}%"
             )
         } else {
             tooltip.addPara(
                 "Increases the range at which fleets inside can be detected by %s.",
                 pad,
                 highlight,
-                "" + ((1f - NORMAL_DETECTED_MULT) * 100).toInt() + "%"
+                "${(NORMAL_DETECTED_MULT * 100).toInt()}%"
             )
             tooltip.addPara(
-                "Meson storms are known to boost sensor range of fleets inside.",
-                nextPad
+                "%s are known to boost sensor range of fleets inside.",
+                pad,
+                highlight,
+                "Meson storms"
             )
         }
 
@@ -324,7 +338,11 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
 //		);
         if (expanded) {
             tooltip.addSectionHeading("Combat", Alignment.MID, pad)
-            tooltip.addPara("No combat effects.", nextPad)
+            if (niko_MPC_settings.MCTE_loaded && MCTE_settings.MESON_FIELD_ENABLED) {
+                mesonFieldEffectScript.modifyTerrainTooltip(tooltip, nextPad, isStorm)
+            } else {
+                tooltip.addPara("No combat effects.", nextPad)
+            }
         }
     }
 
@@ -440,11 +458,11 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     override fun getFlareFadeOutMax(): Float {
-        return 5f
+        return 10f
     }
 
     override fun getFlareFadeOutMin(): Float {
-        return 2f
+        return 7f
     }
 
     override fun getFlareOccurrenceAngle(): Float {
@@ -492,11 +510,11 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     override fun getFlareSmallFadeOutMax(): Float {
-        return 1f
+        return 10f
     }
 
     override fun getFlareSmallFadeOutMin(): Float {
-        return 0.5f
+        return 6f
     }
 
     override fun getFlareShortenFlatModMax(): Float {
@@ -524,15 +542,11 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     override fun getFlareSkipLargeProbability(): Float {
-        return 0f
+        return 0.0f
     }
 
     override fun getFlareCenterEntity(): SectorEntityToken? {
         return entity
-    }
-
-    override fun hasAIFlag(flag: Any): Boolean {
-        return flag === TerrainAIFlags.CR_DRAIN // a lie, but itll keep the ai from going in as much
     }
 
     override fun canPlayerHoldStationIn(): Boolean {
@@ -541,5 +555,24 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
 
     override fun getAuroraBlocker(): RangeBlockerUtil? {
         return null
+    }
+
+    override fun onScanned(
+        factorTracker: niko_MPC_HTFactorTracker,
+        playerFleet: CampaignFleetAPI,
+        sensorBurstAbility: AbilityPlugin
+    ) {
+        if (!containsEntity(playerFleet)) return
+
+        val id = entity.id
+
+        if (factorTracker.scanned.contains(id)) {
+            factorTracker.reportNoDataAcquired("Meson Field already scanned")
+        } else {
+            HyperspaceTopographyEventIntel.addFactorCreateIfNecessary(
+                HTScanFactor("Meson Field scanned", HYPERSPACE_TOPOGRAPHY_POINTS), null
+            )
+            factorTracker.scanned.add(id)
+        }
     }
 }

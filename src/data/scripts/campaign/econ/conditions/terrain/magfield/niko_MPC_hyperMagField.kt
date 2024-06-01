@@ -3,10 +3,19 @@ package data.scripts.campaign.econ.conditions.terrain.magfield
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.characters.AbilityPlugin
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HTScanFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
 import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.campaign.terrain.niko_MPC_scannableTerrain
+import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 
-class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListener {
+class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListener, niko_MPC_scannableTerrain {
+
+    companion object {
+        const val HYPERSPACE_TOPOGRAPHY_POINTS = 30
+    }
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
@@ -75,6 +84,26 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
 
     override fun onGameLoad() {
         return
+    }
+
+    override fun onScanned(
+        factorTracker: niko_MPC_HTFactorTracker,
+        playerFleet: CampaignFleetAPI,
+        sensorBurstAbility: AbilityPlugin
+    ) {
+
+        if (!containsEntity(playerFleet)) return
+
+        val id = entity.id
+
+        if (factorTracker.scanned.contains(id)) {
+            factorTracker.reportNoDataAcquired("Ultra-Magnetic Field already scanned")
+        } else {
+            HyperspaceTopographyEventIntel.addFactorCreateIfNecessary(
+                HTScanFactor("Ultra-Magnetic Field scanned", HYPERSPACE_TOPOGRAPHY_POINTS), null
+            )
+            factorTracker.scanned.add(id)
+        }
     }
 
 }
