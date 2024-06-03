@@ -9,7 +9,13 @@ import org.lazywizard.console.Console
 class niko_MPC_fillThingsWithNanoforges: BaseCommand {
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
         var i = 3
+        var failsafeIndex = 250
         while (i > 0) {
+            failsafeIndex--
+            if (failsafeIndex <= 0) {
+                Console.showMessage("failsafe hit")
+                return BaseCommand.CommandResult.ERROR
+            }
             val randSystem = Global.getSector().starSystems.random()
             if (randSystem.isEnteredByPlayer) continue
             val randPlanet = randSystem.planets.randomOrNull() ?: continue

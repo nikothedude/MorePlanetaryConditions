@@ -16,7 +16,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
 
         val baseSlipstreamDetectionRadius = 3f
 
-        val groundDefenseIncrement = 100f
+        val groundDefenseMult = 1.1f
     }
 
     override fun advance(amount: Float) {
@@ -66,7 +66,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
                 )
             }
         }
-        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, groundDefenseIncrement, name)
+        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, groundDefenseMult, name)
     }
 
     override fun unapply(id: String?) {
@@ -94,7 +94,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+${groundDefenseIncrement.toInt()}"
+            "${groundDefenseMult}x"
         )
 
         tooltip.addPara(

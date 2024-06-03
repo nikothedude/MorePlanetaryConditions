@@ -31,9 +31,10 @@
     <orderEntry type="library" name="unknown skies" level="project" />
     <orderEntry type="library" name="Knights of Ludd" level="project" />
     <orderEntry type="library" name="Illustrated.Entities1.1" level="project" />
-    <orderEntry type="library" name="ExerelinCore" level="project" />
     <orderEntry type="library" name="src1" level="project" />
     <orderEntry type="library" name="sotf" level="project" />
     <orderEntry type="library" name="Interstellar Imperium" level="project" />
+    <orderEntry type="library" name="jars" level="project" />
+    <orderEntry type="library" name="ExerelinCore" level="project" />
   </component>
 </module>

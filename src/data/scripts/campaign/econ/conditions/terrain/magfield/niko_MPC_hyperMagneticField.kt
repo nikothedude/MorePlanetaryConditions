@@ -32,8 +32,7 @@ class niko_MPC_hyperMagneticField:
     companion object {
         var hazardRatingIncrement = 0.5f
         var accessabilityIncrement = -0.25f
-        var defenseRatingIncrement = 500f
-        var defenseRatingMult = 1.2f
+        var defenseRatingMult = 1.3f
 
     }
     var terrainPlugin: niko_MPC_hyperMagField? = null
@@ -125,7 +124,6 @@ class niko_MPC_hyperMagneticField:
         market.hazard.modifyFlat(id, hazardRatingIncrement, name)
         market.accessibilityMod.modifyFlat(id, accessabilityIncrement, name)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, defenseRatingMult, name)
-        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, defenseRatingIncrement, name)
 
         val mining = market.getIndustry(Industries.MINING)
         if (mining is Mining) {
@@ -187,14 +185,6 @@ class niko_MPC_hyperMagneticField:
             Misc.getHighlightColor(),
             "${defenseRatingMult}x"
             )
-
-
-        tooltip.addPara(
-            "%s defense rating",
-            10f,
-            Misc.getHighlightColor(),
-            "+${(defenseRatingIncrement.toInt())}"
-        )
 
         tooltip.addPara(
             "Ferromagnetic metals are naturally compressed by the magnetic field, resulting in %s",

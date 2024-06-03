@@ -3,6 +3,7 @@
           {"freq":1, "tip":"[More Planetary Conditions] Defense satellite automatically interfere in any battles happening near the entity they orbit. This includes station battles!"},
 		  {"freq":1, "tip":"[More Planetary Conditions] If a fleet's side wins a battle that has defense satellites involved on the opposing side, every fleet in the winning fleet's side will be given a brief grace period where they cannot be attacked or blocked by said defense satellites."},
 		  {"freq":1, "tip":"[More Planetary Conditions] If a fleet is attempting to perform some hostile action against a planet with defense satellites, the satellites will attack the fleet and keep them briefly occupied, if not outright defeat them. This includes raids!"},
+		  {"freq":0.7, "tip":"[More Planetary Conditions] Meson fields are a risk/reward game: "},
 		  {"freq":0.1, "tip":"[More Planetary Conditions] Defense satellites in orbit of a world you control can be fought if you disable your transponder. And while you can't get any credits from their CPU cores, you can still salvage their remains!"},
     ],
 }

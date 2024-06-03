@@ -1,146 +1,157 @@
 id,trigger,conditions,script,text,options,notes
-#RULESET_NAME niko_MPC,,,,,,
+"#RULESET_NAME niko_MPC",,,,,,
 ,,,,,,
 # Satellite Interactions,,,,,,
-niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"niko_MPC_entityHasSatellites
+niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"!niko_MPC_marketBlockedByArtyStation
+
+niko_MPC_entityHasSatellites
 !$niko_MPC_bypassedSatellites
-!niko_MPC_satellitesWantToBlockPlayer score:1090",FireBest OpenInteractionDialog,"The satellites in orbit of $entityName give your $shipOrFleet no trouble as you approach, though sensors do give a few worrying reports of brief lock-ons and targetting laser scans.",,
-niko_MPC_marketSatellitesWantToBlockButCant,OpenInteractionDialog,"niko_MPC_entityHasSatellites
+!niko_MPC_satellitesWantToBlockPlayer score:1090","FireBest OpenInteractionDialog","The satellites in orbit of $entityName give your $shipOrFleet no trouble as you approach, though sensors do give a few worrying reports of brief lock-ons and targetting laser scans.",,
+niko_MPC_marketSatellitesWantToBlockButCant,OpenInteractionDialog,"!niko_MPC_marketBlockedByArtyStation
+
+niko_MPC_entityHasSatellites
 !$niko_MPC_bypassedSatellites
 niko_MPC_satellitesWantToBlockPlayer 
-!niko_MPC_satellitesCapableOfBlockingPlayer score:1250",FireBest OpenInteractionDialog,"While the satellites in orbit of $entityName harass you, they simply are not strong enough to prevent your approach.",,wont call noblock since wanttoblockplayer is true not false
-niko_MPC_marketSatellitesWillingAndCapableToBlock,OpenInteractionDialog,"niko_MPC_entityHasSatellites
+!niko_MPC_satellitesCapableOfBlockingPlayer score:1250","FireBest OpenInteractionDialog","While the satellites in orbit of $entityName harass you, they simply are not strong enough to prevent your approach.",,"wont call noblock since wanttoblockplayer is true not false"
+niko_MPC_marketSatellitesWillingAndCapableToBlock,OpenInteractionDialog,"!niko_MPC_marketBlockedByArtyStation
+
+niko_MPC_entityHasSatellites
 !$niko_MPC_bypassedSatellites
-niko_MPC_satellitesCapableAndWillingToBlock score:1300",FireBest niko_MPC_satellitesBlockingAccess,,,
+niko_MPC_satellitesCapableAndWillingToBlock score:1000","FireBest niko_MPC_satellitesBlockingAccess",,,
+niko_MPC_marketSatellitesNoBlockArty,OpenInteractionDialog,"niko_MPC_marketBlockedByArtyStation
+
+niko_MPC_entityHasSatellites
+!$niko_MPC_bypassedSatellites
+$market.isPlanetConditionMarketOnly","FireBest OpenInteractionDialog","The satellites in orbit of $entityName are currently protected by the artillery station, which you will have to engage first.",,
 ,,,,,,
 # Satellites Blocking Access,,,,,,
 niko_MPC_genericSatelliteBlock,niko_MPC_satellitesBlockingAccess,,"FireAll niko_MPC_satellitesBlocking_PopulateOptions
 FireBest niko_MPC_satellitesBlockingText",,,
 ,,,,,,
 # Populating Options,,,,,,
-niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,80:niko_MPC_attackDefenseSatellites:Move in to engage the defense satellites,
+niko_MPC_attackSatellitesOption,niko_MPC_satellitesBlocking_PopulateOptions,,,,"80:niko_MPC_attackDefenseSatellites:Move in to engage the defense satellites",
 niko_MPC_marketLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$hasMarket
 !$market.isPlanetConditionMarketOnly","SetTooltip marketLeave $marketLeaveTooltip
-SetShortcut marketLeave ""ESCAPE""",,500:marketLeave:Leave,
-niko_MPC_surveyLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,$market.isPlanetConditionMarketOnly,"SetShortcut surveyLeave ""ESCAPE""",,500:surveyLeave:Leave,
+SetShortcut marketLeave ""ESCAPE""",,"500:marketLeave:Leave",
+niko_MPC_surveyLeaveOption,niko_MPC_satellitesBlocking_PopulateOptions,"$market.isPlanetConditionMarketOnly","SetShortcut surveyLeave ""ESCAPE""",,"500:surveyLeave:Leave",
 niko_MPC_phaseThroughOption,niko_MPC_satellitesBlocking_PopulateOptions,,"FireBest niko_MPC_modifyPhaseThroughOption
 
 SetTooltip niko_MPC_phaseThroughSatellitesOption ""The effectiveness of this method scales with the percentage of phase ships in your fleet.\n\nUnusable at or below 30%, 3 story points above 30%, 2 story points above 50%, 1 story point above 75%, free above 95%.""
 SetTooltipHighlightColors niko_MPC_phaseThroughSatellitesOption textEnemyColor hColor storyOptionColor hColor storyOptionColor hColor storyOptionColor hColor storyOptionColor textFriendColor
-SetTooltipHighlights niko_MPC_phaseThroughSatellitesOption ""Unusable"" ""at or below 30%"" ""3"" ""above 30%"" ""2"" ""above 50%"" ""1"" ""above 75%"" ""free"" ""above 95%""",,110:niko_MPC_phaseThroughSatellitesOption:Use your phase ships to distract the satellites long enough for your fleet to approach,
+SetTooltipHighlights niko_MPC_phaseThroughSatellitesOption ""Unusable"" ""at or below 30%"" ""3"" ""above 30%"" ""2"" ""above 50%"" ""1"" ""above 75%"" ""free"" ""above 95%""",,"110:niko_MPC_phaseThroughSatellitesOption:Use your phase ships to distract the satellites long enough for your fleet to approach",
 niko_MPC_sneakOption,#niko_MPC_satellitesBlocking_PopulateOptions,,"FireBest niko_MPC_modifySneakThroughOption
-",,120:niko_MPC_sneakThroughSatellitesOption:Attempt to sneak through the satellites,
+",,"120:niko_MPC_sneakThroughSatellitesOption:Attempt to sneak through the satellites",
 niko_MPC_ecmOption,niko_MPC_satellitesBlocking_PopulateOptions,,"FireBest niko_MPC_modifyEcmOption
 
 SetTooltip niko_MPC_ecmSatellitesOption ""The effectiveness of this method scales with your fleet's cumulative ECM strength.\n\nUnusable at or below 10%, 3 story points above 10%, 2 story points above 25%, 1 story point above 40%.\n\nUsing this option will slightly damage your reputation with the owner of the market, and cause a small military response to be dispatched to this market to investigate your fleet as a possible smuggler.""
 SetTooltipHighlightColors niko_MPC_ecmSatellitesOption textEnemyColor hColor storyOptionColor hColor storyOptionColor hColor storyOptionColor hColor
-SetTooltipHighlights niko_MPC_ecmSatellitesOption ""Unusable"" ""at or below 10%"" ""3"" ""above 10%"" ""2"" ""above 25%"" ""1"" ""above 40%""",,130:niko_MPC_ecmSatellitesOption:Disrupt the satellites' targetting with your ECM,
-#END Populating Options,,,,,,
+SetTooltipHighlights niko_MPC_ecmSatellitesOption ""Unusable"" ""at or below 10%"" ""3"" ""above 10%"" ""2"" ""above 25%"" ""1"" ""above 40%""",,"130:niko_MPC_ecmSatellitesOption:Disrupt the satellites' targetting with your ECM",
+"#END Populating Options",,,,,,
 ,,,,,,
 # Intro Text,,,,,,
 niko_MPC_genericSatelliteBlockText,niko_MPC_satellitesBlockingText,,,"Before you can even enter high orbit of $entityName, your $shipOrFleet is suddenly lit up by hundreds of thousands of targetting lasers. Your sensors officer reports that the array of defense satellites in orbit of $entityName are currently tracking your $shipOrFleet and will make further approach nearly impossible, unless a number are destroyed/disabled.",,
-#END Intro Text,,,,,,
+"#END Intro Text",,,,,,
 ,,,,,,
 # Attacking Satellites,,,,,,
-niko_MPC_attackDefenseSatellitesSelected,DialogOptionSelected,$option == niko_MPC_attackDefenseSatellites,"niko_MPC_prepareSatelliteEncounter
+niko_MPC_attackDefenseSatellitesSelected,DialogOptionSelected,"$option == niko_MPC_attackDefenseSatellites","niko_MPC_prepareSatelliteEncounter
 FireBest niko_MPC_defenseSatellitesPrepareAttack
 FireBest niko_MPC_defenseSatellitesPrepareText",,,
 ,,,,,,
 # Text,,,,,,
-niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,You give the order to prepare for an engagement with the defense satellites.,,
-#END Text,,,,,,
+niko_MPC_defenseSatellitesPrepareGenericText,niko_MPC_defenseSatellitesPrepareText,,,"You give the order to prepare for an engagement with the defense satellites.",,
+"#END Text",,,,,,
 ,,,,,,
 # Battle End,,,,,,
 ,,,,,,
 # Complete victory,,,,,,
 niko_MPC_defenseSatellitesDefeatedContinue,niko_MPC_DefenseSatellitesDefeated,,"FireBest OpenInteractionDialog
-FireBest niko_MPC_defenseSatellitesDefeatedText",,,called in dialogUtils
+FireBest niko_MPC_defenseSatellitesDefeatedText",,,"called in dialogUtils"
 ,,,,,,
 # End Text,,,,,,
 niko_MPC_genericDefenseSatelliteDefeatedText,niko_MPC_defenseSatellitesDefeatedText,,,"Your efforts have opened a brief hole in the satellite orbit, allowing a brief window to interact.",,
-#END End Text,,,,,,
-#END Complete victory,,,,,,
-#END Battle End,,,,,,
-#END Attacking Satellites,,,,,,
+"#END End Text",,,,,,
+"#END Complete victory",,,,,,
+"#END Battle End",,,,,,
+"#END Attacking Satellites",,,,,,
 ,,,,,,
 # Alternate Options,,,,,,
 ,,,,,,
 # Modify,,,,,,
 ,,,,,,
 # Phase,,,,,,
-niko_MPC_phaseThroughModBelowMin,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" ""<="" 0.3 score:100",SetEnabled niko_MPC_phaseThroughSatellitesOption false,,,
+niko_MPC_phaseThroughModBelowMin,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" ""<="" 0.3 score:100","SetEnabled niko_MPC_phaseThroughSatellitesOption false",,,
 niko_MPC_phaseThroughModThreshOne,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">"" 0.3 score:110","SetStoryOption niko_MPC_phaseThroughSatellitesOption 3 niko_MPC_phaseThroughOptionThreshOne ui_char_spent_story_point ""Used phase ships to bypass satellites on $market""",,,
 niko_MPC_phaseThroughModThreshTwo,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.5 score:120","SetStoryOption niko_MPC_phaseThroughSatellitesOption 2 niko_MPC_phaseThroughOptionThreshTwo ui_char_spent_story_point ""Used phase ships to bypass satellites on $market""",,,
 niko_MPC_phaseThroughModThreshThree,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.75 score:130","SetStoryOption niko_MPC_phaseThroughSatellitesOption 1 niko_MPC_phaseThroughOptionThreshThree ui_char_spent_story_point ""Used phase ships to bypass satellites on $market""",,,
-niko_MPC_phaseThroughModThreshFour,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.95 score:140","SetOptionText niko_MPC_phaseThroughSatellitesOption ""Order the fleet to phase through the defensive matrix""",,,its free!
-#END Phase,,,,,,
+niko_MPC_phaseThroughModThreshFour,niko_MPC_modifyPhaseThroughOption,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.95 score:140","SetOptionText niko_MPC_phaseThroughSatellitesOption ""Order the fleet to phase through the defensive matrix""",,,"its free!"
+"#END Phase",,,,,,
 ,,,,,,
 # ECM,,,,,,
-niko_MPC_ecmOptionModBelowMin,niko_MPC_modifyEcmOption,"niko_MPC_fleetECMCheck ""getPlayerFleet"" ""<="" 10 score:100",SetEnabled niko_MPC_ecmSatellitesOption false,,,
+niko_MPC_ecmOptionModBelowMin,niko_MPC_modifyEcmOption,"niko_MPC_fleetECMCheck ""getPlayerFleet"" ""<="" 10 score:100","SetEnabled niko_MPC_ecmSatellitesOption false",,,
 niko_MPC_ecmOptionModThreshOne,niko_MPC_modifyEcmOption,"niko_MPC_fleetECMCheck ""getPlayerFleet"" "">"" 10 score:110","SetStoryOption niko_MPC_ecmSatellitesOption 3 niko_MPC_ecmOptionModThreshOne ui_char_spent_story_point ""Used ECM to bypass satellites on $market""",,,
 niko_MPC_ecmOptionModThreshTwo,niko_MPC_modifyEcmOption,"niko_MPC_fleetECMCheck ""getPlayerFleet"" "">"" 25 score:120","SetStoryOption niko_MPC_ecmSatellitesOption 2 niko_MPC_ecmOptionModThreshTwo ui_char_spent_story_point ""Used ECM to bypass satellites on $market""",,,
 niko_MPC_ecmOptionModThreshThree,niko_MPC_modifyEcmOption,"niko_MPC_fleetECMCheck ""getPlayerFleet"" "">"" 40 score:120","SetStoryOption niko_MPC_ecmSatellitesOption 1 niko_MPC_ecmOptionModThreshThree ui_char_spent_story_point ""Used ECM to bypass satellites on $market""",,,
-#END ECM,,,,,,
-#END Modify,,,,,,
+"#END ECM",,,,,,
+"#END Modify",,,,,,
 ,,,,,,
 # Options,,,,,,
 ,,,,,,
 # Phase2,,,,,,
-niko_MPC_phaseThroughSatellitesOption,DialogOptionSelected,$option == niko_MPC_phaseThroughSatellitesOption,"$niko_MPC_bypassedSatellites = true 0
+niko_MPC_phaseThroughSatellitesOption,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesOption","$niko_MPC_bypassedSatellites = true 0
 FireBest niko_MPC_phaseThroughSatellitesOptionText","You order your fleet up to the limit of the satellite defense grid and ready their engines to burn hard, putting all hands on alert.",,
-niko_MPC_phaseThroughSatellitesTotal,niko_MPC_phaseThroughSatellitesOptionText,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.95",FireBest OpenInteractionDialog,"You open a fleetwide comms channel and issue the command that oh-so-commonly haunts phase fleet dreams: ""All hands, standby for deep dive"". On your mark, your entire fleet enters phase, and burns hard into the defensive sphere projected by the satellites.  
+niko_MPC_phaseThroughSatellitesTotal,niko_MPC_phaseThroughSatellitesOptionText,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" "">="" 0.95","FireBest OpenInteractionDialog","You open a fleetwide comms channel and issue the command that oh-so-commonly haunts phase fleet dreams: ""All hands, standby for deep dive"". On your mark, your entire fleet enters phase, and burns hard into the defensive sphere projected by the satellites.  
 
 They fire fruitlessly into phase ghosts, ballistics and plasma passing through them like gas. Within mere minutes, your sensor officer gives the all-okay signal, to which all ships respond by eagerly exiting phase space. You forward the inevitable reports of phase sickness to the head physician, and resume on your course.",,
-niko_MPC_phaseThroughSatellitesDistract,niko_MPC_phaseThroughSatellitesOptionText,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" ""<"" 0.95",,"You spend a few minutes with your ops chief, pouring over your plan. Within twenty minutes, the two of you, with help from your other bridge officers and input from fleet pilots, have a relatively ""good"" plan - at least, thats what your op chief calls it. As is typical for any paperwork written by this particular officer, it's filled with jargon, indecipherable annotations, and countless moving pieces. Still, they gruffly insist to just ""leave them be"", as it's perfectly understandable by them.",10:niko_MPC_phaseThroughSatellitesDistractTwo:Continue,
-niko_MPC_phaseThroughSatellitesDistractTwo,DialogOptionSelected,$option == niko_MPC_phaseThroughSatellitesDistractTwo,,"Ten minutes later, you receive a comms-request from your ops chief. As soon as you pick it up, you hear a gruff ""Ready"" - a bluntness and straightforwardness you'd only expect from your ops chief. You answer with the same bluntness: ""Execute.""
+niko_MPC_phaseThroughSatellitesDistract,niko_MPC_phaseThroughSatellitesOptionText,"niko_MPC_phaseShipPercentCheck ""getPlayerFleet"" ""<"" 0.95",,"You spend a few minutes with your ops chief, pouring over your plan. Within twenty minutes, the two of you, with help from your other bridge officers and input from fleet pilots, have a relatively ""good"" plan - at least, thats what your op chief calls it. As is typical for any paperwork written by this particular officer, it's filled with jargon, indecipherable annotations, and countless moving pieces. Still, they gruffly insist to just ""leave them be"", as it's perfectly understandable by them.","10:niko_MPC_phaseThroughSatellitesDistractTwo:Continue",
+niko_MPC_phaseThroughSatellitesDistractTwo,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractTwo",,"Ten minutes later, you receive a comms-request from your ops chief. As soon as you pick it up, you hear a gruff ""Ready"" - a bluntness and straightforwardness you'd only expect from your ops chief. You answer with the same bluntness: ""Execute.""
 
-Your ops chief begins barking orders into his headset, and all the officers in your bridge scramble to their positions. In an instant, your phase ships begin to take defensive formations around your material ships, your flagship lurching as it moves to join.",10:niko_MPC_phaseThroughSatellitesDistractBegin:Continue,
+Your ops chief begins barking orders into his headset, and all the officers in your bridge scramble to their positions. In an instant, your phase ships begin to take defensive formations around your material ships, your flagship lurching as it moves to join.","10:niko_MPC_phaseThroughSatellitesDistractBegin:Continue",
 niko_MPC_phaseThroughSatellitesDistractProtected,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractBegin
 !niko_MPC_flagshipIsPhase ""getPlayerFleet""",,"The autopilot, reprogrammed by your ops chief, takes your ship behind a few phase ships designated to protecting it. 
 
 Your ops chief ceases barking coordinates and adjustments into his mic. They open a comms link to the fleet and issue one order, ""Hold"". Then a moment later, ""Execute"".
 
-Your ship lurches as its engines are pushed to their limit. The ships in front of you phase and begin evasive maneuvers, firing off the occasional flare from jury-rigged flare launchers that quickly fizzle off into realspace. The ballistics, plasma, and missiles are all masterfully redirected away from your flagship and either into the PD net of a nearby protectorate, or off into space.",10:niko_MPC_phaseThroughSatellitesDistractProtectedTwo:Continue,
-niko_MPC_phaseThroughSatellitesDistractProtectedTwo,DialogOptionSelected,$option == niko_MPC_phaseThroughSatellitesDistractProtectedTwo,FireBest niko_MPC_phaseThroughSatellitesDistractEnd,"A few minutes of spectacular fireworks later, your op chief barks into their mic the command ""End operation"". Your escorts immediately unphase, and all ships re-enter normal formation.",,
+Your ship lurches as its engines are pushed to their limit. The ships in front of you phase and begin evasive maneuvers, firing off the occasional flare from jury-rigged flare launchers that quickly fizzle off into realspace. The ballistics, plasma, and missiles are all masterfully redirected away from your flagship and either into the PD net of a nearby protectorate, or off into space.","10:niko_MPC_phaseThroughSatellitesDistractProtectedTwo:Continue",
+niko_MPC_phaseThroughSatellitesDistractProtectedTwo,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractProtectedTwo","FireBest niko_MPC_phaseThroughSatellitesDistractEnd","A few minutes of spectacular fireworks later, your op chief barks into their mic the command ""End operation"". Your escorts immediately unphase, and all ships re-enter normal formation.",,
 niko_MPC_phaseThroughSatellitesDistractProtector,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractBegin
 niko_MPC_flagshipIsPhase ""getPlayerFleet""",,"The autopilot, reprogrammed by your ops chief, takes your ship in front of one of your realspace ships and into an array of phase ships designated to its protection. Your headpiece dings as it begins transmitting direct orders from the ops chief, giving your ship the rather creative designation of ""Flagship"". A moment later, your console dings as it helpfully informs you that manual control has been restored, and its up to you now.
 
-Your ops chief ceases barking coordinates and adjustments into his mic. They open a comms link to the fleet and issue one order, ""Hold"". Then a moment later, ""Execute"".",10:niko_MPC_phaseThroughSatellitesDistractProtectorTwo:Begin evasive maneuvers,
-niko_MPC_phaseThroughSatellitesDistractProtectorTwo,DialogOptionSelected,$option == niko_MPC_phaseThroughSatellitesDistractProtectorTwo,,"You immediately dive into phase with the rest of your group, firing off jury-rigged flares on the hull of your flagship. The satellites are immediately attracted to these flares, and by extension, you, firing barrage after barrage into your phase ghost. You, and your ops chief, both take care to ensure you don't cause the firing line to intersect with any protectorates.
+Your ops chief ceases barking coordinates and adjustments into his mic. They open a comms link to the fleet and issue one order, ""Hold"". Then a moment later, ""Execute"".","10:niko_MPC_phaseThroughSatellitesDistractProtectorTwo:Begin evasive maneuvers",
+niko_MPC_phaseThroughSatellitesDistractProtectorTwo,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractProtectorTwo",,"You immediately dive into phase with the rest of your group, firing off jury-rigged flares on the hull of your flagship. The satellites are immediately attracted to these flares, and by extension, you, firing barrage after barrage into your phase ghost. You, and your ops chief, both take care to ensure you don't cause the firing line to intersect with any protectorates.
 
 You constanly re-adjust, responding to command after command from your ops chief, your wingmates, and the protectorate, painting wide arcs in space with your engine contrail.
 
-",10:niko_MPC_phaseThroughSatellitesDistractProtectorThree:Continue,
-niko_MPC_phaseThroughSatellitesDistractProtectorThree,DialogOptionSelected,$option == niko_MPC_phaseThroughSatellitesDistractProtectorThree,FireBest niko_MPC_phaseThroughSatellitesDistractEnd,"A few minutes of spectacular fireworks later, your op chief barks into their mic the command ""End operation"", and your wing immediately unphases. You receive the order to re-enter the fleet's formation, to which you give to the autopilot.",,
-niko_MPC_phaseThroughSatellitesDistractEnd,niko_MPC_phaseThroughSatellitesDistractEnd,,FireBest OpenInteractionDialog,"You request a damage report and take a few moments to peruse it, but to your surprise, most damage is in the form of overstressed phase coils and superficial armor damage.
+","10:niko_MPC_phaseThroughSatellitesDistractProtectorThree:Continue",
+niko_MPC_phaseThroughSatellitesDistractProtectorThree,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractProtectorThree","FireBest niko_MPC_phaseThroughSatellitesDistractEnd","A few minutes of spectacular fireworks later, your op chief barks into their mic the command ""End operation"", and your wing immediately unphases. You receive the order to re-enter the fleet's formation, to which you give to the autopilot.",,
+niko_MPC_phaseThroughSatellitesDistractEnd,niko_MPC_phaseThroughSatellitesDistractEnd,,"FireBest OpenInteractionDialog","You request a damage report and take a few moments to peruse it, but to your surprise, most damage is in the form of overstressed phase coils and superficial armor damage.
 
 Satisfied with your work, you issue the command to continue with your journey.",,
-#END Phase2,,,,,,
+"#END Phase2",,,,,,
 ,,,,,,
 # Sensor Profile,,,,,,
 niko_MPC_,,,,,,
-#END Sensor Profile,,,,,,
+"#END Sensor Profile",,,,,,
 ,,,,,,
 # ECM2,,,,,,
-niko_MPC_ecmSatellitesOption,DialogOptionSelected,$option == niko_MPC_ecmSatellitesOption,$niko_MPC_bypassedSatellites = true 0,"You send a standby order to the fleet, and with help from your sensors officer, hook the fleet's sensor matrix up to the ECM's central computers. Your flagship's sensors begin to thrum with power as they charge, causing a slightly worried atmosphere to fall apon your bridge.
+niko_MPC_ecmSatellitesOption,DialogOptionSelected,"$option == niko_MPC_ecmSatellitesOption","$niko_MPC_bypassedSatellites = true 0","You send a standby order to the fleet, and with help from your sensors officer, hook the fleet's sensor matrix up to the ECM's central computers. Your flagship's sensors begin to thrum with power as they charge, causing a slightly worried atmosphere to fall apon your bridge.
 
-Nonetheless, in only a few minutes, your console pings green, and you know it's time to go. All that the fleet is waiting for is your command. ",10:niko_MPC_ecmSatellitesOptionTextTwo:Execute,
-niko_MPC_ecmSatellitesOptionTextTwo,DialogOptionSelected,$option == niko_MPC_ecmSatellitesOptionTextTwo,niko_MPC_playECMSatellitesSound,"In an instant, every single sensor array, transmission dish, and output pylon in your fleet fire a highly ionized sensor burst in tandem with your CW assault, completely overwhelming and blinding the hypersensitive instruments on the satellites. You observe some firing a few random shots into space, but a few micro-maneuvers are enough to avoid them.",10:niko_MPC_ecmSatellitesOptionTextThree:Request a SitRep,
-niko_MPC_ecmSatellitesOptionTextThree,DialogOptionSelected,$option == niko_MPC_ecmSatellitesOptionTextThree,FireBest niko_MPC_postECMSatellitesReaction,"The satellites are briefly disabled, allowing for passage into the planet's orbit.",10:niko_MPC_ecmSatellitesOptionTextEnd:Continue into high orbit,
-niko_MPC_postECMSatellitesReactionUninhabited,niko_MPC_postECMSatellitesReaction,$market.isPlanetConditionMarketOnly score:1000,,,,
+Nonetheless, in only a few minutes, your console pings green, and you know it's time to go. All that the fleet is waiting for is your command. ","10:niko_MPC_ecmSatellitesOptionTextTwo:Execute",
+niko_MPC_ecmSatellitesOptionTextTwo,DialogOptionSelected,"$option == niko_MPC_ecmSatellitesOptionTextTwo","niko_MPC_playECMSatellitesSound","In an instant, every single sensor array, transmission dish, and output pylon in your fleet fire a highly ionized sensor burst in tandem with your CW assault, completely overwhelming and blinding the hypersensitive instruments on the satellites. You observe some firing a few random shots into space, but a few micro-maneuvers are enough to avoid them.","10:niko_MPC_ecmSatellitesOptionTextThree:Request a SitRep",
+niko_MPC_ecmSatellitesOptionTextThree,DialogOptionSelected,"$option == niko_MPC_ecmSatellitesOptionTextThree","FireBest niko_MPC_postECMSatellitesReaction","The satellites are briefly disabled, allowing for passage into the planet's orbit.","10:niko_MPC_ecmSatellitesOptionTextEnd:Continue into high orbit",
+niko_MPC_postECMSatellitesReactionUninhabited,niko_MPC_postECMSatellitesReaction,"$market.isPlanetConditionMarketOnly score:1000",,,,
 niko_MPC_postECMSatellitesReactionPlayer,niko_MPC_postECMSatellitesReaction,"$faction.id == ""player""",,"You receive a rather irate comms request from the colony government, but once you show them your credentials, they apologize and close the channel.",,
 niko_MPC_postECMSatellitesReactionNormal,niko_MPC_postECMSatellitesReaction,"$faction.id != ""player""","AddTextSmall ""Patrols mobilized to investigate"" textEnemyColor
 IncreaseSmugglingSuspicion 5000
 niko_MPC_postECMSatellitesReactionCommand
 
 FireBest niko_MPC_postEcmSatellitesRepLoss",,,
-niko_MPC_postEcmSatellitesRepLossNoTransponder,niko_MPC_postEcmSatellitesRepLoss,!$player.transponderOn,AdjustRep $faction.id VENGEFUL -5,"Judging by the confused comms chatter, it appears that while the inhabitants of the colony noticed your ECM burst, they don't quite know who or what did it. However, a quiet few are mentioning your fleet as a possible culprit, which may cause some damaging rumors in the future.",,
-niko_MPC_postEcmSatellitesRepLossTransponder,niko_MPC_postEcmSatellitesRepLoss,$player.transponderOn,AdjustRep $faction.id VENGEFUL -20,"Judging by the immediate high-priority comms request from the colony's administration, you gather that your transponder gave away your role in the ECM burst. You quickly make an excuse about your sensor array malfunctioning and close the channel cordially.",,
-niko_MPC_postEcmSatellitesRepLossUninhabited,niko_MPC_postEcmSatellitesRepLoss,$market.isPlanetConditionMarketOnly score:500,,,,
-niko_MPC_ecmSatellitesOptionTextEnd,DialogOptionSelected,$option == niko_MPC_ecmSatellitesOptionTextEnd,FireBest OpenInteractionDialog,,,
-#END ECM2,,,,,,
-#END Options,,,,,,
-#END Alternate Options,,,,,,
-#END Satellites Blocking Access,,,,,,
-#END Satellite Interactions,,,,,,
-,,,,,,
+niko_MPC_postEcmSatellitesRepLossNoTransponder,niko_MPC_postEcmSatellitesRepLoss,"!$player.transponderOn","AdjustRep $faction.id VENGEFUL -5","Judging by the confused comms chatter, it appears that while the inhabitants of the colony noticed your ECM burst, they don't quite know who or what did it. However, a quiet few are mentioning your fleet as a possible culprit, which may cause some damaging rumors in the future.",,
+niko_MPC_postEcmSatellitesRepLossTransponder,niko_MPC_postEcmSatellitesRepLoss,"$player.transponderOn","AdjustRep $faction.id VENGEFUL -20","Judging by the immediate high-priority comms request from the colony's administration, you gather that your transponder gave away your role in the ECM burst. You quickly make an excuse about your sensor array malfunctioning and close the channel cordially.",,
+niko_MPC_postEcmSatellitesRepLossUninhabited,niko_MPC_postEcmSatellitesRepLoss,"$market.isPlanetConditionMarketOnly score:500",,,,
+niko_MPC_ecmSatellitesOptionTextEnd,DialogOptionSelected,"$option == niko_MPC_ecmSatellitesOptionTextEnd","FireBest OpenInteractionDialog",,,
+"#END ECM2",,,,,,
+"#END Options",,,,,,
+"#END Alternate Options",,,,,,
+"#END Satellites Blocking Access",,,,,,
+"#END Satellite Interactions",,,,,,
+

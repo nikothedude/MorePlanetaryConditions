@@ -1,5 +1,5 @@
 3.2.0:
-PROBABLY SAVE COMPATABLE (IF THIS IS RELEASED WITHOUT THIS MESSAGE BEING CHANGED CRUSIFY ME)
+PROBABLY SAVE COMPATIBLE (IF THIS IS RELEASED WITHOUT THIS MESSAGE BEING CHANGED CRUSIFY ME)
 
 New terrain: Meson field
     Magfield-like: Same texture, has storms, is a ring
@@ -27,12 +27,20 @@ Hyperspace Bipartisan
 
 STC districts
     Spawn rate reduced
+    Changed defense increase to mult for simplicity
 
 Spy arrays
     Spawn rate reduced
+    Changed defense increase to mult for simplicity
 
-Overgrown nanoforge
-    Adjust defense effect should now generate
+Ultramagnetic field
+    Changed defense increase to mult for simplicity
+
+Bug fixes
+    Fixed a bug where indevo arty stations could be fought in an inappropiate setting by engaging defense satellites
+        Fixed a crash caused by this
+        Defense satellites now take lower rules priority than arty stations
+    Adjust defense overgrown nanoforge effect should now generate
 
 3.1.1:
 SAVE COMPATABLE

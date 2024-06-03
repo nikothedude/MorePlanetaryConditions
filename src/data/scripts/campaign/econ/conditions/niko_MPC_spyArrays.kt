@@ -12,7 +12,7 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
     companion object {
         val sameFactionSensorProfileMult = 0.7f
         val stabilityIncrement = 1f
-        val groundDefenseIncrement = 200f
+        val groundDefenseMult = 1.1f
     }
 
     override fun advance(amount: Float) {
@@ -46,7 +46,7 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
         val market = getMarket() ?: return
 
         market.stability.modifyFlat(id, stabilityIncrement, name)
-        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, groundDefenseIncrement, name)
+        market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, groundDefenseMult, name)
     }
 
     override fun unapply(id: String?) {
@@ -74,7 +74,7 @@ class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
             "%s defense rating",
             10f,
             Misc.getHighlightColor(),
-            "+${groundDefenseIncrement.toInt()}"
+            "${groundDefenseMult}x"
         )
 
         tooltip.addPara(
