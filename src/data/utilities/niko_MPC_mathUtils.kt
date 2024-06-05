@@ -97,4 +97,9 @@ object niko_MPC_mathUtils {
         }
         return entriesToScore
     }
+
+    fun Float.trimHangingZero(): Number {
+        if (this % 1 == 0f) return this.toInt()
+        return this
+    }
 }

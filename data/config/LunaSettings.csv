@@ -1,22 +1,27 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
-MPC_generalHeader,General Header,Header,General Options,,,,,
-MPC_showErrorsInGame,Show Errors,Boolean,true,,"Whenever a custom error occurs, you will be notified by some text.",,,
+MPC_generalHeader,General Header,Header,General Options,,,,,General
+MPC_showErrorsInGame,Show Errors,Boolean,true,,"Whenever a custom error occurs, you will be notified by some text.",,,General
+,,,,,,,,Conditions
+MPC_conditionToggleHeader,Condition Toggles,Header,Condition Toggles,,,,,Conditions
+MPC_enableDefenseSatellites,Enable Defense Satellites,Boolean,true,,"If false, removes all instances of defense satellites from the sector.",,,Conditions
+,,,,,,,,Conditions
+MPC_satelliteConfigHeader,Satellite Config,Header,Satellite Config,,,,,Conditions
+MPC_preventSatelliteTurning,Prevent in-combat turning,Boolean,true,,Satellites will not turn whatsoever in combat. May theoretically improve combat performance if disabled.,,,Conditions
+MPC_discoverSatellitesInBulk,Discover satellites in bulk,Boolean,false,,"If true, apon discovering a satellite in orbit of an entity, the entire ring will be discovered.",,,Conditions
+MPC_satelliteInterferenceDistanceBase,Interference distance base,Double,90.0,,"The higher, the further away satellites will interfere in battles from.",,,Conditions
+MPC_satelliteInterferenceDistanceMult,Interference distance mult,Double,1.0,,"The higher, the further away satellites will interfere in battles from. Applied after base.",,,Conditions
+MPC_maxSatelliteFpBonus,Max fleet FP bonus,Int,10,,"The higher, the more FP a satellite fleet can spawn with.",,,Conditions
+MPC_maxSatelliteFpBonusMult,Max fleet FP bonus mult,Double,1.0,,"The higher, the more FP a satellite fleet can spawn with. Applied after base.",,,Conditions
+,,,,,,,,Conditions
+MPC_overgrownNanoforgeHeader,Nanoforge Config,Header,Nanoforge Config,,,,,Conditions
+MPC_maxStructuresForNanoforge,Disabled structure threshold,Int,12,,"If a market's structure count exceeds this number, all positive effects of a overgrown nanoforge will be disabled. Reccommended not to change - this is a balance measure.",,,Conditions
+MPC_nanoforgeIsIndustry,Core is industry,Boolean,false,,,,,Conditions
+MPC_nanoforgeBudgetMultMin,Budget minimum mult,Double,0.8,,"The higher the budget, the more intense effects are, both positive and negative.",,,Conditions
+MPC_nanoforgeBudgetMultMax,Budget maximum mult,Double,1.2,,,,,Conditions
+MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts (Days),Int,30,,,,,Conditions
+MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts (Days),Int,90,,,,,Conditions
 ,,,,,,,,
-MPC_conditionToggleHeader,Condition Toggles,Header,Condition Toggles,,,,,
-MPC_enableDefenseSatellites,Enable Defense Satellites,Boolean,true,,"If false, removes all instances of defense satellites from the sector.",,,
-,,,,,,,,
-MPC_satelliteConfigHeader,Satellite Config,Header,Satellite Config,,,,,
-MPC_preventSatelliteTurning,Prevent in-combat turning,Boolean,true,,Satellites will not turn whatsoever in combat. May theoretically improve combat performance if disabled.,,,
-MPC_discoverSatellitesInBulk,Discover satellites in bulk,Boolean,false,,"If true, apon discovering a satellite in orbit of an entity, the entire ring will be discovered.",,,
-MPC_satelliteInterferenceDistanceBase,Interference distance base,Double,90.0,,"The higher, the further away satellites will interfere in battles from.",,,
-MPC_satelliteInterferenceDistanceMult,Interference distance mult,Double,1.0,,"The higher, the further away satellites will interfere in battles from. Applied after base.",,,
-MPC_maxSatelliteFpBonus,Max fleet FP bonus,Int,10,,"The higher, the more FP a satellite fleet can spawn with.",,,
-MPC_maxSatelliteFpBonusMult,Max fleet FP bonus mult,Double,1.0,,"The higher, the more FP a satellite fleet can spawn with. Applied after base.",,,
-,,,,,,,,
-MPC_overgrownNanoforgeHeader,Nanoforge Config,Header,Nanoforge Config,,,,,
-MPC_maxStructuresForNanoforge,Disabled structure threshold,Int,12,,"If a market's structure count exceeds this number, all positive effects of a overgrown nanoforge will be disabled. Reccommended not to change - this is a balance measure.",,,
-MPC_nanoforgeIsIndustry,Core is industry,Boolean,false,,,,,
-MPC_nanoforgeBudgetMultMin,Budget minimum mult,Double,0.8,,,,,
-MPC_nanoforgeBudgetMultMax,Budget maximum mult,Double,1.2,,,,,
-MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts,Int,30,,In days.,,,
-MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts,Int,90,,,,,
+MPC_nexBarrageAbilityHeader,Satellite barrage settings,Header,Satellite barrage settings,,,,,Nexerelin
+MPC_satelliteBarrageDamage,Satellite barrage base damage,Double,2.0,,"While satellite barrage is active, this damage is distributed across all enemy units on the target industry every turn.",0.0,20.0,Nexerelin
+MPC_satelliteBarrageDuration,Satellite barrage duration (In turns),Int,3,,Ensure the ability entry in groundBattleDefs.json has its cooldown match or exceed this value.,0,50,Nexerelin
+MPC_satelliteBarrageDisruptTime,Satellite barrage base disruption time (Days),Int,9,,"While satellite barrage is active, the target industry is disrupted this much per turn (even if held by friendlies).",0,365,Nexerelin

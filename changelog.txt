@@ -15,15 +15,27 @@ New terrain: Meson field
 
 All terrain can now be scanned for hyperspace topography
     Hyperspace bipartisan
-        Scan the jump points
+        Scan the jump points, the clouds are weirdly inconsistant
     Ultramagnetic field
     Meson field
 
 New command: niko_MPC_findTerrainWithId
 FindPlanetsWithCondition changed to niko_MPC_findPlanetsWithCondition
 
+Anti-Asteroid Satellites
+    Added a ability to ground battles: Satellite Barrage
+    Requires friendly satellites over the planet
+    Single industry target
+    For three turns, damages enemy units on the target industry and forces them to be reorganized for at least one turn
+        This reduces their outputted damage and makes them unable to move out of the industry
+        Basically, suppressive fire
+
+    Long cooldown
+    No global cooldown - can be used in conjunction with other abilities
+
 Hyperspace Bipartisan
     Slipstream detection radius no longer scales on pop size, is now a flat 7 ly
+    Planetary shields now make the market count as not being in the clouds
 
 STC districts
     Spawn rate reduced
@@ -32,9 +44,14 @@ STC districts
 Spy arrays
     Spawn rate reduced
     Changed defense increase to mult for simplicity
+    Stealth bonus is now 0.5x - thats half the detected-at range baby
 
 Ultramagnetic field
     Changed defense increase to mult for simplicity
+
+Updated tips
+
+LunaSettings separated into sections
 
 Bug fixes
     Fixed a bug where indevo arty stations could be fought in an inappropiate setting by engaging defense satellites

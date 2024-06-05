@@ -748,8 +748,6 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     open fun areWeHostileTo(fleet: CampaignFleetAPI): Boolean {
-        val ourMarket = getOurMarket()
-
         val fleetWantsToFight = getDummyFleetWithUpdate()?.isHostileTo(fleet)
         if (fleetWantsToFight == null) {
             displayError("somehow dummyfleet was null after an access")

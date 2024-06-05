@@ -1,11 +1,24 @@
 {
-	"conditions": {
-		"niko_MPC_antiAsteroidSatellitesDerelict"{
-			"desc":"",
-			"highlights":["drop attrition", "40%", "prevents bombardment"],
-			"color":[155,139,134,255],
-			"plugin":"data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satellitesNexPlugin",
-			
-		}
-	}
+	#"conditions": {
+	#	"niko_MPC_antiAsteroidSatellitesDerelict"{
+	#		"desc":"",
+	#		"highlights":["drop attrition", "40%", "prevents bombardment"],
+	#		"color":[155,139,134,255],
+	#		"plugin":"data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_satellitesNexPlugin",
+	#		
+	#	}
+	#}
+	
+	"abilities":{
+		"niko_MPC_satelliteBarrage":{
+			"name":"Satellite Barrage",
+			"icon":"graphics/icons/skills/ranged_specialization.png",
+			"plugin":"data.nexerelin.satelliteBarrageNexAbilityPlugin",
+			"sound":"nex_sfx_gb_attrition",
+			"cooldown":6,
+			"cooldownGlobal":0,
+			"color":[121, 8, 8, 255],
+			"order":5,
+		},
+	},
 }

@@ -1,7 +1,6 @@
 package data.utilities
 
 import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
@@ -17,21 +16,16 @@ import com.fs.starfarer.campaign.econ.PlanetConditionMarket
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.baseOvergrownNanoforgeStructure
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCondition
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeRandomizedSource
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
-import data.utilities.niko_MPC_ids.overgrownNanoforgeJunkHandlerMemoryId
-import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
-import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
-import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
-import java.lang.NullPointerException
 
 object niko_MPC_marketUtils {
 
@@ -329,5 +323,9 @@ object niko_MPC_marketUtils {
 
     fun Industry.isSpacePort(): Boolean {
         return this is Spaceport
+    }
+
+    fun Industry.getIndustryDisruptTime(): Float {
+        return spec.disruptDanger.disruptionDays
     }
 }

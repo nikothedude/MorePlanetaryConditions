@@ -10,7 +10,7 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 class niko_MPC_spyArrays: niko_MPC_baseNikoCondition() {
 
     companion object {
-        val sameFactionSensorProfileMult = 0.7f
+        val sameFactionSensorProfileMult = 0.5f
         val stabilityIncrement = 1f
         val groundDefenseMult = 1.1f
     }

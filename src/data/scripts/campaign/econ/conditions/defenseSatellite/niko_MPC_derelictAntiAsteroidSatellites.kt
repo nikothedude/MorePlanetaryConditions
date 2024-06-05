@@ -11,6 +11,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.everyFrames.niko_MPC_satelliteCustomEntityRemovalScript
 import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_marketUtils.hasCustomControls
+import data.utilities.niko_MPC_settings
 
 
 class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBase() {
@@ -134,5 +135,14 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
             "any battle that takes place very close to the planet will have satellites interfere",
             "enhanced"
         )
+
+        if (niko_MPC_settings.nexLoaded) {
+            tooltip.addPara(
+                "The satellites can be used to perform a %s that pins down an entire industry's worth of enemy forces.",
+                10f,
+                Misc.getHighlightColor(),
+                "powerful ground battle ability"
+            )
+        }
     }
 }

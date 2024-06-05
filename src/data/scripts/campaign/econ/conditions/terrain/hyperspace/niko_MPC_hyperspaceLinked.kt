@@ -324,9 +324,18 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         )
 
         if (!containedByHyperclouds()) {
+            var desc = ""
+            val localHighlights: ArrayList<String> = ArrayList()
+            if (marketProtected()) {
+                desc += "Since ${market.name} is protected by a %s, it is isolated from external hazards. "
+                localHighlights += "planetary shield"
+            }
+            desc += "Further effects could be acquired if ${market.name} was within hyperclouds."
             tooltip.addPara(
-                "Further effects could be acquired if ${market.name} was within hyperclouds.",
-                5f
+                desc,
+                5f,
+                Misc.getHighlightColor(),
+                *(localHighlights.toTypedArray())
             )
             return
         }
@@ -360,7 +369,16 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         )
     }
 
+    private fun marketProtected(): Boolean {
+        val market = getMarket() ?: return false
+        for (industry in market.industries) {
+            if (industry.id == Industries.PLANETARYSHIELD && (industry.isFunctional)) return true
+        }
+        return false
+    }
+
     fun containedByHyperclouds(): Boolean {
+        if (marketProtected()) return false
         val plugin = terrain ?: return false
         val primaryEntity = getMarket()?.primaryEntity ?: return false
         return plugin.containsEntity(primaryEntity)

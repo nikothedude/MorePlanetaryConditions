@@ -63,12 +63,12 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     companion object {
-        const val HYPERSPACE_TOPOGRAPHY_POINTS = 30
+        const val HYPERSPACE_TOPOGRAPHY_POINTS = 20
 
-        const val NORMAL_DETECTED_MULT = 5f
+        const val NORMAL_DETECTED_MULT = 7f
 
         const val STORM_DETECTED_MULT = 0.5f
-        const val STORM_SENSOR_MULT = 5f
+        const val STORM_SENSOR_MULT = 7f
 
         val baseColors = arrayOf(
             Color(237, 246, 5, 43),

@@ -34,6 +34,15 @@ import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadSettings
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
+import data.utilities.niko_MPC_settings.loadAllSettings
+import data.utilities.niko_MPC_settings.loadNexSettings
+import data.utilities.niko_MPC_settings.nexLoaded
+import lunalib.lunaSettings.LunaSettings
+import lunalib.lunaSettings.LunaSettingsListener
+import niko.MCTE.niko_MCTE_modPlugin
+import niko.MCTE.settings.MCTE_settings
+import niko.MCTE.utils.MCTE_debugUtils
+import org.apache.log4j.Level
 
 class niko_MPC_modPlugin : BaseModPlugin() {
 
@@ -56,7 +65,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             throw RuntimeException("LazyLib is required for more planetary conditions!")
         }
         try {
-            loadSettings()
+            loadAllSettings()
         } catch (ex: Exception) {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
@@ -72,6 +81,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
         niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
+        nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)
@@ -161,6 +171,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()
         }
+
+        LunaSettings.addSettingsListener(settingsChangedListener())
     }
 
     override fun beforeGameSave() {
@@ -278,6 +290,17 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             if (handler.allowedInLocationWithTag(Tags.THEME_CORE)) continue
             val location: LocationAPI = handler.getLocation() ?: continue
             if (location.hasTag(Tags.THEME_CORE)) handler.delete()
+        }
+    }
+
+    class settingsChangedListener : LunaSettingsListener {
+        override fun settingsChanged(modID: String) {
+            try {
+                loadAllSettings()
+            } catch (ex: Exception) {
+                MCTE_debugUtils.displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
+                MCTE_debugUtils.log.debug("info:", ex)
+            }
         }
     }
 }

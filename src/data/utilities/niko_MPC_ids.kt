@@ -1,6 +1,7 @@
 package data.utilities
 
 object niko_MPC_ids {
+    const val NEX_GROUND_REPORT_PLUGIN_ID = "MPC_groundReportPlugin"
     const val hyperspaceLinkedExitJumppoints = "\$niko_MPC_hyperspaceLinkedExitJumppoints" // used for scanning in hyperspace
     const val hyperspaceLinkedJumpPointDesignationId = "\$niko_MPC_hyperspaceLinkedJumpPoint"
     const val hyperMagneticFieldMemoryId = "\$niko_MPC_hyperMagneticFieldMemoryId"

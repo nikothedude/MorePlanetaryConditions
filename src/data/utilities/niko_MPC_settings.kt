@@ -16,6 +16,7 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    var nexLoaded: Boolean = false
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
 
@@ -69,6 +70,11 @@ object niko_MPC_settings {
         //Color(38, 155, 130, 100),
     )
 
+    fun loadAllSettings() {
+        loadSettings()
+        loadNexSettings()
+    }
+
     @JvmStatic
     @Throws(JSONException::class, IOException::class)
     fun loadSettings() {
@@ -88,6 +94,12 @@ object niko_MPC_settings {
         OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX = LunaSettings.getFloat(modId, "MPC_nanoforgeBudgetMultMax")!!
         OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMinTimeBetweenSpreads")!!
         OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMaxTimeBetweenSpreads")!!
+    }
+
+    fun loadNexSettings() {
+        SATELLITE_NEX_ABILITY_BASE_TOTAL_DAMAGE = LunaSettings.getFloat(modId, "MPC_satelliteBarrageDamage")!!
+        SATELLITE_NEX_ABILITY_DURATION = LunaSettings.getInt(modId, "MPC_satelliteBarrageDuration")!!
+        SATELLITE_NEX_ABILITY_BASE_DISRUPTION_TIME = LunaSettings.getInt(modId, "MPC_satelliteBarrageDisruptTime")!!
     }
 
     @JvmStatic
@@ -152,10 +164,12 @@ object niko_MPC_settings {
 
     var USE_SATELLITE_INTERACTION_PLUGIN: Boolean = true
 
+    var SATELLITE_NEX_ABILITY_BASE_TOTAL_DAMAGE = 2f // pretty low
+    var SATELLITE_NEX_ABILITY_BASE_DISRUPTION_TIME = 9 // in days
+    var SATELLITE_NEX_ABILITY_DURATION = 3 // 3 turns
+
     var OVERGROWN_NANOFORGE_IS_INDUSTRY = false
 
-    //var OVERGROWN_NANOFORGE_CARES_ABOUT_PLAYER_PROXIMITY_FOR_DECON = true
-    //var OVERGROWN_NANOFORGE_INTERACTION_DISTANCE = 1000f //todo: adjust
     var OVERGROWN_NANOFORGE_USE_JUNK_STRUCTURES = true
 
     var HARD_LIMIT_FOR_DEFENSE = 500f
