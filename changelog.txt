@@ -1,5 +1,5 @@
 3.2.0:
-PROBABLY SAVE COMPATIBLE (IF THIS IS RELEASED WITHOUT THIS MESSAGE BEING CHANGED CRUSIFY ME)
+PROBABLY SAVE COMPATIBLE
 
 New terrain: Meson field
     Magfield-like: Same texture, has storms, is a ring
