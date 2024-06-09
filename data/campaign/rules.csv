@@ -119,7 +119,7 @@ niko_MPC_flagshipIsPhase ""getPlayerFleet""",,"The autopilot, reprogrammed by yo
 Your ops chief ceases barking coordinates and adjustments into his mic. They open a comms link to the fleet and issue one order, ""Hold"". Then a moment later, ""Execute"".","10:niko_MPC_phaseThroughSatellitesDistractProtectorTwo:Begin evasive maneuvers",
 niko_MPC_phaseThroughSatellitesDistractProtectorTwo,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractProtectorTwo",,"You immediately dive into phase with the rest of your group, firing off jury-rigged flares on the hull of your flagship. The satellites are immediately attracted to these flares, and by extension, you, firing barrage after barrage into your phase ghost. You, and your ops chief, both take care to ensure you don't cause the firing line to intersect with any protectorates.
 
-You constanly re-adjust, responding to command after command from your ops chief, your wingmates, and the protectorate, painting wide arcs in space with your engine contrail.
+You constantly readjust, responding to command after command from your ops chief, your wingmates, and the protectorate, painting wide arcs in space with your engine contrail.
 
 ","10:niko_MPC_phaseThroughSatellitesDistractProtectorThree:Continue",
 niko_MPC_phaseThroughSatellitesDistractProtectorThree,DialogOptionSelected,"$option == niko_MPC_phaseThroughSatellitesDistractProtectorThree","FireBest niko_MPC_phaseThroughSatellitesDistractEnd","A few minutes of spectacular fireworks later, your op chief barks into their mic the command ""End operation"", and your wing immediately unphases. You receive the order to re-enter the fleet's formation, to which you give to the autopilot.",,
@@ -154,4 +154,137 @@ niko_MPC_ecmSatellitesOptionTextEnd,DialogOptionSelected,"$option == niko_MPC_ec
 "#END Alternate Options",,,,,,
 "#END Satellites Blocking Access",,,,,,
 "#END Satellite Interactions",,,,,,
+,,,,,,
+# Corona Resist Station,,,,,,
+MPC_coronaResistStationExploreSelected,DialogOptionSelected,"$MPC_coronaResistStation score:1000
+$MPC_coronaResistStationFleet != null
+$option == salExplore
+
+","FireBest MPC_coronaResistStationExplore",,,
+MPC_coronaResistStationFleetDefeated,MPC_coronaResistStationFleetDefeated,,"niko_MPC_coronaResistStation genLoot","With the defenders defeated, your approach to the station is unimpeded.","0:salBeatDefendersContinue:Continue",
+MPC_coronaResistStationFleetLeft,MPC_coronaResistStationFleetLeft,,"niko_MPC_coronaResistStation genLoot","With the defenders abandoning the station, you may approach it unimpeded.","0:salBeatDefendersContinue:Continue",
+MPC_coronaResistStationFleetLeftOption,DialogOptionSelected,"$option == MPC_coronaResistStationFleetLeftOption","FireBest MPC_coronaResistStationFleetLeft",,,
+,,,,,,
+# Comms,,,,,,
+MPC_coronaResistFleetCommsOpening,OpenCommLink,"$MPC_skulioda_person score:5000","FireBest MPC_coronaResistFleetCommsOpeningText
+
+FireAll MPC_coronaResistFleetCommsOpeningOptions",,,
+MPC_coronaResistFleetAlwaysOptions,MPC_coronaResistFleetCommsOpeningOptions,,"SetShortcut cutCommLink ""ESCAPE""",,"1:MPC_coronaResistFleetWhoAreYouOption:Ask $himOrHer who $heOrShe is
+2:MPC_coronaResistFleetXIVLegionWhatOption:Inquire how in the hell did they get a XIV Legion
+10:MPC_coronaResistFleetHaggleInquiryOption:Ask about the station
+600:cutCommLink:Cut the comm link",
+MPC_coronaResistFleetCommsOpeningFirstInteractionHostile,MPC_coronaResistFleetCommsOpeningText,"$notTalkedToYet == true
+!niko_MPC_coronaResistStation stationFriendly score:500","$notTalkedToYet = false
+
+AddOption 400 MPC_coronaResistFleetCommsEnableTransponderOption ""Enable your transponder""
+FireBest MPC_coronaResistFleetCommsAddTransponderOption
+","Your comms request is accepted promptly, exposing a middle-aged spacer staring dimly at you. ""Hey bud"" he quips dully. ""Sorry 'bout what's about to happen here, but there's only 3 options of what you could be."" He takes a breath, beginning to list them out. ""One, a bounty hunter, in which case I'm screwed - and I wanna go down fighting."" He spits into a can on his desk, conveniently named ""disrespectful spit jar"" in green cursive. ""Two, a fed, and to that I say - congratulations, you-"" he begins clapping. ""-FINALLY found me, after TWENTY years."" he says as he stares a hollow hole into yourself. ""Or THREE..."" he pauses. ""A poor sod who just found the most wanted man in the galaxy.""
+
+""In which case, sorry bud, but we cant have the heggie boys finding us out."" Right as he says this, his ships finish maneuvering, and their weapons power up, but he disarms them with a quick executive command. ""But in th' interest of fairness, and maybe some pity... y'can plead your case. Maybe we'll let ya go, who knows... maybe it'll give y' some comfort in your demise knowin' who killed y'."" He sighs wistfully. A hint of regret carries his words.
+
+""So... any questions?""",,
+MPC_coronaResistFleetCommsOpeningFutureHostile,MPC_coronaResistFleetCommsOpeningText,"$notTalkedToYet == false
+!niko_MPC_coronaResistStation stationFriendly score:500","AddOption 400 MPC_coronaResistFleetCommsEnableTransponderOption ""Enable your transponder""
+FireBest MPC_coronaResistFleetCommsAddTransponderOption
+
+$MPC_defeatedMentally = true
+
+SetTextHighlights ""get us out""
+
+$notTalkedToYet = false","A familiar face appears before you, looking rather disheveled. ""...why'd y' come back? Come t' mock me?"" He sighs.
+
+""W' can't live in peace anymore cause y'left... y'coulda told someone 'bout us... so now what? What th' fuck do you *want*? If y'aint here t' get us out, and y'aint here t' kill us, y'just gonna die!""",,
+MPC_coronaResistFleetCommsOpeningFirstInteractionFriendly,MPC_coronaResistFleetCommsOpeningText,"$notTalkedToYet == true
+niko_MPC_coronaResistStation stationFriendly score:450","$notTalkedToYet = false","Your comms request is accepted promptly, exposing a middle-aged spacer staring dimly at you. ""Well well well..."" a warm smile spreads across his face. ""Not a man o' heart, but a man I 'an trust not t' call me out."" He sighs.
+
+""Y've found th' pirate lord $lastName, pinned 'own and unable t' move. Y'got any questions?""",,
+MPC_coronaResistFleetCommsOpeningFutureFriendly,MPC_coronaResistFleetCommsOpeningText,"$notTalkedToYet == false
+niko_MPC_coronaResistStation stationFriendly score:450","$notTalkedToYet = false","Your comms request is accepted promptly, exposing a middle-aged spacer staring dimly at you. ""Hey bud"" he quips dully. ""Sorry 'bout what's about to happen here, but there's only 3 options of what you could be."" He takes a breath, beginning to list them out. ""One, a bounty hunter, in which case I'm screwed - and I wanna go down fighting."" He spits into a can on his desk, conveniently named ""disrespectful spit jar"" in green cursive. ""Two, a fed, and to that I say - congratulations, you-"" he begins clapping. ""-FINALLY found me, after TWENTY years."" he says as he stares a hollow hole into yourself. ""Or THREE..."" he pauses. ""A poor sod who just found the most wanted man in the galaxy.""
+
+""In which case, sorry bud, but we cant have the heggie boys finding us out."" Right as he says this, his ships finish maneuvering, and their weapons power up, but he disarms them with a quick executive command. ""But in th' interest of fairness, and maybe some pity... y'can plead your case. Maybe we'll let ya go, who knows... maybe it'll give y' some comfort in your demise knowin' who killed y'."" He sighs wistfully. A hint of regret carries his words.
+
+""So... any questions?""",,"""Whatcha' want""?
+
+for some reason this is always picked so i just pasted the most important one in here"
+MPC_coronaResistFleetWhoAreYouOption,DialogOptionSelected,"$option == MPC_coronaResistFleetWhoAreYouOption",,"He scoffs, rolling his eyes. ""How th' *hell* did the sector ever forget 'bout me..."" he sighs out, shaking his head, before shrugging and adding ""Y'must have some real big issues right now to forget a pirate lord like *me*.""
+
+A look in his eyes captures a silent reminiscing, before he snaps his head back to the screen to explain. ""Name's Jensen, $name, but back in the day I just went by Skulioda. Led me a powerful raiding party - was hittin' trade fleets day in and day out, 'least... that was 'for we hit the *big one*."" He shivers at the thought. But before he can continue your tangent, you subconciously make your ""please some expositing your entire life face"", to which he sticks out a hand and exclaims ""No no, this is important! This is for context!""
+
+He gestures broadly to the station around him. ""We stole... *this*."" He pauses for dramatic effect, then sighs when you don't express the desired emotion. ""We stole some kinda... giant array of freaky-ass dishes right out the ass of a diktat convoy. We figured out what it did pretty damn fast from how when we dove into this system, the pulsar didn't hit us for *shit*. So, with half the sector on our ass, and a bounty mounting, we hid in here - found a autoforge - and have been 'ere ever since.""",,
+MPC_coronaResistFleetXIVLegionWhatOption,DialogOptionSelected,"$option == MPC_coronaResistFleetXIVLegionWhatOption",,"He has no reaction to your rather startling language.
+
+""'found it."" He explains matter-of-frankly. ""Over 'ere."", he says, nodding to the left, which your tactical officer helpfully translates to being *south* from here.
+
+While a completely plausible explanation, it makes you wonder why all the other scavengers of the sector fail to find XIV legions when they are literally just *lying around*.",,
+MPC_coronaResistFleetCommsTransponderOption,DialogOptionSelected,"$option == MPC_coronaResistFleetCommsTransponderOption","niko_MPC_coronaResistStation toggleTransponder
+FireBest MPC_coronaResistFleetCommsTransponderOnReaction",,,
+MPC_coronaResistFleetCommsAddTransponderOptionEnable,MPC_coronaResistFleetCommsAddTransponderOption,"!$player.transponderOn
+
+!niko_MPC_coronaResistStation stationFriendly
+niko_MPC_coronaResistStation wouldBeFriendlyIfTOn","SetEnabled MPC_coronaResistFleetCommsTransponderOption true",,,
+MPC_coronaResistFleetCommsAddTransponderOptionDisableTOn,MPC_coronaResistFleetCommsAddTransponderOption,"$player.transponderOn score:1000","SetEnabled MPC_coronaResistFleetCommsTransponderOption false
+SetTooltip MPC_coronaResistFleetCommsTransponderOption ""Your transponder is already on.""",,,
+MPC_coronaResistFleetCommsAddTransponderOptionDisableTOff,,"!$player.transponderOn
+
+!niko_MPC_coronaResistStation wouldBeFriendlyIfTOn","SetEnabled MPC_coronaResistFleetCommsTransponderOption false
+SetTooltip MPC_coronaResistFleetCommsTransponderOption ""Revealing your identity would serve no purpose right now.""",,,
+MPC_coronaResistFleetCommsEnableTransponderOption,DialogOptionSelected,"$option == MPC_coronaResistFleetCommsEnableTransponderOption","niko_MPC_coronaResistStation toggleTransponder
+FireBest MPC_coronaResistFleetCommsTransponderOnReaction",,,
+MPC_coronaResistFleetCommsTransponderOnReactionDisarm,MPC_coronaResistFleetCommsTransponderOnReaction,"niko_MPC_coronaResistStation stationFriendly","niko_MPC_coronaResistStation disarm","He stares at his console for a moment, processing the information before him. Then, a moment later, he lets his head fall and a sigh escape his lips. He looks up wearily, and mutters ""Finally... a friendly face. You... you can go. Just don't tell anyone we're here, aye...?""",,
+MPC_coronaResistFleetHaggleInquiryOption,DialogOptionSelected,"$option == MPC_coronaResistFleetHaggleInquiryOption","SetTextHighlights 250,000","A wave of regret flashes over him, as his expression sours. ""Ah... this piece o' shit..."" he grumbles out, glaring off into a particular corner of the his bridge. He snaps his gaze up, delivering a terrible stare. ""This place... is what sealed our fate.""
+
+""Ever since we got this 'baryon array' as m'boys call it from the diktat, we've been hunted, killed, and pinned down, only survivin' from the occasional raid fleet we get out. We live comfortably, yeah, this place has got what we need..."" he sighs. ""But... not what we *want*.""
+
+""See, the time out 'ere has done a bit o' a number on us. Near a decade of isolation..."" he shivers. ""Me an' the crew are hankerin' t' get back t' land, but all we can ever manage to raid is a goddamn food store. Not NEARLY 'nough t' give us enough to live comfortably, much less under th' radar.""","50:MPC_coronaResistBack:Back","0:MPC_coronaResistFleetHaggleOption:Purchase the station off him, as well as the baryon array
+
+FireBest MPC_coronaResistFleetHaggleModifyOption
+
+""If I had to guess... it'd cost us 250,000 credits t' get outta here, back t' jangala, livin' amongst th' priests and folk in them hab modules wittout anyun' knowin' a thing. Back in th' day, it'd probably cost a lot more, but... heh, we've lost lotsa good men. Don't have t' fund what ain't breathin'... "" he says with a certain melancholy."
+MPC_coronaResistFleetHaggleOption,DialogOptionSelected,"$option == MPC_coronaResistFleetHaggleOption",,"He blinks once, before laughing. ""Y're kiddin'!"" He quickly realizes, no, in fact, you are NOT kidding. ""Wh-really? Y'd... pay for somethin' this old? This... fuckin' *useless*?"" He pauses, before looking over his shoulder and shrugging, smiling gently. ""Well. I guess it ain't that useless. That baryon array back there can protect a fuckin' onslaught from god himself... maybe I could upcharge y' instead? Heh... ain't like I've ever lost a *fight*.""
+
+He grins mischevously before wrly chuckling, and shaking his head, to the ease of your bridge crew. ""Jus' kiddin'. Fuck, I'm jus' happy we're finally gettin' t' leave... I'd PAY y' to take this accursed ARRAY of my hands."" He sighs wistfully and brings up his intercom, announcing the good news to the crew. The delighted comms chatter becomes unbearable, and within seconds, your sensor officer disables the wiretap module, much to your appreciation.
+
+""Well cap'n... can't say it's been a pleasure. But I can't say it *hasn't*. I doubt you'll see us again - after all this time, we've grown kinda tired of bein' pirates. But 'ay - if you ever visit a bar in jangala...""
+
+""*Don't* try to find me. 'cause I'll shoot anyone who tries to tie me to my old life."" He winks. ","0:MPC_coronaResistFleetHaggleTwo:Nod politely and wish them well","where you buy the station"
+MPC_coronaResistFleetHaggleTwo,DialogOptionSelected,"$option == MPC_coronaResistFleetHaggleTwo","niko_MPC_coronaResistStation getRidOfFleets
+niko_MPC_coronaResistStation friendlyAction
+niko_MPC_coronaResistStation leaveToJangala","He seems to remember something, before opening a panel on his desk, with a big red button on it. ""Oh, yeah - forgot t' shut off the defenses."" He presses it, and immediately, you register hundreds of high-power detonations across the star system. ""That should make leavin' a lot easier."" When you ask your tactical officer for clarification, they report the sudden detonation of all hostile derelicts in the system.
+
+You watch from your desk as the previously hostile ships now exit the hangar, emergency burning hard into the inky void of space.","0:MPC_coronaResistStationFleetLeftOption:Continue",
+MPC_coronaResistFleetHaggleModifyNoTrust,MPC_coronaResistFleetHaggleModifyOption,"!niko_MPC_coronaResistStation wantsToSell","SetEnabled MPC_coronaResistFleetHaggleOption false
+SetTooltip MPC_coronaResistFleetHaggleOption ""He doesn't trust you enough yet. Try coming back with a higher pirate reputation.""",,,
+MPC_coronaResistFleetHaggleModifyNoCredits,MPC_coronaResistFleetHaggleModifyOption,"!niko_MPC_coronaResistStation hasEnoughCreditsToBuy","SetEnabled MPC_coronaResistFleetHaggleOption false
+SetTooltip MPC_coronaResistFleetHaggleOption ""You don't have enough credits to do this.""",,,
+MPC_coronaResistBack,DialogOptionSelected,"$option == MPC_coronaResistBack","FireAll MPC_coronaResistFleetCommsOpeningOptions","Aye.",,
+"#END Comms",,,,,,
+,,,,,,
+# First interaction,,,,,,
+MPC_coronaResistStationExploreUnintroduced,MPC_coronaResistStationExplore,"$MPC_coronaResistStationFleet != null
+niko_MPC_coronaResistStation fleetInStation","SetTextHighlights ""may trigger a tough hostile encounter""
+
+SetShortcut defaultLeave ""ESCAPE""","Your $shipOrFleet takes shelter behind the station, which generously shelters it from the withering hail of pulsed radiation emanating from the pulsar. Both you and your ops chief agree it would be wise to exercise caution, given the strange activity in the system coupled with the extra-and-sub-surface activity present on the station. 
+
+A quick sensor sweep shows startlingly high p-space activity, the endpoints of which show high baryon concentration. It is these points that correspond with the deflection of the pulsar, explaining the anomalous protection. A deeper scan shows something much more worrying: The station is powered, active, and containing organic life, with one particular set of hangars holding a flotilla of combat-ready ships (with the rest seemingly occupied by derelict auto-forges ready to churn out ship after ship after ship). Clearly, someone has occupied this station, and may not be exactly welcoming. If they have detected you or not is unknown, though ELINT systems are on alert.
+
+Before you can give your next order, your tactical officer warns you that approaching the station may trigger a tough hostile encounter, and that you should be ready for combat against what appears to be a capital-heavy fleet of mixed design, with numerous smaller escorts.","1:MPC_coronaResistStationExploreMoveFleetIn:Send a detachment of armed salvors
+500:defaultLeave:Don't risk an altercation and leave","!$MPC_introducedToPlayerFleet"
+MPC_coronaResistStationExploreMoveFleetInOne,DialogOptionSelected,"$option == MPC_coronaResistStationExploreMoveFleetIn",,"Expecting the worst, you give your ops chief permission to handpick an elite team for the mission. After 30 minutes, they return to you and drop a dossier on your station without a word, nearly spilling your coffee. After a quick sigh and a tactical repositioning of your mug, you open the dossier: 15 salvors armed with HV-Carbines, and 5 off-duty marines with salvage experience. Trusting your chief's wisdom, you slap the dossier close and give the go-ahead.","0:MPC_coronaResistStationExploreMoveFleetInTwo:Give your attention to the front screen",
+MPC_coronaResistStationExploreMoveFleetInTwoHostile,DialogOptionSelected,"$option == MPC_coronaResistStationExploreMoveFleetInTwo
+!niko_MPC_coronaResistStation stationFriendly","niko_MPC_coronaResistStation beginInitialConfrontation","The shuttles leave your $shipOrFleet and make their way to the station, your ops chief requesting constant updates (likely out of pulsar-derived paranoia). Apon arrival, and multiple assertions of optimal performance, your sensors suddenly alarm. Shooting your head down to your panel, you read multiple IR and UV spikes near the docking ports - small-arms fire. As if on queue, your ops chief snaps up following their latest SitRep and begins barking commands. ""Ripcord. Kill blocks. Seal. Seal. Affirm. Crack and burn.""
+
+The frantic comms chatter quickly gives way to steady yet shaken reports of massive resistance, including mounted heavy weaponry that nearly burnt a hole in one specific shuttle. Halfway from the station to your fleet, your tactical officer alarms as numerous ships emerge from the aforementioned hanger and bear down hard on your fleet, barely giving you time to assume a combat formation.
+
+As if things couldn't get worse, the bridge is suddenly flooded by a white light and you have to squint to make out what happened: The baryonic field seems to have been disabled, beginning the withering hail of ionized particles the pulsar so desperately wants to inflict upon your fleet.","0:MPC_coronaResistStationExploreMoveFleetPrepareForBattle:Prepare for battle",
+MPC_coronaResistStationExploreMoveFleetPrepareForBattle,DialogOptionSelected,"$option == MPC_coronaResistStationExploreMoveFleetPrepareForBattle","niko_MPC_coronaResistStation beginInitialConfrontation
+HighlightComms
+
+$MPC_introducedToPlayerFleet = true",,,
+"#END First interaction",,,,,,
+,,,,,,
+# Subsequent interactions,,,,,,
+MPC_coronaResistStationExploreIntroducedHostile,,,,,,
+MPC_coronaResistStationExploreIntroducedFriendly,,,,,,
+"#END Subsequent interactions",,,,,,
+"#END Corona Resist Station",,,,,,
 

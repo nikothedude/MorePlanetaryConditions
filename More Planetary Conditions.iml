@@ -36,5 +36,7 @@
     <orderEntry type="library" name="Interstellar Imperium" level="project" />
     <orderEntry type="library" name="jars" level="project" />
     <orderEntry type="library" name="ExerelinCore" level="project" />
+    <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
+    <orderEntry type="library" name="HMI" level="project" />
   </component>
 </module>

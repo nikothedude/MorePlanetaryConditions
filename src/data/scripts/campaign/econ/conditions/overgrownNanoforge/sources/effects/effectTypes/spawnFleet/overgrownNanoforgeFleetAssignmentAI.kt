@@ -118,6 +118,7 @@ class overgrownNanoforgeFleetAssignmentAI(
         }
 
         for (planet in system.planets) {
+            if (planet.isStar) continue
             if (planet == source) continue
             picker.add(planet, planetWeight)
         }

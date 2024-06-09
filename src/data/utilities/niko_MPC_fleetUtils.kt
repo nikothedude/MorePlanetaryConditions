@@ -2,6 +2,7 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.CampaignTerrainPlugin
 import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.rules.HasMemory
@@ -13,17 +14,21 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes.*
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
-import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_FleetRequest.FleetType
+import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin
 import com.fs.starfarer.api.loading.HullModSpecAPI
+import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
+import data.utilities.niko_MPC_fleetUtils.approximateCounterVelocityOfTerrain
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.util.vector.Vector2f
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import kotlin.math.abs
 
 object niko_MPC_fleetUtils {
     /**
@@ -192,5 +197,106 @@ object niko_MPC_fleetUtils {
         }
 
         return ecmValue
+    }
+
+    fun CampaignFleetAPI.counterTerrainMovement(days: Float) {
+        if (containingLocation == null) return
+
+        val velocity = velocity
+        for (terrain in containingLocation.terrainCopy) {
+            if (terrain.plugin == null) continue
+            val offset = approximateCounterVelocityOfTerrain(terrain.plugin, days) ?: continue
+
+            setVelocity(velocity.x + offset.x, velocity.y + offset.y)
+        }
+    }
+
+    /// Returns the velocity needed to counteract the pushforce of a given terrain entity.
+    fun CampaignFleetAPI.approximateCounterVelocityOfTerrain(plugin: CampaignTerrainPlugin, days: Float): Vector2f? {
+        if (!plugin.containsEntity(this)) return null // coronas still push you around bub
+        if (plugin is EventHorizonPlugin) return plugin.approximateOffsetForFleet(this, days)
+        if (plugin is PulsarBeamTerrainPlugin) return plugin.approximateOffsetForFleet(this, days)
+
+        return null
+    }
+    fun PulsarBeamTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float): Vector2f {
+        val intensity = getIntensityAtPoint(fleet.location)
+
+        // "wind" effect - adjust velocity
+        val maxFleetBurn = fleet.fleetData.burnLevel
+        val currFleetBurn = fleet.currBurnLevel
+
+        val maxWindBurn = params.windBurnLevel
+
+
+        val currWindBurn: Float = intensity * maxWindBurn
+        val maxFleetBurnIntoWind = maxFleetBurn - Math.abs(currWindBurn)
+
+        val angle = Misc.getAngleInDegreesStrict(entity.location, fleet.location)
+        val windDir = Misc.getUnitVectorAtDegreeAngle(angle)
+        if (currWindBurn < 0) {
+            windDir.negate()
+        }
+
+        val velDir = Misc.normalise(Vector2f(fleet.velocity))
+        velDir.scale(currFleetBurn)
+
+        val fleetBurnAgainstWind = -1f * Vector2f.dot(windDir, velDir)
+
+        var accelMult = 0.5f
+        if (fleetBurnAgainstWind > maxFleetBurnIntoWind) {
+            accelMult += 0.75f + 0.25f * (fleetBurnAgainstWind - maxFleetBurnIntoWind)
+        }
+
+        val seconds: Float = days * Global.getSector().clock.secondsPerDay
+
+        windDir.scale(seconds * fleet.acceleration * accelMult)
+        windDir.x = -windDir.x / 50 // somewhat arbitrary divisors but they do the job
+        windDir.y = -windDir.y / 50
+        return windDir
+    }
+    fun StarCoronaTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float): Vector2f? {
+        val intensity = getIntensityAtPoint(fleet.location)
+        val inFlare = flareManager.isInActiveFlareArc(fleet)
+
+        // "wind" effect - adjust velocity
+        val maxFleetBurn = fleet.fleetData.burnLevel
+        val currFleetBurn = fleet.currBurnLevel
+
+        var maxWindBurn = params.windBurnLevel
+        if (inFlare) {
+            maxWindBurn *= 2f
+        }
+
+        val currWindBurn: Float = intensity * maxWindBurn
+        val maxFleetBurnIntoWind = maxFleetBurn - abs(currWindBurn)
+
+        val angle = Misc.getAngleInDegreesStrict(entity.location, fleet.location)
+        val windDir = Misc.getUnitVectorAtDegreeAngle(angle)
+        if (currWindBurn < 0) {
+            windDir.negate()
+        }
+
+        val velDir = Misc.normalise(Vector2f(fleet.velocity))
+        velDir.scale(currFleetBurn)
+
+        val fleetBurnAgainstWind = -1f * Vector2f.dot(windDir, velDir)
+
+        var accelMult = 0.5f
+        if (fleetBurnAgainstWind > maxFleetBurnIntoWind) {
+            accelMult += 0.75f + 0.25f * (fleetBurnAgainstWind - maxFleetBurnIntoWind)
+        }
+        val fleetAccelMult = fleet.stats.accelerationMult.modifiedValue
+        if (fleetAccelMult > 0) { // && fleetAccelMult < 1) {
+            accelMult /= fleetAccelMult
+        }
+
+        val seconds = days * Global.getSector().clock.secondsPerDay
+
+        windDir.scale(seconds * fleet.acceleration * accelMult)
+
+        windDir.x = -windDir.x / 50
+        windDir.y = -windDir.y / 50
+        return windDir
     }
 }

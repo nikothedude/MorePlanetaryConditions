@@ -57,4 +57,16 @@ object niko_MPC_ids {
     const val globalSatelliteHandlerListId = "\$niko_MPC_globalSatelliteHandlerList"
 
     const val isDummyFleetId = "\$niko_MPC_isDummyFleet"
+
+    const val CORONA_RESIST_STATION_TAG = "MPC_coronaResistStationTag"
+    const val CORONA_RESIST_DEFENDER = "\$niko_MPC_coronaResistDefenderFleet"
+    const val CORONA_RESIST_SYSTEM = "\$niko_MPC_coronaResistSystem"
+    const val CORONA_RESIST_STATION = "\$MPC_coronaResistStation"
+    const val CORONA_RESIST_DEFENDER_CORE = "\$MPC_coronaResistDefenderFleetCore"
+    const val CORONA_RESIST_STATION_DEFENDER_FLEET = "\$MPC_coronaResistStationFleet"
+    const val SKULIODA_MEMORY_TAG = "\$MPC_skulioda_person"
+
+    // stored in global mem
+    const val CORONA_RESIST_STATION_GLOBAL = "\$MPC_coronaResistStationGlobal"
+    const val UNDER_CORONA_RESIST_EFFECT = "\$MPC_underCoronaResistEffect"
 }

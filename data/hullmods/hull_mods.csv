@@ -1,17 +1,23 @@
-name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sprite
-Tachyon Fighter Comms,niko_MPC_tachyonFighterComms,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_tachyonFighterComms,Increases fighter engagement range by %s.,,graphics/hullmods/integrated_point_defense_ai.png
+name,id,tier,rarity,tech/manufacturer,tags,uiTags,base value,unlocked,hidden,hiddenEverywhere,cost_frigate,cost_dest,cost_cruiser,cost_capital,script,desc,short,sModDesc,sprite
+Tachyon Fighter Comms,niko_MPC_tachyonFighterComms,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_tachyonFighterComms,Increases fighter engagement range by %s.,,,graphics/hullmods/integrated_point_defense_ai.png
 Fundumental Point Defense Integration,niko_MPC_superPDComputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_superPDComputer,"Gives all small non-missile weapons the ability to automatically target incoming enemy missiles and to identify - and ignore - decoy flares. Targeting missiles takes priority over targeting enemy ships or fighters.
 
-In addition, all point-defense weapons get the best possible target leading, regardless of combat readiness, and all damage to missiles is increased by %s. On top of this, all point-defense weapons gain a range extension of %s.",,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_satellitePlateWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessRight,Armor plates will explode when these explode;.,,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_satellitePlateWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessLeft,Armor plates will explode when these explode;.,,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_satelliteCoreStrutWeakness,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satelliteCoreStrutWeakness,Connector module will explode when these explode;.,,graphics/hullmods/integrated_point_defense_ai.png
-No explosion damage,niko_MPC_noExplosionDamage,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_noExplosionDamage,Makes explosions do no damage.,,graphics/hullmods/targeting_supercomputer.png
-Minor Fighter Focus,niko_MPC_minorFighterFocus,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_minorFighterFocus,awfawdawd,,graphics/hullmods/integrated_point_defense_ai.png
-Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all non-PD weapons by %s.,Extends the range of all non-PD weapons by %s.,graphics/hullmods/targeting_supercomputer.png
-Fighter Focus,niko_MPC_fighterFocus,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_fighterFocus,awfawdawd,,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_connectorWeakness,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorWeakness,Struts connected to this will explode when this explodes.,,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_connectorStrutWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessRight,Frontal plates will explode when these explode.,,graphics/hullmods/integrated_point_defense_ai.png
-Structural Weakness,niko_MPC_connectorStrutWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessLeft,Frontal plates will explode when these explode.,,graphics/hullmods/integrated_point_defense_ai.png
-Supportive Presence,niko_MPC_cheapDeployment,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_cheapDeployment,Removes DP.,,graphics/hullmods/integrated_point_defense_ai.png
-Accelerated Particle Drivers,niko_MPC_acceleratedParticleDrivers,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_acceleratedParticleDrivers,awfawdawd,,graphics/hullmods/integrated_point_defense_ai.png
+In addition, all point-defense weapons get the best possible target leading, regardless of combat readiness, and all damage to missiles is increased by %s. On top of this, all point-defense weapons gain a range extension of %s.",,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_satellitePlateWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessRight,Armor plates will explode when these explode;.,,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_satellitePlateWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satellitePlateWeaknessLeft,Armor plates will explode when these explode;.,,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_satelliteCoreStrutWeakness,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_satelliteCoreStrutWeakness,Connector module will explode when these explode;.,,,graphics/hullmods/integrated_point_defense_ai.png
+No explosion damage,niko_MPC_noExplosionDamage,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_noExplosionDamage,Makes explosions do no damage.,,,graphics/hullmods/targeting_supercomputer.png
+Minor Fighter Focus,niko_MPC_minorFighterFocus,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_minorFighterFocus,awfawdawd,,,graphics/hullmods/integrated_point_defense_ai.png
+Gravitic Targetting Supercomputer,niko_MPC_graviticSupercomputer,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_graviticSupercomputer,Extends the range of all non-PD weapons by %s.,Extends the range of all non-PD weapons by %s.,,graphics/hullmods/targeting_supercomputer.png
+Fighter Focus,niko_MPC_fighterFocus,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_fighterFocus,awfawdawd,,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_connectorWeakness,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorWeakness,Struts connected to this will explode when this explodes.,,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_connectorStrutWeaknessRight,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessRight,Frontal plates will explode when these explode.,,,graphics/hullmods/integrated_point_defense_ai.png
+Structural Weakness,niko_MPC_connectorStrutWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_connectorStrutWeaknessLeft,Frontal plates will explode when these explode.,,,graphics/hullmods/integrated_point_defense_ai.png
+Supportive Presence,niko_MPC_cheapDeployment,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_cheapDeployment,Removes DP.,,,graphics/hullmods/integrated_point_defense_ai.png
+Accelerated Particle Drivers,niko_MPC_acceleratedParticleDrivers,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_acceleratedParticleDrivers,awfawdawd,,,graphics/hullmods/integrated_point_defense_ai.png
+,,,,,,,,,,,,,,,,,,,
+Projected Solar Shielding,niko_MPC_fighterSolarShielding,3,,,"defensive, req_spaceport, no_drop, restricted","Fighters, Defenses, Requires Dock",25000,FALSE,,,2,4,6,11,data.hullmods.niko_MPC_fighterSolarShielding,"Utilizes p-space to establish a thin baryon field around the ship's fighters, reducing the effect a star's corona may have on the fighter. 
+
+In combat, reduces the energy damage fighters take by %s.",,Increases the protection from solar coronae and similar hazards to %s.,graphics/hullmods/solar_shielding.png
+,,,,,,,,,,,,,,,,,,,
+YOU SHOULDNT SEE THIS,niko_MPC_coronaResistShielding,,,,,,,,TRUE,TRUE,0,0,0,0,data.hullmods.niko_MPC_coronaResistShielding,,,,graphics/hullmods/solar_shielding.png

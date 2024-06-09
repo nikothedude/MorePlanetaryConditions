@@ -8,17 +8,16 @@ import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
-import com.fs.starfarer.api.impl.campaign.ids.Commodities
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags
-import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
+import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
 import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.kotlin.computeNumFighterBays
 
 object niko_MPC_miscUtils {
     @JvmStatic
@@ -162,5 +161,24 @@ object niko_MPC_miscUtils {
 
         return destOffset
     }
+
+    fun PulsarBeamTerrainPlugin.getApproximateOrbitDays(): Float {
+        val rotationSpeed = niko_MPC_reflectionUtils.get("pulsarRotation", this) as Float
+        if (rotationSpeed == 0f) return 0f
+        return -(365/rotationSpeed)
+    }
+
+    fun refreshCoronaDefenderFleetSmods(fleet: CampaignFleetAPI) {
+        val flagship = fleet.flagship
+        flagship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
+        flagship.variant.addPermaMod(HullMods.HEAVYARMOR, true)
+        flagship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
+
+        for (ship in fleet.fleetData.membersListCopy - flagship) {
+            ship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
+            if (ship.variant.computeNumFighterBays() > 0) ship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
+        }
+    }
+
 
 }

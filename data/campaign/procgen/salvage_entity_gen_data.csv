@@ -1,0 +1,6 @@
+id,rating,detection_range,type,autoXP,xpDiscover,xpSalvage,tags,drop_value,drop_random,defFaction,defQuality,probDefenders,minStr,maxStr,maxSize,probStation,stationRole
+MPC_station_corona_resist,1,1500,DISCOVERABLE,2200,500,1500,,basic:500,"ai_cores2:5,
+any_hullmod_high:5,
+blueprints_low:10,
+package_bp:4,
+rare_tech:1",,,,,,,,

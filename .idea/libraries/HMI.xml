@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="HMI">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../HMI/jars/HMI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../HMI/src" />
+      <root url="file://$PROJECT_DIR$/../HMI/src" />
+    </SOURCES>
+  </library>
+</component>
