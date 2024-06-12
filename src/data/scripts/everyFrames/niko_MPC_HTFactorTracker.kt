@@ -72,7 +72,7 @@ class niko_MPC_HTFactorTracker: niko_MPC_baseNikoScript() {
     fun checkJumpPoints(jumpPoints: MutableSet<SectorEntityToken>) {
         for (jumpPoint in jumpPoints) {
             if (jumpPoint !is JumpPointAPI) continue
-            if (jumpPoint.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointDesignationId] == false) continue
+            if (jumpPoint.memoryWithoutUpdate[niko_MPC_ids.hyperspaceLinkedJumpPointDesignationId] != true) continue
 
             tryScanHyperspaceLinkedJumpPoint(jumpPoint)
         }

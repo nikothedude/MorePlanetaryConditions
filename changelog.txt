@@ -1,3 +1,9 @@
+3.3.1:
+SAVE COMPATIBLE
+
+Fixes being able to scan ANY jump point as a bipartisan jump point
+Fixes UNGP storm rider not applying to bipartisan hyperstorms
+
 3.3.0:
 SAVE COMPATIBLE
 

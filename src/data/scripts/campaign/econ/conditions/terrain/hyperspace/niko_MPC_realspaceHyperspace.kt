@@ -252,10 +252,9 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
 
         fleet.addScript(niko_MPC_realspaceHyperspaceBoost(this, cell, fleet))
 
-        val key = "\$MPC_hyperstormStrikeTimeout"
         val mem = fleet.memoryWithoutUpdate
-        if (mem.contains(key)) return
-        mem[key, true] = (STORM_MIN_TIMEOUT + (STORM_MAX_TIMEOUT - STORM_MIN_TIMEOUT) * Math.random()).toFloat()
+        if (mem.contains(STORM_STRIKE_TIMEOUT_KEY)) return
+        mem[STORM_STRIKE_TIMEOUT_KEY, true] = (STORM_MIN_TIMEOUT + (STORM_MAX_TIMEOUT - STORM_MIN_TIMEOUT) * Math.random()).toFloat()
 
         val members = fleet.fleetData.membersListCopy
         if (members.isEmpty()) return
