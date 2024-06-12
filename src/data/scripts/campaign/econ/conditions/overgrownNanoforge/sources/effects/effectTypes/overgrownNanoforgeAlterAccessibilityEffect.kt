@@ -29,7 +29,7 @@ class overgrownNanoforgeAlterAccessibilityEffect(
     }
 
     override fun getBaseFormat(): String {
-        return "Market accessibility $adjectiveChar by $changeChar"
+        return "Market accessibility $adjectiveChar by $changeChar%"
     }
 
     override fun getChange(positive: Boolean): String {

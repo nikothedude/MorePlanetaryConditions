@@ -735,7 +735,9 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     open fun wantToBlock(fleet: CampaignFleetAPI): Boolean {
-        return (!fleet.isTransponderOn && (market == null || market!!.hasCustomControls()) ||
+        val careAboutTransponder = (market?.hasCustomControls() == true) && (fleet.faction != getFaction() || niko_MPC_settings.ATTACK_SAME_FACTION_IF_TOFF)
+
+        return ((!fleet.isTransponderOn && careAboutTransponder) ||
                 getFaction().isAtBest(fleet.faction, RepLevel.INHOSPITABLE) ||
                 wantToFight(fleet))
     }

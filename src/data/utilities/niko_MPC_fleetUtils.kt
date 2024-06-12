@@ -199,27 +199,27 @@ object niko_MPC_fleetUtils {
         return ecmValue
     }
 
-    fun CampaignFleetAPI.counterTerrainMovement(days: Float) {
+    fun CampaignFleetAPI.counterTerrainMovement(days: Float, movementDivisor: Float) {
         if (containingLocation == null) return
 
         val velocity = velocity
         for (terrain in containingLocation.terrainCopy) {
             if (terrain.plugin == null) continue
-            val offset = approximateCounterVelocityOfTerrain(terrain.plugin, days) ?: continue
+            val offset = approximateCounterVelocityOfTerrain(terrain.plugin, days, movementDivisor) ?: continue
 
             setVelocity(velocity.x + offset.x, velocity.y + offset.y)
         }
     }
 
     /// Returns the velocity needed to counteract the pushforce of a given terrain entity.
-    fun CampaignFleetAPI.approximateCounterVelocityOfTerrain(plugin: CampaignTerrainPlugin, days: Float): Vector2f? {
+    fun CampaignFleetAPI.approximateCounterVelocityOfTerrain(plugin: CampaignTerrainPlugin, days: Float, movementDivisor: Float): Vector2f? {
         if (!plugin.containsEntity(this)) return null // coronas still push you around bub
-        if (plugin is EventHorizonPlugin) return plugin.approximateOffsetForFleet(this, days)
-        if (plugin is PulsarBeamTerrainPlugin) return plugin.approximateOffsetForFleet(this, days)
+        if (plugin is StarCoronaTerrainPlugin) return plugin.approximateOffsetForFleet(this, days, movementDivisor)
+        if (plugin is PulsarBeamTerrainPlugin) return plugin.approximateOffsetForFleet(this, days, movementDivisor)
 
         return null
     }
-    fun PulsarBeamTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float): Vector2f {
+    fun PulsarBeamTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float, movementDivisor: Float): Vector2f {
         val intensity = getIntensityAtPoint(fleet.location)
 
         // "wind" effect - adjust velocity
@@ -227,7 +227,6 @@ object niko_MPC_fleetUtils {
         val currFleetBurn = fleet.currBurnLevel
 
         val maxWindBurn = params.windBurnLevel
-
 
         val currWindBurn: Float = intensity * maxWindBurn
         val maxFleetBurnIntoWind = maxFleetBurn - Math.abs(currWindBurn)
@@ -241,21 +240,21 @@ object niko_MPC_fleetUtils {
         val velDir = Misc.normalise(Vector2f(fleet.velocity))
         velDir.scale(currFleetBurn)
 
-        val fleetBurnAgainstWind = -1f * Vector2f.dot(windDir, velDir)
+        val fleetBurnAgainstWind = -1.0 * Vector2f.dot(windDir, velDir)
 
-        var accelMult = 0.5f
+        var accelMult = 0.5
         if (fleetBurnAgainstWind > maxFleetBurnIntoWind) {
-            accelMult += 0.75f + 0.25f * (fleetBurnAgainstWind - maxFleetBurnIntoWind)
+            accelMult += 0.75 + 0.25 * (fleetBurnAgainstWind - maxFleetBurnIntoWind)
         }
 
         val seconds: Float = days * Global.getSector().clock.secondsPerDay
 
-        windDir.scale(seconds * fleet.acceleration * accelMult)
-        windDir.x = -windDir.x / 50 // somewhat arbitrary divisors but they do the job
-        windDir.y = -windDir.y / 50
+        windDir.scale((seconds * fleet.acceleration * accelMult).toFloat())
+        windDir.x = -windDir.x / movementDivisor // somewhat arbitrary divisors but they do the job
+        windDir.y = -windDir.y / movementDivisor
         return windDir
     }
-    fun StarCoronaTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float): Vector2f? {
+    fun StarCoronaTerrainPlugin.approximateOffsetForFleet(fleet: CampaignFleetAPI, days: Float, movementDivisor: Float): Vector2f? {
         val intensity = getIntensityAtPoint(fleet.location)
         val inFlare = flareManager.isInActiveFlareArc(fleet)
 
@@ -295,8 +294,8 @@ object niko_MPC_fleetUtils {
 
         windDir.scale(seconds * fleet.acceleration * accelMult)
 
-        windDir.x = -windDir.x / 50
-        windDir.y = -windDir.y / 50
+        windDir.x = -windDir.x / (movementDivisor)
+        windDir.y = -windDir.y / (movementDivisor)
         return windDir
     }
 }

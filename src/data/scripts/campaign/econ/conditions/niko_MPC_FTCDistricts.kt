@@ -87,7 +87,7 @@ class niko_MPC_FTCDistricts: niko_MPC_baseNikoCondition() {
             "%s slipstream detection radius",
             10f,
             Misc.getHighlightColor(),
-            "+${baseSlipstreamDetectionRadius.toInt()}"
+            "+${baseSlipstreamDetectionRadius.toInt()} ly"
         )
 
         tooltip.addPara(

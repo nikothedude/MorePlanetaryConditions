@@ -3,7 +3,7 @@ niko_MPC_antiAsteroidLuddicPathSuppressor,Satellite Customs Control,0,0,,0,,,"st
 ,,,,,,,,,,,,,,
 niko_MPC_overgrownNanoforge,Overgrown Nanoforge,0,0,,0,,,no_saturation_bombardment,,graphics/industry/nanoforge_placeholder.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry,"An ""overgrown nanoforge"", or an industrial-grade nanoforge with disabled growth safeties. It will produce a significant amount of resources, as well as progressively create structures that will boost said resource production, at the cost of taking a structure slot and causing slight negatives effects.
 
-Once this structure is destroyed, you will be given a special item that massively increases resource production (and fleet size + production budget, if on heavy industry) at the cost of increased hazard (and decreased ship quality, if on heavy indsutry). However, this structure can only be attacked once all growths are destroyed in tandem, making it a dedicated and expensive effort to do so.
+Once this structure is destroyed, you will be given a special item that massively increases resource production (and fleet size + production budget, if on heavy industry) at the cost of increased hazard (and decreased ship quality, if on heavy industry). However, this structure can only be attacked once all growths are destroyed in tandem, making it a dedicated and expensive effort to do so.
 
 Press F1 to view lore.",90,
 ,,,,,,,,,,,,,,

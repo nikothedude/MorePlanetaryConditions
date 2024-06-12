@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.SpecialItemData
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.MPC_coronaResistScript
 import data.scripts.campaign.MPC_coronaResistStructureScript
 import data.utilities.niko_MPC_fleetUtils.approximateCounterVelocityOfTerrain
 import data.utilities.niko_MPC_fleetUtils.counterTerrainMovement
@@ -39,6 +40,10 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
         super.unapply()
     }
 
+    override fun showWhenUnavailable(): Boolean {
+        return false
+    }
+
     override fun isAvailableToBuild(): Boolean {
         if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
             return false
@@ -48,14 +53,7 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
     }
 
     private fun interferenceDetected(): Boolean {
-        val market = getMarket() ?: return false
-        val containingLocation = market.containingLocation ?: return false
-
-        for (iterMarket in Misc.getMarketsInLocation(containingLocation)) {
-            if (iterMarket == market) continue
-            if (iterMarket.hasIndustry(niko_MPC_industryIds.coronaResistIndustry)) return true
-        }
-        return false
+        return MPC_coronaResistScript.interferenceDetected(market.containingLocation)
     }
 
     override fun getUnavailableReason(): String {
@@ -63,7 +61,7 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
             return "Blueprint unknown"
         }
         if (interferenceDetected()) {
-            return "Maximum of one per star system"
+            return "Maximum of one baryon emitter per star system"
         }
         return super.getUnavailableReason()
     }

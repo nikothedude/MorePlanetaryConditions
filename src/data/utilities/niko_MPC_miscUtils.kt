@@ -178,7 +178,6 @@ object niko_MPC_miscUtils {
             ship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
             if (ship.variant.computeNumFighterBays() > 0) ship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
         }
+        flagship.variant.tags += Tags.VARIANT_ALWAYS_RECOVERABLE
     }
-
-
 }

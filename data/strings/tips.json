@@ -7,8 +7,8 @@
 		  {"freq":0.7, "tip":"[More Planetary Conditions] Overgrown nanoforges are a fantastic credit sink and can easily outproduce any industry in the game, modded or otherwise!"},
 		  {"freq":0.7, "tip":"[More Planetary Conditions] The colony item you get for culling a overgrown nanoforge's core can be installed in ANY structure/industry, and massively boosts production/fleet size at the cost of upkeep and ship quality."},
 		  
-		  {"freq":0.7, "tip":"[More Planetary Conditions] Meson fields are a risk/reward game: Do you risk exposing yourself to nearby fleets to get a good look at then?"},
+		  {"freq":0.7, "tip":"[More Planetary Conditions] Meson fields are a risk/reward game: Do you risk exposing yourself to nearby fleets to get a good look at them?"},
 		  
-		  {"freq":0.2, "tip":"[More Planetary Conditions] Defense satellites in orbit of a world you control can be fought if you disable your transponder. And while you can't get any credits from their CPU cores, you can still salvage their remains!"},
+		  #{"freq":0.2, "tip":"[More Planetary Conditions] Defense satellites in orbit of a world you control can be fought if you disable your transponder. And while you can't get any credits from their CPU cores, you can still salvage their remains!"},
     ],
 }

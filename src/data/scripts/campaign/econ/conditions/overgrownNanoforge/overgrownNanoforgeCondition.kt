@@ -215,8 +215,8 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
         tooltip.addPara("${market.name} currently has %s growth$s$spreadingOrNot.", 5f, Misc.getHighlightColor(), "$growthNum")
         //"...currently has x growth(s)[, one of which is currently spreading].
 
-        tooltip.addPara("Further details, such as purpose of the growths, or the traits of the nanoforge, are not determinable " +
-                "without establishing a long-term prescense such as a colony.", 5f)
+        tooltip.addPara("Further details, such as purpose of the growths, or the traits of the nanoforge, may be viewed " +
+                "via the \"overgrown nanoforge\" tab in intel.", 5f)
         //TODO()
     }
 

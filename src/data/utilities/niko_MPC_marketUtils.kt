@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
+import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.econ.impl.Spaceport
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
@@ -11,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.util.Pair
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
@@ -327,5 +329,17 @@ object niko_MPC_marketUtils {
 
     fun Industry.getIndustryDisruptTime(): Float {
         return spec.disruptDanger.disruptionDays
+    }
+
+    // TODO: update this method if it ever changes, 1:1 with applyDeficitToProduction from baseindustry.java
+    fun Industry.applyDeficitToProductionStatic(index: Int, deficit: Pair<String, Int>, vararg commodities: String) {
+        if (this !is BaseIndustry) return
+        for (commodity in commodities) {
+//			if (this instanceof Mining && market.getName().equals("Louise")) {
+//				System.out.println("efwefwe");
+//			}
+            if (getSupply(commodity).quantity.isUnmodified) continue
+            supply(index, commodity, -deficit.two, BaseIndustry.getDeficitText(deficit.one))
+        }
     }
 }

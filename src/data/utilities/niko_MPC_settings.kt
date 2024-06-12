@@ -87,6 +87,7 @@ object niko_MPC_settings {
         SATELLITE_INTERFERENCE_DISTANCE_MULT = LunaSettings.getFloat(modId, "MPC_satelliteInterferenceDistanceMult")!!
         SATELLITE_FLEET_FP_BONUS_INCREMENT = LunaSettings.getInt(modId, "MPC_maxSatelliteFpBonus")!!
         SATELLITE_FLEET_FP_BONUS_MULT = LunaSettings.getFloat(modId, "MPC_maxSatelliteFpBonusMult")!!
+        ATTACK_SAME_FACTION_IF_TOFF = LunaSettings.getBoolean(modId, "MPC_satellitesAttackFactionIfToff")!!
 
         MAX_STRUCTURES_ALLOWED = LunaSettings.getInt(modId, "MPC_maxStructuresForNanoforge")!!
         OVERGROWN_NANOFORGE_IS_INDUSTRY = LunaSettings.getBoolean(modId, "MPC_nanoforgeIsIndustry")!!
@@ -145,6 +146,7 @@ object niko_MPC_settings {
         }
     }
 
+    var ATTACK_SAME_FACTION_IF_TOFF = false
     @JvmField
     var PREVENT_SATELLITE_TURN = false
     @JvmField

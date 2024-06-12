@@ -6,9 +6,9 @@ import data.utilities.niko_MPC_debugUtils
 
 /** A generic base class filled with funcs and vars that I use a lot in my common scripting. */
 abstract class niko_MPC_baseNikoScript: EveryFrameScriptWithCleanup{
-    private var started: Boolean = false
+    var started: Boolean = false
     private var done: Boolean = false
-    private var deleted: Boolean = false
+    var deleted: Boolean = false
 
     override fun isDone(): Boolean {
         return done

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.Mining
+import com.fs.starfarer.api.impl.campaign.econ.impl.Refining
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.Stats
@@ -21,6 +22,7 @@ import data.scripts.everyFrames.niko_MPC_conditionRemovalScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_settings
+import data.utilities.niko_MPC_stringUtils
 import org.lazywizard.lazylib.MathUtils
 import kotlin.math.roundToInt
 
@@ -34,6 +36,7 @@ class niko_MPC_hyperMagneticField:
         var accessabilityIncrement = -0.25f
         var defenseRatingMult = 1.3f
 
+        val REFINING_UPKEEP_MULT = 0.2f
     }
     var terrainPlugin: niko_MPC_hyperMagField? = null
 
@@ -127,8 +130,8 @@ class niko_MPC_hyperMagneticField:
 
         val mining = market.getIndustry(Industries.MINING)
         if (mining is Mining) {
-            mining.supply(id, Commodities.ORE, (mining.getSupply(Commodities.ORE).quantity.modifiedInt * -0.5f).roundToInt(), name)
-            mining.supply(id, Commodities.RARE_ORE, (mining.getSupply(Commodities.RARE_ORE).quantity.modifiedInt * -0.5f).roundToInt(), name)
+            mining.supply(id, Commodities.ORE, (mining.getSupply(Commodities.ORE).quantity.modifiedInt * -0.5).roundToInt(), name)
+            mining.supply(id, Commodities.RARE_ORE, (mining.getSupply(Commodities.RARE_ORE).quantity.modifiedInt * -0.5).roundToInt(), name)
             mining.getSupply(Commodities.ORE).quantity.modifyMult(id, 0.5f, name)
             mining.getSupply(Commodities.RARE_ORE).quantity.modifyMult(id, 0.5f, name)
             if (mining.isFunctional) {
@@ -139,6 +142,11 @@ class niko_MPC_hyperMagneticField:
                 mining.getSupply(Commodities.RARE_METALS).quantity.unmodify(id)
                 mining.getSupply(Commodities.METALS).quantity.unmodify(id)
             }
+        }
+
+        val refining = market.getIndustry(Industries.REFINING)
+        if (refining is Refining) {
+            refining.upkeep.modifyMult(id, REFINING_UPKEEP_MULT, name)
         }
     }
 
@@ -153,6 +161,10 @@ class niko_MPC_hyperMagneticField:
             mining.getSupply(Commodities.ORE).quantity.unmodify(id)
             mining.getSupply(Commodities.RARE_METALS).quantity.unmodify(id)
             mining.getSupply(Commodities.METALS).quantity.unmodify(id)
+        }
+        val refining = market.getIndustry(Industries.REFINING)
+        if (refining is Refining) {
+            refining.upkeep.unmodify(id)
         }
     }
 
@@ -191,6 +203,13 @@ class niko_MPC_hyperMagneticField:
             10f,
             Misc.getHighlightColor(),
             "half of the ore/rare ore output of mining being converted into metals/transplutonics"
+        )
+
+        tooltip.addPara(
+            "The above processes can be used in refining, resulting in %s being reduced by %s",
+            10f,
+            Misc.getHighlightColor(),
+            "refining upkeep", niko_MPC_stringUtils.toPercent(1 - REFINING_UPKEEP_MULT)
         )
 
     }

@@ -12,6 +12,7 @@ MPC_satelliteInterferenceDistanceBase,Interference distance base,Double,90.0,,"T
 MPC_satelliteInterferenceDistanceMult,Interference distance mult,Double,1.0,,"The higher, the further away satellites will interfere in battles from. Applied after base.",,,Conditions
 MPC_maxSatelliteFpBonus,Max fleet FP bonus,Int,10,,"The higher, the more FP a satellite fleet can spawn with.",,,Conditions
 MPC_maxSatelliteFpBonusMult,Max fleet FP bonus mult,Double,1.0,,"The higher, the more FP a satellite fleet can spawn with. Applied after base.",,,Conditions
+MPC_satellitesAttackFactionIfToff,Attack same-faction if transponder off,Boolean,false,,"If true, satellites will block fleets of their own faction if their transponder is off (excluding things like smugglers)",,,Conditions
 ,,,,,,,,Conditions
 MPC_overgrownNanoforgeHeader,Nanoforge Config,Header,Nanoforge Config,,,,,Conditions
 MPC_maxStructuresForNanoforge,Disabled structure threshold,Int,12,,"If a market's structure count exceeds this number, all positive effects of a overgrown nanoforge will be disabled. Reccommended not to change - this is a balance measure.",,,Conditions

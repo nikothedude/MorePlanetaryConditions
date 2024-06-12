@@ -34,7 +34,7 @@ class overgrownNanoforgeAlterHazardEffect(
     }
 
     override fun getBaseFormat(): String {
-        return "Market hazard $adjectiveChar by $changeChar percent"
+        return "Market hazard $adjectiveChar by $changeChar%"
     }
 
     override fun getChange(positive: Boolean): String {

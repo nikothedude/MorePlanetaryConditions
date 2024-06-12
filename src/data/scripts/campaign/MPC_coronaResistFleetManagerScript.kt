@@ -4,14 +4,12 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.SourceBasedFleetManager
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
-import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantAssignmentAI
 import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantSeededFleetManager
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeFleetAssignmentAI
 import data.utilities.niko_MPC_ids
@@ -19,10 +17,14 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import java.util.*
 
 open class MPC_coronaResistFleetManagerScript(
-    source: SectorEntityToken, thresholdLY: Float, val minFleets: Int, val maxFleets: Int, respawnDelay: Float, val minPoints: Int, val maxPoints: Int
+    source: SectorEntityToken, thresholdLY: Float, minFleets: Int, maxFleets: Int, respawnDelay: Float, val minPoints: Int, val maxPoints: Int
 ): SourceBasedFleetManager(source, thresholdLY, minFleets, maxFleets, respawnDelay) {
 
     private var totalLost = 0
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+    }
 
     override fun spawnFleet(): CampaignFleetAPI? {
         if (source == null) return null
@@ -113,6 +115,10 @@ open class MPC_coronaResistFleetManagerScript(
                 //if (sid != null && sid.equals(source.getId())) {
                 totalLost++
         }
+    }
+
+    protected open fun readResolve(): Any? {
+        return this
     }
 }
 

@@ -161,8 +161,8 @@ $MPC_coronaResistStationFleet != null
 $option == salExplore
 
 ","FireBest MPC_coronaResistStationExplore",,,
-MPC_coronaResistStationFleetDefeated,MPC_coronaResistStationFleetDefeated,,"niko_MPC_coronaResistStation genLoot","With the defenders defeated, your approach to the station is unimpeded.","0:salBeatDefendersContinue:Continue",
-MPC_coronaResistStationFleetLeft,MPC_coronaResistStationFleetLeft,,"niko_MPC_coronaResistStation genLoot","With the defenders abandoning the station, you may approach it unimpeded.","0:salBeatDefendersContinue:Continue",
+MPC_coronaResistStationFleetDefeated,MPC_coronaResistStationFleetDefeated,,"niko_MPC_coronaResistStation genLoot ","With the defenders defeated, your approach to the station is unimpeded. Your salvors find a pair of very interesting blueprints in the hull, and they deposit them into your cargo.","0:salBeatDefendersContinue:Continue",
+MPC_coronaResistStationFleetLeft,MPC_coronaResistStationFleetLeft,,"niko_MPC_coronaResistStation genLoot","With the defenders abandoning the station, you may approach it unimpeded. Your salvors find a pair of very interesting blueprints in the hull, and they deposit them into your cargo.","0:salBeatDefendersContinue:Continue",
 MPC_coronaResistStationFleetLeftOption,DialogOptionSelected,"$option == MPC_coronaResistStationFleetLeftOption","FireBest MPC_coronaResistStationFleetLeft",,,
 ,,,,,,
 # Comms,,,,,,
@@ -287,4 +287,15 @@ MPC_coronaResistStationExploreIntroducedHostile,,,,,,
 MPC_coronaResistStationExploreIntroducedFriendly,,,,,,
 "#END Subsequent interactions",,,,,,
 "#END Corona Resist Station",,,,,,
+,,,,,,
+# Objectives,,,,,,
+niko_MPC_stable_buildEmitterOpt,Stable_AddBuildOptions,,"FireBest niko_MPC_modifyBuildEmitterOption",,"41:MPC_SL_buildEmitter:Construct a baryon emitter",
+niko_MPC_modifyBuildEmitterOptionCantBuild,niko_MPC_modifyBuildEmitterOption,"!niko_MPC_knowsBaryonEmitterBP score:500","SetEnabled MPC_SL_buildEmitter false
+SetTooltip MPC_SL_buildEmitter ""You need to learn how to build the emitter first. Legends tell that one was stolen and taken into deep space.""",,,
+niko_MPC_modifyBuildEmitterOptionTooManyScripts,niko_MPC_modifyBuildEmitterOption,"niko_MPC_tooManyCoronaResists","SetEnabled MPC_SL_buildEmitter false
+SetTooltip MPC_SL_buildEmitter ""Only one baryon emitter can exist in a system.""",,,
+MPC_SL_buildEmitter,DialogOptionSelected,"$option == MPC_SL_buildEmitter","$slBuildType = MPC_coronaResistObjectiveMakeshift 0
+Objectives printCost $slBuildType
+FireBest Stable_BuildConfirmOptions",,,
+"#END Objectives",,,,,,
 

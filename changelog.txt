@@ -1,3 +1,41 @@
+3.3.0:
+SAVE COMPATIBLE
+
+New condition: Toteliac Habitat
+    Carnivorous fauna
+    Alpha predators, extremely invasive
+    +50% hazard
+    Military bases suppress the hazard rating and generate food/luxury goods, as long as supplies/fuel are in good supply
+
+    Only generates on worlds that could feasibly harbor these creatures
+    As such, they are rare, at 99% of worlds are uninhabitable wastelands
+        Even on habitable worlds they are uncommon
+
+STC districts
+    Discover value reduced
+
+Spy Arrays
+    Discover value reduced
+
+Added config for satellites blocking same-faction fleets
+    Defaults to off
+
+Ultra-Magnetic Field
+    Now reduces refining upkeep by 80%
+    Thematic
+
+Hyperspace Bipartisan
+    No longer spawns on habitable worlds
+        How can you survive exposure to a goddamn hypercloud
+    Added clarification to the condition tooltip showing what effects are disabled upon leaving the hypercloud
+        Also hints that a planetary shield works
+
+Added a secret in the deep expanse of space
+    Tip: Bring your sunscreen, because they already have SPF 2000
+    Made a save before this? Don't worry, just run niko_MPC_genSpecialContent
+
+Fixed typos
+
 3.2.0:
 PROBABLY SAVE COMPATIBLE
 

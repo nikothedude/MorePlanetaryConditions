@@ -24,3 +24,6 @@ MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
+,,,,,
+MPC_coronaResistObjectiveMakeshift,CUSTOM,"While traditionally built on planets for the significantly higher output potential, portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. However, it's limited output makes it struggle to resist the push of solar winds or gravitational influx. 
+",,,

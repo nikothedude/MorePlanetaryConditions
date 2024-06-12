@@ -8,6 +8,7 @@ import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 class MPC_coronaResistStructureScript(entity: SectorEntityToken, val industry: MPC_coronaResistStructure): MPC_coronaResistScript(entity) {
     override fun shouldAffectFleet(fleet: CampaignFleetAPI): Boolean {
         if (!super.shouldAffectFleet(fleet)) return false
+        if (!industry.isFunctional) return false
 
         val market = industry.market
         val reqRep = fleet.getRepLevelForArrayBonus()

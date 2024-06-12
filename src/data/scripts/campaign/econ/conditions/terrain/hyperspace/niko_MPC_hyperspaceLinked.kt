@@ -341,6 +341,14 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         }
 
         tooltip.addPara(
+            "If ${market.name} were to be removed from the hyperclouds (whether by %s or insulation via some sort of " +
+                    "%s), the following effects would not apply:",
+            10f,
+            Misc.getHighlightColor(),
+            "physical location", "planetary shield"
+        )
+
+        tooltip.addPara(
             "%s hazard rating",
             10f,
             Misc.getHighlightColor(),
