@@ -9,8 +9,8 @@ import data.utilities.niko_MPC_satelliteUtils.isCosmeticSatellite
 
 class niko_MPC_satelliteDiscoveredListener : DiscoverEntityListener {
     override fun reportEntityDiscovered(entity: SectorEntityToken) {
-        if (entity !is CustomCampaignEntityAPI || !entity.isCosmeticSatellite()) {
-            displayError("$entity not custom campaign entity/cosmetic satellite during $this reportentitydiscovered")
+        if (entity !is CustomCampaignEntityAPI || !entity.isCosmeticSatellite()) { // remember niko, this can run on non-satellite entities
+            //displayError("${entity.name}, ${entity.id} in ${entity.containingLocation.name} not custom campaign entity/cosmetic satellite during $this reportentitydiscovered")
             return
         }
         val handler = entity.getSatelliteEntityHandler()
@@ -19,7 +19,7 @@ class niko_MPC_satelliteDiscoveredListener : DiscoverEntityListener {
             return
         }
         for (satellite in handler.cosmeticSatellites) {
-            satellite.sensorProfile = 9999999f
+            satellite.sensorProfile = Float.MAX_VALUE
         }
     }
 }

@@ -1,3 +1,19 @@
+3.3.2:
+
+Fixed a bug with satellite discovery
+Made a satellite debug string more clear
+Clarified that the error toggle is in lunasettings
+
+Toteliac food production increased by 1
+
+Skoliada's variant has been changed to wreak havoc on MCTE users
+    I'm the author of MCTE, I get to do this
+    Only applies if MCTE is enabled
+    Prepare yourself for thumpers, needlers, and talons
+    Skolioda is now reckless to facilitate this
+        Again, MCTE has to be enabled
+
+
 3.3.1:
 SAVE COMPATIBLE
 

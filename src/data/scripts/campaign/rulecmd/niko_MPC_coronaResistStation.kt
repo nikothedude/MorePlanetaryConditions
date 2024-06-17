@@ -17,12 +17,9 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.SalvageEntity
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.BaseSalvageSpecial
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_coronaResistFleetManagerScript
-import data.utilities.niko_MPC_debugUtils
-import data.utilities.niko_MPC_dialogUtils
+import data.utilities.*
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
-import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
-import data.utilities.niko_MPC_industryIds
 import data.utilities.niko_MPC_satelliteUtils.hasSatellites
 
 class niko_MPC_coronaResistStation: BaseCommandPlugin() {
@@ -134,6 +131,7 @@ class niko_MPC_coronaResistStation: BaseCommandPlugin() {
     private fun beginConfrontation(initial: Boolean = false): Boolean {
         val cachedMemoryMap = memoryMap
         val fleet = memory?.getFleet(niko_MPC_ids.CORONA_RESIST_STATION_DEFENDER_FLEET) ?: return false
+        niko_MPC_miscUtils.refreshCoronaDefenderFleetSmods(fleet) // sanity
 
         val containingLocation = entity!!.containingLocation
         containingLocation.addEntity(fleet)

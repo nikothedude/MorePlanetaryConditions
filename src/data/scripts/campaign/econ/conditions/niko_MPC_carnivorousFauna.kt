@@ -21,9 +21,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             Pair(Industries.TAG_COMMAND, 0.8f)
         )
         val INDUSTRY_TO_BASE_FOOD_PROD = hashMapOf(
-            Pair(Industries.TAG_PATROL, 1),
-            Pair(Industries.TAG_MILITARY, 2),
-            Pair(Industries.TAG_COMMAND, 3)
+            Pair(Industries.TAG_PATROL, 2),
+            Pair(Industries.TAG_MILITARY, 3),
+            Pair(Industries.TAG_COMMAND, 4)
         )
         val INDUSTRY_TO_BASE_LUXURY_PROD = hashMapOf(
             Pair(Industries.TAG_PATROL, 1),

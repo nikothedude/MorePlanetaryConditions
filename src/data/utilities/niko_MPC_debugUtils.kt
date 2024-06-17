@@ -76,7 +76,7 @@ object niko_MPC_debugUtils {
                 Color.RED
             )
         }
-        campaignUI.addMessage("Please provide the mod author of more planetary conditions a copy of your logs. These messages can be disabled in the niko_MPC_settings.json file in the MPC mod folder.")
+        campaignUI.addMessage("Please provide the mod author of more planetary conditions a copy of your logs. These messages can be disabled in lunasettings.")
     }
 
     @JvmStatic

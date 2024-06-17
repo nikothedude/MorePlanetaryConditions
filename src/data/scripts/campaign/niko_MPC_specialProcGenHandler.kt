@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
@@ -18,6 +19,8 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import data.utilities.niko_MPC_reflectionUtils
+import data.utilities.niko_MPC_settings
+import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
@@ -131,7 +134,11 @@ object niko_MPC_specialProcGenHandler {
         val fleet = FleetFactoryV3.createFleet(params)
         fleet.name = "Skulioda Marauders"
 
-        val newFlagship = fleet.fleetData.addFleetMember("legion_xiv_Elite")
+        val newFlagship: FleetMemberAPI = if (niko_MPC_settings.MCTE_loaded && MCTE_settings.PULSAR_EFFECT_ENABLED) {
+            fleet.fleetData.addFleetMember("legion_xiv_skulioda")
+        } else {
+            fleet.fleetData.addFleetMember("legion_xiv_Elite")
+        }
         newFlagship.shipName = "Skulioda's Prize"
         val commander = genCoronaResistFleetCommander()
         newFlagship.captain = commander
@@ -154,7 +161,12 @@ object niko_MPC_specialProcGenHandler {
         val person = Global.getFactory().createPerson()
         person.name = FullName("Jensen", "Skulioda", FullName.Gender.MALE)
         person.gender = FullName.Gender.MALE
-        person.setPersonality(Personalities.AGGRESSIVE)
+        val personality = if (niko_MPC_settings.MCTE_loaded && MCTE_settings.PULSAR_EFFECT_ENABLED) {
+            Personalities.RECKLESS
+        } else {
+            Personalities.AGGRESSIVE
+        }
+        person.setPersonality(personality)
 
         person.setFaction(Factions.PIRATES)
 

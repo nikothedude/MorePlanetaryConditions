@@ -14,7 +14,7 @@ class MPC_coronaResistStationScript(
     val terrain: PulsarBeamTerrainPlugin,
     val orbitRadius: Float
 ) : MPC_coronaResistScript(entity) {
-    val posResetInterval = IntervalUtil(1f, 1.5f)
+    val posResetInterval = IntervalUtil(0.2f, 0.3f)
 
     override fun advance(amount: Float) {
         val days = Misc.getDays(amount)

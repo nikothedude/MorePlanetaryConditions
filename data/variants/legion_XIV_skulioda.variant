@@ -1,0 +1,67 @@
+{
+    "displayName": "Stormfighter",
+    "fluxCapacitors": 0,
+    "fluxVents": 46,
+    "goalVariant": false,
+    "hullId": "legion_xiv",
+    "hullMods": [
+        "missleracks",
+        "targetingunit",
+		"expanded_deck_crew",
+		"autorepair",
+		"fluxbreakers",
+		"armoredweapons"
+    ],
+    "permaMods": [],
+    "sMods": [
+		"heavyarmor",
+		"niko_MPC_fighterSolarShielding",
+		"solar_shielding"
+	],
+    "variantId": "legion_xiv_skulioda",
+    "weaponGroups": [
+        {
+            "autofire": false,
+            "mode": "ALTERNATING",
+            "weapons": {
+				"WS 000": "cyclone",
+				"WS 001": "cyclone"
+			}
+        },
+		{
+            "autofire": true,
+            "mode": "ALTERNATING",
+            "weapons": {
+                "WS 004": "heavyneedler",
+                "WS 007": "heavyneedler",
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "ALTERNATING",
+            "weapons": {
+                "WS 005": "shredder",
+				"WS 002": "shredder",
+                "WS 003": "shredder",
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 008": "vulcan",
+                "WS 009": "vulcan",
+                "WS 018": "vulcan",
+                "WS 019": "vulcan",
+                "WS 020": "vulcan",
+                "WS 021": "vulcan"
+            }
+        }
+    ],
+    "wings": [
+        "broadsword_wing",
+        "broadsword_wing",
+        "broadsword_wing",
+        "gladius_wing"
+    ]
+}
