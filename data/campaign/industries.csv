@@ -44,6 +44,6 @@ niko_MPC_overgrownNanoforgeJunk_12,Nanoforge Growth,0,0,,,,,no_saturation_bombar
 
 It is for this reason so many of these nanoforges continue to churn. It is for this reason so many of these nanoforges continue their everlasting duties.",,
 ,,,,,,,,,,,,,,
-niko_MPC_coronaResist,Astronomical Barrier Projector,30,20,,,,,structure,,graphics/industry/baryon_field.png,data.scripts.campaign.econ.industries.MPC_coronaResistStructure,"Using surprisingly simple yet exotic techniques, this array of transmitters appears to transmit charged baryons across p-space using a phase clock, that which once expired causes the particles to jump into realspace and shroud the target in a protective field. 
+niko_MPC_coronaResist,Astronomical Barrier Projector,30,20,,2,,,structure,,graphics/industry/baryon_field.png,data.scripts.campaign.econ.industries.MPC_coronaResistStructure,"Using surprisingly simple yet exotic techniques, this array of transmitters appears to transmit charged baryons across p-space using a phase clock, that which once expired causes the particles to jump into realspace and shroud the target in a protective field. 
 
 Sadly, it seems only able to fire bursts strong enough to envelop a fleet of ships or a object of smaller size, though this is still greatly useful for operating inside an astronomically hostile environment.",110,HIGH

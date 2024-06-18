@@ -2,20 +2,15 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
-import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.campaign.rules.HasMemory
+import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.impl.campaign.ids.*
-import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
 import com.fs.starfarer.api.impl.campaign.procgen.NebulaEditor
 import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
-import com.fs.starfarer.api.loading.HullModSpecAPI
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk
-import lunalib.lunaExtensions.getMarketsCopy
+import niko.MCTE.settings.MCTE_settings
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.computeNumFighterBays
 
@@ -168,16 +163,32 @@ object niko_MPC_miscUtils {
         return -(365/rotationSpeed)
     }
 
-    fun refreshCoronaDefenderFleetSmods(fleet: CampaignFleetAPI) {
+    fun refreshCoronaDefenderFleetVariables(fleet: CampaignFleetAPI) {
         val flagship = fleet.flagship
-        flagship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
-        flagship.variant.addPermaMod(HullMods.HEAVYARMOR, true)
-        flagship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
+
+        if (flagship.shipName == niko_MPC_ids.SKULIODA_SHIP_NAME) {
+            val newVariant: ShipVariantAPI
+            if (niko_MPC_settings.MCTE_loaded && MCTE_settings.PULSAR_EFFECT_ENABLED) {
+                newVariant = Global.getSettings().getVariant("legion_xiv_skulioda")
+                flagship.captain?.setPersonality(Personalities.RECKLESS)
+            } else {
+                newVariant = Global.getSettings().getVariant("legion_xiv_Elite")
+                flagship.captain?.setPersonality(Personalities.AGGRESSIVE)
+            }
+            // probably safe, i mean, when the hell will the corona resist fleet get another skuliodas prize
+            flagship.setVariant(newVariant, false, false)
+
+            flagship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
+            flagship.variant.addPermaMod(HullMods.HEAVYARMOR, true)
+            flagship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
+        }
+        flagship.repairTracker.cr = flagship.repairTracker.maxCR
+        flagship.variant.tags += Tags.VARIANT_ALWAYS_RECOVERABLE
 
         for (ship in fleet.fleetData.membersListCopy - flagship) {
             ship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
             if (ship.variant.computeNumFighterBays() > 0) ship.variant.addPermaMod("niko_MPC_fighterSolarShielding", true)
+            ship.repairTracker.cr = ship.repairTracker.maxCR
         }
-        flagship.variant.tags += Tags.VARIANT_ALWAYS_RECOVERABLE
     }
 }

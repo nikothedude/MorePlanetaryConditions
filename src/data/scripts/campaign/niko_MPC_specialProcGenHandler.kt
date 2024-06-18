@@ -73,7 +73,7 @@ object niko_MPC_specialProcGenHandler {
         station.name = "Pristine Research Station" // TODO: do this via the spec (why isnt it doing it already)
 
         MPC_coronaResistStationScript(station, pulsarTerrain, orbitRadius).start()
-        station.addScript(MPC_coronaResistFleetManagerScript(station, 1f, 0, 6, 25f, 3, 20))
+        station.addScript(MPC_coronaResistFleetManagerScript(station, 1f, 0, 4, 25f, 3, 20))
 
         starSystem.tags += Tags.THEME_UNSAFE
         starSystem.tags += Tags.THEME_SPECIAL
@@ -121,12 +121,12 @@ object niko_MPC_specialProcGenHandler {
             Factions.MERCENARY,
             1f,
             FleetTypes.MERC_PATROL,
-            140f,  // combatPts, minus the legion xiv's FP
-            10f,  // freighterPts
-            10f,  // tankerPts
-            5f,  // transportPts
+            70f,  // combatPts, minus the legion xiv's FP
+            4f,  // freighterPts
+            4f,  // tankerPts
+            0f,  // transportPts
             0f,  // linerPts
-            5f,  // utilityPts
+            3f,  // utilityPts
             0f // qualityMod
         )
         params.averageSMods = 0
@@ -139,7 +139,7 @@ object niko_MPC_specialProcGenHandler {
         } else {
             fleet.fleetData.addFleetMember("legion_xiv_Elite")
         }
-        newFlagship.shipName = "Skulioda's Prize"
+        newFlagship.shipName = niko_MPC_ids.SKULIODA_SHIP_NAME
         val commander = genCoronaResistFleetCommander()
         newFlagship.captain = commander
         fleet.commander = commander
@@ -147,9 +147,7 @@ object niko_MPC_specialProcGenHandler {
         fleet.inflateIfNeeded()
         fleet.inflater = null
 
-        niko_MPC_miscUtils.refreshCoronaDefenderFleetSmods(fleet)
-
-        newFlagship.repairTracker.cr = newFlagship.repairTracker.maxCR
+        niko_MPC_miscUtils.refreshCoronaDefenderFleetVariables(fleet)
 
         fleet.fleetData.sort()
         fleet.isNoFactionInName = true

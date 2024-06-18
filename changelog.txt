@@ -1,4 +1,5 @@
 3.3.2:
+SAVE COMPATABLE
 
 Fixed a bug with satellite discovery
 Made a satellite debug string more clear
@@ -6,13 +7,16 @@ Clarified that the error toggle is in lunasettings
 
 Toteliac food production increased by 1
 
-Skoliada's variant has been changed to wreak havoc on MCTE users
+Skulioda's variant has been changed to wreak havoc on MCTE users
     I'm the author of MCTE, I get to do this
-    Only applies if MCTE is enabled
+    Only applies if MCTE is enabled as well as the relevant effect
     Prepare yourself for thumpers, needlers, and talons
     Skolioda is now reckless to facilitate this
         Again, MCTE has to be enabled
 
+Reduced the size of Skulioda's fleet as well as the num of defender fleets
+
+The baryon field structure now has a little upkeep
 
 3.3.1:
 SAVE COMPATIBLE

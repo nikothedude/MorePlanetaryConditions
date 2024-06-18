@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val SKULIODA_SHIP_NAME = "Skulioda's Prize"
     const val BARYON_EMITTER_TAG = "MPC_coronaResistObjective"
 
     const val NEX_GROUND_REPORT_PLUGIN_ID = "MPC_groundReportPlugin"

@@ -49,7 +49,7 @@ class MPC_coronaResistStationScript(
         val flagship = fleet.flagship ?: return
         if (flagship.variant.permaMods.size >= 3) return
 
-        niko_MPC_miscUtils.refreshCoronaDefenderFleetSmods(fleet)
+        niko_MPC_miscUtils.refreshCoronaDefenderFleetVariables(fleet)
     }
 
     private fun resetPos() {
