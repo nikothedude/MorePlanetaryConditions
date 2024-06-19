@@ -63,7 +63,7 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
     }
 
     companion object {
-        const val HYPERSPACE_TOPOGRAPHY_POINTS = 20
+        const val HYPERSPACE_TOPOGRAPHY_POINTS = 10
 
         const val NORMAL_DETECTED_MULT = 7f
 

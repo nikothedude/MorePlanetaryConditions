@@ -47,7 +47,7 @@ open class MPC_coronaResistFleetManagerScript(
         val params = FleetParamsV3(
             source.market,
             source.locationInHyperspace,
-            Global.getSector().getFaction(overgrownNanoforgeFleetFactionId).id,
+            overgrownNanoforgeFleetFactionId,
             1f,
             type,
             combatPoints.toFloat(),  // combatPts

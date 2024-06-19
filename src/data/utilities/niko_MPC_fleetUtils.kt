@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CampaignTerrainPlugin
 import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
@@ -28,6 +29,7 @@ import data.utilities.niko_MPC_fleetUtils.approximateCounterVelocityOfTerrain
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.abs
 
 object niko_MPC_fleetUtils {
@@ -297,5 +299,14 @@ object niko_MPC_fleetUtils {
         windDir.x = -windDir.x / (movementDivisor)
         windDir.y = -windDir.y / (movementDivisor)
         return windDir
+    }
+
+    fun MarketAPI.getDerelictEscortTimeouts(): MutableMap<CampaignFleetAPI, Float> {
+        var timeouts = memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_TIMEOUTS] as? MutableMap<CampaignFleetAPI, Float>
+        if (timeouts !is HashMap<*, *>) {
+            memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_TIMEOUTS] = HashMap<MarketAPI, CampaignFleetAPI>()
+            timeouts = memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_TIMEOUTS] as MutableMap<CampaignFleetAPI, Float>
+        }
+        return timeouts
     }
 }

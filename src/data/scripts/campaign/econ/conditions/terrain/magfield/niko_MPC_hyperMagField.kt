@@ -14,7 +14,7 @@ import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListener, niko_MPC_scannableTerrain {
 
     companion object {
-        const val HYPERSPACE_TOPOGRAPHY_POINTS = 30
+        const val HYPERSPACE_TOPOGRAPHY_POINTS = 20
     }
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {

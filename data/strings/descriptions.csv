@@ -17,6 +17,8 @@ Between those that are aware of their existance now - There is a very common agr
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",
+MPC_overclockedTargetting,SHIP_SYSTEM,,Offensive,"Massively increases weapon range, to near-infinite levels.",
+MPC_overclockedTargettingCore,SHIP_SYSTEM,,Offensive,"Massively increases weapon range, to near-infinite levels.",
 ,,,,,
 MPC_realspaceHyperspace_deep,TERRAIN,"This volume of hyperspace is particularly chaotic, hindering the performance of even hyperspace-calibrated equipment.",,,
 MPC_realspaceHyperspace_storm,TERRAIN,"This volume of hyperspace is undergoing chaotic phase shifts leading to wildly fluctuating resonance cascades. Ancient and dire warnings of prolonged exposure to so-called ""hyperspace storms"" have been passed down through generations of spacers.",,,

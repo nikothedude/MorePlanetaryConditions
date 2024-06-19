@@ -1,6 +1,28 @@
 3.3.2:
 SAVE COMPATABLE
 
+New condition: Frontier reinforcement center
+    Fairly rare
+    Prioritizes un-inhabitable planets over inhabitable ones
+
+    Spawns a small escort fleet for all friendly/trade fleets in system
+        Scales with fleet size
+        The fleets follow for 30-35 days with no distance limit
+        The fleets have a huge burn bonus so they can always keep up with their target
+        Will join their targets in combat
+
+        Basically, Tiandong two
+
+    Has a timeout period between fleets to prevent fleet spam
+    Once fleets are done and returning, they ignore all fleets
+        You cant get infinite felet strength this way, sorry
+
+    Decreases accessability significantly
+    Somewhat increases accessability of all friendly markets in-system
+        Not just your own
+
+    +25% hazard rating
+
 Fixed a bug with satellite discovery
 Made a satellite debug string more clear
 Clarified that the error toggle is in lunasettings
@@ -17,6 +39,8 @@ Skulioda's variant has been changed to wreak havoc on MCTE users
 Reduced the size of Skulioda's fleet as well as the num of defender fleets
 
 The baryon field structure now has a little upkeep
+
+Reduced the hyperspace topography value of ultra magfields and meson fields
 
 3.3.1:
 SAVE COMPATIBLE

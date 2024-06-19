@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val DERELICT_ESCORT_MAX_FOLLOW_PLAYER_DIST_LY = 2f
     const val SKULIODA_SHIP_NAME = "Skulioda's Prize"
     const val BARYON_EMITTER_TAG = "MPC_coronaResistObjective"
 
@@ -73,4 +74,12 @@ object niko_MPC_ids {
     // stored in global mem
     const val CORONA_RESIST_STATION_GLOBAL = "\$MPC_coronaResistStationGlobal"
     const val UNDER_CORONA_RESIST_EFFECT = "\$MPC_underCoronaResistEffect"
+
+    const val DERELICT_ESCORT_STATE_MEMFLAG = "\$MPC_derelictEscortState"
+    const val DERELICT_ESCORT_FLEETS_MEMID = "\$MPC_derelictEscortFleets"
+    const val DERELICT_ESCORT_LISTENER_MEMID = "\$MPC_derelictEscortListener"
+    const val DERELICT_ESCORT_FLEET_MEMID = "\$MPC_escortFleet"
+    const val DERELICT_ESCORT_AFFECTED_MARKETS_MEMID = "\$MPC_derelictEscortMarketsList"
+    const val DERELICT_ESCORT_FLEET_TARGET_MEMID = "\$MPC_followingDerelictEscortFleet"
+    const val DERELICT_ESCORT_TIMEOUTS = "\$MPC_derelictEscortTimeouts"
 }

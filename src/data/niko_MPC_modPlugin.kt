@@ -78,6 +78,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             "niko_MPC_hyperspaceBipartisan",
             "niko_MPC_ftcDistricts",
             "niko_MPC_spyArrays",
+            "niko_MPC_derelictEscort"
         )
     }
 

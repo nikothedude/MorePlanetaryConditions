@@ -1,5 +1,7 @@
 package data.utilities
 
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -292,6 +294,7 @@ object niko_MPC_marketUtils {
         var result: Boolean = false
         try {
             terrainCopy
+            fleets
         } catch (ex: NullPointerException) {
             result = true
         }
@@ -341,5 +344,15 @@ object niko_MPC_marketUtils {
             if (getSupply(commodity).quantity.isUnmodified) continue
             supply(index, commodity, -deficit.two, BaseIndustry.getDeficitText(deficit.one))
         }
+    }
+
+    // key: escortee, value: escorter
+    fun MarketAPI.getEscortFleetList(): MutableMap<CampaignFleetAPI, CampaignFleetAPI> {
+        var fleetList = memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEETS_MEMID] as? HashMap<CampaignFleetAPI, CampaignFleetAPI>
+        if (fleetList !is HashMap<CampaignFleetAPI, CampaignFleetAPI>) {
+            memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEETS_MEMID] = HashMap<CampaignFleetAPI, CampaignFleetAPI>()
+            fleetList = memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEETS_MEMID] as HashMap<CampaignFleetAPI, CampaignFleetAPI>
+        }
+        return fleetList
     }
 }

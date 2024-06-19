@@ -19,5 +19,11 @@
 			"name": "LunaLib",
 			"version": "1.8.4"
 		},
+		{
+			"id": "MagicLib",
+			"name": "MagicLib",
+			"version": "1.4.4"
+
+		},
     ],
 }

@@ -298,4 +298,15 @@ MPC_SL_buildEmitter,DialogOptionSelected,"$option == MPC_SL_buildEmitter","$slBu
 Objectives printCost $slBuildType
 FireBest Stable_BuildConfirmOptions",,,
 "#END Objectives",,,,,,
+,,,,,,
+# Escort Fleets,,,,,,
+MPC_derelictEscortOpenCommsBack,DialogOptionSelected,"$option == MPC_derelictEscortOpenCommsBack",,,,
+MPC_derelictEscortOpenComms,OpenCommLink,"niko_MPC_escortFleet fleetIsEscort score:200","FireBest MPC_derelictEscortCommsText
+FireAll MPC_derelictEscortCommsOptions
+SetShortcut cutCommLink ""ESCAPE""","The screen flickers on to show a spotty domain flag, and a recording of a cheerful man begins playing over your speakers.
+
+""Hello, [DOMAIN CITIZEN]! This fleet is currently engaged in [ESCORT DUTY]! If you are our protectorate, great! We will keep you safe for [ERR::ESCORT DURATION NOT FOUND]! If not, stay away from our protectorate or we will open fire!""
+
+Short, to the point, and uncharacteristically corpo-speak. Strange.","0:cutCommLink:Cut the comm link",
+"#END Escort Fleets",,,,,,
 
