@@ -169,14 +169,14 @@ object niko_MPC_miscUtils {
         if (flagship.shipName == niko_MPC_ids.SKULIODA_SHIP_NAME) {
             val newVariant: ShipVariantAPI
             if (niko_MPC_settings.MCTE_loaded && MCTE_settings.PULSAR_EFFECT_ENABLED) {
-                newVariant = Global.getSettings().getVariant("legion_xiv_skulioda")
+                newVariant = Global.getSettings().getVariant("legion_xiv_skulioda").clone()
                 flagship.captain?.setPersonality(Personalities.RECKLESS)
             } else {
-                newVariant = Global.getSettings().getVariant("legion_xiv_Elite")
+                newVariant = Global.getSettings().getVariant("legion_xiv_Elite").clone()
                 flagship.captain?.setPersonality(Personalities.AGGRESSIVE)
             }
             // probably safe, i mean, when the hell will the corona resist fleet get another skuliodas prize
-            flagship.setVariant(newVariant, false, false)
+            flagship.setVariant(newVariant, true, false)
 
             flagship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)
             flagship.variant.addPermaMod(HullMods.HEAVYARMOR, true)

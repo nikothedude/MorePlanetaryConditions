@@ -1,3 +1,12 @@
+3.3.3:
+SAVE COMPATIBLE
+
+Fixed a bug where XIV legions would spawn with custom smods (fuck)
+    If XIV legions are still spawning with this variant after updating, try running niko_MPC_genericCommand
+    You can test this by running AddShip legion_xiv_Elite and investigating the ship the game adds to your fleet
+
+Reduced spawnrate of FTC districts, spy arrays, meson fields and hypermagnetic fields
+
 3.3.2:
 SAVE COMPATABLE
 
