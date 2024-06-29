@@ -11,6 +11,7 @@ import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getEscortFleetList
 import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
 // lots of this was inspired by tiandong patrol ai
@@ -18,11 +19,12 @@ class MPC_derelictEscortAssignmentAI(
     val fleet: CampaignFleetAPI,
     var target: CampaignFleetAPI,
     var homeMarket: MarketAPI,
+    var despawnSetting: Boolean? = target.isNoAutoDespawn,
 ): niko_MPC_baseNikoScript() {
 
     companion object {
-        const val MIN_DAYS_ESCORTING_TIL_END = 30f
-        const val MAX_DAYS_ESCORTING_TIL_END = 35f
+        const val MIN_DAYS_ESCORTING_TIL_END = 90f
+        const val MAX_DAYS_ESCORTING_TIL_END = 95f
 
         const val DERELICT_ESCORT_CATCH_UP_DIST = 400f
         const val DERELICT_ESCORT_JOIN_COMBAT_DIST = 400f
@@ -52,6 +54,9 @@ class MPC_derelictEscortAssignmentAI(
     override fun runWhilePaused(): Boolean = false
 
     override fun advance(amount: Float) {
+        // PLACEHOLDER REMOVE AFTER YOU LOADED YOUR SAVE IDIOT
+        if (despawnSetting == null) despawnSetting = target.isNoAutoDespawn
+
         val days = Misc.getDays(amount)
         interval.advance(days)
         if (interval.intervalElapsed()) {
@@ -133,6 +138,9 @@ class MPC_derelictEscortAssignmentAI(
         derelictEscortStates.RETURNING_TO_BASE.overrideAssignment(fleet, this, homeMarket.primaryEntity)
         fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
         homeMarket.getEscortFleetList() -= target
+
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = despawnSetting
+        fleet.isNoAutoDespawn = false
     }
 
     override fun delete(): Boolean {
@@ -144,6 +152,9 @@ class MPC_derelictEscortAssignmentAI(
 
         homeMarket.getEscortFleetList() -= target
         target.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_TARGET_MEMID] = null
+
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = despawnSetting
+        fleet.isNoAutoDespawn = false
         return true
     }
 }

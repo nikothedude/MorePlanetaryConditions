@@ -1,3 +1,20 @@
+3.3.4:
+SAVE COMPATIBLE
+
+Fixed a bug where ultra-magnetic fields would have null names (and cause crashes)
+
+Changes the derelict escort target names to be generic, to not spoil what theyre following
+
+Escort fleets now force the simulation of fleets they escort
+    Otherwise, youll never see a trade fleet in the core worlds with an escort
+    Can be disabled in lunalib if save bloat/performance is a problem
+
+Added a lunasetting to disallow escorts from spawning on patrols
+
+Added new ability AI to escort fleets
+    Will now go dark if their target has gone dark
+    Will keep transponder onto the state of their target's transponder
+
 3.3.3:
 SAVE COMPATIBLE
 

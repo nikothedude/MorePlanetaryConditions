@@ -36,7 +36,7 @@ class niko_MPC_hyperMagneticField:
         var accessabilityIncrement = -0.25f
         var defenseRatingMult = 1.3f
 
-        val REFINING_UPKEEP_MULT = 0.2f
+        const val REFINING_UPKEEP_MULT = 0.2f
     }
     var terrainPlugin: niko_MPC_hyperMagField? = null
 
@@ -92,7 +92,9 @@ class niko_MPC_hyperMagneticField:
             if (terrain.plugin !is MagneticFieldTerrainPlugin) continue
             if (terrain.orbitFocus != primaryEntity) continue
 
-            if (terrain.name != "Magnetic Field") terrainPlugin!!.terrainName = terrain.name
+            if (terrain.name != null && terrain.name != "Magnetic Field") {
+                terrainPlugin!!.terrainName = terrain.name
+            }
             primaryEntity.containingLocation.removeEntity(terrain)
         }
 

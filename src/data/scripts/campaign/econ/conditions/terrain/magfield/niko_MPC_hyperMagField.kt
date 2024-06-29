@@ -19,7 +19,7 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
-        if (name == "Magnetic Field") {
+        if (name == "Magnetic Field" || name == null) {
             name = "Ultra-Magnetic Field"
         }
     }
@@ -68,10 +68,12 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
 
     override fun getNameForTooltip(): String = "Ultra-Magnetic Field"
 
-    override fun getTerrainName(): String {
+    override fun getTerrainName(): String? {
         return if (flareManager.isInActiveFlareArc(Global.getSector().playerFleet)) {
             "Ultra-Magnetic Storm"
-        } else super.getTerrainName()
+        } else {
+            return super.getTerrainName()
+        }
     }
 
     override fun readResolve(): Any {

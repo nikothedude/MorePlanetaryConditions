@@ -16,6 +16,9 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    var DERELICT_ESCORT_SIMULATE_FLEETS = true
+    var DERELICT_ESCORT_SPAWN_ON_PATROLS = true
+
     var nexLoaded: Boolean = false
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
@@ -95,6 +98,9 @@ object niko_MPC_settings {
         OVERGROWN_NANOFORGE_RANDOM_BUDGET_MULT_MAX = LunaSettings.getFloat(modId, "MPC_nanoforgeBudgetMultMax")!!
         OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMinTimeBetweenSpreads")!!
         OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMaxTimeBetweenSpreads")!!
+
+        DERELICT_ESCORT_SIMULATE_FLEETS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSimulateFleets")!!
+        DERELICT_ESCORT_SPAWN_ON_PATROLS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSpawnOnPatrols")!!
     }
 
     fun loadNexSettings() {

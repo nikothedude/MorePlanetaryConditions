@@ -82,7 +82,6 @@ class MPC_derelictEscortSustainedBurnAI: SustainedBurnAbilityAI() {
         var target: SectorEntityToken? = null
         var targetIsBurning = false
         if (fleet.ai != null && fleet.ai.currentAssignment != null) {
-            val curr = fleet.ai.currentAssignmentType
             target = fleet.ai.currentAssignment.target
             targetIsBurning = isTargetBurning(target)
         }

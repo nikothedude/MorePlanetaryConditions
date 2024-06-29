@@ -1,10 +1,7 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.CampaignTerrainPlugin
-import com.fs.starfarer.api.campaign.RepLevel
-import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.HasMemory
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
@@ -15,7 +12,6 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes.*
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.ids.Tags.HULLMOD_DMOD
-import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin
 import com.fs.starfarer.api.loading.HullModSpecAPI
@@ -25,7 +21,6 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.everyFrames.niko_MPC_temporarySatelliteFleetDespawner
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_debugUtils.logDataOf
-import data.utilities.niko_MPC_fleetUtils.approximateCounterVelocityOfTerrain
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
 import java.util.*
@@ -165,16 +160,22 @@ object niko_MPC_fleetUtils {
         return memoryWithoutUpdate[niko_MPC_ids.temporaryFleetDespawnerId] as? niko_MPC_temporarySatelliteFleetDespawner
     }
 
-    fun CampaignFleetAPI.getRepLevelForArrayBonus(): RepLevel {
-        val level: RepLevel
-        val fleetType: String = memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_TYPE] as? String ?: return RepLevel.FRIENDLY
-        when (fleetType) {
-            TRADE, TRADE_SMUGGLER, TRADE_SMALL, TRADE_LINER, FOOD_RELIEF_FLEET, SHRINE_PILGRIMS, ACADEMY_FLEET -> {
-                level = RepLevel.SUSPICIOUS
-            }
-            else -> level = RepLevel.FRIENDLY
-        }
-        return level
+    val defaultFriendliesForArrayBonus = hashMapOf(
+        Pair(TRADE, RepLevel.INHOSPITABLE),
+        Pair(TRADE_SMUGGLER, RepLevel.INHOSPITABLE),
+        Pair(TRADE_SMALL, RepLevel.INHOSPITABLE),
+        Pair(TRADE_LINER, RepLevel.INHOSPITABLE),
+        Pair(FOOD_RELIEF_FLEET, RepLevel.INHOSPITABLE),
+        Pair(SHRINE_PILGRIMS, RepLevel.INHOSPITABLE),
+        Pair(ACADEMY_FLEET, RepLevel.INHOSPITABLE),
+    )
+    fun CampaignFleetAPI.getRepLevelForArrayBonus(
+        repMap: MutableMap<String, RepLevel> = defaultFriendliesForArrayBonus,
+        defaultRep: RepLevel = RepLevel.FRIENDLY,
+    ): RepLevel {
+
+        val fleetType: String = memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_TYPE] as? String ?: return defaultRep
+        return repMap[fleetType] ?: return defaultRep
     }
 
     /// Returns a float from 0 to 1, representing a percentage of phase ships.

@@ -15,7 +15,7 @@ enum class derelictEscortStates {
             target: SectorEntityToken?
         ) {
             if (target == null) return
-            val targetText = if (target.isPlayerFleet) "your fleet" else target.fullName
+            val targetText = if (target.isPlayerFleet) "your fleet" else "escortee"
             val actionText = if (!assignmentAI.shouldDoScaryMessages) "catching up to $targetText" else "pursuing $targetText" // i want to scare people.
             fleet.addAssignmentAtStart(getAssignmentType(fleet, assignmentAI, target), target, 1000f, actionText, null)
             //fleet.getAbility(Abilities.SUSTAINED_BURN)?.activate()
@@ -57,7 +57,7 @@ enum class derelictEscortStates {
             target: SectorEntityToken?
         ) {
             if (target == null) return
-            val targetText = if (target.isPlayerFleet) "your fleet" else target.fullName
+            val targetText = if (target.isPlayerFleet) "your fleet" else "escortree"
             fleet.addAssignmentAtStart(getAssignmentType(fleet, assignmentAI, target), target, 1000f, "waiting for $targetText to finish fighting", null)
         }
 
@@ -76,7 +76,7 @@ enum class derelictEscortStates {
             target: SectorEntityToken?
         ) {
             if (target == null) return
-            val targetText = if (target.isPlayerFleet) "your fleet" else target.fullName
+            val targetText = if (target.isPlayerFleet) "your fleet" else "escortee"
             fleet.addAssignmentAtStart(getAssignmentType(fleet, assignmentAI, target), target, 1000f, "moving to assist $targetText in battle", null)
             fleet.setMoveDestinationOverride(target.location.x, target.location.y)
         }

@@ -22,6 +22,10 @@ MPC_nanoforgeBudgetMultMax,Budget maximum mult,Double,1.2,,,,,Conditions
 MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts (Days),Int,30,,,,,Conditions
 MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts (Days),Int,90,,,,,Conditions
 ,,,,,,,,
+MPC_derelictEscortHeader,Derelict Escort Config,Header,Derelict Escort Config,,,,,Conditions
+MPC_derelictEscortSimulateFleets,Force simulation of escorted fleets,Boolean,true,,"If true, escorted fleets will be forcefully spawned (contrary to usual behavior where they are despawned if you are far away to save performance). Disabling will improve performance, but will make escorts return home if the fleet gets too far away from the player.",,,Conditions
+MPC_derelictEscortSpawnOnPatrols,Spawn on patrols,Boolean,true,,"If true, patrols can have escorts spawn on them. Disabling will increase performance if the above is enabled.",,,Conditions
+,,,,,,,,
 MPC_nexBarrageAbilityHeader,Satellite barrage settings,Header,Satellite barrage settings,,,,,Nexerelin
 MPC_satelliteBarrageDamage,Satellite barrage base damage,Double,2.0,,"While satellite barrage is active, this damage is distributed across all enemy units on the target industry every turn.",0.0,20.0,Nexerelin
 MPC_satelliteBarrageDuration,Satellite barrage duration (In turns),Int,3,,Ensure the ability entry in groundBattleDefs.json has its cooldown match or exceed this value.,0,50,Nexerelin

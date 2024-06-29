@@ -10,13 +10,13 @@ import java.net.URLClassLoader
 object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from rat i love starsector dev
 
     private val fieldClass = Class.forName("java.lang.reflect.Field", false, Class::class.java.classLoader)
-    private val setFieldHandle = MethodHandles.lookup()
+    val setFieldHandle = MethodHandles.lookup()
         .findVirtual(fieldClass, "set", MethodType.methodType(Void.TYPE, Any::class.java, Any::class.java))
     private val getFieldHandle =
         MethodHandles.lookup().findVirtual(fieldClass, "get", MethodType.methodType(Any::class.java, Any::class.java))
     private val getFieldNameHandle =
         MethodHandles.lookup().findVirtual(fieldClass, "getName", MethodType.methodType(String::class.java))
-    private val setFieldAccessibleHandle = MethodHandles.lookup()
+    val setFieldAccessibleHandle = MethodHandles.lookup()
         .findVirtual(fieldClass, "setAccessible", MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
     private val getFieldTypeHandle = MethodHandles.lookup()
         .findVirtual(fieldClass, "getType", MethodType.methodType(Class::class.java))
@@ -100,6 +100,23 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
 
         setFieldAccessibleHandle.invoke(field, true)
         setFieldHandle.invoke(field, instanceToModify, newValue)
+    }
+
+    inline fun <reified T: Any> setMultipleInstances(fieldName: String, instancesToModify: Collection<T>, newValue: Any?) {
+        var field: Any? = null
+        try {
+            field = T::class.java.getField(fieldName)
+        } catch (e: Throwable) {
+            try {
+                field = T::class.java.getDeclaredField(fieldName)
+            } catch (e: Throwable) {
+            }
+        }
+
+        setFieldAccessibleHandle.invoke(field, true)
+        for (entry in instancesToModify) {
+            setFieldHandle.invoke(field, entry, newValue)
+        }
     }
 
     fun get(fieldName: String, instanceToGetFrom: Any): Any? {

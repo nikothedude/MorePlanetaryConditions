@@ -1,21 +1,19 @@
 package data.scripts.campaign.econ.conditions.derelictEscort
 
-import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.characters.AbilityPlugin
-import com.fs.starfarer.api.characters.PersonAPI
-import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager.RouteData
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.derelictEscort.MPC_derelictEscortAssignmentAI.Companion.MAX_DAYS_ESCORTING_TIL_END
 import data.scripts.campaign.econ.conditions.derelictEscort.MPC_derelictEscortAssignmentAI.Companion.MIN_DAYS_ESCORTING_TIL_END
-import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.utilities.niko_MPC_fleetUtils.getDerelictEscortTimeouts
 import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
@@ -25,9 +23,12 @@ import data.utilities.niko_MPC_marketUtils.getEscortFleetList
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.isStationFleet
+import data.utilities.niko_MPC_reflectionUtils.set
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
+import org.magiclib.kotlin.isPatrol
 
 class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
 
@@ -37,8 +38,8 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         const val SELF_MARKET_ACCESSABILITY_INCREMENT = -0.30f
         const val OTHER_MARKET_ACCESSIBILITY_INCREMENT = 0.15f
 
-        const val DAYS_BETWEEN_ESCORTS = 20f
-        const val CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED = 0.65f
+        const val DAYS_BETWEEN_ESCORTS = 30f
+        const val CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED = 0.75f
 
         const val UNINHABITED_TIMEOUT_MULT = 5f
 
@@ -57,7 +58,10 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
 
         if (market.isDeserializing() || market?.containingLocation?.isDeserializing() == true/* || Global.getCurrentState() == GameState.TITLE || market.isPlanetConditionMarketOnly || id == "fake_Colonize"*/) return
         syncFaction()
-        //Global.getSector().addTransientListener(this)
+        //val market = getMarket() ?: return
+        //val listener = getListener() ?: return
+        //listener.market = market
+        //listener.start()
     }
 
     private fun applyConditionAttributes(id: String) {
@@ -80,6 +84,8 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         //Global.getSector().removeListener(this)
         if (id == null) return
         unapplyConditionAttributes(id)
+
+       //getListener()?.stop()
     }
 
     private fun unapplyConditionAttributes(id: String) {
@@ -132,8 +138,6 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             val escorter = entry.key
             val escortee = entry.value
 
-            //escorter.location.set(market.primaryEntity.location)
-
             if (!escorter.isAlive || !escortee.isAlive) {
                 iterator.remove()
                 continue
@@ -157,7 +161,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             }
         } else {
             for (entry in fleetList) {
-                entry.value.setFaction(market.factionId)
+                entry.value.setFaction(getFactionIdForFleets())
             }
             if (market.factionId != null && market.factionId != cachedFaction) {
                 tryToSpawnEscortsOnAllFleets()
@@ -166,25 +170,44 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         cachedFaction = market.factionId
     }
 
+    private fun getFactionIdForFleets(): String {
+        val market = getMarket() ?: return Factions.NEUTRAL
+        return if (market.isInhabited()) market.factionId else Factions.PLAYER
+    }
+
     private fun tryToSpawnEscortsOnAllFleets() {
         val market = getMarket() ?: return
 
         val containingLocation = market.containingLocation ?: return
-        val fleets = containingLocation.fleets
-        if (fleets.isEmpty()) return
-        for (fleet in fleets.toList()) {
-            tryToSpawnEscortOn(fleet)
+        val routeManager = RouteManager.getInstance()
+        val fleetMap: MutableMap<CampaignFleetAPI, RouteData?> = HashMap()
+        for (fleet in containingLocation.fleets) {
+            fleetMap[fleet] = null
+        }
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) {
+            val routes = routeManager.getRoutesInLocation(containingLocation)
+            for (route in routes) {
+                if (route.isExpired) continue
+                if (route.activeFleet != null) continue
+                val newFleet = route.spawner?.spawnFleet(route) ?: continue
+                fleetMap[newFleet] = route
+            }
+        }
+        if (fleetMap.isEmpty()) return
+        for ((fleet, route) in fleetMap) {
+            tryToSpawnEscortOn(fleet, route)
         }
     }
 
-    /*private fun getListener(): MPC_derelictEscortListener {
+    private fun getListener(): MPC_derelictEscortListener? {
+        val market = getMarket() ?: return null
         var listener = market.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_LISTENER_MEMID] as? MPC_derelictEscortListener
         if (listener !is MPC_derelictEscortListener) {
-            market.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_LISTENER_MEMID] = MPC_derelictEscortListener()
+            market.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_LISTENER_MEMID] = MPC_derelictEscortListener(market)
             listener = market.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_LISTENER_MEMID] as MPC_derelictEscortListener
         }
         return listener
-    }*/
+    }
 
     private fun getAffectedMarketList(): MutableSet<MarketAPI> {
         val market = getMarket() ?: return HashSet()
@@ -197,7 +220,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         return marketList
     }
 
-    private fun tryToSpawnEscortOn(fleet: CampaignFleetAPI): CampaignFleetAPI? {
+    fun tryToSpawnEscortOn(fleet: CampaignFleetAPI, route: RouteData?): CampaignFleetAPI? {
         val market = getMarket() ?: return null
 
         if (fleet.isSatelliteFleet()) return null
@@ -208,14 +231,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val timeout = market.getDerelictEscortTimeouts()[fleet]
         if (fleet in market.getEscortFleetList().keys) return null
         if (timeout != null) return null
-
-        /*if (fleet != Global.getSector().playerFleet) {
-            when (fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_TYPE] as? String) {
-                FleetTypes.TRADE, FleetTypes.TRADE_SMUGGLER, FleetTypes.TRADE_SMALL, FleetTypes.TRADE_LINER, FleetTypes.FOOD_RELIEF_FLEET, FleetTypes.SHRINE_PILGRIMS, FleetTypes.ACADEMY_FLEET -> {}
-                else -> return null
-            }
-        }*/
-
+        if (niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS && fleet.isPatrol()) return null
 
         var factionToUse = market.faction
         if (!market.isInhabited() && fleet.isPlayerFleet) {
@@ -225,7 +241,16 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         }
         val repLevelNeeded = fleet.getRepLevelForArrayBonus()
         if (factionToUse.getRelationshipLevel(fleet.faction) >= repLevelNeeded) {
+            if (route != null) {
+                set("activeFleet", route, fleet)
+                fleet.addEventListener(RouteManager.getInstance())
+            }
             return spawnEscortOn(fleet, factionToUse)
+        } else if (route != null) {
+            val containingLocation = fleet.containingLocation
+            fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
+            containingLocation.removeEntity(fleet)
+            set("activeFleet", route, null)
         }
         return null
     }
@@ -283,17 +308,26 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.memoryWithoutUpdate[MemFlags.FLEET_FIGHT_TO_THE_LAST] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE] = false
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
+        fleet.isNoAutoDespawn = true
         fleet.setFaction(faction.id)
         fleet.commander?.setFaction(faction.id)
 
         fleet.stats.fleetwideMaxBurnMod.modifyFlat(modId, ESCORT_FLEET_MAX_BURN_MULT, "${market.name} $name")
 
-        fleet.removeAbility(Abilities.SUSTAINED_BURN)
         fleet.removeAbility(Abilities.INTERDICTION_PULSE)
         fleet.removeAbility(Abilities.SENSOR_BURST)
+
+        fleet.removeAbility(Abilities.SUSTAINED_BURN)
+        fleet.removeAbility(Abilities.GO_DARK)
+        fleet.removeAbility(Abilities.TRANSPONDER)
+
         fleet.addAbility("MPC_escort_sustained_burn")
+        fleet.addAbility("MPC_escort_go_dark")
+        fleet.addAbility("MPC_escort_transponder")
 
         MPC_derelictEscortAssignmentAI(fleet, target, market).start()
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = true
 
         var timeoutMult = 1f
         if (!market.isInhabited()) {
