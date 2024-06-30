@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions.derelictEscort
 
+import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -146,6 +147,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
     }
 
     private fun syncFaction() {
+        if (Global.getCurrentState() == GameState.TITLE) return // people have reported syncfaction loading crashes, its probs safe to do this anyway
         val market = getMarket() ?: return
 
         val fleetList = market.getEscortFleetList()
