@@ -16,6 +16,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool
 import data.scripts.campaign.econ.conditions.derelictEscort.MPC_derelictEscortAssignmentAI.Companion.MAX_DAYS_ESCORTING_TIL_END
 import data.scripts.campaign.econ.conditions.derelictEscort.MPC_derelictEscortAssignmentAI.Companion.MIN_DAYS_ESCORTING_TIL_END
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_fleetUtils.getDerelictEscortTimeouts
 import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
@@ -245,6 +246,17 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val repLevelNeeded = fleet.getRepLevelForArrayBonus()
         if (factionToUse.getRelationshipLevel(fleet.faction) >= repLevelNeeded) {
             if (route != null) {
+                if (route.activeFleet != null) {
+                    if (route.activeFleet == fleet) {
+                        niko_MPC_debugUtils.displayError("route activefleet was the same as fleet??? what")
+                    } else {
+                        niko_MPC_debugUtils.displayError("attempted to escort a fleet with an exsisting activeFleet on the route, activeFleet: ${route.activeFleet.name}, spawned fleet: ${fleet.name}")
+                        val containingLocation = fleet.containingLocation
+                        fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
+                        containingLocation.removeEntity(fleet)
+                        return null
+                    }
+                }
                 set("activeFleet", route, fleet)
                 fleet.addEventListener(RouteManager.getInstance())
             }
@@ -253,7 +265,11 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             val containingLocation = fleet.containingLocation
             fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
             containingLocation.removeEntity(fleet)
-            set("activeFleet", route, null)
+            if (fleet == route.activeFleet) {
+                set("activeFleet", route, null)
+            } else {
+                niko_MPC_debugUtils.log.warn("$route had activeFleet that was not null when we tried to abort an escort, this shouldnt happen. activeFleet: ${route.activeFleet.name}, spawned fleet = ${fleet.name}")
+            }
         }
         return null
     }
