@@ -130,7 +130,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     private fun increaseFleetSize(factionMarket: MarketAPI, desc: String) {
         factionMarket.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMultAlways(id, getShipSizeMult(), desc)
         factionMarket.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyMultAlways(getFleetQualityId(), getProductionQualityMult(), desc)
-        // TODO: for some fucking reason this quality mod isnt showing up in the fuckin descriptionnnn of the damn quality screen
+        //TODO: for some fucking reason this quality mod isnt showing up in the fuckin descriptionnnn of the damn quality screen
         fleetSizeRemover.trackMarket(factionMarket)
     }
 

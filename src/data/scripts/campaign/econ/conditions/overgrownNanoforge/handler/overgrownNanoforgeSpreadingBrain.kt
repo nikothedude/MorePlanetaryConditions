@@ -56,7 +56,7 @@ class overgrownNanoforgeSpreadingBrain(
         return allIntel
     }
 
-    private fun getAllHandlers(): Set<overgrownNanoforgeHandler> {
+    fun getAllHandlers(): Set<overgrownNanoforgeHandler> {
         return (industryNanoforge.junkHandlers.toMutableSet() + industryNanoforge)
     }
 

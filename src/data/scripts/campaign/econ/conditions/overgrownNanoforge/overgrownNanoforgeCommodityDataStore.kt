@@ -58,7 +58,7 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
         val supply = coreHandler.getSupply(commodityId)
         var weight: Float = this[commodityId]?.baseWeight ?: return 0f
         if (negative && supply <= 0f) return 0f //prevents us from removing commodities we dont create
-        if (supply > 0f) weight *= OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
+        if (supply > 0f && nanoforge.getCoreHandler().focusingOnExistingCommodities) weight *= OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
         return weight
     }
 

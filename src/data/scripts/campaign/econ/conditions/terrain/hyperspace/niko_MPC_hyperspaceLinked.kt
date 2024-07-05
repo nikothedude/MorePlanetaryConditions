@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
 import com.fs.starfarer.api.campaign.OrbitAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.Mining
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
@@ -28,7 +29,6 @@ import data.scripts.everyFrames.niko_MPC_jumpPointStaplingScript
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isDeserializing
-import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_miscUtils.setArc
 import org.lazywizard.lazylib.MathUtils
@@ -109,9 +109,16 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
 
         market.hazard.modifyFlat(id, hazardBonus, name)
 
-        val mining = market.getIndustry(Industries.MINING)
-        if (mining is Mining) {
-            if (mining.isFunctional) mining.supply(id, Commodities.VOLATILES, getAdjustedVolatilesBonus(), name)
+        var mining: Industry? = null
+        for (industry in market.industries) {
+            val spec = industry.spec ?: continue
+            if (spec.tags.contains(Industries.MINING)) {
+                mining = industry
+                break
+            }
+        }
+        if (mining != null) {
+            if (mining.isFunctional) mining.supply(id, Commodities.VOLATILES, getAdjustedVolatilesBonus(mining), name)
             else mining.getSupply(Commodities.VOLATILES).quantity.unmodify(id)
         }
 
@@ -132,7 +139,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     }
 
 
-    private fun getAdjustedVolatilesBonus(): Int {
+    private fun getAdjustedVolatilesBonus(mining: Industry? = null): Int {
         return volatilesBonus
 
        /* val market = getMarket() ?: return 0

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_marketUtils.applyDeficitToProductionStatic
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils.toPercent
 
 class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
@@ -30,6 +31,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             Pair(Industries.TAG_MILITARY, 2),
             Pair(Industries.TAG_COMMAND, 3)
         )
+        val AOTD_DEFENSE_FORCE_FOOD_PROD = 4
+        val AOTD_DEFENSE_FORCE_LUXURY_PROD = 3
+        val AOTD_DEFENSE_FORCE_HAZARD_MULT = 0.9f
     }
 
     override fun apply(id: String) {
@@ -116,6 +120,10 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             }
         }
 
+        if (decrement <= 0 && industry.id == "militarygarrison") { // aotd
+            decrement += AOTD_DEFENSE_FORCE_HAZARD_MULT
+        }
+
         val deficit = industry.getMaxDeficit(*(industry.allDemand.map { it.commodityId }.toTypedArray()))
         if (decrement > 0 && deficit != null && deficit.one != null) {
             val decrementMult = 1 - (deficit.two / industry.getDemand(deficit.one).quantity.modifiedValue)
@@ -136,6 +144,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
                 break
             }
         }
+        if (amount <= 0 && industry.id == "militarygarrison") { // aotd
+            amount += AOTD_DEFENSE_FORCE_FOOD_PROD
+        }
 
         val anchorPoint = 3
         val sizeBonus = (market.size - anchorPoint).coerceAtMost(0)
@@ -153,6 +164,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
                 amount = result
                 break
             }
+        }
+        if (amount <= 0 && industry.id == "militarygarrison") { // aotd
+            amount += AOTD_DEFENSE_FORCE_LUXURY_PROD
         }
 
         val anchorPoint = 5
@@ -178,5 +192,13 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             Misc.getHighlightColor(),
             "Bonus", "food", "luxury goods"
         )
+        if (niko_MPC_settings.AOTD_vaultsEnabled) {
+            tooltip.addPara(
+                "A %s is particularly effective (%s)",
+                10f,
+                Misc.getHighlightColor(),
+                "standing army", "planetary defense force"
+            )
+        }
     }
 }

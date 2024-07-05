@@ -90,6 +90,8 @@ enum class cullingStrengthReasons {
         val tagMap = HashMap<String, Float>()
         val coreMap = HashMap<String, Float>()
         val improvementMult = 1.2f
+
+        val AOTD_planetaryGarrisonScore = COMMAND_TAG_SCORE
         init {
             tagMap[Industries.TAG_PATROL] = PATROL_TAG_SCORE
             tagMap[Industries.TAG_MILITARY] = MILITARY_TAG_SCORE
@@ -116,6 +118,9 @@ enum class cullingStrengthReasons {
 
                 var industryScore = 0f
                 industry.spec.tags.forEach { it -> tagMap[it]?.let { industryScore += it } }
+                if (industry.id == "militarygarrison") { // aotd
+                    industryScore += AOTD_planetaryGarrisonScore
+                }
 
                 if (industryScore == 0f) continue
 

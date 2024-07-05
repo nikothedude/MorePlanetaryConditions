@@ -4,6 +4,7 @@ import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.Mining
 import com.fs.starfarer.api.impl.campaign.econ.impl.Refining
@@ -130,8 +131,15 @@ class niko_MPC_hyperMagneticField:
         market.accessibilityMod.modifyFlat(id, accessabilityIncrement, name)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(id, defenseRatingMult, name)
 
-        val mining = market.getIndustry(Industries.MINING)
-        if (mining is Mining) {
+        var mining: Industry? = null
+        for (industry in market.industries) {
+            val spec = industry.spec ?: continue
+            if (spec.tags.contains(Industries.MINING)) {
+                mining = industry
+                break
+            }
+        }
+        if (mining != null) {
             mining.supply(id, Commodities.ORE, (mining.getSupply(Commodities.ORE).quantity.modifiedInt * -0.5).roundToInt(), name)
             mining.supply(id, Commodities.RARE_ORE, (mining.getSupply(Commodities.RARE_ORE).quantity.modifiedInt * -0.5).roundToInt(), name)
             mining.getSupply(Commodities.ORE).quantity.modifyMult(id, 0.5f, name)
@@ -146,10 +154,15 @@ class niko_MPC_hyperMagneticField:
             }
         }
 
-        val refining = market.getIndustry(Industries.REFINING)
-        if (refining is Refining) {
-            refining.upkeep.modifyMult(id, REFINING_UPKEEP_MULT, name)
+        var refining: Industry? = null
+        for (industry in market.industries) {
+            val spec = industry.spec ?: continue
+            if (spec.tags.contains(Industries.REFINING)) {
+                refining = industry
+                break
+            }
         }
+        refining?.upkeep?.modifyMult(id, REFINING_UPKEEP_MULT, name)
     }
 
     private fun unapplyConditionAttributes(id: String) {
@@ -157,17 +170,29 @@ class niko_MPC_hyperMagneticField:
         market.hazard.unmodify(id)
         market.accessibilityMod.unmodify(id)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(id)
-        val mining = market.getIndustry(Industries.MINING)
-        if (mining is Mining) {
+        var mining: Industry? = null
+        for (industry in market.industries) {
+            val spec = industry.spec ?: continue
+            if (spec.tags.contains(Industries.MINING)) {
+                mining = industry
+                break
+            }
+        }
+        if (mining != null) {
             mining.getSupply(Commodities.RARE_ORE).quantity.unmodify(id)
             mining.getSupply(Commodities.ORE).quantity.unmodify(id)
             mining.getSupply(Commodities.RARE_METALS).quantity.unmodify(id)
             mining.getSupply(Commodities.METALS).quantity.unmodify(id)
         }
-        val refining = market.getIndustry(Industries.REFINING)
-        if (refining is Refining) {
-            refining.upkeep.unmodify(id)
+        var refining: Industry? = null
+        for (industry in market.industries) {
+            val spec = industry.spec ?: continue
+            if (spec.tags.contains(Industries.REFINING)) {
+                refining = industry
+                break
+            }
         }
+        refining?.upkeep?.unmodify(id)
     }
 
     override fun createDeletionScriptInstance(vararg args: Any): niko_MPC_magfieldConditionDeletionScript {

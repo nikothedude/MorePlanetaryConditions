@@ -18,18 +18,21 @@ class MPC_derelictEscortGoDarkAI: GoDarkAbilityAI() {
     override fun advance(days: Float) {
         val assignmentTarget = fleet.ai?.currentAssignment?.target
         if (assignmentTarget != null) {
-            if (!ability.isActive && fleet.getAbility(Abilities.SUSTAINED_BURN)?.isActive != true) {
+            if (fleet.getAbility(Abilities.SUSTAINED_BURN)?.isActive != true) {
                 val targetGoneDark = (assignmentTarget.getAbility(Abilities.GO_DARK)?.isActive == true)
-                if (targetGoneDark) {
-                    val dist = MathUtils.getDistance(fleet, assignmentTarget)
-                    if (dist <= MPC_derelictEscortAssignmentAI.DERELICT_ESCORT_CATCH_UP_DIST) {
-                        ability.activate()
+                if (!ability.isActive) { // its currently off
+                    if (targetGoneDark) {
+                        val dist = MathUtils.getDistance(fleet, assignmentTarget)
+                        if (dist <= MPC_derelictEscortAssignmentAI.DERELICT_ESCORT_CATCH_UP_DIST) {
+                            ability.activate()
+                        }
                     }
+                } else if (!targetGoneDark) {
+                    ability.deactivate()
                 }
             }
             return
         }
-
         super.advance(days)
     }
 }

@@ -28,6 +28,7 @@ import data.utilities.niko_MPC_miscUtils.isStationFleet
 import data.utilities.niko_MPC_reflectionUtils.set
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils
+import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.magiclib.kotlin.isPatrol
@@ -267,7 +268,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             containingLocation.removeEntity(fleet)
             if (fleet == route.activeFleet) {
                 set("activeFleet", route, null)
-            } else {
+            } else if (route.activeFleet != null){
                 niko_MPC_debugUtils.log.warn("$route had activeFleet that was not null when we tried to abort an escort, this shouldnt happen. activeFleet: ${route.activeFleet.name}, spawned fleet = ${fleet.name}")
             }
         }
@@ -346,7 +347,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.addAbility("MPC_escort_transponder")
 
         MPC_derelictEscortAssignmentAI(fleet, target, market).start()
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = true
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = true
 
         var timeoutMult = 1f
         if (!market.isInhabited()) {
@@ -360,8 +361,9 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         if (tooltip == null) return
         val market = getMarket() ?: return
 
+        val patrolString = if (niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS) "" else " non-patrol"
         tooltip.addPara(
-            "%s for all friendly/trade fleets in system that follow for %s (affected by fleet size)",
+            "%s for all friendly$patrolString/trade fleets in system that follow for %s (affected by fleet size)",
             10f,
             Misc.getHighlightColor(),
             "Creates escorts", "${MIN_DAYS_ESCORTING_TIL_END.toInt()} - ${MAX_DAYS_ESCORTING_TIL_END.toInt()} days"

@@ -54,7 +54,7 @@ class MPC_derelictEscortAssignmentAI(
     override fun runWhilePaused(): Boolean = false
 
     override fun advance(amount: Float) {
-        // PLACEHOLDER REMOVE AFTER YOU LOADED YOUR SAVE IDIOT
+        // TODO: remove after 3.3.4
         if (despawnSetting == null) despawnSetting = target.isNoAutoDespawn
 
         val days = Misc.getDays(amount)
@@ -139,7 +139,7 @@ class MPC_derelictEscortAssignmentAI(
         fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
         homeMarket.getEscortFleetList() -= target
 
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = despawnSetting
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
         fleet.isNoAutoDespawn = false
     }
 
@@ -153,7 +153,7 @@ class MPC_derelictEscortAssignmentAI(
         homeMarket.getEscortFleetList() -= target
         target.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_TARGET_MEMID] = null
 
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) target.isNoAutoDespawn = despawnSetting
+        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
         fleet.isNoAutoDespawn = false
         return true
     }

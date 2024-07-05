@@ -1,19 +1,32 @@
 3.3.4:
 SAVE COMPATIBLE
 
-Fixed a bug where ultra-magnetic fields would have null names (and cause crashes)
+Overgrown Nanoforge
+    Clarified that overgrown nanoforges give a very powerful item when culled
+    Added a button to the core UI that toggles the built-in commodity weighting
+        TLDR is that supply adjustments previously had a super high chance of picking a commodity the nanoforge already produces
+        Now you can toggle it
 
-Changes the derelict escort target names to be generic, to not spoil what theyre following
+Ultra-Magnetic fields
+    Fixed a bug where ultra-magnetic fields would have null names (and cause crashes)
 
-Escort fleets now force the simulation of fleets they escort
-    Otherwise, youll never see a trade fleet in the core worlds with an escort
-    Can be disabled in lunalib if save bloat/performance is a problem
+Derelict Escort
+    Changes the derelict escort target names to be generic, to not spoil what theyre following
+        Close-range escorting still says the name since its pretty obvious most of the time
 
-Added a lunasetting to disallow escorts from spawning on patrols
+    Escort fleets now force the simulation of fleets they escort
+        Otherwise, youll never see a trade fleet in the core worlds with an escort
+        Can be disabled in lunalib if save bloat/performance is a problem
 
-Added new ability AI to escort fleets
-    Will now go dark if their target has gone dark
-    Will keep transponder onto the state of their target's transponder
+    Added a lunasetting to disallow escorts from spawning on patrols
+
+    Added new ability AI to escort fleets
+        Will now go dark if their target has gone dark
+        Will keep transponder onto the state of their target's transponder
+
+Mod interactions
+    Conditions now properly interact with AOTD industries
+    Special treatment in a few cases for the military garrison (overgrown nanoforges, toteliacs)
 
 3.3.3:
 SAVE COMPATIBLE

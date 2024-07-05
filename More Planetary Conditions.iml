@@ -39,5 +39,6 @@
     <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
     <orderEntry type="library" name="HMI" level="project" />
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
+    <orderEntry type="library" name="Vok" level="project" />
   </component>
 </module>

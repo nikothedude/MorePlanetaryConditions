@@ -8,8 +8,10 @@ import com.fs.starfarer.api.campaign.listeners.FleetEventListener
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.ids.Entities.STATION_RESEARCH_REMNANT
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags.MEMORY_KEY_NO_JUMP
@@ -23,6 +25,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.campaign.CharacterStats.SkillLevel
 import com.thoughtworks.xstream.XStream
+import data.compatability.MPC_compatabilityUtils
 import data.scripts.campaign.MPC_coronaResistFleetManagerScript
 import data.scripts.campaign.MPC_coronaResistScript
 import data.scripts.campaign.MPC_coronaResistStationScript
@@ -55,6 +58,7 @@ import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import data.utilities.niko_MPC_reflectionUtils.get
+import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.loadNexSettings
 import data.utilities.niko_MPC_settings.nexLoaded
@@ -80,6 +84,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             "niko_MPC_spyArrays",
             "niko_MPC_derelictEscort"
         )
+        var currVersion = Global.getSettings().modManager.getModSpec(modId).version
     }
 
     @Throws(RuntimeException::class)
@@ -105,6 +110,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
         niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
+        AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
         nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
     }
 
@@ -139,6 +145,28 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
+
+        /*for (loc in Global.getSector().allLocations) {
+            for (fleet in loc.fleets.toList()) {
+                var militaryBaseListener: MilitaryBase? = null
+                for (listener in fleet.eventListeners) {
+                    if (listener is MilitaryBase) {
+                        militaryBaseListener = listener
+                        break
+                    }
+                }
+                if (militaryBaseListener == null) continue
+                val route = RouteManager.getInstance().getRoute(militaryBaseListener.routeSourceId, fleet)
+                if (route == null) {
+                    niko_MPC_debugUtils.log.error("found a broken route for a fleet based off military base:" +
+                            "${fleet.name}, ${fleet.faction.displayName}, ${loc.name}, ${militaryBaseListener.market.name}")
+                }
+                fleet.despawn(CampaignEventListener.FleetDespawnReason.NO_REASON_PROVIDED, null)
+                fleet.removeEventListener(militaryBaseListener)
+            }
+        }*/
+
+        MPC_compatabilityUtils.run()
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
         Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())

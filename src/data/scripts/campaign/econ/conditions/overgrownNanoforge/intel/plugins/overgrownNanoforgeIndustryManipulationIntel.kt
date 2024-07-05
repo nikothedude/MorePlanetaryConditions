@@ -1,11 +1,18 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins
 
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.input.InputEventAPI
+import com.fs.starfarer.api.input.InputEventClass
+import com.fs.starfarer.api.input.InputEventType
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
 import data.scripts.campaign.intel.baseNikoEventStageInterface
+import data.utilities.niko_MPC_settings
+import lunalib.lunaExtensions.addLunaToggleButton
 
 class overgrownNanoforgeIndustryManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
@@ -27,8 +34,31 @@ class overgrownNanoforgeIndustryManipulationIntel(
         if (!exposed) localGrowthManipulationPercent = 0f
     }
 
+    override fun addBasicDescription(info: TooltipMakerAPI, width: Float, stageId: Any?) {
+        super.addBasicDescription(info, width, stageId)
+
+        info.addPara(
+            "Culling the core will allow the usage of it as a potent %s, which is installable in any industry and " +
+                    "massively boosts production and fleet size (if on heavy industry) at the cost of demand, upkeep, and ship quality.",
+            5f,
+            Misc.getHighlightColor(),
+            "colony item")
+
+    }
+
     override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
         super.addMiddleDescriptionText(info, width, stageId)
+        val overallSuppressionMeter = overallManipulationMeter?.get() ?: return
+        val focusButton = info.addLunaToggleButton(ourHandler.focusingOnExistingCommodities, 100f, overallSuppressionMeter.height)
+        focusButton.position.rightOfMid(overallSuppressionMeter.elementPanel, 5f)
+        focusButton.onInput { ourHandler.focusingOnExistingCommodities = focusButton.value }
+        val extraWeight = niko_MPC_settings.OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
+        val descTooltip = focusButton.addTooltip(
+            "If enabled, commodities already being produced are %s more likely to be picked for new growths.",
+            300f,
+            TooltipMakerAPI.TooltipLocation.BELOW,
+            "${extraWeight}x"
+        )
     }
 
     override fun playerCanManipulateGrowth(): Boolean {
