@@ -171,7 +171,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
         Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())
-        Global.getSector().addTransientListener(MilitaryBaseNoRouteSaviorListener())
+        //Global.getSector().addTransientListener(MilitaryBaseNoRouteSaviorListener())
         Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
