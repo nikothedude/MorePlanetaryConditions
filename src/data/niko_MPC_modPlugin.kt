@@ -70,6 +70,7 @@ import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
+import kotlin.contracts.contract
 
 class niko_MPC_modPlugin : BaseModPlugin() {
 
@@ -170,6 +171,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
         Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())
+        Global.getSector().addTransientListener(MilitaryBaseNoRouteSaviorListener())
         Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
@@ -348,6 +350,33 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             } catch (ex: Exception) {
                 MCTE_debugUtils.displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
                 MCTE_debugUtils.log.debug("info:", ex)
+            }
+        }
+    }
+}
+
+class MilitaryBaseNoRouteSaviorListener: BaseCampaignEventListener(false) {
+    override fun reportFleetDespawned(
+        fleet: CampaignFleetAPI?,
+        reason: CampaignEventListener.FleetDespawnReason?,
+        param: Any?
+    ) {
+        if (fleet == null || reason == null) return
+
+        if (reason == CampaignEventListener.FleetDespawnReason.REACHED_DESTINATION) {
+            var militaryBase: MilitaryBase? = null
+            for (listener in fleet.eventListeners) {
+                if (listener is MilitaryBase) {
+                    militaryBase = listener
+                    break
+                }
+            }
+            if (militaryBase == null) return
+            val route = RouteManager.getInstance().getRoute(militaryBase.routeSourceId, fleet)
+            if (route == null) {
+                displayError("found broken route for fleet, logging info and removing listener")
+                niko_MPC_debugUtils.log.info("${fleet.name}, ${fleet.market?.name}")
+                fleet.removeEventListener(militaryBase)
             }
         }
     }
