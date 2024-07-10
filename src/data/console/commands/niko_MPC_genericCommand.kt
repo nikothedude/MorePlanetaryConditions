@@ -1,13 +1,19 @@
 package data.console.commands
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignEventListener
 import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SpecialItemData
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.ids.Tags.VARIANT_ALWAYS_RECOVERABLE
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
 import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_HasBackground
+import com.sun.org.apache.bcel.internal.generic.RET
+import data.scripts.campaign.econ.conditions.derelictEscort.derelictEscortStates
+import data.utilities.niko_MPC_ids
 import exerelin.campaign.SectorManager.transferMarket
 import exerelin.campaign.intel.colony.ColonyExpeditionIntel.createColonyStatic
 import exerelin.campaign.intel.groundbattle.GBUtils
@@ -32,6 +38,29 @@ class niko_MPC_genericCommand: BaseCommand {
         playerPerson.stats.setSkillLevel("captains_academician", numToUse)
         playerPerson.stats.setSkillLevel("captains_unbound", numToUse)
         playerPerson.stats.setSkillLevel("captains_usurper", numToUse)*/
+
+        for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
+            var baseListener: MilitaryBase? = null
+            for (listener in fleet.eventListeners) {
+                if (listener is MilitaryBase) {
+                    baseListener = listener
+                    break
+                }
+            }
+            if (baseListener == null) continue
+
+            val route = RouteManager.getInstance().getRoute(baseListener.routeSourceId, fleet)
+            if (route == null) {
+                fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
+            }
+        }
+
+        for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
+            val existingState = fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_STATE_MEMFLAG] as? derelictEscortStates ?: continue
+            if (existingState == derelictEscortStates.RETURNING_TO_BASE) {
+                fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
+            }
+        }
 
         return BaseCommand.CommandResult.SUCCESS
     }

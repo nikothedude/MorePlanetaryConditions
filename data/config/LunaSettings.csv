@@ -23,7 +23,7 @@ MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts (Days),In
 MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts (Days),Int,90,,,,,Conditions
 ,,,,,,,,
 MPC_derelictEscortHeader,Derelict Escort Config,Header,Derelict Escort Config,,,,,Conditions
-MPC_derelictEscortSimulateFleets,Force simulation of escorted fleets,Boolean,false,,"(WARNING: UNSTABLE, MAY SCREW YOUR SAVE) If true, escorted fleets will be forcefully spawned (contrary to usual behavior where they are despawned if you are far away to save performance). Disabling will improve performance, but will make escorts return home if the fleet gets too far away from the player.",,,Conditions
+MPC_derelictEscortSimulateFleets,Force simulation of escorted fleets,Boolean,true,,"If true, escorted fleets will be forcefully spawned (contrary to usual behavior where they are despawned if you are far away to save performance). Disabling will improve performance, but will make escorts return home if the fleet gets too far away from the player.",,,Conditions
 MPC_derelictEscortSpawnOnPatrols,Spawn on patrols,Boolean,true,,"If true, patrols can have escorts spawn on them. Disabling will increase performance if the above is enabled.",,,Conditions
 ,,,,,,,,
 MPC_nexBarrageAbilityHeader,Satellite barrage settings,Header,Satellite barrage settings,,,,,Nexerelin

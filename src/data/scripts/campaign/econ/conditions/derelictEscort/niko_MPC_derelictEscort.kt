@@ -192,6 +192,8 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS) {
             val routes = routeManager.getRoutesInLocation(containingLocation)
             for (route in routes) {
+                if (route.delay > 0) continue
+                if (route.spawner == null) continue
                 if (route.isExpired) continue
                 if (route.activeFleet != null) continue
                 val newFleet = route.spawner?.spawnFleet(route) ?: continue
@@ -201,6 +203,11 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         if (fleetMap.isEmpty()) return
         for ((fleet, route) in fleetMap) {
             tryToSpawnEscortOn(fleet, route)
+            if (fleet.isAlive && fleet.isPatrol() && route != null && route.activeFleet != fleet) {
+                niko_MPC_debugUtils.displayError("patrol fleet managed to be created and not despawned with no proper activefleet")
+                niko_MPC_debugUtils.log.error("${fleet.name}, ${fleet.market?.name}, ${fleet.containingLocation?.name}")
+                fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
+            }
         }
     }
 
@@ -226,17 +233,17 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
     }
 
     fun tryToSpawnEscortOn(fleet: CampaignFleetAPI, route: RouteData?): CampaignFleetAPI? {
-        val market = getMarket() ?: return null
+        val market = getMarket() ?: return handleFailedEscortSpawn(fleet, route)
 
-        if (fleet.isSatelliteFleet()) return null
-        if (fleet.isStationFleet()) return null
-        if (fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_MEMID] != null) return null
-        if (fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS] == true) return null
-        if (fleet.ai?.currentAssignment?.assignment == FleetAssignment.GO_TO_LOCATION_AND_DESPAWN) return null
+        if (fleet.isSatelliteFleet()) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.isStationFleet()) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_MEMID] != null) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS] == true) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.ai?.currentAssignment?.assignment == FleetAssignment.GO_TO_LOCATION_AND_DESPAWN) return handleFailedEscortSpawn(fleet, route)
         val timeout = market.getDerelictEscortTimeouts()[fleet]
-        if (fleet in market.getEscortFleetList().keys) return null
-        if (timeout != null) return null
-        if (niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS && fleet.isPatrol()) return null
+        if (fleet in market.getEscortFleetList().keys) return handleFailedEscortSpawn(fleet, route)
+        if (timeout != null) return handleFailedEscortSpawn(fleet, route)
+        if (!niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS && fleet.isPatrol()) return handleFailedEscortSpawn(fleet, route)
 
         var factionToUse = market.faction
         if (!market.isInhabited() && fleet.isPlayerFleet) {
@@ -252,23 +259,25 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                         niko_MPC_debugUtils.displayError("route activefleet was the same as fleet??? what")
                     } else {
                         niko_MPC_debugUtils.displayError("attempted to escort a fleet with an exsisting activeFleet on the route, activeFleet: ${route.activeFleet.name}, spawned fleet: ${fleet.name}")
-                        val containingLocation = fleet.containingLocation
-                        fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
-                        containingLocation.removeEntity(fleet)
-                        return null
+                        return handleFailedEscortSpawn(fleet, route)
                     }
                 }
                 set("activeFleet", route, fleet)
                 fleet.addEventListener(RouteManager.getInstance())
             }
             return spawnEscortOn(fleet, factionToUse)
-        } else if (route != null) {
+        }
+        return handleFailedEscortSpawn(fleet, route)
+    }
+
+    fun handleFailedEscortSpawn(fleet: CampaignFleetAPI, route: RouteData?): CampaignFleetAPI? {
+        if (route != null) {
             val containingLocation = fleet.containingLocation
             fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
             containingLocation.removeEntity(fleet)
             if (fleet == route.activeFleet) {
                 set("activeFleet", route, null)
-            } else if (route.activeFleet != null){
+            } else if (route.activeFleet != null) {
                 niko_MPC_debugUtils.log.warn("$route had activeFleet that was not null when we tried to abort an escort, this shouldnt happen. activeFleet: ${route.activeFleet.name}, spawned fleet = ${fleet.name}")
             }
         }
