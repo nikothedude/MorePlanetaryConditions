@@ -3,6 +3,7 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
 
 
@@ -31,10 +32,11 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
 
     val organicsData = overgrownNanoforgeCommoditySetupData(Commodities.ORGANICS, 12f, 10f, hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.35f)))
     val volatilesData = overgrownNanoforgeCommoditySetupData(Commodities.VOLATILES, 17f,8f,  hashMapOf(Pair(Commodities.HEAVY_MACHINERY, 0.5f)))
-    init {
-        reload()
-    }
+
+    val shipComponentsData = overgrownNanoforgeCommoditySetupData("IndEvo_parts", 40f, 5f, hashMapOf(Pair(Commodities.ORE, 0.8f), Pair(Commodities.HEAVY_MACHINERY, 0.1f)))
+
     fun reload() {
+        this.clear()
         this[Commodities.SUPPLIES] = supplyData
         this[Commodities.METALS] = metalData
         this[Commodities.RARE_METALS] = rareMetalData
@@ -51,6 +53,10 @@ object overgrownNanoforgeCommodityDataStore: HashMap<String, overgrownNanoforgeC
         this[Commodities.RARE_ORE] = rareOreData
         this[Commodities.VOLATILES] = volatilesData
         this[Commodities.ORGANICS] = organicsData
+
+        if (niko_MPC_settings.indEvoEnabled) {
+            this["IndEvo_parts"] = shipComponentsData
+        }
     }
 
     fun getWeightForCommodity(commodityId: String, nanoforge: overgrownNanoforgeHandler, negative: Boolean = false): Float {

@@ -35,7 +35,7 @@ object niko_MPC_marketUtils {
 
     val commodities = hashSetOf(Commodities.FUEL, Commodities.DRUGS, Commodities.FOOD, Commodities.DOMESTIC_GOODS,
     Commodities.HEAVY_MACHINERY, Commodities.HAND_WEAPONS, Commodities.METALS, Commodities.ORE, Commodities.RARE_METALS, Commodities.RARE_ORE,
-    Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES)
+    Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES, "IndEvo_parts", )
 
     @JvmStatic
     fun removeNonNanoforgeProducableCommodities(list: MutableSet<String>): MutableSet<String> {

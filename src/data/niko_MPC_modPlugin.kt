@@ -33,6 +33,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
@@ -91,6 +92,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     @Throws(RuntimeException::class)
     override fun onApplicationLoad() {
         val isLazyLibEnabled = Global.getSettings().modManager.isModEnabled("lw_lazylib")
+        niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
+        niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
+        AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
+        nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")
         }
@@ -108,11 +113,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             use unused aurorae2 t exture in graphics/planets to make a tachyon field that makes you go fast around stars? \n\
             investigaet dark nebula in graphics/fx. good terrain sprite"
         )*/
-
-        niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
-        niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
-        AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
-        nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)

@@ -13,6 +13,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownN
 import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.utilities.niko_MPC_settings
 import lunalib.lunaExtensions.addLunaToggleButton
+import lunalib.lunaUI.elements.LunaProgressBar
 
 class overgrownNanoforgeIndustryManipulationIntel(
     brain: overgrownNanoforgeSpreadingBrain,
@@ -49,6 +50,12 @@ class overgrownNanoforgeIndustryManipulationIntel(
     override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
         super.addMiddleDescriptionText(info, width, stageId)
         val overallSuppressionMeter = overallManipulationMeter?.get() ?: return
+        if (playerCanManipulateGrowth()) {
+            addFocusButton(info, overallSuppressionMeter)
+        }
+    }
+
+    fun addFocusButton(info: TooltipMakerAPI, overallSuppressionMeter: LunaProgressBar) {
         val focusButton = info.addLunaToggleButton(ourHandler.focusingOnExistingCommodities, 100f, overallSuppressionMeter.height)
         focusButton.position.rightOfMid(overallSuppressionMeter.elementPanel, 5f)
         focusButton.onInput { ourHandler.focusingOnExistingCommodities = focusButton.value }

@@ -1,4 +1,4 @@
-3.3.4:
+3.4.0:
 SAVE COMPATIBLE
 
 Overgrown Nanoforge
@@ -6,6 +6,7 @@ Overgrown Nanoforge
     Added a button to the core UI that toggles the built-in commodity weighting
         TLDR is that supply adjustments previously had a super high chance of picking a commodity the nanoforge already produces
         Now you can toggle it
+    Can now generate with indevo's ship components
 
 Ultra-Magnetic fields
     Fixed a bug where ultra-magnetic fields would have null names (and cause crashes)

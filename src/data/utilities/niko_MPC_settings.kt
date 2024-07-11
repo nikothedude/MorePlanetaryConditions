@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import data.niko_MPC_modPlugin
 import data.niko_MPC_modPlugin.Companion.modId
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.randomizedSourceBudgets
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
@@ -102,6 +103,7 @@ object niko_MPC_settings {
 
         DERELICT_ESCORT_SIMULATE_FLEETS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSimulateFleets")!!
         DERELICT_ESCORT_SPAWN_ON_PATROLS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSpawnOnPatrols")!!
+        overgrownNanoforgeCommodityDataStore.reload()
     }
 
     fun loadNexSettings() {
