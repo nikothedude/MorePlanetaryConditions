@@ -11,6 +11,9 @@ Ultra-Magnetic fields
     Fixed a bug where ultra-magnetic fields would have null names (and cause crashes)
 
 Derelict Escort
+    Colonized FP increased to 50
+    Timeout increased to 60 days
+
     Changes the derelict escort target names to be generic, to not spoil what theyre following
         Close-range escorting still says the name since its pretty obvious most of the time
 

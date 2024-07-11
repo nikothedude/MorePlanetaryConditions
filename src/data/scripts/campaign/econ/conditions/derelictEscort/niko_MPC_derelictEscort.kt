@@ -41,7 +41,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         const val SELF_MARKET_ACCESSABILITY_INCREMENT = -0.30f
         const val OTHER_MARKET_ACCESSIBILITY_INCREMENT = 0.15f
 
-        const val DAYS_BETWEEN_ESCORTS = 30f
+        const val DAYS_BETWEEN_ESCORTS = 60f
         const val CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED = 0.75f
 
         const val UNINHABITED_TIMEOUT_MULT = 5f
@@ -50,6 +50,9 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         const val ESCORT_FLEET_MAX_BURN_MULT = 5f
 
         const val HAZARD_RATING_INCREMENT = 0.25f
+
+        const val INHABITED_BASE_FLEET_POINTS = 50f
+        const val UNINHABITED_BASE_FLEET_POINTS = 50f
     }
 
     var cachedFaction: String? = null
@@ -288,7 +291,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val market = getMarket() ?: return null
 
         val inhabited = market.isInhabited()
-        val combatPoints = if (inhabited) 30f else 50f
+        val combatPoints = if (inhabited) INHABITED_BASE_FLEET_POINTS else UNINHABITED_BASE_FLEET_POINTS
         val marketForParams = if (!inhabited) null else market
         val qualityOverride = 0.8f
         val params = FleetParamsV3(
