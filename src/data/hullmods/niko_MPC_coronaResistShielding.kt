@@ -11,6 +11,6 @@ class niko_MPC_coronaResistShielding: BaseHullMod() {
     override fun applyEffectsBeforeShipCreation(hullSize: ShipAPI.HullSize?, stats: MutableShipStatsAPI?, id: String?) {
         if (hullSize == null || stats == null || id == null) return
 
-        stats.dynamic.getStat(Stats.CORONA_EFFECT_MULT).modifyMult(id, MPC_coronaResistStructure.coronaResistance)
+        stats.dynamic.getStat(Stats.CORONA_EFFECT_MULT).modifyMult(id, 0f)
     }
 }

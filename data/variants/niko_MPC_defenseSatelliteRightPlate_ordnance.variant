@@ -20,26 +20,29 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0015": "shredder",
         "WS0003": "jackhammer",
-        "WS0016": "hammerrack",
+        "WS0015": "shredder",
+        "WS0016": "hammerrack"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0009": "dualflak",
-        "WS0013": "dualflak",
-		"WS0006": "dualflak",
-	  }
+        "WS0006": "dualflak",
+        "WS0009": "dualflak",
+        "WS0013": "dualflak"
+      }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
+        "WS0001": "lightag",
         "WS0002": "lightag",
         "WS0012": "lightag",
+        "WS0017": "lightag",
+        "WS0018": "lightag",
         "WS0019": "lightag"
       }
     },
@@ -47,36 +50,33 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0011": "breachpod",
-		"WS0010": "harpoonpod",
+        "WS0010": "harpoonpod",
+        "WS0011": "breachpod"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "lightdualmg",
-        "WS0008": "vulcan",
-        "WS0017": "lightdualmg",
-        "WS0018": "vulcan"
+        "WS0008": "vulcan"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0020": "swarmer",
-		"WS0005": "swarmer",
-		"WS0007": "swarmer",
-	  }
+        "WS0005": "swarmer",
+        "WS0007": "swarmer",
+        "WS0020": "swarmer"
+      }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0014": "niko_MPC_LR_heavyburst",
-		"WS0004": "niko_MPC_LR_pdburst",
-	  }
+        "WS0004": "niko_MPC_LR_pdburst",
+        "WS0014": "niko_MPC_LR_heavyburst"
+      }
     }
   ],
   "modules": [],

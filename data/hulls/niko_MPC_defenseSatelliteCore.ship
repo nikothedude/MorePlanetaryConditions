@@ -21,7 +21,7 @@
     "niko_MPC_cheapDeployment",
     "turretgyros",
     "do_not_fire_through",
-	"niko_MPC_superPDComputer"
+    "niko_MPC_superPDComputer"
   ],
   "weaponSlots": [
     {
@@ -44,8 +44,8 @@
       "size": "MEDIUM",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 302,
-      "angle": 61,
+      "arc": 207,
+      "angle": 24,
       "locations": [25, 39.5]
     },
     {
@@ -53,8 +53,8 @@
       "size": "MEDIUM",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 302,
-      "angle": -61,
+      "arc": 207,
+      "angle": -24,
       "locations": [25, -39.5]
     },
     {
@@ -63,7 +63,7 @@
       "type": "HYBRID",
       "mount": "TURRET",
       "arc": 305,
-      "angle": -90,
+      "angle": -46.5,
       "locations": [6.5, -46]
     },
     {
@@ -72,7 +72,7 @@
       "type": "HYBRID",
       "mount": "TURRET",
       "arc": 305,
-      "angle": 90,
+      "angle": 46.5,
       "locations": [6.5, 46]
     },
     {

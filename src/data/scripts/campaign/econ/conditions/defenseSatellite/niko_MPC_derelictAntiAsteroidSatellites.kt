@@ -25,7 +25,7 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
     }
 
     companion object {
-        var baseAccessibilityIncrementObj = -0.30f //also placeholder
+        var baseAccessibilityIncrementObj = -0.10f //also placeholder
         var baseGroundDefenseIncrementObj = 400f
         var baseStabilityIncrementObj = 2f
 

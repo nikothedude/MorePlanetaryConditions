@@ -53,15 +53,8 @@
     {
       "WS0012": "niko_MPC_defenseSatelliteLeftPlate_ordnance"
     },
-    {
-      "WS0013": "niko_MPC_right_module_armour1_Standard"
-    },
-    {
-      "WS0014": "niko_MPC_left_module_armour1_Standard"
-    }
   ],
   "wings": [
-    "wasp_wing",
     "wasp_wing",
     "wasp_wing"
   ]

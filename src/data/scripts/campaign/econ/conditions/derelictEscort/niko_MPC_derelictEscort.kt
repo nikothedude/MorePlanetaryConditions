@@ -341,6 +341,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE] = false
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
+        fleet.memoryWithoutUpdate[MemFlags.MAY_GO_INTO_ABYSS] = true // need to follow our escorts EVERYWHERE
         fleet.isNoAutoDespawn = true
         fleet.setFaction(faction.id)
         fleet.commander?.setFaction(faction.id)

@@ -5,16 +5,17 @@ import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.industries.MPC_coronaResistStructure
-import data.scripts.campaign.econ.industries.MPC_coronaResistStructure.Companion.coronaResistance
 import data.scripts.campaign.objectives.MPC_baryonEmitterObjectiveScript
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_fleetUtils.counterTerrainMovement
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.CORONA_RESIST_MEMORY_FLAG
 import data.utilities.niko_MPC_industryIds
 
 open class MPC_coronaResistScript(
     val entity: SectorEntityToken,
 ): niko_MPC_baseNikoScript() {
+    var coronaResistance: Float = 0.0f
     open var terrainMovementDivisor: Float = 40f
     val affecting: MutableSet<FleetMemberAPI> = HashSet()
 
@@ -41,6 +42,7 @@ open class MPC_coronaResistScript(
 
     open fun unapplyToFleets() {
         for (member in affecting) {
+            member.fleetData?.fleet?.memoryWithoutUpdate?.unset(CORONA_RESIST_MEMORY_FLAG)
             member.stats.dynamic.getStat(Stats.CORONA_EFFECT_MULT).unmodify("${entity.id}_coronaEffect")
         }
         affecting.clear()
@@ -56,6 +58,7 @@ open class MPC_coronaResistScript(
     private fun affectFleet(fleet: CampaignFleetAPI, days: Float) {
         fleet.counterTerrainMovement(days, terrainMovementDivisor) // this doesnt seem to work very well either, its inconsistant between fleets
 
+        fleet.memoryWithoutUpdate.set(CORONA_RESIST_MEMORY_FLAG, coronaResistance, 1f)
         for (fleetMember in fleet.fleetData.membersListCopy) {
             fleetMember.stats.dynamic.getStat(Stats.CORONA_EFFECT_MULT).modifyMult(
                 "${entity.id}_MPCspecialCoronaResistance",

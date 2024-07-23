@@ -34,10 +34,13 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
+        "WS0001": "lightag",
         "WS0002": "lightag",
         "WS0008": "lightag",
         "WS0012": "lightag",
         "WS0013": "heavymortar",
+        "WS0017": "lightag",
+        "WS0018": "lightag",
         "WS0019": "lightag"
       }
     },
@@ -45,18 +48,15 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0004": "niko_MPC_LR_pdburst",
-		}
+        "WS0004": "niko_MPC_LR_pdburst"
+      }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "lightdualmg",
         "WS0006": "dualflak",
-        "WS0009": "dualflak",
-        "WS0017": "lightdualmg",
-        "WS0018": "lightdualmg"
+        "WS0009": "dualflak"
       }
     },
     {

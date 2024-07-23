@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="src">
+  <library name="seeker">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../SEEKER_UC-v0.6.2/jars/SEEKER.jar!/" />
     </CLASSES>

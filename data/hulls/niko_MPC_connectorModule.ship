@@ -1,7 +1,7 @@
 {
   "hullName": "Connector Module",
   "hullId": "niko_MPC_connectorModule",
-  "hullSize": "CAPITAL_SHIP",
+  "hullSize": "FRIGATE",
   "spriteName": "graphics/ships/niko_MPC_connectormoduleplaceholder.png",
   "style": "LOW_TECH",
   "height": 69,
@@ -20,7 +20,7 @@
     "niko_MPC_connectorWeakness",
     "always_detaches",
     "turretgyros",
-	"niko_MPC_superPDComputer"
+    "niko_MPC_superPDComputer"
   ],
   "weaponSlots": [
     {
@@ -28,7 +28,7 @@
       "size": "LARGE",
       "type": "UNIVERSAL",
       "mount": "TURRET",
-      "arc": 270,
+      "arc": 222,
       "angle": 0,
       "locations": [0, -0]
     },
@@ -37,7 +37,7 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 360,
+      "arc": 180,
       "angle": 0,
       "locations": [2.5, 34]
     },
@@ -46,7 +46,7 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 360,
+      "arc": 180,
       "angle": -0,
       "locations": [2.5, -34]
     }

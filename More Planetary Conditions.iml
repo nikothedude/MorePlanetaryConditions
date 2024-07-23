@@ -27,7 +27,7 @@
     <orderEntry type="library" name="CaptainsLog" level="project" />
     <orderEntry type="library" name="DynamicTariffs" level="project" />
     <orderEntry type="library" name="orders from thje boss" level="project" />
-    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="seeker" level="project" />
     <orderEntry type="library" name="unknown skies" level="project" />
     <orderEntry type="library" name="Knights of Ludd" level="project" />
     <orderEntry type="library" name="Illustrated.Entities1.1" level="project" />
@@ -40,5 +40,7 @@
     <orderEntry type="library" name="HMI" level="project" />
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
     <orderEntry type="library" name="Vok" level="project" />
+    <orderEntry type="library" name="ExoticaTechnologies-dev" level="project" />
+    <orderEntry type="library" name="src" level="project" />
   </component>
 </module>

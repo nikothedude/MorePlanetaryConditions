@@ -685,7 +685,7 @@ abstract class niko_MPC_satelliteHandlerCore(
     }
 
     fun cullUselessConditions() {
-        log.info("$this culling conditions")
+        //log.info("$this culling conditions")
         for (condition: niko_MPC_antiAsteroidSatellitesBase in ArrayList(conditions)) {
             if (condition.getMarket() !== market) {
                 condition.delete()

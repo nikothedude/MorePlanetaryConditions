@@ -2,6 +2,9 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    // stores the current corona resist value on the fleet
+    const val CORONA_RESIST_MEMORY_FLAG = "\$niko_MPC_coronaResistMemoryFlag"
+    const val BARYON_EMITTER_POSTCOLLAPSE_TAG = "MPC_postCollapse"
     const val DERELICT_ESCORT_MAX_FOLLOW_PLAYER_DIST_LY = 2f
     const val SKULIODA_SHIP_NAME = "Skulioda's Prize"
     const val BARYON_EMITTER_TAG = "MPC_coronaResistObjective"

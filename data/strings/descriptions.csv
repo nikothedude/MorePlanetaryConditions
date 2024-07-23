@@ -27,5 +27,11 @@ MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,
-MPC_coronaResistObjectiveMakeshift,CUSTOM,"While traditionally built on planets for the significantly higher output potential, portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. However, it's limited output makes it struggle to resist the push of solar winds or gravitational influx. 
+MPC_baryonEmitterStandard,CUSTOM,"Portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. One quickly realizes why they were typically built on planets - the potential output, without a massive power district, is middling at best, and can only partially protect a fleet from the dangers of space. 
+
+These pre-collapse emitters are considered both a rarity and a sad reminder of what we lost, as no current faction has found the DRM needed to produce one - and the cost of such construction would be prohibitive.
+",,,
+MPC_baryonEmitterPostcollapse,CUSTOM,"Portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. One quickly realizes why they were typically built on planets - the potential output, without a massive power district, is middling at best, and can only partially protect a fleet from the dangers of space. 
+
+Constructed using a recovered fac-chip and smartly substituted resources, this emitter is not only incredibly cheaper than the propietary ErugNostic units, but significantly more effective - though still inferior in comparison to a planet-based emitter. This piece of machinery is proof that, despite everything, we can recover what we've lost.
 ",,,

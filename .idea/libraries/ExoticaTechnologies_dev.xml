@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="ExoticaTechnologies-dev">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../ExoticaTechnologies-dev" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../ExoticaTechnologies-dev" />
+      <root url="file://$PROJECT_DIR$/../ExoticaTechnologies-dev/src" />
+    </SOURCES>
+  </library>
+</component>

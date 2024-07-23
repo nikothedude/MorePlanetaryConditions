@@ -48,7 +48,7 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
     companion object {
         var slipstreamDetectionBonus: Float = 7f // very very big
         var accessabilityBonus: Float = 0.5f
-        var hazardBonus: Float = 0.75f
+        var hazardBonus: Float = 0.5f
         var volatilesBonus = 3 // its seriously a lot
 
         var defenseIncrement = 50f

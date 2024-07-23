@@ -17,14 +17,6 @@ import org.magiclib.kotlin.getMarketsInLocation
 class MPC_coronaResistStructure: baseNikoIndustry() {
     var script: MPC_coronaResistStructureScript? = null
 
-    companion object {
-        fun createBlueprint(cargo: CargoAPI) {
-            cargo.addSpecial(SpecialItemData("industry_bp", niko_MPC_industryIds.coronaResistIndustry), 1f)
-        }
-
-        const val coronaResistance = 0.0f
-    }
-
     override fun apply() {
         script = MPC_coronaResistStructureScript(market.primaryEntity, this)
         script!!.start()

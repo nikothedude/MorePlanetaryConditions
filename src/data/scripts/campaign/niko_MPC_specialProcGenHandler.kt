@@ -2,30 +2,34 @@ package data.scripts.campaign
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
+import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.CampaignObjective
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
+import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
 import data.coronaResistStationCoreFleetListener
-import data.utilities.niko_MPC_ids
+import data.utilities.*
 import data.utilities.niko_MPC_marketUtils.isInhabited
-import data.utilities.niko_MPC_miscUtils
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
-import data.utilities.niko_MPC_reflectionUtils
-import data.utilities.niko_MPC_settings
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
 
 object niko_MPC_specialProcGenHandler {
+
+    const val DANGEROUS_TERRAIN_EMITTER_SPAWN_CHANCE = 0.15f // percentage
 
     fun doSpecialProcgen(checkExisting: Boolean = false) {
         generateExplorationContent()
@@ -35,6 +39,80 @@ object niko_MPC_specialProcGenHandler {
 
     private fun generateExplorationContent() {
         generateCoronaImmunityStuff()
+        generateRandomBaryonEmitters()
+    }
+
+    private fun generateRandomBaryonEmitters(): MutableSet<SectorEntityToken> {
+        val objectives = HashSet<SectorEntityToken>()
+        if (Global.getSector().memoryWithoutUpdate["\$MPC_generatedBaryonEmitters"] == true) return objectives
+
+        for (iterSystem in Global.getSector().starSystems.shuffled()) {
+            if (!iterSystem.isProcgen) continue
+            if (iterSystem.hasTag(Tags.THEME_SPECIAL)) continue
+
+            if (MPC_coronaResistScript.interferenceDetected(iterSystem)) continue
+
+            val stableLocations = iterSystem.getEntitiesWithTag(Tags.STABLE_LOCATION)
+            if (stableLocations.isEmpty()) continue // need at least one
+
+            var canSpawnEmitter = false
+            for (terrain in iterSystem.terrainCopy) {
+                val plugin = terrain.plugin
+                if (plugin is PulsarBeamTerrainPlugin ||
+                    plugin is EventHorizonPlugin ||
+                    plugin is HyperspaceTerrainPlugin)
+                {
+                    canSpawnEmitter = true
+                    break
+                }
+            }
+            if (!canSpawnEmitter) continue
+            if (MathUtils.getRandom().nextFloat() <= DANGEROUS_TERRAIN_EMITTER_SPAWN_CHANCE) {
+                val randLocation = stableLocations.random()
+                val objective = staticBuildObjective(randLocation, "MPC_baryonEmitterStandard", Factions.NEUTRAL, true)
+                if (objective != null) objectives += objective
+            }
+
+        }
+        niko_MPC_debugUtils.log.info("generated ${objectives.size} random baryon emitters")
+        Global.getSector().memoryWithoutUpdate["\$MPC_generatedBaryonEmitters"] = true
+        return objectives
+    }
+
+    fun staticBuildObjective(stableLocation: SectorEntityToken, type: String, factionId: String, nonFunctional: Boolean = false): SectorEntityToken? {
+        if (stableLocation.hasTag(Tags.NON_CLICKABLE)) return null
+        if (stableLocation.hasTag(Tags.FADING_OUT_AND_EXPIRING)) return null
+        val loc: LocationAPI = stableLocation.containingLocation
+        val built: SectorEntityToken = loc.addCustomEntity(
+            null,
+            null,
+            type,  // type of object, defined in custom_entities.json
+            factionId
+        ) // faction
+        if (nonFunctional) {
+            built.memoryWithoutUpdate[MemFlags.OBJECTIVE_NON_FUNCTIONAL] = true
+        }
+        if (stableLocation.orbit != null) {
+            built.orbit = stableLocation.orbit.makeCopy()
+        }
+        built.setLocation(stableLocation.location.x, stableLocation.location.y)
+        loc.removeEntity(stableLocation)
+        staticUpdateOrbitingEntities(loc, stableLocation, built)
+
+        //entity.setContainingLocation(null);
+        built.memoryWithoutUpdate["\$originalStableLocation"] = stableLocation
+        return built
+    }
+
+    fun staticUpdateOrbitingEntities(loc: LocationAPI?, prev: SectorEntityToken, built: SectorEntityToken?) {
+        if (loc == null) return
+        for (other in loc.allEntities) {
+            if (other === prev) continue
+            if (other.orbit == null) continue
+            if (other.orbitFocus === prev) {
+                other.orbitFocus = built
+            }
+        }
     }
 
     private fun generateCoronaImmunityStuff() {
@@ -121,7 +199,7 @@ object niko_MPC_specialProcGenHandler {
             Factions.MERCENARY,
             1f,
             FleetTypes.MERC_PATROL,
-            70f,  // combatPts, minus the legion xiv's FP
+            100f,  // combatPts, minus the legion xiv's FP
             4f,  // freighterPts
             4f,  // tankerPts
             0f,  // transportPts

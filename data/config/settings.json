@@ -4,6 +4,7 @@
  	],
 	
 	"plugins":{
+		"niko_MPC_coronaResistCombatScript":"data.scripts.everyFrames.combat.niko_MPC_coronaResistCombatScript",
 		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_newSatelliteDeployerScript",
 		"niko_MPC_campaignPlugin":"data.scripts.campaign.plugins.niko_MPC_campaignPlugin",
 	},

@@ -1,7 +1,7 @@
 {
   "hullName": "Heavy Combat Module",
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
-  "hullSize": "CAPITAL_SHIP",
+  "hullSize": "CRUISER",
   "spriteName": "graphics/ships/niko_MPC_leftplateplaceholder.png",
   "style": "LOW_TECH",
   "height": 190,
@@ -21,7 +21,7 @@
     "niko_MPC_satellitePlateWeaknessLeft",
     "armoredweapons",
     "turretgyros",
-	"niko_MPC_superPDComputer"
+    "niko_MPC_superPDComputer"
   ],
   "weaponSlots": [
     {
@@ -29,8 +29,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 301,
-      "angle": 100.5,
+      "arc": 217,
+      "angle": 26.5,
       "locations": [-49, 92]
     },
     {
@@ -38,8 +38,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 298,
-      "angle": 103,
+      "arc": 174,
+      "angle": 3,
       "locations": [-44, 73]
     },
     {
@@ -47,8 +47,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 212,
-      "angle": 46,
+      "arc": 197,
+      "angle": -5,
       "locations": [-15, 50]
     },
     {
@@ -66,7 +66,7 @@
       "type": "HYBRID",
       "mount": "TURRET",
       "arc": 262,
-      "angle": 0,
+      "angle": 1,
       "locations": [54, -38]
     },
     {
@@ -74,8 +74,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 235,
-      "angle": -60,
+      "arc": 187,
+      "angle": -19,
       "locations": [45, -95]
     },
     {
@@ -83,8 +83,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 254,
-      "angle": -46,
+      "arc": 218,
+      "angle": -3.5,
       "locations": [60, -90]
     },
     {
@@ -92,8 +92,8 @@
       "size": "SMALL",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 231,
-      "angle": -70,
+      "arc": 174,
+      "angle": -12,
       "locations": [30, -101]
     },
     {
@@ -101,8 +101,8 @@
       "size": "MEDIUM",
       "type": "UNIVERSAL",
       "mount": "TURRET",
-      "arc": 259,
-      "angle": 98,
+      "arc": 149,
+      "angle": 13,
       "locations": [-35, 46]
     },
     {
@@ -110,8 +110,8 @@
       "size": "MEDIUM",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 194,
-      "angle": 45,
+      "arc": 211,
+      "angle": 33,
       "locations": [26.5, 36.5]
     },
     {
@@ -146,8 +146,8 @@
       "size": "LARGE",
       "type": "UNIVERSAL",
       "mount": "TURRET",
-      "arc": 244,
-      "angle": -82.5,
+      "arc": 186,
+      "angle": 2.5,
       "locations": [-14.5, -43]
     },
     {
@@ -155,8 +155,8 @@
       "size": "MEDIUM",
       "type": "HYBRID",
       "mount": "TURRET",
-      "arc": 297,
-      "angle": -82.5,
+      "arc": 182,
+      "angle": -1.5,
       "locations": [-7.5, -79]
     },
     {

@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteCore",
   "displayName": "Barrage",
   "goalVariant": false,
-  "fluxCapacitors": 15,
+  "fluxCapacitors": 18,
   "fluxVents": 25,
   "quality": 1,
   "permaMods": [],
@@ -16,16 +16,15 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "chaingun",
-        "WS0002": "chaingun"
+        "WS0002": "chaingun",
+        "WS0003": "vulcan",
+        "WS0004": "vulcan"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {
-		"WS0003": "lightmg",
-        "WS0004": "lightmg"
-		}
+      "weapons": {}
     },
     {
       "autofire": true,
@@ -55,15 +54,8 @@
     {
       "WS0012": "niko_MPC_defenseSatelliteLeftPlate_barrage"
     },
-    {
-      "WS0013": "niko_MPC_right_module_armour1_Standard"
-    },
-    {
-      "WS0014": "niko_MPC_left_module_armour1_Standard"
-    }
   ],
   "wings": [
-    "wasp_wing",
     "wasp_wing",
     "wasp_wing"
   ]

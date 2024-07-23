@@ -147,31 +147,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
 
-        /*for (loc in Global.getSector().allLocations) {
-            for (fleet in loc.fleets.toList()) {
-                var militaryBaseListener: MilitaryBase? = null
-                for (listener in fleet.eventListeners) {
-                    if (listener is MilitaryBase) {
-                        militaryBaseListener = listener
-                        break
-                    }
-                }
-                if (militaryBaseListener == null) continue
-                val route = RouteManager.getInstance().getRoute(militaryBaseListener.routeSourceId, fleet)
-                if (route == null) {
-                    niko_MPC_debugUtils.log.error("found a broken route for a fleet based off military base:" +
-                            "${fleet.name}, ${fleet.faction.displayName}, ${loc.name}, ${militaryBaseListener.market.name}")
-                }
-                fleet.despawn(CampaignEventListener.FleetDespawnReason.NO_REASON_PROVIDED, null)
-                fleet.removeEventListener(militaryBaseListener)
-            }
-        }*/
-
-        MPC_compatabilityUtils.run()
+        MPC_compatabilityUtils.run(currVersion)
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
         Global.getSector().addTransientListener(niko_MPC_interationDialogShownListener())
-        //Global.getSector().addTransientListener(MilitaryBaseNoRouteSaviorListener())
         Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
@@ -201,26 +180,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             knownShips -= "guardian" //no super special ship
             knownShips -= "station_derelict_survey_mothership"
             nanoforgeFaction.clearShipRoleCache()
-            
         }
-
-        /*val list = Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] as? HashSet<overgrownNanoforgeIndustryHandler>
-        if (list != null) {
-            for (entry in list.toMutableSet()) {
-                entry.delete()
-            }
-        }
-
-        for (system in Global.getSector().starSystems) {
-            for (planet in system.planets) {
-                val market = planet.market ?: continue
-                market.purgeOvergrownNanoforgeBuildings()
-                market.removeOvergrownNanoforgeIndustryHandler()
-                for (i in 0..12) {
-                    market.memoryWithoutUpdate.unset(overgrownNanoforgeJunkStructureId + i)
-                }
-            }
-        }*/
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()

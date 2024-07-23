@@ -8,6 +8,14 @@ import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 
 class MPC_coronaResistObjectiveScript(entity: SectorEntityToken, val plugin: MPC_baryonEmitterObjectiveScript): MPC_coronaResistScript(entity) {
 
+    init {
+        if (!plugin.isPostcollapse()) {
+            coronaResistance = 0.5f
+        } else {
+            coronaResistance = 0.1f
+        }
+    }
+
     override fun shouldAffectFleet(fleet: CampaignFleetAPI): Boolean {
         if (!super.shouldAffectFleet(fleet)) return false
 

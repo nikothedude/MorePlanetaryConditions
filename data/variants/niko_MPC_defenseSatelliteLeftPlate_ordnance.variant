@@ -20,7 +20,7 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0009": "typhoon",
+        "WS0009": "typhoon"
       }
     },
     {
@@ -36,8 +36,8 @@
       "mode": "LINKED",
       "weapons": {
         "WS0012": "harpoonpod",
-        "WS0019": "breach",
-		"WS0013": "harpoonpod",
+        "WS0013": "harpoonpod",
+        "WS0019": "breach"
       }
     },
     {
@@ -45,7 +45,8 @@
       "mode": "LINKED",
       "weapons": {
         "WS0002": "lightag",
-        "WS0004": "lightmortar"
+        "WS0004": "lightmortar",
+        "WS0005": "lightag"
       }
     },
     {
@@ -54,7 +55,6 @@
       "weapons": {
         "WS0001": "niko_MPC_LR_pdburst",
         "WS0003": "niko_MPC_LR_pdburst",
-        "WS0005": "lightdualmg",
         "WS0008": "vulcan",
         "WS0010": "flak",
         "WS0011": "flak",
@@ -68,15 +68,15 @@
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-		"WS0014": "hurricane"
-	  }
+        "WS0014": "hurricane"
+      }
     },
     {
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-		"WS0015": "shredder"
-	  }
+        "WS0015": "shredder"
+      }
     }
   ],
   "modules": [],

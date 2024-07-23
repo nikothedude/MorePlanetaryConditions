@@ -1,3 +1,45 @@
+3.5.0:
+PROBABLY SAVE COMPATIBLE? DEPENDS ON IF YOU HVAE A BARYON EMITTER ANYWHERE
+
+Make sure to run niko_MPC_genSpecialContent if updating
+
+Derelict escort
+    Fleets may now enter abyssal hyperspace
+
+Defense Satellites
+    Accessability decrement: 30% -> 10%
+        Was arbitrary all this time, I just think its too high
+
+    Variants reworked to get rid of machine guns in favor of either more HE or frag
+    Num bays reduced to 2
+
+    Weapon arcs reworked - now have a very notable blindspot behind the core
+
+    Frontal plates size changed to cruiser, connector module changed to frigate
+    Removed frontal armor plating, because it was honest to god pointless
+    Swarm variant removed pending refactor
+    Plate overclocked targetting duration: 5s -> 7s
+
+Hyperspace Bipartisan
+    Hazard rating: +75% -> +50%
+        Its super rare, it should be better
+
+General
+    Removed the duplication of transponder and go dark abilities
+        Added code to remove the abilities for this version only
+    Skulioda FP: 70 -> 100
+    Projected solar shielding energy reduction: 10% -> 30%
+    Projected solar shielding description updated
+
+    Nerfed baryon emitters can now randomly generate
+        Reflavored baryon emitters while I was at it
+        You can generate these through niko_MPC_genSpecialContent if updating
+    Baryon emitters now only have 90% protection
+        50% for the ones that can randomly spawn
+    Baryon emitter icons are now properly transparent
+    Baryon emitters, as well as the pristine research station, now properly apply their effect in-combat
+        MCTE users may rejoice
+
 3.4.0:
 SAVE COMPATIBLE
 

@@ -32,6 +32,7 @@
       "weapons": {
         "WS0001": "lightag",
         "WS0002": "lightag",
+        "WS0008": "lightag",
         "WS0014": "hellbore"
       }
     },
@@ -63,8 +64,7 @@
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0008": "lightdualmg",
-		"WS0011": "dualflak"
+        "WS0011": "dualflak"
       }
     },
     {
@@ -74,8 +74,8 @@
         "WS0003": "pdburst",
         "WS0004": "niko_MPC_LR_pdburst",
         "WS0005": "niko_MPC_LR_pdburst",
-		"WS0006": "niko_MPC_LR_mininglaser",
-        "WS0007": "niko_MPC_LR_mininglaser",
+        "WS0006": "niko_MPC_LR_mininglaser",
+        "WS0007": "niko_MPC_LR_mininglaser"
       }
     }
   ],

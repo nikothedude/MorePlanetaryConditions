@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_connectorModule",
   "displayName": "Barrage",
   "goalVariant": false,
-  "fluxCapacitors": 32,
+  "fluxCapacitors": 30,
   "fluxVents": 22,
   "quality": 1,
   "permaMods": [],
@@ -14,15 +14,14 @@
       "mode": "LINKED",
       "weapons": {
         "WS0001": "hephag",
+        "WS0002": "vulcan",
+        "WS0003": "vulcan"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {
-		"WS0002": "lightmg",
-        "WS0003": "lightmg"
-	  }
+      "weapons": {}
     }
   ],
   "modules": [],

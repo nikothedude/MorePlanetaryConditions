@@ -291,10 +291,10 @@ MPC_coronaResistStationExploreIntroducedFriendly,,,,,,
 # Objectives,,,,,,
 niko_MPC_stable_buildEmitterOpt,Stable_AddBuildOptions,,"FireBest niko_MPC_modifyBuildEmitterOption",,"41:MPC_SL_buildEmitter:Construct a baryon emitter",
 niko_MPC_modifyBuildEmitterOptionCantBuild,niko_MPC_modifyBuildEmitterOption,"!niko_MPC_knowsBaryonEmitterBP score:500","SetEnabled MPC_SL_buildEmitter false
-SetTooltip MPC_SL_buildEmitter ""You need to learn how to build the emitter first. Legends tell that one was stolen and taken into deep space, potentially around a pulsar.""",,,
+SetTooltip MPC_SL_buildEmitter ""Baryon emitters require advanced pre-collapse technology to construct, and these components typically require DRM which no faction currently has the rights to. You recall a few legends of strange baryon readings near a pulsar in the sector - maybe start there?""",,,
 niko_MPC_modifyBuildEmitterOptionTooManyScripts,niko_MPC_modifyBuildEmitterOption,"niko_MPC_tooManyCoronaResists","SetEnabled MPC_SL_buildEmitter false
 SetTooltip MPC_SL_buildEmitter ""Only one baryon emitter can exist in a system.""",,,
-MPC_SL_buildEmitter,DialogOptionSelected,"$option == MPC_SL_buildEmitter","$slBuildType = MPC_coronaResistObjectiveMakeshift 0
+MPC_SL_buildEmitter,DialogOptionSelected,"$option == MPC_SL_buildEmitter","$slBuildType = MPC_baryonEmitterPostcollapse 0
 Objectives printCost $slBuildType
 FireBest Stable_BuildConfirmOptions",,,
 "#END Objectives",,,,,,

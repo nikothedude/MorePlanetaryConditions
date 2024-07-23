@@ -3,7 +3,7 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Barrage",
   "goalVariant": false,
-  "fluxCapacitors": 14,
+  "fluxCapacitors": 79,
   "fluxVents": 38,
   "quality": 1,
   "permaMods": [],
@@ -22,6 +22,7 @@
       "weapons": {
         "WS0009": "heavymauler",
         "WS0015": "heavymauler",
+        "WS0017": "heavymauler"
       }
     },
     {
@@ -37,7 +38,8 @@
         "WS0002": "lightag",
         "WS0004": "lightag",
         "WS0006": "lightag",
-        "WS0007": "lightag"
+        "WS0007": "lightag",
+        "WS0008": "lightag"
       }
     },
     {
@@ -53,11 +55,9 @@
       "weapons": {
         "WS0003": "vulcan",
         "WS0005": "vulcan",
-        "WS0008": "lightdualmg",
         "WS0010": "dualflak",
         "WS0011": "dualflak",
-        "WS0016": "dualflak",
-        "WS0017": "heavymg"
+        "WS0016": "dualflak"
       }
     },
     {
@@ -67,8 +67,8 @@
         "WS0012": "swarmer",
         "WS0013": "swarmer",
         "WS0018": "swarmer",
-        "WS0020": "swarmer",
-		"WS0019": "swarmer"
+        "WS0019": "swarmer",
+        "WS0020": "swarmer"
       }
     },
     {
