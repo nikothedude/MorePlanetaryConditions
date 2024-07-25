@@ -32,9 +32,6 @@ enum class overgrownNanoforgeEffectPrototypes(
     val canInvert: Boolean = possibleCategories.contains(overgrownNanoforgeEffectCategories.DEFICIT)
 ) {
 
-    //TODO: Replace params with a special class that has its own budget
-    // This is important because as it stands the caller hsa no way of knowing how much budget was actually used up
-
     ALTER_SUPPLY(setOf(overgrownNanoforgeEffectCategories.BENEFIT, overgrownNanoforgeEffectCategories.DEFICIT)) {
         override fun canBeAppliedTo(growth: overgrownNanoforgeHandler, maxBudget: Float): Boolean {
             val superValue = super.canBeAppliedTo(growth, maxBudget)
@@ -114,42 +111,42 @@ enum class overgrownNanoforgeEffectPrototypes(
             return times.coerceAtMost(picker.items.size)
         }
     },
-        SET_INDUSTRY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
-            override fun canBeAppliedTo(growth: overgrownNanoforgeHandler, maxBudget: Float): Boolean {
-                if (growth !is overgrownNanoforgeJunkHandler) return false
-                return super.canBeAppliedTo(growth, maxBudget)
-            }
-            override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
+    SET_INDUSTRY(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
+        override fun canBeAppliedTo(growth: overgrownNanoforgeHandler, maxBudget: Float): Boolean {
+            if (growth !is overgrownNanoforgeJunkHandler) return false
+            return super.canBeAppliedTo(growth, maxBudget)
+        }
+        override fun getWeight(growth: overgrownNanoforgeHandler, budget: Float): Float {
 
-                val market = growth.market
-                val industries = market.industries.size
-                var divisor = 1f
-                val industryLimitDivisorIncrement: Float = ((industries + 1f) - market.getMaxIndustries()).coerceAtLeast(0f)
-                divisor += industryLimitDivisorIncrement
+            val market = growth.market
+            val industries = market.industries.size
+            var divisor = 1f
+            val industryLimitDivisorIncrement: Float = ((industries + 1f) - market.getMaxIndustries()).coerceAtLeast(0f)
+            divisor += industryLimitDivisorIncrement
 
-                val base = 10f
+            val base = 10f
 
-                return (base/divisor)
-            }
+            return (base/divisor)
+        }
 
-            override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
-            override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
+        override fun getMinimumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
+        override fun getMaximumCost(growth: overgrownNanoforgeHandler, positive: Boolean): Float = getCost()
 
-            private fun getCost(): Float {
-                return 50f
-            }
+        private fun getCost(): Float {
+            return 50f
+        }
 
-            override fun getInstance(
-                growth: overgrownNanoforgeHandler,
-                maxBudget: Float
-            ): overgrownNanoforgeForceIndustryEffect? {
-                if (!canBeAppliedTo(growth, maxBudget)) return null
-                val castedGrowth = growth as? overgrownNanoforgeJunkHandler ?: return null
+        override fun getInstance(
+            growth: overgrownNanoforgeHandler,
+            maxBudget: Float
+        ): overgrownNanoforgeForceIndustryEffect? {
+            if (!canBeAppliedTo(growth, maxBudget)) return null
+            val castedGrowth = growth as? overgrownNanoforgeJunkHandler ?: return null
 
-                return overgrownNanoforgeForceIndustryEffect(castedGrowth)
-            }
+            return overgrownNanoforgeForceIndustryEffect(castedGrowth)
+        }
 
-        },
+    },
         /*ALTER_UPKEEP(setOf(overgrownNanoforgeEffectCategories.DEFICIT)) {
             override fun getWeight(nanoforge: overgrownNanoforgeIndustryHandler): Float = 0f //TODO: disabled
             override fun getMinimumCost(nanoforge: overgrownNanoforgeIndustryHandler): Float? = getCostPerPointOneIncrement(nanoforge) //TODO: this is bad

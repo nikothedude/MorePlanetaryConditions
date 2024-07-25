@@ -1,0 +1,2 @@
+id,age,tags,freqYOUNG,freqAVERAGE,freqOLD,minRadius,maxRadius,habZoneStart,probOrbits,minOrbits,maxOrbits,coronaMin,coronaMult,coronaVar,solarWind,minFlare,maxFlare,crLossMult,lightColorMin,lightColorMax
+MPC_star_blackDwarf,OLD,,0,0,1,100,300,-3,0.95,2,7,70,1,0.1,0.25,0,0,1,20 20 20,80 80 80

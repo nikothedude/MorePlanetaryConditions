@@ -1,31 +1,15 @@
 package data.console.commands
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignEventListener
-import com.fs.starfarer.api.campaign.PlanetAPI
-import com.fs.starfarer.api.campaign.SpecialItemData
-import com.fs.starfarer.api.campaign.StarSystemAPI
-import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
-import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
-import com.fs.starfarer.api.impl.campaign.ids.Tags.VARIANT_ALWAYS_RECOVERABLE
-import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
-import com.fs.starfarer.api.impl.campaign.rulecmd.Nex_HasBackground
-import com.sun.org.apache.bcel.internal.generic.RET
-import data.scripts.campaign.econ.conditions.derelictEscort.derelictEscortStates
-import data.utilities.niko_MPC_ids
-import exerelin.campaign.SectorManager.transferMarket
-import exerelin.campaign.intel.colony.ColonyExpeditionIntel.createColonyStatic
+import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin.MagneticFieldParams
+import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import exerelin.campaign.intel.groundbattle.GBUtils
 import exerelin.campaign.intel.groundbattle.GroundBattleIntel
 import exerelin.campaign.intel.groundbattle.GroundUnit
 import exerelin.campaign.intel.groundbattle.GroundUnitDef
-import exerelin.campaign.intel.specialforces.namer.PlanetNamer
-import indevo.industries.artillery.utils.ArtilleryStationPlacer.addArtilleryToPlanet
-import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.console.BaseCommand
-import org.lazywizard.console.Console
-import org.magiclib.kotlin.hasFarmland
+import java.awt.Color
 
 class niko_MPC_genericCommand: BaseCommand {
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
@@ -39,7 +23,7 @@ class niko_MPC_genericCommand: BaseCommand {
         playerPerson.stats.setSkillLevel("captains_unbound", numToUse)
         playerPerson.stats.setSkillLevel("captains_usurper", numToUse)*/
 
-        for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
+        /*for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
             var baseListener: MilitaryBase? = null
             for (listener in fleet.eventListeners) {
                 if (listener is MilitaryBase) {
@@ -60,7 +44,67 @@ class niko_MPC_genericCommand: BaseCommand {
             if (existingState == derelictEscortStates.RETURNING_TO_BASE) {
                 fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
             }
-        }
+        }*/
+
+        val testSystem = Global.getSector().createStarSystem("Test System")
+        testSystem.backgroundTextureFilename = "graphics/backgrounds/background_galatia.jpg"
+        testSystem.hyperspaceAnchor
+        /*val blackDwarf = testSystem.initStar("MPC_testStar1", "MPC_star_blackDwarf", 180f, 70f, 1f, 0f, 1f)
+        testSystem.lightColor = Color(20, 20, 20)
+        testSystem.location.set(-71000f, -23000f)
+        testSystem.autogenerateHyperspaceJumpPoints()*/
+        val magnetar = testSystem.initStar("MPC_magnetar", "MPC_star_magnetar", 180f, 700f, 10f, 0.2f, 6f)
+        testSystem.lightColor = Color(255, 255, 255)
+        testSystem.location.set(-71000f, -23000f)
+        testSystem.autogenerateHyperspaceJumpPoints(true, true)
+
+        val script = niko_MPC_magnetarStarScript(magnetar)
+        script.start()
+
+        val renderStartOne = magnetar.radius + 50f
+        val renderEndOne = magnetar.radius + 12500f
+        val effectMiddleDistOne = 0f
+        val effectSizeBothWaysOne = renderEndOne + 2000f
+        val paramsOne = MagneticFieldParams(
+            effectSizeBothWaysOne,  // terrain effect band width
+            effectMiddleDistOne,  // terrain effect middle radius
+            magnetar,  // entity that it's around
+            renderStartOne,  // visual band start
+            renderEndOne,  // visual band end
+            Color(50, 110, 110, 50),  // base color
+            1f,  // probability to spawn aurora sequence, checked once/day when no aurora in progress
+            Color(50, 20, 110, 130),
+            Color(150, 30, 120, 150),
+            Color(200, 50, 130, 190),
+            Color(250, 70, 150, 240),
+            Color(200, 80, 130, 255),
+            Color(75, 0, 160),
+            Color(127, 0, 255)
+        )
+        val magfieldOne = testSystem.addTerrain("MPC_magnetarField", paramsOne)
+
+        /*val renderStartTwo = renderEndOne + 0f
+        val renderEndTwo = renderEndOne + 2000f
+        val effectMiddleDistTwo = 1000f
+        val effectSizeBothWaysTwo = 1000f
+        val paramsTwo = MagneticFieldParams(
+            effectSizeBothWaysTwo,  // terrain effect band width
+            effectMiddleDistTwo,  // terrain effect middle radius
+            magnetar,  // entity that it's around
+            renderStartTwo,  // visual band start
+            renderEndTwo,  // visual band end
+            Color(50, 20, 100, 50),  // base color
+            1f,  // probability to spawn aurora sequence, checked once/day when no aurora in progress
+            Color(50, 20, 110, 130),
+            Color(150, 30, 120, 150),
+            Color(200, 50, 130, 190),
+            Color(250, 70, 150, 240),
+            Color(200, 80, 130, 255),
+            Color(75, 0, 160),
+            Color(127, 0, 255)
+        )
+        val magfieldTwo = testSystem.addTerrain(Terrain.MAGNETIC_FIELD, paramsTwo)*/
+
 
         return BaseCommand.CommandResult.SUCCESS
     }

@@ -2,6 +2,8 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val DRIVE_BUBBLE_DESTROYED = "\$MPC_driveBubbleDestroyed"
+
     // stores the current corona resist value on the fleet
     const val CORONA_RESIST_MEMORY_FLAG = "\$niko_MPC_coronaResistMemoryFlag"
     const val BARYON_EMITTER_POSTCOLLAPSE_TAG = "MPC_postCollapse"

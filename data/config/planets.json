@@ -1,0 +1,42 @@
+{
+  "MPC_star_blackDwarf":{
+      "name":"Black Dwarf",
+      "tilt":0, # left-right (>0 tilts to the left)
+      "pitch":0, # towards-away from the viewer (>0 pitches towards)
+      "rotation":-3, # degrees/second
+      "planetColor":[0,0,0,255],
+      "atmosphereThickness":0.1, # as fraction of radius.  Set to 0 for no atmosphere
+      "atmosphereThicknessMin":10, #  minimum thickness in pixels
+      "atmosphereColor":[41,41,41,255],
+      "texture":"graphics/planets/star_white.jpg",
+      "icon":"graphics/warroom/icon_star.png",
+      "iconColor":[20,20,20,255],
+      "starCoronaSprite":"graphics/fx/star_halo.png", # optional, defaults to really bright particle
+      "starCoronaColor":[64,64,64,60], # optional, defaults to white
+      "starCoronaSizeMult":3, # required, multiplier for star's radius
+      "isStar":true,
+      "isPulsar":false,
+      "lightPosition":[0,0,10], # in planet radii.  Not used for stars.  z > 0 is above the playing field.
+  },
+  "MPC_star_magnetar": {
+      "name":"Magnetar",
+      "tilt":0, # left-right (>0 tilts to the left)
+      "pitch":0, # towards-away from the viewer (>0 pitches towards)
+      "rotation":-3, # degrees/second
+      "planetColor":[37,245,200,255],
+      "atmosphereThickness":0.1, # as fraction of radius.  Set to 0 for no atmosphere
+      "atmosphereThicknessMin":10, #  minimum thickness in pixels
+      "atmosphereColor":[255,255,255,255],
+      "texture":"graphics/planets/star_white.jpg",
+      "icon":"graphics/warroom/icon_star.png",
+      "iconColor":[37,245,200,255],
+      "starCoronaSprite":"graphics/fx/star_halo.png", # optional, defaults to really bright particle
+      "starCoronaColor":[255,255,255,60], # optional, defaults to white
+      "starCoronaSizeMult":3, # required, multiplier for star's radius
+      "isStar":true,
+      "isPulsar":true,
+      "scaleMultMapIcon":0.8,
+      "scaleMultStarscapeIcon":0.8,
+      "lightPosition":[0,0,10], # in planet radii.  Not used for stars.  z > 0 is above the playing field.
+  }
+}

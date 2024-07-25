@@ -19,11 +19,13 @@ MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",
 MPC_overclockedTargetting,SHIP_SYSTEM,,Offensive,"Massively increases weapon range, to near-infinite levels.",
 MPC_overclockedTargettingCore,SHIP_SYSTEM,,Offensive,"Massively increases weapon range, to near-infinite levels.",
+MPC_acceleratedOrdnanceFeeder,SHIP_SYSTEM,Activates a highly advanced - but jamming-prone - mechanism for quickly delivering all forms of ordnance to on-board weapons. The mechanism must be re-calibrated and cooled before it can be used again.,Offensive,Provides a flux cost reduction and a brief but massive boost to the rate of fire of all weapons.,
 ,,,,,
 MPC_realspaceHyperspace_deep,TERRAIN,"This volume of hyperspace is particularly chaotic, hindering the performance of even hyperspace-calibrated equipment.",,,
 MPC_realspaceHyperspace_storm,TERRAIN,"This volume of hyperspace is undergoing chaotic phase shifts leading to wildly fluctuating resonance cascades. Ancient and dire warnings of prolonged exposure to so-called ""hyperspace storms"" have been passed down through generations of spacers.",,,
 MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps high energy charged particles. It's extremely difficult to get any sensor readings on a fleet lurking within, and often impossible, due to the frequency of ion storms.",,,
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
+MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomobly strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,
@@ -35,3 +37,11 @@ MPC_baryonEmitterPostcollapse,CUSTOM,"Portable baryon emitters such as this one 
 
 Constructed using a recovered fac-chip and smartly substituted resources, this emitter is not only incredibly cheaper than the propietary ErugNostic units, but significantly more effective - though still inferior in comparison to a planet-based emitter. This piece of machinery is proof that, despite everything, we can recover what we've lost.
 ",,,
+,,,,,
+MPC_star_blackDwarf,PLANET,"Once considered theoretical, a black dwarf is the final stage of life for any main sequence star. After exhausting all fusable material, white dwarves cease to output any significant light or energy, leaving behind a scorching-hot mass of degenerate matter, slowly cooling into an inert ball of stable metal.
+
+Domain scientists reacted to the discovery of black dwarves in the sector with a mixture of intrigue and fright - on one hand, it allows for a new perspective on astrophysics and cosmo-chronology. On the other hand, it implies our universe my be aging faster than we anticipated.
+",,,
+MPC_star_magnetar,PLANET,"A variant of a neutron star, magnetars are the most magnetically powerful entities in the known universe, with a field strong enough to rip even non-ferric material apart on a molecular level. Conventional physics break down on its surface, as atoms are deformed into quark cylinders, possibly even forming strange matter.
+
+While the Domain was happy to visit pulsars and even singularities with their survey drones, every single known instance of a magnetar was given a black mark in the Domain record, owing to their unique ability to destroy drive fields. Whether it's a pulse or stream magnetar, the sheer energy contained in their output is enough to leave a fleet helpless for days or even weeks - that is, if they don't fall victim to the evercalling magnetic pull of the star. Every spacer has the same advice - stay away, for death awaits you.",,,

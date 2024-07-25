@@ -1,0 +1,13 @@
+{
+	"id":"MPC_acceleratedOrdnanceFeeder",
+	"type":"STAT_MOD",
+	"aiType":"WEAPON_BOOST",
+
+	"statsScript":"data.scripts.shipsystems.MPC_acceleratedOrdnanceFeeder",
+
+	"weaponGlowColor":[205,11,11,155],
+	"weaponTypes":[BALLISTIC, ENERGY, MISSILE],
+
+	"useSound":"system_ammo_feeder",
+	"outOfUsesSound":"gun_out_of_ammo",
+}

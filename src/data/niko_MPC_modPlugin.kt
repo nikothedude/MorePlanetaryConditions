@@ -109,9 +109,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         // TODO
        /*throw java.lang.RuntimeException(
-            "IDEAS FOR NEXT CONDITIONS: +accessability for all markets in-system EXCEPT this one? \n\
-            use unused aurorae2 t exture in graphics/planets to make a tachyon field that makes you go fast around stars? \n\
-            investigaet dark nebula in graphics/fx. good terrain sprite"
+            "black dwarf: very rare and very very decrepit star, phase after white dwarf" +
+            "\nplanetary nebulae, hostile environment with white dwarf/neutron star/blackhole that slowly overheats your fleet (is this fun?)" +
+            "\nmagnetar: TODO"
         )*/
     }
 

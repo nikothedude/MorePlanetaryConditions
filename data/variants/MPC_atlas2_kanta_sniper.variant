@@ -1,0 +1,49 @@
+{
+  "variantId": "MPC_atlas2_kanta_sniper",
+  "hullId": "MPC_atlas2_kanta",
+  "displayName": "Sniper",
+  "goalVariant": true,
+  "fluxCapacitors": 0,
+  "fluxVents": 50,
+  "quality": 3,
+  "permaMods": [],
+  "hullMods": [
+    "eccm",
+    "fluxdistributor"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 008": "gauss",
+        "WS 009": "gauss"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 012": "squall",
+        "WS 013": "squall"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 014": "harpoonpod",
+        "WS 015": "harpoonpod",
+        "WS 017": "harpoonpod",
+        "WS 018": "harpoonpod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}
