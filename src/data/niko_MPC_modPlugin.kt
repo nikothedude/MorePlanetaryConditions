@@ -60,6 +60,7 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import data.utilities.niko_MPC_reflectionUtils.get
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
+import data.utilities.niko_MPC_settings.SOTF_enabled
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.loadNexSettings
 import data.utilities.niko_MPC_settings.nexLoaded
@@ -96,6 +97,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
         AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
         nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
+        SOTF_enabled = Global.getSettings().modManager.isModEnabled("secretsofthefrontier")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")
         }

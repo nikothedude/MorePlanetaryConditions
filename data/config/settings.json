@@ -11,6 +11,10 @@
 	"graphics":{
 		"intel":{
 			"niko_MPC_priceUpdate":"graphics/icons/intel/price_update.png",
+			"niko_MPC_magnetarIcon":"graphics/icons/intel/magnetaricon.png",
+		},
+		"illustrations":{
+			"niko_MPC_magnetar":"graphics/illustrations/magnetar.jpg"
 		},
 	},
 	

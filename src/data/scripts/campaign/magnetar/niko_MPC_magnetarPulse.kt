@@ -36,6 +36,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         /** MAX_INTERDICT_REINFORCEMENT is reached at this progress level of interdiction. */
         const val MAX_INTERDICT_PROGRESS_NEEDED = 0.8f
         const val INTERDICT_EXTRA_COOLDOWN = 3f
+
+        const val DIST_NEEDED_TO_HIT = 500f
     }
 
     var blockerUtil: RangeBlockerUtil? = null
@@ -98,6 +100,11 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             val dist = Misc.getDistance(fleet, entity)
             if (dist < shockwaveDist) {
                 damagedAlready.add(id)
+                val distNeededToHit = (shockwaveDist - DIST_NEEDED_TO_HIT).coerceAtLeast(0f)
+
+                if (dist <= distNeededToHit) {
+                    continue
+                }
 
                 val point = fleet.location
                 if (blockerUtil == null) continue
@@ -150,7 +157,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         if (fleet!!.isInCurrentLocation) {
             val dist = Misc.getDistance(fleet, Global.getSector().playerFleet)
             if (dist < HyperspaceTerrainPlugin.STORM_STRIKE_SOUND_RANGE) {
-                val volumeMult = 1f * damageFraction
+                val volumeMult = 6f * damageFraction
                 Global.getSoundPlayer()
                     .playSound("gate_explosion_fleet_impact", 1f, volumeMult, fleet!!.location, Misc.ZERO)
             }
@@ -239,6 +246,15 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         val immobileDur = ((15f * shatterTimeMult).roundTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
         val desc = "Drive field destroyed (${immobileDur} days to repair)"
+
+        val transverseJumpAbility = fleet.getAbility(Abilities.TRANSVERSE_JUMP)
+        if (transverseJumpAbility != null) {
+            transverseJumpAbility.cooldownLeft += immobileDur
+        }
+        val sustainedBurnAbility = fleet.getAbility(Abilities.SUSTAINED_BURN)
+        if (sustainedBurnAbility != null) {
+            sustainedBurnAbility.cooldownLeft += immobileDur
+        }
 
         for (view in fleet.views) {
             view.setJitter(0.1f, immobileFromDays, BASE_COLOR, 2, 3f)

@@ -15,9 +15,11 @@ import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerExposedToMagnetarCore
 import data.scripts.campaign.terrain.niko_MPC_scannableTerrain
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.BLIND_JUMPING
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 
@@ -28,8 +30,9 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         const val NO_BUBBLE_CR_MULT = 25f
         const val NO_BUBBLE_WIND_MULT = 9f
     }
-    var crLossMult = 0.01f
-    var pullFactor = -0.1f
+    // ONLY APPLIES IF BUBBLE IS GONE
+    var crLossMult = 4f
+    var pullFactor = -0.2f
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
@@ -75,40 +78,39 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
 
         val bubbleGone = fleet.memoryWithoutUpdate[niko_MPC_ids.DRIVE_BUBBLE_DESTROYED] == true
 
-        // CR loss and peak time reduction
-        for (member in fleet.fleetData.membersListCopy) {
-            val recoveryRate = member.stats.baseCRRecoveryRatePercentPerDay.modifiedValue
-            val lossRate = member.stats.baseCRRecoveryRatePercentPerDay.baseValue
-            var resistance = member.stats.dynamic.getValue(Stats.CORONA_EFFECT_MULT)
-            if (protectedFromCorona) resistance = 0f
-            //if (inFlare) loss *= 2f;
-            var lossMult = 1f
-            if (inFlare) {
-                lossMult = 2f
-            }
-            if (bubbleGone) {
-                lossMult *= NO_BUBBLE_CR_MULT
-            }
-            val adjustedLossMult: Float =
-                0f + crLossMult * intensity * resistance * lossMult * StarCoronaTerrainPlugin.CR_LOSS_MULT_GLOBAL
-            var loss = (-1f * recoveryRate + -1f * lossRate * adjustedLossMult) * days * 0.01f
-            val curr = member.repairTracker.baseCR
-            if (loss > curr) loss = curr
-            if (resistance > 0) { // not actually resistance, the opposite
+        if (bubbleGone) {
+            // CR loss and peak time reduction
+            for (member in fleet.fleetData.membersListCopy) {
+                val recoveryRate = member.stats.baseCRRecoveryRatePercentPerDay.modifiedValue
+                val lossRate = member.stats.baseCRRecoveryRatePercentPerDay.baseValue
+                var resistance = member.stats.dynamic.getValue(Stats.CORONA_EFFECT_MULT)
+                if (protectedFromCorona) resistance = 0f
+                //if (inFlare) loss *= 2f;
+                var lossMult = 1f
                 if (inFlare) {
-                    member.repairTracker.applyCREvent(loss, "MPC_magnetarFlare", "Magnetar flare effect")
-                } else {
-                    member.repairTracker.applyCREvent(loss, "MPC_magnetarField", "Magnetar corona effect")
+                    lossMult = 2f
                 }
-            }
+                val adjustedLossMult: Float =
+                    0f + crLossMult * intensity * resistance * lossMult * StarCoronaTerrainPlugin.CR_LOSS_MULT_GLOBAL
+                var loss = (-1f * recoveryRate + -1f * lossRate * adjustedLossMult) * days * 0.01f
+                val curr = member.repairTracker.baseCR
+                if (loss > curr) loss = curr
+                if (resistance > 0) { // not actually resistance, the opposite
+                    if (inFlare) {
+                        member.repairTracker.applyCREvent(loss, "MPC_magnetarFlare", "Magnetar flare effect")
+                    } else {
+                        member.repairTracker.applyCREvent(loss, "MPC_magnetarField", "Magnetar corona effect")
+                    }
+                }
 
-            // needs to be applied when resistance is 0 to immediately cancel out the debuffs (by setting them to 0)
-            val peakFraction = 1f / Math.max(1.3333f, 1f + crLossMult * intensity)
-            var peakLost = 1f - peakFraction
-            peakLost *= resistance
-            val degradationMult: Float = 1f + crLossMult * intensity * resistance / 2f
-            member.buffManager.addBuffOnlyUpdateStat(PeakPerformanceBuff(buffId + "_1", 1f - peakLost, buffDur))
-            member.buffManager.addBuffOnlyUpdateStat(CRLossPerSecondBuff(buffId + "_2", degradationMult, buffDur))
+                // needs to be applied when resistance is 0 to immediately cancel out the debuffs (by setting them to 0)
+                val peakFraction = 1f / Math.max(1.3333f, 1f + crLossMult * intensity)
+                var peakLost = 1f - peakFraction
+                peakLost *= resistance
+                val degradationMult: Float = 1f + crLossMult * intensity * resistance / 2f
+                member.buffManager.addBuffOnlyUpdateStat(PeakPerformanceBuff(buffId + "_1", 1f - peakLost, buffDur))
+                member.buffManager.addBuffOnlyUpdateStat(CRLossPerSecondBuff(buffId + "_2", degradationMult, buffDur))
+            }
         }
 
         // "wind" effect - adjust velocity
@@ -186,6 +188,32 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
                 }
             }
         }
+
+        // THE FUN SHIT
+        // if you hit the middle of the magnetar, you get a prompt to transverse jump away or fucking die
+        // doing so will drain CR of all ships to 0%, and set hull/armor integrity to 0 as well
+        // fun stuff
+
+        if (bubbleGone && intensity >= 1) {
+            exposedToMagnetarCore(fleet)
+        }
+    }
+
+    private fun exposedToMagnetarCore(fleet: CampaignFleetAPI) {
+        if (fleet.isPlayerFleet) {
+            playerExposedToMagnetarCore(fleet)
+            return
+        }
+        for (member in fleet.fleetData.membersListCopy) {
+            fleet.removeFleetMemberWithDestructionFlash(member)
+        }
+    }
+
+    private fun playerExposedToMagnetarCore(fleet: CampaignFleetAPI) {
+        if (fleet.memoryWithoutUpdate[BLIND_JUMPING] == true) {
+            return
+        }
+        Global.getSector().campaignUI.showInteractionDialog(MPC_playerExposedToMagnetarCore(), entity.orbitFocus)
     }
 
     fun getIntensityAtPoint(point: Vector2f?): Float {

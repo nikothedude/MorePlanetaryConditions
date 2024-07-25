@@ -2,6 +2,9 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val MAGNETAR_SYSTEM = "\$MPC_magnetarSystem"
+    const val PLAYER_VISITED_MAGNETAR = "\$MPC_playerVisitedMagnetar"
+    const val BLIND_JUMPING = "\$MPC_blindJumping"
     const val DRIVE_BUBBLE_DESTROYED = "\$MPC_driveBubbleDestroyed"
 
     // stores the current corona resist value on the fleet

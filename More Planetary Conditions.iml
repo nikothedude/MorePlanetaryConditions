@@ -41,6 +41,6 @@
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
     <orderEntry type="library" name="Vok" level="project" />
     <orderEntry type="library" name="ExoticaTechnologies-dev" level="project" />
-    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="secrets" level="project" />
   </component>
 </module>

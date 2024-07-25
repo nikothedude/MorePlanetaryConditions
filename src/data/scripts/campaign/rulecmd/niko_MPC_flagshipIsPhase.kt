@@ -10,10 +10,10 @@ import data.utilities.niko_MPC_debugUtils
 
 class niko_MPC_flagshipIsPhase: BaseCommandPlugin() {
     override fun execute(
-        ruleId: String,
+        ruleId: String?,
         dialog: InteractionDialogAPI,
         params: MutableList<Misc.Token>,
-        memoryMap: MutableMap<String, MemoryAPI>
+        memoryMap: MutableMap<String, MemoryAPI>?
     ): Boolean {
 
         val fleet: CampaignFleetAPI

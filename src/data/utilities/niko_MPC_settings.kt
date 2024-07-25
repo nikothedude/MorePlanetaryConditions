@@ -24,6 +24,7 @@ object niko_MPC_settings {
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
     var AOTD_vaultsEnabled = false
+    var SOTF_enabled = false
 
     const val OVERGROWN_NANOFORGE_INDUSTRY_NAME = "Overgrown Nanoforge"
     const val OVERGROWN_NANOFORGE_JUNK_NAME = "Nanoforge Growth"
