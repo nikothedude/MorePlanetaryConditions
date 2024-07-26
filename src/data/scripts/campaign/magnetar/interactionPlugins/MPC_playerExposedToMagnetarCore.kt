@@ -7,11 +7,13 @@ import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.scripts.utils.SotfMisc
+import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_settings
 
 class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
 
     enum class Stage {
+        INITIAL_DONEBEFORE,
         INITIAL,
         JUMPPREP,
 
@@ -139,10 +141,10 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 plugin.textPanel!!.addParagraph(
                     "A hopeful murmur begins to spread amongst your crew. \"However...\" they all fall silent. " +
                     "\"...it is a very risky maneuver. It will wreak havoc on our ships, leaving them heavily damaged, putting them at risk for " +
-                    "critical malfunctions\". He leans in. \"Sir... with our current position, this is our optimal time to start the jump.\"",
+                    "critical malfunctions\", and...\" he pauses, debating whether to speak. \"...killing some of our crew.\" He leans in. \"Sir... with our current position, this is our optimal time to start the jump.\"",
                 )
-                plugin.textPanel!!.highlightInLastPara("heavily damaged", "critical malfunctions")
-                plugin.textPanel!!.setHighlightColorsInLastPara(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor())
+                plugin.textPanel!!.highlightInLastPara("heavily damaged", "critical malfunctions", "killing some of our crew")
+                plugin.textPanel!!.setHighlightColorsInLastPara(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor())
 
                 GIVE_GO_AHEAD.addToOptions(plugin)
             }
@@ -207,7 +209,7 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 END.addToOptions(plugin)
             }
         },
-        END(mutableSetOf()) {
+        END(mutableSetOf(Stage.INITIAL_DONEBEFORE)) {
             override fun addToOptions(plugin: MPC_playerExposedToMagnetarCore) {
                 plugin.options!!.addOption("Take stock of your surroundings", END)
             }
@@ -216,7 +218,13 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 super.execute(plugin, text)
 
                 plugin.dialog!!.dismiss()
-                plugin.playerFleet?.let { niko_MPC_magnetarStarScript.doBlindJump(it) }
+                plugin.playerFleet?.let {
+                    niko_MPC_magnetarStarScript.doBlindJump(it)
+                    if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] == null) {
+                        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] = 0
+                    }
+                    Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] = (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] as Int) + 1
+                }
             }
         };
 
@@ -280,17 +288,37 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
 
         visual!!.showImagePortion("illustrations", "niko_MPC_magnetar", 800f, 534f, 0f, 0f, 800f, 534f)
 
+        val timesPanicked = Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] as? Int
+        if (timesPanicked != null && timesPanicked >= 1) {
+            stage = Stage.INITIAL_DONEBEFORE
+        }
+
         createInitialText()
         Options.addOptions(this)
     }
 
     private fun createInitialText() {
-        textPanel!!.addParagraph(
-            "You stare grimly at the approaching magnetar, your viewport tinged red by the emergency lights, trying " +
-                "your best to ignore the frantic scrambling of your subordinates all around you. You've been trying to think of a way " +
-                "out of this, but with your drive field disabled, you can't jump, you can't move, you can't even protect yourself. As " +
-                "the bridge's velocity alarm begins blaring, and frantic communication turns to indecipherable, you ponder your next steps."
-        )
+        if (stage != Stage.INITIAL_DONEBEFORE) {
+            textPanel!!.addParagraph(
+                "You stare grimly at the approaching magnetar, your viewport tinged red by the emergency lights, trying " +
+                        "your best to ignore the frantic scrambling of your subordinates all around you. You've been trying to think of a way " +
+                        "out of this, but with your drive field disabled, you can't jump, you can't move, you can't even protect yourself. As " +
+                        "the bridge's velocity alarm begins blaring, and frantic communication turns to indecipherable, you ponder your next steps."
+            )
+        } else {
+            textPanel!!.addParagraph(
+                "You stare through your viewport at the approaching magnetar, unfazed by it's promise of instant mortality, " +
+                    "though heavily irritated at yourself for the coming damages and casualties. Sighing, you turn around to face your " +
+                    "tactical officer. With a single hand gesture, the bridge enters a frenzy of activity. Just like before, " +
+                    "sensors are overcharged, shields are polarized, phase coils are overtuned. And with a single command, you order " +
+                    "the rift opened once more. "
+            )
+            textPanel!!.addParagraph("The fleet reluctantly enters, though knowing what awaits them if they chose not to " +
+                    "enter, they do so with haste. Buckling yourself to your chair, you close your eyes and pretend the carnage " +
+                    "ravaging your fleet and assaulting your ears isn't happening - though the screams of both crew and buckling bulkheads make that hard.")
+            //Options.END.addToOptions(this)
+        }
+
     }
 
     override fun optionSelected(optionText: String?, optionData: Any?) {

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
+import com.fs.starfarer.api.impl.campaign.abilities.SustainedBurnAbility
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
@@ -26,7 +27,7 @@ import java.awt.Color
 class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     companion object {
-        const val INITIAL_SHOCKWAVE_DURATION = 30f
+        const val INITIAL_SHOCKWAVE_DURATION = 35f
         const val RANGEBLOCKER_MAX_DIST_FOR_PARTICLE_DESPAWN = 200f // this doesnt work that well, but it kinda makes it look better?
         val BASE_COLOR = Color(37, 245, 200, 190)
         const val BASE_STRIKE_DAMAGE = 25
@@ -243,7 +244,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundTo(1))}"
         }
 
-        val immobileDur = ((15f * shatterTimeMult).roundTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
+        val immobileDur = ((12.4f * shatterTimeMult).roundTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
         val desc = "Drive field destroyed (${immobileDur} days to repair)"
 
@@ -253,6 +254,9 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         }
         val sustainedBurnAbility = fleet.getAbility(Abilities.SUSTAINED_BURN)
         if (sustainedBurnAbility != null) {
+            if (sustainedBurnAbility.isActive) {
+                sustainedBurnAbility.deactivate()
+            }
             sustainedBurnAbility.cooldownLeft += immobileDur
         }
 

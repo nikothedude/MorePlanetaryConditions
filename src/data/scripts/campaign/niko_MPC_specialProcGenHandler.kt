@@ -2,23 +2,22 @@ package data.scripts.campaign
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.CustomCampaignEntityAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
-import com.fs.starfarer.api.impl.campaign.CampaignObjective
+import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
-import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
-import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
-import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.*
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASCENT_WELL_DETECTED_RANGE
 import data.coronaResistStationCoreFleetListener
+import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.utilities.*
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
@@ -26,6 +25,7 @@ import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
+import java.awt.Color
 
 object niko_MPC_specialProcGenHandler {
 
@@ -40,6 +40,107 @@ object niko_MPC_specialProcGenHandler {
     private fun generateExplorationContent() {
         generateCoronaImmunityStuff()
         generateRandomBaryonEmitters()
+        generateMagnetar()
+    }
+
+    private fun generateMagnetar() {
+        val sysName = "PRS-NM 2231+9"
+        val system = Global.getSector().createStarSystem(sysName)
+        system.backgroundTextureFilename = "graphics/backgrounds/background_galatia.jpg"
+        system.hyperspaceAnchor
+        val magnetar = system.initStar("MPC_magnetar", "MPC_star_magnetar", 180f, 700f, 10f, 0.2f, 6f)
+        system.lightColor = Color(255, 255, 255)
+        val xVariation = MathUtils.getRandomNumberInRange(
+            niko_MPC_magnetarStarScript.X_COORD_VARIATION_LOWER_BOUND,
+            niko_MPC_magnetarStarScript.X_COORD_VARIATION_UPPER_BOUND
+        )
+        val yVariation = MathUtils.getRandomNumberInRange(
+            niko_MPC_magnetarStarScript.Y_COORD_VARIATION_LOWER_BOUND,
+            niko_MPC_magnetarStarScript.Y_COORD_VARIATION_UPPER_BOUND
+        )
+        val xCoord = niko_MPC_magnetarStarScript.BASE_X_COORD_FOR_SYSTEM + xVariation
+        val yCoord = niko_MPC_magnetarStarScript.BASE_Y_COORD_FOR_SYSTEM + yVariation
+        system.location.set(xCoord, yCoord)
+
+        val script = niko_MPC_magnetarStarScript(magnetar)
+        script.start()
+
+        val renderStartOne = magnetar.radius + 50f
+        val renderEndOne = magnetar.radius + 20000f
+        val effectMiddleDistOne = 0f
+        val effectSizeBothWaysOne = renderEndOne + 4000f
+        val paramsOne = MagneticFieldTerrainPlugin.MagneticFieldParams(
+            effectSizeBothWaysOne,  // terrain effect band width
+            effectMiddleDistOne,  // terrain effect middle radius
+            magnetar,  // entity that it's around
+            renderStartOne,  // visual band start
+            renderEndOne,  // visual band end
+            Color(50, 110, 110, 50),  // base color
+            1f,  // probability to spawn aurora sequence, checked once/day when no aurora in progress
+            Color(50, 20, 110, 130),
+            Color(150, 30, 120, 150),
+            Color(200, 50, 130, 190),
+            Color(250, 70, 150, 240),
+            Color(200, 80, 130, 255),
+            Color(75, 0, 160),
+            Color(127, 0, 255)
+        )
+        val magnetarField = system.addTerrain("MPC_magnetarField", paramsOne)
+
+        // PLANETS AND EXTERNAL STUFF
+        val planetOneInitialAngle = MathUtils.getRandomNumberInRange(0f, 360f)
+        val planetOne = system.addPlanet(
+            "MPC_magnetarPlanetOne",
+            magnetar,
+            "$sysName 1",
+            Planets.PLANET_LAVA,
+            planetOneInitialAngle,
+            80f,
+            2600f,
+            130f
+        )
+        planetOne.market.addCondition(Conditions.ORE_ULTRARICH)
+        planetOne.market.addCondition(Conditions.RARE_ORE_ULTRARICH)
+        planetOne.market.addCondition(Conditions.NO_ATMOSPHERE)
+        planetOne.market.addCondition(Conditions.VERY_HOT)
+        planetOne.market.addCondition(Conditions.RUINS_SCATTERED)
+
+        for (planet in system.planets) {
+            if (planet.isStar) continue
+            planet.market.addCondition(Conditions.EXTREME_TECTONIC_ACTIVITY)
+            planet.market.addCondition(Conditions.IRRADIATED)
+            planet.market.addCondition("niko_MPC_magnetarCondition")
+        }
+
+        // TAGS AND STUFF
+
+        system.addTag(Tags.THEME_SPECIAL)
+        system.addTag(Tags.THEME_UNSAFE)
+        system.addTag(Tags.THEME_HIDDEN)
+        system.addTag(Tags.THEME_INTERESTING)
+
+        system.type = StarSystemGenerator.StarSystemType.DEEP_SPACE
+
+        system.autogenerateHyperspaceJumpPoints(true, true)
+
+        for (jumpPoint in system.autogeneratedJumpPointsInHyper) {
+            if (jumpPoint.isStarAnchor) {
+                jumpPoint.addTag(Tags.STAR_HIDDEN_ON_MAP)
+            }
+            var range = HyperspaceAbyssPluginImpl.JUMP_POINT_DETECTED_RANGE
+            if (jumpPoint.isGasGiantAnchor) {
+                range = HyperspaceAbyssPluginImpl.GAS_GIANT_DETECTED_RANGE
+            } else if (jumpPoint.isStarAnchor) {
+                range = HyperspaceAbyssPluginImpl.STAR_DETECTED_RANGE
+            }
+
+            AbyssalRogueStellarObjectEPEC.setAbyssalDetectedRange(jumpPoint, range)
+        }
+        for (nascentWell in system.autogeneratedNascentWellsInHyper) {
+            AbyssalRogueStellarObjectEPEC.setAbyssalDetectedRange(nascentWell, NASCENT_WELL_DETECTED_RANGE)
+        }
+
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] = system
     }
 
     private fun generateRandomBaryonEmitters(): MutableSet<SectorEntityToken> {

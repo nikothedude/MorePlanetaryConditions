@@ -39,23 +39,30 @@ class niko_MPC_magnetarStarScript(
                 member.status.applyDamage(9999999f) // very high
                 member.repairTracker.cr = 0f
             }
+
+            val crewNum = fleet.cargo.totalCrew
+            val crewToLose = (crewNum * CREW_LOST_DURING_BLIND_JUMP_PERCENT).toInt().coerceAtMost(MAX_CREW_LOSS_DURING_BLIND_JUMP)
+            fleet.cargo.removeCrew(crewToLose)
         }
 
-        const val MIN_DAYS_PER_PULSE = 4f
-        const val MAX_DAYS_PER_PULSE = 4.2f
+        const val MIN_DAYS_PER_PULSE = 3.4f
+        const val MAX_DAYS_PER_PULSE = 3.7f
 
         const val BASE_X_COORD_FOR_SYSTEM = -71000f
         const val BASE_Y_COORD_FOR_SYSTEM = -45000f
 
-        const val X_COORD_VARIATION_LOWER_BOUND = -1200f
-        const val X_COORD_VARIATION_UPPER_BOUND = 1200f
-        const val Y_COORD_VARIATION_LOWER_BOUND = -600f
+        const val X_COORD_VARIATION_LOWER_BOUND = -1600f
+        const val X_COORD_VARIATION_UPPER_BOUND = 1900f
+        const val Y_COORD_VARIATION_LOWER_BOUND = -1200f
         const val Y_COORD_VARIATION_UPPER_BOUND = 200f
 
         const val BLIND_JUMP_X_VARIATION_LOWER_BOUND = -3000f
         const val BLIND_JUMP_X_VARIATION_UPPER_BOUND = 3000f
         const val BLIND_JUMP_Y_VARIATION_LOWER_BOUND = -2000f
         const val BLIND_JUMP_Y_VARIATION_UPPER_BOUND = 3000f
+
+        const val MAX_CREW_LOSS_DURING_BLIND_JUMP = 2000
+        const val CREW_LOST_DURING_BLIND_JUMP_PERCENT = 0.1f
     }
 
     val daysPerPulse = IntervalUtil(MIN_DAYS_PER_PULSE, MAX_DAYS_PER_PULSE)
@@ -73,11 +80,12 @@ class niko_MPC_magnetarStarScript(
     override fun runWhilePaused(): Boolean = false
 
     override fun advance(amount: Float) {
-        val containingLocation = magnetar.containingLocation ?: return
-        if (containingLocation != Global.getSector().playerFleet?.containingLocation) return
-
         val days = Misc.getDays(amount)
         daysPerPulse.advance(days)
+        // we advance to make things a bit more unpredictably
+        val containingLocation = magnetar.containingLocation ?: return
+        if (containingLocation != Global.getSector().playerFleet?.containingLocation) return
+        // but we dont pulse, since that can cause overhead
         if (daysPerPulse.intervalElapsed()) {
             doPulse()
         }

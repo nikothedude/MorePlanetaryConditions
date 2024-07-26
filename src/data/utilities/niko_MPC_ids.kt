@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val TIMES_MAGNETAR_PANICKED = "\$MPC_timesBlindJumped"
     const val MAGNETAR_SYSTEM = "\$MPC_magnetarSystem"
     const val PLAYER_VISITED_MAGNETAR = "\$MPC_playerVisitedMagnetar"
     const val BLIND_JUMPING = "\$MPC_blindJumping"

@@ -32,7 +32,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     }
     // ONLY APPLIES IF BUBBLE IS GONE
     var crLossMult = 4f
-    var pullFactor = -0.2f
+    var pullFactor = -0.32f
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
@@ -83,7 +83,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             for (member in fleet.fleetData.membersListCopy) {
                 val recoveryRate = member.stats.baseCRRecoveryRatePercentPerDay.modifiedValue
                 val lossRate = member.stats.baseCRRecoveryRatePercentPerDay.baseValue
-                var resistance = member.stats.dynamic.getValue(Stats.CORONA_EFFECT_MULT)
+                var resistance = 1f // you cant actually resist this
                 if (protectedFromCorona) resistance = 0f
                 //if (inFlare) loss *= 2f;
                 var lossMult = 1f
