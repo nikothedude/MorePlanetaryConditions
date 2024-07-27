@@ -8,7 +8,7 @@ import com.fs.starfarer.api.plugins.ShipSystemStatsScript.StatusData
 class MPC_acceleratedOrdnanceFeeder : BaseShipSystemScript() {
 
     companion object {
-        const val ROF_BONUS = 2f
+        const val ROF_BONUS = 2.5f
         const val FLUX_REDUCTION = 50f
     }
 

@@ -199,11 +199,11 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                 if (route.spawner == null) continue
                 if (route.isExpired) continue
                 if (route.activeFleet != null) continue
-                val newFleet = route.spawner?.spawnFleet(route) ?: continue
+                val newFleet = route.spawner?.spawnFleet(route) ?: continue // AFTER THIS, WE SHOULD NOT RETURN WITHOUT DELETING THE FLEET IF WE FAIL
                 fleetMap[newFleet] = route
             }
         }
-        if (fleetMap.isEmpty()) return
+        if (fleetMap.isEmpty()) return // we can return freely, since theres no fleets to worry about
         for ((fleet, route) in fleetMap) {
             tryToSpawnEscortOn(fleet, route)
             if (fleet.isAlive && fleet.isPatrol() && route != null && route.activeFleet != fleet) {
@@ -235,6 +235,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         return marketList
     }
 
+    /** IN FAIL STATES, DO NOT RETURN NULL! RETURN [handleFailedEscortSpawn]!!!!!!!*/
     fun tryToSpawnEscortOn(fleet: CampaignFleetAPI, route: RouteData?): CampaignFleetAPI? {
         val market = getMarket() ?: return handleFailedEscortSpawn(fleet, route)
 
@@ -251,7 +252,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         var factionToUse = market.faction
         if (!market.isInhabited() && fleet.isPlayerFleet) {
             val nextFloat = MathUtils.getRandom().nextFloat()
-            if (CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED > nextFloat) return null
+            if (CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED > nextFloat) return handleFailedEscortSpawn(fleet, route)
             factionToUse = Global.getSector().playerFaction
         }
         val repLevelNeeded = fleet.getRepLevelForArrayBonus()

@@ -106,5 +106,149 @@
 		"tags":["expires"],
 		"layers":[ABOVE], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 		"pluginClass":"data.scripts.campaign.magnetar.niko_MPC_magnetarPulse"
-	}
+	},
+
+	"MPC_magnetarBeacon":{
+		"defaultName":"Scrambled Warning Beacon", # used if name=null in addCustomEntity()
+		"defaultRadius":40, # used if radius<0 in addCustomEntity()
+		"detectionRange":2800, # must be >0 for discoverable/discoveryXP to be used
+		"discoverable":true,
+		"discoveryXP":500,
+		"icon":"graphics/icons/warning_beacon.png",
+		"iconColor":[255,100,0,255],
+		"iconWidth":24,
+		"iconHeight":24,
+		"spriteWidth":64,
+		"spriteHeight":64,
+		"showInCampaign":true,
+		"showIconOnMap":true,
+		"scaleIconWithZoom":true,
+		"customDescriptionId":"MPC_magnetarBeacon",
+		"interactionImage":"graphics/illustrations/comm_relay.jpg",
+		"tags":["has_interaction_dialog", "warning_beacon", "neutrino_high", "MPC_magnetarBeacon"],
+		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
+		"pluginClass":"com.fs.starfarer.api.impl.campaign.WarningBeaconEntityPlugin",
+	},
+
+	"MPC_magnetarShield":{
+		"defaultName":"Stellar Shield", # used if name=null in addCustomEntity()
+		"defaultRadius":40, # used if radius<0 in addCustomEntity()
+		"detectionRange":80, # low, because finding one is a big deal
+		"discoverable":true,
+		"discoveryXP":100,
+		"icon":"graphics/icons/mission_location2.png",
+		"iconWidth":12,
+		"iconHeight":12,
+		"sprite":"graphics/ships/MPC_solar_shield_hightech.png",
+		"spriteWidth":100,
+		"spriteHeight":100,
+		"renderShadow":false, # looks horrendous
+		"showInCampaign":true,
+		"showIconOnMap":true,
+		"scaleIconWithZoom":true,
+		"renderCircleIndicator":false,
+		"customDescriptionId":"MPC_magnetarShield",
+		"interactionImage":"graphics/illustrations/comm_relay.jpg",
+		"tags":["neutrino", "MPC_magnetarShield", "MPC_blocksMagnetarPulse"],
+		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
+	},
+
+	"MPC_station_researchMagnetarOne":{
+		"defaultName":"Research Station", # used if name=null in addCustomEntity()
+		"defaultRadius":45, # used if radius<0 in addCustomEntity()
+		"nameInText":"research station",
+		"shortName":"station",
+		"customDescriptionId":"station_research_remnant",
+		"interactionImage":"graphics/illustrations/orbital_construction.jpg",
+		"icon":"graphics/icons/station0.png",
+		"iconWidth":20,
+		"iconHeight":20,
+		"sprite":"graphics/stations/station_hightech3.png",
+		"spriteWidth":40,
+		"spriteHeight":40,
+		"renderShadow":true,
+		"useLightColor":true,
+		"showInCampaign":true,
+		"showIconOnMap":true,
+		"showNameOnMap":false,
+		"scaleNameWithZoom":false,
+		"scaleIconWithZoom":true,
+		"tags":["has_interaction_dialog", "salvageable", "neutrino"],
+		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
+	},
+
+	"MPC_corrupted_weapons_cache": {
+		"baseId": "weapons_cache",
+		"detectionRange":100, # low, because finding one is a big deal
+		"defaultName": "Shielded Weapons Cache",
+		"customDescriptionId":"MPC_corrupted_weapons_cache",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache"],
+	},
+
+	"MPC_corrupted_weapons_cache_low":{
+		"baseId":"MPC_corrupted_weapons_cache",
+	},
+
+	"MPC_corrupted_weapons_cache_high":{
+		"baseId":"MPC_corrupted_weapons_cache",
+	},
+
+	"MPC_corrupted_supply_cache":{
+		"baseId":"supply_cache",
+		"defaultName":"Shielded Supply Cache", # used if name=null in addCustomEntity()
+		"customDescriptionId":"MPC_corrupted_supply_cache",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache"]
+	},
+
+	"MPC_corrupted_equipment_cache":{
+		"baseId":"MPC_corrupted_supply_cache",
+		"aOrAn":"an",
+		"defaultName":"Shielded Equipment Cache",
+		"defaultRadius":35,
+		"nameInText":"equipment cache",
+		"shortName":"equipment cache",
+	},
+
+	"MPC_corrupted_supply_cache_small":{
+		"baseId":"MPC_corrupted_supply_cache",
+		"defaultName":"Shielded Minor Supply Cache",
+		"defaultRadius":25,
+		"nameInText":"minor supply cache",
+		"shortName":"supply cache",
+	},
+
+	"MPC_corrupted_weapons_cache_small":{
+		"baseId":"MPC_corrupted_weapons_cache",
+		"defaultName":"Shielded Minor Weapons Cache",
+		"defaultRadius":25,
+		"nameInText":"minor weapons cache",
+		"shortName":"weapons cache",
+	},
+
+	"MPC_corrupted_weapons_cache_small_low":{
+		"baseId":"MPC_corrupted_weapons_cache",
+	},
+
+	"MPC_corrupted_weapons_cache_small_high":{
+		"baseId":"MPC_corrupted_weapons_cache",
+	},
+
+	"MPC_corrupted_equipment_cache_small":{
+		"baseId":"supply_cache",
+		"aOrAn":"a",
+		"defaultName":"Shielded Minor Equipment Cache",
+		"defaultRadius":25,
+		"nameInText":"minor equipment cache",
+		"shortName":"equipment cache",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache"]
+	},
+
+	"MPC_magnetarOmegaCache": {
+		"baseId":"supply_cache",
+		"defaultName":"Fractaline Cache",
+		"nameInText":"fractaline cache",
+		"shortName":"cache",
+		"customDescriptionId":"MPC_magnetarOmegaCache",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache", "MPC_omegaCache"]
+	},
 }

@@ -5,10 +5,14 @@ import com.fs.starfarer.api.PluginPick
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.ai.ModularFleetAIAPI
 import com.fs.starfarer.api.campaign.ai.TacticalModulePlugin
+import com.fs.starfarer.api.impl.campaign.fleets.DefaultFleetInflater
+import com.fs.starfarer.api.impl.campaign.fleets.DefaultFleetInflaterParams
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.campaign.fleet.CampaignFleet
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAITacticalModule
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.magnetar.MPC_derelictOmegaDerelictInflater
+import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
 import data.utilities.*
 import data.utilities.niko_MPC_battleUtils.getStationFleet
 import data.utilities.niko_MPC_ids.niko_MPC_campaignPluginId
@@ -165,5 +169,15 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
             }
         }
         return spawnedFleets
+    }
+
+    override fun pickFleetInflater(fleet: CampaignFleetAPI?, params: Any?): PluginPick<FleetInflater>? {
+        if (fleet == null) return null
+        if (params is DefaultFleetInflaterParams) {
+            if (fleet.faction.id == niko_MPC_ids.derelictOmegaConstructorFactionId) {
+                return PluginPick(MPC_derelictOmegaDerelictInflater(params), CampaignPlugin.PickPriority.MOD_SET)
+            }
+        }
+        return null
     }
 }

@@ -1,0 +1,32 @@
+{
+  "variantId": "MPC_omega_derelict_mothership_pod_s_right_Standard",
+  "hullId": "MPC_omega_derelict_mothership_pod_s_right",
+  "displayName": "Standard",
+  "goalVariant": false,
+  "fluxCapacitors": 9,
+  "fluxVents": 0,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "eccm",
+    "niko_MPC_subsumedIntelligence"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 021": "amsrm",
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+		"WS 022": "shockrepeater",
+	  }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

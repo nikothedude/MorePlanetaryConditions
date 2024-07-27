@@ -1,0 +1,56 @@
+{
+  "hullName": "Gun Pod, Medium",
+  "hullId": "MPC_omega_derelict_mothership_pod_m_left",
+  "hullSize": "FRIGATE",
+  "spriteName": "graphics/ships/derelict/derelict_mothership_pod_m_left.png",
+  "style": "LOW_TECH",
+  "height": 58,
+  "width": 48,
+  "center": [26, 31],
+  "collisionRadius": 37,
+  "shieldCenter": [1, 1],
+  "shieldRadius": 37,
+  "viewOffset": 0,
+  "builtInMods": [
+    "supercomputer",
+    "reduced_explosion"
+  ],
+  "weaponSlots": [
+    {
+      "id": "WS 016",
+      "size": "LARGE",
+      "type": "UNIVERSAL",
+      "mount": "TURRET",
+      "arc": 120,
+      "angle": 90,
+      "locations": [-11, 10]
+    },
+    {
+      "id": "WS 017",
+      "size": "SMALL",
+      "type": "UNIVERSAL",
+      "mount": "HARDPOINT",
+      "arc": 6,
+      "angle": 0,
+      "locations": [18, 10]
+    },
+    {
+      "id": "WS 018",
+      "size": "SMALL",
+      "type": "UNIVERSAL",
+      "mount": "TURRET",
+      "arc": 90,
+      "angle": 30,
+      "locations": [-2, -12]
+    }
+  ],
+  "engineSlots": [],
+  "bounds": [
+    -25, 25,
+    13, 17,
+    23, 1,
+    10, -4,
+    0, -20,
+    -23, -3
+  ]
+}

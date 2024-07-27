@@ -1,0 +1,251 @@
+{
+  "hullName": "Fractalized Survey Mothership",
+  "hullId": "MPC_omega_derelict_mothership",
+  "hullSize": "CAPITAL_SHIP",
+  "spriteName": "graphics/ships/derelict/survey_mothership_battle.png",
+  "style": "HIGH_TECH",
+  "height": 512,
+  "width": 512,
+  "center": [257, 256],
+  "collisionRadius": 330,
+  "shieldCenter": [1, 1],
+  "shieldRadius": 330,
+  "viewOffset": 0,
+  "builtInMods": [
+    "vastbulk",
+    "axialrotation",
+    "supercomputer",
+    "niko_MPC_subsumedIntelligence",
+    "automated",
+	#"fluxshunt",
+	"chassis_storage"
+  ],
+  "builtInWings": [
+    "aspect_attack_wing",
+    "aspect_attack_wing",
+    "aspect_missile_wing",
+	"aspect_missile_wing",
+	"aspect_missile_wing",
+    "aspect_shieldbreaker_wing",
+    "aspect_shieldbreaker_wing",
+    "aspect_shock_wing"
+  ],
+  "weaponSlots": [
+    {
+      "id": "WS 001",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": 0,
+      "locations": [246, 61]
+    },
+    {
+      "id": "WS 002",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": 0,
+      "locations": [-194, 156]
+    },
+    {
+      "id": "WS 003",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": 0,
+      "locations": [105, -154]
+    },
+    {
+      "id": "WS 004",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": 0,
+      "locations": [-158, -161]
+    },
+    {
+      "id": "WS 005",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": 0,
+      "locations": [267, -79]
+    },
+    {
+      "id": "WS 006",
+      "size": "LARGE",
+      "type": "STATION_MODULE",
+      "mount": "HARDPOINT",
+      "arc": 1,
+      "angle": -59.5,
+      "locations": [103, 181]
+    },
+    {
+      "id": "LB 1",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        -146, -21.5,
+        -148, -18,
+        -148, -25,
+        -148.5, -32
+      ]
+    },
+    {
+      "id": "LB 2",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        -146, -40.5,
+        -148, -37.5,
+        -148, -41
+      ]
+    },
+    {
+      "id": "LB 3",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        2.5, -123,
+        1, -124
+      ]
+    },
+    {
+      "id": "LB 4",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        71.5, -129,
+        71.5, -130
+      ]
+    },
+    {
+      "id": "LB 5",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        -10, 38.5,
+        -10.5, 39
+      ]
+    },
+    {
+      "id": "LB 6",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [
+        88.5, 51.5,
+        88, 55.5,
+        89.5, 43,
+        88.5, 28.5,
+        89, 20
+      ]
+    },
+    {
+      "id": "LB 7",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [89, 24]
+    },
+    {
+      "id": "LB 8",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [5, 147]
+    },
+    {
+      "id": "LB 9",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [-49.5, 112.5]
+    },
+    {
+      "id": "LB 10",
+      "size": "LARGE",
+      "type": "LAUNCH_BAY",
+      "mount": "HIDDEN",
+      "arc": 360,
+      "angle": 0,
+      "locations": [-95, 141.5]
+    },
+    {
+      "id": "WS0001",
+      "size": "LARGE",
+      "type": "UNIVERSAL",
+      "mount": "TURRET",
+      "arc": 360,
+      "angle": 0,
+      "locations": [148, 103.5]
+    },
+  ],
+  "engineSlots": [],
+  "bounds": [
+    248, 118,
+    185, 144,
+    143, 154,
+    125, 157,
+    122, 172,
+    107, 177,
+    69, 189,
+    54, 160,
+    26, 178,
+    8, 164,
+    -21, 179,
+    -17, 153,
+    -75, 152,
+    -88, 144,
+    -111, 154,
+    -170, 174,
+    -236, 163,
+    -247, 119,
+    -244, -163,
+    -175, -174,
+    -140, -157,
+    -83, -152,
+    -75, -142,
+    -26, -153,
+    32, -137,
+    57, -147,
+    45, -163,
+    72, -164,
+    87, -159,
+    98, -178,
+    114, -143,
+    169, -136,
+    246, -91,
+    246, -30,
+    230, 4,
+    249, 26
+  ]
+}

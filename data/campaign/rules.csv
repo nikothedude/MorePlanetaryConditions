@@ -309,4 +309,145 @@ SetShortcut cutCommLink ""ESCAPE""","The screen flickers on to show a spotty dom
 
 Short, to the point, and uncharacteristically corpo-speak. Strange.","0:cutCommLink:Cut the comm link",
 "#END Escort Fleets",,,,,,
+,,,,,,
+# Sierra Thoughts,,,,,,
+MPC_sierraSawMagnetar,SierrasThoughts,"$global.MPC_sierraSawMagnetar
+!$global.MPC_sierraMentionedMagnetar","SetTextHighlightColors sierraTextColor sierraTextColor sierraTextColor
+SetTextHighlights ""\""So that was a Magnetar...? I never thought I'd see one in the metal! And... it was kind of pretty!\"""" ""\""So POWERFUL! Did you feel the drive field? It was barely holding together! And those lines by the poles... I've never seen a visualized magnetic field on such a scale!""\"" ""\""Still... the stories I've heard of magnetars aren't pretty. Let's agree to never get close to it, okay?\""""
+
+$global.MPC_sierraMentionedMagnetar = true","Her avatar's ""eye"" shrinks. ""So that was a Magnetar...? I never thought I'd see one in the metal! And... it was kind of pretty!"" she says cheerfully. ""So POWERFUL! Did you feel the drive field? It was barely holding together! And those lines by the poles... I've never seen a visualized magnetic field on such a scale!""
+
+Her avatar then shivers. ""Still... the stories I've heard of magnetars aren't pretty. Let's agree to never get close to it, okay?""",,
+"#END Sierra Thoughts",,,,,,
+,,,,,,
+# Magnetar,,,,,,
+MPC_hackableFirstEncounter,OpenInteractionDialog,"$MPC_hackable score:200
+!$global.MPCHasSolutionToExoticICE score:250
+!$global.MPCDiscoveredExoticIce score:250
+!$MPC_hacked
+!$MPCHackfinished","ShowDefaultVisual
+SetShortcut defaultLeave ESCAPE
+FireBest MPC_hackableFirstEncounterText",,"0:MPC_hackableFirstEncounterTwo:Order a full investigation",
+MPC_hackableFirstEncounterTwo,DialogOptionSelected,"$option == MPC_hackableFirstEncounterTwo",,"You summon your senior officers to the bridge, coordinating with your ops chief and tactical officer to produce a 3D holographic display of the $shortName. First, you focus on the physical attributes of the $shortName. Your chief engineer suggests gravitic proximity detectors in-tandem with a chassis-circuit design, but your sensors officer shoots that down by zooming in on the exterior of the $nameInText. Your ops chief grunts out that ""it could be a cloaked ship"" - but you all give him a weird look and he grumbles, receding.
+
+This routine continues for hours, an idea coming up and getting shot down quickly. The fatigue sets in, with a look of irritation and worry entering the expression of your officers. Eventually, your chief engineer suggests it might just some phase-tech we don't quite understand, that's simply undetectable due to the nearby magnetar. Facing a complete null hypothesis otherwise, your officers reluctantly agree to at least operate on the engineer's assumption, and you all move on to the second most-important thing: How to disable it.
+
+Thankfully, progress is made instantly. Your oft-neglected electronics chief chimes up: ""I managed to secure a channel into the $shortName 's electronic systems, and it seems responsive."" She seems preterbed by the end of that sentence. ""Unfortunately... it's feeding me data I just don't understand. This is unlike any ICE I've ever seen before, sir.""
+
+Your ops chief shakes his head. ""We should jus' blow it up. We can get whats inside then."" She glares, stating ""That's incredibly irresponsible! Look-"" she taps her finger. ""The $shortName CLEARLY has an electronic input, so whatever put it there clearly intended for it to be used. If we just shoot at it - who knows what it'll do! Maybe it'll shock the entire fleet and fuse our life support!""
+
+Your tactical officer nods. ""I agree with our electronics chief, Captain."" Your ops chief grumbles and crosses his arms. ""It'd be irresponsible to just - shoot the $shortName .""","0:MPC_hackableFirstEncounterThree:Agree with your electronics chief",
+MPC_hackableFirstEncounterThree,DialogOptionSelected,"$option == MPC_hackableFirstEncounterThree","$global.MPCHasSolutionToExoticICE = true
+$global.MPCDiscoveredExoticIce = true","Your electronics chief sighs, seemingly relieved to be supported. ""Thank you, sir."" She salutes. ""Now - I might have an idea or two, but until we get some kind of key, we'll be stuck brute forcing the ICE every time we find something like this.""
+
+You nod, and wave them all away, returning to your station.","0:MPC_doHackOption:Initiate brute-force
+100:defaultLeave:Leave",
+MPC_hackableNoICEBreak,OpenInteractionDialog,"$MPC_hackable score:200
+!$global.MPCHasSolutionToExoticICE score:250
+$global.MPCDiscoveredExoticIce score:250
+!$MPC_hacked
+!$MPCHackfinished","ShowDefaultVisual
+SetShortcut defaultLeave ESCAPE","Without a solution to the electronic countermeasures of the $textInName, you're still unable to approach.","100:defaultLeave:Leave",
+MPC_hackable,OpenInteractionDialog,"$MPC_hackable score:200
+!$MPC_hacked
+!$MPCHackfinished
+$global.MPCHasSolutionToExoticICE","ShowDefaultVisual
+SetShortcut defaultLeave ESCAPE","The $nameInText appears to be protected by the exotic ICE you previously encountered, necessitating a brute-force attack via your electronic warfare systems.","0:MPC_doHackOption:Initiate brute-force
+100:defaultLeave:Leave",
+MPC_doHackOption,DialogOptionSelected,"$option == MPC_doHackOption","MPC_looseWait $MPCHackwait $MPC_hackDurationNeeded $MPCHackfinished $MPCHackinterrupted $MPCHackinprogress ""Hacking...""",,,
+MPC_hacked,OpenInteractionDialog,"$MPCHackfinished score: 500
+!$MPC_reportedHacked","FireBest OpenInteractionDialog
+$MPC_reportedHacked = true
+$MPC_hacked = true","Your EW panel pings as it reports a successful connection. You pass control over to your electronics chief, who goes to work shutting down defenses and unlocking panels.",,
+MPC_magnetarWarningBeacon,OpenInteractionDialog,"$tag:MPC_magnetarBeacon score:104","ShowDefaultVisual
+SetShortcut MPC_leaveMagnetarBeacon ""ESCAPE""","As your sensors officer predicted, all that comes from this beacon is a stream of garbled data. You work together with your cryptography staff to pick away at the metadata to see if you can glean anything useful, and you find something: This ""message"" seems to be encoded in a near-ancient format, used only for a brief period by the Domain dozens of cycles before the initial colonization of the sector - though there is quite a notable overlap with the exploration phase. 
+While this doesn't tell you much, it does tell you the exploratorium has touched this system. How they got all the way out here, and why they decided to put such a high-powered beacon outside of it, are still unknown.","0:MPC_leaveMagnetarBeacon:Leave",
+MPC_leaveMagnetarBeacon,DialogOptionSelected,"$option == MPC_leaveMagnetarBeacon","DismissDialog",,,
+,,,,,,
+# First hackable encounter no ICEbreak,,,,,,
+MPC_hackableFirstEncounterTextCache,MPC_hackableFirstEncounterText,"$tag:MPC_hackableCache",,"You routinely send your shuttles to retrieve the pods and take them aboard. However, once the shuttles reach the halfway point, your ops chief's expression changes grimly, his hand goes to his handset, and he begins barking orders. You know better than to interrupt him in the midst of an order stream, so you wait for your inevitable SitRep.
+
+A few moments later, he turns to you and begins laying out the complications. Apparantly, when the leading shuttle attempted to open a pod, the pod itself struck it with an EMP arc similar to an omen, disabling it. The remaining shuttles are doing the casualty back to their mothership, with no loot in tow.
+
+The bigger question, he leads, is why. ",,
+"#END First hackable encounter no ICEbreak",,,,,,
+,,,,,,
+# Bar,,,,,,
+MPC_kantaGoonVisitInit,DialogOptionSelected,"MPC_canDoKantaGoonVisit score:1000
+$option == marketVisitBar","FireBest BarShuttleDownPrintDesc
+FireBest BarPrintDesc
+BarCMD playAmbience
+$global.MPC_didKantaGoonVisit = true",,"MPC_kantaGoonVisitContinue:Continue",
+MPC_kantaGoonVisitContinueSel,DialogOptionSelected,"$option == MPC_kantaGoonVisitContinue","SaveCurrentVisual
+FireBest MPC_kantaGoonVisitStart",,,
+MPC_kantaGoonVisitStart,MPC_kantaGoonVisitStart,,"SetTextHighlights ""Emergency Burn""","As you push open the doors, you immediately feel something is off. Scanning the room, you get the distinct feeling that more than half of the patrons are out of place - subtle details, like half-concealed armor vests, or an unlocked CP-Pistol harness, put you on edge.
+
+Turning to the biggest read of the room, the bartender, you notice a hand goes under the table - presumably onto her scattergun - and she stares you in the eye and spins her free hand in a circle before thrusting it forward.
+
+The spacer signal for ""Emergency burn"".","0:MPC_kantaGoonVisitRunAway:Quickly turn around and leave
+10:MPC_kantaGoonVisitStrideForth:Confidantly stride forward",
+MPC_kantaGoonVisitRunAwayOne,DialogOptionSelected,"$option == MPC_kantaGoonVisitRunAway","BeginConversation MPC_kanta_goon_one false true
+ShowSecondPerson MPC_kanta_goon_two
+FireBest MPC_kantaGoonVisitRunAwayTwo",,,
+MPC_kantaGoonVisitRunAwayTwo,MPC_kantaGoonVisitRunAwayTwo,,"FireBest MPC_kantaGoonVisitTwo","You spin on your heel and hastily make your way back to the door, your discrete bodyguards closer than usual, clearly sensing the danger. Before you can escape, though, the door shuts closed, and the bolt lights flick on. You bonk into the thick metal airlock like a shrike into an onslaught's shield matrix, and bounce back, rubbing your wounded nose. 
+
+""Ah-ah-ah, captain!"" a voice rings out. Turning towards it like PD moving to defend against a torpedo, you swing towards it, confronting a pair of shoddily-dressed goons leaning on a wall, one tall and young, one old and short. The younger one seems to be holding a remote, which he pockets with a cocky smile. ""We still aint talked yet!""",,
+MPC_kantaGoonVisitStrideForthOne,DialogOptionSelected,"$option == MPC_kantaGoonVisitStrideForth","BeginConversation MPC_kanta_goon_one false true
+ShowSecondPerson MPC_kanta_goon_two
+FireBest MPC_kantaGoonVisitStrideForthTwo",,,
+MPC_kantaGoonVisitStrideForthTwo,MPC_kantaGoonVisitStrideForthTwo,,"FireBest MPC_kantaGoonVisitTwo","Ignoring your better judgement, you square your shoulders and walk right into the center of the room, surveying the patrons. Seems your intuition was right - most of the suspicious patrons turn towards you, giving you a side-eye. A few of the in-place ones curiously look, but you assume thats more out of seeing what everyone else is looking at.
+
+""Cocky, captain! I like that!"" a voice rings out. Turning towards it like PD moving to defend against a torpedo, you swing towards it, confronting a pair of shoddily-dressed goons leaning on a wall, one tall and young, one old and short. The younger one seems to be holding a remote, which he pockets with a cocky smile.",,
+MPC_kantaGoonVisitTwo,MPC_kantaGoonVisitTwo,,,"The two men stand up from the wall, and start walking towards you with a massive swagger in their step. Every second, their fingers come together to rhythmically *CLIK!*, each time itching your trigger finger. 
+
+The taller one stops 3 feet from you, the shorter one four. The former looks you up and down, before twisting his mouth into a smug grin. ""So yous the captain kanta's been talkin' 'bout? Hmph! You don' look lik' nothin'!"" You stop listening after the mention of Kanta, recalling your last encounter with the mad warlord. You twitch, and your heart begins racing. Kanta's attention can't mean anything good. Your bodyguards take up positions in front of you, and put their hands on their weapons.
+
+The smaller one squeaks, like a malfunctioning airlock. ""Thas' not a good idea, pals..."" he states, before making a gesture towards your posse over his shoulder. Before you have any time to think, half the bar is pointing CP-pistols, charge SMGs, and god-knows-what weapons at you. While their accuracy may be dubious, their volume of fire is not, and you quickly make the calculation that any ""funny business"" will be met with the force of a thousand bolts - ESPECIALLY if these men were sent by Kanta. The tall one smiles curtly and rests his hands on your bodyguards shoulders - now standing stiff, glaring at him - and pushes them aside, exposing yourself to him.
+
+""Now now... where was we?"" He grins.","1:MPC_kantaGoonVisitThree:Glare at him
+20:MPC_kantaGoonVisitThreeBartender:Glance to the bartender",
+MPC_kantaGoonVisitThreeBartender,DialogOptionSelected,"$option == MPC_kantaGoonVisitThreeBartender",,"You shoot your eyes to the right, towards the bartender. The adrenaline forces you to take in every detail - a drink spilt, eyes wide open, fingers trembling, laid apon a scattergun on the table, pointing at the wall as it rests. She is pale as a ghost, staring directly at you.","0:MPC_kantaGoonVisitThree:Look back at the tall man",
+MPC_kantaGoonVisitThree,DialogOptionSelected,"$option == MPC_kantaGoonVisitThree",,"He releases your bodyguards, who take up positions behind you.  While they would usually put themselves between the danger and you, the danger here is so intense they opt to instead prevent flanking.
+
+His hands go behind his back and he approaches, slowly, the smaller one staying back. He attempts to circle you - but one of your bodyguards stop him. He laughs, and stomps on his foot - your bodyguard crying out in pain. You catch a glimpse - his boot had some kind of metal spike in the bottom - a common modification pirates make to make themselves more ""badass"". In this case, it just made him more effective in combat.
+Just as you'd expect, your bodyguard remains steadfast and keeps him back. ""Tsk tsk tsk."" the tall one mutters, before unceremoniously pulling out his CP-pistol and firing a 5mm hole through your bodyguard's chest with a flat PREP. Small-arms fire alarms begin to blare, but are shut off near-immediately with a flick of the tall man's remote.
+
+The injured bodyguard falls to the floor and immediately begins nursing his wound, and after a moment of consideration (which included a long stare at the firing line), your other joins him. Since the wound's location is over the liver, you estimate if you get him to the station's medbay within 20 minutes, he'll make it.
+
+Your fixation on your injured guard is broken by a flick on your forehead from the tall man. ""Y'got bigger problems, bub."" he mutters, patting your chest and then his.","0:MPC_kantaGoonVisitFour:Continue
+10:MPC_kantaGoonVisitFourCurse:Curse him out",
+MPC_kantaGoonVisitFour,DialogOptionSelected,"$option == MPC_kantaGoonVisitFour","FireBest MPC_kantaGoonVisitFourActual",,,
+MPC_kantaGoonVisitFourCurse,DialogOptionSelected,"$option == MPC_kantaGoonVisitFourCurse","FireBest MPC_kantaGoonVisitFourActual","You spit out the most hateful insult you can muster towards the tall man. He merely snorts.",,
+MPC_kantaGoonVisitFourActual,MPC_kantaGoonVisitFourActual,,"SetTextHighlights ""tech""
+FireBest MPC_kantaGoonVisitFourSecondParagraph
+FireBest MPC_kantaGoonVisitFourSecondParagraphTwo","The tall man resumes his circling around you, paying no mind to the groaning bodyguard on the floor, nor the pool of blood that has formed. In fact, it seems he intentionally steps inside of it to begin tracking it around, encircling you with the blood of your comrade.
+
+""Kanta's been lookin' for ya."" he says. ""She seems t' think y' got some... qualities other fleets don't have. Sommin' about some kinda tech!"" he laughs, a laugh much like a dying toteliac. His companion emits something that could be called a laugh - which seems to annoy him, since he turns around and tells him off. Sighing, turning back, he stops his encircling directly ahead of you, forcing the conversation's backdrop to be against 50 or so hired killers.",,
+MPC_kantaGoonVisitFourSecondParagraphLokeDead,MPC_kantaGoonVisitFourSecondParagraph,"$global.murderedCloneLoke == true",,"""Gonna be honest bub-"" he wags his finger. ""Kanta wants you DEAD. That stunt you pilled wit' that science girl? Oh yeah-haha, shes PISSED!  'specially after what you did to that loke guy..."" he shakes his head, feigning mourning for the dead clone.",,
+MPC_kantaGoonVisitFourSecondParagraph,MPC_kantaGoonVisitFourSecondParagraph,"$global.murderedCloneLoke != true",,"""Gonna be honest bub-"" he wags his finger. ""Kanta wants you DEAD. That stunt you pilled wit' that science girl? Oh yeah-haha, shes PISSED!""",,
+MPC_kantaGoonVisitFourSecondParagraphTwo,MPC_kantaGoonVisitFourSecondParagraphTwo,,"SetTextHighlights ""grace""
+AddTextSmall ""Received kanta's den docking key"" highlight
+FireBest MPC_kantaGoonVisitFourSecondParagraphThree","""But... but!"" He smiles like a shark - and you bet if he was one, he's about to eat you. ""She's willin'... t' offer you some grace!"" he speaks, words as slimy as a juvenile lobster. He resumes his circling. ""She's in need of some..."" he spreads his hands out, making a star gesture. ""...special talents, for a mission of hers.""
+
+He yet again stops, though this time in front of your dying guard. You feel a tinge of rage. ""Kanta wants t'see you, captain. Soon. And if you know her like I do..."" he flashes a badge - a mark of the kanta family. You feel your heart sink. ""...I wouldn't wanna keep 'er waitin'."". 
+
+He backs off,  takes out a tripad, and taps it a few times. You feel your tripad vibrate, but you don't dare look down at it. ""Jus' transmitted ah key t' y' PDA, bud! Y'can use it to get one free trip into th' den - under armed guard, o'course."" He winks.",,
+MPC_kantaGoonVisitFourSecondParagraphThree,MPC_kantaGoonVisitFourSecondParagraphThree,,,"He then brings his tripad back up, and with one final dramatic tap, you hear a cauciphony of tripad updates coming from the patronage. All at once, the patrons put their weapons away, and many stand up and leave - though some stay behind. As they pass you and your guards, some laugh, some point, but most glare. ""Hope t'never see y'again, captain!"" you hear a familiar voice cry. You consider drawing your weapon and firing in the direction of the voice, but angering the trigger-happy crowd around you who presumably wouldn't be upset to scramble your brains doesn't seem like the best idea.","0:MPC_kantaGoonVisitFive:Tend to your guard",
+MPC_kantaGoonVisitFive,DialogOptionSelected,"$option == MPC_kantaGoonVisitFive","EndConversation DO_NOT_FIRE","Once the crowd clears out, you turn to your guard, still groaning and bleeding out. ""I-I'm fine sir-just-gotta get this patched up-"" you silence him, reminding him he was shot in his liver. He nods, groaning, and limps away with your intact bodyguard to the station medbay, post-haste. You radio in for a set of replacement guards (as well as a few extra to boot), and you stand at attention as you wait. The bartender behind you sighs, and you hear a clatter. Snapping behind - nearly drawing your weapon - you see a frightened woman, looking utterly exhausted. ""They came in and paid off all the patrons to..."" she makes a broad gesture. ""...do that."" She continues, ""...thanks for not getting anyone killed. I guess."" she sighs, and returns to washing a glass. The bar is empty now, rendering your original intent of coming here moot.
+
+Your guards arrive a moment later, and you take stock of your situation. No pain, no wounds. Only one casualty. All in all, not that bad. Still, Kanta wants to meet with you, which is a terrifying prospect in its own right.  Despite this, it wouldn't hurt to keep note of this, so as your guards escort you back to your fleet in phanlanx formation, you jot it down in your fleet journal.","0:MPC_kantaGoonVisitEnd:Take your leave",
+MPC_kantaGoonVisitEnd,DialogOptionSelected,"$option == MPC_kantaGoonVisitEnd","MPC_endKantaGoonVisit
+BarCMD leaveBar",,,
+"#END Bar",,,,,,
+,,,,,,
+# Kantas Den,,,,,,
+MPC_kantasDenKantaExpectingPlayer,PopulateOptions,"$global.MPC_kantaExpectingPlayer
+$market.id == ""kantas_den""",,"You recall Kanta wished to see you about some sort of mission. If you wanted, you could use the key the goon gave you to secure a docking port.","5:MPC_transmitKantaKeyFirst:Transmit the key and wait for a response",
+MPC_transmitKantaKeyFirst,DialogOptionSelected,"$option == MPC_transmitKantaKeyFirst",,"You transmit the docking key to the automated STC systems, which give no response at first - which makes sense, given how ramshackle Kanta's Den is.
+
+Then, after four minutes of waiting, you receive a comms request from the portmaster.","10:MPC_transmitKantaKeyPickUp:Open a comms channel
+0:MPC_transmitKantaKeyFirstAbort:Don't pick up",
+MPC_transmitKantaKeyFirstAbort,DialogOptionSelected,"$option == MPC_transmitKantaKeyFirstAbort","FireAll PopulateOptions","You have second thoughts about meeting the most psychopathic warlord in the entire sector. You watch as the comms request times out, and doesn't return.",,
+"#END Kantas Den",,,,,,
+"#END Magnetar",,,,,,
 

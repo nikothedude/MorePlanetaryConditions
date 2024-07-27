@@ -9,11 +9,17 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Terrain
+import com.fs.starfarer.api.impl.campaign.procgen.DropGroupRow
+import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.scripts.utils.SotfMisc
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
+import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
 class niko_MPC_magnetarStarScript(
@@ -45,16 +51,16 @@ class niko_MPC_magnetarStarScript(
             fleet.cargo.removeCrew(crewToLose)
         }
 
-        const val MIN_DAYS_PER_PULSE = 3.4f
-        const val MAX_DAYS_PER_PULSE = 3.7f
+        const val MIN_DAYS_PER_PULSE = 3f
+        const val MAX_DAYS_PER_PULSE = 3.2f
 
-        const val BASE_X_COORD_FOR_SYSTEM = -71000f
-        const val BASE_Y_COORD_FOR_SYSTEM = -45000f
+        const val BASE_X_COORD_FOR_SYSTEM = -59800f
+        const val BASE_Y_COORD_FOR_SYSTEM = -49320f
 
-        const val X_COORD_VARIATION_LOWER_BOUND = -1600f
-        const val X_COORD_VARIATION_UPPER_BOUND = 1900f
-        const val Y_COORD_VARIATION_LOWER_BOUND = -1200f
-        const val Y_COORD_VARIATION_UPPER_BOUND = 200f
+        const val X_COORD_VARIATION_LOWER_BOUND = -3600f
+        const val X_COORD_VARIATION_UPPER_BOUND = 3900f
+        const val Y_COORD_VARIATION_LOWER_BOUND = -100f
+        const val Y_COORD_VARIATION_UPPER_BOUND = 3200f
 
         const val BLIND_JUMP_X_VARIATION_LOWER_BOUND = -3000f
         const val BLIND_JUMP_X_VARIATION_UPPER_BOUND = 3000f
@@ -89,6 +95,23 @@ class niko_MPC_magnetarStarScript(
         if (daysPerPulse.intervalElapsed()) {
             doPulse()
         }
+        // yeahhh this fucking sucks
+        // this is best done in a listener but no listeners exist
+        // also, salvage fields are completely contextless so i HAVE To do this blanket stuff
+        for (terrain in containingLocation.terrainCopy) {
+            if (terrain.plugin.terrainId != Terrain.DEBRIS_FIELD) continue
+            val itemsToDrop = terrain.dropRandom[0]?.custom?.items ?: continue
+            // prefix is _wpn
+            val iterator = itemsToDrop.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                val spec = entry.weaponSpec ?: continue
+                if (spec.hasTag("omega")) {
+                    iterator.remove()
+                }
+            }
+
+        }
     }
 
     fun doPulse() {
@@ -104,10 +127,15 @@ class niko_MPC_magnetarStarScript(
 
     override fun reportFleetJumped(fleet: CampaignFleetAPI?, from: SectorEntityToken?, to: JumpDestination?) {
         if (fleet == null || !fleet.isPlayerFleet || to?.destination?.containingLocation != magnetar.containingLocation) return
+
+        val hasSierra = (niko_MPC_settings.SOTF_enabled && SotfMisc.playerHasSierra())
+        if (hasSierra) {
+            Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SIERRA_SAW_MAGNETAR] = true
+        }
+
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PLAYER_VISITED_MAGNETAR] == true) return
 
-        Global.getSector().intelManager.addIntel(niko_MPC_magnetarIntel())
-        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PLAYER_VISITED_MAGNETAR] = true
+        Global.getSector().campaignUI.showInteractionDialog(MPC_playerFirstVisitToMagnetar(), magnetar)
     }
 
 

@@ -7,6 +7,8 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl
 import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin.MagneticFieldParams
+import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
+import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor.createFleet
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.BASE_X_COORD_FOR_SYSTEM
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.BASE_Y_COORD_FOR_SYSTEM
@@ -20,6 +22,7 @@ import exerelin.campaign.intel.groundbattle.GroundBattleIntel
 import exerelin.campaign.intel.groundbattle.GroundUnit
 import exerelin.campaign.intel.groundbattle.GroundUnitDef
 import org.lazywizard.console.BaseCommand
+import org.lazywizard.console.Console
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.getStarSystemForAnchor
 import java.awt.Color
@@ -81,6 +84,15 @@ class niko_MPC_genericCommand: BaseCommand {
         )
         val magfieldTwo = testSystem.addTerrain(Terrain.MAGNETIC_FIELD, paramsTwo)*/
 
+        val playerFleet = Global.getSector().playerFleet ?: return BaseCommand.CommandResult.ERROR
+        val distFromStar = playerFleet.starSystem.star?.let { MathUtils.getDistance(playerFleet, it).toString() } ?: "N/A"
+        /*val containingLocaiton = playerFleet.containingLocation ?: return BaseCommand.CommandResult.ERROR
+        val fleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(createFleet(100f, null))
+        containingLocaiton.addEntity(fleet)
+        fleet.location.set(playerFleet.location.x, playerFleet.location.y)*/
+
+        Console.showMessage("X:${playerFleet.location.x} Y:${playerFleet.location.y}")
+        Console.showMessage("Dist from star: $distFromStar")
 
         return BaseCommand.CommandResult.SUCCESS
     }

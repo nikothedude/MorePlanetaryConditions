@@ -1,6 +1,7 @@
 package data.scripts.campaign.terrain
 
 import com.fs.starfarer.api.campaign.PlanetAPI
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.procgen.MagFieldGenPlugin
@@ -23,6 +24,33 @@ class niko_MPC_mesonFieldGenPlugin: TerrainGenPlugin {
 
         fun planetCanHaveMesonField(planet: PlanetAPI): Boolean {
             return true
+        }
+
+        fun generateDefaultParams(target: SectorEntityToken): niko_MPC_mesonField.mesonFieldParams {
+            val isStar = target.isStar
+
+            val baseIndex = (niko_MPC_mesonField.baseColors.size * StarSystemGenerator.random.nextDouble()).toInt()
+            val auroraIndex = (niko_MPC_mesonField.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
+
+            val widthToUse = if (isStar) WIDTH_STAR else WIDTH_PLANET
+
+            var visStartRadius = (target.radius * 1.5f)
+            var visEndRadius = visStartRadius + widthToUse
+            var bandWidth = (visEndRadius - visStartRadius) * 0.6f
+            var midRadius = (visStartRadius + visEndRadius) / 2
+            var auroraProbability = 1f
+
+            val params = niko_MPC_mesonField.mesonFieldParams(
+                bandWidth,
+                midRadius,
+                target,
+                visStartRadius,
+                visEndRadius,
+                niko_MPC_mesonField.baseColors[baseIndex],
+                auroraProbability,
+                niko_MPC_mesonField.auroraColors[auroraIndex].toList(),
+            )
+            return params
         }
     }
     // this DOES generate btw! the csv is good
@@ -61,44 +89,13 @@ class niko_MPC_mesonFieldGenPlugin: TerrainGenPlugin {
 
         if (context.parent != null) parent = context.parent
 
-        //System.out.println("GENERATING MAG FIELD AROUND " + parent.getId());
-
-
-        //System.out.println("GENERATING MAG FIELD AROUND " + parent.getId());
-        val baseIndex = (niko_MPC_mesonField.baseColors.size * StarSystemGenerator.random.nextDouble()).toInt()
-        val auroraIndex = (niko_MPC_mesonField.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
-
-
-        /*var visStartRadius = (planet.radius * 1.5f)
-        var visEndRadius = planet.radius + niko_MPC_mesonFieldGenPlugin.WIDTH_PLANET
-        var bandWidth = 180f // approx the size of the band
-        var midRadius = (planet.radius + niko_MPC_mesonFieldGenPlugin.WIDTH_PLANET) / 1.5f*/
-
-        val widthToUse = if (isStar) WIDTH_STAR else WIDTH_PLANET
-        val orbitalWidth = widthToUse
-
-        var visStartRadius = (parent.radius * 1.5f)
-        var visEndRadius = visStartRadius + widthToUse
-        var bandWidth = (visEndRadius - visStartRadius) * 0.6f
-        var midRadius = (visStartRadius + visEndRadius) / 2
-//		float visStartRadius = parent.getRadius() + 50f;
-//		float visEndRadius = parent.getRadius() + 50f + WIDTH_PLANET + 50f;
-        //		float visStartRadius = parent.getRadius() + 50f;
-//		float visEndRadius = parent.getRadius() + 50f + WIDTH_PLANET + 50f;
-        var auroraProbability = 1f
-
-        val params = niko_MPC_mesonField.mesonFieldParams(
-            bandWidth,
-            midRadius,
-            parent,
-            visStartRadius,
-            visEndRadius,
-            niko_MPC_mesonField.baseColors[baseIndex],
-            auroraProbability,
-            niko_MPC_mesonField.auroraColors[auroraIndex].toList(),
+        val params = generateDefaultParams(
+            parent
         )
         val mesonField = system.addTerrain("MPC_mesonField", params)
         mesonField.setCircularOrbit(parent, 0f, 0f, 100f)
+
+        val orbitalWidth = if (isStar) WIDTH_STAR else WIDTH_PLANET
 
         result.onlyIncrementByWidth = !isStar
         result.entities.add(mesonField)

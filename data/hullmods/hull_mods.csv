@@ -29,4 +29,6 @@ Walls have been torn down in order to fit more missiles, increasing missile weap
 
 All these modifications have been made with absolutely zero respect to the structure of the ship. It should be fine under normal operation, but hull integrity is reduced by %s and armor rating reduced by %s.",,,graphics/hullmods/damper_field.png
 ,,,,,,,,,,,,,,,,,,,
+Subsumed Intelligence,niko_MPC_subsumedIntelligence,5,,,"no_drop, restricted, MPC_omegaDerelict","Weapons, Defenses",1000000,FALSE,TRUE,,0,0,0,0,data.hullmods.niko_MPC_subsumedIntelligance,A terrifying machine intelligance has seized control of this ship's AI inhabitants.,,,graphics/hullmods/damper_field.png
+,,,,,,,,,,,,,,,,,,,
 YOU SHOULDNT SEE THIS,niko_MPC_coronaResistShielding,,,,,,,,TRUE,TRUE,0,0,0,0,data.hullmods.niko_MPC_coronaResistShielding,,,,graphics/hullmods/solar_shielding.png

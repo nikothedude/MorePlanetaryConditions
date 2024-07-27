@@ -29,6 +29,8 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
                 "we can mitigate if not prevent entirely (depending on the timing of the interdiction) the impact of a pulse - although, it will " +
                 "severely overload our ECM packages, meaning it will take a lot longer to set up the next interdiction.\n" +
                 "\n" +
+                "Additionally, the pulses are blocked by large stellar masses, making them effective shelters.\n" +
+                "\n" +
                 "Also, sir, I know how you are about these kind of warnings. " +
                 "But believe me when I say, this one isn't embellished in the slightest. This isn't just a threat to our daily operations. If we " +
                 "get close to the magnetar without shielding... it'll kill us all. Instantly. This isn't like a black hole, where our drive field insulates us, " +
@@ -49,6 +51,8 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
             Pair("interdict at the same time", Misc.getHighlightColor()),
             Pair("mitigate if not prevent entirely", Misc.getPositiveHighlightColor()),
             Pair("lot longer to set up the next interdiction", Misc.getNegativeHighlightColor()),
+            Pair("blocked by large stellar masses", Misc.getHighlightColor()),
+            Pair("effective shelters", Misc.getPositiveHighlightColor()),
             Pair("it'll kill us all", Misc.getNegativeHighlightColor()),
             Pair("Instantly", Misc.getNegativeHighlightColor()),
             Pair("Tread carefully", Misc.getHighlightColor())

@@ -14,17 +14,17 @@ class MPC_kantasFavored: BaseHullMod() {
     companion object {
         const val MISSILE_AMMO_MULT = 2f
 
-        const val SHIELD_DAMAGE_TAKEN_MULT = 0.4f
+        const val SHIELD_DAMAGE_TAKEN_MULT = 0.3f
         const val SHIELD_PIERCE_CHANCE_MULT = 0.4f
         const val SHIELD_ARC_MULT = 5.25f
         const val SHIELD_RAISE_RATE_MULT = 2.1f
 
-        const val FLUX_DISSIPATION_BONUS = 100f
+        const val FLUX_DISSIPATION_BONUS = 200f
 
         const val HULL_MULT = 0.6f
         const val ARMOR_MULT = 0.1f
 
-        const val RANGE_MULT = 1.2f
+        const val RANGE_MULT = 1.3f
     }
 
     override fun applyEffectsBeforeShipCreation(hullSize: ShipAPI.HullSize?, stats: MutableShipStatsAPI?, id: String?) {

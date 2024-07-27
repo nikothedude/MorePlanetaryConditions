@@ -45,3 +45,16 @@ Domain scientists reacted to the discovery of black dwarves in the sector with a
 MPC_star_magnetar,PLANET,"A variant of a neutron star, magnetars are the most magnetically powerful entities in the known universe, with a field strong enough to rip even non-ferric material apart on a molecular level. Conventional physics break down on its surface, as atoms are deformed into quark cylinders, possibly even forming strange matter.
 
 While the Domain was happy to visit pulsars and even singularities with their survey drones, every single known instance of a magnetar was given a black mark in the Domain record, owing to their unique ability to destroy drive fields. Whether it's a pulse or stream magnetar, the sheer energy contained in their output is enough to leave a fleet helpless for days or even weeks - that is, if they don't fall victim to the evercalling magnetic pull of the star. Every spacer has the same advice - stay away, for death awaits you.",,,
+MPC_gasGiantIntrastellarCapture,PLANET,"Primarily composed of hydrogen and helium gases. The temperature and pressure at the core are extreme, but not enough to sustain the deuterium fusion that would turn the planet into a brown dwarf star.
+
+This gas giant resides past the ""frost line"" of the nearby star, where normal gas giants rarely, if ever, form. While carefree minds quickly jump to conspiracy theory, your scientists are pretty sure this is just an interstellar capture.",,,
+,,,,,
+MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-state power system which enables theoretical operation and station-keeping half-life with an upwards range in the hundreds of thousands of cycles. This one is not doing so well - it's pulses are faint, and inconsistantly timed. Something is clearly wrong with it.
+
+The astute starship captain will heed well its warning... if it still has one to give.",,,
+,,,,,
+MPC_magnetarShield,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.",,,
+,,,,,
+MPC_corrupted_weapons_cache,CUSTOM,These drifting cargo pods give peculiar readings unique to spacecraft armaments. They seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.,,,
+MPC_corrupted_supply_cache,CUSTOM,"A cache of supplies, weapons, or other equipment. There are clear signs of prior activity and modification, and they seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.",,,
+MPC_magnetarOmegaCache,CUSTOM,"A strange collection of eggshell-colored angular cargo pods, not unlike a certain foe you've previously faced. They seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.",,,

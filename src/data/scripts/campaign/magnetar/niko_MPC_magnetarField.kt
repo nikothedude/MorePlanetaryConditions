@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.TerrainAIFlags
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
-import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HTScanFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
@@ -29,6 +28,12 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
 
         const val NO_BUBBLE_CR_MULT = 25f
         const val NO_BUBBLE_WIND_MULT = 9f
+
+        const val DETECTED_MULT = 0.5f
+        const val DETECTED_MULT_STORM = 0f
+
+        const val SENSOR_RANGE_MULT = 0.9f
+        const val SENSOR_RANGE_MULT_STORM = 0f // completely blinded
     }
     // ONLY APPLIES IF BUBBLE IS GONE
     var crLossMult = 4f
@@ -51,6 +56,35 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         val percentToMagnetar = distFromMagnetar/(outerRadius) //TODO: this wont work that well, double check the math*/
 
         val fleet = entity as? CampaignFleetAPI ?: return
+
+        if (flareManager.isInActiveFlareArc(fleet)) {
+
+            fleet.stats.removeTemporaryMod(modId + "_7")
+            fleet.stats.addTemporaryModMult(
+                0.1f, modId + "_2",
+                "Inside magnetar storm", SENSOR_RANGE_MULT_STORM,
+                fleet.stats.sensorRangeMod
+            )
+            fleet.stats.removeTemporaryMod(modId + "_6")
+            fleet.stats.addTemporaryModMult(
+                0.1f, modId + "_5",
+                "Inside magnetar storm", DETECTED_MULT_STORM,
+                fleet.stats.detectedRangeMod
+            )
+        } else {
+            fleet.stats.removeTemporaryMod(modId + "_2")
+            fleet.stats.addTemporaryModMult(
+                0.1f, modId + "_7",
+                "Inside strong magnetar field", SENSOR_RANGE_MULT,
+                fleet.stats.sensorRangeMod
+            )
+            fleet.stats.removeTemporaryMod(modId + "_5")
+            fleet.stats.addTemporaryModMult(
+                0.1f, modId + "_6",
+                "Inside strong magnetar field", DETECTED_MULT,
+                fleet.stats.detectedRangeMod
+            )
+        }
 
         var inFlare = false
         if (flareManager.isInActiveFlareArc(fleet)) {
@@ -276,9 +310,12 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             nextPad = small
         }
 
+        val flare = (flareManager.isInActiveFlareArc(Global.getSector().playerFleet))
         var detectedMult = DETECTED_MULT
-        if (flareManager.isInActiveFlareArc(Global.getSector().playerFleet)) {
-            detectedMult = DETECTED_MULT_AURORA
+        var sensorMult = SENSOR_RANGE_MULT
+        if (flare) {
+            detectedMult = DETECTED_MULT_STORM
+            sensorMult = SENSOR_RANGE_MULT_STORM
         }
         tooltip.addPara(
             "Reduces the range at which fleets inside can be detected by %s.", nextPad,
@@ -286,14 +323,11 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             "" + ((1f - detectedMult) * 100).toInt() + "%"
         )
 
-        if (flareManager.isInActiveFlareArc(Global.getSector().playerFleet)) {
-            tooltip!!.addPara(
-                "The magnetar storm also blinds the sensors of a fleet within," +
-                        " reducing their range by %s.", pad,
-                highlight,
-                "" + ((1f - SENSOR_MULT_AURORA) * 100).toInt() + "%"
-            )
-        }
+        tooltip.addPara(
+            "Reduces the range of a fleet's sensors by %s.", nextPad,
+            highlight,
+            "" + ((1f - sensorMult) * 100).toInt() + "%"
+        )
 
         tooltip.addPara(
             "Reduces the combat readiness of all ships inside the field at a rather slow pace.",
@@ -339,9 +373,10 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
 
     override fun hasAIFlag(flag: Any): Boolean {
         return super.hasAIFlag(flag) ||
-                flag === TerrainAIFlags.CR_DRAIN ||
+                //flag === TerrainAIFlags.CR_DRAIN || // sadly, this makes defender fleets act badly
                 flag === TerrainAIFlags.BREAK_OTHER_ORBITS ||
-                flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE
+                flag === TerrainAIFlags.MOVES_FLEETS
+                //flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE
     }
 
     override fun onScanned(

@@ -1,0 +1,38 @@
+{
+  "variantId": "MPC_omega_derelict_mothership_sensor_mast_Standard",
+  "hullId": "MPC_omega_derelict_mothership_sensor_mast",
+  "displayName": "Standard",
+  "goalVariant": false,
+  "fluxCapacitors": 0,
+  "fluxVents": 13,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "niko_MPC_subsumedIntelligence"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 009": "vpdriver",
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+		"WS 010": "shockrepeater",
+        "WS 011": "shockrepeater",
+        "WS 012": "shockrepeater"
+	  }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

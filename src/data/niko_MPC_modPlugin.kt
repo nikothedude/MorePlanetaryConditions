@@ -4,44 +4,30 @@ import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
-import com.fs.starfarer.api.campaign.listeners.FleetEventListener
-import com.fs.starfarer.api.characters.FullName
-import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
-import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
-import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
-import com.fs.starfarer.api.impl.campaign.ids.Entities.STATION_RESEARCH_REMNANT
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags.MEMORY_KEY_NO_JUMP
-import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
-import com.fs.starfarer.api.impl.campaign.procgen.SalvageEntityGenDataSpec.DropData
+import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
-import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator.random
-import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
-import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageEntityGeneratorOld
-import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
-import com.fs.starfarer.api.loading.VariantSource
-import com.fs.starfarer.campaign.CharacterStats.SkillLevel
 import com.thoughtworks.xstream.XStream
 import data.compatability.MPC_compatabilityUtils
-import data.scripts.campaign.MPC_coronaResistFleetManagerScript
-import data.scripts.campaign.MPC_coronaResistScript
-import data.scripts.campaign.MPC_coronaResistStationScript
+import data.scripts.campaign.MPC_People
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.listeners.overgrownNanoforgeDiscoveryListener
-import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.effectTypes.spawnFleet.overgrownNanoforgeSpawnFleetScript
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
-import data.scripts.campaign.terrain.niko_MPC_mesonField
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
+import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
+import data.scripts.campaign.terrain.niko_MPC_mesonField
+import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
+import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids.mesonFieldGlobalMemoryId
@@ -52,27 +38,25 @@ import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
-import data.utilities.niko_MPC_settings.generatePredefinedSatellites
-import data.utilities.niko_MPC_settings.loadSettings
-import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
-import data.scripts.everyFrames.niko_MPC_HTFactorTracker
-import data.utilities.niko_MPC_marketUtils.isInhabited
-import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
-import data.utilities.niko_MPC_reflectionUtils.get
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
 import data.utilities.niko_MPC_settings.SOTF_enabled
+import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadAllSettings
-import data.utilities.niko_MPC_settings.loadNexSettings
 import data.utilities.niko_MPC_settings.nexLoaded
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
-import niko.MCTE.niko_MCTE_modPlugin
-import niko.MCTE.settings.MCTE_settings
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
-import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
-import kotlin.contracts.contract
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
+import kotlin.collections.MutableSet
+import kotlin.collections.any
+import kotlin.collections.hashSetOf
+import kotlin.collections.minusAssign
+import kotlin.collections.set
+import kotlin.collections.setOf
+import kotlin.collections.toMutableSet
 
 class niko_MPC_modPlugin : BaseModPlugin() {
 
@@ -156,6 +140,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().listenerManager.addListener(overgrownNanoforgeOptionsProvider(), true)
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
+        Global.getSector().addTransientListener(niko_MPC_omegaWeaponPurger())
 
         if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
             Global.getSector().listenerManager.addListener(niko_MPC_satelliteDiscoveredListener(), true)
@@ -169,20 +154,33 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
 
         val nanoforgeFaction = Global.getSector().getFaction(overgrownNanoforgeFleetFactionId)
+        val constructionFaction = Global.getSector().getFaction(niko_MPC_ids.derelictOmegaConstructorFactionId)
+        val omegaDerelictFaction = Global.getSector().getFaction(niko_MPC_ids.OMEGA_DERELICT_FACTION_ID)
         if (nanoforgeFaction == null) {
             displayError("null nanoforge faction SOMEHTING IS VERY VERY WRONG")
         } else {
             for (faction in Global.getSector().allFactions) {
                 val id = faction.id
-                if (id == Factions.DERELICT || id == overgrownNanoforgeFleetFactionId) continue
-                nanoforgeFaction.setRelationship(id, RepLevel.HOSTILE)
+                if (id != Factions.DERELICT && id != overgrownNanoforgeFleetFactionId) {
+                    nanoforgeFaction.setRelationship(id, RepLevel.HOSTILE)
+                }
+                if (id != Factions.REMNANTS && id != Factions.OMEGA && id != omegaDerelictFaction.id && id != constructionFaction.id) {
+                    omegaDerelictFaction.setRelationship(id, RepLevel.VENGEFUL)
+                }
             }
 
             val knownShips = nanoforgeFaction.knownShips
             knownShips -= "guardian" //no super special ship
             knownShips -= "station_derelict_survey_mothership"
             nanoforgeFaction.clearShipRoleCache()
+
+            val omegaKnownShips = constructionFaction.knownShips
+            omegaKnownShips -= "guardian"
+            omegaKnownShips -= "station_derelict_survey_mothership"
+            constructionFaction.clearShipRoleCache()
         }
+
+        MPC_People.createCharacters() // safe to call multiple times
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()

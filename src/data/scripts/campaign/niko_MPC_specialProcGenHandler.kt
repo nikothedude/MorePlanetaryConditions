@@ -1,26 +1,32 @@
 package data.scripts.campaign
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
+import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
+import com.fs.starfarer.api.impl.campaign.shared.WormholeManager.WormholeItemData
 import com.fs.starfarer.api.impl.campaign.terrain.*
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASCENT_WELL_DETECTED_RANGE
+import com.fs.starfarer.api.util.Misc
 import data.coronaResistStationCoreFleetListener
+import data.scripts.campaign.MPC_People.createCharacters
+import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
+import data.scripts.campaign.terrain.niko_MPC_mesonField
+import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.utilities.*
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
+import lunalib.lunaExtensions.generatePlanetCondition
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
@@ -44,7 +50,9 @@ object niko_MPC_specialProcGenHandler {
     }
 
     private fun generateMagnetar() {
-        val sysName = "PRS-NM 2231+9"
+        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] != null) return
+
+        val sysName = "Perseus NM 2231+9CB"
         val system = Global.getSector().createStarSystem(sysName)
         system.backgroundTextureFilename = "graphics/backgrounds/background_galatia.jpg"
         system.hyperspaceAnchor
@@ -85,7 +93,7 @@ object niko_MPC_specialProcGenHandler {
             Color(75, 0, 160),
             Color(127, 0, 255)
         )
-        val magnetarField = system.addTerrain("MPC_magnetarField", paramsOne)
+        val magnetarField = system.addTerrain("MPC_magnetarField", paramsOne) as CampaignTerrainAPI
 
         // PLANETS AND EXTERNAL STUFF
         val planetOneInitialAngle = MathUtils.getRandomNumberInRange(0f, 360f)
@@ -95,7 +103,7 @@ object niko_MPC_specialProcGenHandler {
             "$sysName 1",
             Planets.PLANET_LAVA,
             planetOneInitialAngle,
-            80f,
+            70f,
             2600f,
             130f
         )
@@ -105,12 +113,105 @@ object niko_MPC_specialProcGenHandler {
         planetOne.market.addCondition(Conditions.VERY_HOT)
         planetOne.market.addCondition(Conditions.RUINS_SCATTERED)
 
+        val planetTwo = system.addPlanet(
+            "MPC_magnetarGasGiantOne",
+            magnetar,
+            "$sysName G1",
+            Planets.GAS_GIANT,
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            430f,
+            15000f,
+            612f,
+        )
+        planetTwo.market.addCondition(Conditions.POOR_LIGHT)
+        planetTwo.market.addCondition(Conditions.HIGH_GRAVITY)
+        planetTwo.market.addCondition(Conditions.VERY_COLD)
+        planetTwo.market.addCondition(Conditions.DENSE_ATMOSPHERE)
+        planetTwo.market.addCondition(Conditions.VOLATILES_PLENTIFUL)
+        planetTwo.market.addCondition(Conditions.RUINS_SCATTERED)
+        planetTwo.descriptionIdOverride = "MPC_gasGiantIntrastellarCapture"
+
+        val planetThree = system.addPlanet(
+            "MPC_magnetarSystemPlanetTwo",
+            magnetar,
+            "$sysName 2",
+            Planets.PLANET_LAVA_MINOR,
+            Misc.normalizeAngle(planetOneInitialAngle - 50f),
+            90f,
+            6078f,
+            100f
+        )
+        planetThree.market.addCondition(Conditions.VERY_HOT)
+        planetThree.market.addCondition(Conditions.ORE_ULTRARICH)
+        planetThree.market.addCondition(Conditions.RARE_ORE_RICH)
+        planetThree.market.addCondition(Conditions.NO_ATMOSPHERE)
+        planetThree.market.addCondition(Conditions.RUINS_SCATTERED)
+
+        val mesonFieldOne = system.addTerrain(
+            "MPC_mesonField",
+            niko_MPC_mesonFieldGenPlugin.generateDefaultParams(planetThree)
+        )
+        mesonFieldOne.setCircularOrbit(planetThree, 0f, 0f, 100f)
+
+        /*val planetFour = system.addPlanet(
+            "MPC_magnetarSystemPlanetThree",
+            magnetar,
+            "$sysName 3",
+            Planets.IRRADIATED,
+            Misc.normalizeAngle(planetOneInitialAngle + 76f),
+            110f,
+            4100f,
+            180f
+        )
+        val planetFive = system.addPlanet(
+            "MPC_magnetarSystemPlanetFour",
+            magnetar,
+            "$sysName 4",
+            Planets.BARREN_BOMBARDED,
+            Misc.normalizeAngle(planetOneInitialAngle - 50f),
+            90f,
+            4600f,
+            100f
+        )*/
+
+        val magnetarPlugin = magnetarField.plugin as niko_MPC_magnetarField
         for (planet in system.planets) {
             if (planet.isStar) continue
-            planet.market.addCondition(Conditions.EXTREME_TECTONIC_ACTIVITY)
+            if (!magnetarPlugin.containsEntity(planet)) continue
+            if (!planet.isGasGiant) planet.market.addCondition(Conditions.EXTREME_TECTONIC_ACTIVITY)
             planet.market.addCondition(Conditions.IRRADIATED)
             planet.market.addCondition("niko_MPC_magnetarCondition")
         }
+
+        // WORMHOLE
+
+        system.addCustomEntity(null, null, Entities.STABLE_LOCATION, Factions.NEUTRAL).setCircularOrbitPointingDown(magnetar, 280f, 20000f, 720f)
+        val sacrificialStableLocation = system.getEntitiesWithTag(Tags.STABLE_LOCATION).first()
+        val itemData = WormholeItemData("MPC_magnetarWormhole", "MPC_hotel", "Hotel")
+        val item = SpecialItemData(Items.WORMHOLE_ANCHOR, itemData.toJsonStr())
+        val wormholeOne = WormholeManager.get().addWormhole(item, sacrificialStableLocation, null)
+        wormholeOne.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = false
+
+        // SHIELDS
+        system.addCustomEntity("MPC_magnetarShieldOne", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 3493f, 90f)
+        system.addCustomEntity("MPC_magnetarShieldTwo", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 5762f, 90f)
+        system.addCustomEntity("MPC_magnetarShieldThree", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 4197f, -90f)
+        system.addCustomEntity("MPC_magnetarShieldFour", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2400f, 90f)
+        system.addCustomEntity("MPC_magnetarShieldFive", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 7420f, -90f)
+
+        // OMEGA CACHES
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.7f).setCircularOrbitPointingDown(magnetar, 250f, 1208f, 365f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.7f).setCircularOrbitPointingDown(magnetar, 310f, 985f, 342f)
+
+        // WEAPON CACHES
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 20f, 5000f, 500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache_small", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(planetTwo, 100f, planetTwo.radius + 300f, 50f)
+
+        //SALVAGE_SPEC_ID_OVERRIDE
+        //SALVAGE_SPEC_ID_OVERRIDE
+        //SALVAGE_SPEC_ID_OVERRIDE
+        //SALVAGE_SPEC_ID_OVERRIDE
+        // FUCKING USE THIS PLEEEEEEEEEEEEEEEEEASE
 
         // TAGS AND STUFF
 
@@ -140,7 +241,27 @@ object niko_MPC_specialProcGenHandler {
             AbyssalRogueStellarObjectEPEC.setAbyssalDetectedRange(nascentWell, NASCENT_WELL_DETECTED_RANGE)
         }
 
+        val anchor = system.hyperspaceAnchor
+        val beacon = Global.getSector().hyperspace.addCustomEntity(
+            "MPC_magnetarBeacon",
+            "Scrambled Beacon",
+            "MPC_magnetarBeacon",
+            Factions.NEUTRAL
+        )
+        beacon.setCircularOrbitPointingDown(anchor, 100f, 300f, 65f)
+        val glowColor = Color(0, 250, 147, 255)
+        val pingColor = Color(0, 250, 147, 255)
+        Misc.setWarningBeaconColors(beacon, glowColor, pingColor)
+        AbyssalRogueStellarObjectEPEC.setAbyssalDetectedRange(beacon, 2800f) // its a beacon, of course you can see it
+
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] = system
+    }
+
+    private fun makeEntityHackable(entity: SectorEntityToken, hackDaysNeeded: Float): SectorEntityToken {
+        entity.memoryWithoutUpdate["\$MPC_hackable"] = true
+        entity.memoryWithoutUpdate["\$MPC_hackDurationNeeded"] = hackDaysNeeded
+
+        return entity
     }
 
     private fun generateRandomBaryonEmitters(): MutableSet<SectorEntityToken> {

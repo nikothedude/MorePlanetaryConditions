@@ -2,6 +2,16 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val GENERATED_PEOPLE = "\$MPC_generatedPeople"
+    const val KANTA_EXPECTING_PLAYER = "\$MPC_kantaExpectingPlayer"
+    const val DID_KANTA_GOON_VISIT = "\$MPC_didKantaGoonVisit"
+    const val KANTA_MAGNETAR_QUEST_STARTED = "\$MPC_kantaMagnetarQuestStarted"
+    const val BLOCKS_MAGNETAR_PULSE_TAG = "MPC_blocksMagnetarPulse"
+    const val SIERRA_SAW_MAGNETAR = "\$MPC_sierraSawMagnetar"
+    const val SIERRA_MENTIONED_MAGNETAR = "\$MPC_sierraMentionedMagnetar"
+    const val OMEGA_DERELICT_FACTION_ID = "MPC_omegaDerelict"
+    const val derelictOmegaConstructorFactionId = "MPC_derelictOmegaConstructor"
+    const val IMMUNE_TO_MAGNETAR_PULSE = "\$MPC_immuneToMagnetarPulse"
     const val TIMES_MAGNETAR_PANICKED = "\$MPC_timesBlindJumped"
     const val MAGNETAR_SYSTEM = "\$MPC_magnetarSystem"
     const val PLAYER_VISITED_MAGNETAR = "\$MPC_playerVisitedMagnetar"

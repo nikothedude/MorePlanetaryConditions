@@ -224,6 +224,8 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] = 0
                     }
                     Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] = (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.TIMES_MAGNETAR_PANICKED] as Int) + 1
+                    Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false)
+                    Global.getSoundPlayer().playCustomMusic(1, 1,null, true)
                 }
             }
         };
@@ -267,9 +269,6 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
     protected var options: OptionPanelAPI? = null
     protected var visual: VisualPanelAPI? = null
 
-    //protected float counter_repeating = 0f;
-    protected var counter = 0f
-
     protected var playerFleet: CampaignFleetAPI? = null
 
     var stage: Stage = Stage.INITIAL
@@ -295,6 +294,9 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
 
         createInitialText()
         Options.addOptions(this)
+
+        Global.getSoundPlayer().setSuspendDefaultMusicPlayback(true)
+        Global.getSoundPlayer().playCustomMusic(1, 1,"music_encounter_mysterious", true)
     }
 
     private fun createInitialText() {

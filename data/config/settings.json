@@ -17,6 +17,9 @@
 			"niko_MPC_magnetar":"graphics/illustrations/magnetar.jpg"
 		},
 	},
+	"stations":{
+		"MPC_hightech3":"graphics/stations/station_hightech3.png",
+	},
 	
 	"bonusXP":{
 		"niko_MPC_phaseThroughOptionThreshOne":0,

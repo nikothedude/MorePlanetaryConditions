@@ -1,10 +1,10 @@
 {
     "id":"niko_morePlanetaryConditions", # For the convenience of troubleshooters, include your name and the mod name, not just an acronym.
-	"name":"More Planetary Conditions", # Displayed to the player
+	"name":"What we left behind", # Displayed to the player
 	"author":"Niko",
     "utility":"false",
-	"version":"3.5.0",
-	"description":"Adds a bunch of misc. planetary conditions to the game, many, if not most, with custom scripted effects that go beyond what most other conditions, vanilla or modded, do.",
+	"version":"3.6.0",
+	"description":"Adds a variety of planetary conditions to the sector, as well as a smattering of mysteries and awe-inspiring vistas.",
     "gameVersion": "0.97a-RC11",
   	"jars":["jars/niko_morePlanetaryConditions.jar"],
   	"modPlugin":"data.niko_MPC_modPlugin",

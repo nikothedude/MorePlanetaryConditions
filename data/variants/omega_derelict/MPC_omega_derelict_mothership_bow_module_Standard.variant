@@ -1,0 +1,25 @@
+{
+  "variantId": "MPC_omega_derelict_mothership_bow_module_Standard",
+  "hullId": "MPC_omega_derelict_mothership_bow_module",
+  "displayName": "Standard",
+  "goalVariant": false,
+  "fluxCapacitors": 12,
+  "fluxVents": 0,
+  "quality": 0.5,
+  "permaMods": [],
+  "hullMods": [
+    "niko_MPC_subsumedIntelligence"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 007": "cryoblaster",
+        "WS 008": "cryoblaster"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}
