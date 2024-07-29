@@ -7,11 +7,11 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
-import com.fs.starfarer.api.impl.campaign.procgen.DropGroupRow
-import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
@@ -25,6 +25,8 @@ import org.lazywizard.lazylib.MathUtils
 class niko_MPC_magnetarStarScript(
     val magnetar: PlanetAPI
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
+
+    var generatedMothershipDefenders = false
 
     companion object {
         fun doBlindJump(fleet: CampaignFleetAPI) {
@@ -86,10 +88,23 @@ class niko_MPC_magnetarStarScript(
     override fun runWhilePaused(): Boolean = false
 
     override fun advance(amount: Float) {
+
+        val containingLocation = magnetar.containingLocation ?: return
+        val playerFleet = Global.getSector().playerFleet
+        if (!generatedMothershipDefenders && playerFleet?.containingLocation == containingLocation) {
+            val mothership = containingLocation.getEntitiesWithTag("MPC_omegaDerelict_mothership").firstOrNull()
+            if (mothership != null) {
+                mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
+                mothership.memoryWithoutUpdate["\$hasDefenders"] = true
+                mothership.memoryWithoutUpdate["\$hasStation"] = true
+                mothership.memoryWithoutUpdate["\$hasNonStation"] = true
+                generatedMothershipDefenders = true
+            }
+        }
+
         val days = Misc.getDays(amount)
         daysPerPulse.advance(days)
         // we advance to make things a bit more unpredictably
-        val containingLocation = magnetar.containingLocation ?: return
         if (containingLocation != Global.getSector().playerFleet?.containingLocation) return
         // but we dont pulse, since that can cause overhead
         if (daysPerPulse.intervalElapsed()) {
@@ -221,5 +236,17 @@ class niko_MPC_magnetarStarScript(
 
     override fun reportEconomyMonthEnd() {
         return
+    }
+
+    fun createOmegaMothershipDefenders(): CampaignFleetAPI {
+        val fleetPoints = 100f // the mothership is very powerful
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+        val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
+        mothership.repairTracker.cr = mothership.repairTracker.maxCR
+        mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+
+        defenderFleet.fleetData.sort()
+
+        return defenderFleet
     }
 }

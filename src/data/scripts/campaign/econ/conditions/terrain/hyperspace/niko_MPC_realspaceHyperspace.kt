@@ -507,6 +507,14 @@ class niko_MPC_realspaceHyperspace: HyperspaceTerrainPlugin(), niko_MPC_saveList
         niko_MPC_delayedHyperspaceSync(this, ArrayList(savedActiveCells)).start()
     }
 
+    override fun afterGameSave() {
+        return
+    }
+
+    override fun onGameSaveFailed() {
+        return
+    }
+
     fun syncCells(newCells: MutableList<CellStateTracker>) {
         for (curr in newCells) { // WHY THE FUCK DO CELLS GET RESET ON THIS CLASS BUT NOTHING ELSE???????????????
             activeCells[curr.i][curr.j] = curr

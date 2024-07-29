@@ -14,7 +14,7 @@ import java.util.*
 class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreAutofitPlugin(fleetCommander) {
 
     companion object {
-        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 0.4f
+        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 0.2f
     }
 
     override fun getBestMatch(
@@ -52,13 +52,13 @@ class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreA
 //			desiredPD = true;
 //		}
         var iter = 0
-        for (w in possible) {
+        val boostOmega = (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_TO_BE_BOOSTED)
+
+        for (w in possible.shuffled()) {
             iter++
             val spec = w.spec
-            if (w.spec.tags.contains("omega")) {
-                if (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_TO_BE_BOOSTED) {
-                    return w
-                }
+            if (boostOmega && !w.spec.tags.contains("omega")) {
+                return w
             }
             val catTag = getCategoryTag(cat, spec.tags) ?: continue
             // not in this category

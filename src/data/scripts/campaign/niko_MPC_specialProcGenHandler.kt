@@ -5,11 +5,13 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
@@ -19,6 +21,8 @@ import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASC
 import com.fs.starfarer.api.util.Misc
 import data.coronaResistStationCoreFleetListener
 import data.scripts.campaign.MPC_People.createCharacters
+import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
+import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
 import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.scripts.campaign.terrain.niko_MPC_mesonField
@@ -31,6 +35,7 @@ import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
+import org.magiclib.kotlin.setDefenderOverride
 import java.awt.Color
 
 object niko_MPC_specialProcGenHandler {
@@ -153,17 +158,21 @@ object niko_MPC_specialProcGenHandler {
         )
         mesonFieldOne.setCircularOrbit(planetThree, 0f, 0f, 100f)
 
-        /*val planetFour = system.addPlanet(
+        val planetFour = system.addPlanet(
             "MPC_magnetarSystemPlanetThree",
             magnetar,
             "$sysName 3",
             Planets.IRRADIATED,
-            Misc.normalizeAngle(planetOneInitialAngle + 76f),
+            MathUtils.getRandomNumberInRange(0f, 360f),
             110f,
-            4100f,
-            180f
+            9300f,
+            365f
         )
-        val planetFive = system.addPlanet(
+        planetFour.market.addCondition(Conditions.IRRADIATED)
+        planetFour.market.addCondition(Conditions.NO_ATMOSPHERE)
+        planetFour.market.addCondition(Conditions.ORE_SPARSE)
+        planetFour.market.addCondition(Conditions.RUINS_EXTENSIVE)
+        /*val planetFive = system.addPlanet(
             "MPC_magnetarSystemPlanetFour",
             magnetar,
             "$sysName 4",
@@ -182,6 +191,7 @@ object niko_MPC_specialProcGenHandler {
             planet.market.addCondition(Conditions.IRRADIATED)
             planet.market.addCondition("niko_MPC_magnetarCondition")
         }
+        system.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_FIELD_MEMID] = magnetarPlugin
 
         // WORMHOLE
 
@@ -192,6 +202,8 @@ object niko_MPC_specialProcGenHandler {
         val wormholeOne = WormholeManager.get().addWormhole(item, sacrificialStableLocation, null)
         wormholeOne.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = false
 
+        system.addCustomEntity("MPC_magnetarWormholeProbe", null, "MPC_magnetarWormholeProbe", Factions.NEUTRAL, null).setCircularOrbitPointingDown(wormholeOne, 0f, 350f, 30f)
+
         // SHIELDS
         system.addCustomEntity("MPC_magnetarShieldOne", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 3493f, 90f)
         system.addCustomEntity("MPC_magnetarShieldTwo", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 5762f, 90f)
@@ -200,12 +212,22 @@ object niko_MPC_specialProcGenHandler {
         system.addCustomEntity("MPC_magnetarShieldFive", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 7420f, -90f)
 
         // OMEGA CACHES
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.7f).setCircularOrbitPointingDown(magnetar, 250f, 1208f, 365f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.7f).setCircularOrbitPointingDown(magnetar, 310f, 985f, 342f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitPointingDown(magnetar, 250f, 1208f, 365f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitPointingDown(magnetar, 310f, 985f, 342f)
 
         // WEAPON CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 20f, 5000f, 500f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache_small", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(planetTwo, 100f, planetTwo.radius + 300f, 50f)
+
+        // THE MOTHERSHIP - THE SOURCE
+        val mothership = system.addSalvageEntity(MathUtils.getRandom(), "MPC_omegaDerelict_mothership", Factions.NEUTRAL)
+        mothership.setCircularOrbitWithSpin(magnetar, 20f, 700f, 50f, -10f, 10f)
+        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 7, 10, 20f, 90, 110)) // VERY THREATENING
+
+        /*mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
+        mothership.memoryWithoutUpdate["\$hasDefenders"] = true
+        mothership.memoryWithoutUpdate["\$hasStation"] = true
+        mothership.memoryWithoutUpdate["\$hasNonStation"] = true*/
 
         //SALVAGE_SPEC_ID_OVERRIDE
         //SALVAGE_SPEC_ID_OVERRIDE
@@ -256,6 +278,17 @@ object niko_MPC_specialProcGenHandler {
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] = system
     }
+
+    /*private fun createOmegaMothershipDefenders(): CampaignFleetAPI {
+        val fleetPoints = 300f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+        val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
+
+        mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+        defenderFleet.fleetData.sort()
+
+        return defenderFleet
+    }*/
 
     private fun makeEntityHackable(entity: SectorEntityToken, hackDaysNeeded: Float): SectorEntityToken {
         entity.memoryWithoutUpdate["\$MPC_hackable"] = true

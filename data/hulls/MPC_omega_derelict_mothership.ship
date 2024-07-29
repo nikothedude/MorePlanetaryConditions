@@ -17,15 +17,12 @@
     "supercomputer",
     "niko_MPC_subsumedIntelligence",
     "automated",
-	#"fluxshunt",
-	"chassis_storage"
+    #"chassis_storage"
   ],
   "builtInWings": [
-    "aspect_attack_wing",
-    "aspect_attack_wing",
     "aspect_missile_wing",
-	"aspect_missile_wing",
-	"aspect_missile_wing",
+    "aspect_missile_wing",
+    "aspect_missile_wing",
     "aspect_shieldbreaker_wing",
     "aspect_shieldbreaker_wing",
     "aspect_shock_wing"
@@ -145,7 +142,8 @@
       "angle": 0,
       "locations": [
         -10, 38.5,
-        -10.5, 39
+        -10.5, 39,
+        1, 39
       ]
     },
     {
@@ -179,7 +177,11 @@
       "mount": "HIDDEN",
       "arc": 360,
       "angle": 0,
-      "locations": [5, 147]
+      "locations": [
+        5, 147,
+        5, 147,
+        -1, 145
+      ]
     },
     {
       "id": "LB 9",
@@ -188,7 +190,11 @@
       "mount": "HIDDEN",
       "arc": 360,
       "angle": 0,
-      "locations": [-49.5, 112.5]
+      "locations": [
+        -49.5, 112.5,
+        -58.5, 113,
+        -43, 113.5
+      ]
     },
     {
       "id": "LB 10",
@@ -197,7 +203,10 @@
       "mount": "HIDDEN",
       "arc": 360,
       "angle": 0,
-      "locations": [-95, 141.5]
+      "locations": [
+        -95, 141.5,
+        -96, 141
+      ]
     },
     {
       "id": "WS0001",
@@ -207,7 +216,7 @@
       "arc": 360,
       "angle": 0,
       "locations": [148, 103.5]
-    },
+    }
   ],
   "engineSlots": [],
   "bounds": [

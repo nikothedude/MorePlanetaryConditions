@@ -23,6 +23,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
     fun setupFleet(fleet: CampaignFleetAPI): CampaignFleetAPI {
         fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] = true
 
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE_WHILE_TOFF] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_PATROL_FLEET] = true
         //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_ALLOW_LONG_PURSUIT] = true // kinda unfun
@@ -40,14 +41,17 @@ object niko_MPC_derelictOmegaFleetConstructor {
         fleet.removeAbility(Abilities.SENSOR_BURST)
         fleet.removeAbility(Abilities.EMERGENCY_BURN)
 
+        fleet.stats.sensorRangeMod.modifyMult("MPC_magnetarFleetSensorMalus", 0.5f, "you shouldnt see this")
+        fleet.stats.sensorProfileMod.modifyMult("MPC_magnetarFleetProfileMalus", 1.65f, "you shouldnt see this")
+
         return fleet
     }
 
-    fun createFleet(fleetPoints: Float, source: SectorEntityToken?): CampaignFleetAPI {
+    fun createFleet(fleetPoints: Float, source: SectorEntityToken?, omegaChance: Float = CHANCE_FOR_OMEGA_IN_FLEET, addListener: Boolean = true): CampaignFleetAPI {
         var omegaFleet: CampaignFleetAPI? = null
         var omegaParams: FleetParamsV3? = null
         var derelictPoints = fleetPoints
-        val tryOmega = (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_IN_FLEET)
+        val tryOmega = (MathUtils.getRandom().nextFloat() <= omegaChance)
         if (tryOmega) {
             var omegaBudget = (derelictPoints * PERCENT_OF_FP_TO_OMEGA) * OMEGA_FP_MULT
             if (omegaBudget > MIN_OMEGA_FP)  {
@@ -78,7 +82,15 @@ object niko_MPC_derelictOmegaFleetConstructor {
             OmegaOfficerGeneratorPlugin.addCommanderSkills(captain, derelictFleet, omegaParams, 2, MathUtils.getRandom())
         }
         derelictFleet.fleetData.sort()
+        derelictFleet.forceSync()
+        derelictFleet.fleetData.setSyncNeeded()
+        derelictFleet.fleetData.syncIfNeeded()
         derelictFleet.setFaction(niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, true)
+
+        if (addListener) {
+            MPC_variantFixerListener(derelictFleet).begin() // the nuclear option
+        }
+
         return derelictFleet
     }
 
@@ -111,9 +123,14 @@ object niko_MPC_derelictOmegaFleetConstructor {
 
     fun createDerelictFleet(params: FleetParamsV3): CampaignFleetAPI {
         val fleet = FleetFactoryV3.createFleet(params)
-        val omegaFaction = Global.getSector().getFaction(Factions.OMEGA)
 
-        val plugin = Misc.getAICoreOfficerPlugin(Commodities.OMEGA_CORE)
+        val faction = Global.getSector().getFaction(niko_MPC_ids.derelictOmegaConstructorFactionId)
+        val knownShips = faction.knownShips // it doesnt work on modplugin so i guess this works lol
+        if (knownShips.contains("guardian")) {
+            faction.removeKnownShip("guardian")
+        }
+        params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
+
 
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
         fleet.inflateIfNeeded()
@@ -129,6 +146,9 @@ object niko_MPC_derelictOmegaFleetConstructor {
             member.setVariant(clonedVariant, false, true)
         }
         fleet.fleetData.sort()
+        fleet.forceSync()
+        fleet.fleetData.setSyncNeeded()
+        fleet.fleetData.syncIfNeeded()
         fleet.isNoFactionInName = false
 
         return fleet

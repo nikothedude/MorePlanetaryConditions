@@ -88,6 +88,14 @@ class niko_MPC_hyperMagField: MagneticFieldTerrainPlugin(), niko_MPC_saveListene
         return
     }
 
+    override fun afterGameSave() {
+        return
+    }
+
+    override fun onGameSaveFailed() {
+        return
+    }
+
     override fun onScanned(
         factorTracker: niko_MPC_HTFactorTracker,
         playerFleet: CampaignFleetAPI,

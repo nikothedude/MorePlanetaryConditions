@@ -7,6 +7,7 @@ import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.niko_MPC_magnetarIntel
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 
@@ -49,7 +50,8 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
 
         createInitialText()
         Global.getSoundPlayer().setSuspendDefaultMusicPlayback(true)
-        Global.getSoundPlayer().playCustomMusic(1, 1,"music_encounter_mysterious_non_aggressive", true)
+        MPC_addDelayedMusicScript("music_encounter_mysterious_non_aggressive").start() // doesnt work if you go through a wormhole otehrwise
+        //Global.getSoundPlayer().playCustomMusic(1, 1,"music_encounter_mysterious_non_aggressive", true)
         //MPC_playerExposedToMagnetarCore.Options.addOptions(this)
     }
 
@@ -139,5 +141,26 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
 
     override fun getMemoryMap(): MutableMap<String, MemoryAPI> {
         return HashMap()
+    }
+}
+
+class MPC_addDelayedMusicScript(val musicId: String): niko_MPC_baseNikoScript() {
+    var timesRan = 0
+    override fun startImpl() {
+        Global.getSector().addScript(this)
+    }
+
+    override fun stopImpl() {
+        Global.getSector().removeScript(this)
+    }
+
+    override fun runWhilePaused(): Boolean {
+        return true
+    }
+
+    override fun advance(amount: Float) {
+        if (timesRan++ < 2) return
+        Global.getSoundPlayer().playCustomMusic(1, 1, musicId, true)
+        delete()
     }
 }

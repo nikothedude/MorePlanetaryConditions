@@ -177,6 +177,25 @@
 		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 	},
 
+	"MPC_omegaDerelict_mothership":{
+		"baseId": "derelict_mothership",
+		"defaultName":"Strange Domain-era Mothership", # used if name=null in addCustomEntity()
+		"nameInText":"Domain-era mothership",
+		"shortName":"mothership",
+		"aOrAn":"a",
+		"isOrAre":"is",
+		"customDescriptionId":"MPC_omegaDerelict_mothership",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino_high", "MPC_omegaDerelict_mothership"],
+	},
+
+	"MPC_magnetarWormholeProbe":{
+		"defaultName":"Strange probe",
+		"nameInText":"Strange probe",
+		"baseId":"generic_probe",
+		"customDescriptionId":"MPC_magnetarWormholeProbe",
+		"tags":["has_interaction_dialog", "neutrino", "MPC_magnetarWormholeProbe"]
+	},
+
 	"MPC_corrupted_weapons_cache": {
 		"baseId": "weapons_cache",
 		"detectionRange":100, # low, because finding one is a big deal

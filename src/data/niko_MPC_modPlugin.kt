@@ -169,15 +169,11 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                 }
             }
 
-            val knownShips = nanoforgeFaction.knownShips
-            knownShips -= "guardian" //no super special ship
-            knownShips -= "station_derelict_survey_mothership"
-            nanoforgeFaction.clearShipRoleCache()
+            nanoforgeFaction.removeKnownShip("guardian")
+            nanoforgeFaction.removeKnownShip("station_derelict_survey_mothership")
 
-            val omegaKnownShips = constructionFaction.knownShips
-            omegaKnownShips -= "guardian"
-            omegaKnownShips -= "station_derelict_survey_mothership"
-            constructionFaction.clearShipRoleCache()
+            constructionFaction.removeKnownShip("guardian")
+            constructionFaction.removeKnownShip("station_derelict_survey_mothership")
         }
 
         MPC_People.createCharacters() // safe to call multiple times
@@ -194,6 +190,22 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.beforeGameSave()
+        }
+    }
+
+    override fun afterGameSave() {
+        super.afterGameSave()
+
+        for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
+            listener.afterGameSave()
+        }
+    }
+
+    override fun onGameSaveFailed() {
+        super.onGameSaveFailed()
+
+        for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
+            listener.onGameSaveFailed()
         }
     }
 

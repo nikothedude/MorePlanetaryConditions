@@ -72,6 +72,7 @@ class MPC_derelictEscortAssignmentAI(
     }
 
     private fun refreshAssignments() {
+
         if (homeMarket.primaryEntity == null || !homeMarket.primaryEntity.isAlive) {
             selfDestruct()
             return

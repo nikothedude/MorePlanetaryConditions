@@ -26,4 +26,10 @@
 			{"file":"sounds/sfx_interface/ui_income_report_negative.ogg","pitch":1,"volume":0.2},
 		],
 	},
+	
+	"MPC_rapidEMP":{
+		"sounds":[
+			{"file":"sounds/MPC_rapidEMP.ogg","pitch":1,"volume":1}
+		],
+	}
 }

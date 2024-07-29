@@ -14,6 +14,10 @@ When exploratorium drones discover a planet, they often perform rudimentary terr
 Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of it's nature.
 Between those that are aware of their existance now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
 ,,,,,
+MPC_omega_derelict_mothership,SHIP,"One of the legendary survey motherships, the quiet automated workhorse of the Domain exploration and colonization effort. This is in essence a von Neumann probe, as the survey motherships contain autoforge capacity to manufacture a suite of smaller survey ships and the supplies required to perform its ongoing mission. This specimen is burned and battered by its centuries of service to the Domain, a drifting forgotten hulk.
+
+A fearsome intelligance has taken control over this instrument of science. Its weapon mounts have been upgraded, a large shield generator has been installed (of unknown make), and its hull has been reinforced by neutronium armor. Truely, a fearsome opponent.",,,
+,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",
@@ -54,6 +58,12 @@ MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-s
 The astute starship captain will heed well its warning... if it still has one to give.",,,
 ,,,,,
 MPC_magnetarShield,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.",,,
+,,,,,
+MPC_magnetarWormholeProbe,CUSTOM,"While at first glance this probe appears to be like any other generic sensor probe, deeper scans show internal modifications, as well as strange angular protrusions on its exterior.",,,
+,,,,,
+MPC_omegaDerelict_mothership,CUSTOM,"One of the legendary survey motherships, the quiet automated workhorse of the Domain exploration and colonization effort. This is in essence a von Neumann probe, as the survey motherships contain autoforge capacity to manufacture a suite of smaller survey ships and the supplies required to perform its ongoing mission. This specimen is burned and battered by its centuries of service to the Domain, a drifting forgotten hulk.
+
+This one has had extensive modifications done to it, including shielding against the nearby magnetar.",,,
 ,,,,,
 MPC_corrupted_weapons_cache,CUSTOM,These drifting cargo pods give peculiar readings unique to spacecraft armaments. They seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.,,,
 MPC_corrupted_supply_cache,CUSTOM,"A cache of supplies, weapons, or other equipment. There are clear signs of prior activity and modification, and they seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.",,,

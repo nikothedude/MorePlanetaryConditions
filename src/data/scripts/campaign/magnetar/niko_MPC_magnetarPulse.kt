@@ -25,7 +25,7 @@ import java.awt.Color
 class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     companion object {
-        const val INITIAL_SHOCKWAVE_DURATION = 35f
+        const val INITIAL_SHOCKWAVE_DURATION = 40f
         const val RANGEBLOCKER_MAX_DIST_FOR_PARTICLE_DESPAWN = 200f // this doesnt work that well, but it kinda makes it look better?
         val BASE_COLOR = Color(37, 245, 200, 190)
         const val BASE_STRIKE_DAMAGE = 25
@@ -48,7 +48,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
         shockwaveSpeed = 250f
         shockwaveDuration = INITIAL_SHOCKWAVE_DURATION
-        noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.25f)
+        noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.15f)
 
         for (particle in particles) {
             particle.maxDur = shockwaveDuration
@@ -305,6 +305,14 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     override fun onGameLoad() {
         sprite = Global.getSettings().getSprite("misc", "nebula_particles")
+    }
+
+    override fun afterGameSave() {
+        return
+    }
+
+    override fun onGameSaveFailed() {
+        return
     }
 
 }

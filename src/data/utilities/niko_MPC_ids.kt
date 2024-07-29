@@ -2,6 +2,8 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val MAGNETAR_FIELD_MEMID = "\$MPC_magnetarFieldLink"
+    const val OMEGA_MOTHERSHIP_DEFENDER_FLEET_MEMID = "\$MPC_omegaMothershipDefenderFleet"
     const val GENERATED_PEOPLE = "\$MPC_generatedPeople"
     const val KANTA_EXPECTING_PLAYER = "\$MPC_kantaExpectingPlayer"
     const val DID_KANTA_GOON_VISIT = "\$MPC_didKantaGoonVisit"
