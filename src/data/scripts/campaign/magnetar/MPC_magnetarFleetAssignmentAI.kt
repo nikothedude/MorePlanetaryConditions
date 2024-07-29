@@ -82,7 +82,7 @@ class MPC_magnetarFleetAssignmentAI(
                     FleetAssignment.ORBIT_PASSIVE,
                     source, 3f + Math.random().toFloat() * 2f, "performing unknown maneuvers"
                 )
-                fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, source, 5f)
+                fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, source, 5f, "performing unknown maneuvers")
             }
         }
 
@@ -125,7 +125,7 @@ class MPC_magnetarFleetAssignmentAI(
     private fun goToRandLocationInField() {
         val field =
             homeSystem.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_FIELD_MEMID] as? niko_MPC_magnetarField ?: return
-        val radius = field.auroraOuterRadius  * 0.35f
+        val radius = field.auroraOuterRadius * 0.35f
 
         val randXTwo = MathUtils.getRandomNumberInRange(-radius, radius)
         val randYTwo = MathUtils.getRandomNumberInRange(-radius, radius)

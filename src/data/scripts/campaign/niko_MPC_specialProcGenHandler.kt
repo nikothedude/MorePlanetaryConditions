@@ -210,19 +210,46 @@ object niko_MPC_specialProcGenHandler {
         system.addCustomEntity("MPC_magnetarShieldThree", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 4197f, -90f)
         system.addCustomEntity("MPC_magnetarShieldFour", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2400f, 90f)
         system.addCustomEntity("MPC_magnetarShieldFive", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 7420f, -90f)
+        system.addCustomEntity("MPC_magnetarShieldSix", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2900f, -90f)
+
 
         // OMEGA CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitPointingDown(magnetar, 250f, 1208f, 365f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitPointingDown(magnetar, 310f, 985f, 342f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 2.2f).setCircularOrbitPointingDown(magnetar, 20f, 2400f, 342f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 2.2f).setCircularOrbitPointingDown(magnetar, 220f, 2200f, 342f)
 
         // WEAPON CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 20f, 5000f, 500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 110f, 5700f, -500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.8f).setCircularOrbitPointingDown(magnetar, 250f, 6100f, -400f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.6f).setCircularOrbitPointingDown(magnetar, 110f, 3200f, -360f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1f).setCircularOrbitPointingDown(magnetar, 10f, 6200f, -200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 90f, 6700f, 200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 320f, 5300f, 200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 40f, 3400f, -200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 350f, 4900f, 200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 310f, 4100f, 200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 320f, 4300f, -200f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 330f, 4700f, 200f)
+
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache_small", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(planetTwo, 100f, planetTwo.radius + 300f, 50f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache_small", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(planetOne, 100f, planetOne.radius + 400f, 50f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache_small", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(planetFour, 100f, planetFour.radius + 300f, 50f)
+
+        // EQUIPMENT CACHES
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 1.6f).setCircularOrbitPointingDown(magnetar, 20f, 2100f, 120f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 210f, 10000f, 500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 10f, 12000f, 500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 30f, 11000f, 500f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache_small", Factions.NEUTRAL), 1.2f).setCircularOrbitPointingDown(planetThree, 20f, planetThree.radius + 600f, -90f)
+        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache_small", Factions.NEUTRAL), 1.2f).setCircularOrbitPointingDown(planetFour, 30f, planetFour.radius + 900f, 90f)
+
 
         // THE MOTHERSHIP - THE SOURCE
         val mothership = system.addSalvageEntity(MathUtils.getRandom(), "MPC_omegaDerelict_mothership", Factions.NEUTRAL)
         mothership.setCircularOrbitWithSpin(magnetar, 20f, 700f, 50f, -10f, 10f)
-        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 7, 10, 20f, 90, 110)) // VERY THREATENING
+        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 8, 9, 20f, 90, 110)) // VERY THREATENING
 
         /*mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
         mothership.memoryWithoutUpdate["\$hasDefenders"] = true

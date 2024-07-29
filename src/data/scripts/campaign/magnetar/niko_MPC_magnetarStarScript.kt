@@ -26,7 +26,7 @@ class niko_MPC_magnetarStarScript(
     val magnetar: PlanetAPI
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
 
-    var generatedMothershipDefenders = false
+    var generatedDefenders = false
 
     companion object {
         fun doBlindJump(fleet: CampaignFleetAPI) {
@@ -54,7 +54,7 @@ class niko_MPC_magnetarStarScript(
         }
 
         const val MIN_DAYS_PER_PULSE = 3f
-        const val MAX_DAYS_PER_PULSE = 3.2f
+        const val MAX_DAYS_PER_PULSE = 3.7f
 
         const val BASE_X_COORD_FOR_SYSTEM = -59800f
         const val BASE_Y_COORD_FOR_SYSTEM = -49320f
@@ -91,15 +91,23 @@ class niko_MPC_magnetarStarScript(
 
         val containingLocation = magnetar.containingLocation ?: return
         val playerFleet = Global.getSector().playerFleet
-        if (!generatedMothershipDefenders && playerFleet?.containingLocation == containingLocation) {
+        if (!generatedDefenders && playerFleet?.containingLocation == containingLocation) {
             val mothership = containingLocation.getEntitiesWithTag("MPC_omegaDerelict_mothership").firstOrNull()
             if (mothership != null) {
                 mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
                 mothership.memoryWithoutUpdate["\$hasDefenders"] = true
                 mothership.memoryWithoutUpdate["\$hasStation"] = true
                 mothership.memoryWithoutUpdate["\$hasNonStation"] = true
-                generatedMothershipDefenders = true
             }
+
+            val omegaCaches = containingLocation.getEntitiesWithTag("MPC_omegaCache")
+            for (cache in omegaCaches) {
+                cache.memoryWithoutUpdate["\$defenderFleet"] = createOmegaCacheDefenders()
+                cache.memoryWithoutUpdate["\$hasDefenders"] = true
+                cache.memoryWithoutUpdate["\$hasStation"] = false
+                cache.memoryWithoutUpdate["\$hasNonStation"] = true
+            }
+            generatedDefenders = true
         }
 
         val days = Misc.getDays(amount)
@@ -236,6 +244,13 @@ class niko_MPC_magnetarStarScript(
 
     override fun reportEconomyMonthEnd() {
         return
+    }
+
+    private fun createOmegaCacheDefenders(): CampaignFleetAPI {
+        val fleetPoints = 120f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+
+        return defenderFleet
     }
 
     fun createOmegaMothershipDefenders(): CampaignFleetAPI {

@@ -133,7 +133,7 @@
 	"MPC_magnetarShield":{
 		"defaultName":"Stellar Shield", # used if name=null in addCustomEntity()
 		"defaultRadius":40, # used if radius<0 in addCustomEntity()
-		"detectionRange":80, # low, because finding one is a big deal
+		"detectionRange":120, # low, because finding one is a big deal
 		"discoverable":true,
 		"discoveryXP":100,
 		"icon":"graphics/icons/mission_location2.png",
