@@ -17,6 +17,9 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    /** If true, fleets in the magnetar system can drop omega weapons. */
+    var MAGNETAR_DROP_OMEGA_WEAPONS = false
+
     var DERELICT_ESCORT_SIMULATE_FLEETS = true
     var DERELICT_ESCORT_SPAWN_ON_PATROLS = true
 
@@ -104,6 +107,9 @@ object niko_MPC_settings {
 
         DERELICT_ESCORT_SIMULATE_FLEETS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSimulateFleets")!!
         DERELICT_ESCORT_SPAWN_ON_PATROLS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSpawnOnPatrols")!!
+
+        MAGNETAR_DROP_OMEGA_WEAPONS = LunaSettings.getBoolean(modId, "MPC_magnetarDropOmegaWeapons")!!
+
         overgrownNanoforgeCommodityDataStore.reload()
     }
 

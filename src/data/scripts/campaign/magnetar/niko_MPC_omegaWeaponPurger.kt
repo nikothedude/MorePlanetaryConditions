@@ -6,10 +6,14 @@ import com.fs.starfarer.api.campaign.CargoAPI
 import com.fs.starfarer.api.campaign.FleetEncounterContextPlugin
 import data.utilities.niko_MPC_battleUtils.getContainingLocation
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_settings.MAGNETAR_DROP_OMEGA_WEAPONS
 
 class niko_MPC_omegaWeaponPurger: BaseCampaignEventListener(false) {
     override fun reportEncounterLootGenerated(plugin: FleetEncounterContextPlugin?, loot: CargoAPI?) {
         super.reportEncounterLootGenerated(plugin, loot)
+
+        if (MAGNETAR_DROP_OMEGA_WEAPONS) return
+
         if (plugin == null || loot == null) return
 
         val battle = plugin.battle

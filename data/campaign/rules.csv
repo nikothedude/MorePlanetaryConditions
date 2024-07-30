@@ -531,7 +531,7 @@ You make your way back to your fleet, and oversee the transfer of the wormhole a
 "#END Wormhole",,,,,,
 ,,,,,,
 # Mothership,,,,,,
-MPC_omegaMothershipApproachOne,PopulateSalvageOptions1,"$tag:MPC_omegaDerelict_mothership",,"While visibly similar to a normal mothership, you can tell this THING is anything but. Sensors report constant activity inside and outside of the $shortName,  with a frightening amount of gamma radiation as well. You exchange uneasy glances with your officers as you decide what next to do.",,
+MPC_omegaMothershipApproachOne,PopulateSalvageOptions1,"$tag:MPC_omegaDerelict_mothership","SetTextHighlights ""ship construction""","While visibly similar to a normal mothership, you can tell this THING is anything but. Sensors report constant activity inside and outside of the $shortName, with a frightening amount of gamma radiation as well. To make matters worse, you can detect emissions consistent with ship construction - it would seem the internal shipworks of the mothership are alive and well. You exchange uneasy glances with your officers as you decide what next to do.",,
 MPC_omegaMothershipTriggerDefensesText,TriggerAutomatedDefenses,"$customType == MPC_omegaDerelict_mothership score:20","SalvageDefenderInteraction","As your $shipOrFleet moves in closer, your sensors begin to pick up dozens of fractaline small craft pouring out of the mothership's every orifice, as well as a number of significantly larger craft either detaching from or exiting the mothership. A moment of held breath later, your sensors suddenly spike with frightening power fluctuations in the core of the corrupted ship, quickly translating to weapon hardpoints and (what you assume is) internal combat systems.
 
 You exchange nervous glances with a few of your officers, before turning back to your command panel.",,
@@ -612,5 +612,44 @@ MPC_omegaMothershipSalvageSitInChair,DialogOptionSelected,"$option == MPC_omegaM
 MPC_omegaMothershipSalvageSitInEight,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageSitInEight","SalvageEntity showCost
 FireAll PopulateSalvageOptions2","Satisfied, you dust off your hands and return to the bridge. Noting the lack of notable finds from the salvors, you finally relinquish op control fully to your ops chief. You take a deep breath of the now anti-rad laden air, and sigh. The next few months are going to suck.",,
 "#END Mothership",,,,,,
+,,,,,,
+# Scavenger debris field,,,,,,
+MPC_scavengerDebrisFieldInit,PopulateSalvageOptions1,"$tag:MPC_scavVictimDebrisField
+$global.MPC_magnetarFoundScavVictimDebrisField != true","$global.MPC_magnetarFoundScavVictimDebrisField = true
+SetTextHighlights ""A broken wormhole scanner""
+FireAll MPC_scavengerDebrisFieldReaction","You approach the debris field without any complications, and routinely dispatch an exploratory team to survey the field. Soon, though, you learn this is anything but routine. From the camfeeds, you see damage patterns that can only be described as arcane. Metal flash-frozen into sharp shards, and heavy armor that looks as if it's been eaten by some sort of acid. Your salvors maintain their professionalism, but are clearly spooked, and through their helms, you can see their faces, abnormally pale.
+
+Your attention is caught by a nudge from your ops chief. ""$PlayerSirOrMadam. Y' wanna see this."" he pulls up a cam from salvor 23, who is staring at what looks like...
+
+A broken wormhole scanner.
+
+Noting the nearby wormhole terminus, you guess the fleet must have traversed it to get here and was subsequently wiped out... but who, or what, is responsible?",,
+MPC_scavengerDebrisFieldReactionKnowsAboutKanta,MPC_scavengerDebrisFieldReaction,"$global.MPC_kantaMagnetarQuestStarted == true",,"You think back to Cydonia's talk of a ""contracted salvage fleet""... is it possible this is that fleet? Perhaps they undeployed the terminus once the salvagers went through... or maybe, the salvagers didnt get a chance to return, before they were destroyed? Whatever the case, you feel a shiver run down your spine, as you begin to doubt this ""deal"" even further.",,
+"#END Scavenger debris field",,,,,,
+,,,,,,
+# Planet three (Omega manufactorum),,,,,,
+MPC_magnetarPlanetThreeTrySurvey,,"$option == surveyPerform
+$id == MPC_magnetarSystemPlanetThree
+!$global.MPC_playerSearchedOmegaManufactorum score:1000","FireBest MPC_OManInitialExploreInit",,,
+MPC_magnetarPlanetThreeTryExplore,OpenInteractionDialog,"$id == MPC_magnetarSystemPlanetThree
+!$global.MPC_playerSearchedOmegaManufactorum score:1000","FireBest MPC_OManInitialExploreInit",,,
+MPC_OManInitialExploreInit,MPC_OManInitialExploreInit,,"ShowDefaultVisual
+
+SalvageDefenderInteraction
+$global.MPC_playerSearchedOmegaManufactorum = true","As your shuttles descend upon the planet, you begin to receive scattered and inconsistent reports of sensor contacts. finish later lol",,
+MPC_OManHostile,OpenInteractionDialog,"$id == MPC_magnetarSystemPlanetThree
+
+$global.MPC_playerSearchedOmegaManufactorum
+!$global.MPC_playerFinishedOmegaManufactorum","SetShortcut defaultLeave ""ESCAPE""
+FireBest MPC_OManHostileModifyOptions","Your $shipOrFleet re-enters orbit around $name. The strange complex still looms below you, bristling with mystery. ","10:MPC_OManEngageDefenders:Re-engage the defenders
+20:MPC_OManBombard:Orbitally bombard the complex to remove the defenses
+30:MPC_OManRaid:Prepare a raid on the fractaline complex
+100:defaultLeave:Leave",
+MPC_OManHostileModifyOptionsDefendersPresent,MPC_OManHostileModifyOptions,"!$defenderFleetDefeated","SetEnabled MPC_OManRaid false
+SetTooltip MPC_OManRaid ""It would be suicide to send down marines while the planet is defended.""",,,
+NEW RULE,,,,,,
+MPC_OManRaid,DialogOptionSelected,"$option == MPC_OManRaid",,"With the defenders defeated, nothing stands between you and the complex below besides the ground defenses, which thankfully seem to be",,
+MPC_OManEngageDefenders,DialogOptionSelected,"$option == MPC_OManEngageDefenders","SalvageDefenderInteraction","Your $shipOrFleet re-enters low orbit, and as predicted, a collection of fractaline defenders appear over the horizon.",,
+"#END Planet three (Omega manufactorum)",,,,,,
 "#END Magnetar",,,,,,
 

@@ -131,7 +131,6 @@ object niko_MPC_derelictOmegaFleetConstructor {
         }
         params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
 
-
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
         fleet.inflateIfNeeded()
         fleet.inflater = null
@@ -143,8 +142,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
             clonedVariant.source = VariantSource.REFIT
             clonedVariant.addPermaMod("niko_MPC_subsumedIntelligence")
             clonedVariant.addTag(Tags.UNRECOVERABLE) // they can drop with omega weapons
-            member.setVariant(clonedVariant, false, true)
-        }
+            member.setVariant(clonedVariant, false, true)         }
         fleet.fleetData.sort()
         fleet.forceSync()
         fleet.fleetData.setSyncNeeded()

@@ -20,3 +20,4 @@ Atlas Mk.II (Kanta),MPC_atlas2_kanta,Modified Superfreighter,Kanta's Favored,MPC
 ,MPC_omega_derelict_mothership_pod_engine_left,"Gun Pod, Rear",,mine_strike,1,7000,500,2500,5000,500,46,,0,0,0,10,10,220,NONE,,0,0,0,,,0,0,0,0,1,0,,500000,,1,,,0,0,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelict, niko_MPC_omegaDerelict",,0.5,2,2,,2104
 ,MPC_omega_derelict_mothership_bow_module,Bow Shield Module,,damper_omega,1,9000,1200,3000,6250,600,32,,0,0,0,10,10,200,NONE,,0,0,0,,,0,0,0,0,1,0,,500000,,1,,,0,0,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelict, niko_MPC_omegaDerelict",,0.5,2,2,,2105
 ,MPC_omega_derelict_mothership_sensor_mast,Bow Sensor Mast,,highenergyfocus,1,700,500,3500,6250,600,64,,0,0,0,10,10,280,NONE,,0,0,0,,,0,0,0,0,1,0,,500000,,1,,,0,0,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelict, niko_MPC_omegaDerelict",,0.7,2,2,,2106
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

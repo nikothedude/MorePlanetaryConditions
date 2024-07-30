@@ -11,7 +11,9 @@ import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
+import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
@@ -107,6 +109,12 @@ class niko_MPC_magnetarStarScript(
                 cache.memoryWithoutUpdate["\$hasStation"] = false
                 cache.memoryWithoutUpdate["\$hasNonStation"] = true
             }
+
+            val planetThree = containingLocation.getEntityById("MPC_magnetarSystemPlanetThree")
+            planetThree?.memoryWithoutUpdate?.set("\$defenderFleet", createManufactorumDefenders())
+            planetThree?.memoryWithoutUpdate?.set("\$hasDefenders", true)
+            planetThree?.memoryWithoutUpdate?.set("\$hasStation", true)
+            planetThree?.memoryWithoutUpdate?.set("\$hasNonStation", true)
             generatedDefenders = true
         }
 
@@ -121,19 +129,21 @@ class niko_MPC_magnetarStarScript(
         // yeahhh this fucking sucks
         // this is best done in a listener but no listeners exist
         // also, salvage fields are completely contextless so i HAVE To do this blanket stuff
-        for (terrain in containingLocation.terrainCopy) {
-            if (terrain.plugin.terrainId != Terrain.DEBRIS_FIELD) continue
-            val itemsToDrop = terrain.dropRandom[0]?.custom?.items ?: continue
-            // prefix is _wpn
-            val iterator = itemsToDrop.iterator()
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                val spec = entry.weaponSpec ?: continue
-                if (spec.hasTag("omega")) {
-                    iterator.remove()
+        if (!niko_MPC_settings.MAGNETAR_DROP_OMEGA_WEAPONS) {
+            for (terrain in containingLocation.terrainCopy) {
+                if (terrain.plugin.terrainId != Terrain.DEBRIS_FIELD || terrain.hasTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)) continue
+                if (terrain.dropRandom.isEmpty()) continue
+                val itemsToDrop = terrain.dropRandom[0]?.custom?.items ?: continue
+                // prefix is _wpn
+                val iterator = itemsToDrop.iterator()
+                while (iterator.hasNext()) {
+                    val entry = iterator.next()
+                    val spec = entry.weaponSpec ?: continue
+                    if (spec.hasTag("omega")) {
+                        iterator.remove()
+                    }
                 }
             }
-
         }
     }
 
@@ -253,8 +263,34 @@ class niko_MPC_magnetarStarScript(
         return defenderFleet
     }
 
+    private fun createManufactorumDefenders(): CampaignFleetAPI {
+        val fleetPoints = 200f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+
+        val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
+        guardian.repairTracker.cr = guardian.repairTracker.maxCR
+        guardian.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+
+        val variant = guardian.variant.clone()
+        variant.addPermaMod("niko_MPC_subsumedIntelligence")
+        variant.addPermaMod(HullMods.SAFETYOVERRIDES) // uh oh
+
+        variant.addPermaMod(HullMods.HARDENED_SHIELDS, true)
+        variant.addPermaMod(HullMods.HEAVYARMOR, true)
+        variant.addPermaMod(HullMods.MAGAZINES, true)
+        variant.addPermaMod(HullMods.UNSTABLE_INJECTOR, true)
+        variant.addPermaMod(HullMods.REINFORCEDHULL, true)
+
+        variant.source = VariantSource.REFIT
+        guardian.setVariant(variant, false, true)
+
+        defenderFleet.fleetData.sort()
+
+        return defenderFleet
+    }
+
     fun createOmegaMothershipDefenders(): CampaignFleetAPI {
-        val fleetPoints = 100f // the mothership is very powerful
+        val fleetPoints = 140f // the mothership is very powerful
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
         val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
         mothership.repairTracker.cr = mothership.repairTracker.maxCR

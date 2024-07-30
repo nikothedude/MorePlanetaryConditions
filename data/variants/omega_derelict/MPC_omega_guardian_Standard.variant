@@ -1,0 +1,80 @@
+{
+  "variantId": "MPC_omega_guardian_Standard",
+  "hullId": "guardian",
+  "displayName": "Corrupted",
+  "goalVariant": false,
+  "fluxCapacitors": 50,
+  "fluxVents": 55,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "fluxdistributor",
+    "fluxbreakers",
+    "insulatedengine",
+    "autorepair",
+    "auxiliarythrusters"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 004": "cryoflux",
+        "WS 005": "cryoflux",
+        "WS 006": "rifttorpedo",
+        "WS 007": "autopulse",
+        "WS 008": "autopulse",
+        "WS 009": "rifttorpedo",
+        "WS 012": "minipulser",
+        "WS 013": "minipulser",
+        "WS 014": "shockrepeater",
+        "WS 015": "shockrepeater",
+        "WS 016": "shockrepeater",
+        "WS 017": "shockrepeater",
+        "WS 018": "shockrepeater",
+        "WS 019": "shockrepeater",
+        "WS 020": "devastator"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {}
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 010": "sabotpod",
+        "WS 011": "sabotpod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {}
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 000": "flak",
+        "WS 001": "flak",
+        "WS 002": "flak",
+        "WS 003": "flak"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

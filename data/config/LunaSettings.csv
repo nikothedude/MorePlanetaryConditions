@@ -30,3 +30,5 @@ MPC_nexBarrageAbilityHeader,Satellite barrage settings,Header,Satellite barrage 
 MPC_satelliteBarrageDamage,Satellite barrage base damage,Double,2.0,,"While satellite barrage is active, this damage is distributed across all enemy units on the target industry every turn.",0.0,20.0,Nexerelin
 MPC_satelliteBarrageDuration,Satellite barrage duration (In turns),Int,3,,Ensure the ability entry in groundBattleDefs.json has its cooldown match or exceed this value.,0,50,Nexerelin
 MPC_satelliteBarrageDisruptTime,Satellite barrage base disruption time (Days),Int,9,,"While satellite barrage is active, the target industry is disrupted this much per turn (even if held by friendlies).",0,365,Nexerelin
+,,,,,,,,
+MPC_magnetarDropOmegaWeapons,Drop omega weapons from battle in magnetar system,Boolean,false,,Reccommended to be set to false - omega weapon availability is intentionally limited.,,,Exploration
