@@ -122,14 +122,13 @@ object niko_MPC_derelictOmegaFleetConstructor {
     }
 
     fun createDerelictFleet(params: FleetParamsV3): CampaignFleetAPI {
-        val fleet = FleetFactoryV3.createFleet(params)
-
         val faction = Global.getSector().getFaction(niko_MPC_ids.derelictOmegaConstructorFactionId)
         val knownShips = faction.knownShips // it doesnt work on modplugin so i guess this works lol
         if (knownShips.contains("guardian")) {
             faction.removeKnownShip("guardian")
         }
-        params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
+        //params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
+        val fleet = FleetFactoryV3.createFleet(params)
 
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
         fleet.inflateIfNeeded()
@@ -171,7 +170,6 @@ object niko_MPC_derelictOmegaFleetConstructor {
             0f,  // utilityPts
             0f // qualityMod
         )
-        params.modeOverride
         params.averageSMods = 1
         params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_OMEGA
         params.quality = 10f

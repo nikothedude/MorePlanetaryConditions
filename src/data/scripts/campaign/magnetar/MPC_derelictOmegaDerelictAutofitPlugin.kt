@@ -1,7 +1,9 @@
 package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.combat.ShipVariantAPI
 import com.fs.starfarer.api.combat.WeaponAPI.AIHints
+import com.fs.starfarer.api.combat.WeaponAPI.WeaponType
 import com.fs.starfarer.api.loading.WeaponSlotAPI
 import com.fs.starfarer.api.loading.WeaponSpecAPI
 import com.fs.starfarer.api.plugins.AutofitPlugin.AutofitPluginDelegate
@@ -14,7 +16,7 @@ import java.util.*
 class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreAutofitPlugin(fleetCommander) {
 
     companion object {
-        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 1f
+        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 1f // a good bit lower than this in reality due to api jank
     }
 
     override fun getBestMatch(
@@ -57,7 +59,7 @@ class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreA
         for (w in possible) {
             iter++
             val spec = w.spec
-            if (boostOmega && !w.spec.tags.contains("omega")) {
+            if (boostOmega && w.spec.tags.contains("omega")) {
                 return w
             }
             val catTag = getCategoryTag(cat, spec.tags) ?: continue
