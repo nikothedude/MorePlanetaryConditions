@@ -151,13 +151,6 @@ object niko_MPC_specialProcGenHandler {
         planetThree.market.addCondition(Conditions.NO_ATMOSPHERE)
         planetThree.market.addCondition(Conditions.RUINS_SCATTERED)
 
-        planetThree.setDefenderOverride(DefenderDataOverride( // i manually do this in the magnetar star script
-            niko_MPC_ids.OMEGA_DERELICT_FACTION_ID,
-            100f,
-            2f,
-            2f
-        ))
-
         val mesonFieldOne = system.addTerrain(
             "MPC_mesonField",
             niko_MPC_mesonFieldGenPlugin.generateDefaultParams(planetThree)
@@ -178,6 +171,14 @@ object niko_MPC_specialProcGenHandler {
         planetFour.market.addCondition(Conditions.NO_ATMOSPHERE)
         planetFour.market.addCondition(Conditions.ORE_SPARSE)
         planetFour.market.addCondition(Conditions.RUINS_EXTENSIVE)
+
+        planetFour.setDefenderOverride(DefenderDataOverride( // i manually do this in the magnetar star script
+            niko_MPC_ids.OMEGA_DERELICT_FACTION_ID,
+            100f,
+            2f,
+            2f
+        ))
+
         /*val planetFive = system.addPlanet(
             "MPC_magnetarSystemPlanetFour",
             magnetar,
@@ -306,7 +307,7 @@ object niko_MPC_specialProcGenHandler {
         // THE MOTHERSHIP - THE SOURCE
         val mothership = system.addSalvageEntity(MathUtils.getRandom(), "MPC_omegaDerelict_mothership", Factions.NEUTRAL)
         mothership.setCircularOrbitWithSpin(magnetar, 20f, 700f, 50f, -10f, 10f)
-        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 9, 10, 20f, 90, 110)) // VERY THREATENING
+        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 14, 14, 20f, 90, 110)) // VERY THREATENING
 
         /*mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
         mothership.memoryWithoutUpdate["\$hasDefenders"] = true

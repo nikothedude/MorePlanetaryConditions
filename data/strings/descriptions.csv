@@ -18,6 +18,12 @@ MPC_omega_derelict_mothership,SHIP,"One of the legendary survey motherships, the
 
 A fearsome intelligance has taken control over this instrument of science. Its weapon mounts have been upgraded, a large shield generator has been installed (of unknown make), and its hull has been reinforced by neutronium armor. Truely, a fearsome opponent.",,,
 ,,,,,
+MPC_atlas2_kanta,SHIP,"Previously owned by a fierce pirate warlord, this once sub-par ""capital"" ship has been extensively modified to transform it into a terrifying vehicle of war, capable of glassing a small colony through firepower alone.
+
+The Atlas-class superfreighter is a prime target of pirate attacks. A few are later found at the broken heart of a sharp spray of impact debris in some lonely orbit. Others earn a pirate's second appraising glance and are hauled off to secret shipyards. Cargo holds are ripped apart, replaced with trusses to hold weapons mounts and souped-up ammo feed lines.
+
+This Atlas, reborn in vacuum and fire, now delivers a cargo of death from the hand of a pirate warlord.",,,
+,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",

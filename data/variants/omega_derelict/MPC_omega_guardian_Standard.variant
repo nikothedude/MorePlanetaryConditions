@@ -3,8 +3,8 @@
   "hullId": "guardian",
   "displayName": "Corrupted",
   "goalVariant": false,
-  "fluxCapacitors": 50,
-  "fluxVents": 55,
+  "fluxCapacitors": 29,
+  "fluxVents": 50,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -16,48 +16,51 @@
   ],
   "weaponGroups": [
     {
-      "autofire": false,
-      "mode": "LINKED",
-      "weapons": {
-        "WS 004": "cryoflux",
-        "WS 005": "cryoflux",
-        "WS 006": "rifttorpedo",
-        "WS 007": "autopulse",
-        "WS 008": "autopulse",
-        "WS 009": "rifttorpedo",
-        "WS 012": "minipulser",
-        "WS 013": "minipulser",
-        "WS 014": "shockrepeater",
-        "WS 015": "shockrepeater",
-        "WS 016": "shockrepeater",
-        "WS 017": "shockrepeater",
-        "WS 018": "shockrepeater",
-        "WS 019": "shockrepeater",
-        "WS 020": "devastator"
-      }
-    },
-    {
-      "autofire": false,
-      "mode": "ALTERNATING",
-      "weapons": {}
-    },
-    {
-      "autofire": false,
+      "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS 010": "sabotpod",
-        "WS 011": "sabotpod"
+        "WS 007": "vpdriver",
+        "WS 008": "vpdriver",
+        "WS 010": "resonatormrm"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+        "WS 004": "cryoflux",
+        "WS 005": "cryoflux"
+      }
     },
     {
       "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 006": "cyclone",
+        "WS 009": "cyclone"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS 011": "resonatormrm"
+      }
+    },
+    {
+      "autofire": true,
       "mode": "LINKED",
-      "weapons": {}
+      "weapons": {
+        "WS 012": "riftlance",
+        "WS 013": "riftlance"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 020": "devastator"
+      }
     },
     {
       "autofire": true,
@@ -66,13 +69,14 @@
         "WS 000": "flak",
         "WS 001": "flak",
         "WS 002": "flak",
-        "WS 003": "flak"
+        "WS 003": "flak",
+        "WS 014": "shockrepeater",
+        "WS 015": "shockrepeater",
+        "WS 016": "shockrepeater",
+        "WS 017": "shockrepeater",
+        "WS 018": "shockrepeater",
+        "WS 019": "shockrepeater"
       }
-    },
-    {
-      "autofire": true,
-      "mode": "LINKED",
-      "weapons": {}
     }
   ],
   "modules": [],

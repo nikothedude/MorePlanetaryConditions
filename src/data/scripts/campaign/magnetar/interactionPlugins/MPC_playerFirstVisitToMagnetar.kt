@@ -1,5 +1,6 @@
 package data.scripts.campaign.magnetar.interactionPlugins
 
+import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
@@ -161,6 +162,28 @@ class MPC_addDelayedMusicScript(val musicId: String): niko_MPC_baseNikoScript() 
     override fun advance(amount: Float) {
         if (timesRan++ < 2) return
         Global.getSoundPlayer().playCustomMusic(1, 1, musicId, true)
+        delete()
+    }
+}
+
+class MPC_delayedClearMusicScript(): niko_MPC_baseNikoScript() {
+    override fun startImpl() {
+        Global.getSector().addScript(this)
+    }
+
+    override fun stopImpl() {
+        Global.getSector().removeScript(this)
+    }
+
+    override fun runWhilePaused(): Boolean {
+        return false
+    }
+
+    override fun advance(amount: Float) {
+        if (Global.getCurrentState() != GameState.CAMPAIGN) return
+
+        Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false)
+        Global.getSoundPlayer().playCustomMusic(1, 1, null, false)
         delete()
     }
 }

@@ -31,5 +31,11 @@
 		"sounds":[
 			{"file":"sounds/MPC_rapidEMP.ogg","pitch":1,"volume":1}
 		],
-	}
+	},
+	
+	"MPC_explosion":{
+		"sounds":[
+			{"file":"sounds/MPC_explosion.ogg","pitch":1,"volume":1}
+		],
+	},
 }

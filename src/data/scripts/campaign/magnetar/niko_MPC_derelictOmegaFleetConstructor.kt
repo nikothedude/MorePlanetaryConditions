@@ -15,7 +15,7 @@ import org.lazywizard.lazylib.MathUtils
 
 object niko_MPC_derelictOmegaFleetConstructor {
 
-    const val CHANCE_FOR_OMEGA_IN_FLEET = 0.2f
+    const val CHANCE_FOR_OMEGA_IN_FLEET = 0.25f
     const val PERCENT_OF_FP_TO_OMEGA = 0.3f
     const val OMEGA_FP_MULT = 2.3f
     const val MIN_OMEGA_FP = (6f * OMEGA_FP_MULT) // sinstral shard
@@ -23,6 +23,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
     fun setupFleet(fleet: CampaignFleetAPI): CampaignFleetAPI {
         fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] = true
 
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE_WHILE_TOFF] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_PATROL_FLEET] = true
@@ -41,8 +42,8 @@ object niko_MPC_derelictOmegaFleetConstructor {
         fleet.removeAbility(Abilities.SENSOR_BURST)
         fleet.removeAbility(Abilities.EMERGENCY_BURN)
 
-        fleet.stats.sensorRangeMod.modifyMult("MPC_magnetarFleetSensorMalus", 0.25f, "you shouldnt see this")
-        fleet.stats.sensorProfileMod.modifyMult("MPC_magnetarFleetProfileMalus", 1.85f, "you shouldnt see this")
+        fleet.stats.sensorRangeMod.modifyMult("MPC_magnetarFleetSensorMalus", 0.64f, "you shouldnt see this")
+        fleet.stats.sensorProfileMod.modifyMult("MPC_magnetarFleetProfileMalus", 2.3f, "you shouldnt see this")
 
         return fleet
     }
@@ -87,8 +88,8 @@ object niko_MPC_derelictOmegaFleetConstructor {
         derelictFleet.fleetData.syncIfNeeded()
         derelictFleet.setFaction(niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, true)
 
-        if (addListener) {
-            MPC_variantFixerListener(derelictFleet).begin() // the nuclear option
+        if (addListener) { // NOT NEEDED, I FIGURED IT OUT
+            //MPC_variantFixerListener(derelictFleet).begin() // the nuclear option
         }
 
         return derelictFleet
@@ -131,17 +132,20 @@ object niko_MPC_derelictOmegaFleetConstructor {
         val fleet = FleetFactoryV3.createFleet(params)
 
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
-        fleet.inflateIfNeeded()
-        fleet.inflater = null
         for (member in fleet.fleetData.membersListCopy) {
             //val omegaCore = plugin.createPerson(Commodities.OMEGA_CORE, omegaFaction.id, MathUtils.getRandom())
             //member.captain = omegaCore
 
             val clonedVariant = member.variant.clone()
             clonedVariant.source = VariantSource.REFIT
-            clonedVariant.addPermaMod("niko_MPC_subsumedIntelligence")
+            clonedVariant.addMod("niko_MPC_subsumedIntelligence")
             clonedVariant.addTag(Tags.UNRECOVERABLE) // they can drop with omega weapons
-            member.setVariant(clonedVariant, false, true)         }
+            member.setVariant(clonedVariant, false, true)
+        }
+
+        fleet.inflateIfNeeded()
+        fleet.inflater = null
+
         fleet.fleetData.sort()
         fleet.forceSync()
         fleet.fleetData.setSyncNeeded()

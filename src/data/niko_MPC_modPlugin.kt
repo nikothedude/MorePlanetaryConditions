@@ -133,6 +133,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
 
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.OMAN_BOMBARD_COST_ID] = niko_MPC_settings.OMAN_BOMBARD_COST
+
         MPC_compatabilityUtils.run(currVersion)
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())

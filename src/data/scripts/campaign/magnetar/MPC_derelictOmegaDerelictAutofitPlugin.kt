@@ -16,7 +16,7 @@ import java.util.*
 class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreAutofitPlugin(fleetCommander) {
 
     companion object {
-        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 1f // a good bit lower than this in reality due to api jank
+        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 0.15f
     }
 
     override fun getBestMatch(
@@ -54,12 +54,12 @@ class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreA
 //			desiredPD = true;
 //		}
         var iter = 0
-        val boostOmega = (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_TO_BE_BOOSTED)
-
         for (w in possible) {
             iter++
             val spec = w.spec
-            if (boostOmega && w.spec.tags.contains("omega")) {
+            // this might sound weird to not just check once before the loop since this looks like it inflates the chances of the omega pick
+            // but it doesnt? somehow? and changing it fucks it up?
+            if (w.spec.tags.contains("omega") && (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_TO_BE_BOOSTED)) {
                 return w
             }
             val catTag = getCategoryTag(cat, spec.tags) ?: continue

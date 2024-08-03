@@ -71,7 +71,7 @@ class niko_MPC_genericCommand: BaseCommand {
         val fp = args.toFloat()
 
         val playerFleet = Global.getSector().playerFleet ?: return BaseCommand.CommandResult.ERROR
-        val distFromStar = playerFleet.starSystem.star?.let { MathUtils.getDistance(playerFleet, it).toString() } ?: "N/A"
+        val distFromStar = playerFleet.starSystem?.star?.let { MathUtils.getDistance(playerFleet, it).toString() } ?: "N/A"
         val containingLocaiton = playerFleet.containingLocation ?: return BaseCommand.CommandResult.ERROR
         val fleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(createFleet(fp, null))
         containingLocaiton.addEntity(fleet)

@@ -161,9 +161,10 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                 val escortee = entry.key
                 val escorter = entry.value
 
-                if (escorter.fleetData.membersListCopy == null) continue // safety
-                for (member in escorter.fleetData.membersListCopy) {
-                    escorter.removeFleetMemberWithDestructionFlash(member)
+                if (escorter.fleetData?.membersListCopy != null) {
+                    for (member in escorter.fleetData.membersListCopy) {
+                        escorter.removeFleetMemberWithDestructionFlash(member)
+                    }
                 }
                 fleetList -= escortee
             }
