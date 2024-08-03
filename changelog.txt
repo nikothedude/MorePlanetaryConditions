@@ -1,6 +1,13 @@
 3.6.0:
 SAVE COMPATIBLE
 
+Run niko_MPC_genSpecialContent if updating
+
+Fixed a rare crash with derelict escorts
+
+Adds a terrifying secret
+    Adds questline that points you to it - requires wormhole scanner and level 14
+
 3.5.0:
 PROBABLY SAVE COMPATIBLE? DEPENDS ON IF YOU HVAE A BARYON EMITTER ANYWHERE
 

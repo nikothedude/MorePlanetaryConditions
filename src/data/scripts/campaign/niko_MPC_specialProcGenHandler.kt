@@ -280,15 +280,11 @@ object niko_MPC_specialProcGenHandler {
 
         // WEAPON CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 20f, 5000f, 500f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.7f).setCircularOrbitPointingDown(magnetar, 110f, 5700f, -500f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.8f).setCircularOrbitPointingDown(magnetar, 250f, 6100f, -400f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 0.6f).setCircularOrbitPointingDown(magnetar, 110f, 3200f, -360f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1f).setCircularOrbitPointingDown(magnetar, 10f, 6200f, -200f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 90f, 6700f, 200f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 320f, 5300f, 200f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 40f, 3400f, -200f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 350f, 4900f, 200f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 50f, 4100f, 200f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 100f, 4300f, -200f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_weapons_cache", Factions.NEUTRAL), 1.1f).setCircularOrbitPointingDown(magnetar, 330f, 4700f, 200f)
 
@@ -299,7 +295,6 @@ object niko_MPC_specialProcGenHandler {
         // EQUIPMENT CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 1.6f).setCircularOrbitPointingDown(magnetar, 20f, 2100f, 120f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 210f, 10000f, 500f)
-        makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 10f, 12000f, 500f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache", Factions.NEUTRAL), 4f).setCircularOrbitPointingDown(magnetar, 30f, 11000f, 500f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache_small", Factions.NEUTRAL), 1.2f).setCircularOrbitPointingDown(planetThree, 20f, planetThree.radius + 600f, -90f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_corrupted_equipment_cache_small", Factions.NEUTRAL), 1.2f).setCircularOrbitPointingDown(planetFour, 30f, planetFour.radius + 900f, 90f)
