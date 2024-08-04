@@ -140,7 +140,7 @@ class MPC_derelictEscortAssignmentAI(
         fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
         homeMarket.getEscortFleetList() -= target
 
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
+        if (!target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
         fleet.isNoAutoDespawn = false
     }
 
@@ -154,7 +154,7 @@ class MPC_derelictEscortAssignmentAI(
         homeMarket.getEscortFleetList() -= target
         target.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_TARGET_MEMID] = null
 
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
+        if (!target.isPlayerFleet) target.isNoAutoDespawn = despawnSetting
         fleet.isNoAutoDespawn = false
         return true
     }

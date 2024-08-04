@@ -18,7 +18,7 @@ class niko_MPC_omegaWeaponPurger: BaseCampaignEventListener(false) {
 
         val battle = plugin.battle
         for (fleet in battle.bothSides) {
-            if (fleet.faction.id == niko_MPC_ids.OMEGA_DERELICT_FACTION_ID) {
+            if (fleet.faction.id == niko_MPC_ids.OMEGA_DERELICT_FACTION_ID && !fleet.hasTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)) {
                 purgeOmegaWeapons(loot)
             }
         }

@@ -649,7 +649,7 @@ FireAll PopulateSalvageOptions2","Satisfied, you dust off your hands and return 
 MPC_scavengerDebrisFieldInit,PopulateSalvageOptions1,"$tag:MPC_scavVictimDebrisField
 $global.MPC_magnetarFoundScavVictimDebrisField != true","$global.MPC_magnetarFoundScavVictimDebrisField = true
 SetTextHighlights ""A broken wormhole scanner""
-FireAll MPC_scavengerDebrisFieldReaction","You approach the debris field without any complications, and routinely dispatch an exploratory team to survey the field. Soon, though, you learn this is anything but routine. From the camfeeds, you see damage patterns that can only be described as arcane. Metal flash-frozen into sharp shards, and heavy armor that looks as if it's been eaten by some sort of acid. Your salvors maintain their professionalism, but are clearly spooked, and through their helms, you can see their faces, abnormally pale.
+FireAll MPC_scavengerDebrisFieldReaction","You approach the debris field without any complications, and routinely dispatch an exploratory team to survey it. It becomes quickly apparent, however, this op is anything but routine. From the camfeeds, you see damage patterns that can only be described as arcane. Metal flash-frozen into jagged shards, and heavy armor that looks as if it's been eaten by some sort of acid. Your salvors try to maintain their professionalism, but are clearly spooked, judging by the abnormally pale faces you can see through their helm-glass.
 
 Your attention is caught by a nudge from your ops chief. ""$PlayerSirOrMadam. Y' wanna see this."" A cam from a salvor is pulled up, which reveals what looks like...
 

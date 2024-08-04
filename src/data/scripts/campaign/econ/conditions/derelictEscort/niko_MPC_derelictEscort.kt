@@ -362,7 +362,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.addAbility("MPC_escort_transponder")
 
         MPC_derelictEscortAssignmentAI(fleet, target, market).start()
-        if (niko_MPC_settings.DERELICT_ESCORT_SIMULATE_FLEETS && !target.isPlayerFleet) target.isNoAutoDespawn = true
+        if (!target.isPlayerFleet) target.isNoAutoDespawn = true
 
         var timeoutMult = 1f
         if (!market.isInhabited()) {

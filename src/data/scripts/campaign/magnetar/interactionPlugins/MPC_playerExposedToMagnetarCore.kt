@@ -36,8 +36,9 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 plugin.textPanel?.addParagraph(
                     "With a hardened expression, you silence your surroundings with a privacy field. Now free from the " +
                         "panicked sounds of your crew, you take a moment to reflect. It was a foolish idea to enter this system, " +
-                        "and even more foolish to remain. And now, you more than likely face your death. And even if you do survive, " +
-                        "your more sentimental side has a few words to say to the people of the core world - to those you left behind. "
+                        "and even more foolish to remain. And now, you are more than likely face your death. Your more rational side quickly " +
+                        "banishes these thoughts - but something within you still echoes the sentiment. You resolve to send a message - just in case you " +
+                        "can't escape."
                 )
                 val hasComms = Global.getSector().intelManager.isPlayerInRangeOfCommRelay
                 val beginningString = "Messages sent from the abyss are notoriously slow, so you know you'll be able to cancel this if you survive. " +
@@ -50,7 +51,7 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                     "hoping you make more people aware of the dangers in the abyss."
                 } else {
                     "...however... nothing happens. The channel fails to open. ERR::OOR. Your heart sinks as you realize what this means: " +
-                    "You're out of comms range. Noone will ever know your last words, and you will die. Alone."
+                    "You're out of comms range. No-one will ever know your last words, and you will die. Alone."
                 }
                 plugin.textPanel?.addParagraph(beginningString)
                 plugin.textPanel?.addParagraph(differingString)

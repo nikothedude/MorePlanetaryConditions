@@ -259,6 +259,7 @@ class niko_MPC_magnetarStarScript(
     private fun createOmegaCacheDefenders(): CampaignFleetAPI {
         val fleetPoints = 120f
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+        defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
 
         return defenderFleet
     }
@@ -284,6 +285,7 @@ class niko_MPC_magnetarStarScript(
         variant.source = VariantSource.REFIT
         guardian.setVariant(variant, false, true)
 
+        defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
         defenderFleet.fleetData.sort()
 
         return defenderFleet
@@ -296,6 +298,7 @@ class niko_MPC_magnetarStarScript(
         mothership.repairTracker.cr = mothership.repairTracker.maxCR
         mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
 
+        defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
         defenderFleet.fleetData.sort()
 
         return defenderFleet

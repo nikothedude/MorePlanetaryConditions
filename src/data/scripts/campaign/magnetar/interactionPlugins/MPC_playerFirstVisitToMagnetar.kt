@@ -61,39 +61,47 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
         val dist = MathUtils.getDistance(playerFleet, magnetar)
         val overMagnetar = (dist <= (magnetar.radius + 500f))
 
-        val lineText = "Curving streams of ionized particles perfectly trace the lines of the unfathomable magnetic field, " +
-                "making a spectacular cosmic light show enthralling to anyone unaware of their dangers."
+        val lineText = "Curving streams of ionized particles trace the unfathomable magnetic field, " +
+                "birthing a spectacular cosmic light show enthralling to anyone unaware of their dangers."
 
         if (overMagnetar) {
             textPanel!!.addParagraph(
-                "As soon as your translate through the jump point, you are put on alert by the sound of a high-pitched " +
-                    "buzzing, seeming to emanate from the outside of the ship - the telltale sound of drive bubble failure. " +
+                "As soon as you translate through the jump point, you are put on alert by the sound of a high-pitched " +
+                    "buzzing, seeming to emanate from the outside of the ship - the telltale sound of imminent drive bubble failure. " +
                     "You prepare to raise your voice and issue emergency commands, but when you look up from your station, " +
-                    "you stop. Half your bridge crew is staring at the viewport, filled with the most terrifying sight in the galaxy - " +
+                    "you stop. Half your bridge crew is staring at the viewport, filled with what could be the most terrifying sight in the galaxy - " +
                     "a magnetar. $lineText\n" +
                     "\n" +
-                    "Your gawking is interrupted by your senior tactical officer hurriedly approaching with a spooked look in his " +
-                    "eyes. \"S-sir-\" he stammers out, before resolving himself - making the spacer sign for \"all seals confirmed safe\". " +
-                    "\"We... that, that is a magnetar, sir.\" he says, as if you were unaware. \"-I will... give you a detailed report in a moment, " +
-                    "but-\" he snaps his head over behind his shoulder, towards the star, then sighs shakily, repeating the gesture " +
+                    "Your gawking is interrupted by your tactical officer hurriedly approaching. " +
+                    "A datapad clatters onto your desk, lacking the usual cadence you expect from your crew. Your advisor stands stiff, " +
+                    "putting on a strong face - but you can tell from the micro-twitches and the dilated pupils that this is only a professional courtesy." +
+                    "\"S-sir,\" your officer begins, \"We... we have translated... directly on top of a magnetar.\" they state with a sub-tone of terror." +
+                    "A nod to the datapad shifts your attention, as your tactical officer continues. \"We are... safe for now, sir, but-\" your officer makes the " +
+                    "spacer sign for \"All airlocks sealed\", a sort of ward against evil. \"The drive field, if it breaks-\" their voice catches. " +
+                    "\"...we... we won't be able to resist the magnetic field.\" Their grim intonation tells you all you need to know, and " +
+                    "after reading the tactical report, you grimly agree and order an immediate emergency burn away from the star."
+
+                    /*" \"S-sir-\" your officer stammers out, before resolving themselves - making the spacer sign for \"all seals confirmed safe\". " +
+                    "\"We... that, that is a magnetar, sir.\" you hear, as if you were unaware. \"-I will... give you a detailed report in a moment, " +
+                    "but-\" their head snaps over their shoulder to the magnetar, then sighs shakily, repeating the gesture " +
                     "he did moments before. \"We are... right on top of it, sir. If our drive field breaks...\" he stammers. " +
                     "\"W-we will die, sir. We need to get out of here...NOW.\" He slides you the expected tactical report, and after " +
-                    "briefly skimming over it, you grimly agree and order an emergency burn away from the star. Immediately."
+                    "briefly skimming over it, you grimly agree and order an emergency burn away from the star. Immediately."*/
             )
-            textPanel!!.highlightInLastPara("magnetar", "magnetar", "die", "Immediately")
+            textPanel!!.highlightInLastPara("magnetar", "directly on top of a magnetar", "won't be able to resist the magnetic field", "immediate emergency burn")
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
         } else {
             textPanel!!.addParagraph(
-                "You smoothly translate through the jump point. You routinely request fleet status, put up a jump sickness bulletin, " +
-                    "and run a sensor sweep - but you notice your bridge crew is performing slower than usual. Irritated, you look " +
-                    "up from your station only to see something that makes your heart sink. In the distance, light seconds away, " +
+                "Your fleet smoothly translates through the jump point. You request fleet status, put up a jump sickness bulletin, " +
+                    "and run a sensor sweep. Ten seconds later, you're still waiting for it's initiation. Irritated, you look " +
+                    "up from your station only to see something that makes your heart sink. In the distance, mere light seconds away, " +
                     "is a magnetar. $lineText Even now, you can hear the creaking of your ship's hull as it strains against the " +
-                    "magnetic force of the star." +
+                    "ever-calling magnetic force, trying to bring your fleet ever-closer." +
                     "\n" +
                     "Your gawking is interrupted by your senior tactical officer delivering a report to your desk. \"I " +
-                    "really want to reiterate, sir...\" he taps the datapad for effect. \"This isn't like a black hole. " +
+                    "really want to reiterate, sir...\" a tap on the datapad for effect. \"This isn't like a black hole. " +
                     "This is a real threat.\"\n" +
-                    "Skimming over the datapad, you're inclined to agree with him. You make a mental note to be careful in this system."
+                    "Skimming over the datapad, you're inclined to agree with your officer. You make a mental note to be careful in this system."
             )
             textPanel!!.highlightInLastPara("magnetar", "real threat", "careful in this system")
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
