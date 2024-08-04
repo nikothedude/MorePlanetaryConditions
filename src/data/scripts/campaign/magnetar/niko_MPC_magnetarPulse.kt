@@ -17,8 +17,8 @@ import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.DRIVE_BUBBLE_DESTROYED
 import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
+import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_stringUtils.toPercent
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 
@@ -221,10 +221,10 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         }
         var interdictionResultsString = ""
         if (interdictionEffectiveness != null) {
-            interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundTo(1))}"
+            interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundNumTo(1))}"
         }
 
-        val immobileDur = ((10f * shatterTimeMult).roundTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
+        val immobileDur = ((10f * shatterTimeMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
         val desc = "Drive field destroyed (${immobileDur} days to repair)"
 
