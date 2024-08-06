@@ -2,8 +2,12 @@ package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.SectorEntityToken.VisibilityLevel
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
@@ -25,8 +29,7 @@ import java.awt.Color
 class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     companion object {
-        const val INITIAL_SHOCKWAVE_DURATION = 40f
-        const val RANGEBLOCKER_MAX_DIST_FOR_PARTICLE_DESPAWN = 200f // this doesnt work that well, but it kinda makes it look better?
+        const val BASE_SHOCKWAVE_DURATION = 40f
         val BASE_COLOR = Color(37, 245, 200, 190)
         const val BASE_STRIKE_DAMAGE = 25
 
@@ -37,21 +40,52 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         const val INTERDICT_EXTRA_COOLDOWN = 3f
 
         const val DIST_NEEDED_TO_HIT = 500f
+
+        const val BASE_SHOCKWAVE_SPEED = 250f
+    }
+
+    class MPC_magnetarPulseParams(where: LocationAPI,
+                                  loc: Vector2f,
+                                  radius: Float,
+                                  durationMult: Float,
+                                  val shockwaveSpeed: Float = BASE_SHOCKWAVE_SPEED,
+                                  val shockwaveDuration: Float = BASE_SHOCKWAVE_DURATION,
+                                  val shockwaveAccel: Float? = null,
+                                  color: Color = BASE_COLOR
+    ): ExplosionParams(color, where, loc, radius, durationMult) {
+        var baseRepLoss = 0f
+        var sourceFleet: CampaignFleetAPI? = null
+        var explosionDamageMult = 1f
+        /** Higher = longer drive field disruption. */
+        var explosionDisruptionMult = 1f
+        var makeParticlesMaxVelocityImmediately = false
     }
 
     var noEffectShockwaveDurationThreshold: Float = 0f // once we have this much duration left we dont have any effects
+    var initialShockwaveDuration: Float = 0f
 
     override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
         super.init(entity, pluginParams)
 
         Global.getSector().listenerManager.addListener(this)
 
-        shockwaveSpeed = 250f
-        shockwaveDuration = INITIAL_SHOCKWAVE_DURATION
+        val castedParams = getCastedParams()
+        if (castedParams.shockwaveAccel != null) {
+            shockwaveAccel = castedParams.shockwaveAccel
+        }
+        shockwaveSpeed = castedParams.shockwaveSpeed
+        initialShockwaveDuration = castedParams.shockwaveDuration
+        shockwaveDuration = castedParams.shockwaveDuration
         noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.15f)
 
         for (particle in particles) {
             particle.maxDur = shockwaveDuration
+            if (castedParams.makeParticlesMaxVelocityImmediately) {
+                val accel = Misc.getUnitVectorAtDegreeAngle(Misc.getAngleInDegrees(particle.offset))
+                accel.scale(shockwaveSpeed)
+                particle.vel.x += accel.x
+                particle.vel.y += accel.y
+            }
         }
 
         if (params.where.isCurrentLocation) {
@@ -59,6 +93,10 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         }
 
         return
+    }
+
+    private fun getCastedParams(): MPC_magnetarPulseParams {
+        return params as MPC_magnetarPulseParams
     }
 
     override fun applyDamageToFleets() {
@@ -80,6 +118,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             val dist = Misc.getDistance(fleet, entity)
             if (dist < shockwaveDist) {
                 damagedAlready.add(id)
+                if (getCastedParams().sourceFleet == fleet) return
+                if (fleet.isStationMode) return
                 val distNeededToHit = (shockwaveDist - DIST_NEEDED_TO_HIT).coerceAtLeast(0f)
 
                 if (dist <= distNeededToHit) {
@@ -109,7 +149,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     override fun applyDamageToFleet(fleet: CampaignFleetAPI?, damageMult: Float) {
         if (fleet == null) return
-        var damageMult = (shockwaveDuration / INITIAL_SHOCKWAVE_DURATION) * 0.15f
+        val castedParams = getCastedParams()
+        var damageMult = (shockwaveDuration / initialShockwaveDuration) * 0.15f
         val members = fleet.fleetData.membersListCopy
         if (members.isEmpty()) return
 
@@ -135,12 +176,12 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         val shoveIntensity = (damageFraction * 20f).coerceAtMost((shockwaveSpeed/625f)) // not arbitrary, it mostly keeps it locked to the speed of the pulse
         fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity)) // EDIT
 
-        if (fleet!!.isInCurrentLocation) {
+        if (fleet.isInCurrentLocation && fleet.isVisibleToPlayerFleet) {
             val dist = Misc.getDistance(fleet, Global.getSector().playerFleet)
             if (dist < HyperspaceTerrainPlugin.STORM_STRIKE_SOUND_RANGE) {
                 val volumeMult = 6f * damageFraction
                 Global.getSoundPlayer()
-                    .playSound("gate_explosion_fleet_impact", 1f, volumeMult, fleet!!.location, Misc.ZERO)
+                    .playSound("gate_explosion_fleet_impact", 1f, volumeMult, fleet.location, Misc.ZERO)
             }
         }
 
@@ -159,7 +200,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
         val numStrikes = picker.items.size
 
-        for (i in 0 until numStrikes) {
+         for (i in 0 until numStrikes) {
             val member = picker.pick() ?: return
             val crPerDep = member.deployCost
             //if (crPerDep <= 0) continue;
@@ -168,7 +209,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             val suppliesPer100CR = suppliesPerDep * 1f / Math.max(0.01f, crPerDep)
 
             // half flat damage, half scaled based on ship supply cost cost
-            val strikeSupplies = (BASE_STRIKE_DAMAGE + suppliesPer100CR) * 0.5f * damageFraction
+            var strikeSupplies = ((BASE_STRIKE_DAMAGE) + suppliesPer100CR) * 0.5f * damageFraction
+            strikeSupplies *= castedParams.explosionDamageMult
             //strikeSupplies = suppliesPerDep * 0.5f * damageFraction;
             var strikeDamage = strikeSupplies / suppliesPer100CR * (0.75f + Math.random().toFloat() * 0.5f)
 
@@ -224,26 +266,20 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundNumTo(1))}"
         }
 
-        val immobileDur = ((10f * shatterTimeMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
+        val immobileDur = ((10f * shatterTimeMult * castedParams.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
         val desc = "Drive field destroyed (${immobileDur} days to repair)"
 
-        val transverseJumpAbility = fleet.getAbility(Abilities.TRANSVERSE_JUMP)
-        if (transverseJumpAbility != null) {
-            transverseJumpAbility.cooldownLeft += immobileDur
-        }
-        val sustainedBurnAbility = fleet.getAbility(Abilities.SUSTAINED_BURN)
-        if (sustainedBurnAbility != null) {
-            if (sustainedBurnAbility.isActive) {
-                sustainedBurnAbility.deactivate()
-            }
-            sustainedBurnAbility.cooldownLeft += immobileDur
+        for (ability in fleet.abilities.values) {
+            if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") || ability.id != Abilities.TRANSVERSE_JUMP) continue
+            ability.deactivate()
+            ability.cooldownLeft = ability.cooldownLeft.coerceAtLeast(immobileDur)
         }
 
         for (view in fleet.views) {
             view.setJitter(0.1f, immobileFromDays, BASE_COLOR, 2, 3f)
             view.setUseCircularJitter(true)
-            view.setJitterDirection(Vector2f(0f, 0f))
+            view.setJitterDirection(Misc.ZERO)
             view.setJitterLength(immobileFromDays)
             view.setJitterBrightness(0.2f)
         }
@@ -251,7 +287,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         fleet.stats.addTemporaryModMult(immobileDur, entity.id + "_magnetPulseAftermathEngines", desc, -500f, fleet.stats.fleetwideMaxBurnMod)
         fleet.memoryWithoutUpdate.set(DRIVE_BUBBLE_DESTROYED, true, immobileDur)
 
-        if (fleet!!.isPlayerFleet) {
+        if (fleet.isPlayerFleet) {
             if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f)  {
                 Global.getSector().campaignUI.addMessage(
                     "The ionized pulse bounces off your reinforced drive bubble, thanks to your interdiction", Misc.getHighlightColor()
@@ -262,6 +298,33 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                     Misc.getNegativeHighlightColor()
                 )
             }
+        }
+
+        if (fleet.isInCurrentLocation) {
+            val vis: VisibilityLevel = fleet.visibilityLevelToPlayerFleet
+            if (fleet.isPlayerFleet || vis == VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS || vis == VisibilityLevel.COMPOSITION_DETAILS) {
+                if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f) {
+                    fleet.addFloatingText("Pulse avoided!", fleet.faction.baseUIColor, 1f, true)
+                } else {
+                    fleet.addFloatingText(
+                        "Drive field destroyed! ($immobileDur days to repair)",
+                        fleet.faction.baseUIColor,
+                        1f,
+                        true
+                    )
+                }
+            }
+        }
+
+        val sourceFleet = castedParams.sourceFleet
+        if (sourceFleet?.isPlayerFleet == true && fleet.knowsWhoPlayerIs() && sourceFleet.faction != fleet.faction) {
+            val repParams = CustomRepImpact()
+            repParams.delta = -castedParams.baseRepLoss * (damageMult * 10f)
+            repParams.limit = RepLevel.INHOSPITABLE
+            Global.getSector().adjustPlayerReputation(
+                RepActionEnvelope(RepActions.CUSTOM, repParams, null, false),
+                fleet.faction.id
+            )
         }
     }
 

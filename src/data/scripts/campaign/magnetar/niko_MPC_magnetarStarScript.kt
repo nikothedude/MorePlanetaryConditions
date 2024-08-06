@@ -149,7 +149,7 @@ class niko_MPC_magnetarStarScript(
 
     fun doPulse() {
         val color = niko_MPC_magnetarPulse.BASE_COLOR
-        val params = ExplosionEntityPlugin.ExplosionParams(color, magnetar.containingLocation, magnetar.location, 500f, 2f)
+        val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(magnetar.containingLocation, magnetar.location, 500f, 2f, color = color)
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
         val explosion = magnetar.containingLocation.addCustomEntity(
             Misc.genUID(), "Ionized Pulse",

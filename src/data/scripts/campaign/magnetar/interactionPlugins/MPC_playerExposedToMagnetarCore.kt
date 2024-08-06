@@ -79,7 +79,7 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                     "The drive field is shattered. Navigation is offline. Jumping is impossible, and to make matters worse -"
                 )
                 plugin.textPanel!!.addParagraph(
-                    "The junior officer gulps. \"We-we're headed straight towards a magnetar, s-sir.\". He finishes his worried " +
+                    "The junior officer gulps. \"We-we're headed straight towards a magnetar, s-sir.\". The officer finishes their worried " +
                         "report by ending that fleetwide morale is plummeting, and multiple ships are at risk for a full-on mutiny - for all the good that would do them."
                 )
                 plugin.textPanel!!.addParagraph(
@@ -87,7 +87,7 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 )
             }
         },
-        CALL_SIERRA(mutableSetOf(Stage.INITIAL)) { // SOTF;
+        /*CALL_SIERRA(mutableSetOf(Stage.INITIAL)) { // SOTF
             override fun addToOptions(plugin: MPC_playerExposedToMagnetarCore) {
                 if (!niko_MPC_settings.SOTF_enabled) return
                 plugin.options!!.addOption("Call sierra", CALL_SIERRA)
@@ -97,10 +97,10 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
             override fun execute(plugin: MPC_playerExposedToMagnetarCore, text: String?) {
                 super.execute(plugin, text)
                 plugin.textPanel?.addParagraph(
-                    "testStuff yippee"
+                    ""
                 )
             }
-        },
+        },*/
         TAC_OFFICER_BARGES_IN(mutableSetOf(Stage.INITIAL)) {
             override fun addToOptions(plugin: MPC_playerExposedToMagnetarCore) {
                 plugin.options!!.addOption("Continue", TAC_OFFICER_BARGES_IN)
@@ -111,9 +111,8 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 super.execute(plugin, text)
                 plugin.textPanel!!.addParagraph(
                     "You ruminate in your seat, hands folded, head racing in both complex maneuvers to escape and your last words. " +
-                        "Suddenly, you're jolted up by a hand on your shoulder - your senior tactical officer, eyes wide and wild. In his left hand, " +
-                        "he holds a datapad filled with complex schematics. While it's hard to hear over the commotion on the bridge, you can make out the words " +
-                        "\"I might have something\"!"
+                        "Suddenly, you're jolted up by a hand on your shoulder - your senior tactical officer, eyes wide and wild. \"S-sir!\" they stammer. " +
+                        "\"I m-might, have something, sir.\""
                 )
                 HUSH_ROOM.addToOptions(plugin)
             }
@@ -128,21 +127,22 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 super.execute(plugin, text)
 
                 plugin.textPanel!!.addParagraph(
-                    "You bring your whistle to your lips and blow. An ear-piercing shrill tone fills the room, causing " +
+                    "You bring your whistle to your lips and blow. A shrill tone fills the room, causing " +
                         "all your crew to fall silent and stare at you, exhaustion and panic clear on their face. You turn to your tactical officer " +
                         "expectantly."
                 )
                 plugin.textPanel!!.addParagraph(
-                    "He turns to the crowd, clearly nervous. \"I-I think I have something\" he stammers, bringing up his datapad. "  +
-                    "\"So, we can't jump. We can't move. But... BUT-\" he pauses, less for effect and more out of anxiety. " +
-                    "He turns to you. \"Captain... have you heard of blind jumping? It's an ancient technique. It's impossible in the " +
+                    "Your officer turns to the crowd, clearly nervous. \"I-I think I have something\" they stammer, bringing up their datapad. "  +
+                    "\"So, we can't jump. We can't move. But...\" he pauses, less for effect and more out of anxiety. " +
+                    "They turn to you. \"Captain... have you heard of blind jumping? It's an ancient technique. It's impossible in the " +
                     "bubble of a drive field...\" his tone rises. \"-but, with ours shattered, coupled with the latent energy of the magnetar " +
                     "field, we might be able to break into hyperspace!\""
                 )
                 plugin.textPanel!!.addParagraph(
-                    "A hopeful murmur begins to spread amongst your crew. \"However...\" they all fall silent. " +
+                    "You recall tales of risky blind jumps - a breach into hyperspace made, only for ships to emerge halfway across the local cluster -" +
+                    "if they even emerge at all. \"However...\" Your murmuring crew falls silent. " +
                     "\"...it is a very risky maneuver. It will wreak havoc on our ships, leaving them heavily damaged, putting them at risk for " +
-                    "critical malfunctions\", and...\" he pauses, debating whether to speak. \"...killing some of our crew.\" He leans in. \"Sir... with our current position, this is our optimal time to start the jump.\"",
+                    "critical malfunctions\", and...\" he pauses, debating whether to speak, before resolving to a whisper, hiding the secret from your panicked crew. \"...killing some of our crew.\" Your officer leans in. \"Sir... with our current position, we won't h-have, an opportunity for long.\"",
                 )
                 plugin.textPanel!!.highlightInLastPara("heavily damaged", "critical malfunctions", "killing some of our crew")
                 plugin.textPanel!!.setHighlightColorsInLastPara(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor())
@@ -163,7 +163,7 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                     "coordinated orders, as everyone works together to get themselves out of this mess."
                 )
                 plugin.textPanel!!.addParagraph(
-                    "System after system fall into place. Shield generators polarize to your TacOff's designations, phase " +
+                    "System after system fall into place. Shield generators polarize to your tacoff's designations, phase " +
                         "coils prepare to project a high-level phase field 2 kilometers ahead. All non-vital systems are disabled, and " +
                         "sensors are supercharged, ready to rip a hole in spacetime, assisted by what was certainly your doom mere moments ago. " +
                         "Soon, everything is ready, and everyone looks to you for the final confirmation."
