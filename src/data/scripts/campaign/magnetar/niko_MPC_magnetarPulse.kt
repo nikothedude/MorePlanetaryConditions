@@ -173,10 +173,6 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
         damageFraction *= damageMult
 
-        val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
-        val shoveIntensity = (damageFraction * 20f).coerceAtMost((shockwaveSpeed/625f)) // not arbitrary, it mostly keeps it locked to the speed of the pulse
-        fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity)) // EDIT
-
         if (fleet.isInCurrentLocation && fleet.isVisibleToPlayerFleet) {
             val dist = Misc.getDistance(fleet, Global.getSector().playerFleet)
             if (dist < HyperspaceTerrainPlugin.STORM_STRIKE_SOUND_RANGE) {
@@ -290,6 +286,9 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         fleet.stats.addTemporaryModMult(immobileDur, entity.id + "_magnetPulseAftermathEngines", desc, -500f, fleet.stats.fleetwideMaxBurnMod)
         fleet.memoryWithoutUpdate.set(DRIVE_BUBBLE_DESTROYED, true, immobileDur)
 
+        val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
+        val shoveIntensity = (damageFraction * 20f).coerceAtMost((shockwaveSpeed/625f)) // not arbitrary, it mostly keeps it locked to the speed of the pulse
+
         if (fleet.isPlayerFleet) {
             if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f)  {
                 Global.getSector().campaignUI.addMessage(
@@ -301,6 +300,10 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                     Misc.getNegativeHighlightColor()
                 )
             }
+        }
+
+        if (interdictionEffectiveness != null && interdictionEffectiveness < 1f) {
+            fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity)) // EDIT
         }
 
         if (fleet.isInCurrentLocation) {
