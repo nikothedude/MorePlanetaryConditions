@@ -302,7 +302,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             }
         }
 
-        if (interdictionEffectiveness != null && interdictionEffectiveness < 1f) {
+        if (interdictionEffectiveness == null || interdictionEffectiveness < 1f) {
             fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity)) // EDIT
         }
 

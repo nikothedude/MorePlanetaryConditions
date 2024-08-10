@@ -27,7 +27,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         const val HYPERSPACE_TOPOGRAPHY_POINTS = 20
 
         const val NO_BUBBLE_CR_MULT = 25f
-        const val NO_BUBBLE_WIND_MULT = 18f
+        const val NO_BUBBLE_WIND_MULT = 16f
 
         const val DETECTED_MULT = 0.5f
         const val DETECTED_MULT_STORM = 0f
@@ -36,7 +36,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         const val SENSOR_RANGE_MULT_STORM = 0f // completely blinded
     }
     // ONLY APPLIES IF BUBBLE IS GONE
-    var crLossMult = 4f
+    var crLossMult = 3.5f
     var pullFactor = -0.16f
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
