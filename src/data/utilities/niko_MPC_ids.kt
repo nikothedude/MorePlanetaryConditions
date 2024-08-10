@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val FRACTAL_OPTIMIZATIONS_SKILL_ID = "MPC_fractalOptimizations"
     const val TRANSCENDANT_CONCIOUSNESS_SKILL_ID = "MPC_transcendentConciousness"
     const val SLAVED_OMEGA_CORE_COMMID = "MPC_slavedOmegaCore"
     const val OMAN_BOMBARD_COST_ID = "\$MPC_OManBombardCost"

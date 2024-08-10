@@ -5,13 +5,16 @@ import com.fs.starfarer.api.characters.LevelBasedEffect.ScopeDescription
 import com.fs.starfarer.api.characters.MarketSkillEffect
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.skills.Hypercognition
-import kotlin.math.roundToInt
+import data.utilities.niko_MPC_stringUtils.toPercent
 
 class MPC_transcendantConciousness {
 
 
     companion object {
         const val HAZARD_REDUCTION = -0.25f
+        const val UPKEEP_MULT = 0.5f
+        const val SHIP_PRODUCTION_QUALITY_MOD = 0.25f
+        const val ACCESSABILITY_BONUS = 0.20f
     }
 
     class Level1 : MarketSkillEffect {
@@ -24,7 +27,7 @@ class MPC_transcendantConciousness {
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "$HAZARD_REDUCTION% hazard rating"
+            return "${(HAZARD_REDUCTION*100).toInt()}% hazard rating"
         }
 
         override fun getEffectPerLevelDescription(): String? {
@@ -38,20 +41,22 @@ class MPC_transcendantConciousness {
 
     class Level2 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT)
-                .modifyFlat(id, Hypercognition.FLEET_SIZE / 100f, "Hypercognition")
+            for (industry in market.industries) {
+                industry.upkeep.modifyMult(id, UPKEEP_MULT, "Transcendent Consciousness")
+            }
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodifyFlat(id)
+            for (industry in market.industries) {
+                industry.upkeep.unmodify(id)
+            }
         }
 
         override fun getEffectDescription(level: Float): String {
-            //return "" + (int)Math.round(FLEET_SIZE) + "% larger fleets";
-            return "+" + Math.round(Hypercognition.FLEET_SIZE) + "% fleet size"
+            return "${toPercent(UPKEEP_MULT)} less upkeep for all buildings"
         }
 
-        override fun getEffectPerLevelDescription(): String {
+        override fun getEffectPerLevelDescription(): String? {
             return null
         }
 
@@ -62,20 +67,18 @@ class MPC_transcendantConciousness {
 
     class Level3 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD)
-                .modifyMult(id, 1f + Hypercognition.DEFEND_BONUS * 0.01f, "Hypercognition")
+            market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat(id, SHIP_PRODUCTION_QUALITY_MOD, "Transcendent Consciousness")
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            //market.getStats().getDynamic().getMod(Stats.GROUND_DEFENSES_MOD).unmodifyPercent(id);
-            market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodifyMult(id)
+            market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify(id)
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "+" + Hypercognition.DEFEND_BONUS + "% effectiveness of ground defenses"
+            return "+${toPercent(SHIP_PRODUCTION_QUALITY_MOD)} fleet quality"
         }
 
-        override fun getEffectPerLevelDescription(): String {
+        override fun getEffectPerLevelDescription(): String? {
             return null
         }
 
@@ -86,18 +89,18 @@ class MPC_transcendantConciousness {
 
     class Level4 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            market.stability.modifyFlat(id, Hypercognition.STABILITY_BONUS, "Hypercognition")
+            market.accessibilityMod.modifyFlat(id, ACCESSABILITY_BONUS, "Transcendent Consciousness")
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            market.stability.unmodifyFlat(id)
+            market.accessibilityMod.unmodifyFlat(id)
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "+" + Hypercognition.STABILITY_BONUS.toInt() + " stability"
+            return "+${(ACCESSABILITY_BONUS * 100).toInt()}% accessability"
         }
 
-        override fun getEffectPerLevelDescription(): String {
+        override fun getEffectPerLevelDescription(): String? {
             return null
         }
 

@@ -2,3 +2,6 @@ id,name,order,tier,reqPoints,reqPointsPerExtraSkill,description,author,combat of
 MPC_transcendentConciousness,Transcendent Consciousness,50001,0,,,"How can we hope to comprehend a mind that thinks not in static forms, but in fractaline possibilities? That, my dear court, I cannot answer.
 However, I can promise something even greater - the intelligence of a being so fierce, even dieties pale in comparison. If we harness this mind, this incomprehensible being, we may find ourselves ascended by its very might.
 ",Initial domain hearing on AI laws,,,TRUE,"npc_only, ai_core_only",graphics/icons/skills/MPC_transcendantConciousness.png,
+MPC_fractalOptimizations,Fractal Optimizations,50002,0,,,"...investigation of the captured vessel showed crystaline ""tendrils"" networking the weapon systems...
+
+...salvors called the op an ""autopsy"" due to the intense interconnectedness of the subsystems... marked similarities to the nervous system of the homo sapien...",Excerpts of a SUPER-ALABASTER datacore from a hegemony data breach,TRUE,,,"npc_only, ai_core_only",graphics/icons/skills/MPC_transcendantConciousness.png,

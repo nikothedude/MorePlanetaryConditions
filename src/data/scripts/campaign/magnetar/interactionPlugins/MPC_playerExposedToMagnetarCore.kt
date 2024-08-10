@@ -316,8 +316,8 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                     "sensors are overcharged, shields are polarized, phase coils are overtuned. And with a single command, you order " +
                     "the rift opened once more. "
             )
-            textPanel!!.addParagraph("The fleet reluctantly enters, though knowing what awaits them if they chose not to " +
-                    "enter, they do so with haste. Buckling yourself to your chair, you close your eyes and pretend the carnage " +
+            textPanel!!.addParagraph("The fleet reluctantly enters, though knowing what awaits them if they choose not to, " +
+                    "most ships do so with haste. Buckling yourself to your chair, you close your eyes and pretend the carnage " +
                     "ravaging your fleet and assaulting your ears isn't happening - though the screams of both crew and buckling bulkheads make that hard.")
             //Options.END.addToOptions(this)
         }

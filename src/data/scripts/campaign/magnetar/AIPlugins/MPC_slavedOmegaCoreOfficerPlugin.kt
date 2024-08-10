@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import data.utilities.niko_MPC_ids
 import java.util.*
 
 class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
@@ -42,10 +43,11 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
 
         // assume it's not going to be integrated, no reason to do it - same as assuming it's always integrated
         person.portraitSprite = "graphics/portraits/characters/omega.png"
-        person.stats.level = 11
+        person.stats.level = 10
         person.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
         person.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)
-        person.stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+       // person.stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+        person.stats.setSkillLevel(Skills.BALLISTIC_MASTERY, 2f)
         //person.getStats().setSkillLevel(Skills.SHIELD_MODULATION, 2);
         //person.getStats().setSkillLevel(Skills.SHIELD_MODULATION, 2);
         person.stats.setSkillLevel(Skills.FIELD_MODULATION, 2f)
@@ -56,10 +58,9 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
         //person.getStats().setSkillLevel(Skills.RELIABILITY_ENGINEERING, 2);
         person.stats.setSkillLevel(Skills.SYSTEMS_EXPERTISE, 2f)
         person.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 2f)
-        person.stats.setSkillLevel(Skills.DAMAGE_CONTROL, 2f)
         person.stats.setSkillLevel(Skills.POINT_DEFENSE, 2f)
         person.stats.setSkillLevel(Skills.ENERGY_WEAPON_MASTERY, 2f)
-        person.stats.setSkillLevel(Skills.OMEGA_ECM, 2f)
+        person.stats.setSkillLevel(niko_MPC_ids.FRACTAL_OPTIMIZATIONS_SKILL_ID, 2f)
 
         /*if (points != 0) {
             person.memoryWithoutUpdate[AICoreOfficerPlugin.AUTOMATED_POINTS_VALUE] = points
