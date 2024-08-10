@@ -11,6 +11,8 @@ import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.campaign.fleet.CampaignFleet
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAITacticalModule
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.scripts.campaign.magnetar.AIPlugins.MPC_slavedOmegaCoreAdminPlugin
+import data.scripts.campaign.magnetar.AIPlugins.MPC_slavedOmegaCoreOfficerPlugin
 import data.scripts.campaign.magnetar.MPC_derelictOmegaDerelictInflater
 import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
 import data.utilities.*
@@ -185,6 +187,22 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
             if (fleet.faction.id == niko_MPC_ids.derelictOmegaConstructorFactionId) {
                 return PluginPick(MPC_derelictOmegaDerelictInflater(params), CampaignPlugin.PickPriority.MOD_SET)
             }
+        }
+        return null
+    }
+
+    override fun pickAICoreOfficerPlugin(commodityId: String?): PluginPick<AICoreOfficerPlugin>? {
+        if (commodityId == null) return null
+        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+            return PluginPick(MPC_slavedOmegaCoreOfficerPlugin(), CampaignPlugin.PickPriority.MOD_SET)
+        }
+        return null
+    }
+
+    override fun pickAICoreAdminPlugin(commodityId: String?): PluginPick<AICoreAdminPlugin>? {
+        if (commodityId == null) return null
+        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+            return PluginPick(MPC_slavedOmegaCoreAdminPlugin(), CampaignPlugin.PickPriority.MOD_SET)
         }
         return null
     }

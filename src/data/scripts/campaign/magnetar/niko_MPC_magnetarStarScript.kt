@@ -101,6 +101,26 @@ class niko_MPC_magnetarStarScript(
                 mothership.memoryWithoutUpdate["\$hasStation"] = true
                 mothership.memoryWithoutUpdate["\$hasNonStation"] = true
             }
+            val researchStation = containingLocation.getEntitiesWithTag("MPC_station_researchMagnetarOne").firstOrNull()
+            if (researchStation != null) {
+                researchStation.memoryWithoutUpdate["\$defenderFleet"] = createDomainResearchStationDefenders()
+                researchStation.memoryWithoutUpdate["\$hasDefenders"] = true
+                researchStation.memoryWithoutUpdate["\$hasStation"] = false
+                researchStation.memoryWithoutUpdate["\$hasNonStation"] = true
+            }
+
+            for (probe in containingLocation.getEntitiesWithTag("MPC_omegaDerelict_probe")) {
+                probe.memoryWithoutUpdate["\$defenderFleet"] = createOmegaProbeDefenders(probe)
+                probe.memoryWithoutUpdate["\$hasDefenders"] = true
+                probe.memoryWithoutUpdate["\$hasStation"] = false
+                probe.memoryWithoutUpdate["\$hasNonStation"] = true
+            }
+            for (surveyShip in containingLocation.getEntitiesWithTag("MPC_omegaDerelict_survey_ship")) {
+                surveyShip.memoryWithoutUpdate["\$defenderFleet"] = createOmegaSurveyShipDefenders(surveyShip)
+                surveyShip.memoryWithoutUpdate["\$hasDefenders"] = true
+                surveyShip.memoryWithoutUpdate["\$hasStation"] = false
+                surveyShip.memoryWithoutUpdate["\$hasNonStation"] = true
+            }
 
             val omegaCaches = containingLocation.getEntitiesWithTag("MPC_omegaCache")
             for (cache in omegaCaches) {
@@ -120,7 +140,7 @@ class niko_MPC_magnetarStarScript(
 
         val days = Misc.getDays(amount)
         daysPerPulse.advance(days)
-        // we advance to make things a bit more unpredictably
+        // we advance to make things a bit more unpredictable
         if (containingLocation != Global.getSector().playerFleet?.containingLocation) return
         // but we dont pulse, since that can cause overhead
         if (daysPerPulse.intervalElapsed()) {
@@ -257,7 +277,7 @@ class niko_MPC_magnetarStarScript(
     }
 
     private fun createOmegaCacheDefenders(): CampaignFleetAPI {
-        val fleetPoints = 120f
+        val fleetPoints = 160f
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
         defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
 
@@ -266,7 +286,7 @@ class niko_MPC_magnetarStarScript(
 
     private fun createManufactorumDefenders(): CampaignFleetAPI {
         val fleetPoints = 200f
-        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
 
         val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
         guardian.repairTracker.cr = guardian.repairTracker.maxCR
@@ -285,21 +305,42 @@ class niko_MPC_magnetarStarScript(
         variant.source = VariantSource.REFIT
         guardian.setVariant(variant, false, true)
 
-        defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
+        defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()
 
         return defenderFleet
     }
 
     fun createOmegaMothershipDefenders(): CampaignFleetAPI {
-        val fleetPoints = 140f // the mothership is very powerful
+        val fleetPoints = 170f // the mothership is very powerful, so add like 50 dp to this mentally
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
         val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
         mothership.repairTracker.cr = mothership.repairTracker.maxCR
         mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
 
-        defenderFleet.addTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)
+        defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()
+
+        return defenderFleet
+    }
+
+    fun createDomainResearchStationDefenders(): CampaignFleetAPI {
+        val fleetPoints = 500f // TERROR
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 0f))
+
+        return defenderFleet
+    }
+
+    fun createOmegaSurveyShipDefenders(surveyShip: SectorEntityToken): CampaignFleetAPI {
+        val fleetPoints = 190f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
+
+        return defenderFleet
+    }
+
+    fun createOmegaProbeDefenders(probe: SectorEntityToken): CampaignFleetAPI {
+        val fleetPoints = 130f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
 
         return defenderFleet
     }

@@ -3,7 +3,7 @@
   "hullId": "guardian",
   "displayName": "Corrupted",
   "goalVariant": false,
-  "fluxCapacitors": 29,
+  "fluxCapacitors": 43,
   "fluxVents": 50,
   "quality": 1,
   "permaMods": [],
@@ -21,7 +21,6 @@
       "weapons": {
         "WS 007": "vpdriver",
         "WS 008": "vpdriver",
-        "WS 010": "resonatormrm"
       }
     },
     {
@@ -36,16 +35,17 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS 006": "cyclone",
-        "WS 009": "cyclone"
-      }
+		  "WS 006": "squall",
+		  "WS 009": "squall",
+	  }
     },
     {
       "autofire": true,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS 011": "resonatormrm"
-      }
+          "WS 011": "typhoon",
+		  "WS 010": "typhoon",
+	  }
     },
     {
       "autofire": true,
@@ -59,8 +59,8 @@
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS 020": "devastator"
-      }
+		"WS 020": "realitydisruptor"
+	  }
     },
     {
       "autofire": true,

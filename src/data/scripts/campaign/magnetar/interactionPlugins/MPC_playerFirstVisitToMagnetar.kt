@@ -98,12 +98,10 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
                     "is a magnetar. $lineText Even now, you can hear the creaking of your ship's hull as it strains against the " +
                     "ever-calling magnetic force, trying to bring your fleet ever-closer." +
                     "\n" +
-                    "Your gawking is interrupted by your senior tactical officer delivering a report to your desk. \"I " +
-                    "really want to reiterate, sir...\" a tap on the datapad for effect. \"This isn't like a black hole. " +
-                    "This is a real threat.\"\n" +
-                    "Skimming over the datapad, you're inclined to agree with your officer. You make a mental note to be careful in this system."
+                    "Your gawking is interrupted by your senior tactical officer delivering a report to your desk. Blinking a few " +
+                    "times, you shake off your awe, and return to semi-normal duties."
             )
-            textPanel!!.highlightInLastPara("magnetar", "real threat", "careful in this system")
+            textPanel!!.highlightInLastPara("magnetar")
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
         }
 

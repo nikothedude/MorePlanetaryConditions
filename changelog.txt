@@ -1,6 +1,8 @@
 3.6.0:
 SAVE COMPATIBLE
 
+Rebranded to "what we left behind"
+
 Run niko_MPC_genSpecialContent if updating
 
 Fixed a rare crash with derelict escorts

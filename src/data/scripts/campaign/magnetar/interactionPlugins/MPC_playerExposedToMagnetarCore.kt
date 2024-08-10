@@ -133,16 +133,16 @@ class MPC_playerExposedToMagnetarCore: InteractionDialogPlugin {
                 )
                 plugin.textPanel!!.addParagraph(
                     "Your officer turns to the crowd, clearly nervous. \"I-I think I have something\" they stammer, bringing up their datapad. "  +
-                    "\"So, we can't jump. We can't move. But...\" he pauses, less for effect and more out of anxiety. " +
+                    "\"So, we can't jump. We can't move. But...\" they pause, less for effect and more out of anxiety. " +
                     "They turn to you. \"Captain... have you heard of blind jumping? It's an ancient technique. It's impossible in the " +
-                    "bubble of a drive field...\" his tone rises. \"-but, with ours shattered, coupled with the latent energy of the magnetar " +
+                    "bubble of a drive field...\" their tone rises. \"-but, with ours shattered, coupled with the latent energy of the magnetar " +
                     "field, we might be able to break into hyperspace!\""
                 )
                 plugin.textPanel!!.addParagraph(
                     "You recall tales of risky blind jumps - a breach into hyperspace made, only for ships to emerge halfway across the local cluster -" +
                     "if they even emerge at all. \"However...\" Your murmuring crew falls silent. " +
                     "\"...it is a very risky maneuver. It will wreak havoc on our ships, leaving them heavily damaged, putting them at risk for " +
-                    "critical malfunctions\", and...\" he pauses, debating whether to speak, before resolving to a whisper, hiding the secret from your panicked crew. \"...killing some of our crew.\" Your officer leans in. \"Sir... with our current position, we won't h-have, an opportunity for long.\"",
+                    "critical malfunctions\", and...\" they pause, debating whether to speak, before resolving to a whisper, hiding the secret from your panicked crew. \"...killing some of our crew.\" Your officer leans in. \"Sir... with our current position, we won't h-have, an opportunity for long.\"",
                 )
                 plugin.textPanel!!.highlightInLastPara("heavily damaged", "critical malfunctions", "killing some of our crew")
                 plugin.textPanel!!.setHighlightColorsInLastPara(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor())

@@ -28,18 +28,18 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         //public static final float RANGE = 1000f;
         const val BASE_RADIUS = 200f
         const val BASE_DURATION = BASE_SHOCKWAVE_DURATION * 0.056f
-        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 0.7f
+        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 0.85f
         const val BASE_PULSE_ACCEL = 20f
         const val BASE_SECONDS = 6f
         const val STRENGTH_PER_SECOND = 200f
 
-        const val MAX_BURN_ANCHOR = 9
+        const val MAX_BURN_ANCHOR = 10
+        /** Controls how much having a high or low burn impacts the power of the pulse. */
         const val BASE_SIZE_MULT = 0.9f
 
         const val BASE_REP_LOSS = 0.04f // if a fleet is hit by the shockwave
 
-        const val FUEL_USE_MULT = 3f
-
+        const val FUEL_USE_MULT = 5f
 
         val BASE_COLOR = Color(202, 27, 233, 190)
 
@@ -178,6 +178,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
             params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
             params.baseRepLoss = BASE_REP_LOSS
             params.makeParticlesMaxVelocityImmediately = true
+            params.respectIgnore = false
 
             params.explosionDamageMult = 2f
 

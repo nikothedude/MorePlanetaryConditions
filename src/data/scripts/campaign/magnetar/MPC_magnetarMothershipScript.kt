@@ -1,11 +1,9 @@
 package data.scripts.campaign.magnetar
 
+import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
-import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.SourceBasedFleetManager
-import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 import java.util.*
@@ -63,5 +61,12 @@ class MPC_magnetarMothershipScript(source: SectorEntityToken, thresholdLY: Float
                 MPC_magnetarFleetAssignmentAI(fleet, source.starSystem, source).start()
             }
         }
+    }
+
+    override fun reportFleetDespawnedToListener(fleet: CampaignFleetAPI?, reason: FleetDespawnReason, param: Any?) {
+        if (reason == FleetDespawnReason.DESTROYED_BY_BATTLE || fleet?.memoryWithoutUpdate?.get(niko_MPC_ids.DRIVE_BUBBLE_DESTROYED) == true) {
+            destroyed++
+        }
+        fleets.remove(fleet)
     }
 }

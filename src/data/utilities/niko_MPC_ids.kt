@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val SLAVED_OMEGA_CORE_COMMID = "MPC_slavedOmegaCore"
     const val OMAN_BOMBARD_COST_ID = "\$MPC_OManBombardCost"
     const val IMMUNE_TO_OMEGA_CLEARING = "\$MPC_immuneToOmegaClearing"
     const val MAGNETAR_FIELD_MEMID = "\$MPC_magnetarFieldLink"

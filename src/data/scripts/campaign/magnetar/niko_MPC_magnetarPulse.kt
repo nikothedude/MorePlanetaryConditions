@@ -59,6 +59,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         /** Higher = longer drive field disruption. */
         var explosionDisruptionMult = 1f
         var makeParticlesMaxVelocityImmediately = false
+        var respectIgnore = true
     }
 
     var noEffectShockwaveDurationThreshold: Float = 0f // once we have this much duration left we dont have any effects
@@ -108,10 +109,10 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         }
         var shockwaveDist = 0f
         for (p in particles) {
-            shockwaveDist = Math.max(shockwaveDist, p.offset.length())
+            shockwaveDist = shockwaveDist.coerceAtLeast(p.offset.length())
         }
         for (fleet in entity.containingLocation.fleets) {
-            if (fleet.memoryWithoutUpdate[IMMUNE_TO_MAGNETAR_PULSE] == true) continue
+            if (fleet.memoryWithoutUpdate[IMMUNE_TO_MAGNETAR_PULSE] == true && getCastedParams().respectIgnore) continue
             val id = fleet.id
             if (damagedAlready.contains(id)) continue
 
@@ -271,17 +272,19 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         val desc = "Drive field destroyed (${immobileDur} days to repair)"
 
         for (ability in fleet.abilities.values) {
-            if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") || ability.id != Abilities.TRANSVERSE_JUMP) continue
+            if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") && ability.id != Abilities.TRANSVERSE_JUMP) continue
             ability.deactivate()
             ability.cooldownLeft = ability.cooldownLeft.coerceAtLeast(immobileDur)
         }
 
-        for (view in fleet.views) {
-            view.setJitter(0.1f, immobileFromDays, BASE_COLOR, 2, 3f)
-            view.setUseCircularJitter(true)
-            view.setJitterDirection(Misc.ZERO)
-            view.setJitterLength(immobileFromDays)
-            view.setJitterBrightness(0.2f)
+        if (immobileFromDays > 0) {
+            for (view in fleet.views) {
+                view.setJitter(0.1f, immobileFromDays, BASE_COLOR, 2, 3f)
+                view.setUseCircularJitter(true)
+                view.setJitterDirection(Misc.ZERO)
+                view.setJitterLength(immobileFromDays)
+                view.setJitterBrightness(0.2f)
+            }
         }
 
         fleet.stats.addTemporaryModMult(immobileDur, entity.id + "_magnetPulseAftermathEngines", desc, -500f, fleet.stats.fleetwideMaxBurnMod)

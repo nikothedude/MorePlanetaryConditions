@@ -18,11 +18,11 @@ import java.io.IOException
 object niko_MPC_settings {
 
     const val OMAN_BOMBARD_COST = 200
-
     /** If true, fleets in the magnetar system can drop omega weapons. */
     var MAGNETAR_DROP_OMEGA_WEAPONS = false
 
     var DERELICT_ESCORT_SIMULATE_FLEETS = true
+
     var DERELICT_ESCORT_SPAWN_ON_PATROLS = true
 
     var nexLoaded: Boolean = false

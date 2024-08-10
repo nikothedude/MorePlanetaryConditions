@@ -38,7 +38,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FORCE_TRANSPONDER_OFF] = true
 
         fleet.removeAbility(Abilities.SUSTAINED_BURN)
-        fleet.removeAbility(Abilities.INTERDICTION_PULSE)
+        //fleet.removeAbility(Abilities.INTERDICTION_PULSE)
         fleet.removeAbility(Abilities.SENSOR_BURST)
         fleet.removeAbility(Abilities.EMERGENCY_BURN)
 
@@ -128,7 +128,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
         if (knownShips.contains("guardian")) {
             faction.removeKnownShip("guardian")
         }
-        //params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
+        params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
         val fleet = FleetFactoryV3.createFleet(params)
 
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
