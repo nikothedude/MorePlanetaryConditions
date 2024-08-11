@@ -247,7 +247,8 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         return super.isUsable() &&
                 fleet != null &&
                 fleet.memoryWithoutUpdate[niko_MPC_ids.DRIVE_BUBBLE_DESTROYED] != true &&
-                getSizeMult(fleet) > 0f
+                getSizeMult(fleet) > 0f &&
+                fleet.cargo.fuel >= computeFuelCost()
         //getNonReadyShips().isEmpty();
     }
 
@@ -304,7 +305,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
             "Base range of %s* units, increased for every burn level above %s, " +
                     "for a total of %s units. While the pulse is charging, the range at which the fleet can be detected will " +
                     "gradually increase by up to %s.", pad, highlight,
-            "$BASE_RADIUS", "$MAX_BURN_ANCHOR", "${BASE_RADIUS * sizeMult}", "$DETECTABILITY_PERCENT%"
+            "$BASE_RADIUS", "$MAX_BURN_ANCHOR", "${BASE_RADIUS * sizeMult}", "${DETECTABILITY_PERCENT.toInt()}%"
         )
         if (sizeMult <= 0) {
             tooltip.addPara(

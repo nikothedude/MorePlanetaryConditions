@@ -64,6 +64,9 @@ MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-s
 The astute starship captain will heed well its warning... if it still has one to give.",,,
 ,,,,,
 MPC_magnetarShield,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.",,,
+MPC_magnetarShield_hijacked,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.
+
+Your fleet's scanners pick up the faintest of comm pings from the object. A closer inspection is necessary to pick apart the fragmented data.",,,
 ,,,,,
 MPC_magnetarWormholeProbe,CUSTOM,"While at first glance this probe appears to be like any other generic sensor probe, deeper scans show internal modifications, as well as strange angular protrusions on its exterior.",,,
 ,,,,,

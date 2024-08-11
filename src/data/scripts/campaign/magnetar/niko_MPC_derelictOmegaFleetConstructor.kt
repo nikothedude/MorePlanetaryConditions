@@ -15,7 +15,7 @@ import org.lazywizard.lazylib.MathUtils
 
 object niko_MPC_derelictOmegaFleetConstructor {
 
-    const val CHANCE_FOR_OMEGA_IN_FLEET = 0.25f
+    const val CHANCE_FOR_OMEGA_IN_FLEET = 0.05f
     const val PERCENT_OF_FP_TO_OMEGA = 0.3f
     const val OMEGA_FP_MULT = 2.3f
     const val MIN_OMEGA_FP = (6f * OMEGA_FP_MULT) // sinstral shard

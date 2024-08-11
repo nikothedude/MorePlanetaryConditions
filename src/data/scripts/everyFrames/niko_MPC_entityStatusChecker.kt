@@ -6,7 +6,7 @@ import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_
 import data.utilities.niko_MPC_miscUtils.isDespawning
 
 class niko_MPC_entityStatusChecker(val handler: niko_MPC_satelliteHandlerCore): niko_MPC_deltaTimeScript() {
-    override val thresholdForAdvancement: Float = 1f
+    override val thresholdForAdvancement: Float = 2f
     override val onlyUseDeltaIfPlayerNotNear = true
 
     override fun startImpl() {

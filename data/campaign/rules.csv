@@ -856,5 +856,28 @@ MPC_DomResearchEnd,DialogOptionSelected,"$option == MPC_DomResearchEnd","Salvage
 FireAll PopulateSalvageOptions2
 $global.MPC_didDomResearchExposition = true",,,
 "#END Domain research station",,,,,,
+,,,,,,
+# Hijacked solar shield,,,,,,
+MPC_HSSExplore,OpenInteractionDialog,"$tag:MPC_magnetarShield_hijacked score:1000","MPC_removeHasInteractionDialog
+ShowDefaultVisual
+MPC_hijackedStellarShieldCMD startMusic
+
+SetTextHighlights ""--they--here, f-the throne, it's---followed the mothership! That DAMN MOTHERsh- *static* I told them we should've made this star---they didn't know we were here so the--goddamn drones!"" ""I don't know what they're doing bu---mothership as a starbase---planet thi as---making MORE! They're making MORE-"" ""If anyone else g-mhole anchor. We---through and close it behind us - we'll only wait a few weeks."" ""---god help us all.""
+
+AddStoryPoints 1
+AddXP 500","While visually untouched (aside from the usual pitting) on the star-facing side, the back hosts what looks to be a high-tech - yet hastily fastened - comms buoy, typically deployed in open space. 
+
+The buoy seems to be transmitting in low-power mode, and only on a very specific frequency, unfamiliar to your crew. Upon tapping in, your computer plays a heavily corrupted and spotty recording of a young woman's voice, laden with panic. 
+
+""--they--here, f-the throne, it's---followed the mothership! That DAMN MOTHERsh- *static* I told them we should've made this star---they didn't know we were here so the--goddamn drones!""
+
+A pause, wherein all you can hear is frantic breathing. ""I don't know what they're doing bu---mothership as a starbase---planet thi as---making MORE! They're making MORE-""
+
+""If anyone else g-mhole anchor. We---through and close it behind us - we'll only wait a few weeks."". A brief pause, in which you can imagine the woman shuddering. ""---god help us all.""
+
+The message then repeats, likely forever - without any listeners. A shiver runs down your spine, and you find yourself gripping your desk harder than usual. You're used to cries for help - even listening to the agonized screams of your crew. But there's something a about a domain officer so panicked, on the verge of tears... 
+
+You shake the thought away. The domain fell, and you rose from the ashes. This will be no different. You close the comm link, save a recording for posterity, and prepare to deactivate the beacon - you'd rather not be snuck up on while sheltering behind the star.","0:MPC_leaveMagnetarBeacon:Disconnect the beacon",
+"#END Hijacked solar shield",,,,,,
 "#END Magnetar",,,,,,
 

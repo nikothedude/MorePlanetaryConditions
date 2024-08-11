@@ -17,7 +17,6 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySp
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager.WormholeItemData
 import com.fs.starfarer.api.impl.campaign.terrain.*
-import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASCENT_WELL_DETECTED_RANGE
 import com.fs.starfarer.api.util.Misc
 import data.coronaResistStationCoreFleetListener
@@ -30,7 +29,6 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
-import org.magiclib.kotlin.addDebrisField
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
 import org.magiclib.kotlin.setDefenderOverride
@@ -178,6 +176,22 @@ object niko_MPC_specialProcGenHandler {
             2f
         ))
 
+        val ringCenter = 5250f
+        system.addRingBand(
+            magnetar,
+            "misc",
+            "rings_dust0",
+            312f,
+            1,
+            Color.white,
+            312f,
+            ringCenter,
+            100f,
+            Terrain.RING,
+            null
+        )
+
+
         /*val planetFive = system.addPlanet(
             "MPC_magnetarSystemPlanetFour",
             magnetar,
@@ -269,6 +283,7 @@ object niko_MPC_specialProcGenHandler {
         system.addCustomEntity("MPC_magnetarShieldFour", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2400f, 90f)
         system.addCustomEntity("MPC_magnetarShieldFive", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 7420f, -90f)
         system.addCustomEntity("MPC_magnetarShieldSix", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2900f, -90f)
+        system.addCustomEntity("MPC_magnetarShield_hijacked", null, "MPC_magnetarShield_hijacked", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), ringCenter, -90f)
 
         // OMEGA CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitWithSpin(magnetar, 250f, 1208f, 365f, -10f, 10f)

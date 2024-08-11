@@ -117,8 +117,8 @@ class MPC_fractalineOptimization {
         }
 
         override fun getWeaponBaseRangeFlatMod(ship: ShipAPI?, weapon: WeaponAPI?): Float {
-            if (weapon == null || weaponsToRangeBuff[weapon] == null) return 0f
-            return weaponsToRangeBuff[weapon]!!
+            if (weapon == null) return 0f
+            return weaponsToRangeBuff[weapon] ?: 0f
         }
     }
 

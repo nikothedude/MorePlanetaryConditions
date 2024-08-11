@@ -9,7 +9,7 @@ class MPC_acceleratedOrdnanceFeeder : BaseShipSystemScript() {
 
     companion object {
         const val ROF_BONUS = 2.5f
-        const val FLUX_REDUCTION = 50f
+        const val FLUX_REDUCTION = 75f
     }
 
     override fun apply(stats: MutableShipStatsAPI, id: String, state: ShipSystemStatsScript.State, effectLevel: Float) {
