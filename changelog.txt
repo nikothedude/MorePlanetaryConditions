@@ -1,4 +1,5 @@
 3.7.0
+SAVE COMPATIBLE
 
 The funny core
     Increased range-matching boost from 250 to 300
