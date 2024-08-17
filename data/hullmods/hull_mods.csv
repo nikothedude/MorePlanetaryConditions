@@ -26,6 +26,7 @@ The internal shield generator has somehow been replaced by a full-size X03, incr
 A second atlas's flux vent-line has been daisy-chained, increasing flux dissipation by %s.
 The retrofitted ATC has been optimized using some sort of gravitic targetting computer, increasing non-missile weapon range by %s.
 Walls have been torn down in order to fit more missiles, increasing missile weapon ammo capacity by %s.
+The engines have been overpowered via auxillary AM injectors, increasing acceleration and deceleration speed by %s.
 
 All these modifications have been made with absolutely zero respect to the structure of the ship. It should be fine under normal operation, but hull integrity is reduced by %s and armor rating reduced by %s.",,,graphics/hullmods/damper_field.png
 ,,,,,,,,,,,,,,,,,,,

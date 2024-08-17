@@ -18,6 +18,7 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.DRIVE_BUBBLE_DESTROYED
 import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
@@ -68,6 +69,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
     override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
         super.init(entity, pluginParams)
 
+        doParamsCheck()
+
         Global.getSector().listenerManager.addListener(this)
 
         val castedParams = getCastedParams()
@@ -96,7 +99,21 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         return
     }
 
+    private fun doParamsCheck() {
+        if (params !is MPC_magnetarPulseParams) {
+            niko_MPC_debugUtils.displayError("wrong param types passed into magnetar pulse, using default, logging info")
+            niko_MPC_debugUtils.log.info("${params.damage}, ${params.color}")
+            params = MPC_magnetarPulseParams(
+                params.where,
+                params.loc,
+                params.radius,
+                params.durationMult
+            )
+        }
+    }
+
     private fun getCastedParams(): MPC_magnetarPulseParams {
+        doParamsCheck()
         return params as MPC_magnetarPulseParams
     }
 
@@ -219,7 +236,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             }
             if (strikeDamage > 0) {
                 val currCR = member.repairTracker.baseCR
-                val crDamage = Math.min(currCR, strikeDamage)
+                val crDamage = currCR.coerceAtMost(strikeDamage)
                 if (crDamage > 0) {
                     member.repairTracker.applyCREvent(
                         -crDamage, "explosion_" + entity.id,

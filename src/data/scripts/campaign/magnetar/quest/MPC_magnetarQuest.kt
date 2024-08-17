@@ -10,10 +10,6 @@ import com.fs.starfarer.api.util.Misc
 
 class MPC_magnetarQuest: BaseIntelPlugin() {
 
-    companion object {
-
-    }
-
     enum class Stage {
         GO_TO_KANTA,
         FIND_SYSTEM,
@@ -39,12 +35,12 @@ class MPC_magnetarQuest: BaseIntelPlugin() {
             )
         } else if (stage == Stage.RETURN_CHAIR){
             info!!.addPara(
-                "You've acquired an ancient chair, and now you must deliver it to kanta for your reward.",
+                "You've acquired an ancient chair, and now you must deliver it to Kanta for your reward.",
                 opad
             )
         } else {
             info!!.addPara(
-                "You've returned the chair PLACEHOLDERRRR",
+                "You've delivered the chair to Kanta.",
                 opad
             )
         }
@@ -64,7 +60,7 @@ class MPC_magnetarQuest: BaseIntelPlugin() {
         if (stage == Stage.GO_TO_KANTA) {
             info.addPara("Go to %s and %s", initPad, h, "kanta's den", "talk to kanta")
         } else if (stage == Stage.FIND_SYSTEM) {
-            info.addPara("Find the system", h, initPad)
+            info.addPara("Find the artifact", h, initPad)
         } else if (stage == Stage.RETURN_CHAIR) {
             info.addPara("Return the chair to %s", initPad, h, "kanta")
         }

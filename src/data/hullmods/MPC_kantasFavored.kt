@@ -24,6 +24,8 @@ class MPC_kantasFavored: BaseHullMod() {
         const val HULL_MULT = 0.6f
         const val ARMOR_MULT = 0.1f
 
+        const val ACCEL_MULT = 3f
+
         const val RANGE_MULT = 1.3f
     }
 
@@ -45,6 +47,9 @@ class MPC_kantasFavored: BaseHullMod() {
 
         stats.hullBonus.modifyMult(id, HULL_MULT)
         stats.armorBonus.modifyMult(id, ARMOR_MULT)
+
+        stats.acceleration.modifyMult(id, ACCEL_MULT)
+        stats.deceleration.modifyMult(id, ACCEL_MULT)
     }
 
     override fun applyEffectsAfterShipCreation(ship: ShipAPI?, id: String?) {
@@ -76,9 +81,12 @@ class MPC_kantasFavored: BaseHullMod() {
                 "" + (abs(1f - MISSILE_AMMO_MULT) * 100f).roundToInt() + "%"
             }
             8 -> {
-                "" + ((1f - HULL_MULT) * 100f).roundToInt() + "%"
+                "" + (abs(1f - ACCEL_MULT) * 100f).roundToInt() + "%"
             }
             9 -> {
+                "" + ((1f - HULL_MULT) * 100f).roundToInt() + "%"
+            }
+            10 -> {
                 "" + ((1f - ARMOR_MULT) * 100f).roundToInt() + "%"
             }
 

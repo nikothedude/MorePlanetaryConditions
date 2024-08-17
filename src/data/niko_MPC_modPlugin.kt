@@ -97,7 +97,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
        /*throw java.lang.RuntimeException(
             "black dwarf: very rare and very very decrepit star, phase after white dwarf" +
             "\nplanetary nebulae, hostile environment with white dwarf/neutron star/blackhole that slowly overheats your fleet (is this fun?)" +
-            "\nmagnetar: TODO"
         )*/
     }
 
@@ -240,23 +239,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         clearInappropiateOvergrownFleetSpawners()
 
         doSpecialProcgen(true)
-    }
-
-    fun generateMesonFields(checkExisting: Boolean = false) { // doing this since i want to start moving away from natural procgen
-      /*  if (checkExisting && getMesonFields().isNotEmpty()) return
-
-        for (system in Global.getSector().starSystems) {
-            if (!system.isProcgen) return
-            for (planet in system.planets) {
-                if (planet.isStar)
-            }
-        }*/
-    }
-
-    private fun getMesonFields(): MutableSet<niko_MPC_mesonField> {
-        val memory = Global.getSector().memoryWithoutUpdate
-        if (memory[mesonFieldGlobalMemoryId] !is MutableSet<*>) memory[mesonFieldGlobalMemoryId] = HashSet<niko_MPC_mesonField>()
-        return memory[mesonFieldGlobalMemoryId] as MutableSet<niko_MPC_mesonField>
     }
 
     private fun clearCoreWorldsOfInappropiateConditions() {

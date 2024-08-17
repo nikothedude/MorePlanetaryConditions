@@ -22,7 +22,7 @@ class niko_MPC_satelliteEventListener(permaRegister: Boolean) : BaseCampaignEven
      * @param primaryWinner The "primary" fleet of the side that won. This is NOT the combined fleet.
      * @param battle The battle to check.
      */
-    override fun reportBattleFinished(primaryWinner: CampaignFleetAPI, battle: BattleAPI) { //fixme: doesnt fire on player battle end
+    override fun reportBattleFinished(primaryWinner: CampaignFleetAPI, battle: BattleAPI) { // doesnt fire on player battle end
         super.reportBattleFinished(primaryWinner, battle)
 
         val tracker = getSatelliteBattleTracker() ?: return

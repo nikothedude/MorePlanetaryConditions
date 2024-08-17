@@ -15,6 +15,7 @@ class MPC_transcendantConciousness {
         const val UPKEEP_MULT = 0.5f
         const val SHIP_PRODUCTION_QUALITY_MOD = 0.25f
         const val ACCESSABILITY_BONUS = 0.20f
+        const val NUM_INDUSTRIES_INCREASE = 1f
     }
 
     class Level1 : MarketSkillEffect {
@@ -98,6 +99,28 @@ class MPC_transcendantConciousness {
 
         override fun getEffectDescription(level: Float): String {
             return "+${(ACCESSABILITY_BONUS * 100).toInt()}% accessability"
+        }
+
+        override fun getEffectPerLevelDescription(): String? {
+            return null
+        }
+
+        override fun getScopeDescription(): ScopeDescription {
+            return ScopeDescription.GOVERNED_OUTPOST
+        }
+    }
+
+    class Level5: MarketSkillEffect {
+        override fun apply(market: MarketAPI, id: String, level: Float) {
+            market.stats.dynamic.getMod(Stats.MAX_INDUSTRIES).modifyFlat(id, NUM_INDUSTRIES_INCREASE, "Transcendent Consciousness")
+        }
+
+        override fun unapply(market: MarketAPI, id: String) {
+            market.stats.dynamic.getMod(Stats.MAX_INDUSTRIES).unmodify(id)
+        }
+
+        override fun getEffectDescription(level: Float): String {
+            return "+${NUM_INDUSTRIES_INCREASE.toInt()} max industries"
         }
 
         override fun getEffectPerLevelDescription(): String? {

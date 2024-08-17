@@ -13,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
+import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -46,7 +47,7 @@ class niko_MPC_magnetarStarScript(
             fleet.memoryWithoutUpdate.set(niko_MPC_ids.BLIND_JUMPING, true, 2f)
 
             for (member in fleet.fleetData.membersListCopy) {
-                member.status.applyDamage(9999999f) // very high
+                member.status.applyDamage(9999999f) // very high, high enough to kill your fleet if you run into it twice
                 member.repairTracker.cr = 0f
             }
 
@@ -291,6 +292,7 @@ class niko_MPC_magnetarStarScript(
         val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
         guardian.repairTracker.cr = guardian.repairTracker.maxCR
         guardian.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+        integrateAndAdaptCoreForAIFleet(guardian)
 
         val variant = guardian.variant.clone()
         variant.addPermaMod("niko_MPC_subsumedIntelligence")
@@ -312,11 +314,12 @@ class niko_MPC_magnetarStarScript(
     }
 
     fun createOmegaMothershipDefenders(): CampaignFleetAPI {
-        val fleetPoints = 170f // the mothership is very powerful, so add like 50 dp to this mentally
+        val fleetPoints = 210f // the mothership is very powerful, so add like 50 dp to this mentally
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
         val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
         mothership.repairTracker.cr = mothership.repairTracker.maxCR
         mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+        integrateAndAdaptCoreForAIFleet(mothership)
 
         defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()

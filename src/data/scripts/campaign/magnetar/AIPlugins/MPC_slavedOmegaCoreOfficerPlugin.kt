@@ -43,7 +43,7 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
 
         // assume it's not going to be integrated, no reason to do it - same as assuming it's always integrated
         person.portraitSprite = "graphics/portraits/characters/omega.png"
-        person.stats.level = 10
+        person.stats.level = 10 // normal omega is 9
         person.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
         person.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)
        // person.stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
@@ -72,6 +72,7 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
         person.postId = null
 
         person.stats.isSkipRefresh = false
+        person.memoryWithoutUpdate["\$chatterChar"] = "MPC_slavedOmegaCore"
 
         return person
     }

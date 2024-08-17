@@ -12,6 +12,7 @@
 				{"type":"GOVERNED_OUTPOST", "script":"data.scripts.campaign.skills.MPC_transcendantConciousness$Level2"},
 				{"type":"GOVERNED_OUTPOST", "script":"data.scripts.campaign.skills.MPC_transcendantConciousness$Level3"},
 				{"type":"GOVERNED_OUTPOST", "script":"data.scripts.campaign.skills.MPC_transcendantConciousness$Level4"},
+				{"type":"GOVERNED_OUTPOST", "script":"data.scripts.campaign.skills.MPC_transcendantConciousness$Level5"},
 			]
 		},
 	],

@@ -1,3 +1,25 @@
+3.7.0
+
+The funny core
+    Increased range-matching boost from 250 to 300
+    Gave it a special combat chatter personality
+    New colony skill: +1 max industry
+Magnetar defenders
+   Captains are now of the appropriate level
+   Reduced autofit randomization chance
+   AI cores now fully integrated
+
+   Omega ships now take more points from the fleet they generated in
+
+   Mothership defenders now have more ships
+   Mothership now has an extra missile wing
+   Reasioning: Destroying the mothership removes the fleet spawns, making it a lot easier to traverse the system
+
+Fixed a bug where magnetar pulses would get the wrong params and cause a save load crash
+Renamed the magnetar quest stages so it tells you to find the artifact rather than the system
+
+Kanta atlas mk2 now has 300% accel/decel speed
+
 3.6.0:
 SAVE COMPATIBLE
 

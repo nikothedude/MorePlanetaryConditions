@@ -16,9 +16,10 @@ import org.lazywizard.lazylib.MathUtils
 object niko_MPC_derelictOmegaFleetConstructor {
 
     const val CHANCE_FOR_OMEGA_IN_FLEET = 0.05f
-    const val PERCENT_OF_FP_TO_OMEGA = 0.3f
-    const val OMEGA_FP_MULT = 2.3f
-    const val MIN_OMEGA_FP = (6f * OMEGA_FP_MULT) // sinstral shard
+    const val PERCENT_OF_FP_TO_OMEGA = 0.49f
+    /** The approximate FP, from base, an omega ship "really" has. */
+    const val OMEGA_FP_MULT = 2f
+    const val MIN_OMEGA_FP = (6f) // sinstral shard
 
     fun setupFleet(fleet: CampaignFleetAPI): CampaignFleetAPI {
         fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] = true
@@ -54,10 +55,14 @@ object niko_MPC_derelictOmegaFleetConstructor {
         var derelictPoints = fleetPoints
         val tryOmega = (MathUtils.getRandom().nextFloat() <= omegaChance)
         if (tryOmega) {
-            var omegaBudget = (derelictPoints * PERCENT_OF_FP_TO_OMEGA) * OMEGA_FP_MULT
+
+            // step 1: get a % of the base budget in omegaBudget
+            // step 4: multiply omegaBudget against a inverted OMEGA_FP_MULT because otherwise we get a buncha tesseracts and stuff
+            // (reduces the amount of omega FP to reflect the actual strength of omega - e.g. a sinstral shard is actually around 12 FP or smthn)
+            var omegaBudget = (derelictPoints * PERCENT_OF_FP_TO_OMEGA)
+            omegaBudget /= OMEGA_FP_MULT
             if (omegaBudget > MIN_OMEGA_FP)  {
-                derelictPoints -= omegaBudget
-                omegaBudget /= OMEGA_FP_MULT
+                derelictPoints *= (PERCENT_OF_FP_TO_OMEGA)
 
                 omegaParams = createOmegaParams(omegaBudget, source)
                 omegaFleet = createOmegaFleet(omegaParams)
@@ -76,10 +81,10 @@ object niko_MPC_derelictOmegaFleetConstructor {
         if (bestShip != null) {
             val captain = bestShip.captain
             derelictFleet.commander = captain
-            captain.setRankId(Ranks.SPACE_COMMANDER)
-            captain.setPostId(Ranks.POST_FLEET_COMMANDER)
-            derelictFleet.setCommander(captain)
-            derelictFleet.getFleetData().setFlagship(bestShip)
+            captain.rankId = Ranks.SPACE_COMMANDER
+            captain.postId = Ranks.POST_FLEET_COMMANDER
+            derelictFleet.commander = captain
+            derelictFleet.fleetData.setFlagship(bestShip)
             OmegaOfficerGeneratorPlugin.addCommanderSkills(captain, derelictFleet, omegaParams, 2, MathUtils.getRandom())
         }
         derelictFleet.fleetData.sort()
@@ -118,6 +123,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
             0f,  // utilityPts
             0f // qualityMod
         )
+        params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_OMEGA
 
         return params
     }

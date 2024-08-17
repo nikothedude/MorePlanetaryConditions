@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="CombatChatter">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Combat Chatter/jars/CombatChatter.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../Combat Chatter/jars/CombatChatter.jar!/" />
+    </SOURCES>
+  </library>
+</component>

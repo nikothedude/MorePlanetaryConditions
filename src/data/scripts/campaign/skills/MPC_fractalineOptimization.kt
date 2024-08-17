@@ -15,7 +15,7 @@ class MPC_fractalineOptimization {
     companion object {
         const val TIMEFLOW_PERCENT = 10f
 
-        const val RANGE_MATCH_INCREASE = 250f
+        const val RANGE_MATCH_INCREASE = 300f
     }
 
     class Level1: ShipSkillEffect {

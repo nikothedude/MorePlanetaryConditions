@@ -1,0 +1,84 @@
+{
+	"name":"Tactical AI",
+	"personalities":["cautious","steady","aggressive"],
+	"gender":["m","f","n"],
+	"chance":1,
+	"talkativeness":1,
+	"categoryTags":["MPC", "special"],
+	
+	"lines":{
+		"start":[
+			{"text":"entry vector 0.0 burn active"},
+			{"text":"burn engines full"},
+			{"text":"ini commlink allies positive"},
+			{"text":"fwd scan maximal sweep"}
+		],
+		"start_boss":[
+			{"text":"tacanal negative outlook"},
+			{"text":"req new stratplan facing hvt"},
+		],
+		"retreat":[
+			{"text":"reverse burn full"},
+			{"text":"set nav y-coord 0"},
+			{"text":"init retreat stratplan"}
+		],
+		"out_of_missiles":[
+			{"text":"ord empty"},
+			{"text":"missile int zero"}
+		],
+		"engaged":[
+			{"text":"lock wpns vector 102.3"},
+			{"text":"good lock fire fire fire"},
+			{"text":"micro-fluc in shieldgrid at zero vector"},
+			{"text":"fire fire fire"},
+			{"text":"avoid impact burn"},
+		],
+		"need_help":[
+			{"text":"tacplan negative req assets"},
+			{"text":"activate ripcord assist"}
+		],
+		"pursuing":[
+			{"text":"burn engines to trgt"},
+			{"text":"counter tacplan return with pursuit"},
+			{"text":"trgt exiting range burning"}
+		],
+		"running":[
+			{"text":"invert engine power"},
+			{"text":"dngr threshold passed return"},
+		],
+		"hull_90":[
+			{"text":"log impact event"},
+			{"text":"register hull damage"},
+			{"text":"seal airlock a23"},
+		],
+		"hull_50":[
+			{"text":"prevent depressurization block b-deck"},
+			{"text":"prevent electrodischarge activate breakers 2bbc-294d"},
+			{"text":"subsidize damage control areas 252-92c"}
+		],
+		"hull_30":[
+			{"text":"activate core shielding ready for eject"},
+			{"text":"repair repair repair integrity low"},
+			{"text":"seal blast doors"}
+		],
+		"overload":[
+			{"text":"shunt flux breakers"},
+			{"text":"flux management failure"},
+			{"text":"core overload request assets"}
+		],
+		"death":[
+			{"text":"eject core"},
+			{"text":"logging failure for review"},
+			{"text":"shunt power to core minimize damag-"},
+		],
+		"victory":[
+			{"text":"tacplan success confirmed"},
+			{"text":"logging victory for review"},
+			{"text":"max fwd scanners find remnants"},
+		],
+		"victory_boss":[
+			{"text":"hvt elimination confirmed"},
+			{"text":"cool flux systems disable conduits"},
+		],
+	}
+}
