@@ -81,12 +81,9 @@ class MPC_kantasFavored: BaseHullMod() {
                 "" + (abs(1f - MISSILE_AMMO_MULT) * 100f).roundToInt() + "%"
             }
             8 -> {
-                "" + (abs(1f - ACCEL_MULT) * 100f).roundToInt() + "%"
-            }
-            9 -> {
                 "" + ((1f - HULL_MULT) * 100f).roundToInt() + "%"
             }
-            10 -> {
+            9 -> {
                 "" + ((1f - ARMOR_MULT) * 100f).roundToInt() + "%"
             }
 

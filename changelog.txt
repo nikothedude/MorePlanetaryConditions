@@ -1,3 +1,13 @@
+3.7.1
+SAVE COMPATIBLE
+
+Fixes a crash with the warlords warship hullmod (WHY CANT YOU EXCEED 9 HIGHLIGHTS???)
+Stellar shields now clarify that you can click on them to automatically shelter behind them
+Clarifies how the pulse blocking works in the magnetar intel
+Clarifies how the astronomical barrier projector works
+
+Fixed a bug where the astronomical barrier projector would say you have too many baryon emitters and still let you build
+
 3.7.0
 SAVE COMPATIBLE
 

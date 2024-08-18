@@ -63,8 +63,13 @@ MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-s
 
 The astute starship captain will heed well its warning... if it still has one to give.",,,
 ,,,,,
-MPC_magnetarShield,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.",,,
+MPC_magnetarShield,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.
+
+Your fleet's autonav can automatically position your fleet in the optimal shelter position - you just need to set a course.",,,
+,,,,,
 MPC_magnetarShield_hijacked,CUSTOM,"Little more than a slab of metal with stabilizing boosters attached, it appears to have been placed here to provide mobile cover for fleets operating in this system. Hiding behind it should shield you from the magnetar's pulses.
+
+Your fleet's autonav can automatically position your fleet in the optimal shelter position - you just need to set a course.
 
 Your fleet's scanners pick up the faintest of comm pings from the object. A closer inspection is necessary to pick apart the fragmented data.",,,
 ,,,,,

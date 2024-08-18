@@ -3,8 +3,10 @@ package data.scripts.campaign.econ.industries
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CargoAPI
 import com.fs.starfarer.api.campaign.SpecialItemData
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_coronaResistScript
 import data.scripts.campaign.MPC_coronaResistStructureScript
@@ -52,7 +54,7 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
         if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
             return "Blueprint unknown"
         }
-        if (interferenceDetected()) {
+        if (MPC_coronaResistScript.getScriptsInLocation(market.containingLocation).size > 1) {
             return "Maximum of one baryon emitter per star system"
         }
         return super.getUnavailableReason()

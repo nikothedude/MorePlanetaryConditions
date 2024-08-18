@@ -86,7 +86,7 @@ open class MPC_coronaResistScript(
             return getScriptsInLocation(location).isNotEmpty()
         }
 
-        private fun getScriptsInLocation(location: LocationAPI): MutableSet<MPC_coronaResistScript> {
+        fun getScriptsInLocation(location: LocationAPI): MutableSet<MPC_coronaResistScript> {
             val scripts = HashSet<MPC_coronaResistScript>()
 
             for (iterMarket in Misc.getMarketsInLocation(location)) {
