@@ -1,3 +1,7 @@
+3.8.0
+
+Added a lunalib setting for disabling the generation of the magnetar system
+
 3.7.1
 SAVE COMPATIBLE
 

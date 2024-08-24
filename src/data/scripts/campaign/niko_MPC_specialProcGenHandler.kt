@@ -52,6 +52,7 @@ object niko_MPC_specialProcGenHandler {
     }
 
     private fun generateMagnetar() {
+        if (niko_MPC_settings.MAGNETAR_DISABLED) return
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] != null) return
 
         val sysName = "Perseus NM 2231+9CB"

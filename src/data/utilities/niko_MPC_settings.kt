@@ -17,6 +17,7 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    var MAGNETAR_DISABLED = false
     const val OMAN_BOMBARD_COST = 200
     /** If true, fleets in the magnetar system can drop omega weapons. */
     var MAGNETAR_DROP_OMEGA_WEAPONS = false
@@ -111,6 +112,7 @@ object niko_MPC_settings {
         DERELICT_ESCORT_SPAWN_ON_PATROLS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSpawnOnPatrols")!!
 
         MAGNETAR_DROP_OMEGA_WEAPONS = LunaSettings.getBoolean(modId, "MPC_magnetarDropOmegaWeapons")!!
+        MAGNETAR_DISABLED = LunaSettings.getBoolean(modId, "MPC_disableMagnetar")!!
 
         overgrownNanoforgeCommodityDataStore.reload()
     }

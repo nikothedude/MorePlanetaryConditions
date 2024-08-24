@@ -31,4 +31,5 @@ MPC_satelliteBarrageDamage,Satellite barrage base damage,Double,2.0,,"While sate
 MPC_satelliteBarrageDuration,Satellite barrage duration (In turns),Int,3,,Ensure the ability entry in groundBattleDefs.json has its cooldown match or exceed this value.,0,50,Nexerelin
 MPC_satelliteBarrageDisruptTime,Satellite barrage base disruption time (Days),Int,9,,"While satellite barrage is active, the target industry is disrupted this much per turn (even if held by friendlies).",0,365,Nexerelin
 ,,,,,,,,
+MPC_disableMagnetar,Disable magnetar,Boolean,false,,"If enabled, the magnetar system will not generate. Only affects generation.",,,Exploration
 MPC_magnetarDropOmegaWeapons,Drop omega weapons from battle in magnetar system,Boolean,false,,Reccommended to be set to false - omega weapon availability is intentionally limited.,,,Exploration
