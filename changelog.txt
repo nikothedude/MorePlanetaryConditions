@@ -1,6 +1,7 @@
 3.8.0
 
 Added a lunalib setting for disabling the generation of the magnetar system
+Fixed a bug where slaved omega cores would crash the game if applied to a market with upkeep-less industries
 
 3.7.1
 SAVE COMPATIBLE
