@@ -20,6 +20,7 @@ import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.scripts.campaign.intel.baseNikoIntelPlugin
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES
 import data.utilities.niko_MPC_ids.INTEL_OVERGROWN_NANOFORGES_MARKET
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_MULT
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_DISCOUNT_THRESHOLD
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_SUPPRESSION_EXTRA_COST_MULT
@@ -466,7 +467,11 @@ abstract class baseOvergrownNanoforgeIntel(
 
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
         val tags = super.getIntelTags(map)
-        tags += INTEL_OVERGROWN_NANOFORGES_MARKET + getMarket().name
+        if (niko_MPC_settings.CONDENSE_OVERGROWN_NANOFORGE_INTEL) {
+            tags += INTEL_OVERGROWN_NANOFORGES
+        } else {
+            tags += INTEL_OVERGROWN_NANOFORGES_MARKET + getMarket().name
+        }
         return tags
     }
 

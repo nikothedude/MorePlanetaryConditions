@@ -1,3 +1,7 @@
+3.9.0
+
+Added a lunalib setting for condensing all overgrown nanoforge intel into one tab
+
 3.8.0
 
 Added a lunalib setting for disabling the generation of the magnetar system

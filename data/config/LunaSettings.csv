@@ -21,6 +21,7 @@ MPC_nanoforgeBudgetMultMin,Budget minimum mult,Double,0.8,,"The higher the budge
 MPC_nanoforgeBudgetMultMax,Budget maximum mult,Double,1.2,,,,,Conditions
 MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts (Days),Int,30,,,,,Conditions
 MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts (Days),Int,90,,,,,Conditions
+MPC_condenseOvergrownNanoforgeIntel,Puts all overgrown nanoforge into one intel tab,Boolean,false,,,,,Conditions
 ,,,,,,,,
 MPC_derelictEscortHeader,Derelict Escort Config,Header,Derelict Escort Config,,,,,Conditions
 MPC_derelictEscortSimulateFleets,Force simulation of escorted fleets,Boolean,true,,"If true, escorted fleets will be forcefully spawned (contrary to usual behavior where they are despawned if you are far away to save performance). Disabling will improve performance, but will make escorts return home if the fleet gets too far away from the player.",,,Conditions
