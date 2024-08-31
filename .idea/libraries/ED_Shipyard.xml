@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="ED Shipyard">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../ED Shipyard/jars/EDShipyard.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../ED Shipyard" />
+    </SOURCES>
+  </library>
+</component>
