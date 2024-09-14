@@ -38,7 +38,6 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         }
 
         industry.upkeep.unmodifyFlat(id)
-        industry.upkeep.modifyMultAlways(id, getUpkeepMult(), getDesc(industry))
         industry.upkeep.modifyFlatAlways(id, getUpkeepIncrement(), getDesc(industry))
     }
 
@@ -51,14 +50,12 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
 
             supply.quantity.unmodifyFlat(id)
             supply.quantity.modifyMultAlways(id, getSupplyMult(), desc)
-            supply.quantity.modifyFlatAlways(id, getSupplyIncrement(), desc)
 
         }
 
         for (demand in industry.allDemand) {
             demand.quantity.unmodifyFlat(id)
             demand.quantity.modifyMultAlways(id, getDemandMult(), desc)
-            demand.quantity.modifyFlatAlways(id, getDemandIncrement(), desc)
         }
     }
 
@@ -77,16 +74,8 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         return 2.5f
     }
 
-    private fun getSupplyIncrement(): Float {
-        return 1f
-    }
-
     private fun getDemandMult(): Float {
         return 1.5f
-    }
-
-    private fun getDemandIncrement(): Float {
-        return 1f
     }
 
     companion object {
@@ -96,10 +85,6 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
                 commodity == Commodities.ORGANS) return false
             return true
         }
-    }
-
-    private fun getUpkeepMult(): Float {
-        return 1.5f
     }
 
     private fun getUpkeepIncrement(): Float {
@@ -193,14 +178,13 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     ) {
         if (text == null) return
         val description = pre + "Increases all supply on installed industries by %s and %s, and all demand by " +
-                "%s and %s, increases upkeep by %s and %s." +
+                "%s, increases upkeep by %s." +
                 "If installed in a heavy industry, increases production capacity by %s and %s." +
                 "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s. " +
                 "On habitable worlds, causes pollution which becomes permanent."
         text.addPara(description, pad, Misc.getHighlightColor(),
-            "${getSupplyMult()}x", "+${getSupplyIncrement()}", "x${getDemandMult()}", "+${getDemandIncrement()}",
-        "${getUpkeepMult()}x", "+${getUpkeepIncrement()}", "${getShipProductionMult()}x", "$shipProductionBaseIncrement * Market Size",
-        "${getShipSizeMult()}x", "${getProductionQualityMult()}x")
+            "${getSupplyMult()}x", "x${getDemandMult()}", "+${getUpkeepIncrement().toInt()}", "${getShipProductionMult()}x",
+            "${shipProductionBaseIncrement.toInt()} * Market Size", "${getShipSizeMult()}x", "${getProductionQualityMult()}x")
     }
 
     private fun getName(): String {
