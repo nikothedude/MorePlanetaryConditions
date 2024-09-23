@@ -30,5 +30,11 @@
 		"niko_MPC_ecmOptionModThreshTwo":0,
 		"niko_MPC_ecmOptionModThreshThree":0,
 		"niko_MPC_ecmOptionModThreshFour":0,
-	}
+	},
+
+	 "designTypeColors":{
+		 "Kanta's Favored":[200,0,0,255],
+		 "Domain Forbidden":[155,155,155,255],
+
+	 }
  }

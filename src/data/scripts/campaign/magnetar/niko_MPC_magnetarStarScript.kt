@@ -307,7 +307,7 @@ class niko_MPC_magnetarStarScript(
         variant.source = VariantSource.REFIT
         guardian.setVariant(variant, false, true)
 
-        defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
+        //defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()
 
         return defenderFleet
@@ -321,7 +321,7 @@ class niko_MPC_magnetarStarScript(
         mothership.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
         integrateAndAdaptCoreForAIFleet(mothership)
 
-        defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
+        //defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()
 
         return defenderFleet

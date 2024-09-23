@@ -13,6 +13,7 @@ import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
 import data.utilities.niko_MPC_marketUtils.getOvergrownJunk
 import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT
@@ -127,6 +128,7 @@ class overgrownNanoforgePrepareGrowthFactor(
             if (!OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED) return 0
         }
         if (!industryHandler.market.isInhabited()) adjustedProgress *= OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT
+        adjustedProgress *= niko_MPC_settings.OVERGROWN_NANOFORGE_SPEED_MULT
 
         return adjustedProgress.roundToInt()
     }
@@ -141,8 +143,9 @@ class overgrownNanoforgePrepareGrowthFactor(
                 if (tooltip == null) return
                 val opad = 10f
 
-                val stringToAdd = "The Overgrown Nanoforge on ${getMarket().name} is preparing for a growth at a rate of ${getProgress(overgrownIntel)} per month."
-                tooltip.addPara(stringToAdd, opad)
+                val rate = "${getProgress(overgrownIntel)}"
+                val stringToAdd = "The Overgrown Nanoforge on ${getMarket().name} is preparing for a growth at a rate of %s per month."
+                tooltip.addPara(stringToAdd, opad, Misc.getNegativeHighlightColor(), rate)
             }
         }
     }

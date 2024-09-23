@@ -34,6 +34,9 @@ object niko_MPC_settings {
 
     var CONDENSE_OVERGROWN_NANOFORGE_INTEL = false
 
+    /** All spreading speed and countermeasures speed is multiplied against this. */
+    var OVERGROWN_NANOFORGE_SPEED_MULT = 0.7f
+
     const val OVERGROWN_NANOFORGE_INDUSTRY_NAME = "Overgrown Nanoforge"
     const val OVERGROWN_NANOFORGE_JUNK_NAME = "Nanoforge Growth"
 
@@ -110,6 +113,7 @@ object niko_MPC_settings {
         OVERGROWN_NANOFORGE_MIN_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMinTimeBetweenSpreads")!!
         OVERGROWN_NANOFORGE_MAX_TIME_BETWEEN_SPREADS = LunaSettings.getInt(modId, "MPC_nanoforgeMaxTimeBetweenSpreads")!!
         CONDENSE_OVERGROWN_NANOFORGE_INTEL = LunaSettings.getBoolean(modId, "MPC_condenseOvergrownNanoforgeIntel")!!
+        OVERGROWN_NANOFORGE_SPEED_MULT = LunaSettings.getFloat(modId, "MPC_nanoforgeSpeedMult")!!
 
         DERELICT_ESCORT_SIMULATE_FLEETS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSimulateFleets")!!
         DERELICT_ESCORT_SPAWN_ON_PATROLS = LunaSettings.getBoolean(modId, "MPC_derelictEscortSpawnOnPatrols")!!

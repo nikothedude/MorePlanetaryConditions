@@ -6,11 +6,13 @@ import com.fs.starfarer.api.input.InputEventClass
 import com.fs.starfarer.api.input.InputEventType
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeSpreadingBrain
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
 import data.scripts.campaign.intel.baseNikoEventStageInterface
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_settings
 import lunalib.lunaExtensions.addLunaToggleButton
 import lunalib.lunaUI.elements.LunaProgressBar
@@ -27,6 +29,18 @@ class overgrownNanoforgeIndustryManipulationIntel(
             if (oldField != field) {
                 updateExposed()
             }
+        }
+
+    var considerExposed: Boolean = false
+        get() {
+            if (niko_MPC_modPlugin.currVersion != "3.10.0") {
+                niko_MPC_debugUtils.log.warn("unneeded sanity check in considerExposed get, please remove")
+                return field
+            }
+            if (field == null) {
+                field = false
+            }
+            return field
         }
 
     fun updateExposed() {
@@ -50,9 +64,11 @@ class overgrownNanoforgeIndustryManipulationIntel(
     override fun addMiddleDescriptionText(info: TooltipMakerAPI, width: Float, stageId: Any?) {
         super.addMiddleDescriptionText(info, width, stageId)
         val overallSuppressionMeter = overallManipulationMeter?.get() ?: return
+        considerExposed = false
         if (playerCanManipulateGrowth()) {
             addFocusButton(info, overallSuppressionMeter)
         }
+        considerExposed = true
     }
 
     fun addFocusButton(info: TooltipMakerAPI, overallSuppressionMeter: LunaProgressBar) {
@@ -69,7 +85,7 @@ class overgrownNanoforgeIndustryManipulationIntel(
     }
 
     override fun playerCanManipulateGrowth(): Boolean {
-        return (exposed && super.playerCanManipulateGrowth())
+        return ((!considerExposed || (exposed)) && super.playerCanManipulateGrowth())
     }
 
     override fun getCantInteractWithInputReasons(): MutableSet<String> {

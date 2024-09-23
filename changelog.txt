@@ -1,3 +1,25 @@
+3.10.0
+NOT SAVE COMPATIBLE IF YOU HAVE A OVERGROWN NANOFORGE ITEM - DELETE IT AND READD IT TO UPDATE
+
+Fixes a bug where the Kanta onslaught and atlas could be obtained through arms dealers
+Condensed overgrown nanoforge "installed in" into one word
+
+Design types now have proper colors
+
+Overgrown nanoforge rebalanced
+    Item
+        All modifiers are now either flat or a mult, no inbetween
+            Except the production budget mod
+        Fleet size mult is now 3x, down from 5x
+            Same for production budget mult
+        Upkeep reduced
+        Now increases market hazard rating
+    Condition
+        Spreading, culling, etc. now 30% slower
+            If you want that item, you have to work for it
+
+Fixed a bug where the overgrown nanoforge focus button didnt appear
+
 3.9.0
 
 Added a lunalib setting for condensing all overgrown nanoforge intel into one tab

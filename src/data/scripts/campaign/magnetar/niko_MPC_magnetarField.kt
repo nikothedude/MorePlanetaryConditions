@@ -371,12 +371,16 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         return Misc.interpolateColor(base, special, Global.getSector().campaignUI.sharedFader.brightness * 1f)
     }
 
-    override fun hasAIFlag(flag: Any): Boolean {
-        return super.hasAIFlag(flag) ||
-                //flag === TerrainAIFlags.CR_DRAIN || // sadly, this makes defender fleets act badly
+    override fun hasAIFlag(flag: Any?, fleet: CampaignFleetAPI?): Boolean {
+
+        return super.hasAIFlag(flag)
+                ||
+                (fleet != null &&
+                fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] != true &&
+                (flag === TerrainAIFlags.CR_DRAIN || flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE)
+                ) ||
                 flag === TerrainAIFlags.BREAK_OTHER_ORBITS ||
                 flag === TerrainAIFlags.MOVES_FLEETS
-                //flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE
     }
 
     override fun onScanned(

@@ -8,14 +8,16 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.ba
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.baseOvergrownNanoforgeManipulationIntel
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeGrowthIntel
 import data.utilities.niko_MPC_marketUtils.exceedsMaxStructures
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_PROGRESS_WHILE_UNDISCOVERED
 import java.awt.Color
+import kotlin.math.roundToInt
 
 class overgrownNanoforgeIntelFactorStructureRegeneration(
     override val overgrownIntel: baseOvergrownNanoforgeManipulationIntel
 ): baseOvergrownNanoforgeEventFactor(overgrownIntel) {
     override fun getProgress(intel: BaseEventIntel?): Int {
-        return overgrownIntel.ourHandler.cullingResistanceRegeneration
+        return (overgrownIntel.ourHandler.cullingResistanceRegeneration * niko_MPC_settings.OVERGROWN_NANOFORGE_SPEED_MULT).roundToInt()
     }
 
     override fun getDesc(intel: BaseEventIntel?): String {
@@ -31,10 +33,11 @@ class overgrownNanoforgeIntelFactorStructureRegeneration(
             override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
                 if (tooltip == null) return
                 val opad = 10f
+                val progress = "${getProgress(overgrownIntel)}"
 
                 val stringToAdd = "The ${getNanoforgeName()} on ${getMarket().name} is ${overgrownIntel.getSpreadingAdjective()} " +
-                        "at a rate of ${getProgress(overgrownIntel)} per month."
-                tooltip.addPara(stringToAdd, opad)
+                        "at a rate of %s per month."
+                tooltip.addPara(stringToAdd, opad, Misc.getNegativeHighlightColor(), progress)
             }
         }
     }
@@ -92,7 +95,7 @@ open class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOver
     override fun getProgress(intel: BaseEventIntel?): Int {
         val initial = overgrownIntel.getOverallCullingStrength(getMarket())
         val initialTwo = -(overgrownIntel.localGrowthManipulationPercent/100f)
-        val result = initial * initialTwo
+        val result = (initial * initialTwo) * niko_MPC_settings.OVERGROWN_NANOFORGE_SPEED_MULT
         return result.toInt()
     }
 
@@ -119,11 +122,12 @@ open class overgrownNanoforgeIntelFactorCountermeasures(overgrownIntel: baseOver
                 if (tooltip == null) return
                 val opad = 10f
 
+                val strengthPercent = "${getUsedStrengthPercent()}%"
                 val stringToAdd =
-                    "${getMarket().name}'s government is currently using ${getUsedStrengthPercent()}% of its" +
+                    "${getMarket().name}'s government is currently using %s of its" +
                             " culling strength towards ${cullingOrCultivating()} the ${overgrownIntel.brain.industryNanoforge.getCurrentName()}'s growth."
 
-                tooltip.addPara(stringToAdd, opad)
+                tooltip.addPara(stringToAdd, opad, Misc.getHighlightColor(), strengthPercent)
             }
         }
     }

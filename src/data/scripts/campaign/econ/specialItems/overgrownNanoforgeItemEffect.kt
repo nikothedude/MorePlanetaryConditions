@@ -38,7 +38,8 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         }
 
         industry.upkeep.unmodifyFlat(id)
-        industry.upkeep.modifyFlatAlways(id, getUpkeepIncrement(), getDesc(industry))
+        industry.upkeep.modifyFlatAlways(id, getUpkeepIncrement(), getName())
+        industry.market?.hazard?.modifyFlat(id, getHazardIncrement(), getDesc(industry))
     }
 
     private fun increaseSupplyAndDemand(industry: Industry) {
@@ -78,6 +79,10 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         return 1.5f
     }
 
+    private fun getHazardIncrement(): Float {
+        return 0.15f
+    }
+
     companion object {
         fun supplyIsValidToAlter(commodity: String): Boolean {
             if (commodity == Commodities.CREW ||
@@ -88,7 +93,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun getUpkeepIncrement(): Float {
-        return 750f
+        return 250f
     }
 
     private fun modifyShipProduction(industry: Industry) {
@@ -132,11 +137,11 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun getShipProductionMult(): Float {
-        return 5f
+        return getShipSizeMult()
     }
 
     private fun getShipSizeMult(): Float {
-        return 4f
+        return 3f
     }
 
     val shipProductionBaseIncrement = 1000f
@@ -164,6 +169,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
             resetFleetSize(factionMarket)
             factionMarket.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
         }
+        industry.market?.hazard?.unmodify(id)
         fleetSizeRemover.delete()
 
     }
@@ -177,14 +183,21 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         mode: InstallableIndustryItemPlugin.InstallableItemDescriptionMode?, pre: String?, pad: Float
     ) {
         if (text == null) return
-        val description = pre + "Increases all supply on installed industries by %s and %s, and all demand by " +
-                "%s, increases upkeep by %s." +
-                "If installed in a heavy industry, increases production capacity by %s and %s." +
-                "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s. " +
+        val description = pre + "Increases all supply on installed industries by %s, all demand by " +
+                "%s, and increases upkeep by %s per month. Also increases hazard rating of the market by %s.\n" +
+                "\n" +
+                "If installed in a heavy industry, increases production capacity by %s and %s. " +
+                "If said heavy industry is the primary ship producer of it's faction, increases faction-wide fleet size by %s, but decreases ship quality by %s. \n" +
+                "\n" +
                 "On habitable worlds, causes pollution which becomes permanent."
-        text.addPara(description, pad, Misc.getHighlightColor(),
-            "${getSupplyMult()}x", "x${getDemandMult()}", "+${getUpkeepIncrement().toInt()}", "${getShipProductionMult()}x",
-            "${shipProductionBaseIncrement.toInt()} * Market Size", "${getShipSizeMult()}x", "${getProductionQualityMult()}x")
+        val para = text.addPara(description, pad, Misc.getHighlightColor(),
+            "${getSupplyMult()}x", "${getDemandMult()}x", "${getUpkeepIncrement().toInt()} credits", "${(getHazardIncrement() * 100f).toInt()}%",
+
+            "${getShipProductionMult()}x", "${shipProductionBaseIncrement.toInt()} * Market Size", "${getShipSizeMult()}x",
+            "${(1 - getProductionQualityMult()) * 100f}%")
+
+        para.setHighlightColors(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(),
+            Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
     }
 
     private fun getName(): String {

@@ -49,8 +49,6 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         // helps escorts keep up with their escortees even in hyperspace
         const val ESCORT_FLEET_MAX_BURN_MULT = 5f
 
-        const val HAZARD_RATING_INCREMENT = 0.25f
-
         const val INHABITED_BASE_FLEET_POINTS = 50f
         const val UNINHABITED_BASE_FLEET_POINTS = 50f
     }
@@ -73,7 +71,6 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
     private fun applyConditionAttributes(id: String) {
         val market = getMarket() ?: return
         market.accessibilityMod.modifyFlat(id, SELF_MARKET_ACCESSABILITY_INCREMENT, name)
-        market.hazard.modifyFlat(id, HAZARD_RATING_INCREMENT, name)
         val markets = Misc.getMarketsInLocation(market.containingLocation) - market
         val ourFaction = market.faction
         for (iterMarket in markets) {
@@ -391,12 +388,6 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                 "colonized", "return", "${MPC_derelictEscortAssignmentAI.MAX_FOLLOW_PLAYER_DIST_LY.toInt()} ly"
             )
         }
-        tooltip.addPara(
-            "%s hazard rating",
-            10f,
-            Misc.getHighlightColor(),
-            "+${niko_MPC_stringUtils.toPercent(HAZARD_RATING_INCREMENT)}"
-        )
         tooltip.addPara(
             "%s accessibility",
             10f,
