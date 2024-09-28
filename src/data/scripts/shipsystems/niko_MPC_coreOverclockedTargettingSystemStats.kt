@@ -4,13 +4,15 @@ import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.combat.MutableShipStatsAPI
 import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.combat.ShipwideAIFlags
 import com.fs.starfarer.api.impl.combat.BaseShipSystemScript
 import com.fs.starfarer.api.plugins.ShipSystemStatsScript
 
 open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript() {
 
     companion object {
-        val rangeMult = 50f
+        const val rangeMult = 50f
+        const val nonMissileRangeMult = 3f
     }
     open val overloadTime = 0f
 
@@ -19,8 +21,8 @@ open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript()
 
         if (id == null || stats == null) return
 
-        stats.energyWeaponRangeBonus.modifyMult(id, rangeMult*effectLevel)
-        stats.ballisticWeaponRangeBonus.modifyMult(id, rangeMult*effectLevel)
+        stats.energyWeaponRangeBonus.modifyMult(id, nonMissileRangeMult*effectLevel)
+        stats.ballisticWeaponRangeBonus.modifyMult(id, nonMissileRangeMult*effectLevel)
         stats.missileWeaponRangeBonus.modifyMult(id, rangeMult*effectLevel)
     }
 

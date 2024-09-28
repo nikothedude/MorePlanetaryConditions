@@ -429,7 +429,7 @@ MPC_kantaGoonVisitStrideForthTwo,MPC_kantaGoonVisitStrideForthTwo,,"FireBest MPC
 ""Cocky, captain! I like that!"" a voice rings out. Turning towards it like PD moving to defend against a torpedo, you swing around, confronting a pair of shoddily-dressed goons leaning on a wall. One appears tall and young, while the other middle-aged and short. The younger one seems to be holding a remote, which he pockets with a cocky smile.",,
 MPC_kantaGoonVisitTwo,MPC_kantaGoonVisitTwo,,,"The two men stand up from the wall, and start walking towards you with a massive swagger in their step. Every second, their fingers come together to rhythmically *CLIK!*, each time itching your trigger finger. 
 
-The taller one stops 3 feet from you, the shorter one four. The former looks you up and down, before twisting his mouth into a smug grin. ""So yous the captain kanta's been talkin' 'bout? Hmph! You don' look lik' nothin'!"" You stop listening after the mention of Kanta, recalling your last encounter with the mad warlord. You twitch, and your heart begins racing. Kanta's attention can't mean anything good. Your bodyguards take up positions in front of you, and put their hands on their weapons.
+The taller one stops 3 feet from you, the shorter one four. The former looks you up and down, before twisting his mouth into a smug grin. ""So yous the captain Kanta's been talkin' 'bout? Hmph! You don' look lik' nothin'!"" You stop listening after the mention of Kanta, recalling your last encounter with the mad warlord. You twitch, and your heart begins racing. Kanta's attention can't mean anything good. Your bodyguards take up positions in front of you, and put their hands on their weapons.
 
 The smaller one squeaks, not unlike a malfunctioning airlock. ""Thas' not a good idea, pals..."" he states, before making a gesture towards your posse over his shoulder. Before you have any time to think, half the bar is pointing CP-pistols, charge SMGs, and god-knows-what weapons at you. While their accuracy may be dubious, their volume of fire is not, and you quickly make the calculation that any ""funny business"" will be met with overwhelmingly lethal force - ESPECIALLY if these men were sent by Kanta. The tall one smiles curtly and rests his hands on your bodyguards shoulders - now standing stiff, glaring at him - and pushes them aside, exposing yourself to him.
 
@@ -455,10 +455,10 @@ FireBest MPC_kantaGoonVisitFourSecondParagraphTwo","The tall man resumes his cir
 MPC_kantaGoonVisitFourSecondParagraphLokeDead,MPC_kantaGoonVisitFourSecondParagraph,"$global.murderedCloneLoke == true",,"""Gonna be honest bub-"" he wags his finger. ""Kanta wants you DEAD. That stunt you pilled wit' that science girl? Oh yeah-haha, shes PISSED!  'specially after what you did to that loke guy..."" he shakes his head, feigning mourning for the dead clone.",,
 MPC_kantaGoonVisitFourSecondParagraph,MPC_kantaGoonVisitFourSecondParagraph,"$global.murderedCloneLoke != true",,"""Gonna be honest bub-"" he wags his finger. ""Kanta wants you DEAD. That stunt you pilled wit' that science girl? Oh yeah-haha, shes PISSED!""",,
 MPC_kantaGoonVisitFourSecondParagraphTwo,MPC_kantaGoonVisitFourSecondParagraphTwo,,"SetTextHighlights ""grace""
-AddTextSmall ""Received kanta's den docking key"" highlight
+AddTextSmall ""Received Kanta's den docking key"" highlight
 FireBest MPC_kantaGoonVisitFourSecondParagraphThree","""But... but!"" He smiles like a shark - and you bet if he was one, he's about to eat you. ""She's willin'... t' offer you some grace!"" he speaks, words as slimy as a juvenile lobster. He resumes his circling. ""She's in need of some..."" he spreads his hands out, making a star gesture. ""...special talents, for a mission of hers.""
 
-He yet again stops, though this time in front of your dying guard. You feel a tinge of rage. ""Kanta wants t'see you, captain. Soon. And if you know her like I do..."" he flashes a badge - a mark of the kanta family. You feel your heart sink. ""...I wouldn't wanna keep 'er waitin'."". 
+He yet again stops, though this time in front of your dying guard. You feel a tinge of rage. ""Kanta wants t'see you, captain. Soon. And if you know her like I do..."" he flashes a badge - a mark of the Kanta family. You feel your heart sink. ""...I wouldn't wanna keep 'er waitin'."".
 
 He backs off,  takes out a tripad, and taps it a few times. You feel your tripad vibrate, but you don't dare look down at it. ""Jus' transmitted ah key t' y' PDA, bud! Y'can use it to get one free trip into th' den - under armed guard, o'course."" He winks.",,
 MPC_kantaGoonVisitFourSecondParagraphThree,MPC_kantaGoonVisitFourSecondParagraphThree,,,"He then brings his tripad back up, and with one final dramatic tap, you hear a cauciphony of tripad updates coming from the patronage. All at once, the patrons put their weapons away, and many stand up and leave - though some stay behind. As they pass you and your guards, some laugh, some point, but most glare. ""Hope t'never see y'again, captain!"" you hear a familiar voice cry. You consider drawing your weapon and firing in the direction of the voice, but angering the trigger-happy crowd around you who presumably wouldn't be upset to scramble your brains doesn't seem like the best idea.","0:MPC_kantaGoonVisitFive:Tend to your guard",
@@ -484,7 +484,7 @@ MPC_transmitKantaKeyPickUp,DialogOptionSelected,"$option == MPC_transmitKantaKey
 FireBest MPC_kantaCommLinkOpenFlavor
 FireBest MPC_transmitKantaKeyPickUpInitialText",,,
 MPC_transmitKantaKeyPickUpInitialText,MPC_transmitKantaKeyPickUpInitialText,,"AddTextSmall ""Kanta's den docking key expired"" textEnemyColor
-AddTextSmall ""Received kanta permission signature"" highlight","The visage of the portmaster appears before you, the key apparently having bypassed the usual process of going through the king. $heOrShe stares you down, an eye twisted downwards through some psychotic filter. After what feels like an eternity passes, she picks up a tripad with a half-broken screen (though still more cared for than others you've seen here) and taps away. 
+AddTextSmall ""Received Kanta permission signature"" highlight","The visage of the portmaster appears before you, the key apparently having bypassed the usual process of going through the king. $heOrShe stares you down, an eye twisted downwards through some psychotic filter. After what feels like an eternity passes, she picks up a tripad with a half-broken screen (though still more cared for than others you've seen here) and taps away.
 
 ""...token's signature checks out."" $heOrShe glares at you. ""And jus' how the hell did y' manage to get a key signed by K-"" She freezes, the words stuck in her mouth like a jammed autocannon. She swallows the metaphorical slugs, and shivers. ""...ok, bub. Y're cleared fer bay 23. Use this flight path, and if anyun gives you trouble, jus' show 'em this."" She transmits an electronic signature expressing permission to board from Kanta herself. Just this would send any pirates running home scared.
 
@@ -493,17 +493,17 @@ AddTextSmall ""Received kanta permission signature"" highlight","The visage of t
 The comm feed cuts abruptly.","0:MPC_takeKantaShuttleInit:Take a shuttle down to bay 23, following the flightplan","Needs to exist otherwise the flavor is put before this for some reason *shrug"
 MPC_takeKantaShuttleInit,DialogOptionSelected,"$option == MPC_takeKantaShuttleInit","EndConversation DO_NOT_FIRE","The trip towards the den is nerve-wracking. Your pilot constantly has to make harsh maneuvers that you guess were intentionally laid out to be as confusing as possible, and you silently curse yourself for ever trusting a pirate.
 
-After a while, though, your shuttle safely reaches the dock, and upon transmission of kanta's signature, you find yourself subject to a velvety treatment - as far as pirates go, anyway. No bribe is requested, docking clamps actually hit their marks the first time, and the officer that meets you makes no comment on your unusually high number of bodyguards - you're not yourself be accosted again.","0:MPC_WWLLearnWalkToKantaOne:Continue",
+After a while, though, your shuttle safely reaches the dock, and upon transmission of Kanta's signature, you find yourself subject to a velvety treatment - as far as pirates go, anyway. No bribe is requested, docking clamps actually hit their marks the first time, and the officer that meets you makes no comment on your unusually high number of bodyguards - you're not yourself be accosted again.","0:MPC_WWLLearnWalkToKantaOne:Continue",
 MPC_WWLLearnWalkToKantaOneIntroNotDone,DialogOptionSelected,"$option == MPC_WWLLearnWalkToKantaOne
 !$global.didKantasDenIntro score:50",,"You leave four guards and the pilot at your shuttle. Two more guards follow you, and the pirate lieutenant sent to meet you nods that this is correct.
 
-You're led through a primary access corridor toward the center of the station. You adjust quickly to disjointed agrav fields, an effect you suspect is intentional as ranks of pirates of all shapes and ages eye you for weakness, murmuring crude comments and jostling for prestige.","kd_kantaFirstIntro1:Keep on walking","in case the player raided and never visited kanta or something. i honestly dont know if this is needed lol"
+You're led through a primary access corridor toward the center of the station. You adjust quickly to disjointed agrav fields, an effect you suspect is intentional as ranks of pirates of all shapes and ages eye you for weakness, murmuring crude comments and jostling for prestige.","kd_kantaFirstIntro1:Keep on walking","in case the player raided and never visited Kanta or something. i honestly dont know if this is needed lol"
 MPC_WWLLearnWalkToKantaOne,DialogOptionSelected,"$option == MPC_WWLLearnWalkToKantaOne",,"As always, you leave two guards and your pilot in the shuttle, but this time you take an entourage of six guards with you as the officer leads you through the disjointed hallways. While you've seen it all before, you're on extra guard this time.","0:MPC_WWLLearnEnterCourt:Enter the court",
 MPC_WWLLearnEnterCourt,DialogOptionSelected,"$option == MPC_WWLLearnEnterCourt","FireBest KDKantaRouteTo",,,
 MPC_WWLLearnReachedKanta,KDKantaRouteTo,"$global.MPC_kantaExpectingPlayer score:500",,"The court's floor has been cleared of all except Kanta, Cydonia, and a handful of guards. Clearly, they've been expecting you.
 
-""Spacer!"" Cydonia spits out. ""Your crimes against Kanta are NOT! FORGOTTEN!"" He draws an x with his arms, glaring angrily. He then flips his finger up. ""BUT! The great kanta may still have use for you..."" ","0:MPC_WWLLearnReachedKantaTwo:Continue",
-MPC_WWLLearnReachedKantaTwo,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaTwo","FireBest MPC_WWLLearnReachedKantaThreeResentfulCheck","The doctor skitters over to a gilded table beside Kanta, who stares at you with her signature menace. The gaze is broken by Cydonia, now holding a pristine tripad in his left hand. ""The mighty kanta seeks to express her strength over all by expanding her collection of artifacts. One, however, continues to elude her!"" he exclaims, the might in his voice betrayed by his small frame. ","0:MPC_WWLLearnReachedKantaThree:Continue",
+""Spacer!"" Cydonia spits out. ""Your crimes against Kanta are NOT! FORGOTTEN!"" He draws an x with his arms, glaring angrily. He then flips his finger up. ""BUT! The great Kanta may still have use for you..."" ","0:MPC_WWLLearnReachedKantaTwo:Continue",
+MPC_WWLLearnReachedKantaTwo,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaTwo","FireBest MPC_WWLLearnReachedKantaThreeResentfulCheck","The doctor skitters over to a gilded table beside Kanta, who stares at you with her signature menace. The gaze is broken by Cydonia, now holding a pristine tripad in his left hand. ""The mighty Kanta seeks to express her strength over all by expanding her collection of artifacts. One, however, continues to elude her!"" he exclaims, the might in his voice betrayed by his small frame. ","0:MPC_WWLLearnReachedKantaThree:Continue",
 MPC_WWLLearnReachedKantaThree,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaThree
 ","SetTextHighlights ""wormholes""","Kanta stands, causing Cydonia to wither. ""It has come to our attention that you possess a particular ability."" She pauses. For effect, or for something else, you can't tell. ""The ability to traverse wormholes.""
 
@@ -511,21 +511,21 @@ The court gasps.
 
 She sits back down, staring intensely. ""You have proven yourself as more than just a weapon. You are powerful, willful. You cannot be wielded."" Cydonia looks absolutely shocked at her speech. ""You can, however, be pushed in a direction. Our. Direction."" She stares at Cydonia.
 
-After a few moments of sputtering, Cydonia seems to realize something and frantically taps his tripad, before transmitting a spec of an atlas mk2. to yours. ""A family member has betrayed the great kanta."" She announces, to yet another gasp of the crowd. """"To facilitate this task, we will give you an invaluable treasure - a wormhole anchor, rumored to connect to a location containing this artifact. Retrieve this artifact, and the ship is yours.""
+After a few moments of sputtering, Cydonia seems to realize something and frantically taps his tripad, before transmitting a spec of an atlas mk2. to yours. ""A family member has betrayed the great Kanta."" She announces, to yet another gasp of the crowd. """"To facilitate this task, we will give you an invaluable treasure - a wormhole anchor, rumored to connect to a location containing this artifact. Retrieve this artifact, and the ship is yours.""
 
 You take a moment to look over the spec. While it's rather vague (to pirate standard), it describes a highly customized atlas mk2 powerful enough to rival even the onslaught in strength - though nothing will fix the horrific hull integrity.","0:MPC_WWLLearnAccept:Accept the task",
 MPC_WWLLearnReachedKantaThreeResentfulCheck,MPC_WWLLearnReachedKantaThreeResentfulCheck,"MPC_kantaResentful",,"""Slime."" Kanta mutters, sending Cydonia skittering away, before tiptoeing back. ""Vermin. You are no better than a common Toteliac."" She hisses, sounding like a hull breach. ""Y-Yes! Yes, you must be PUNISHED! The great KAN-""
 
-""Yet, you are still useful."" kanta interrupts.",,
+""Yet, you are still useful."" Kanta interrupts.",,
 MPC_WWLLearnReachedKantaHasChairCheck,MPC_WWLLearnReachedKantaHasChairCheck,"MPC_hasTheThrone","SetTextHighlights ""Throne of Deridation""","Before you leave, you realize something. The artifact's specs line up with the description of the Throne of Deridation...","0:MPC_WWLLearnReachedKantaAlreadyHasIt:Notify Kanta that you may already have the artifact
 10:defaultLeave:Leave",
 MPC_WWLLearnAccept,DialogOptionSelected,"$option == MPC_WWLLearnAccept","FireBest MPC_WWLLearnReachedKantaHasChairCheck
 
 MPC_kantaMissionBegin
 AddTextSmall ""Received artifact specs"" highlight
-AddTextSmall ""Received wormhole anchor \""Tango\"" as well as calibration data"" highlight","While you're less than happy to be working for kanta again, you can't deny that you're curious as to what lies beyond the wormhole. Besides - you could get a powerful ship out if - assuming kanta holds up her end of the deal.
+AddTextSmall ""Received wormhole anchor \""Tango\"" as well as calibration data"" highlight","While you're less than happy to be working for Kanta again, you can't deny that you're curious as to what lies beyond the wormhole. Besides - you could get a powerful ship out if - assuming Kanta holds up her end of the deal.
 
-""It is settled!"" Cydonia exclaims. ""The captain will repent for his previous actions under a new mutual respect-"" Kanta bangs her hand on her armrest, and Cydonia cowers. ""...t-the captain will recover the artifact for the glorious kanta, and receive a traitor's ship for their efforts! And to expedite the task, the recovered calibration data will be transferred to the captain as well, so the wormhole may be immediately traversed!""
+""It is settled!"" Cydonia exclaims. ""The captain will repent for his previous actions under a new mutual respect-"" Kanta bangs her hand on her armrest, and Cydonia cowers. ""...t-the captain will recover the artifact for the glorious Kanta, and receive a traitor's ship for their efforts! And to expedite the task, the recovered calibration data will be transferred to the captain as well, so the wormhole may be immediately traversed!""
 
 Cydonia transmits the specs of the artifact to your tripad. Apparantly, it's some sort of ancient wooden matrix with cloth lining, with a note saying ""You'll know it when you see it."" You'll see about that.
 
@@ -535,17 +535,17 @@ MPC_WWLLearnReachedKantaAlreadyHasIt,DialogOptionSelected,"$option == MPC_WWLLea
 ","0:MPC_TODDeliveryBringItIn:Order it brought in",
 MPC_TODDeliveryEntrance,KDKantaRouteTo,"niko_MPC_kantaCMD canVisitKantaAgain score:500",,"Cydonia stands stiffnecked, clearly expecting something. ""The captain comes crawling back to the mighty Kanta! What tribute do they offer?! Have they completed the task laid before them?!""","0:MPC_TODDeliveryIHaveIt:Yes
 100:defaultLeave:Say no, then take your leave","im geting tired of the dialogue here tbh"
-MPC_TODDeliveryIHaveIt,DialogOptionSelected,"$option == MPC_TODDeliveryIHaveIt",,"The audience erupts into both parts jeer and cheer. Cydonia hisses and circles you, your bodyguards standing at the ready. ""Well! Where is it?"". Before you even get a chance to open your mouth, he hisses and gets in your face - your bodyguards pushing him away slightly. ""The great kanta deserves more than mere claims! Show her proof of your assertation, so her might may be solidified!""","0:MPC_TODDeliveryBringItIn:Order it brought in",
+MPC_TODDeliveryIHaveIt,DialogOptionSelected,"$option == MPC_TODDeliveryIHaveIt",,"The audience erupts into both parts jeer and cheer. Cydonia hisses and circles you, your bodyguards standing at the ready. ""Well! Where is it?"". Before you even get a chance to open your mouth, he hisses and gets in your face - your bodyguards pushing him away slightly. ""The great Kanta deserves more than mere claims! Show her proof of your assertation, so her might may be solidified!""","0:MPC_TODDeliveryBringItIn:Order it brought in",
 MPC_TODDeliveryBringItIn,DialogOptionSelected,"$option == MPC_TODDeliveryBringItIn","FireAll MPC_TODDeliveryPopulateOptions
 
 niko_MPC_kantaCMD chairGivenToKanta
 AddRemoveAnyItem SPECIAL ""MPC_specialChair"" -1
 
-AddStoryPoints 3","You give the order to allow for a pirate crew to take the throne off your ship, with intense supervision by kanta-clan guards. Kanta merely stares through you, Cydonia anxiously snapping between the warlord and you. 
+AddStoryPoints 3","You give the order to allow for a pirate crew to take the throne off your ship, with intense supervision by Kanta-clan guards. Kanta merely stares through you, Cydonia anxiously snapping between the warlord and you.
 
 Five anxiety-ridden minutes later, the door opens to the sight of six trembling pirate deckworkers hauling the Throne into the court, prompting much murmuring amongst the cloud. The instant the tell-tale clunk of metal feet slamming against floor sound, the audience quiets to watch Kanta approach the throne. 
 
-""Down."" she orders, to which the pirates meekly drop the throne and walk out, the laughing kanta clan members following, shaking their heads. They must get a kick out of terrorising their own.
+""Down."" she orders, to which the pirates meekly drop the throne and walk out, the laughing Kanta clan members following, shaking their heads. They must get a kick out of terrorising their own.
 
 Kanta. Sits. Staring directly at you from her new throne.
 
@@ -554,10 +554,10 @@ Kanta. Sits. Staring directly at you from her new throne.
 You receive a notification that a heavily modified atlas mk2. has entered your fleet's formation, ignoring requests to identify itself. You quickly order your ships to stand down before it's reduced to scrap.
 
 All that's left to do now is leave, and reap the rewards.","1000:defaultLeave:Leave",
-MPC_TODLetMeIn,KDStationKingOptions,"niko_MPC_kantaCMD canVisitKantaAgain",,,"0:MPC_TODBulliedTheSK:""I have an important artifact kanta desires.""",
-MPC_TODBulliedTheSK,DialogOptionSelected,"$option == MPC_TODBulliedTheSK",,"""Oh yeh? What kinda artifact would kanta e-""
+MPC_TODLetMeIn,KDStationKingOptions,"niko_MPC_kantaCMD canVisitKantaAgain",,,"0:MPC_TODBulliedTheSK:""I have an important artifact Kanta desires.""",
+MPC_TODBulliedTheSK,DialogOptionSelected,"$option == MPC_TODBulliedTheSK",,"""Oh yeh? What kinda artifact would Kanta e-""
 
-The king gulps and stares at their datapad. ""Oh cripe."" They give you a fearful look, then without even a word, cut the feed, probably fearing for their life for daring to question kanta.
+The king gulps and stares at their datapad. ""Oh cripe."" They give you a fearful look, then without even a word, cut the feed, probably fearing for their life for daring to question Kanta.
 
 Your shuttle gets the go-ahead to make the rest of the journey.","0:MPC_takeKantaShuttleInit:Take the shuttle in",
 "#END Kantas Den",,,,,,

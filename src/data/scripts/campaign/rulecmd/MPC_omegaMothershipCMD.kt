@@ -42,7 +42,7 @@ class MPC_omegaMothershipCMD: BaseCommandPlugin() {
 
                 val rule = AddRemoveAnyItem()
                 val tokens = Misc.tokenize("RESOURCES") + Misc.tokenize(Commodities.ALPHA_CORE) + Misc.tokenize("3")
-                val tokensTwo = Misc.tokenize("RESOURCES") + Misc.tokenize(Commodities.CREW) + Misc.tokenize(RADIATION_CREW_LOSS.toString())
+                val tokensTwo = Misc.tokenize("RESOURCES") + Misc.tokenize(Commodities.CREW) + Misc.tokenize((-RADIATION_CREW_LOSS).toString())
                 rule.execute(ruleId, dialog, tokens, memoryMap)
                 rule.execute(ruleId, dialog, tokensTwo, memoryMap)
             }

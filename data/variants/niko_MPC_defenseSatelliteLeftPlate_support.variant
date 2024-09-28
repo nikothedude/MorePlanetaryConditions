@@ -1,0 +1,84 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteLeftPlate_support",
+  "hullId": "niko_MPC_defenseSatelliteLeftPlate",
+  "displayName": "Support",
+  "goalVariant": false,
+  "fluxCapacitors": 60,
+  "fluxVents": 37,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "heavyarmor",
+    "missleracks",
+    "reinforcedhull",
+    "autorepair",
+    "armoredweapons",
+    "eccm"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0014": "hurricane"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0015": "heavymauler",
+        "WS0017": "heavymauler"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "lightag",
+        "WS0002": "lightag",
+        "WS0004": "lightag"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0012": "MPC_pinprickPod",
+        "WS0013": "MPC_pinprickPod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0009": "MPC_pinprickPod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0018": "swarmer",
+        "WS0019": "swarmer",
+        "WS0020": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0003": "vulcan",
+        "WS0005": "vulcan",
+        "WS0006": "vulcan",
+        "WS0007": "vulcan",
+        "WS0008": "vulcan",
+        "WS0010": "dualflak",
+        "WS0011": "dualflak",
+        "WS0016": "dualflak"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

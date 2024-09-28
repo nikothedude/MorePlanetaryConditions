@@ -251,8 +251,4 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
         }
 
     }
-
-    override fun getRequirements(industry: Industry?): MutableList<String> {
-        return super.getRequirements(industry)
-    }
 }

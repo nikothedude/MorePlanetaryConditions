@@ -19,7 +19,7 @@
     "niko_MPC_tachyonFighterComms",
     "pointdefenseai",
     "niko_MPC_cheapDeployment",
-    "turretgyros",
+    #"turretgyros",
     "do_not_fire_through",
     "niko_MPC_superPDComputer"
   ],
@@ -42,7 +42,7 @@
     {
       "id": "WS0001",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "SYNERGY",
       "mount": "TURRET",
       "arc": 207,
       "angle": 24,
@@ -51,7 +51,7 @@
     {
       "id": "WS0002",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "SYNERGY",
       "mount": "TURRET",
       "arc": 207,
       "angle": -24,

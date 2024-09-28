@@ -23,7 +23,7 @@ class MPC_magnetarQuest: BaseIntelPlugin() {
 
         if (stage == Stage.GO_TO_KANTA) {
             info!!.addPara(
-                "You were accosted by a pair of goons sent from kanta. Apparently kanta wants to speak with you about " +
+                "You were accosted by a pair of goons sent from Kanta. Apparently kanta wants to speak with you about " +
                     "some sort of task.",
                 opad
             )
@@ -58,11 +58,11 @@ class MPC_magnetarQuest: BaseIntelPlugin() {
         bullet(info)
         val isUpdate = getListInfoParam() != null
         if (stage == Stage.GO_TO_KANTA) {
-            info.addPara("Go to %s and %s", initPad, h, "kanta's den", "talk to kanta")
+            info.addPara("Go to %s and %s", initPad, h, "Kanta's Den", "talk to kanta")
         } else if (stage == Stage.FIND_SYSTEM) {
             info.addPara("Find the artifact", h, initPad)
         } else if (stage == Stage.RETURN_CHAIR) {
-            info.addPara("Return the chair to %s", initPad, h, "kanta")
+            info.addPara("Return the chair to %s", initPad, h, "Kanta")
         }
         initPad = 0f
         unindent(info)

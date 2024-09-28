@@ -41,7 +41,7 @@ class niko_MPC_overclockedTargettingSystemAI: niko_MPC_coreOverclockedTargetting
         var lowestPDRange: Float? = null
         for (weapon in ship!!.usableWeapons) {
             if (lowestRange == null) lowestRange = weapon.range
-            if (highestRange < weapon.range) highestRange = weapon.range
+            if (highestRange < weapon.range) highestRange = weapon.range.coerceAtMost(1000f)
             if (lowestRange > weapon.range) lowestRange = weapon.range
             val modifiedRange = weapon.range * niko_MPC_coreOverclockedTargettingSystemStats.rangeMult
             if (highestModifiedRange < modifiedRange) highestModifiedRange = modifiedRange

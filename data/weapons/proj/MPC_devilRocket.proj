@@ -1,0 +1,57 @@
+{
+	"id":"MPC_devilRocket",
+	"specClass":"missile",
+	"missileType":"MISSILE",
+	"sprite":"graphics/proj/MPC_devilMissileStage2.png",
+	"size":[9,20],	
+	"center":[4.5,10],
+	"collisionRadius":15,
+	"collisionClass":"MISSILE_NO_FF",
+	"explosionColor":[255,100,100,255],  # purely visual, will get a white additively blended core on top of this color
+	"explosionRadius":300, # purely visual
+	"explosionSpec":{"duration":0.1f, # not visual
+					 "radius":150,
+					 "coreRadius":60, # full damage within core radius
+					 "collisionClass":HITS_SHIPS_AND_ASTEROIDS,
+					 "collisionClassByFighter":HITS_SHIPS_AND_ASTEROIDS,
+					 "particleSizeMin":4.0,
+					 "particleSizeRange":2.5,
+					 "particleDuration":1,
+					 "particleCount":150,
+					 "particleColor":[255,155,155,255],
+					 "explosionColor":[255,100,100,255],
+					 "detailedExplosionFlashColorFringe":[255,100,100,255],
+					 "detailedExplosionFlashRadius":400,
+					 "useDetailedExplosion":true
+					 },
+	"armingTime":0.5,
+	"engineSpec":{"turnAcc":0,
+				  "turnRate":0,
+				  #"acc":35,
+				  "acc":250,
+				  "dec":0,
+				  "maxSpeed":400},
+	"engineSlots":[{"id":"ES1",
+					"loc":[-9, 0],
+					#"loc":[-14, 0],
+				    #"style":"TORPEDO",
+				    "style":"CUSTOM",
+					"styleSpec":{
+						"mode":"QUAD_STRIP", # PARTICLES or QUAD_STRIP, determines which params are used
+						"engineColor":[255,100,100,255],
+						"contrailDuration":2,
+						"contrailWidthMult":1.5,
+						"contrailWidthAddedFractionAtEnd":1,  # can be negative. makes trail spread out/narrow at the end
+						"contrailMinSeg":5, # min segment length, in pixels
+						"contrailMaxSpeedMult":0f,
+						"contrailAngularVelocityMult":0.5f,
+						"contrailSpawnDistMult":0f, # how far away from engine it starts
+						"contrailColor":[255,100,100,50],
+						"glowSizeMult":2.5,
+						"glowAlternateColor":[255,0,0,255],
+						"type":"GLOW" # GLOW or SMOKE; additive or regular blend mode
+					},
+				    "width":10.0,
+				    "length":80.0,
+				    "angle":180.0}]
+}

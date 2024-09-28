@@ -18,7 +18,43 @@ Overgrown nanoforge rebalanced
         Spreading, culling, etc. now 30% slower
             If you want that item, you have to work for it
 
+Repositioned magnetar to be away from RAT's abyss
+Amount of omega weapons in magnetar heavily reduced
+    Special fleets no longer drop their weapons
+Magnetar mothership fleet made stronger
+
+Satellite weapons redesigned
+    Now missile-centric
+    Only one loadout
+        Pilums on the core, a devil torpedo on the connector, and 6 pinpricks across the combat modules (and 2 hurricanes)
+
+New weapons
+    Only found on satellites
+
+    Devil-class VRLT (Very long-ranged torpedo)
+        Large mount
+        3000 HE
+        12000 Range
+        Moderately fast
+        Horrible tracking
+        Long cooldown
+
+        Artillery - Your backline ships fire it and it will invariably reach an enemy target (it might not hit)
+
+    Pinprick-class VRLM
+        Medium mount
+        Bursts of 8
+        220 Frag
+        12000 Range
+        Moderate cooldown
+
+        Extreme speed and okay tracking
+
+        Long-ranged pressure - Either used to kill ships with stripped armor, or pressure ships to keep shields up
+
 Fixed a bug where the overgrown nanoforge focus button didnt appear
+
+Fixed all instances of kanta being not capitalized
 
 3.9.0
 

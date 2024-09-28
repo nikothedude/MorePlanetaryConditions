@@ -37,6 +37,20 @@ MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
 MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomobly strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
 ,,,,,
+MPC_devilRocketPod,WEAPON,"The devil-class torpedo combines the destructive power of the famous reaper with a long-distance ion thruster, creating a terrifyingly effective cruise missile capable of striking targets from across the battlefield with 50 MJ of explosive force. A combat-rated autoloader system ensures usefulness in protracted engagements.
+
+The devil-class torpedo consists of two parts: An ion thruster block, and the payload. The payload is rather uninteresting - merely a downsized reaper-class torpedo fitted on a thin frame. The ion block, though, is a rather fascinating piece of technology. Instead of chemical propellant, it ionizes miniscule amounts of gas to travel at impressive speeds, removing the need for a bulky fuel tank. Unfortunately, it was considered impractical for its intended use as a starship thruster due to the prohibitive costs associated with installing one - to say nothing of the flux costs, which paradoxically makes their performance worse than chemical thrusters due to the zero-flux boost.
+
+Early testing showed promise in long-ranged ordnance, but the “Decisive Battle” naval doctrine the domain fielded prevented its adoption outside of specialized cases. A specialized case appeared with the advent of the Outguard-class defense satellite, and the lack of properly long-ranged missiles soon became evident. Thus, the devil was born, with the express purpose of intercepting fast-moving asteroids at long-range before they impact the satellite’s protectorate.
+",,,
+MPC_pinprickPod,WEAPON,"With a fuel-to-weight ratio of 90%, the pinprick can travel for hundreds of kilometers without even flaming out. Its utility is limited by the utter lack of payload, made even worse by its flathead design. A combat-rated autoloader system ensures usefulness in protracted engagements.
+
+Created for the same reason as the devil-class torpedo, the pinprick is a long-ranged support missile. Its strange characteristics are explained by its intended role - to strike asteroids into pieces small enough for any atmosphere to burn them up.
+
+Unlike its cousin, the pinprick uses conventional propulsion instead of an ion thruster, enabling it to be mounted far more easily, and with no flux cost.
+
+",,,
+,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,
 MPC_baryonEmitterStandard,CUSTOM,"Portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. One quickly realizes why they were typically built on planets - the potential output, without a massive power district, is middling at best, and can only partially protect a fleet from the dangers of space. 

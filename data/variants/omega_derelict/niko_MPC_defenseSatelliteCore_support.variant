@@ -1,0 +1,63 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteCore_support",
+  "hullId": "niko_MPC_defenseSatelliteCore",
+  "displayName": "Support",
+  "goalVariant": false,
+  "fluxCapacitors": 7,
+  "fluxVents": 25,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "eccm",
+    "missleracks"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0001": "pilum",
+        "WS0002": "pilum",
+        "WS0003": "swarmer_fighter",
+        "WS0004": "vulcan"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0005": "dualflak",
+        "WS0006": "dualflak"
+      }
+    }
+  ],
+  "modules": [
+    {
+      "WS0007": "niko_MPC_connectorModule_barrage"
+    },
+    {
+      "WS0008": "niko_MPC_strut_standard"
+    },
+    {
+      "WS0009": "niko_MPC_defenseSatelliteLeftStrut_standard"
+    },
+    {
+      "WS0010": "niko_MPC_defenseSatelliteRightStrut_standard"
+    },
+    {
+      "WS0011": "niko_MPC_defenseSatelliteRightPlate_barrage"
+    },
+    {
+      "WS0012": "niko_MPC_defenseSatelliteLeftPlate_barrage"
+    }
+  ],
+  "wings": [
+    "wasp_wing",
+    "wasp_wing"
+  ]
+}
