@@ -14,8 +14,8 @@
 	"flameoutTime":1, # total time from flameout to full fadeout
 	"noEngineGlowTime":0.5, # time spent without the engine glow being rendered
 	"fadeTime":0.5, # fadeout duration	
-	"engineSpec":{"turnAcc":100,
-				  "turnRate":100,
+	"engineSpec":{"turnAcc":180,
+				  "turnRate":180,
 				  "acc":100,
 				  "dec":0},
 	"engineSlots":[{"id":"ES1",
