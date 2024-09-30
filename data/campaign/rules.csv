@@ -880,4 +880,12 @@ The message then repeats, likely forever - without any listeners. A shiver runs 
 You shake the thought away. The domain fell, and you rose from the ashes. This will be no different. You close the comm link, save a recording for posterity, and prepare to deactivate the beacon - you'd rather not be snuck up on while sheltering behind the star.","0:MPC_leaveMagnetarBeacon:Disconnect the beacon",
 "#END Hijacked solar shield",,,,,,
 "#END Magnetar",,,,,,
+,,,,,,
+# Post-slaved omega core acquisition,,,,,,
+MPC_HSBInit,DialogOptionSelected,"MPC_hegemonySpyCMD canExecute score:1000
+$option == marketVisitBar","FireBest BarShuttleDownPrintDesc
+FireBest BarPrintDesc
+BarCMD playAmbience
+$global.MPC_didKantaGoonVisit = true",,,"MPC_HSBInit"
+"#END Post-slaved omega core acquisition",,,,,,
 

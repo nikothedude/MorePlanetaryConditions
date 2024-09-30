@@ -17,12 +17,16 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGenerator
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.scripts.utils.SotfMisc
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_settings
+import niko.MCTE.utils.MCTE_mathUtils.roundTo
 import org.lazywizard.lazylib.MathUtils
 
 class niko_MPC_magnetarStarScript(
@@ -139,6 +143,13 @@ class niko_MPC_magnetarStarScript(
             generatedDefenders = true
         }
 
+        if (niko_MPC_modPlugin.currVersion == "3.11.0") {
+            if (magnetar.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] == null) {
+                magnetar.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] = this
+            }
+        } else {
+            niko_MPC_debugUtils.log.warn("useless sanity check in niko_MPC_magnetarStarScript, please remove")
+        }
         val days = Misc.getDays(amount)
         daysPerPulse.advance(days)
         // we advance to make things a bit more unpredictable
@@ -346,5 +357,13 @@ class niko_MPC_magnetarStarScript(
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
 
         return defenderFleet
+    }
+
+    fun getSecsTilNextPulse(): Float {
+        return Global.getSector().clock.convertToSeconds(daysPerPulse.intervalDuration - daysPerPulse.elapsed)
+    }
+
+    fun getSecsTilNextPulseString(): String {
+        return "${getSecsTilNextPulse().roundNumTo(1)} second(s) until next pulse"
     }
 }

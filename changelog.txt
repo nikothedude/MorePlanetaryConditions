@@ -1,3 +1,11 @@
+3.11.0
+
+Magnetar terrain tooltip now tells you when the next pulse is
+You can now plot a course onto things while hacking
+    This includes the hack target!
+Interdict progress needed for full protection reduced to 60%
+    Timing is easier
+
 3.10.0
 NOT SAVE COMPATIBLE IF YOU HAVE A OVERGROWN NANOFORGE ITEM - DELETE IT AND READD IT TO UPDATE
 

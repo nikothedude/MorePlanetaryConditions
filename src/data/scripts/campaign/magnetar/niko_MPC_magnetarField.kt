@@ -281,11 +281,17 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     }
 
     override fun getTerrainName(): String? {
-        return if (flareManager.isInActiveFlareArc(Global.getSector().playerFleet)) {
+        var baseName = if (flareManager.isInActiveFlareArc(Global.getSector().playerFleet)) {
             "Magnetar Storm"
         } else {
-            return super.getTerrainName()
+            super.getTerrainName()
         }
+
+        return "${baseName} (${getStarScript().getSecsTilNextPulseString()})"
+    }
+
+    private fun getStarScript(): niko_MPC_magnetarStarScript {
+        return relatedEntity.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] as niko_MPC_magnetarStarScript
     }
 
     override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {

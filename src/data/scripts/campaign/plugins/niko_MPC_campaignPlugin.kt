@@ -7,6 +7,7 @@ import com.fs.starfarer.api.campaign.ai.ModularFleetAIAPI
 import com.fs.starfarer.api.campaign.ai.TacticalModulePlugin
 import com.fs.starfarer.api.impl.campaign.fleets.DefaultFleetInflater
 import com.fs.starfarer.api.impl.campaign.fleets.DefaultFleetInflaterParams
+import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.campaign.fleet.CampaignFleet
 import data.scripts.campaign.AI.niko_MPC_satelliteFleetAITacticalModule
@@ -62,7 +63,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
     override fun pickInteractionDialogPlugin(interactionTarget: SectorEntityToken?): PluginPick<InteractionDialogPlugin>? {
         if (interactionTarget == null) return null
 
-        if (interactionTarget.customEntityType == "derelict_gatehauler") {
+        if (interactionTarget.customEntityType == Entities.DERELICT_GATEHAULER) {
             Global.getSector().memoryWithoutUpdate["\$MPC_playerFoundGatehauler"] = true
         }
 

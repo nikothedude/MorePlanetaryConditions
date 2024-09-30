@@ -37,7 +37,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         /** At max interdict effectiveness, immobility is reduced by this percent. */
         const val MAX_INTERDICT_REINFORCEMENT = 1f
         /** MAX_INTERDICT_REINFORCEMENT is reached at this progress level of interdiction. */
-        const val MAX_INTERDICT_PROGRESS_NEEDED = 0.8f
+        const val MAX_INTERDICT_PROGRESS_NEEDED = 0.6f
         const val INTERDICT_EXTRA_COOLDOWN = 3f
 
         const val DIST_NEEDED_TO_HIT = 500f

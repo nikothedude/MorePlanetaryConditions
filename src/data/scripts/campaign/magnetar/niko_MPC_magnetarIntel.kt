@@ -16,13 +16,13 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
         const val DEFAULT_DESC = "Magnetars are eccentric neutron star variants, boasting an unfathomably powerful magnetic field " +
                 "that can shred even non-ferric material. \n" +
                 "\n" +
-                "It projects a gargantuan magnetic field powerful enough to pull in a starship and tear off external plating, though " +
+                "They project a gargantuan magnetic field powerful enough to pull in a starship and turn it to mush, though " +
                 "a fleet's drive field is sufficient at mitigating the worst of this. Unfortunately, this particular magnetar is capable of " +
-                "emitting pulses of ionized particles, which are energetic enough to shatter the drive field for days on end, disabling the " +
+                "emitting pulses of ionized particles which are energetic enough to shatter the drive field for days on end, disabling the " +
                 "fleet's travel drives and making transverse jumping impossible, allthewhile dragging the fleet closer and closer to the star. " +
                 "Nothing has been known to survive close proximity to a magnetar without a drive field, making it a TOP PRIORITY to maintain distance. \n" +
                 "\n" +
-                "------------------------------------------------" +
+                "-------------------------------------------------------------------------------------------------------------------------------------" +
                 "\n" +
                 "Your tactical officer seems to have left a note at the bottom of the report: \"Sir, after studying the pulses we've " +
                 "discovered a potential method of reinforcing our drive field. If we set up our sensors to interdict at the same time, " +

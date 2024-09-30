@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.LeashScript
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.Misc.VarAndMemory
@@ -64,6 +65,7 @@ class MPC_looseWait: BaseCommandPlugin() {
         }
         indicator = Global.getFactory().createProgressIndicator(text, target, durationDays)
         target.containingLocation.addEntity(indicator)
+        target.removeTag(Tags.HAS_INTERACTION_DIALOG)
         waitScript = object : BaseCampaignEventListenerAndScript(durationDays + 0.1f) {
             private var elapsedDays = 0f
             private var done = false
@@ -79,7 +81,7 @@ class MPC_looseWait: BaseCommandPlugin() {
 
             override fun advance(amount: Float) {
                 val clock = Global.getSector().clock
-                Global.getSector().campaignUI.setDisallowPlayerInteractionsForOneFrame()
+                //Global.getSector().campaignUI.setDisallowPlayerInteractionsForOneFrame()
                 val days = clock.convertToDays(amount)
                 elapsedDays += days
                 inProgress!!.memory[inProgress!!.name] = true
@@ -90,6 +92,7 @@ class MPC_looseWait: BaseCommandPlugin() {
                 val tooFar = (MathUtils.getDistance(playerFleet, target) > MAX_DIST_FROM_TARGET)
                 if (tooFar || battleOccured || interactedWithSomethingElse) {
                     done = true
+                    target.addTag(Tags.HAS_INTERACTION_DIALOG)
                     interrupted!!.memory[interrupted!!.name] = true
                     interrupted!!.memory.expire(interrupted!!.name, 2f)
                     handle!!.memory.unset(handle!!.name)
@@ -97,6 +100,7 @@ class MPC_looseWait: BaseCommandPlugin() {
                     Global.getSoundPlayer().playUISound("ui_wait_interrupt", 1f, 1f)
                 } else if (elapsedDays >= durationDays && !Global.getSector().campaignUI.isShowingDialog) {
                     done = true
+                    target.addTag(Tags.HAS_INTERACTION_DIALOG)
                     finished!!.memory[finished!!.name] = true
                     finished!!.memory.expire(finished!!.name, 0f)
                     inProgress!!.memory.unset(inProgress!!.name)

@@ -73,6 +73,7 @@ object niko_MPC_specialProcGenHandler {
         system.location.set(xCoord, yCoord)
 
         val script = niko_MPC_magnetarStarScript(magnetar)
+        magnetar.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] = script
         script.start()
 
         val renderStartOne = magnetar.radius + 50f

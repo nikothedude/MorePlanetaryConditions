@@ -171,7 +171,7 @@
 		"spriteWidth":80,
 		"spriteHeight":80,
 
-		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_station_researchMagnetarOne", "MPC_sealedForHack"],
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_station_researchMagnetarOne", "MPC_sealedForHack", "protects_from_corona_in_battle"],
 	},
 
 	"MPC_omegaDerelict_probe":{
