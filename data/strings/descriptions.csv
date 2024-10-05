@@ -24,6 +24,10 @@ The Atlas-class superfreighter is a prime target of pirate attacks. A few are la
 
 This Atlas, reborn in vacuum and fire, now delivers a cargo of death from the hand of a pirate warlord.",,,
 ,,,,,
+MPC_ramjet,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
+
+The ramjet-class tug is a rare sight in the sector, due to the fact that their blueprint was only ever distributed to frontier reinforcement centers. Featuring an overclocked drive stabilizer, these tugs are known for being rather expensive to run - but well worth the cost.",,,
+,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",
@@ -50,6 +54,7 @@ Created for the same reason as the devil-class torpedo, the pinprick is a long-r
 Unlike its cousin, the pinprick uses conventional propulsion instead of an ion thruster, enabling it to be mounted far more easily, and with no flux cost.
 
 ",,,
+MPC_heavyFlak,WEAPON,"A flak cannon upgraded with superheavy rounds, the heavy flak cannon sits in the uncomfortable role of PD specialist as a large ballistic. Thankfully, however, it's area denial capabilities make it a worthy pick.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,

@@ -1,0 +1,11 @@
+{
+    "displayName": "Standard",
+    "fluxCapacitors": 10,
+    "fluxVents": 0,
+    "goalVariant": true,
+    "hullId": "MPC_ramjet",
+    "hullMods": [],
+    "permaMods": [],
+    "variantId": "MPC_ramjet_Standard",
+    "weaponGroups": []
+}

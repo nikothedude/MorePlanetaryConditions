@@ -784,15 +784,16 @@ MPC_OManExploreNotBombardedThree,DialogOptionSelected,"$option == MPC_OManExplor
 
 No contacts reported, no autonomous defenses. Looks like the interior scans were right - this place is completely undefended. With a foothold in the central chamber, your ops chief feels confidant enough to order a general exploration order, relaxing combat protocols. Your salvors collectively sigh with relief (under their breaths, of course) and begin vigorously cataloguing their finds.
 
-The chamber itself appears to be some kind of... manufactorum? At least, thats what your tactical officer says - with a shrug. Specialized chambers of unknown make dot the walls, with slots for some kind of device behind a chrome shield. Conveyor belts shoot out from a central platform, the same kind of slot placed in equidistant 5 foot intervals atop them, and on the platform...
+The chamber itself appears to be some kind of... manufactorum? At least, thats what your tactical officer says - with a shrug. Specialized chambers of unknown make dot the walls, with slots for some kind of device behind a chromeglass shield. Conveyor belts shoot out from a central platform, the same kind of slot placed in equidistant 5 foot intervals atop them, and on the platform...
 
-""$PlayerSirOrMadam..."" a salvor's voice rings out, shaking with either excitement or terror. ""...it's some kind of AI core."" 
+""$PlayerSirOrMadam..."" a salvor's voice rings out, ""...it's some kind of AI core."" ","0:MPC_OManExploreNotBombardedAICore:Switch your camfeed to the awe-struck salvor",
+MPC_OManExploreNotBombardedAICore,DialogOptionSelected,"$option == MPC_OManExploreNotBombardedAICore",,"A truely arcane AI core sits in the center of the shakey camfeed, crystalline wiring attached to seemingly random points of it's transparent shell. As the salvor turns their head to examine it, you note the kaleidoscope-esque color fragmentation of it's ""interior"". Your salvage AI helpfully marks the core as ""Unknown"" (atypical even for the salvage AI's delta-level intelligence), further solidifying it's foreignness.
 
-A strange AI core, placed atop a pedestal, with a translucent exterior like glass. Strange machinery faintly resembling a scanning array surrounds the item, it's data-tendrils extending into an unfamiliar socket beneath itself. You've never seen anything like it before, but if the excitement rising in your chest tells you anything...
 
-This is something special.
 
-You order the AI core carefully returned to the fleet (in a shielded container, of course) for further examination. You promptly return control of the op to your chief, and consider your next steps.","0:MPC_OManExploreNotBombardedReadLogs:Investigate the preliminary report
+","0:MPC_OManExplore
+
+0:MPC_OManExploreNotBombardedReadLogs:Investigate the preliminary report
 50:MPC_OManExploreBeginSalvage:Initiate salvage operations",
 MPC_OManExploreNotBombardedReadLogs,DialogOptionSelected,"$option == MPC_OManExploreNotBombardedReadLogs",,"It appears this entire complex is one big factory - though the item produced is initially unclear. You piece things together, page by page - hyper-advanced simulation machines hooked up to a conveyor of the make you just saw - elaborate machines capable of producing annealed glass that withstood a full-power plasmatorch - and, most worryingly, a selection of unmanned ships in the shipyard with notably empty AI core slots.
 
@@ -886,6 +887,9 @@ MPC_HSBInit,DialogOptionSelected,"MPC_hegemonySpyCMD canExecute score:1000
 $option == marketVisitBar","FireBest BarShuttleDownPrintDesc
 FireBest BarPrintDesc
 BarCMD playAmbience
-$global.MPC_didKantaGoonVisit = true",,,"MPC_HSBInit"
+$global.MPC_didHSBVisit = true
+
+FireBest MPC_HSBStart",,,
+MPC_HSBStart,,,,,,
 "#END Post-slaved omega core acquisition",,,,,,
 

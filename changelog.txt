@@ -6,6 +6,28 @@ You can now plot a course onto things while hacking
 Interdict progress needed for full protection reduced to 60%
     Timing is easier
 
+The quest can now only start if the galatia questline is done
+
+Testing grounds mission turnt into a real mission
+
+New weapon: Heavy flak cannon
+    Large ballistic
+    1 second fire delay
+    Blast radius is huge - can wipe out entire fighter wings
+
+Derelict escorts no longer have a invisible burn mult, instead...
+New ship: Ramjet-Class Tug
+    Frigate
+    Derelict - Only spawns in derelict escort fleets
+        Always makes sure they have at least 19 burn in sustained burn
+    Has a juiced up drive field stabilizer that increases burn an extra +1 if sustained burn is active
+
+    More expensive to run than the Ox
+
+Fixed a rare crash on sector gen
+
+Renamed slaved omega core to fractal core
+
 3.10.0
 NOT SAVE COMPATIBLE IF YOU HAVE A OVERGROWN NANOFORGE ITEM - DELETE IT AND READD IT TO UPDATE
 

@@ -1,0 +1,80 @@
+{
+  "hullName": "Ramjet",
+  "hullId": "MPC_ramjet",
+  "hullSize": "FRIGATE",
+  "spriteName": "graphics/ships/MPC_ramjet.png",
+  "style": "LOW_TECH",
+  "height": 102,
+  "width": 112,
+  "center": [56, 51],
+  "collisionRadius": 61.5,
+  "shieldCenter": [0, -0],
+  "shieldRadius": 56,
+  "viewOffset": 0,
+  "builtInMods": [
+    "MPC_driveFieldResonator",
+    "high_maintenance",
+	"automated",
+	"rugged"
+    #"civgrade"
+  ],
+  "weaponSlots": [],
+  "engineSlots": [
+    {
+      "location": [-40, -33.5],
+      "length": 30,
+      "width": 10,
+      "angle": 180,
+      "contrailSize": 30,
+      "style": "LOW_TECH"
+    },
+    {
+      "location": [-40, 33.5],
+      "length": 30,
+      "width": 10,
+      "angle": -180,
+      "contrailSize": 30,
+      "style": "LOW_TECH"
+    },
+    {
+      "location": [-31, -6],
+      "length": 23,
+      "width": 8,
+      "angle": 180,
+      "contrailSize": 8,
+      "style": "LOW_TECH"
+    },
+    {
+      "location": [-31, 6],
+      "length": 23,
+      "width": 8,
+      "angle": -180,
+      "contrailSize": 8,
+      "style": "LOW_TECH"
+    }
+  ],
+  "bounds": [
+    -31, 9.5,
+    -23.5, 21,
+    -39, 26.5,
+    -39, 39,
+    -22.5, 42.5,
+    -7.5, 52,
+    26, 45,
+    26, 41,
+    37.5, 39.5,
+    37.5, 5.5,
+    28, 5.5,
+    28, -5.5,
+    37.5, -5.5,
+    37.5, -39.5,
+    26, -41,
+    26, -45,
+    -7.5, -52,
+    -22.5, -42.5,
+    -39, -39,
+    -39, -26.5,
+    -23.5, -21,
+    -31, -9.5
+  ]
+}

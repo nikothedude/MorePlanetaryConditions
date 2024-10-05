@@ -43,7 +43,7 @@ class MPC_kantaGoonVisitCMD: BaseCommandPlugin() {
                 if (playerLevel == null || playerLevel < 14) return false
 
                 if (!WormholeScannerPlugin.canPlayerUseWormholes()) return false
-                if (Global.getSector().memoryWithoutUpdate["\$gaATG_missionCompleted"] == false) return false // post-galatia academy
+                if (Global.getSector().memoryWithoutUpdate["\$gaATG_missionCompleted"] != true) return false // post-galatia academy
                 if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.KANTA_MAGNETAR_QUEST_STARTED] == true) return false
                 if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DID_KANTA_GOON_VISIT] == true) return false
 

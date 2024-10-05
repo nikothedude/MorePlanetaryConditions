@@ -26,7 +26,7 @@ object niko_MPC_satelliteUtils {
     @JvmStatic
     fun getSatelliteBattleTracker(): niko_MPC_satelliteBattleTracker? {
         val sectorMemory: MemoryAPI = Global.getSector()?.memoryWithoutUpdate ?: return null
-        var tracker: niko_MPC_satelliteBattleTracker? = sectorMemory[niko_MPC_ids.satelliteBattleTrackerId] as niko_MPC_satelliteBattleTracker
+        var tracker: niko_MPC_satelliteBattleTracker? = sectorMemory[niko_MPC_ids.satelliteBattleTrackerId] as? niko_MPC_satelliteBattleTracker
         if (tracker == null) {
             tracker = niko_MPC_memoryUtils.createNewSatelliteTracker()
         }

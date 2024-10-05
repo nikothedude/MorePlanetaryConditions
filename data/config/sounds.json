@@ -38,4 +38,16 @@
 			{"file":"sounds/MPC_explosion.ogg","pitch":1,"volume":1}
 		],
 	},
+	
+	# FLAK
+	"MPC_heavyFlak_fire": {
+		"sounds":[
+			{"file":"sounds/weapons/MPC_heavyFlakFire.ogg","pitch":1,"volume":1.2},
+		],
+	},
+	"MPC_heavyFlakExplosion":{ # when a flak shot's proximity fuse is triggered and it explodes
+		"sounds":[
+			{"file":"sounds/sfx_impacts/explosion_missile_01.ogg","pitch":1.2,"volume":0.8},
+		],
+	},	
 }

@@ -4,6 +4,7 @@ import com.fs.starfarer.api.GameState
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.fleet.FleetMemberType
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
@@ -317,6 +318,13 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         }
 
         val fleet = FleetFactoryV3.createFleet(params) ?: return null
+        val maxBurn = fleet.fleetData.maxBurnLevel
+        var tugsToAdd = ((10f - maxBurn) * 4f).toInt()
+        while (tugsToAdd-- > 0) {
+            val fleetMember = Global.getFactory().createFleetMember(FleetMemberType.SHIP, "MPC_ramjet_Standard")
+            fleetMember.repairTracker.cr = fleetMember.repairTracker.maxCR
+            fleet.fleetData.addFleetMember(fleetMember)
+        }
 
         market.containingLocation.addEntity(fleet)
         fleet.containingLocation = market.containingLocation
@@ -345,7 +353,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.setFaction(faction.id)
         fleet.commander?.setFaction(faction.id)
 
-        fleet.stats.fleetwideMaxBurnMod.modifyFlat(modId, ESCORT_FLEET_MAX_BURN_MULT, "${market.name} $name")
+        //fleet.stats.fleetwideMaxBurnMod.modifyFlat(modId, ESCORT_FLEET_MAX_BURN_MULT, "${market.name} $name")
 
         fleet.removeAbility(Abilities.INTERDICTION_PULSE)
         fleet.removeAbility(Abilities.SENSOR_BURST)

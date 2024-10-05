@@ -1,7 +1,7 @@
 {
     "id":"niko_morePlanetaryConditions", # For the convenience of troubleshooters, include your name and the mod name, not just an acronym.
 	"name":"What we left behind", # Displayed to the player
-	"author":"Niko",
+	"author":"Niko, Khepht (Spriter)",
     "utility":"false",
 	"version":"3.11.0",
 	"description":"Adds a variety of planetary conditions to the sector, as well as a smattering of mysteries and awe-inspiring vistas.",

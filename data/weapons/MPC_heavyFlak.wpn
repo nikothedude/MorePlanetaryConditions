@@ -1,0 +1,28 @@
+{
+	"id":"MPC_heavyFlak",  # this id must match what's in the spreadsheet
+	"specClass":"projectile",
+	"type":"BALLISTIC",
+	"size":"LARGE",
+	"displayArcRadius":400,
+	"turretSprite":"graphics/weapons/MPC_heavyFlakTurretBase.png",
+	"turretGunSprite":"graphics/weapons/MPC_heavyFlakTurretRecoil.png",
+	"hardpointSprite":"graphics/weapons/MPC_heavyFlakBase.png",
+	"hardpointGunSprite":"graphics/weapons/MPC_heavyFlakRecoil.png",	
+	"visualRecoil":8.0,  # the gun sprites are only used if this is non-0
+	"renderHints":[RENDER_BARREL_BELOW],
+	"turretOffsets":[39, -7, 39, 7],
+	"turretAngleOffsets":[0, 0],
+	"hardpointOffsets":[43, -7, 43, 7],
+	"hardpointAngleOffsets":[0, 0],
+	"barrelMode":"ALTERNATING", # or LINKED.  whether barrels fire at the same time or alternate.
+	"animationType":"MUZZLE_FLASH",  # NONE, GLOW, MUZZLE_FLASH, SMOKE
+	"muzzleFlashSpec":{"length":55.0,   # only used if animationType = MUZZLE_FLASH
+					   "spread":25.0,
+					   "particleSizeMin":8.0,
+					   "particleSizeRange":8.0,
+					   "particleDuration":0.18,
+					   "particleCount":46,
+					  "particleColor":[255,155,75,245]},
+	"projectileSpecId":"MPC_heavyFlakShot",  # projectile that will be fired
+	"fireSoundTwo":"MPC_heavyFlak_fire",	
+}

@@ -593,7 +593,7 @@ object niko_MPC_specialProcGenHandler {
         return fleet
     }
 
-    private fun genCoronaResistFleetCommander(): PersonAPI {
+    fun genCoronaResistFleetCommander(): PersonAPI {
         val person = Global.getFactory().createPerson()
         person.name = FullName("Jensen", "Skulioda", FullName.Gender.MALE)
         person.gender = FullName.Gender.MALE

@@ -16,6 +16,10 @@ Structural Weakness,niko_MPC_connectorStrutWeaknessLeft,,,,,,,,TRUE,,0,0,0,0,dat
 Supportive Presence,niko_MPC_cheapDeployment,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_cheapDeployment,Removes DP.,,,graphics/hullmods/integrated_point_defense_ai.png
 Accelerated Particle Drivers,niko_MPC_acceleratedParticleDrivers,,,,,,,,TRUE,,0,0,0,0,data.hullmods.niko_MPC_acceleratedParticleDrivers,awfawdawd,,,graphics/hullmods/integrated_point_defense_ai.png
 ,,,,,,,,,,,,,,,,,,,
+Drive Field Resonator,MPC_driveFieldResonator,2,,,"no_drop, restricted",,,FALSE,TRUE,,0,0,0,0,data.hullmods.MPC_driveFieldResonator,"Strengthens the fleet's drive bubble, increasing the maximum burn of the fleet by %s. An additional %s burn is granted if movement-enhancing abilities are active. The effect of multiple stabilizers is cumulative.
+
+Increases the ship's sensor profile by %s.",,,graphics/hullmods/MPC_driveFieldResonator.png
+,,,,,,,,,,,,,,,,,,,
 Projected Solar Shielding,niko_MPC_fighterSolarShielding,3,,,"defensive, req_spaceport, no_drop, restricted","Fighters, Defenses, Requires Dock",25000,FALSE,,,2,4,6,11,data.hullmods.niko_MPC_fighterSolarShielding,"Utilizes p-space to establish a thin baryon field around the ship's fighters, reducing the effect a star's corona may have on the fighter by %s. 
 
 In combat, reduces the energy damage fighters take by %s.",,Increases the protection from solar coronae and similar hazards to %s.,graphics/hullmods/solar_shielding.png

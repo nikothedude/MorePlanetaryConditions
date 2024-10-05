@@ -10,3 +10,4 @@ LR Mining Laser,niko_MPC_LR_mininglaser,,,,600,30,,,0,80,1,,,,ENERGY,,10,0,0.25,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Devil VLRT Pod,MPC_devilRocketPod,1,,6000,12000,,3000,0,60,2,27,3,0.026,1,HIGH_EXPLOSIVE,2000,,,20,1,,0,0,0,0,,350,25,60,400,,,"DO_NOT_AIM, DIRECT_AIM, STRIKE","missile16, LR, strike12, rare_bp, hist1t, merc, no_drop_salvage",,,,Artillery,Medium,Terrible,,,,,,,,100.4
 Pinprick VLRM Pod,MPC_pinprickPod,2,,3000,12000,,220,0,15,30,12,150,0.28,8,FRAGMENTATION,,,,10,8,0.1,0,0,0,0,,1000,20,50,60,,,"DO_NOT_AIM, ANTI_FTR","missile12, LR, rare_bp, hist1t, merc, no_drop_salvage",,,,Long Ranged Pressure,Extremely Fast,Terrible,,,,,,,,101.5
+Heavy Flak Cannon,MPC_heavyFlak,2,,4500,700,,325,,30,40,17,,,,FRAGMENTATION,100,,0,1,1,,0,10,2,10,,650,,,70,,,PD,"pd19, SR, rare_bp, merc, no_drop_salvage",,,,Point Defense (Area),,,,,Projectiles fired from this weapon have an exceptionally large blast radius.,,,,,4.05

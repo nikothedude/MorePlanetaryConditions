@@ -145,7 +145,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
             val clonedVariant = member.variant.clone()
             clonedVariant.source = VariantSource.REFIT
             clonedVariant.addMod("niko_MPC_subsumedIntelligence")
-            clonedVariant.addTag(Tags.UNRECOVERABLE) // they can drop with omega weapons
+            clonedVariant.addTag(Tags.VARIANT_UNBOARDABLE) // they can drop with omega weapons
             member.setVariant(clonedVariant, false, true)
         }
 

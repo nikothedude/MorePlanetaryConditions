@@ -1,6 +1,8 @@
 package data.scripts.shipsystems
 
 import com.fs.starfarer.api.combat.MutableShipStatsAPI
+import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.combat.BaseShipSystemScript
 import com.fs.starfarer.api.plugins.ShipSystemStatsScript
 import com.fs.starfarer.api.plugins.ShipSystemStatsScript.StatusData
@@ -21,8 +23,7 @@ class MPC_acceleratedOrdnanceFeeder : BaseShipSystemScript() {
         stats.missileRoFMult.modifyMult(id, mult)
         stats.missileWeaponFluxCostMod.modifyMult(id, 1f - FLUX_REDUCTION * 0.01f)
 
-//		ShipAPI ship = (ShipAPI)stats.getEntity();
-//		ship.blockCommandForOneFrame(ShipCommand.FIRE);
+    //		ship.blockCommandForOneFrame(ShipCommand.FIRE);
 //		ship.setHoldFireOneFrame(true);
     }
 

@@ -1,2 +1,2 @@
 name,id,demand class,base price,export value,price variability,utility,origin,tags,stack size,cargo space,icon,sound id,sound id drop,order,economyTier,econUnitOrigUnused,econUnit,baseRaidDanger,eU * base value,iconWidthMult,plugin,desc
-Slaved Omega Core,MPC_slavedOmegaCore,ai_cores,,,0,1000,,"nonecon, ai_core, no_loss_from_combat, no_drop",1000,,graphics/icons/cargo/MPC_slaved_omega_core.png,ai_core_pickup,ui_alpha_core_drop,42,,,,EXTREME,,1,,
+Fractal Core,MPC_slavedOmegaCore,ai_cores,,,0,1000,,"nonecon, ai_core, no_loss_from_combat, no_drop",1000,,graphics/icons/cargo/MPC_slaved_omega_core.png,ai_core_pickup,ui_alpha_core_drop,42,,,,EXTREME,,1,,
