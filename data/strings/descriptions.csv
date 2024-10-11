@@ -27,6 +27,9 @@ This Atlas, reborn in vacuum and fire, now delivers a cargo of death from the ha
 MPC_ramjet,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
 The ramjet-class tug is a rare sight in the sector, due to the fact that their blueprint was only ever distributed to frontier reinforcement centers. Featuring an overclocked drive stabilizer, these tugs are known for being rather expensive to run - but well worth the cost.",,,
+MPC_spearHead,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
+
+A very rare sight in the sector, owing to it's very specific role. Mbaye-Gogol was challenged with creating a cruiser-sized ship capable of bolstering frontier patrols while helping them catch up to escortees, and they delivered, with a massively oversized drive core so powerful it can be weaponized to disable the drive field of nearby ships - an unintended effect, but quite valuable, the engineers thought.",,,
 ,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 

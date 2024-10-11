@@ -6,6 +6,7 @@ import com.fs.starfarer.api.combat.ShipAPI.HullSize
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import org.lazywizard.lazylib.combat.AIUtils
 import org.magiclib.kotlin.interruptAbilitiesWithTag
 
 class MPC_driveFieldResonator: BaseHullMod() {

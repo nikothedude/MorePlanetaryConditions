@@ -1,6 +1,6 @@
 {
   "hullName": "Defense Satellite Core",
-  "hullId": "niko_MPC_defenseSatelliteCore",
+  "hullId": "MPC_satelliteCore",
   "hullSize": "CAPITAL_SHIP",
   "spriteName": "graphics/ships/niko_MPC_satellitecoreplaceholder.png",
   "style": "LOW_TECH",

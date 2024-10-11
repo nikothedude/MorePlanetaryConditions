@@ -1,0 +1,60 @@
+{
+  "variantId": "MPC_spearHead_Standard",
+  "hullId": "MPC_spearHead",
+  "displayName": "Standard",
+  "goalVariant": true,
+  "fluxCapacitors": 0,
+  "fluxVents": 1,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "targetingunit",
+    "armoredweapons",
+    "autorepair",
+    "heavyarmor",
+    "missleracks"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "mjolnir"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0002": "harpoonpod",
+        "WS0004": "harpoonpod"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0005": "squall"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0003": "dualflak"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

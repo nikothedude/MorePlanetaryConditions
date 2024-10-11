@@ -24,6 +24,16 @@ New ship: Ramjet-Class Tug
 
     More expensive to run than the Ox
 
+New ship: Spearhead-Class Battletug
+    Cruiser
+
+    Has everything the ramjet has, as well as a drive field stabilizer (so +3 burn in total)
+    Ship system - Interdiction array
+        Disables a number of enemy engines
+
+    QUITE expensive to run - 34 supplies a month
+
+
 Fixed a rare crash on sector gen
 
 Renamed slaved omega core to fractal core

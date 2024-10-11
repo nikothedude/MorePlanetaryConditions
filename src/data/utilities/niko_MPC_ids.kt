@@ -83,6 +83,7 @@ object niko_MPC_ids {
     const val temporaryFleetDespawnerId = "\$niko_MPC_temporaryFleetDespawner"
     const val derelictSatelliteFakeFactionId = "derelictSatelliteBuilder"
     const val overgrownNanoforgeFleetFactionId = "overgrownNanoforgeFleet"
+    const val derelictBoostFaction = "MPC_derelictBoostFac"
     const val satelliteTagId = "niko_MPC_satellite"
     const val scriptAdderId = "\$niko_MPC_scriptAdderId"
     const val satelliteCustomEntityRemoverScriptId = "\$niko_MPC_satelliteCustomEntityRemoverScriptId"

@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager.RouteData
 import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -22,6 +23,7 @@ import data.utilities.niko_MPC_fleetUtils.getDerelictEscortTimeouts
 import data.utilities.niko_MPC_fleetUtils.getRepLevelForArrayBonus
 import data.utilities.niko_MPC_fleetUtils.isSatelliteFleet
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.derelictBoostFaction
 import data.utilities.niko_MPC_marketUtils.getEscortFleetList
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
@@ -294,13 +296,17 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val combatPoints = if (inhabited) INHABITED_BASE_FLEET_POINTS else UNINHABITED_BASE_FLEET_POINTS
         val marketForParams = if (!inhabited) null else market
         val qualityOverride = 0.8f
+
+        val normalDerelictPoints = combatPoints * 0.7f
+        val speedDerelictPoints = combatPoints * 0.3f
+
         val params = FleetParamsV3(
             marketForParams,
             market.locationInHyperspace,
             niko_MPC_ids.overgrownNanoforgeFleetFactionId,
             qualityOverride,
             FleetTypes.PATROL_SMALL,
-            combatPoints,
+            normalDerelictPoints,
             0f,
             0f,
             0f,
@@ -308,23 +314,48 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             0f,
             0f
         )
-        params.maxShipSize = 2
-        val doctrine = Global.getSector().getFaction(niko_MPC_ids.overgrownNanoforgeFleetFactionId).doctrine.clone()
-        doctrine.shipSize = 1
-        params.doctrineOverride = doctrine
+        val paramsTwo = FleetParamsV3(
+            marketForParams,
+            market.locationInHyperspace,
+            derelictBoostFaction,
+            qualityOverride,
+            FleetTypes.PATROL_SMALL,
+            speedDerelictPoints,
+            0f,
+            0f,
+            0f,
+            0f,
+            (speedDerelictPoints * 0.2f),
+            0f
+        )
+        //params.maxShipSize = 2
+        //val doctrine = Global.getSector().getFaction(niko_MPC_ids.overgrownNanoforgeFleetFactionId).doctrine.clone()
+        //doctrine.shipSize = 1
+        //params.doctrineOverride = doctrine
         val fleetSize = market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
         if (fleetSize < 1) {
             params.ignoreMarketFleetSizeMult = true
+            paramsTwo.ignoreMarketFleetSizeMult = true
         }
 
+        params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_GAMMA
+        paramsTwo.aiCores = HubMissionWithTriggers.OfficerQuality.AI_GAMMA
+
         val fleet = FleetFactoryV3.createFleet(params) ?: return null
-        val maxBurn = fleet.fleetData.maxBurnLevel
+        val boostFleet = FleetFactoryV3.createFleet(paramsTwo) ?: return null
+        boostFleet.fleetData.membersListCopy.forEach {
+            fleet.fleetData.addFleetMember(it)
+            boostFleet.fleetData.removeFleetMember(it)
+        }
+        boostFleet.despawn()
+        /*val maxBurn = fleet.fleetData.maxBurnLevel
         var tugsToAdd = ((10f - maxBurn) * 4f).toInt()
         while (tugsToAdd-- > 0) {
             val fleetMember = Global.getFactory().createFleetMember(FleetMemberType.SHIP, "MPC_ramjet_Standard")
             fleetMember.repairTracker.cr = fleetMember.repairTracker.maxCR
             fleet.fleetData.addFleetMember(fleetMember)
-        }
+        }*/
+        fleet.fleetData.sort()
 
         market.containingLocation.addEntity(fleet)
         fleet.containingLocation = market.containingLocation
