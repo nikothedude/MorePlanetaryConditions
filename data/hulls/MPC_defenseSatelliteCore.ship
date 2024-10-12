@@ -1,6 +1,6 @@
 {
   "hullName": "Defense Satellite Core",
-  "hullId": "niko_MPC_defenseSatelliteCore",
+  "hullId": "MPC_defenseSatelliteCore",
   "hullSize": "CAPITAL_SHIP",
   "spriteName": "graphics/ships/MPC_satelliteCore.png",
   "style": "LOW_TECH",
@@ -26,36 +26,36 @@
     {
       "id": "WS0001",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "ENERGY",
       "mount": "TURRET",
-      "arc": 200,
+      "arc": 0,
       "angle": 135,
       "locations": [-28.5, 50]
     },
     {
       "id": "WS0002",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "ENERGY",
       "mount": "TURRET",
-      "arc": 200,
+      "arc": 0,
       "angle": -135,
       "locations": [-28.5, -50]
     },
     {
       "id": "WS0003",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "ENERGY",
       "mount": "TURRET",
-      "arc": 200,
+      "arc": 0,
       "angle": 45,
       "locations": [32, 51]
     },
     {
       "id": "WS0004",
       "size": "MEDIUM",
-      "type": "HYBRID",
+      "type": "ENERGY",
       "mount": "TURRET",
-      "arc": 200,
+      "arc": 0,
       "angle": -45,
       "locations": [32, -51]
     },
@@ -151,30 +151,12 @@
     },
     {
       "id": "WS0005",
-      "size": "LARGE",
-      "type": "STATION_MODULE",
-      "mount": "HARDPOINT",
+      "size": "MEDIUM",
+      "type": "ENERGY",
+      "mount": "TURRET",
       "arc": 0,
       "angle": 0,
-      "locations": [127, -0]
-    },
-    {
-      "id": "WS0006",
-      "size": "LARGE",
-      "type": "STATION_MODULE",
-      "mount": "HARDPOINT",
-      "arc": 0,
-      "angle": 0,
-      "locations": [250.5, 136.5]
-    },
-    {
-      "id": "WS0007",
-      "size": "LARGE",
-      "type": "STATION_MODULE",
-      "mount": "HARDPOINT",
-      "arc": 0,
-      "angle": 0,
-      "locations": [250.5, -136.5]
+      "locations": [105.5, -0]
     }
   ],
   "engineSlots": [

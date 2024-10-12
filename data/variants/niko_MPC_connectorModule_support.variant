@@ -3,8 +3,8 @@
   "hullId": "niko_MPC_connectorModule",
   "displayName": "Support",
   "goalVariant": false,
-  "fluxCapacitors": 9,
-  "fluxVents": 23,
+  "fluxCapacitors": 0,
+  "fluxVents": 24,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -16,16 +16,18 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "MPC_devilRocketPod",
+        "WS0001": "MPC_devilRocketPod"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-		"WS0002": "vulcan",
-        "WS0003": "vulcan"
-		}
+        "WS0003": "vulcan",
+        "WS0004": "vulcan",
+        "WS0005": "vulcan",
+        "WS0006": "vulcan"
+      }
     }
   ],
   "modules": [],

@@ -4,7 +4,7 @@
   "displayName": "Support",
   "goalVariant": false,
   "fluxCapacitors": 60,
-  "fluxVents": 37,
+  "fluxVents": 20,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
@@ -20,62 +20,58 @@
       "autofire": false,
       "mode": "LINKED",
       "weapons": {
-        "WS0014": "hurricane"
+        "WS0006": "hurricane"
       }
     },
     {
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-        "WS0015": "heavymauler",
-        "WS0017": "heavymauler"
+        "WS0003": "MPC_pinprickPod",
+        "WS0005": "MPC_pinprickPod",
+        "WS0008": "MPC_pinprickPod",
+        "WS0010": "MPC_pinprickPod",
+        "WS0011": "MPC_pinprickPod"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0016": "MPC_devilRocketPod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0007": "swarmer",
+        "WS0009": "swarmer",
+        "WS0012": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0004": "dualflak",
+        "WS0014": "dualflak",
+        "WS0015": "dualflak"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0001": "lightag",
-        "WS0002": "lightag",
-        "WS0004": "lightag"
-      }
-    },
-    {
-      "autofire": false,
-      "mode": "ALTERNATING",
-      "weapons": {
-        "WS0012": "MPC_pinprickPod",
-        "WS0013": "MPC_pinprickPod"
+        "WS0002": "vulcan"
       }
     },
     {
       "autofire": true,
       "mode": "LINKED",
       "weapons": {
-        "WS0009": "MPC_pinprickPod"
-      }
-    },
-    {
-      "autofire": true,
-      "mode": "ALTERNATING",
-      "weapons": {
-        "WS0018": "swarmer",
-        "WS0019": "swarmer",
-        "WS0020": "swarmer"
-      }
-    },
-    {
-      "autofire": false,
-      "mode": "ALTERNATING",
-      "weapons": {
-        "WS0003": "vulcan",
-        "WS0005": "vulcan",
-        "WS0006": "vulcan",
-        "WS0007": "vulcan",
-        "WS0008": "vulcan",
-        "WS0010": "dualflak",
-        "WS0011": "dualflak",
-        "WS0016": "dualflak"
+        "WS0001": "MPC_heavyFlak",
+        "WS0013": "vulcan"
       }
     }
   ],
