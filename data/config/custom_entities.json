@@ -6,9 +6,9 @@
 		"icon":"graphics/icons/entity_hollow.png",
 		"iconWidth":12,
 		"iconHeight":12,
-		"sprite":"graphics/ships/niko_MPC_fullSatellitePlaceholder.png", #placeholder sprite
-		"spriteWidth":23,
-		"spriteHeight":23,
+		"sprite":"graphics/ships/MPC_antiAsteroidSatelliteFull.png", #placeholder sprite
+		"spriteWidth":25,
+		"spriteHeight":25,
 		"defaultRadius":12, # used if radius<0 in addCustomEntity()
 		"customDescriptionId":"niko_MPC_defenseSatellite",
 		"interactionImage":"graphics/illustrations/comm_relay.jpg", #placeholder

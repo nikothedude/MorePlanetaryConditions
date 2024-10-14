@@ -31,6 +31,13 @@ MPC_spearHead,SHIP,"Although automated machines of war were forbidden in core Do
 
 A very rare sight in the sector, owing to it's very specific role. Mbaye-Gogol was challenged with creating a cruiser-sized ship capable of bolstering frontier patrols while helping them catch up to escortees, and they delivered, with a massively oversized drive core so powerful it can be weaponized to disable the drive field of nearby ships - an unintended effect, but quite valuable, the engineers thought.",,,
 ,,,,,
+MPC_pickhead,SHIP,"Fragile, lacking significant firepower, and with an abysmal comms module, the pickhead is only useful for budget close-up intercepting.
+
+The outguard defense satellite doesn't actually destroy most orbitting asteroids by itself. The pickhead interceptor is actually a mining vessel, tasked with finding mineral-rich asteroids and carefully cutting them into harvestable chunks, and turning the mundane ones into space dust.",,,
+MPC_minecart,SHIP,"Slow, bulky, and with an abysmal comms module, the minecart is still frighteningly effective in close range at both point-defense and bodyblocking for it's parent vessel.
+
+Used in tandem with the pickhead-class interceptor, the minecart is used to haul materials back to it's parent satellite for processing. The LPC features an automatic combat augment - once combat is confirmed, any new craft created will have collapsed cargo holds - significantly hampering shuttling ability and speed, but vastly improving hull integrity.",,,
+,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",

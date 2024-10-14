@@ -1,0 +1,91 @@
+{
+  "hullName": "Minecart",
+  "hullId": "MPC_minecart",
+  "hullSize": "FIGHTER",
+  "spriteName": "graphics/ships/MPC_minecart.png",
+  "style": "LOW_TECH",
+  "height": 64,
+  "width": 44,
+  "center": [22, 31],
+  "collisionRadius": 33,
+  "shieldCenter": [0, -0],
+  "shieldRadius": 31,
+  "viewOffset": 0,
+  "weaponSlots": [
+    {
+      "id": "WS0001",
+      "size": "SMALL",
+      "type": "BALLISTIC",
+      "mount": "TURRET",
+      "arc": 221,
+      "angle": 45,
+      "locations": [21.5, 10]
+    },
+    {
+      "id": "WS0002",
+      "size": "SMALL",
+      "type": "BALLISTIC",
+      "mount": "TURRET",
+      "arc": 221,
+      "angle": -45,
+      "locations": [21.5, -10]
+    },
+    {
+      "id": "WS0003",
+      "size": "SMALL",
+      "type": "BALLISTIC",
+      "mount": "TURRET",
+      "arc": 221,
+      "angle": 135,
+      "locations": [-13, 10]
+    },
+    {
+      "id": "WS0004",
+      "size": "SMALL",
+      "type": "BALLISTIC",
+      "mount": "TURRET",
+      "arc": 221,
+      "angle": -135,
+      "locations": [-13, -10]
+    },
+    {
+      "id": "WS0005",
+      "size": "SMALL",
+      "type": "MISSILE",
+      "mount": "TURRET",
+      "arc": 221,
+      "angle": 0,
+      "locations": [13.5, -0]
+    }
+  ],
+  "engineSlots": [
+    {
+      "location": [-27.5, 4.5],
+      "length": 24,
+      "width": 8,
+      "angle": 180,
+      "contrailSize": 64,
+      "style": "LOW_TECH"
+    },
+    {
+      "location": [-27.5, -4.5],
+      "length": 24,
+      "width": 8,
+      "angle": 180,
+      "contrailSize": 64,
+      "style": "LOW_TECH"
+    }
+  ],
+  "bounds": [
+    25.5, -13,
+    23.5, -15,
+    -18, -15,
+    -20, -9,
+    -27, -7,
+    -27, 7,
+    -20, 9,
+    -18, 15,
+    23.5, 15,
+    25.5, 13
+  ]
+}

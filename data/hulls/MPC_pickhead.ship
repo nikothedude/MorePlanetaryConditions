@@ -1,0 +1,82 @@
+{
+  "hullName": "Pickhead",
+  "hullId": "MPC_pickhead",
+  "hullSize": "FIGHTER",
+  "spriteName": "graphics/ships/MPC_pickhead.png",
+  "style": "LOW_TECH",
+  "height": 42,
+  "width": 38,
+  "center": [19, 20.5],
+  "collisionRadius": 23,
+  "shieldCenter": [0, -0],
+  "shieldRadius": 21,
+  "viewOffset": 0,
+  "weaponSlots": [
+    {
+      "id": "WS0001",
+      "size": "SMALL",
+      "type": "ENERGY",
+      "mount": "HIDDEN",
+      "arc": 53,
+      "angle": 0,
+      "locations": [5.5, 2]
+    },
+    {
+      "id": "WS0002",
+      "size": "SMALL",
+      "type": "ENERGY",
+      "mount": "HIDDEN",
+      "arc": 53,
+      "angle": -0,
+      "locations": [5.5, -2]
+    },
+    {
+      "id": "WS0003",
+      "size": "SMALL",
+      "type": "ENERGY",
+      "mount": "HIDDEN",
+      "arc": 77,
+      "angle": 7.5,
+      "locations": [10, 10]
+    },
+    {
+      "id": "WS0004",
+      "size": "SMALL",
+      "type": "ENERGY",
+      "mount": "HIDDEN",
+      "arc": 77,
+      "angle": -7.5,
+      "locations": [10, -10]
+    }
+  ],
+  "engineSlots": [
+    {
+      "location": [-16.5, 7.5],
+      "length": 24,
+      "width": 8,
+      "angle": 180,
+      "contrailSize": 8,
+      "style": "LOW_TECH"
+    },
+    {
+      "location": [-16.5, -7.5],
+      "length": 24,
+      "width": 8,
+      "angle": -180,
+      "contrailSize": 8,
+      "style": "LOW_TECH"
+    }
+  ],
+  "bounds": [
+    10, 0,
+    5.5, 7.5,
+    16.5, 9,
+    10, 15.5,
+    -16.5, 8.5,
+    -16.5, -8.5,
+    10, -15.5,
+    16.5, -9,
+    5.5, -7.5,
+    10, -0
+  ]
+}

@@ -33,6 +33,28 @@ New ship: Spearhead-Class Battletug
 
     QUITE expensive to run - 34 supplies a month
 
+Outguard resprited and redesigned
+
+New wings
+    Pickhead-Class Drone Interceptor
+
+        3000 engagement range
+        4 front-facing mining lasers
+        Low health
+        Fast replacement rate
+
+        Used in the outguard exclusively
+    Minecart-Class Cargo Shuttle
+
+        2000 engaegment range
+
+        4 wide-arc vulcans
+        Very high HP (2000)
+        Medium replacement rate
+
+        Used in the outguard
+        Intended use: Brick
+
 
 Fixed a rare crash on sector gen
 

@@ -10,8 +10,8 @@ MPC_preventSatelliteTurning,Prevent in-combat turning,Boolean,true,,Satellites w
 MPC_discoverSatellitesInBulk,Discover satellites in bulk,Boolean,false,,"If true, apon discovering a satellite in orbit of an entity, the entire ring will be discovered.",,,Conditions
 MPC_satelliteInterferenceDistanceBase,Interference distance base,Double,90.0,,"The higher, the further away satellites will interfere in battles from.",,,Conditions
 MPC_satelliteInterferenceDistanceMult,Interference distance mult,Double,1.0,,"The higher, the further away satellites will interfere in battles from. Applied after base.",,,Conditions
-MPC_maxSatelliteFpBonus,Max fleet FP bonus,Int,10,,"The higher, the more FP a satellite fleet can spawn with.",,,Conditions
-MPC_maxSatelliteFpBonusMult,Max fleet FP bonus mult,Double,1.0,,"The higher, the more FP a satellite fleet can spawn with. Applied after base.",,,Conditions
+MPC_maxSatelliteFpBonus,Max fleet FP bonus,Int,0,,"The higher, the more FP a satellite fleet can spawn with.",,,Conditions
+MPC_maxSatelliteFpBonusMult,Max fleet FP bonus mult,Double,0.5,,"The higher, the more FP a satellite fleet can spawn with. Applied after base.",,,Conditions
 MPC_satellitesAttackFactionIfToff,Attack same-faction if transponder off,Boolean,false,,"If true, satellites will block fleets of their own faction if their transponder is off (excluding things like smugglers)",,,Conditions
 ,,,,,,,,Conditions
 MPC_overgrownNanoforgeHeader,Nanoforge Config,Header,Nanoforge Config,,,,,Conditions
@@ -22,7 +22,7 @@ MPC_nanoforgeBudgetMultMax,Budget maximum mult,Double,1.2,,,,,Conditions
 MPC_nanoforgeMinTimeBetweenSpreads,Min time between spreading attempts (Days),Int,30,,,,,Conditions
 MPC_nanoforgeMaxTimeBetweenSpreads,Max time between spreading attempts (Days),Int,90,,,,,Conditions
 MPC_condenseOvergrownNanoforgeIntel,Puts all overgrown nanoforge into one intel tab,Boolean,false,,,,,Conditions
-MPC_nanoforgeSpeedMult,Manipulation speed mult,Double,0.6,,"Controls how powerful all the overgrown nanoforge event factors are (higher = faster spread and countermeasures)",,,Conditions
+MPC_nanoforgeSpeedMult,Manipulation speed mult,Double,0.6,,Controls how powerful all the overgrown nanoforge event factors are (higher = faster spread and countermeasures),,,Conditions
 ,,,,,,,,
 MPC_derelictEscortHeader,Derelict Escort Config,Header,Derelict Escort Config,,,,,Conditions
 MPC_derelictEscortSimulateFleets,Force simulation of escorted fleets,Boolean,true,,"If true, escorted fleets will be forcefully spawned (contrary to usual behavior where they are despawned if you are far away to save performance). Disabling will improve performance, but will make escorts return home if the fleet gets too far away from the player.",,,Conditions

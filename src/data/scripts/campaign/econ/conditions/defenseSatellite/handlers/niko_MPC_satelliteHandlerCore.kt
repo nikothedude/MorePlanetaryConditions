@@ -13,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.defenseSatellite.niko_MPC_antiAsteroidSatellitesBase
 import data.scripts.campaign.listeners.niko_MPC_satelliteFleetDespawnListener
@@ -423,6 +424,7 @@ abstract class niko_MPC_satelliteHandlerCore(
             maximumSatelliteFleetFp,
             0f, 0f, 0f, 0f, 0f, 0f
         )
+        fleetParams.aiCores = HubMissionWithTriggers.OfficerQuality.AI_GAMMA
 
         val satelliteFleet: CampaignFleetAPI =
             FleetFactoryV3.createFleet(fleetParams) //step 1: make the fleet, filled with ships
