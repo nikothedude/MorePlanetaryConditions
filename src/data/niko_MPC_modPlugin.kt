@@ -2,8 +2,12 @@ package data
 
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.PluginPick
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
+import com.fs.starfarer.api.combat.MissileAIPlugin
+import com.fs.starfarer.api.combat.MissileAPI
+import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
@@ -12,6 +16,7 @@ import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.thoughtworks.xstream.XStream
 import data.compatability.MPC_compatabilityUtils
+import data.scripts.ai.MPC_interceptorMissileAI
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
@@ -120,6 +125,17 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             if (spec.params.isNotEmpty()) spec.params += ", "
             spec.params += id
         }
+    }
+
+    override fun pickMissileAI(missile: MissileAPI?, launchingShip: ShipAPI?): PluginPick<MissileAIPlugin>? {
+        if (missile == null) return null
+
+        /*when (missile.projectileSpecId) {
+            "MPC_steelpeckerStageOne" -> return PluginPick(MPC_interceptorMissileAI(missile, launchingShip), CampaignPlugin.PickPriority.MOD_SPECIFIC)
+            "MPC_steelpeckerStageTwo" -> return PluginPick(MPC_interceptorMissileAI(missile, launchingShip), CampaignPlugin.PickPriority.MOD_SPECIFIC)
+        }*/
+
+        return null
     }
 
     /* @Override

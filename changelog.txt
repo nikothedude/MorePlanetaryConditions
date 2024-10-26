@@ -48,13 +48,14 @@ New wings
 
         2000 engaegment range
 
-        4 wide-arc vulcans
+        4 wide-arc vulcans and 1 scatter missile
         Very high HP (2000)
         Medium replacement rate
 
         Used in the outguard
         Intended use: Brick
 
+Pinprick rebalanced to lose lock on close misses
 
 Fixed a rare crash on sector gen
 

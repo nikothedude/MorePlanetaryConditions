@@ -64,6 +64,7 @@ Created for the same reason as the devil-class torpedo, the pinprick is a long-r
 Unlike its cousin, the pinprick uses conventional propulsion instead of an ion thruster, enabling it to be mounted far more easily, and with no flux cost.
 
 ",,,
+MPC_scatterpin,WEAPON,"A smaller derivative of the pinprick, the scatterpin fires a spread of flathead missiles capable of severely damaging exposed hull.",,,
 MPC_heavyFlak,WEAPON,"A flak cannon upgraded with superheavy rounds, the heavy flak cannon sits in the uncomfortable role of PD specialist as a large ballistic. Thankfully, however, it's area denial capabilities make it a worthy pick.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,

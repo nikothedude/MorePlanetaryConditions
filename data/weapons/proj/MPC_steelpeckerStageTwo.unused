@@ -1,31 +1,32 @@
 {
-	"id":"MPC_pinprickMissile",
+	"id":"MPC_steelpeckerStageTwo",
 	"specClass":"missile",
 	"missileType":"MISSILE",
-	"onFireEffect":"data.scripts.weapons.MPC_pinprickScript",
+	"onFireEffect":"data.scripts.weapons.MPC_interceptScriptTwo",
 	"sprite":"graphics/proj/MPC_pinprickMissile.png",
-	"size":[6,19],	
-	"center":[3,9.5],
+	"size":[2,9],	
+	"center":[1,4.5],
 	#"size":[10,21],	
 	#"center":[5,10.5],
-	"collisionRadius":12,
+	"collisionRadius":5,
 	"collisionClass":"MISSILE_NO_FF",
-	"explosionColor":[255,165,0,255],  # purely visual, will get a white additively blended core on top of this color
-	"explosionRadius":75, # purely visual
+	"explosionColor":[185,245,255,255],  # purely visual, will get a white additively blended core on top of this color
+	"explosionRadius":100, # purely visual
 	"flameoutTime":1, # total time from flameout to full fadeout
 	"noEngineGlowTime":0.5, # time spent without the engine glow being rendered
 	"fadeTime":0.5, # fadeout duration	
-	"engineSpec":{"turnAcc":180,
-				  "turnRate":180,
-				  "acc":100,
-				  "dec":0},
+	"engineSpec":{"turnAcc":1000,
+				  "turnRate":500,
+				  "acc":5000,
+				  "dec":5000,
+				  "maxSpeed":900},
 	"engineSlots":[{"id":"ES1",
-					"loc":[-9.5, 0],
+					"loc":[-1, 0],
 				    #"style":"ROCKET_LOW_TECH",
 				    "style":"CUSTOM",
 					"styleSpec":{
 						"mode":"QUAD_STRIP", # PARTICLES or QUAD_STRIP, determines which params are used
-						"engineColor":[252,253,233,255],
+						"engineColor":[185,245,255,255],
 						"contrailDuration":.5,
 						"contrailWidthMult":2,
 						"contrailWidthAddedFractionAtEnd":2,  # can be negative. makes trail spread out/narrow at the end
@@ -34,11 +35,26 @@
 						"contrailAngularVelocityMult":0.5f,
 						"contrailSpawnDistMult":0f, # how far away from engine it starts
 						"contrailColor":[75,75,75,150],
+						"glowSizeMult":2.0,
 						"type":"SMOKE" # GLOW or SMOKE; additive or regular blend mode
 					},
 				    "width":4.0,
 				    "length":30.0,
-				    "angle":180.0}]
+				    "angle":180.0}],
+	"behaviorSpec":{"behavior":"PROXIMITY_FUSE",
+				"range":90,
+				"explosionSpec":{"duration":0.1f,
+								 "radius":135,
+								 "coreRadius":90, # full damage within core radius - also equal to proximity fuse range
+								 "collisionClass":PROJECTILE_FF,
+								 "collisionClassByFighter":PROJECTILE_FIGHTER,
+								 "particleSizeMin":1.0,
+								 "particleSizeRange":2.0,
+								 "particleDuration":0.3,
+								 "particleCount":120,
+								 "particleColor":[255,155,155,255],
+								 "sound":"MPC_heavyFlakExplosion"},
+				}
 }
 
 			
