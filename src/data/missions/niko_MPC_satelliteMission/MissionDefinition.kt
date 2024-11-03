@@ -24,7 +24,6 @@ class MissionDefinition : MissionDefinitionPlugin {
         api.addBriefingItem("Your ships have superior maneuverability - divide and conquer")
         api.addBriefingItem("The enemy captain is extremely competent - but so are you")
 
-        api.addToFleet(FleetSide.ENEMY, "niko_MPC_defenseSatelliteCore_support", FleetMemberType.SHIP, "DSS Hbaye-Mari", false)
         api.addToFleet(FleetSide.ENEMY, "niko_MPC_defenseSatelliteCore_support", FleetMemberType.SHIP,  "DSS KHG-KH",false)
 
         val skuliodasFlagship = api.addToFleet(FleetSide.ENEMY, "legion_xiv_Elite", FleetMemberType.SHIP, true)
@@ -56,9 +55,6 @@ class MissionDefinition : MissionDefinitionPlugin {
 
         val plugin = Global.getSettings().getPlugin("officerLevelUp") as OfficerLevelupPlugin
 
-        // (64 (54 w/o skills) DP)
-
-        // (64 (54 w/o skills) DP)
         val playerFlagship = api.addToFleet(FleetSide.PLAYER, "harbinger_Strike", FleetMemberType.SHIP, true)
         val indies = Global.getSettings().createBaseFaction(Factions.INDEPENDENT)
 
@@ -77,7 +73,9 @@ class MissionDefinition : MissionDefinitionPlugin {
         playerFlagship.captain = officer
 
         api.addToFleet(FleetSide.PLAYER, "aurora_Strike", FleetMemberType.SHIP, false)
+        api.addToFleet(FleetSide.PLAYER, "aurora_Strike", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "apogee_Balanced", FleetMemberType.SHIP, false)
+        api.addToFleet(FleetSide.PLAYER, "venture_Exploration", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "venture_Exploration", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "venture_Exploration", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "heron_Strike", FleetMemberType.SHIP, false)
@@ -94,6 +92,9 @@ class MissionDefinition : MissionDefinitionPlugin {
         api.addToFleet(FleetSide.PLAYER, "buffalo_Standard", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "buffalo_Standard", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "buffalo_Standard", FleetMemberType.SHIP, false)
+        api.addToFleet(FleetSide.PLAYER, "colossus_Standard", FleetMemberType.SHIP, false)
+        api.addToFleet(FleetSide.PLAYER, "colossus_Standard", FleetMemberType.SHIP, false)
+        api.addToFleet(FleetSide.PLAYER, "colossus_Standard", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "colossus_Standard", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "colossus_Standard", FleetMemberType.SHIP, false)
         api.addToFleet(FleetSide.PLAYER, "shepherd_Frontier", FleetMemberType.SHIP, false)

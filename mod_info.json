@@ -3,7 +3,7 @@
 	"name":"What we left behind", # Displayed to the player
 	"author":"Niko, Khepht (Spriter)",
     "utility":"false",
-	"version":"3.11.0",
+	"version":"4.0.0",
 	"description":"Adds a variety of planetary conditions to the sector, as well as a smattering of mysteries and awe-inspiring vistas.",
     "gameVersion": "0.97a-RC11",
   	"jars":["jars/niko_morePlanetaryConditions.jar"],

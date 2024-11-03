@@ -1,84 +1,117 @@
 package data.console.commands
 
 import com.fs.starfarer.api.Global
-import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
-import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor.createFleet
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.CampaignTerrainAPI
+import com.fs.starfarer.api.campaign.JumpPointAPI
+import com.fs.starfarer.api.impl.campaign.abilities.GenerateSlipsurgeAbility
+import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.ids.Terrain
+import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamTerrainPlugin2
+import com.fs.starfarer.api.util.Misc
 import exerelin.campaign.intel.groundbattle.GBUtils
 import exerelin.campaign.intel.groundbattle.GroundBattleIntel
 import exerelin.campaign.intel.groundbattle.GroundUnit
 import exerelin.campaign.intel.groundbattle.GroundUnitDef
 import org.lazywizard.console.BaseCommand
-import org.lazywizard.console.Console
-import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.util.vector.Vector2f
+import java.util.*
 
 class niko_MPC_genericCommand: BaseCommand {
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        /*val playerPerson = Global.getSector().playerPerson
+        val fleet: CampaignFleetAPI = Global.getSector().playerFleet ?: return BaseCommand.CommandResult.ERROR
 
-        val disable = args.toBoolean()
-        var numToUse = if (disable) 0f else 1f
+        //JumpPointAPI jp = findGravityWell();
 
-        playerPerson.stats.setSkillLevel("captains_academician", numToUse)
-        playerPerson.stats.setSkillLevel("captains_unbound", numToUse)
-        playerPerson.stats.setSkillLevel("captains_usurper", numToUse)*/
+        //JumpPointAPI jp = findGravityWell()
 
-        /*for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
-            var baseListener: MilitaryBase? = null
-            for (listener in fleet.eventListeners) {
-                if (listener is MilitaryBase) {
-                    baseListener = listener
-                    break
-                }
-            }
-            if (baseListener == null) continue
+        var strength: Float = 0.4f
+        strength *= GenerateSlipsurgeAbility.SLIPSURGE_STRENGTH_MULT
 
-            val route = RouteManager.getInstance().getRoute(baseListener.routeSourceId, fleet)
-            if (route == null) {
-                fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
-            }
+        val angle = 50f
+        val offset = 100f
+//		Vector2f from = Misc.getUnitVectorAtDegreeAngle(angle);
+//		from.scale(offset + fleet.getRadius());
+//		Vector2f.add(from, startLoc, from);
+        //		Vector2f from = Misc.getUnitVectorAtDegreeAngle(angle);
+//		from.scale(offset + fleet.getRadius());
+//		Vector2f.add(from, startLoc, from);
+        val from: Vector2f = fleet.location
+
+        val params = SlipstreamTerrainPlugin2.SlipstreamParams2()
+
+        params.enteringSlipstreamTextOverride = "Entering slipsurge"
+        params.enteringSlipstreamTextDurationOverride = 0.1f
+        params.forceNoWindVisualEffectOnFleets = true
+
+        val width = 600f
+        var length = 1000f
+
+        length += strength * 500f
+        params.burnLevel = Math.round(400f + strength * strength * 500f)
+        params.accelerationMult = 20f + strength * strength * 280f
+
+        //params.accelerationMult = 500f;
+
+
+        //params.accelerationMult = 500f;
+        params.baseWidth = width
+        params.widthForMaxSpeed = 400f
+        params.widthForMaxSpeedMinMult = 0.34f
+        //params.widthForMaxSpeed = 300f;
+        //params.widthForMaxSpeed = 300f;
+        params.slowDownInWiderSections = true
+        //params.edgeWidth = 100f;
+        //params.accelerationMult = 100f;
+
+
+        //params.edgeWidth = 100f;
+        //params.accelerationMult = 100f;
+        params.minSpeed = Misc.getSpeedForBurnLevel((params.burnLevel - params.burnLevel / 8).toFloat())
+        params.maxSpeed = Misc.getSpeedForBurnLevel((params.burnLevel + params.burnLevel / 8).toFloat())
+        //params.lineLengthFractionOfSpeed = 0.25f * Math.max(0.25f, Math.min(1f, 30f / (float) params.burnLevel));
+        //params.lineLengthFractionOfSpeed = 0.25f * Math.max(0.25f, Math.min(1f, 30f / (float) params.burnLevel));
+        params.lineLengthFractionOfSpeed = 2000f / ((params.maxSpeed + params.minSpeed) * 0.5f)
+
+        val lineFactor = 0.1f
+        params.minSpeed *= lineFactor
+        params.maxSpeed *= lineFactor
+        //params.lineLengthFractionOfSpeed *= 0.25f;
+        //params.lineLengthFractionOfSpeed *= 1f;
+        //params.lineLengthFractionOfSpeed *= 0.25f;
+        //params.lineLengthFractionOfSpeed *= 1f;
+        params.maxBurnLevelForTextureScroll = (params.burnLevel * 0.1f).toInt()
+
+        params.particleFadeInTime = 0.01f
+        params.areaPerParticle = 1000f
+
+        val to = Misc.getUnitVectorAtDegreeAngle(angle)
+        to.scale(offset + fleet.radius + length)
+        Vector2f.add(to, from, to)
+
+        val slipstream = fleet.getContainingLocation().addTerrain(Terrain.SLIPSTREAM, params) as CampaignTerrainAPI
+        slipstream.addTag(Tags.SLIPSTREAM_VISIBLE_IN_ABYSS)
+        slipstream.setLocation(from.x, from.y)
+
+        val plugin = slipstream.plugin as SlipstreamTerrainPlugin2
+
+        val spacing = 100f
+        val incr = spacing / length
+
+        val diff = Vector2f.sub(to, from, Vector2f())
+        var f = 0f
+        while (f <= 1f) {
+            val curr = Vector2f(diff)
+            curr.scale(f)
+            Vector2f.add(curr, from, curr)
+            plugin.addSegment(curr, width - Math.min(300f, 300f * Math.sqrt(f.toDouble()).toFloat()))
+            f += incr
         }
 
-        for (fleet in Global.getSector().playerFleet.containingLocation.fleets.toList()) {
-            val existingState = fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_STATE_MEMFLAG] as? derelictEscortStates ?: continue
-            if (existingState == derelictEscortStates.RETURNING_TO_BASE) {
-                fleet.despawn(CampaignEventListener.FleetDespawnReason.PLAYER_FAR_AWAY, null)
-            }
-        }*/
+        plugin.recomputeIfNeeded()
 
-        /*val renderStartTwo = renderEndOne + 0f
-        val renderEndTwo = renderEndOne + 2000f
-        val effectMiddleDistTwo = 1000f
-        val effectSizeBothWaysTwo = 1000f
-        val paramsTwo = MagneticFieldParams(
-            effectSizeBothWaysTwo,  // terrain effect band width
-            effectMiddleDistTwo,  // terrain effect middle radius
-            magnetar,  // entity that it's around
-            renderStartTwo,  // visual band start
-            renderEndTwo,  // visual band end
-            Color(50, 20, 100, 50),  // base color
-            1f,  // probability to spawn aurora sequence, checked once/day when no aurora in progress
-            Color(50, 20, 110, 130),
-            Color(150, 30, 120, 150),
-            Color(200, 50, 130, 190),
-            Color(250, 70, 150, 240),
-            Color(200, 80, 130, 255),
-            Color(75, 0, 160),
-            Color(127, 0, 255)
-        )
-        val magfieldTwo = testSystem.addTerrain(Terrain.MAGNETIC_FIELD, paramsTwo)*/
-
-        val fp = args.toFloat()
-
-        val playerFleet = Global.getSector().playerFleet ?: return BaseCommand.CommandResult.ERROR
-        val distFromStar = playerFleet.starSystem?.star?.let { MathUtils.getDistance(playerFleet, it).toString() } ?: "N/A"
-        val containingLocaiton = playerFleet.containingLocation ?: return BaseCommand.CommandResult.ERROR
-        val fleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(createFleet(fp, null))
-        containingLocaiton.addEntity(fleet)
-        fleet.location.set(playerFleet.location.x, playerFleet.location.y)
-
-        Console.showMessage("X:${playerFleet.location.x} Y:${playerFleet.location.y}")
-        Console.showMessage("Dist from star: $distFromStar")
+        plugin.despawn(1.5f, 0.2f, Random())
 
         return BaseCommand.CommandResult.SUCCESS
     }

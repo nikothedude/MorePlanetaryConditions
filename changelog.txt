@@ -1,4 +1,7 @@
-3.11.0
+4.0.0
+NOT SAVE COMPATIBLE
+
+!!SATELLITE FP AND DERELICT ESCORT SPAWN ON PATROL DEFAULTS CHANGED! RESET LUNASETTINGS TO DEFAULT!!
 
 Magnetar terrain tooltip now tells you when the next pulse is
 You can now plot a course onto things while hacking
@@ -8,7 +11,7 @@ Interdict progress needed for full protection reduced to 60%
 
 The quest can now only start if the galatia questline is done
 
-Testing grounds mission turnt into a real mission
+Testing grounds mission turned into a real mission
 
 New weapon: Heavy flak cannon
     Large ballistic
@@ -60,6 +63,11 @@ Pinprick rebalanced to lose lock on close misses
 Fixed a rare crash on sector gen
 
 Renamed slaved omega core to fractal core
+
+Fixed a bug where baryon emitters would appear as being unbuildable
+Planetary baryon emitters now have upkeep
+
+By default, FRCs no longer spawn escorts on patrols
 
 3.10.0
 NOT SAVE COMPATIBLE IF YOU HAVE A OVERGROWN NANOFORGE ITEM - DELETE IT AND READD IT TO UPDATE

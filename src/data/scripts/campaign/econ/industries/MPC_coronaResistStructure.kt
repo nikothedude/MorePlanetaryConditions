@@ -20,9 +20,10 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
     var script: MPC_coronaResistStructureScript? = null
 
     override fun apply() {
+        super.apply(true)
+
         script = MPC_coronaResistStructureScript(market.primaryEntity, this)
         script!!.start()
-        return
     }
 
     override fun unapply() {
@@ -35,7 +36,10 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
     }
 
     override fun showWhenUnavailable(): Boolean {
-        return false
+        if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
+            return false
+        }
+        return true
     }
 
     override fun isAvailableToBuild(): Boolean {
@@ -50,13 +54,13 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
         return MPC_coronaResistScript.interferenceDetected(market.containingLocation)
     }
 
-    override fun getUnavailableReason(): String {
+    override fun getUnavailableReason(): String? {
         if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
             return "Blueprint unknown"
         }
         if (MPC_coronaResistScript.getScriptsInLocation(market.containingLocation).size > 1) {
             return "Maximum of one baryon emitter per star system"
         }
-        return super.getUnavailableReason()
+        return null
     }
 }
