@@ -16,6 +16,15 @@
 		"illustrations":{
 			"niko_MPC_magnetar":"graphics/illustrations/magnetar.jpg"
 		},
+		"planets":{
+			"MPCatmosphere3":"graphics/planets/MPC_atmosphere3.png",
+			"MPCatmosphere3_red":"graphics/planets/MPC_atmosphere3Red.png",
+			"MPCatmosphere3_blue":"graphics/planets/MPC_atmosphere3Blue.png",
+			"MPCatmosphere3_green":"graphics/planets/MPC_atmosphere3Green.png",
+			"MPCshieldInnerRed":"graphics/planets/MPC_shieldInnerRed.png",
+			"MPCshieldInnerBlue":"graphics/planets/MPC_shieldInnerBlue.png",
+			"MPCshieldInnerGreen":"graphics/planets/MPC_shieldInnerGreen.png",
+		},
 	},
 	"stations":{
 		"MPC_hightech3":"graphics/stations/station_hightech3.png",

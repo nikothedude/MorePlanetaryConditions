@@ -35,8 +35,8 @@
       "autofire": false,
       "mode": "ALTERNATING",
       "weapons": {
-		  "WS 006": "squall",
-		  "WS 009": "squall",
+		  "WS 006": "rifttorpedo",
+		  "WS 009": "rifttorpedo",
 	  }
     },
     {

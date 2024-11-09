@@ -32,5 +32,7 @@ Setups like these - ""reinforcement centers"" as they were called - were deploye
 SPECIAL - NO RANDOM SPAWN,,,,,,,
 Magnetar Devastation,niko_MPC_magnetarCondition,TRUE,FALSE,data.scripts.campaign.magnetar.niko_MPC_magnetarCondition,"$market is nigh-uninhabitable as a result of it's proximity to the nearby magnetar. The magnetic influences on the mantle cause unstable gravity, atmospheric disturbances, and spectacular volcanic eruptions that extend hundreds of kilometers above the surface until hardening into rock and continuing the doomed journey towards the star. If that wasn't bad enough, the surface is frequently slammed by pulses of highly ionized particles, rendering any speculation of a colony moot by complete lack of technological function.",graphics/icons/markets/MPC_magnetar_field_condition_icon.png,60
 ,,,,,,,
+Fractured World,MPC_fracturedWorld,TRUE,FALSE,data.scripts.campaign.singularity.MPC_fracturedWorld,"$market has spent innumerable years being devoured by the nearby black hole, and it is very likely that, at one point in time, it was much larger than it is now. Its mantle is exposed, and colonization is made utterly impossible by the incredibly harsh conditions.",graphics/icons/markets/MPC_devastation.png,200
+,,,,,,,
 UNUSED BELOW,,,,,,,
 Meson Field,niko_MPC_mesonField,TRUE,FALSE,data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonFieldCondition,"A highly energized field of mesons orbits this planet, amplifying the sensor range of anything within it. Useful for early warning systems.",graphics/icons/terrain/corona.png,10

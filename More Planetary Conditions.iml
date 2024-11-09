@@ -41,10 +41,11 @@
     <orderEntry type="library" name="Vok" level="project" />
     <orderEntry type="library" name="ExoticaTechnologies-dev" level="project" />
     <orderEntry type="library" name="secrets" level="project" />
-    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="vic" level="project" />
     <orderEntry type="library" name="secretsofthefrontier" level="project" />
     <orderEntry type="library" name="CombatChatter" level="project" />
     <orderEntry type="library" name="ED Shipyard" level="project" />
     <orderEntry type="library" name="Station-Augments" level="project" />
+    <orderEntry type="library" name="CustomizableStarSystems-v2.1" level="project" />
   </component>
 </module>

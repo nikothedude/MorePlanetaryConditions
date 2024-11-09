@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val IMPORTANT_PEOPLE = "\$MPC_importantPeople"
     const val DID_HEGEMONY_SPY_VISIT = "\$MPC_didHegemonySpyVisit"
     const val MAGNETAR_STAR_SCRIPT_MEMID = "\$MPC_magnetarStarScript"
     const val FRACTAL_OPTIMIZATIONS_SKILL_ID = "MPC_fractalOptimizations"
@@ -111,6 +112,11 @@ object niko_MPC_ids {
     const val DERELICT_ESCORT_AFFECTED_MARKETS_MEMID = "\$MPC_derelictEscortMarketsList"
     const val DERELICT_ESCORT_FLEET_TARGET_MEMID = "\$MPC_followingDerelictEscortFleet"
     const val DERELICT_ESCORT_TIMEOUTS = "\$MPC_derelictEscortTimeouts"
+
+    const val SYSTEM_ENERGY_FIELDS_LIST_MEMID = "\$MPC_energyFields"
+    const val RECENTLY_HIT_BY_ENERGY_FIELD = "\$MPC_recentlyHitByEnergyField"
+    const val DISCOVERED_SINGULARITY_READINGS = "\$MPC_discoveredSingularityReadings"
+    const val SINGULARITY_SYSTEM_MEMID = "\$MPC_singularitySystem"
 
     const val HAS_HAD_OMEGA_CORE_FOR_SOME_TIME = "\$MPC_hasHadSlavedOmegaCoreForSomeTime"
 }

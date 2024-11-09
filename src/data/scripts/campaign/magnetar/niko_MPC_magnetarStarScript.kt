@@ -64,7 +64,7 @@ class niko_MPC_magnetarStarScript(
         const val MAX_DAYS_PER_PULSE = 3.7f
 
         const val BASE_X_COORD_FOR_SYSTEM = -45800f
-        const val BASE_Y_COORD_FOR_SYSTEM = -50320f
+        const val BASE_Y_COORD_FOR_SYSTEM = -55320f
 
         const val X_COORD_VARIATION_LOWER_BOUND = -3600f
         const val X_COORD_VARIATION_UPPER_BOUND = 3900f
@@ -143,13 +143,6 @@ class niko_MPC_magnetarStarScript(
             generatedDefenders = true
         }
 
-        if (niko_MPC_modPlugin.currVersion == "3.11.0") {
-            if (magnetar.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] == null) {
-                magnetar.memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_STAR_SCRIPT_MEMID] = this
-            }
-        } else {
-            niko_MPC_debugUtils.log.warn("useless sanity check in niko_MPC_magnetarStarScript, please remove")
-        }
         val days = Misc.getDays(amount)
         daysPerPulse.advance(days)
         // we advance to make things a bit more unpredictable

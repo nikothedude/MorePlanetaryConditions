@@ -16,6 +16,7 @@ import data.scripts.campaign.magnetar.AIPlugins.MPC_slavedOmegaCoreAdminPlugin
 import data.scripts.campaign.magnetar.AIPlugins.MPC_slavedOmegaCoreOfficerPlugin
 import data.scripts.campaign.magnetar.MPC_derelictOmegaDerelictInflater
 import data.scripts.campaign.magnetar.niko_MPC_derelictOmegaFleetConstructor
+import data.scripts.campaign.singularity.MPC_ultimaJumpPointInteractionPlugin
 import data.utilities.*
 import data.utilities.niko_MPC_battleUtils.getStationFleet
 import data.utilities.niko_MPC_ids.niko_MPC_campaignPluginId
@@ -66,9 +67,17 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
         if (interactionTarget.customEntityType == Entities.DERELICT_GATEHAULER) {
             Global.getSector().memoryWithoutUpdate["\$MPC_playerFoundGatehauler"] = true
         }
+        doSatelliteStuff(interactionTarget)
 
+        if (interactionTarget is JumpPointAPI && (interactionTarget.hasTag("MPC_ultimaSingularityJumpPoint"))) {
+            return PluginPick(MPC_ultimaJumpPointInteractionPlugin(), CampaignPlugin.PickPriority.MOD_SPECIFIC)
+        }
+        return null
+    }
+
+    private fun doSatelliteStuff(interactionTarget: SectorEntityToken) {
         // SATELLITE HANDLING BELOW
-        if (interactionTarget.shouldSkip()) return null
+        if (interactionTarget.shouldSkip()) return
 
         var entityToExpandRadiusFrom: SectorEntityToken? = null // this entity will always be checked to see if it should deploy satellites
         var battle: BattleAPI? = null
@@ -85,7 +94,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
                     // which we handle in the else statement lower down in this method
                     if (stationFleet == null) { // this should never happen, but lets just be safe
                         niko_MPC_debugUtils.displayError("null stationfleet when expecting station, interaction target: " + interactionTarget.getName())
-                        return null
+                        return
                     }
                     val primaryEntity = stationFleet.getStationFleetMarket()?.primaryEntity
                     if (primaryEntity != null) { //doesnt matter if we get a station or not, we got the primary entity
@@ -110,7 +119,6 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
             }
         }
         spawnSatelliteFleetsOnPlayerIfAble(interactionTarget, targetFleet, battle, entityToExpandRadiusFrom)
-        return null
     }
 
     private fun SectorEntityToken.shouldSkip(): Boolean {

@@ -1,4 +1,17 @@
 {
+	
+	#collapseopen MUSIC
+"music":{
+		"MPC_phaseSystemAmbience":[
+			{"file":"MPC_contactWithTheUnknown.ogg","source":"sounds/music","volume":0.8},
+		],
+		"MPC_phaseDemonAmbience":[
+			{"file":"MPC_contactWithTheUnknownTwo.ogg","source":"sounds/music","volume":0.8},
+		],
+		
+	# collapseclose
+	},
+	
 	"MPC_superheavyDamperStart":[
 		{"file":"sounds/sfx_systems/damper_field_activate.ogg","pitch":0.7,"volume":1.2},
 	],
@@ -30,6 +43,11 @@
 	"MPC_rapidEMP":{
 		"sounds":[
 			{"file":"sounds/MPC_rapidEMP.ogg","pitch":1,"volume":1}
+		],
+	},
+	"MPC_energyFieldDisabled":{
+		"sounds":[
+			{"file":"sounds/MPC_energyFieldDisabled.ogg","pitch":0.6,"volume":1.2}
 		],
 	},
 	

@@ -126,3 +126,29 @@ Unlike the other structures of the system, it is neither constructed to explorat
 ,,,,,
 MPC_slavedOmegaCore,RESOURCE,"This AI core matches no known specifications, rendering it one-of-a-kind. It seems to speak in arcane riddles, disjointed sentences, unable to properly communicate with a human. However, it's processing capacity far exceeds even that of the terrifying alpha-level AI. Whatever this thing is, it's exceptionally powerful, and as a result, incredibly dangerous.",,,
 ,,,,,
+MPC_guardStationDescViolence,CUSTOM,"An old star fortress, marked by both battle and time. It's surface is pockmarked by impact craters, though seemingly filled in via a repair effort, and it's paint is faded by relentless exposure to the nearby black hole. Curiously, it most closely matches the ARMD-5 pattern star fortress - one swapped out for the more modern ARMD-6 just before the collapse. Whatever this is, it's old. Very old.
+
+It seems partially submerged in the blood-red energy field, and could be a possible vector for approach.
+",,,
+MPC_guardStationDescIntelligence,CUSTOM,"An atypical research station, following atypical design principles. These types of stations were frequently seen in specialized research operations, as their unique shape and design allowed them to be hyper-specialized towards a single purpose. No more, however - the schematics were lost during the collapse. What this one is doing out here is a mystery.
+
+It seems partially submerged in the ocean-blue energy field, and could be a possible vector for approach.
+",,,
+MPC_guardStationDescMorality,CUSTOM,"A rather ornately built station, strange for it's location. It's exterior walls are marble instead of hard steel, and it's lights are an elegant 200 lumens, barely enough to even light the outside.
+
+It seems partially submerged in the grass-green energy field, and could be a possible vector for approach.",,,
+,,,,,
+MPC_singularityStagingStation,CUSTOM,"Often nicknamed ""pontoons"", staging stations are typically used during long-term construction work prior to the creation of the to-be-built structure itself. Crafted using pre-fab blocks, they can do little more than house workers, pump air, and moor ships. Once the job is done, they are usually dismantled for what little salvage they can provide.
+
+A cursory scan indicates that it has been cold and dead for tens of cycles at the very least, possibly hundreds. Closer inspection may yield salvage.",,,
+,,,,,
+MPC_planetPhaseAlloy,PLANET,"A geologically unstable planet without a permanently formed crust. Glowing fissures and active volcanoes litter the surface, the magma they spew forth combining to form flows that travel hundreds of kilometers across the charred surface.
+
+Your sensors officer reports unusual readings - reminiscent of a phase coil - from the planet's core. The accretion disc makes further investigation difficult - you will have to enter orbit to perform any further analysis.
+
+",,,
+MPC_ultimaSingularity,PLANET,"The result of the apocalyptic collapse of a massive star. No object can escape from the black hole, nor light itself. The black hole does however emit detectable Hawking radiation due to poorly-understood quantum effects. No information can be detected beyond the event horizon with any device known to exist in the Sector. The intense gravity of the black hole rips and tears nearby objects into an accretion disc which inevitably spirals into the gravitational abyss. Extremely dangerous. This black hole is completely shrouded in an awe-inspiring accretion disc, derived from the nearby planet. 
+
+Your sensors report exotic phase readings eminating from the core of the singularity. It is unlike anything you, or any scientist in the sector, for that matter, has ever seen before. To make matters worse, this SHOULD be an impossibility - nothing can escape the event horizon of a black hole. And yet, here you are, listening to whining phase oscillation.
+",,,
+,,,,,

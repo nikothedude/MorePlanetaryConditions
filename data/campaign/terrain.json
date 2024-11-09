@@ -47,5 +47,13 @@
 		# inside active aurora/magnetic storm
 		"loopTwo":"terrain_magstorm",
 	},
+	"MPC_energyField":{
+		"plugin":"data.scripts.campaign.singularity.MPC_energyField",
+		"musicSuppression":0.0,
+		# inside field
+		#"loopOne":"terrain_magfield",
+		# inside active aurora/magnetic storm
+		#"loopTwo":"terrain_magstorm",
+	},
 }
 

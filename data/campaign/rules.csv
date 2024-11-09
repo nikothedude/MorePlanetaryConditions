@@ -423,7 +423,8 @@ MPC_kantaGoonVisitRunAwayTwo,MPC_kantaGoonVisitRunAwayTwo,,"FireBest MPC_kantaGo
 MPC_kantaGoonVisitStrideForthOne,DialogOptionSelected,"$option == MPC_kantaGoonVisitStrideForth","BeginConversation MPC_kanta_goon_one false true
 ShowSecondPerson MPC_kanta_goon_two
 FireBest MPC_kantaGoonVisitStrideForthTwo
-MPC_kantaGoonVisitCMD confront",,,
+MPC_kantaGoonVisitCMD confront
+$player.ethosCocky++",,,
 MPC_kantaGoonVisitStrideForthTwo,MPC_kantaGoonVisitStrideForthTwo,,"FireBest MPC_kantaGoonVisitTwo","Ignoring your better judgement, you square your shoulders and walk right into the center of the room, surveying the patrons. Seems your intuition was right - most of the suspicious patrons turn towards you, giving you a side-eye. A few of the in-place ones curiously look, but you assume thats more out of seeing what everyone else is looking at.
 
 ""Cocky, captain! I like that!"" a voice rings out. Turning towards it like PD moving to defend against a torpedo, you swing around, confronting a pair of shoddily-dressed goons leaning on a wall. One appears tall and young, while the other middle-aged and short. The younger one seems to be holding a remote, which he pockets with a cocky smile.",,
@@ -582,7 +583,7 @@ MPC_omegaMothershipSalvageThreeTotal,DialogOptionSelected,"$option == MPC_omegaM
 All that's left to do now is wait, keeping a close eye on the nearby magnetar to make sure it won't destroy your drive field during this tactical maneuver.
 
 About 30 minutes later, you receive a notification that the radiation levels have reached tolerable levels, that pulses have ceased, and that the sludge seems to all have turnt to dust.","0:MPC_omegaMothershipSalvageFour:Continue",
-MPC_omegaMothershipSalvageThreeRadiation,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageThreeRadiation",,"You make sure your bridge staff knows that ""You could totally take the sludge if it went sapient."" Your tactical officer nods, most likely out of professional obligation. Your pilots seem very relieved to be moving away from the radioactive sludge slowly spilling out of the mothership, and within a few minutes, you're at a safe distance.
+MPC_omegaMothershipSalvageThreeRadiation,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageThreeRadiation","$player.ethosCocky++","You make sure your bridge staff knows that ""You could totally take the sludge if it went sapient."" Your tactical officer nods, most likely out of professional obligation. Your pilots seem very relieved to be moving away from the radioactive sludge slowly spilling out of the mothership, and within a few minutes, you're at a safe distance.
 
 All that's left to do now is wait, keeping a close eye on the nearby magnetar to make sure it won't destroy your drive field during this tactical maneuver.
 
@@ -590,7 +591,8 @@ About 30 minutes later, you receive a notification that the radiation levels hav
 MPC_omegaMothershipSalvageThreeRefuse,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageThreeRefuse","MPC_omegaMothershipCMD irradiateFleet
 $global.MPC_choseToIrradiateFleet = true
 
-AddTextSmall ""Fleet severely irradiated"" textEnemyColor","You shake your head. The ship is melting, and if it keeps melting, you won't have anything left to salvage.
+AddTextSmall ""Fleet severely irradiated"" textEnemyColor
+$player.ethosRuthless++","You shake your head. The ship is melting, and if it keeps melting, you won't have anything left to salvage.
 
 Your tactical officer looks dismayed, but salutes anyway. ""Sir yes sir."" You expect as much from your bridge crew, though with a maneuver as risky as this, you did have your doubts.
 
@@ -642,7 +644,7 @@ You all just stare for a moment. Then a dock worker speaks up, excitement rising
 Noticing your confusion, they go on to explain how it's an ancient domain artifact that supposedly gives godhood to whoever sits in it. While you tune most of it out, apparently it was once important enough to start wars over.","0:MPC_omegaMothershipSalvageSitInChair:Sit in the chair
 10:MPC_omegaMothershipSalvageSitInEight:Continue",
 MPC_omegaMothershipSalvageChairReaction,MPC_omegaMothershipSalvageChairReaction,"$global.MPC_kantaMagnetarQuestStarted == true score:200",,"You recall the description given to you by Cydonia. A wooden matrix with cloth lining... this must've been the relic Kanta wanted!",,
-MPC_omegaMothershipSalvageSitInChair,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageSitInChair",,"You sit in the chair. Nothing happens. You are silently amused, while the worker looks mortified.","10:MPC_omegaMothershipSalvageSitInEight:Continue",
+MPC_omegaMothershipSalvageSitInChair,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageSitInChair","$player.ethosCocky++","You sit in the chair. Nothing happens. You are silently amused, while the worker looks mortified.","10:MPC_omegaMothershipSalvageSitInEight:Continue",
 MPC_omegaMothershipSalvageSitInEight,DialogOptionSelected,"$option == MPC_omegaMothershipSalvageSitInEight","SalvageEntity showCost
 FireAll PopulateSalvageOptions2
 $global.MPC_didMothershipExposition = true","Satisfied, you dust off your hands and return to the bridge. Noting the lack of notable finds from the salvors, you finally relinquish op control fully to your ops chief, who resumes procedural call-and-response. You take a deep breath of the now anti-rad laden air, and sigh. The next few months are going to suck.",,
@@ -880,4 +882,59 @@ The message then repeats, likely forever - without any listeners. A shiver runs 
 You shake the thought away. The domain fell, and you rose from the ashes. This will be no different. You close the comm link, save a recording for posterity, and prepare to deactivate the beacon - you'd rather not be snuck up on while sheltering behind the star.","0:MPC_leaveMagnetarBeacon:Disconnect the beacon",
 "#END Hijacked solar shield",,,,,,
 "#END Magnetar",,,,,,
+,,,,,,
+# Singularity,,,,,,
+MPC_singularityProximity,MPC_singularityProximity,,"SetTextHighlights ""something"" ""$global.MPC_singularityOrientation"" ""strong""
+niko_MPC_musicToggle """" true","As your $shipOrFleet traverses the abyss, your sensor officer reports... something, about $global.MPC_singularityOrientation from your north. It's faint... but strong, to be penetrating such thick hyperspace without any clear sensor contact.
+
+You could plot a course along the predicted origin path, or continue on your way. ","0:MPC_singularityPlotCourse:Plot a course
+10:MPC_leaveResumeMusic:Continue onto your original destination",
+MPC_singularityPlotCourse,DialogOptionSelected,"$option == MPC_singularityPlotCourse","MPC_singularityProximityCMD reroute","With a single gesture, you signal the new heading, and your helmsman obeys, though you sense a smidge of unease in their actions. You, too, share this. It's never good news to find something in the abyss. Much less drive right towards it. But you wouldn't be here without your sense of adventure. You quietly hope that whatever it is, it's mundane - like a distress beacon. But you know it won't be. 
+
+Noone survives to fire off beacons out here.","10:MPC_leaveResumeMusic:Continue",
+MPC_leaveResumeMusic,DialogOptionSelected,"$option == MPC_leaveResumeMusic","DismissDialog
+niko_MPC_musicToggle """" false true",,,
+MPC_singularityPlanetOneInteractBlurb,PopulateOptions,"$id == MPC_singularityPlanetOne
+!$global.MPC_playerKnowsSingularityPlanetOneAlloys","FireBest MPC_singularityPlanetOneInteractBlurbText
+
+$global.MPC_playerKnowsSingularityPlanetOneAlloys = true","
+",,
+MPC_singularityPlanetOneInteractBlurbText,MPC_singularityPlanetOneInteractBlurbText,,"AddStoryPoints 1","Your $shipOrFleet tiptoes through the dust, careful to avoid equal parts magma-accretion and superstition. The dustfield between you and $entityName twinkles gently through the imagined scanlines of your sensors.  You almost don't notice the ping of your PDA signalling the end of the geometric-forensic sweep through the awesome destruction just a few thousand kilometers away from the viewscreen, like a parasite slowly feeding on it's rocky prey.
+
+It would seem the asthenosphere, mantle, outer and inner core of $entityName possess extremely high concentrations of atnerithum, a highly exotic alloy of iron-platinum that natively lowers the p-resonance of nearby space. Your tactical officer would go even deeper into the specifics, but your withering stare is enough to prompt the well-respected ""executive summary"". Essentially, this material acts as a bridge into phase space, and is used most often in phase coils. This knowledge does nothing to soothe the already tense atmosphere of your bridge.",,
+,,,,,,
+# Staging Habitat,,,,,,
+MPC_SHInitialInteraction,OpenInteractionDialog,"$tag:MPC_singularityStagingStation
+!$global.MPC_exploredSingularityStagingStation","ShowDefaultVisual
+SetShortcut defaultLeave ""ESCAPE""","Your $shipOrFleet approaches $entityName.
+
+The habitat is as cold and dead as the wreckage around it. ","0:MPC_SHInvestigate:Order a scan
+50:defaultLeave:Leave",
+MPC_SHWreckInteraction,OpenInteractionDialog,"$customType == wreck
+$tag:MPC_habitatWreck score:1000
+","SetTextHighlights ""textbook scuttling""
+SalvageGenFromSeed
+FireBest ShowSalvageEntityDetails
+FireBest SalvageCheckHostile","Popcorn-craters span the hull, each centered at least loosely on key structural points. This is textbook scuttling.",,
+"#END Staging Habitat",,,,,,
+,,,,,,
+# Violence,,,,,,
+MPC_VGSInteract,OpenInteractionDialog,"$tag:MPC_singularityGuardStationViolence score:1000","ShowDefaultVisual
+SetShortcut MPC_leaveResumeMusic ""ESCAPE""
+
+niko_MPC_musicToggle ""music_encounter_mysterious"" true true",,"50:MPC_leaveResumeMusic:Leave",
+"#END Violence",,,,,,
+"#END Singularity",,,,,,
+,,,,,,
+# Historian,,,,,,
+MPC_historianBlurb00,HistorianBackstoryBlurb,"!WasHistorianBlurbShown MPC_historianBlurb00 score:50
+MPC_randomChanceCMD 40 true","SetHistorianBlurbShownAfterDelay MPC_historianBlurb00
+$global.MPC_heardOfMBAC = true
+
+SetTextHighlights ""doesn't have""","""Not even the Domain wanted to touch the abyss, with it's miserable expedition profit margins, and unappealing sensor data. It's a complete no-mans-land - anything that comes in, rarely comes out. This is true for the BC.23 ""MBAC co."" expedition - an oft forgotten effort to map the abyss by a third party.""
+
+""Strange, then, that they entered the abyss with 8 atlases containing the resources for a small colony. Even stranger still, they lacked any real survey or cartography equipment, opting for construction rigs instead. And to make matters even weirder..."" $HeOrShe takes a breath. ""MBAC co. didn't have an exploration branch. What they WERE was a technocratic shadow company with no public records, rumored to have-"" and then an emphasis on the words, ""religious connections.""
+
+""Strange, right?"" $HeOrShe smiles. ""Maybe there is something worth finding after all.""",,"appears a lot more"
+"#END Historian",,,,,,
 

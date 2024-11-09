@@ -284,4 +284,56 @@
 		"customDescriptionId":"MPC_magnetarOmegaCache",
 		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache", "MPC_omegaCache"]
 	},
+
+	"MPC_singularityGuardStation":{
+		"baseId": "station_research",
+		"defaultName":"Guard Station", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_guardStationDesc",
+		"sprite":"graphics/stations/station_hightech3.png",
+		"spriteWidth":80,
+		"spriteHeight":80,
+
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_singularityGuardStation"],
+	},
+
+	"MPC_singularityGuardStationViolence":{
+		"baseId": "MPC_singularityGuardStation",
+		"defaultName":"Scarred Fortress", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_guardStationDescViolence",
+
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_singularityGuardStation", "MPC_singularityGuardStationViolence"],
+	},
+	"MPC_singularityGuardStationIntelligence":{
+		"baseId": "MPC_singularityGuardStation",
+		"defaultName":"Research Installation", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_guardStationDescIntelligence",
+		"sprite":"graphics/stations/station_side07.png",
+		"spriteWidth":60,
+		"spriteHeight":60,
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_singularityGuardStation", "MPC_singularityGuardStationMorality"],
+	},
+	"MPC_singularityGuardStationMorality":{
+		"baseId": "MPC_singularityGuardStation",
+		"defaultName":"Ornate Station", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_guardStationDescMorality",
+		"sprite":"graphics/stations/station_jangala2.png",
+
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_singularityGuardStation", "MPC_singularityGuardStationMorality"],
+	},
+
+	"MPC_singularityStagingStation":{
+		"baseId": "orbital_habitat",
+		"defaultRadius":30, # used if radius<0 in addCustomEntity()
+		"defaultName":"Staging Habitat", # used if name=null in addCustomEntity()
+		"aOrAn":"a",
+		"nameInText":"staging habitat",
+		"shortName":"staging habitat",
+		"customDescriptionId":"MPC_singularityStagingStation",
+		"interactionImage":"graphics/illustrations/orbital_construction.jpg",
+		"icon":"graphics/icons/station0.png",
+		"sprite":"graphics/stations/station_side05.png",
+		"spriteWidth":60,
+		"spriteHeight":60,
+		"tags":["has_interaction_dialog", "neutrino", "MPC_singularityStagingStation"],
+	}
 }
