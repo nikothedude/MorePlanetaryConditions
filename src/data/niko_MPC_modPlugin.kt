@@ -18,6 +18,7 @@ import com.thoughtworks.xstream.XStream
 import data.compatability.MPC_compatabilityUtils
 import data.scripts.ai.MPC_interceptorMissileAI
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.MPC_hostileActivityHook
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
@@ -27,7 +28,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
-import data.scripts.campaign.magnetar.MPC_omegaCoreAdminChecker
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -159,6 +159,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         Global.getSector().addTransientListener(niko_MPC_omegaWeaponPurger())
+        //Global.getSector().addTransientListener(niko_MPC_spyFleetBattleListener())
+        MPC_hostileActivityHook().start()
         //MPC_omegaCoreAdminChecker().start()
 
         if (niko_MPC_settings.DISCOVER_SATELLITES_IN_BULK) {
@@ -202,6 +204,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
 
         LunaSettings.addSettingsListener(settingsChangedListener())
+
+
     }
 
     override fun beforeGameSave() {

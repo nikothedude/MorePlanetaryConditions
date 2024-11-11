@@ -34,5 +34,7 @@ Magnetar Devastation,niko_MPC_magnetarCondition,TRUE,FALSE,data.scripts.campaign
 ,,,,,,,
 Fractured World,MPC_fracturedWorld,TRUE,FALSE,data.scripts.campaign.singularity.MPC_fracturedWorld,"$market has spent innumerable years being devoured by the nearby black hole, and it is very likely that, at one point in time, it was much larger than it is now. Its mantle is exposed, and colonization is made utterly impossible by the incredibly harsh conditions.",graphics/icons/markets/MPC_devastation.png,200
 ,,,,,,,
+Forward Operating Base,MPC_FOB,FALSE,FALSE,data.scripts.campaign.magnetar.crisis.MPC_FOBCondition,"$market is a temporary military installation, lacking any significant civilian or commercial presence. Security is significantly tightened, with many docking bays converted into fighter hangars and communication relays replaced by weapon installations.",,70
+,,,,,,,
 UNUSED BELOW,,,,,,,
 Meson Field,niko_MPC_mesonField,TRUE,FALSE,data.scripts.campaign.econ.conditions.terrain.meson.niko_MPC_mesonFieldCondition,"A highly energized field of mesons orbits this planet, amplifying the sensor range of anything within it. Useful for early warning systems.",graphics/icons/terrain/corona.png,10

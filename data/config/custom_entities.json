@@ -285,6 +285,25 @@
 		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_hackableCache", "MPC_omegaCache"]
 	},
 
+	"MPC_spySupplyCache":{
+		"baseId":"supply_cache",
+		"defaultName":"Shielded Supply Cache", # used if name=null in addCustomEntity()
+		"customDescriptionId":"MPC_spySupplyCache",
+		"tags":["has_interaction_dialog", "salvageable", "neutrino", "MPC_spySupplyCache"],
+	},
+
+	"MPC_spySupplyCacheOne":{
+		"baseId":"MPC_spySupplyCache",
+	},
+
+	"MPC_spySupplyCacheTwo":{
+		"baseId":"MPC_spySupplyCache",
+	},
+
+	"MPC_spySupplyCacheThree":{
+		"baseId":"MPC_spySupplyCache",
+	},
+
 	"MPC_singularityGuardStation":{
 		"baseId": "station_research",
 		"defaultName":"Guard Station", # used if name=null in addCustomEntity(),

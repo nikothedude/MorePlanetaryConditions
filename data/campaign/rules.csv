@@ -400,9 +400,8 @@ The bigger question, your chief leads, is why. ",,
 "#END First hackable encounter no ICEbreak",,,,,,
 ,,,,,,
 # Bar,,,,,,
-MPC_kantaGoonVisitInit,DialogOptionSelected,"MPC_kantaGoonVisitCMD canVisit score:1000
-$option == marketVisitBar","FireBest BarShuttleDownPrintDesc
-FireBest BarPrintDesc
+MPC_kantaGoonVisitInit,DialogOptionSelected,"$option == marketVisitBar
+MPC_kantaGoonVisitCMD canVisit score:1000","FireBest BarShuttleDownPrintDesc
 BarCMD playAmbience
 $global.MPC_didKantaGoonVisit = true",,"MPC_kantaGoonVisitContinue:Continue",
 MPC_kantaGoonVisitContinueSel,DialogOptionSelected,"$option == MPC_kantaGoonVisitContinue","SaveCurrentVisual
@@ -931,10 +930,112 @@ MPC_historianBlurb00,HistorianBackstoryBlurb,"!WasHistorianBlurbShown MPC_histor
 MPC_randomChanceCMD 40 true","SetHistorianBlurbShownAfterDelay MPC_historianBlurb00
 $global.MPC_heardOfMBAC = true
 
-SetTextHighlights ""doesn't have""","""Not even the Domain wanted to touch the abyss, with it's miserable expedition profit margins, and unappealing sensor data. It's a complete no-mans-land - anything that comes in, rarely comes out. This is true for the BC.23 ""MBAC co."" expedition - an oft forgotten effort to map the abyss by a third party.""
+SetTextHighlights ""didn't have""","""The domain didn't want anything to do with the abyss, what with it's miserable profit margins and immunity to remote cartography. Its a complete no-mans-land - anything that goes in, rarely comes out. This was true for the BC.23 ""MBAC co."" expedition - an oft forgotten effort to map the abyss by a third party.""
 
-""Strange, then, that they entered the abyss with 8 atlases containing the resources for a small colony. Even stranger still, they lacked any real survey or cartography equipment, opting for construction rigs instead. And to make matters even weirder..."" $HeOrShe takes a breath. ""MBAC co. didn't have an exploration branch. What they WERE was a technocratic shadow company with no public records, rumored to have-"" and then an emphasis on the words, ""religious connections.""
+""Strange, then, that they entered the abyss with enough material for a full-scale colony. Even stranger still, they lacked any real survey or cartography equipment, opting for construction capability instead. And the strangest of all..."" $HeOrShe takes a breath. ""MBAC co. didn't have an exploration branch. What they WERE was a technocratic shadow company with no public records, rumored to have-"" and then an emphasis on the words, ""religious connections.""
 
-""Strange, right?"" $HeOrShe smiles. ""Maybe there is something worth finding after all.""",,"appears a lot more"
+""Weird, isn't it?"" $HeOrShe smiles.",,"appears a lot more"
 "#END Historian",,,,,,
+,,,,,,
+# Post-magnetar,,,,,,
+,,,,,,
+# BarMagn,,,,,,
+MPC_hegemonySpyInit,DialogOptionSelected,"$option == marketVisitBar
+MPC_hegemonySpyCMD canExecute score:1000
+","FireBest BarShuttleDownPrintDesc
+BarCMD playAmbience
+ShowImageVisual space_bar
+$global.MPC_didHegemonySpyVisit = true",,"MPC_hegemonySpyContinue:Continue",
+MPC_hegemonySpyContinue,DialogOptionSelected,"$option == MPC_hegemonySpyContinue","SetTextHighlights ""aren't wearing MuniSec uniforms""","You hear it before you see it. A thump, yell, the crackling of e-sticks delivering sublethal shock, the hum-clack of magcuffs and finally,  groans of pain. You barely even bother to look - drunks and narcs undergo routine arrest here, where booze flows like water and MuniSec maintains an everpresent eye.
+
+What makes you doubletake is a small detail you notice in a moment of thoughtlessness: The officials slapping magcuffs on the groaning drunk aren't wearing MuniSec uniforms. You still recognize them, but...","MPC_hegemonySpyContinueTwo:Take a closer look",
+MPC_hegemonySpyContinueTwo,DialogOptionSelected,"$option == MPC_hegemonySpyContinueTwo","SetTextHighlights ""IntSec""
+BeginConversation MPC_playerFacIntsecSquadChief false true
+ShowSecondPerson MPC_hegemonySpy","""IntSec, $playerSirOrMadam"". Your leftmost guard speaks up, their sentinel instincts naturally bringing their attention to yours. You take a sharp breath - this is no normal arrest. Whoever this patron is has caught the ire of your faction's intelligence branch, which is no small feat. Only a handful of things can prompt such brazen an arrest, and you can't say you're not curious as to what.","0:MPC_hegemonySpyFlagDownOfficer:Flag down the squad chief
+10:MPC_hegemonySpyBeStupidAndLoud:Loudly announce your presence
+20:MPC_hegemonySpyWaitForLeave:Simply wait for them to leave
+",
+MPC_hegemonySpyFlagDownOfficer,DialogOptionSelected,"$option == MPC_hegemonySpyFlagDownOfficer",,"You step on $personName's foot just two inches too far to be coincidence and with only enough force for $himOrHer to feel a pinch. 
+
+Uttering a canned apology, you both lean forward in feigned injury to exchange authphrases, leaving just enough time for encoded inquiry and response. A tug on your pant leg and a knee to yours turns you around in a distracted escort, your head buried in your PDA as you pretend not to follow the sounds of the wailing prisoner.","MPC_hegemonySpyFollowSquad:Follow your IntSec outside",
+MPC_hegemonySpyBeStupidAndLoud,DialogOptionSelected,"$option == MPC_hegemonySpyBeStupidAndLoud","$player.ethosCocky++
+$player.ethosSarcastic++","Flaunting your signature ""savoir faire"", you raise your voice and loudly announce both your presence and authority over the investigation. Your flagrant disregard for OpSec is met only by the officers' rigid stares, an energy shield blocking sight of the damage beneath. Their prisoner, turns, writhes, attempting to use your discovered status in a vain attempt at freedom. They plead, but you pay them no real mind.
+
+$personName hurries over, face filled with professional panic. ""$PlayerSirOrMadam,"" $heOrShe gasps, dropping to a hurried whisper. ""We are-in the middle of a... sensitive operation, here... please..."" $HeOrShe straightens $hisOrHer back, motions for you to follow, and quickly re-joins the ranks of IntSec officers attempting to ignore the withering stares of the patronage.","MPC_hegemonySpyFollowSquad:Follow your IntSec outside","$player.ethosStupid++
+god i wish"
+MPC_hegemonySpyWaitForLeave,DialogOptionSelected,"$option == MPC_hegemonySpyWaitForLeave","FireBest BarPrintDesc
+BarCMD showOptions","Whatever this is, you'd rather IntSec handles it internally; it's what you pay them for, after all. You take the nearest seat and make a show of ordering a cheap drink for yourself (nulling the tab, of course). A subtle nod from the IntSec chief and a drunken name-cry from the prisoner is all the acknowledgement you receive. Business quickly returns to normal once the ring of doors slamming shut fills the room.",,
+MPC_hegemonySpyFollowSquad,DialogOptionSelected,"$option == MPC_hegemonySpyFollowSquad","MPC_hegemonySpyCMD endAmbience","You follow your IntSec out of the bar and into the adjacent security post. The bewildered garrison MuniSec are ushered out with a simple flash of $personFirstName's badge and a gesture, as well as an unneeded nod from yourself. Their confused visages vanish instantly in the face of the now-blackened privacy window, triggered by a single hand-wave from $personFirstName.
+
+$HeOrShe snaps to a stiff salute, and the IntSec officers (save for the prisoner's handler) follow suit. ""It's good to have you here."" $HeOrShe nods to the adjacent cell - a basic monolith with more effort placed into containment than amenities - and prisoner transfer begins in your periphery.","MPC_hegemonySpyReport:""Report.""",
+MPC_hegemonySpyReport,DialogOptionSelected,"$option == MPC_hegemonySpyReport","SetTextHighlightColors hegemony
+SetTextHighlights ""Hegemony""","""$PlayerSirOrMadam."" $HeOrShe starts. ""Sorry for not informing you. We thought he..."" $heOrShe gestures to the flailing drunkard being forced through double-reinforced cell-doors, ""...was just a pather. But when we came to investigate..."" Your eyes are drawn to a device $heOrShe produces from $hisOrHer coat pocket - some complex piece of circuitry. ""We found links to the Hegemony."" $HeOrShe stops, letting the weight of the sentence hang in the air.","0:MPC_hegemonySpyReport2:Continue",
+MPC_hegemonySpyReport2,DialogOptionSelected,"$option == MPC_hegemonySpyReport2","SetTextHighlightColors hegemony highlight
+SetTextHighlights ""hegemony spy"" ""exotic intelligence""","$HeOrShe leans in, your cue to do the same. ""We think he might be a hegemony spy, sent to investigate reports of 'exotic intelligence'."" $heOrShe murmurs darkly, clearly referring to your ""creative"" choice of colony administrator. ""We detected a signal sent to hegemony space 5 minutes before the arrest. Data analysis is still underway, but it isn't looking good, $playerSirOrMadam.""
+
+You both turn back to the ""drunkard"", now safely sealed away behind three layers diamond-glass and two plastitanium.","0:MPC_hegemonySpyReportWhoIsSpy:Ask about the spy's identity
+10:MPC_hegemonySpyReportHowIsSpy:Ask how the spy got in to begin with
+30:MPC_hegemonySpyReportWhatWillBeDoneWithSpy:Ask what will be done with the spy
+40:MPC_hegemonySpyReportAskToSpeakWithSpy:Speak with the spy
+50:MPC_hegemonySpyLeaveOffice:Wish the chief well and depart","SetTextHighlightColors doesnt work for some reason idk why"
+MPC_hegemonySpyReportWhoIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhoIsSpy","SetEnabled MPC_hegemonySpyReportWhoIsSpy false","""Apart from the fake ID?"" $heOrShe snorts. ""Bodewell Calus, 29 year old spacer, spends most his time on Chico. Records are filled with mundane work, freighter duty, but lacking significant detail on his home life-"" $heOrShe taps $hisOrHer head. ""Typical INTSEC forging job, tell you what.""",,
+MPC_hegemonySpyReportHowIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportHowIsSpy","SetEnabled MPC_hegemonySpyReportHowIsSpy false
+FireBest MPC_hegemonySpyReportHowIsSpyImpl",,,
+MPC_hegemonySpyReportHowIsSpyImplNormal,MPC_hegemonySpyReportHowIsSpyImpl,,,"In $hisOrHer other hand, $heOrShe produces a official-looking ID. ""Fake ID."" $HeOrShe taps the placard, prompting a closer inspection, which still fails to find any flaws. ""Damn well made. If I had to guess, COMSEC had a hand in this."" $HeOrShe flips it over, inspecting it closely - before returning it to you, finger on the top-right corner. ""Cut just a nanometer too thick here, beyond our tolerances. In fact, the authenticity of his ID is what put us on this track to begin with.""
+
+$HeOrShe smiles, stowing ""Jeffery Longbottom""'s ID. ""We have an eye for this kind of thing. It's what you pay us for, hm?""",,
+MPC_hegemonySpyReportHowIsSpyImplFreePort,MPC_hegemonySpyReportHowIsSpyImpl,"MPC_hegemonySpyCMD isFreePort score:1000","SetTextHighlights ""dismantled""","""Uh-"" an awkward look spreads over $hisOrHer face. ""$PlayerSirOrMadam..."" $heOrShe trawls, trying to find a way to soften the blow of the following statement. ""...you... dismantled this place's customs control. We..."" $heOrShe takes a sucking breath. ""...don't curate who comes and goes.""
+
+You cough awkwardly, and quickly change the subject.",,
+MPC_hegemonySpyReportWhatWillBeDoneWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhatWillBeDoneWithSpy","SetEnabled MPC_hegemonySpyReportWhatWillBeDoneWithSpy false
+FireBest MPC_hegemonySpyRepatriateText","""We'll interrogate him, see what he knows. After that...""",,
+MPC_hegemonySpyRepatriateTextYes,MPC_hegemonySpyRepatriateText,"MPC_hegemonySpyCMD shouldRepatriate",,"""We'll probably repatriate him to the hegemony to maintain our good relations. This whole thing was covert, so..."" $heOrShe waves a hand. ""Not hard to sweep it under the rug.""",,
+MPC_hegemonySpyRepatriateTextNo,MPC_hegemonySpyReportWhatWillBeDoneWithSpyImpl,"!MPC_hegemonySpyCMD shouldRepatriate",,"""We'll probably keep him for a prisoner exchange later on.""",,
+MPC_hegemonySpyReportAskToSpeakWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportAskToSpeakWithSpy","SetEnabled MPC_hegemonySpyReportAskToSpeakWithSpy false","$HeOrShe chuffs, rolling $hisOrHer shoulders. ""Suit yourself, but I don't think you'll get much out of it."" $HeOrShe moves to the side, offering you unrestricted access to the cell's voicebox.
+
+It becomes quickly apparent that either this man is legitimately blackout-drunk, or a incredible actor. Either way, the chief's assertion is right - this man is impenetrable to you.",,
+MPC_hegemonySpyLeaveOffice,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOffice","SetTextHighlightColors luddic_church hegemony independent tritachyon luddic_path
+SetTextHighlights ""church"" ""hegemony"" ""KKL"" ""tri-tach"" ""pather""
+AdjustRep hegemony SUSPICIOUS -5
+AdjustRep luddic_church SUSPICIOUS -5
+AdjustRep independent SUSPICIOUS -5
+AdjustRep luddic_path SUSPICIOUS -5","You give $personFirstName a salute, and spin around to take your leave. 
+
+$HeOrShe hesitates. ""$PlayerSirOrMadam-"" $heOrShe blurts out, tone suddenly having dropped. ""-there's something I forgot to tell you."" Turning back, you make sure to give her $himOrHer your best impatient stare. $HeOrShe responds immediately. ""-we've been picking up some chatter in the external comm-nets. As soon as he sent his signal, we picked up a significant increase in church, hegemony, KKL, tri-tach and even some pather comms. Coupled with an increase of scouting fleets by those factions..."" $heOrShe takes a breath. ""I think we're looking at a coordinated operation, $playerSirOrMadam.""","MPC_hegemonySpyLeaveOfficeTwo:Continue",
+MPC_hegemonySpyLeaveOfficeTwo,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOfficeTwo","FireBest BarPrintDesc
+BarCMD showOptions
+BarCMD playAmbience
+EndConversation
+$global.MPC_investigatedHSpyPreliminary = true","With that, $heOrShe offers a salute. ""That's all, $playerSirOrMadam."" $heOrShe states, hiding the trepidation of $hisOrHer previous statement under a wall of professionalism. You nod, and take your leave, joining your bodyguards outside and back into the bar. You can't help but feel a few more pairs on eyes on the back of your neck.",,
+"#END BarMagn",,,,,,
+,,,,,,
+# Spy Caches,,,,,,
+MPC_spyCacheOneDiscover,CheckSalvageSpecial,"$customType == MPC_spySupplyCacheOne score:1000
+!$MPC_discoveredCache","$MPC_discoveredCache = true
+ShowDefaultVisual
+SetTextHighlights ""Station components"" ""fully-sized external modules""
+MPC_disruptedDelivery -9","Exploration is performed with remote salvage drones as per standard unknown-contact protocol. Stealth-paint is vaporized by plasma-torch, and your sensor panel cheerfully pings as it finally obtains a now-useless full lock.
+
+You and your officers watch as a robotic arm pries open a pod-door, to reveal...
+
+Station components. And not just things like hab-units or docking clamps - rather, fully-sized external modules, just waiting to be assembled by a construction rig. A strange thing to leave in stealth-coated cargo pods, for sure. Just what was that fleet doing out here? You exchange an uneasy glance with tactical.","MPC_spyCacheContinue:Continue",
+MPC_spyCacheTwoDiscover,CheckSalvageSpecial,"$customType == MPC_spySupplyCacheTwo score:1000
+!$MPC_discoveredCache","$MPC_discoveredCache = true
+ShowDefaultVisual
+MPC_disruptedDelivery -4","Exploration is performed with remote salvage drones as per standard unknown-contact protocol. Stealth-paint is vaporized by plasma-torch, and your sensor panel cheerfully pings as it finally obtains a now-useless full lock.
+
+You and your officers watch as a robotic arm pries open a pod-door, to reveal...
+
+Nothing more than a collection of generic materials. Odd for that fleet to have dumped them, sure, but hardly incriminating.","MPC_spyCacheContinue:Continue",
+MPC_spyCacheThreeDiscover,CheckSalvageSpecial,"$customType == MPC_spySupplyCacheThree score:1000
+!$MPC_discoveredCache","$MPC_discoveredCache = true
+ShowDefaultVisual
+MPC_disruptedDelivery -4","Exploration is performed with remote salvage drones as per standard unknown-contact protocol. Stealth-paint is vaporized by plasma-torch, and your sensor panel cheerfully pings as it finally obtains a now-useless full lock.
+
+You and your officers watch as a robotic arm pries open a pod-door, to reveal...
+
+Construction materials and machinery - cranes, a-grav locks, mass limiters, all used for heavy duty construction. Odd for that fleet to have dumped them, sure, but hardly incriminating.","MPC_spyCacheContinue:Continue",
+MPC_spyCacheContinue,DialogOptionSelected,"$option == MPC_spyCacheContinue","FireBest CheckSalvageSpecial",,,
+"#END Spy Caches",,,,,,
+"#END Post-magnetar",,,,,,
 

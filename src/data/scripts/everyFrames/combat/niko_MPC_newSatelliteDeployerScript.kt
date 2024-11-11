@@ -51,6 +51,9 @@ class niko_MPC_newSatelliteDeployerScript : BaseEveryFrameCombatPlugin() {
             return
         }
         val engine = Global.getCombatEngine()
+        if (engine.isSimulation) {
+            return engine.removePlugin(this)
+        }
         val playerGoal = engine.context.playerGoal
         val otherGoal = engine.context.otherGoal
         if (otherGoal == FleetGoal.ESCAPE || playerGoal == FleetGoal.ESCAPE) escapeBattle = true

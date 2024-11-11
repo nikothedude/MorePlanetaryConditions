@@ -38,9 +38,11 @@ class niko_MPC_genericCommand: BaseCommand {
 
         val tmp = args.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (tmp.size == 1) {
-            val playerFleet = Global.getSector().playerFleet
+            /*val playerFleet = Global.getSector().playerFleet
             Console.showMessage("X: ${playerFleet.location.x}, Y: ${playerFleet.location.y}")
-            return BaseCommand.CommandResult.SUCCESS
+            return BaseCommand.CommandResult.SUCCESS*/
+
+            
         }
 
         val sysName = "Perseus BH 19042+2CG"

@@ -19,6 +19,9 @@ object MPC_People {
     const val INTELLIGENCE_GUARD = "MPC_intelligenceGuard"
     const val MORALITY_GUARD = "MPC_moralityGuard"
 
+    const val PLAYER_FACTION_INTSEC_SQUAD_CHIEF = "MPC_playerFacIntsecSquadChief"
+    const val HEGEMONY_SPY = "MPC_hegemonySpy"
+
     fun createCharacters() {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -98,6 +101,33 @@ object MPC_People {
             MPC_importantPeople[MORALITY_GUARD] = moralityGuard
         }
 
+        if (MPC_importantPeople[PLAYER_FACTION_INTSEC_SQUAD_CHIEF] == null) {
+            val intsecChief = Global.getSector().getFaction(Factions.PLAYER).createRandomPerson(StarSystemGenerator.random)
+            intsecChief.id = PLAYER_FACTION_INTSEC_SQUAD_CHIEF
+            intsecChief.rankId = Ranks.SPECIAL_AGENT
+            intsecChief.postId = Ranks.SPECIAL_AGENT
+            intsecChief.importance = PersonImportance.VERY_HIGH
+            //moralityGuard.portraitSprite = "graphics/portraits/MPC_moralityGuard.png"
+            //moralityGuard.name = FullName("Simon", "Geria", FullName.Gender.MALE)
+            //moralityGuard.gender = FullName.Gender.MALE
+            //moralityGuard.voice = Voices.FAITHFUL
+            importantPeople.addPerson(intsecChief)
+            MPC_importantPeople[PLAYER_FACTION_INTSEC_SQUAD_CHIEF] = intsecChief
+        }
+
+        if (MPC_importantPeople[HEGEMONY_SPY] == null) {
+            val hegemonySpy = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson()
+            hegemonySpy.id = HEGEMONY_SPY
+            hegemonySpy.rankId = Ranks.CITIZEN
+            hegemonySpy.postId = Ranks.CITIZEN
+            hegemonySpy.importance = PersonImportance.MEDIUM
+            hegemonySpy.portraitSprite = "graphics/portraits/portrait23.png"
+            hegemonySpy.name = FullName("Bodewell", "Calus", FullName.Gender.MALE)
+            hegemonySpy.gender = FullName.Gender.MALE
+            //moralityGuard.voice = Voices.FAITHFUL
+            importantPeople.addPerson(hegemonySpy)
+            MPC_importantPeople[HEGEMONY_SPY] = hegemonySpy
+        }
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true
     }
 }

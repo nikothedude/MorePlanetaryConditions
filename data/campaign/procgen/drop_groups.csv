@@ -1,0 +1,6 @@
+commodity,group,freq
+,,
+metals,MPC_stationComponent,20
+supplies,MPC_stationComponent,10
+rare_metals,MPC_stationComponent,1
+,,

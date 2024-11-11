@@ -1,8 +1,9 @@
 package data.utilities
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
@@ -33,9 +34,24 @@ import org.lwjgl.util.vector.Vector2f
 
 object niko_MPC_marketUtils {
 
-    val commodities = hashSetOf(Commodities.FUEL, Commodities.DRUGS, Commodities.FOOD, Commodities.DOMESTIC_GOODS,
-    Commodities.HEAVY_MACHINERY, Commodities.HAND_WEAPONS, Commodities.METALS, Commodities.ORE, Commodities.RARE_METALS, Commodities.RARE_ORE,
-    Commodities.SHIPS, Commodities.LUXURY_GOODS, Commodities.ORGANICS, Commodities.VOLATILES, Commodities.SUPPLIES, "IndEvo_parts", )
+    val commodities = hashSetOf(
+        Commodities.FUEL,
+        Commodities.DRUGS,
+        Commodities.FOOD,
+        Commodities.DOMESTIC_GOODS,
+        Commodities.HEAVY_MACHINERY,
+        Commodities.HAND_WEAPONS,
+        Commodities.METALS,
+        Commodities.ORE,
+        Commodities.RARE_METALS,
+        Commodities.RARE_ORE,
+        Commodities.SHIPS,
+        Commodities.LUXURY_GOODS,
+        Commodities.ORGANICS,
+        Commodities.VOLATILES,
+        Commodities.SUPPLIES,
+        "IndEvo_parts",
+    )
 
     @JvmStatic
     fun removeNonNanoforgeProducableCommodities(list: MutableSet<String>): MutableSet<String> {
@@ -238,7 +254,7 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.getOvergrownNanoforgeIndustryHandler(): overgrownNanoforgeIndustryHandler? {
-        return memoryWithoutUpdate[niko_MPC_ids.overgrownNanoforgeHandlerMemoryId] as? overgrownNanoforgeIndustryHandler
+        return memoryWithoutUpdate[overgrownNanoforgeHandlerMemoryId] as? overgrownNanoforgeIndustryHandler
     }
 
     fun MarketAPI.setOvergrownNanoforgeIndustryHandler(handler: overgrownNanoforgeIndustryHandler?) {
@@ -354,5 +370,20 @@ object niko_MPC_marketUtils {
             fleetList = memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEETS_MEMID] as HashMap<CampaignFleetAPI, CampaignFleetAPI>
         }
         return fleetList
+    }
+
+    fun MarketAPI.getStockpileNumConsumedOverTime(com: CommodityOnMarketAPI, days: Float, available: Int = com.available): Float {
+        val demand = com.maxDemand
+
+        var deficitDrawBaseAmount = BaseIndustry.getSizeMult(demand.toFloat()) - BaseIndustry.getSizeMult(available.toFloat())
+        deficitDrawBaseAmount *= com.commodity.econUnit
+
+        val drawAmount = deficitDrawBaseAmount * days / 30f
+
+        return drawAmount
+    }
+
+    fun MarketAPI.isFractalMarket(): Boolean {
+        return (admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID)
     }
 }

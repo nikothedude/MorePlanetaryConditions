@@ -20,6 +20,11 @@ Magnetar guardian now has rift torps
     You asked for this
 
 Historian now has WWLB dialogue
+Certain dialog options now adjust your ethos
+
+The world now reacts to your exploration in the magnetar system
+    The hegemony will get angry if you use a fractal core in a colony
+    The diktat is very interested in your ionized pulse
 
 4.0.0
 NOT SAVE COMPATIBLE
