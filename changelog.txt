@@ -18,6 +18,7 @@ Added a new secret to the abyss
 
 Magnetar guardian now has rift torps
     You asked for this
+Magnetar guard fleets now ignore your comms
 
 Historian now has WWLB dialogue
 Certain dialog options now adjust your ethos

@@ -1,30 +1,29 @@
 package data.scripts.campaign.magnetar.crisis
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.FactionAPI
-import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
-import com.fs.starfarer.api.impl.campaign.ids.Industries
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel.EventStageData
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
+import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission
 import com.fs.starfarer.api.impl.campaign.submarkets.LocalResourcesSubmarketPlugin
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getStockpileNumConsumedOverTime
+import data.utilities.niko_MPC_settings
+import indevo.exploration.minefields.conditions.MineFieldCondition
+import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
 import org.magiclib.kotlin.getLocalResources
 import java.awt.Color
@@ -35,7 +34,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     companion object {
         const val FOB_MARKET_ID = "MPC_fractalBacklashFOB"
         val fleetTypesToWeight = hashMapOf(
-            Pair(FleetTypes.TRADE, 5f),
+           // Pair(FleetTypes.TRADE, 5f),
             Pair(FleetTypes.TRADE_LINER, 5f),
             Pair(FleetTypes.TRADE_SMALL, 5f),
         )
@@ -47,7 +46,6 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             Pair(Factions.DIKTAT, 1f),
             Pair(Factions.LUDDIC_PATH, 1f),
         )
-        const val SPY_HASSLE_REASON = "MPC_spyFleet"
 
         fun getFOB(): MarketAPI? = Global.getSector().economy.getMarket(FOB_MARKET_ID)
         fun getContributingFactions(): List<FactionAPI> {
@@ -118,6 +116,14 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         return 10f
     }
 
+    override fun rollEvent(intel: HostileActivityEventIntel?, stage: EventStageData?) {
+        super.rollEvent(intel, stage)
+
+        val data = HAERandomEventData(this, stage)
+        stage!!.rollData = data
+        intel!!.sendUpdateIfPlayerHasIntel(data, false)
+    }
+
     override fun fireEvent(intel: HostileActivityEventIntel?, stage: BaseEventIntel.EventStageData?): Boolean {
         return super.fireEvent(intel, stage)
     }
@@ -128,14 +134,20 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         FOBStation.market = market
 
         market.addIndustry(Industries.STARFORTRESS_HIGH)
+        market.getIndustry(Industries.STARFORTRESS_HIGH).aiCoreId = Commodities.ALPHA_CORE // yes, theyre hypocrits
         market.addIndustry(Industries.HIGHCOMMAND)
         market.getIndustry(Industries.HIGHCOMMAND).isImproved = true
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
+        market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData("drone_replicator", null)
         market.addIndustry(Industries.ORBITALWORKS)
         market.addIndustry(Industries.WAYSTATION)
 
         market.addCondition("MPC_FOB")
+        if (niko_MPC_settings.indEvoEnabled) {
+            market.addCondition(Ids.COND_MINERING)
+            (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()
+        }
 
         market.isUseStockpilesForShortages = true
         val submarket = market.getLocalResources() as? LocalResourcesSubmarketPlugin ?: return

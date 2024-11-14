@@ -16,7 +16,6 @@ import data.scripts.campaign.magnetar.crisis.MPC_spyFleetScript
 import data.utilities.niko_MPC_ids
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
-import org.lazywizard.lazylib.VectorUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getSourceMarket
 
@@ -31,17 +30,20 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
     var finishedUnloading = false
 
     var fakeTravelTarget: MarketAPI? = null
-    var fakeCommodityType: String? = null
+    var fakeCommodityTypeOne: String? = null
+    var fakeCommodityTypeTwo: String? = null
 
     var ranOnce = false
+    var playerSawCache = false
 
     companion object {
         const val DISTANCE = 5f
         const val DISTANCE_TO_TARGET_TO_DELIVER = 300f
 
         const val TIME_NEEDED_TO_FINISH_UNLOADING = 1.2f // days
+        const val CHANCE_TO_DESPAWN = 40f
         val cacheTypeToWeight = hashMapOf(
-            Pair("MPC_spySupplyCacheOne", 5f),
+            Pair("MPC_spySupplyCacheOne", 2f),
             Pair("MPC_spySupplyCacheTwo", 5f),
             Pair("MPC_spySupplyCacheThree", 5f),
         )
@@ -52,11 +54,12 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
 
     override fun init(script: MPC_spyFleetScript) {
         fakeTravelTarget = Global.getSector().playerFaction.getMarketsCopy().firstOrNull { it.primaryEntity?.containingLocation == script.system }
-        fakeCommodityType = possibleCommoditiesToUse.random()
+        fakeCommodityTypeOne = possibleCommoditiesToUse.random()
+        fakeCommodityTypeTwo = possibleCommoditiesToUse.random()
 
         targetLoc = script.system.createToken(getStationPoint(script.system))
         script.fleet.clearAssignments()
-        script.fleet.addAssignment(FleetAssignment.DELIVER_RESOURCES, targetLoc, 99999f, "traveling to ${fakeTravelTarget?.name}")
+        script.fleet.addAssignment(FleetAssignment.DELIVER_RESOURCES, targetLoc, 99999f, "delivering $fakeCommodityTypeOne to ${fakeTravelTarget?.name}")
 
         script.fleet.isTransponderOn = false
         script.fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FORCE_TRANSPONDER_OFF] = true
@@ -89,7 +92,7 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
                     FleetAssignment.PATROL_SYSTEM,
                     script.system.planets.randomOrNull(),
                     999999f,
-                    "traveling to ${fakeTravelTarget?.name}",
+                    "delivering $fakeCommodityTypeOne to ${fakeTravelTarget?.name}",
                     null
                 )
             }
@@ -98,7 +101,7 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
             return
         } else if (script.fleet.currentAssignment?.assignment != FleetAssignment.DELIVER_RESOURCES) {
             script.fleet.clearAssignments()
-            script.fleet.addAssignment(FleetAssignment.DELIVER_RESOURCES, targetLoc, 99999f, "traveling to ${fakeTravelTarget?.name}")
+            script.fleet.addAssignment(FleetAssignment.DELIVER_RESOURCES, targetLoc, 99999f, "delivering $fakeCommodityTypeOne to ${fakeTravelTarget?.name}")
         }
         val distToThing = MathUtils.getDistance(script.fleet, targetLoc)
         if (distToThing <= DISTANCE_TO_TARGET_TO_DELIVER) {
@@ -112,15 +115,15 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
         }
         if (timeSpentUnloading >= TIME_NEEDED_TO_FINISH_UNLOADING) {
             script.fleet.clearAssignments()
-            script.fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, script.fleet.getSourceMarket().primaryEntity, 999999f, "delivering $fakeCommodityType to ${script.fleet.getSourceMarket().name}")
+            script.fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, script.fleet.getSourceMarket().primaryEntity, 999999f, "delivering $fakeCommodityTypeTwo to ${script.fleet.getSourceMarket().name}")
             done = true
             finishedUnloading = true
             script.fleet.memoryWithoutUpdate[niko_MPC_ids.SPY_FLEET_LAID_CACHE] = true
-            trySpawningCache(script)
+            finishedLoadingCache(script)
         }
     }
 
-    private fun trySpawningCache(script: MPC_spyFleetScript) {
+    private fun finishedLoadingCache(script: MPC_spyFleetScript) {
         if (script.fleet.visibilityLevelToPlayerFleet >= SectorEntityToken.VisibilityLevel.SENSOR_CONTACT) {
             val picker = WeightedRandomPicker<String>()
             cacheTypeToWeight.forEach { picker.add(it.key, it.value) }
@@ -134,6 +137,12 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
             MPC_distanceBasedDespawnScript(cache, 3500f).start()
             cache.memoryWithoutUpdate[niko_MPC_ids.SPY_CACHE_FLEET] = script.fleet
             script.fleet.memoryWithoutUpdate[niko_MPC_ids.SPY_FLEET_CACHE] = cache
+            playerSawCache = true
+        } else {
+            val randFloat = MathUtils.getRandom().nextFloat()
+            if (randFloat <= CHANCE_TO_DESPAWN * 0.01f) {
+                script.fleet.despawn()
+            }
         }
     }
 

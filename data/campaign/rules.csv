@@ -959,11 +959,18 @@ MPC_hegemonySpyFlagDownOfficer,DialogOptionSelected,"$option == MPC_hegemonySpyF
 
 Uttering a canned apology, you both lean forward in feigned injury to exchange authphrases, leaving just enough time for encoded inquiry and response. A tug on your pant leg and a knee to yours turns you around in a distracted escort, your head buried in your PDA as you pretend not to follow the sounds of the wailing prisoner.","MPC_hegemonySpyFollowSquad:Follow your IntSec outside",
 MPC_hegemonySpyBeStupidAndLoud,DialogOptionSelected,"$option == MPC_hegemonySpyBeStupidAndLoud","$player.ethosCocky++
-$player.ethosSarcastic++","Flaunting your signature ""savoir faire"", you raise your voice and loudly announce both your presence and authority over the investigation. Your flagrant disregard for OpSec is met only by the officers' rigid stares, an energy shield blocking sight of the damage beneath. Their prisoner, turns, writhes, attempting to use your discovered status in a vain attempt at freedom. They plead, but you pay them no real mind.
+$player.ethosSarcastic++
+
+AdjustRepActivePerson SUSPICIOUS -1","Flaunting your signature ""savoir faire"", you raise your voice and loudly announce both your presence and authority over the investigation. Your flagrant disregard for OpSec is met only by the officers' rigid stares, an energy shield blocking sight of the damage beneath. Their prisoner, turns, writhes, attempting to use your discovered status in a vain attempt at freedom. They plead, but you pay them no real mind.
 
 $personName hurries over, face filled with professional panic. ""$PlayerSirOrMadam,"" $heOrShe gasps, dropping to a hurried whisper. ""We are-in the middle of a... sensitive operation, here... please..."" $HeOrShe straightens $hisOrHer back, motions for you to follow, and quickly re-joins the ranks of IntSec officers attempting to ignore the withering stares of the patronage.","MPC_hegemonySpyFollowSquad:Follow your IntSec outside","$player.ethosStupid++
 god i wish"
-MPC_hegemonySpyWaitForLeave,DialogOptionSelected,"$option == MPC_hegemonySpyWaitForLeave","FireBest BarPrintDesc
+MPC_hegemonySpyWaitForLeave,DialogOptionSelected,"$option == MPC_hegemonySpyWaitForLeave","AdjustRep hegemony SUSPICIOUS -5
+AdjustRep luddic_church SUSPICIOUS -5
+AdjustRep independent SUSPICIOUS -5
+AdjustRep luddic_path SUSPICIOUS -5
+
+FireBest BarPrintDesc
 BarCMD showOptions","Whatever this is, you'd rather IntSec handles it internally; it's what you pay them for, after all. You take the nearest seat and make a show of ordering a cheap drink for yourself (nulling the tab, of course). A subtle nod from the IntSec chief and a drunken name-cry from the prisoner is all the acknowledgement you receive. Business quickly returns to normal once the ring of doors slamming shut fills the room.",,
 MPC_hegemonySpyFollowSquad,DialogOptionSelected,"$option == MPC_hegemonySpyFollowSquad","MPC_hegemonySpyCMD endAmbience","You follow your IntSec out of the bar and into the adjacent security post. The bewildered garrison MuniSec are ushered out with a simple flash of $personFirstName's badge and a gesture, as well as an unneeded nod from yourself. Their confused visages vanish instantly in the face of the now-blackened privacy window, triggered by a single hand-wave from $personFirstName.
 
@@ -978,8 +985,8 @@ You both turn back to the ""drunkard"", now safely sealed away behind three laye
 30:MPC_hegemonySpyReportWhatWillBeDoneWithSpy:Ask what will be done with the spy
 40:MPC_hegemonySpyReportAskToSpeakWithSpy:Speak with the spy
 50:MPC_hegemonySpyLeaveOffice:Wish the chief well and depart","SetTextHighlightColors doesnt work for some reason idk why"
-MPC_hegemonySpyReportWhoIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhoIsSpy","SetEnabled MPC_hegemonySpyReportWhoIsSpy false","""Apart from the fake ID?"" $heOrShe snorts. ""Bodewell Calus, 29 year old spacer, spends most his time on Chico. Records are filled with mundane work, freighter duty, but lacking significant detail on his home life-"" $heOrShe taps $hisOrHer head. ""Typical INTSEC forging job, tell you what.""",,
-MPC_hegemonySpyReportHowIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportHowIsSpy","SetEnabled MPC_hegemonySpyReportHowIsSpy false
+MPC_hegemonySpyReportWhoIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhoIsSpy","RemoveOption MPC_hegemonySpyReportWhoIsSpy false","""Apart from the fake ID?"" $heOrShe snorts. ""Bodewell Calus, 29 year old spacer, spends most his time on Chico. Records are filled with mundane work, freighter duty, but lacking significant detail on his home life-"" $heOrShe taps $hisOrHer head. ""Typical INTSEC forging job, tell you what.""",,
+MPC_hegemonySpyReportHowIsSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportHowIsSpy","RemoveOption MPC_hegemonySpyReportHowIsSpy false
 FireBest MPC_hegemonySpyReportHowIsSpyImpl",,,
 MPC_hegemonySpyReportHowIsSpyImplNormal,MPC_hegemonySpyReportHowIsSpyImpl,,,"In $hisOrHer other hand, $heOrShe produces a official-looking ID. ""Fake ID."" $HeOrShe taps the placard, prompting a closer inspection, which still fails to find any flaws. ""Damn well made. If I had to guess, COMSEC had a hand in this."" $HeOrShe flips it over, inspecting it closely - before returning it to you, finger on the top-right corner. ""Cut just a nanometer too thick here, beyond our tolerances. In fact, the authenticity of his ID is what put us on this track to begin with.""
 
@@ -987,11 +994,11 @@ $HeOrShe smiles, stowing ""Jeffery Longbottom""'s ID. ""We have an eye for this 
 MPC_hegemonySpyReportHowIsSpyImplFreePort,MPC_hegemonySpyReportHowIsSpyImpl,"MPC_hegemonySpyCMD isFreePort score:1000","SetTextHighlights ""dismantled""","""Uh-"" an awkward look spreads over $hisOrHer face. ""$PlayerSirOrMadam..."" $heOrShe trawls, trying to find a way to soften the blow of the following statement. ""...you... dismantled this place's customs control. We..."" $heOrShe takes a sucking breath. ""...don't curate who comes and goes.""
 
 You cough awkwardly, and quickly change the subject.",,
-MPC_hegemonySpyReportWhatWillBeDoneWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhatWillBeDoneWithSpy","SetEnabled MPC_hegemonySpyReportWhatWillBeDoneWithSpy false
+MPC_hegemonySpyReportWhatWillBeDoneWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportWhatWillBeDoneWithSpy","RemoveOption MPC_hegemonySpyReportWhatWillBeDoneWithSpy false
 FireBest MPC_hegemonySpyRepatriateText","""We'll interrogate him, see what he knows. After that...""",,
 MPC_hegemonySpyRepatriateTextYes,MPC_hegemonySpyRepatriateText,"MPC_hegemonySpyCMD shouldRepatriate",,"""We'll probably repatriate him to the hegemony to maintain our good relations. This whole thing was covert, so..."" $heOrShe waves a hand. ""Not hard to sweep it under the rug.""",,
 MPC_hegemonySpyRepatriateTextNo,MPC_hegemonySpyReportWhatWillBeDoneWithSpyImpl,"!MPC_hegemonySpyCMD shouldRepatriate",,"""We'll probably keep him for a prisoner exchange later on.""",,
-MPC_hegemonySpyReportAskToSpeakWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportAskToSpeakWithSpy","SetEnabled MPC_hegemonySpyReportAskToSpeakWithSpy false","$HeOrShe chuffs, rolling $hisOrHer shoulders. ""Suit yourself, but I don't think you'll get much out of it."" $HeOrShe moves to the side, offering you unrestricted access to the cell's voicebox.
+MPC_hegemonySpyReportAskToSpeakWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportAskToSpeakWithSpy","RemoveOption MPC_hegemonySpyReportAskToSpeakWithSpy false","$HeOrShe chuffs, rolling $hisOrHer shoulders. ""Suit yourself, but I don't think you'll get much out of it."" $HeOrShe moves to the side, offering you unrestricted access to the cell's voicebox.
 
 It becomes quickly apparent that either this man is legitimately blackout-drunk, or a incredible actor. Either way, the chief's assertion is right - this man is impenetrable to you.",,
 MPC_hegemonySpyLeaveOffice,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOffice","SetTextHighlightColors luddic_church hegemony independent tritachyon luddic_path
@@ -1037,5 +1044,10 @@ You and your officers watch as a robotic arm pries open a pod-door, to reveal...
 Construction materials and machinery - cranes, a-grav locks, mass limiters, all used for heavy duty construction. Odd for that fleet to have dumped them, sure, but hardly incriminating.","MPC_spyCacheContinue:Continue",
 MPC_spyCacheContinue,DialogOptionSelected,"$option == MPC_spyCacheContinue","FireBest CheckSalvageSpecial",,,
 "#END Spy Caches",,,,,,
+,,,,,,
+# Spy Fleets,,,,,,
+MPC_spyFleetWanderingHub,PopulateOptions,"MPC_spyFleetCMD isDeliveryFleet",,,"11:MPC_spyFleetWhyWandering:Inquire as to the fleet's destination",
+MPC_spyFleetSawDelivery,PopulateOptions,"MPC_spyFleetCMD playerSawDeliverCargo",,,"12:MPC_spyFleetWhyDump:Ask why the fleet dumped that cargo",
+"#END Spy Fleets",,,,,,
 "#END Post-magnetar",,,,,,
 

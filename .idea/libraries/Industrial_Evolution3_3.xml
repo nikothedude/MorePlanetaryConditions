@@ -5,6 +5,8 @@
       <root url="jar://$PROJECT_DIR$/../Industrial.Evolution3.3.e/jars/IndEvo.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.3.e/jars/src" />
+    </SOURCES>
   </library>
 </component>
