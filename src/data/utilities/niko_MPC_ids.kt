@@ -2,6 +2,8 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val IAIIC_FAC_ID = "MPC_IAIIC"
+    const val MPC_FOB_ID = "\$MPC_IAIICFob"
     const val SPY_FLEET_CACHE = "\$MPC_spyFleetCache"
     const val SPY_FLEET_LAID_CACHE = "\$MPC_spyFleetLaidCache"
     const val SPY_CACHE_FLEET = "\$MPC_spyCacheFleet"

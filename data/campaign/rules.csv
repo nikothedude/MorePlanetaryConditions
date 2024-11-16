@@ -1046,8 +1046,54 @@ MPC_spyCacheContinue,DialogOptionSelected,"$option == MPC_spyCacheContinue","Fir
 "#END Spy Caches",,,,,,
 ,,,,,,
 # Spy Fleets,,,,,,
-MPC_spyFleetWanderingHub,PopulateOptions,"MPC_spyFleetCMD isDeliveryFleet",,,"11:MPC_spyFleetWhyWandering:Inquire as to the fleet's destination",
-MPC_spyFleetSawDelivery,PopulateOptions,"MPC_spyFleetCMD playerSawDeliverCargo",,,"12:MPC_spyFleetWhyDump:Ask why the fleet dumped that cargo",
+MPC_openCommLinkSpyFleet,OpenCommLink,"MPC_spyFleetCMD isDeliveryFleet","$menuState = fleetConvMain 0
+FireAll PopulateOptions",,,
+MPC_spyFleetWanderingHub,PopulateOptions,"$menuState == fleetConvMain
+MPC_spyFleetCMD isDeliveryFleet","FireAll MPC_spyFleetWanderingHubOptionsTwo",,"11:MPC_spyFleetWhyWandering:Inquire as to the fleet's destination
+12:MPC_spyFleetWhyTOff:Demand to know why their transponder is off",
+MPC_spyFleetSawDelivery,PopulateOptions,"MPC_spyFleetCMD playerSawDeliverCargo",,,"13:MPC_spyFleetWhyDump:Ask why the fleet dumped that cargo",
+MPC_spyFleetWhyWandering,DialogOptionSelected,"$option == MPC_spyFleetWhyWandering","RemoveOption MPC_spyFleetWhyWandering","""Trade contract’s not actually expectin’ us for another… month?"" $HeOrShe shrugs. ""Just trying t’ kill time before we actually have to deliver."" Such contract problems are not uncommon, especially with an unestablished faction such as yours.",,
+MPC_spyFleetWhyTOff,DialogOptionSelected,"$option == MPC_spyFleetWhyTOff","AddTextSmall ""Received trade fleet identification"" highlight
+SetStoryOption MPC_spyFleetWhyTOffInspect general ""Discovered something is awry with a trade fleet""
+","$HisOrHer expression pains. ""Sorry, $playerSirOrMadam, but we got hit real bad on the way here."" $HeOrShe speaks with gultied apology, like a child caught taking a cookie from a jar. ""Here - manual transfer’s still working… if you’re wonderin’ how we got through your patrols-"" $heOrShe looks to the camfeed, putting on a disarming smile. ""-did the same routine we’re doin’ here."" Your console pings as it receives their identification, and with a nod from comms, seems to check out.
+
+""Is there anything else, $playerSirOrMadam?""
+","0:MPC_spyFleetWhyTOffReturn:Shake your head
+10:MPC_spyFleetWhyTOffInspect:Consider $hisOrHer words
+",
+MPC_spyFleetWhyTOffReturn,DialogOptionSelected,"$option == MPC_spyFleetWhyTOffReturn","FireAll PopulateOptions","$HeOrShe narrowly avoids overload as your words allow $himOrHer to vent. ""Of course, $playerSirOrMadam.""",,
+MPC_spyFleetWhyTOffInspect,DialogOptionSelected,"$option == MPC_spyFleetWhyTOffInspect","SetTextHighlights ""This fleet isn’t on any official trade records""
+AddTextSmall ""Discovered something is awry with trade fleets in your space"" highlight
+$global.MPC_discoveredSpyWeirdness = true
+","$HisOrHer words ring strangely in your ears, like a phase ship about to strike. You maneuver your mind to address the threat, picking apart words and intonation…
+
+Then, it strikes you. Yes, transponders are often damaged in hyperstorms. Yes, trade fleets are granted relaxed transponder rules. Yes, the identification perfectly checks out. But, purely on a whim, fingers moving before you realize it…
+
+This fleet isn’t on any official trade records. Not to any planet you control, at least. While independent contractors often commission independent convoys, they’re almost always registered within official STC to avoid ""headbutting"". The fleet is too large and ""loud"" to be a smuggler, either, which leaves… something. Unfortunately, this is not enough to take action, unless you want independent traders to start considering ventures into your space ""high-surveillance"" - an economic death sentence.
+
+$personFirstName clears $hisOrHer throat anxiously. ""Something wrong, $playerSirOrMadam?""
+","0:MPC_spyFleetWhyTOffReturn:Shake your head
+10:MPC_spyFleetWhyTOffReturnIntSec:Shake your head, but put an IntSec bulletin up",
+MPC_spyFleetWhyTOffReturnIntSec,DialogOptionSelected,"$option == MPC_spyFleetWhyTOffReturnIntSec ","$player.ethosLiar++
+$option = MPC_spyFleetWhyTOffReturn
+FireBest DialogOptionSelected
+",,,
+MPC_spyFleetWhyDump,DialogOptionSelected,"$option == MPC_spyFleetWhyDump","FireAll MPC_spyFleetWhyDumpedCacheOptions
+SetShortcut MPC_spyFleetWhyDumpedCacheRelent ""ESCAPE""","$HeOrShe freezes, and you’d think the camfeed itself died if not for $hisOrHer quick recovery. ""Just ran out of cargo space, that’s all. We didn’t need any of that - y’know, you can take it if you want."" You feel like $heOrShe would give a flirtatious wink if $heOrShe was less anxious.","0:MPC_spyFleetWhyDumpedCacheWhyStealth:Ask about the stealth coating
+10:MPC_spyFleetWhyDumpedCacheWhyHere:Ask why they dumped it so far out
+100:MPC_spyFleetWhyDumpedCacheRelent:Nod and return to more prudent matters
+",
+MPC_spyFleetWhyDumpedCacheOptionsWasStationComp,MPC_spyFleetWhyDumpedCacheOptions,"MPC_spyFleetCMD wasStationComponents","AddOption 50 MPC_spyFleetWhyDumpedCacheStationComp ""Discuss the nature of the cargo""",,,
+MPC_spyFleetWhyDumpedCacheWhyStealth,DialogOptionSelected,"$option == MPC_spyFleetWhyDumpedCacheWhyStealth","RemoveOption MPC_spyFleetWhyDumpedCacheWhyStealth","$HeOrShe’s smile acts as a decoy flare, deflecting the incoming suspicion. ""Look, I understand your caution, but we got those from a bulk sale. You can search it yourself - look - Maxios auctioned them off just last cycle, auction ID’s 228HHB92G. Take a look!"" TechOps quickly runs that through your records (quietly thanking themselves for the expanded economics package), and confirms $hisOrHer assertion. 
+
+""In the comin' weeks, you might see a lot of this kinda pod from all sortsa traders. It was a darn big auction!"" $HeOrShe nervously chuckles.
+",,
+MPC_spyFleetWhyDumpedCacheWhyHere,DialogOptionSelected,"$option == MPC_spyFleetWhyDumpedCacheWhyHere","RemoveOption MPC_spyFleetWhyDumpedCacheWhyHere","""Takes a while to unload cargo, doesn’t it? Isn’t really prudent to get harangued by pirates near a jump point. Plus-"" A finger flicks to the screen. ""-tactical over here was getting a real bad hyperache in his head."" $HeOrShe drags $hisOrHer thumb to a sickly looking officer hunched over on a table. Tactical helpfully reminds you - hyperaches are hyperspace induced headaches made worse by nearby gravity wells, and the treatment is usually - as $personFirstName has done - flying out into deep space until the pain subsides.",,
+MPC_spyFleetWhyDumpedCacheStationComp,DialogOptionSelected,"$option == MPC_spyFleetWhyDumpedCacheStationComp ","RemoveOption MPC_spyFleetWhyDumpedCacheStationComp ","You inquire about, why exactly, they dumped what must be highly valuable station components. $HeOrShe merely laughs and waves it off. ""Turns out, pirates are real bad clients. Just - canceled our contract out of the blue."" A tinge of mirth enters $hisOrHer voice. ""And… well, without a buyer - there isn’t exactly an open market for this kinda niche material - it’s more profitable to just… dump them."" $HeOrShe sighs. ""So much lost profit…""
+
+Almost as an afterthought, $heOrShe adds ""Just to be clear, the pirates in question were just a buncha schmucks thinking it was as easy as 1 2 3 to make a raiding base. Honestly…"" $heOrShe trails off. ""Even if they got em, they’d probably have just blown themselves up.""
+",,
+MPC_spyFleetWhyDumpedCacheRelent,DialogOptionSelected,"$option == MPC_spyFleetWhyDumpedCacheRelent","FireAll PopulateOptions","$HeOrShe nods. ""Of course, $playerSirOrMadam.""",,
 "#END Spy Fleets",,,,,,
 "#END Post-magnetar",,,,,,
 

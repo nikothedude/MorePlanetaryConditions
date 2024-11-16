@@ -25,6 +25,7 @@ import data.utilities.niko_MPC_settings
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
+import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.getLocalResources
 import java.awt.Color
 import java.util.*
@@ -33,6 +34,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
     companion object {
         const val FOB_MARKET_ID = "MPC_fractalBacklashFOB"
+        const val FOB_MARKET_NAME = "Ark FOB"
         val fleetTypesToWeight = hashMapOf(
            // Pair(FleetTypes.TRADE, 5f),
             Pair(FleetTypes.TRADE_LINER, 5f),
@@ -125,13 +127,23 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     }
 
     override fun fireEvent(intel: HostileActivityEventIntel?, stage: BaseEventIntel.EventStageData?): Boolean {
-        return super.fireEvent(intel, stage)
+        super.fireEvent(intel, stage)
+
+        val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return false
+        val fractalSystem = fractalColony.starSystem
+        val foundDist = MathUtils.getDistance(MPC_fractalCrisisHelpers.getStationPoint(fractalSystem), fractalSystem.center.location)
+        val station = fractalColony.starSystem.addCustomEntity(niko_MPC_ids.MPC_FOB_ID, FOB_MARKET_NAME, "MPC_IAIICFOB", niko_MPC_ids.IAIIC_FAC_ID)
+        station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 180f)
+        createMarket(station)
+
+        return true
     }
 
-    protected fun createMarket(FOBStation: SectorEntityToken) {
+    protected fun createMarket(FOBStation: SectorEntityToken): MarketAPI {
         val market = Global.getFactory().createMarket(FOB_MARKET_ID, "IAIC FOB", 4)
         market.factionId = Factions.INDEPENDENT
         FOBStation.market = market
+        market.name = FOB_MARKET_NAME
 
         market.addIndustry(Industries.STARFORTRESS_HIGH)
         market.getIndustry(Industries.STARFORTRESS_HIGH).aiCoreId = Commodities.ALPHA_CORE // yes, theyre hypocrits
@@ -150,12 +162,14 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         }
 
         market.isUseStockpilesForShortages = true
-        val submarket = market.getLocalResources() as? LocalResourcesSubmarketPlugin ?: return
+        val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
         for (com in market.commoditiesCopy) {
             val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)
             submarket.getStockpilingBonus(com.id).modifyFlat("MPC_reserveMaterials", bonus)
-            com.stockpile = market.getStockpileNumConsumedOverTime(com, 365f, 0)
+            com.stockpile = bonus
         }
+
+        return market
     }
 
     override fun createFleet(system: StarSystemAPI?, random: Random?): CampaignFleetAPI? {

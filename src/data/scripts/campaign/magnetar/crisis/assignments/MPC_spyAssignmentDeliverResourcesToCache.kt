@@ -70,7 +70,17 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
             ranOnce = true
             script.fleet.removeScriptsOfClass(DisposableAggroAssignmentAI::class.java)
         }
-        if (done) return
+        if (done)  {
+            if (script.fleet.assignmentsCopy.first().assignment != FleetAssignment.GO_TO_LOCATION_AND_DESPAWN) {
+                script.fleet.addAssignment(
+                    FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
+                    script.fleet.getSourceMarket().primaryEntity,
+                    999999f,
+                    "delivering $fakeCommodityTypeTwo to ${script.fleet.getSourceMarket().name}"
+                )
+            }
+            return
+        }
         val days = Misc.getDays(amount)
         if (wandering) {
             wanderingInterval.advance(days)
@@ -116,8 +126,8 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
         if (timeSpentUnloading >= TIME_NEEDED_TO_FINISH_UNLOADING) {
             script.fleet.clearAssignments()
             script.fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, script.fleet.getSourceMarket().primaryEntity, 999999f, "delivering $fakeCommodityTypeTwo to ${script.fleet.getSourceMarket().name}")
-            done = true
             finishedUnloading = true
+            done = true
             script.fleet.memoryWithoutUpdate[niko_MPC_ids.SPY_FLEET_LAID_CACHE] = true
             finishedLoadingCache(script)
         }

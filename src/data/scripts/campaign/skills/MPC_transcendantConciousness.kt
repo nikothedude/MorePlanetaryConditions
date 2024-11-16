@@ -42,15 +42,12 @@ class MPC_transcendantConciousness {
 
     class Level2 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            for (industry in market.industries) {
-                industry.upkeep?.modifyMult(id, UPKEEP_MULT, "Transcendent Consciousness")
-            }
+            market.upkeepMult.modifyMult(id, UPKEEP_MULT, "Transcendent Conciousness")
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            for (industry in market.industries) {
-                industry.upkeep?.unmodify(id)
-            }
+            market.upkeepMult.unmodify(id)
+
         }
 
         override fun getEffectDescription(level: Float): String {

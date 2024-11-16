@@ -304,6 +304,12 @@
 		"baseId":"MPC_spySupplyCache",
 	},
 
+	"MPC_IAIICFOB": {
+		"baseId":"station_lowtech3",
+		"defaultName":"Military FOB",
+		"customDescriptionId":"MPC_IAIICFOB",
+	},
+
 	"MPC_singularityGuardStation":{
 		"baseId": "station_research",
 		"defaultName":"Guard Station", # used if name=null in addCustomEntity(),

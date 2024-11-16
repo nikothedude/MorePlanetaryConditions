@@ -148,6 +148,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
             clonedVariant.source = VariantSource.REFIT
             clonedVariant.addMod("niko_MPC_subsumedIntelligence")
             clonedVariant.addTag(Tags.VARIANT_UNBOARDABLE) // they can drop with omega weapons
+            clonedVariant.removeTag(Tags.AUTOMATED_RECOVERABLE)
             member.setVariant(clonedVariant, false, true)
         }
 
