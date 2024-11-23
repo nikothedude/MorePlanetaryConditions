@@ -260,6 +260,13 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         clearNanoforgesFromCoreWorlds()
         clearInappropiateOvergrownFleetSpawners()
 
+        val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+        IAIIC.setRelationship(Factions.HEGEMONY, RepLevel.FAVORABLE)
+        IAIIC.setRelationship(Factions.LUDDIC_CHURCH, RepLevel.WELCOMING)
+        IAIIC.setRelationship(Factions.INDEPENDENT, RepLevel.FAVORABLE)
+        IAIIC.setRelationship(Factions.DIKTAT, -5f)
+        IAIIC.setRelationship(Factions.PLAYER, -20f)
+
         doSpecialProcgen(true)
     }
 

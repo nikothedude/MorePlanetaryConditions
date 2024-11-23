@@ -38,10 +38,8 @@ abstract class MPC_hegemonyFractalCoreCause(intel: HostileActivityEventIntel?) :
     }
 
     fun getProgress(checkNegated: Boolean): Int {
-        if (getFractalColony() == null) return 0
-        if (getContributingFactions().isEmpty()) return 0
-        if (!Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return 0 // this is the confirmation
-        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.PLAYER_DEFENDED_FRACTAL_CORE)) return 0
+        if (!MPC_fractalCoreFactor.isActive()) return 0
+
         if (preDefeat) {
             if (HegemonyHostileActivityFactor.isPlayerDefeatedHegemony()) return 0
         } else if (!HegemonyHostileActivityFactor.isPlayerDefeatedHegemony()) {

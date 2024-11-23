@@ -128,5 +128,4 @@ class MPC_transcendantConciousness {
             return ScopeDescription.GOVERNED_OUTPOST
         }
     }
-
 }

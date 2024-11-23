@@ -1,6 +1,6 @@
 {
 	id:"MPC_IAIIC",
-	"color":[150,150,150,255],
+	"color":[120,168,110,255],
 	"displayName":"IAIIC",
 	"displayNameWithArticle":"the IAIIC",
 	"displayNameLong":"IAIIC",
@@ -18,7 +18,7 @@
 		"BRITISH_NAVY":1,
 		"ABRAHAMIC":1,
 	},
-	"description":"No description yet.",
+	#"description":"No description yet.",
 	"names":{
 		"modern":1,
 		"world":1,

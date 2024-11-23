@@ -2,10 +2,12 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.econ.MarketConditionAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
@@ -385,5 +387,30 @@ object niko_MPC_marketUtils {
 
     fun MarketAPI.isFractalMarket(): Boolean {
         return (admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID)
+    }
+
+    fun MarketAPI.addConditionIfNotPresent(conditionId: String): MarketConditionAPI {
+        if (hasCondition(conditionId)) {
+            return getCondition(conditionId)
+        }
+        else {
+            addCondition(conditionId)
+            return getCondition(conditionId)
+        }
+    }
+
+    /** Returns a set of the largest markets in the faction. Ex. Will return the 2 size 7 markets in a faction with
+     * 3 size 5, 1 size 6, and 2 size 7. */
+    fun FactionAPI.getLargestMarketSize(): Int {
+        val markets = HashSet<MarketAPI>()
+
+        var largestMarket = 0
+        for (market in this.getMarketsCopy()) {
+            if (market.size > largestMarket) {
+                largestMarket = market.size
+            }
+        }
+
+        return largestMarket
     }
 }

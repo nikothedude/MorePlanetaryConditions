@@ -12,21 +12,20 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission
-import com.fs.starfarer.api.impl.campaign.submarkets.LocalResourcesSubmarketPlugin
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.niko_MPC_modPlugin
+import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
-import data.utilities.niko_MPC_marketUtils.getStockpileNumConsumedOverTime
 import data.utilities.niko_MPC_settings
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
-import org.magiclib.kotlin.getLocalResources
+import org.magiclib.kotlin.makeImportant
 import java.awt.Color
 import java.util.*
 
@@ -51,7 +50,17 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
         fun getFOB(): MarketAPI? = Global.getSector().economy.getMarket(FOB_MARKET_ID)
         fun getContributingFactions(): List<FactionAPI> {
-            return contributingFactionsToWeight.keys.map { Global.getSector().getFaction(it) }.filter { it != null && it.getMarketsCopy().isNotEmpty() }
+            return contributingFactionsToWeight.keys.map { Global.getSector().getFaction(it) }.filter { it != null && checkFactionExists(it.id, true) }
+        }
+
+        fun isActive(): Boolean {
+            if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.PLAYER_DEFENDED_FRACTAL_CORE)) return false
+            if (!Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false // this is the confirmation
+            if (MPC_hegemonyFractalCoreCause.getFractalColony() == null) return false
+            if (getContributingFactions().isEmpty()) return false
+            if (!checkFactionExists(Factions.HEGEMONY, true)) return false
+
+            return true
         }
     }
 
@@ -111,9 +120,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     }
 
     override fun getEventFrequency(intel: HostileActivityEventIntel?, stage: BaseEventIntel.EventStageData?): Float {
-        if (getContributingFactions().isEmpty()) return 0f
+        if (!isActive()) return 0f
         if (getFOB() != null) return 0f
-        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PLAYER_DEFENDED_FRACTAL_CORE] == true) return 0f
 
         return 10f
     }
@@ -129,19 +137,44 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     override fun fireEvent(intel: HostileActivityEventIntel?, stage: BaseEventIntel.EventStageData?): Boolean {
         super.fireEvent(intel, stage)
 
+        if (!isActive()) return false
+
         val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return false
-        val fractalSystem = fractalColony.starSystem
+        val fractalSystem = fractalColony.starSystem ?: return false
         val foundDist = MathUtils.getDistance(MPC_fractalCrisisHelpers.getStationPoint(fractalSystem), fractalSystem.center.location)
+
+        stage!!.rollData = null
+        return spawnFOB(fractalColony, fractalSystem, foundDist)
+    }
+
+    private fun spawnFOB(fractalColony: MarketAPI, fractalSystem: StarSystemAPI, foundDist: Float): Boolean {
         val station = fractalColony.starSystem.addCustomEntity(niko_MPC_ids.MPC_FOB_ID, FOB_MARKET_NAME, "MPC_IAIICFOB", niko_MPC_ids.IAIIC_FAC_ID)
         station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 180f)
-        createMarket(station)
+        val market = createMarket(station)
+        station.makeImportant(niko_MPC_ids.MPC_FOB_ID, Float.MAX_VALUE)
+
+        market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
+
+        initFOBFleets(station, market, fractalSystem)
+
+        MPC_IAIICFobIntel()
+        //FOBIntel.setListener(this)
+        //Global.getSector().intelManager.addIntel(FOBIntel)
 
         return true
     }
 
+    private fun initFOBFleets(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
+        initMercFleet(station, market, fractalSystem)
+    }
+
+    private fun initMercFleet(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
+        TODO("Not yet implemented")
+    }
+
     protected fun createMarket(FOBStation: SectorEntityToken): MarketAPI {
-        val market = Global.getFactory().createMarket(FOB_MARKET_ID, "IAIC FOB", 4)
-        market.factionId = Factions.INDEPENDENT
+        val market = Global.getFactory().createMarket(FOB_MARKET_ID, FOB_MARKET_NAME, 4)
+        market.factionId = niko_MPC_ids.IAIIC_FAC_ID
         FOBStation.market = market
         market.name = FOB_MARKET_NAME
 
@@ -151,8 +184,9 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.getIndustry(Industries.HIGHCOMMAND).isImproved = true
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
-        market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData("drone_replicator", null)
+        market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
         market.addIndustry(Industries.ORBITALWORKS)
+        market.getIndustry(Industries.ORBITALWORKS).specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
         market.addIndustry(Industries.WAYSTATION)
 
         market.addCondition("MPC_FOB")
@@ -162,12 +196,12 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         }
 
         market.isUseStockpilesForShortages = true
-        val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
+        /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
         for (com in market.commoditiesCopy) {
             val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)
             submarket.getStockpilingBonus(com.id).modifyFlat("MPC_reserveMaterials", bonus)
             com.stockpile = bonus
-        }
+        }*/
 
         return market
     }

@@ -25,6 +25,17 @@
 			"MPCshieldInnerBlue":"graphics/planets/MPC_shieldInnerBlue.png",
 			"MPCshieldInnerGreen":"graphics/planets/MPC_shieldInnerGreen.png",
 		},
+		"events":{
+			"MPC_IAIIC_START":"graphics/icons/campaign/hostile_activity_start.png",
+			"MPC_IAIIC_FIRST_RAID":"graphics/icons/campaign/hostile_activity1.png",
+			"MPC_IAIIC_SECOND_RAID":"graphics/icons/campaign/hostile_activity2.png",
+			"MPC_IAIIC_FIRST_ESCALATION":"graphics/icons/campaign/event_bad.png",
+			"MPC_IAIIC_THIRD_RAID":"graphics/icons/campaign/hostile_activity3.png",
+			"MPC_IAIIC_FOURTH_RAID":"graphics/icons/campaign/hostile_activity4.png",
+			"MPC_IAIIC_SECOND_ESCALATION":"graphics/icons/campaign/major_bad_event.png",
+			"MPC_IAIIC_BLOCKADE":"graphics/icons/markets/blockade.png",
+			"MPC_IAIIC_ALL_OR_NOTHING":"graphics/icons/missions/tactical_bombardment.png",
+		},
 	},
 	"stations":{
 		"MPC_hightech3":"graphics/stations/station_hightech3.png",

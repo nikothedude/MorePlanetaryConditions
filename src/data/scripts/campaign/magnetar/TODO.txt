@@ -1,0 +1,14 @@
+Finish stages
+Implement guard fleet
+Write dialogue for all contributing factions
+
+Write dialogue for IAIIC
+IAIIC faction descs and stuff
+
+Write in contingencies
+    What if the planet is taken over? Should have a script that checks and destroys the core
+
+PL Integration/Ways to sabotage it
+    Promise diktat weapons and tech in exchange for assistancne
+    Strongarm the PL to help you if youre in the PL
+    Hire mercenaries?

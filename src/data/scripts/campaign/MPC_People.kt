@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.PersonImportance
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.People
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
@@ -22,15 +21,21 @@ object MPC_People {
     const val PLAYER_FACTION_INTSEC_SQUAD_CHIEF = "MPC_playerFacIntsecSquadChief"
     const val HEGEMONY_SPY = "MPC_hegemonySpy"
 
-    fun createCharacters() {
+    const val IAIIC_LEADER = "MPC_IAIIC_Leader"
+    const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
+
+    fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
         }
+        return Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] as HashMap<String, PersonAPI>
+    }
 
+    fun createCharacters() {
         val importantPeople = Global.getSector().importantPeople
 
         // Pirate bar encounter after delivering loke, points you to the magnetar quest
-        val MPC_importantPeople = Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] as HashMap<String, PersonAPI>
+        val MPC_importantPeople = getImportantPeople()
         if (MPC_importantPeople[KANTA_GOON_ONE] == null) {
             val goonOne = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson(StarSystemGenerator.random)
             goonOne.id = KANTA_GOON_ONE
@@ -128,6 +133,37 @@ object MPC_People {
             importantPeople.addPerson(hegemonySpy)
             MPC_importantPeople[HEGEMONY_SPY] = hegemonySpy
         }
+
+        if (MPC_importantPeople[IAIIC_LEADER] == null) {
+            val IAIICLeader = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).createRandomPerson()
+            IAIICLeader.id = IAIIC_LEADER
+            IAIICLeader.rankId = Ranks.FACTION_LEADER
+            IAIICLeader.postId = Ranks.POST_FACTION_LEADER
+            IAIICLeader.importance = PersonImportance.VERY_HIGH
+            IAIICLeader.portraitSprite = "graphics/portraits/characters/imoinu_kato.png" // TODO: this will likely be used in a later SS update
+            IAIICLeader.name = FullName("Jill", "Mirthson", FullName.Gender.MALE)
+            IAIICLeader.gender = FullName.Gender.FEMALE
+            IAIICLeader.voice = Voices.SOLDIER
+
+            importantPeople.addPerson(IAIICLeader)
+            MPC_importantPeople[IAIIC_LEADER] = IAIICLeader
+        }
+
+        if (MPC_importantPeople[IAIIC_MERC_COMMANDER] == null) {
+            val IAIICMercCommander = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).createRandomPerson()
+            IAIICMercCommander.id = IAIIC_MERC_COMMANDER
+            IAIICMercCommander.rankId = Ranks.SPACE_COMMANDER
+            IAIICMercCommander.postId = Ranks.POST_SPACER
+            IAIICMercCommander.importance = PersonImportance.HIGH
+            IAIICMercCommander.portraitSprite = "graphics/portraits/characters/fenius.png" // TODO: this will likely be used in a later SS update
+            IAIICMercCommander.name = FullName("Jishino", "Mentsu", FullName.Gender.MALE)
+            IAIICMercCommander.gender = FullName.Gender.MALE
+            IAIICMercCommander.voice = Voices.SPACER
+
+            importantPeople.addPerson(IAIICMercCommander)
+            MPC_importantPeople[IAIIC_MERC_COMMANDER] = IAIICMercCommander
+        }
+
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true
     }
 }

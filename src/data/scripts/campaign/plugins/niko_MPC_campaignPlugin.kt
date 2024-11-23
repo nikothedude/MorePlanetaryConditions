@@ -202,7 +202,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
 
     override fun pickAICoreOfficerPlugin(commodityId: String?): PluginPick<AICoreOfficerPlugin>? {
         if (commodityId == null) return null
-        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID && !Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.MPC_LOST_FRACTAL_CORE)) {
             return PluginPick(MPC_slavedOmegaCoreOfficerPlugin(), CampaignPlugin.PickPriority.MOD_SET)
         }
         return null
@@ -210,7 +210,7 @@ class niko_MPC_campaignPlugin : BaseCampaignPlugin() {
 
     override fun pickAICoreAdminPlugin(commodityId: String?): PluginPick<AICoreAdminPlugin>? {
         if (commodityId == null) return null
-        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+        if (commodityId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID && !Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.MPC_LOST_FRACTAL_CORE)) {
             return PluginPick(MPC_slavedOmegaCoreAdminPlugin(), CampaignPlugin.PickPriority.MOD_SET)
         }
         return null
