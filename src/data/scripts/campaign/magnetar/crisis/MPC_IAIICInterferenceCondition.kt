@@ -22,7 +22,7 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
         fun isHostile(market: MarketAPI? = null): Boolean {
             val hostFaction = if (market != null) market.faction else Global.getSector().playerFaction
             val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return false
-            if (hostFaction.getRelationshipLevel(IAIIC) > RepLevel.INHOSPITABLE) return true
+            if (hostFaction.getRelationshipLevel(IAIIC).min >= RepLevel.INHOSPITABLE.min) return true
             return false
         }
     }
@@ -60,27 +60,27 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
         if (!marketIsSuspicious()) {
             tooltip.addPara(
-                "The IAIIC seems to be ignoring ${market.name}, likely due to the limited AI presence.", 10f
+                "The IAIIC seems to be ignoring ${market.name}, likely due to the limited AI presence.", 20f
             )
             return
         }
 
         if (isHostile()) {
             tooltip.addPara(
-                "The belligerence of the governing polity certainly limits the IAIIC's efforts, but not completely. Trade vessels often find themselves" +
-                    "stop-searched by unsanctioned patrols, security keys frequently \"go missing\", and many spacers simply feel the space is too \"hot\" to enter.", 10f
+                "The belligerence of the governing polity certainly limits the IAIIC's efforts, but not completely. Trade vessels often find themselves " +
+                    "stop-searched by unsanctioned patrols, security keys frequently \"go missing\", and many spacers simply feel the space is too \"hot\" to enter.", 5f
             )
         } else {
             tooltip.addPara(
                 "Groundside stop-searches by grey-and-green uniforms are common even for ${market.faction.displayName} officials. Things in orbit aren't any easier, with " +
                 "STC being made hellish by the pacing spy-skiffs along trade routes, waiting for any opportunity to board a hapless civilian's vessel.",
-                10f
+                5f
             )
         }
 
         tooltip.addPara(
             "%s accessibility",
-            5f,
+            10f,
             Misc.getNegativeHighlightColor(),
             "${(BASE_ACCESSIBILITY_MALUS * 100f).toInt()}%"
         )
@@ -95,9 +95,9 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
         tooltip.addPara(
             "Due to the IAIIC's \"permitted\" access to your space, there is little in the way of resistance to their aggressive " +
             "investigatory tactics, resulting in a further %s accessibility penalty.",
-            15f,
+            10f,
             Misc.getNegativeHighlightColor(),
-            "-${(NON_HOSTILE_ACCESSIBILITY_MALUS * 100f).toInt()}%"
+            "${(NON_HOSTILE_ACCESSIBILITY_MALUS * 100f).toInt()}%"
         )
     }
 

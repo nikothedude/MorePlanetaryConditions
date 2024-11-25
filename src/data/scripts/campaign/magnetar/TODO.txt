@@ -12,3 +12,33 @@ PL Integration/Ways to sabotage it
     Promise diktat weapons and tech in exchange for assistancne
     Strongarm the PL to help you if youre in the PL
     Hire mercenaries?
+
+Idea: Go to participating factions and get them to divest
+    If successful, increases progress and erases an event
+        Probably should only get rid of the minor raids
+        Maybe also decrease strength of the final raid
+
+    Not easy, probably have to do a major task for them
+        LC and LP probably will never divest early
+            Hegemony?
+
+Need a way to slow down the crisis
+    CURRENTLY WAYS YOU CAN DO IT:
+        Remove AI cores from planets
+            Won't help with the fractal core, which cant be removed
+        Be at peace with the IAIIC (get worse accessibility, but attrition increases a lot slower)
+
+    PLANNED WAYS:
+        Sue for peace (SP option + maybe some money)
+        Bribe IAIIC officials?
+
+Ways to accelerate crisis
+    CURRENT WAYS:
+        Destroy IAIIC ships
+        Cause shortages in the FOB
+        Disrupt the FOB
+    PLANNED WAYS:
+        Raid and disrupt contributor factions(?)
+
+Maybe make it so if the FOB is destroyed, the crisis just ends instantly?
+    Can be made REALLY HARD with defense rating + orbital defenses

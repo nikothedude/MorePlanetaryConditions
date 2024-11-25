@@ -32,7 +32,7 @@ import java.util.*
 class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActivityFactor(intel) {
 
     companion object {
-        const val FOB_MARKET_ID = "MPC_fractalBacklashFOB"
+        const val FOB_MARKET_ID = "MPC_arkFOB"
         const val FOB_MARKET_NAME = "Ark FOB"
         val fleetTypesToWeight = hashMapOf(
            // Pair(FleetTypes.TRADE, 5f),
@@ -54,6 +54,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         }
 
         fun isActive(): Boolean {
+            if (MPC_IAIICFobIntel.get() != null) return false
             if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.PLAYER_DEFENDED_FRACTAL_CORE)) return false
             if (!Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false // this is the confirmation
             if (MPC_hegemonyFractalCoreCause.getFractalColony() == null) return false
@@ -169,15 +170,18 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     }
 
     private fun initMercFleet(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
-        TODO("Not yet implemented")
+        return
     }
 
     protected fun createMarket(FOBStation: SectorEntityToken): MarketAPI {
         val market = Global.getFactory().createMarket(FOB_MARKET_ID, FOB_MARKET_NAME, 4)
         market.factionId = niko_MPC_ids.IAIIC_FAC_ID
+        market.primaryEntity = FOBStation
         FOBStation.market = market
         market.name = FOB_MARKET_NAME
 
+        market.addIndustry(Industries.POPULATION)
+        market.addIndustry(Industries.MEGAPORT)
         market.addIndustry(Industries.STARFORTRESS_HIGH)
         market.getIndustry(Industries.STARFORTRESS_HIGH).aiCoreId = Commodities.ALPHA_CORE // yes, theyre hypocrits
         market.addIndustry(Industries.HIGHCOMMAND)
@@ -203,6 +207,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             com.stockpile = bonus
         }*/
 
+        Global.getSector().economy.addMarket(market, true)
         return market
     }
 

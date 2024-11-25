@@ -13,7 +13,7 @@ import org.magiclib.kotlin.getOuterRadius
 object MPC_fractalCrisisHelpers {
     fun getStationPoint(system: StarSystemAPI): Vector2f {
         val furthestMarket = system.getMarketsInLocation(Global.getSector().playerFaction.id).sortedBy { MathUtils.getDistance(it.primaryEntity, system.center) }.lastOrNull() ?: return Vector2f(0f, 0f)
-        val targetDist = (MathUtils.getDistance(furthestMarket.primaryEntity, system.center) * MPC_spyAssignmentDeliverResourcesToCache.DISTANCE).coerceAtMost(system.getOuterRadius())
+        val targetDist = (MathUtils.getDistance(furthestMarket.primaryEntity, system.center) * MPC_spyAssignmentDeliverResourcesToCache.DISTANCE).coerceAtMost(system.getOuterRadius() * 2.5f)
 
         val targetLoc = MathUtils.getPointOnCircumference(system.center.location, targetDist, MathUtils.getRandomNumberInRange(0f, 360f))
         return targetLoc

@@ -938,7 +938,7 @@ SetTextHighlights ""didn't have""","""The domain didn't want anything to do with
 "#END Historian",,,,,,
 ,,,,,,
 # Post-magnetar,,,,,,
-MPC_RACAFractalCore,RemoveAICoreAdmin,"MPC_RACACMD isFractalCore","MPC_RACAFractalCore
+MPC_RACAFractalCore,RemoveAICoreAdmin,"MPC_RACACMD isFractalCore","MPC_RACACMD
 ShowPic ai_core_uninstall",,,"dismiss instantly if not in crisis, but dont if crisis is active?"
 ,,,,,,
 # BarMagn,,,,,,

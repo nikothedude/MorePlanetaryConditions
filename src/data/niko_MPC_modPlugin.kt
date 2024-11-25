@@ -264,8 +264,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.HEGEMONY, RepLevel.FAVORABLE)
         IAIIC.setRelationship(Factions.LUDDIC_CHURCH, RepLevel.WELCOMING)
         IAIIC.setRelationship(Factions.INDEPENDENT, RepLevel.FAVORABLE)
-        IAIIC.setRelationship(Factions.DIKTAT, -5f)
-        IAIIC.setRelationship(Factions.PLAYER, -20f)
+        IAIIC.setRelationship(Factions.DIKTAT, -0.05f)
+        IAIIC.setRelationship(Factions.PLAYER, -0.2f)
 
         doSpecialProcgen(true)
     }

@@ -83,6 +83,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         AICoreAdmin.get(fractalColony)!!.daysActive = 500f // so it cant be removed anymore
         Global.getSector().intelManager.addIntel(this, false, null)
         Global.getSector().addListener(this)
+        isImportant = true
     }
 
     private fun setup() {
@@ -279,7 +280,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         val days = Misc.getDays(amount)
         marketInterval.advance(days)
-        if (marketInterval.intervalElapsed()) {
+        val elapsed = marketInterval.intervalElapsed()
+        if (elapsed) {
             checkMarketDeficits()
         }
 

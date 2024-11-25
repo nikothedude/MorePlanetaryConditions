@@ -6,7 +6,7 @@ object niko_MPC_ids {
     const val MPC_IAIIC_ESCALATION_ID = "\$MPC_IAIIC_escalationBonus"
     const val IAIIC_CONDITION_ID = "MPC_IAIICInvestigationCondition"
     const val IAIIC_FAC_ID = "MPC_IAIIC"
-    const val MPC_FOB_ID = "\$MPC_IAIICFob"
+    const val MPC_FOB_ID = "MPC_IAIICFob"
     const val SPY_FLEET_CACHE = "\$MPC_spyFleetCache"
     const val SPY_FLEET_LAID_CACHE = "\$MPC_spyFleetLaidCache"
     const val SPY_CACHE_FLEET = "\$MPC_spyCacheFleet"
