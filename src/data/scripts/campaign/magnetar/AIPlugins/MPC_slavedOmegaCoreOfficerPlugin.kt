@@ -42,7 +42,8 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
         person.name = FullName(spec.name, "", FullName.Gender.ANY)
 
         // assume it's not going to be integrated, no reason to do it - same as assuming it's always integrated
-        person.portraitSprite = "graphics/portraits/characters/omega.png"
+        Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
+        person.portraitSprite = "graphics/portraits/MPC_fractalCore.png"
         person.stats.level = 10 // normal omega is 9
         person.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
         person.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)

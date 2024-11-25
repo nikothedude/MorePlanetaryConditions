@@ -18,7 +18,8 @@ class MPC_slavedOmegaCoreAdminPlugin: AICoreAdminPlugin {
         person.aiCoreId = aiCoreId
         val commodityName = StringHelper.getCommodityName(aiCoreId)
         person.name = FullName(commodityName, "", FullName.Gender.ANY)
-        person.portraitSprite = "graphics/portraits/characters/omega.png"
+        Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
+        person.portraitSprite = "graphics/portraits/MPC_fractalCore.png"
 
         person.rankId = null
         person.postId = Ranks.POST_ADMINISTRATOR

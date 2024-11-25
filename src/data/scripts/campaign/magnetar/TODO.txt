@@ -1,3 +1,18 @@
+Two stages of IAIIC stuff: Peace, War
+
+War
+    Accessibility penalty reduced, but can cause a lot of trade disruption alongside other things
+        Begone, orbital stations, begone trade fleets
+    Accelerated crisis growth
+
+Peace
+    Slowed crisis growth
+    Worsened accessibility penalties
+
+You go to war when you're confidant you can win and prevent the shortages and losses,
+you go to peace when you need time to breathe
+    You still need to escalate with the crisis even if you're stomping them
+
 Finish stages
 Implement guard fleet
 Write dialogue for all contributing factions

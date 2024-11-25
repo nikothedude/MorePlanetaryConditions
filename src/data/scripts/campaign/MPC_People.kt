@@ -6,9 +6,11 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
+import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.getNumEliteSkills
 
 object MPC_People {
     const val KANTA_GOON_ONE = "MPC_kanta_goon_one"
@@ -144,6 +146,8 @@ object MPC_People {
             IAIICLeader.name = FullName("Jill", "Mirthson", FullName.Gender.MALE)
             IAIICLeader.gender = FullName.Gender.FEMALE
             IAIICLeader.voice = Voices.SOLDIER
+
+            IAIICLeader.stats.setSkillLevel(Skills.HYPERCOGNITION, 1f) // PLACEHOLDER
 
             importantPeople.addPerson(IAIICLeader)
             MPC_importantPeople[IAIIC_LEADER] = IAIICLeader

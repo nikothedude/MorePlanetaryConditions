@@ -8,12 +8,14 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
+import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.*
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.crisis.MPC_factionContribution
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
@@ -21,15 +23,34 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedH
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
+import data.utilities.niko_MPC_settings
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.isPatrol
 import org.magiclib.kotlin.isWarFleet
 import java.awt.Color
+import kotlin.math.roundToInt
 
 class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     val affectedMarkets = HashSet<MarketAPI>()
-    val marketInterval = IntervalUtil(1f, 1.1f)
+    val checkInterval = IntervalUtil(1f, 1.1f)
+    val factionContributions = HashSet<MPC_factionContribution>()
+        get() {
+            sanitizeFactionContributions(field)
+            return field
+        }
+
+    private fun sanitizeFactionContributions(contributions: HashSet<MPC_factionContribution> = factionContributions) {
+        val iterator = contributions.iterator()
+        while (iterator.hasNext()) {
+            val contribution = iterator.next()
+            if (!BaseHostileActivityFactor.checkFactionExists(contribution.factionId, contribution.requireMilitary)) {
+                contribution.onRemoved(true)
+                iterator.remove()
+            }
+        }
+    }
+
 
     enum class Stage {
         START,
@@ -68,10 +89,22 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         fun computeShipsDestroyedPoints(fleetPointsDestroyed: Float): Int {
             if (fleetPointsDestroyed <= 0) return 0
-            var points = Math.round(fleetPointsDestroyed / FP_PER_POINT)
+            var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
             if (points < 1) points = 1
             return points
         }
+
+        fun getFleetMultFromContributingFactions(contributions: MutableSet<MPC_factionContribution>): Float {
+            var mult = 1f
+            for (entry in contributions) {
+                mult += entry.fleetMult
+            }
+            return mult
+        }
+
+    }
+    fun getFleetMultFromContributingFactions(): Float {
+        return Companion.getFleetMultFromContributingFactions(this.factionContributions)
     }
 
     init {
@@ -264,8 +297,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     private fun escalate(amount: Float) {
         val FOB = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return
         FOB.industries.forEach {
-            if (it.disruptedDays > 2f) {
-                it.setDisrupted(2f)
+            if (it.disruptedDays > 0.5f) {
+                it.setDisrupted(0.5f)
             }
         }
         if (FOB.memoryWithoutUpdate[niko_MPC_ids.MPC_IAIIC_ESCALATION_ID] == null) {
@@ -279,15 +312,26 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         super.advanceImpl(amount)
 
         val days = Misc.getDays(amount)
-        marketInterval.advance(days)
-        val elapsed = marketInterval.intervalElapsed()
+        checkInterval.advance(days)
+        val elapsed = checkInterval.intervalElapsed()
+        // idk why i have to do this, but this is like a quantum slit bug
+        // if you dont define the var, you dont observe it being true in the debugger, so it doesnt work
+        // its weird????
         if (elapsed) {
             checkMarketDeficits()
+            checkPlayerRep()
         }
 
         val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony()
         if (fractalColony == null) {
+            TODO("add a contingency for if the fractal colony is destroyed")
+        }
+    }
 
+    private fun checkPlayerRep() {
+        val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
+        if (IAIIC.relToPlayer.rel >= niko_MPC_settings.MAX_IAIIC_REP) {
+            IAIIC.setRelationship(Factions.PLAYER, niko_MPC_settings.MAX_IAIIC_REP)
         }
     }
 

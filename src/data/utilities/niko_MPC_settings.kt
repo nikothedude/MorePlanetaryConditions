@@ -1,6 +1,7 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.RepLevel
 import data.niko_MPC_modPlugin
 import data.niko_MPC_modPlugin.Companion.modId
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
@@ -18,6 +19,7 @@ import java.io.IOException
 object niko_MPC_settings {
 
     var MAGNETAR_DISABLED = false
+    const val MAX_IAIIC_REP = 0.24f
     const val OMAN_BOMBARD_COST = 200
     /** If true, fleets in the magnetar system can drop omega weapons. */
     var MAGNETAR_DROP_OMEGA_WEAPONS = false

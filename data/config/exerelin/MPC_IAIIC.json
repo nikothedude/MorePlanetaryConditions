@@ -1,0 +1,51 @@
+{
+    "playableFaction":false,
+    "corvusCompatible":true,
+    
+    "rebelFleetSuffix":"Traitors",
+    
+    "marketSpawnWeight":2,
+
+    "maxRelationships":{ "player":-0.24 },
+    "diplomacyNegativeChance":{ "player":1.5 },
+    "dispositions":{
+        "player": -100,
+        "sindrian_diktat": -10,
+		"tritachyon": -10,
+    },
+    
+    "alignments":{
+        "technocratic":-1,
+        "hierarchical":1,
+        "militarist":1,
+        "diplomatic":-0.5,
+        "ideological":0.5,
+    },
+    "diplomacyTraits":["paranoid", "stalwart", "hates_ai", "law_and_order"],
+        
+    "groundBattleSettings":{
+        "attackMult":1.25,
+        "defenseMult":1.25,
+        "moraleDamageTakenMult":0.8,
+    },
+    
+    "specialForcesNamerClass":"exerelin.campaign.intel.specialforces.namer.CommanderNamer",
+    #"specialForcesFlagshipVariants":{ "paragon_Elite":1, "astral_Strike":0.5 },
+    
+    "defenceStations":[
+        {"ids":["orbitalstation", "battlestation", "starfortress"]},
+        {"ids":["orbitalstation_mid", "battlestation_mid", "starfortress_mid"], "weight":0.5},
+    ],
+    
+    "industrySeeds":[
+        {"id":"orbitalworks", "mult":0.1},
+        {"id":"fuelprod", "mult":0.1},
+        {"id":"lightindustry", "mult":0.1},
+    ],
+    
+    "bonusSeeds":[
+        {"id":"population_upsize", "count":1},
+        {"id":"nanoforge_pristine", "count":1},
+        {"id":"synchrotron", "count":1},
+    ],
+}

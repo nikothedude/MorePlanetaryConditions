@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel.EventStageData
@@ -14,6 +15,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
+import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
@@ -107,11 +109,29 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         val fractalSystem = MPC_hegemonyFractalCoreCause.getFractalColony()?.starSystem
         info.addPara(
             "IntSec is reporting high levels of activity in the outskirts of ${fractalSystem?.name}, and there is good intel " +
-            "to suggest a major hostile operation may occur in the near future. Little more is known - whoever is doing this likely " +
-            "has good OpSec.", opad
+            "to suggest a major hostile operation may occur in the near future. %s",
+            opad,
+            Misc.getNegativeHighlightColor(),
+            "MilInt encourages extreme caution over the threat, and advises aversive action to be taken if " +
+                    "we are not prepared for a possibly unprecedented conflict."
         )
         stage.beginResetReqList(info, true, "crisis", opad)
-        info.addPara("Unknown", 0f)
+        val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony()?.name
+        if (fractalColony != null) {
+            info.addPara(
+                "The %s is removed from %s",
+                0f,
+                Misc.getHighlightColor(),
+                "fractal core", "${MPC_hegemonyFractalCoreCause.getFractalColony()?.name}"
+            )
+        } else {
+            info.addPara(
+                "The %s is not installed in any colonies",
+                0f,
+                Misc.getHighlightColor(),
+                "fractal core"
+            )
+        }
         stage.endResetReqList(info, false, "crisis", -1, -1)
         addBorder(info, Global.getSector().getFaction(Factions.NEUTRAL).baseUIColor)
     }
@@ -121,6 +141,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     }
 
     override fun getEventFrequency(intel: HostileActivityEventIntel?, stage: BaseEventIntel.EventStageData?): Float {
+        if (stage?.id == HostileActivityEventIntel.Stage.MINOR_EVENT) return 0f
         if (!isActive()) return 0f
         if (getFOB() != null) return 0f
 
@@ -148,13 +169,15 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         return spawnFOB(fractalColony, fractalSystem, foundDist)
     }
 
+    override fun getStageTooltipImpl(intel: HostileActivityEventIntel?, stage: EventStageData): TooltipCreator? {
+        return getDefaultEventTooltip("Unknown Action", intel, stage)
+    }
+
     private fun spawnFOB(fractalColony: MarketAPI, fractalSystem: StarSystemAPI, foundDist: Float): Boolean {
         val station = fractalColony.starSystem.addCustomEntity(niko_MPC_ids.MPC_FOB_ID, FOB_MARKET_NAME, "MPC_IAIICFOB", niko_MPC_ids.IAIIC_FAC_ID)
         station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 180f)
         val market = createMarket(station)
         station.makeImportant(niko_MPC_ids.MPC_FOB_ID, Float.MAX_VALUE)
-
-        market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
 
         initFOBFleets(station, market, fractalSystem)
 
@@ -185,7 +208,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.addIndustry(Industries.STARFORTRESS_HIGH)
         market.getIndustry(Industries.STARFORTRESS_HIGH).aiCoreId = Commodities.ALPHA_CORE // yes, theyre hypocrits
         market.addIndustry(Industries.HIGHCOMMAND)
-        market.getIndustry(Industries.HIGHCOMMAND).isImproved = true
+        val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
+        HC.isImproved = true
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
         market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
@@ -194,12 +218,20 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.addIndustry(Industries.WAYSTATION)
 
         market.addCondition("MPC_FOB")
+        market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
+        market.addCondition(Conditions.POPULATION_4)
+        market.conditions.forEach { it.isSurveyed = true }
         if (niko_MPC_settings.indEvoEnabled) {
             market.addCondition(Ids.COND_MINERING)
             (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()
         }
 
+        market.addSubmarket(Submarkets.SUBMARKET_OPEN)
+        market.addSubmarket(Submarkets.SUBMARKET_STORAGE)
+
         market.isUseStockpilesForShortages = true
+        market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
+        market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
         /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
         for (com in market.commoditiesCopy) {
             val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)

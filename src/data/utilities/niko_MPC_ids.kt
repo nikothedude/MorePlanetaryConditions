@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val MPC_BENEFACTOR_CONDID = "MPC_benefactors"
     const val MPC_LOST_FRACTAL_CORE = "\$MPC_playerLostFractalCore"
     const val MPC_IAIIC_ESCALATION_ID = "\$MPC_IAIIC_escalationBonus"
     const val IAIIC_CONDITION_ID = "MPC_IAIICInvestigationCondition"

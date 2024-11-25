@@ -49,6 +49,7 @@ import data.utilities.niko_MPC_settings.SOTF_enabled
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.nexLoaded
+import exerelin.campaign.DiplomacyManager
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils

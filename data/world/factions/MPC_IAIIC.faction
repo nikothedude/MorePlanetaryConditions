@@ -231,11 +231,11 @@
 		"smallTrader":"Trader",
 		"tradeLiner":"Personnel Convoy",
 		
-		"patrolSmall":"Scout",
+		"patrolSmall":"Skyskiff",
 		"patrolMedium":"Flotilla",
 		"patrolLarge":"Spearfleet",
 		
-		"inspectionFleet":"Provisionary Inspectors",
+		"inspectionFleet":"Provisional Inspectors",
 		
 		#"mercScout":"Seeker",
 		#"mercBountyHunter":"Judgment-bringer",
