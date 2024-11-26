@@ -34,6 +34,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     val affectedMarkets = HashSet<MarketAPI>()
     val checkInterval = IntervalUtil(1f, 1.1f)
+    var escalationLevel: Float = 0f
     val factionContributions = HashSet<MPC_factionContribution>()
         get() {
             sanitizeFactionContributions(field)
@@ -58,9 +59,9 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         SECOND_RAID,
         FIRST_ESCALATION,
         THIRD_RAID,
-        FOURTH_RAID,
-        SECOND_ESCALATION,
         BLOCKADE,
+        SECOND_ESCALATION,
+        FOURTH_RAID,
         ALL_OR_NOTHING;
     }
 
@@ -129,6 +130,16 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         //addFactor(MPC_IAIICTradeDestroyedFactorHint()) // the shortage factor already does this
         addFactor(MPC_IAIICShortageFactor())
         addFactor(MPC_IAIICAttritionFactor())
+
+        addStage(Stage.FIRST_RAID, 200)
+        addStage(Stage.SECOND_RAID, 275)
+        addStage(Stage.FIRST_ESCALATION, 325)
+        addStage(Stage.THIRD_RAID, 400)
+        addStage(Stage.BLOCKADE, 500)
+        addStage(Stage.SECOND_ESCALATION, 600)
+        addStage(Stage.FOURTH_RAID, 700)
+
+        addStage(Stage.ALL_OR_NOTHING, 1000)
     }
 
     override fun getName(): String {

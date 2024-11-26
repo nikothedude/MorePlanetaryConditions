@@ -12,9 +12,9 @@ import data.utilities.niko_MPC_ids
 class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
     companion object {
-        const val BASE_ACCESSIBILITY_MALUS = -0.05f
+        const val BASE_ACCESSIBILITY_MALUS = -0.10f
         const val BASE_STABILITY_MALUS = -1f
-        const val NON_HOSTILE_ACCESSIBILITY_MALUS = -0.15f
+        const val NON_HOSTILE_ACCESSIBILITY_MALUS = -0.25f
 
         const val MIN_COLONY_SIZE_FOR_DEFICIT = 4
         const val CORE_POINTS_NEEDED_FOR_DEFICIT = 5f
@@ -39,7 +39,7 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
         market.stability.modifyFlat(id, BASE_STABILITY_MALUS, "IAIIC Interference")
         var accessibilityMod = BASE_ACCESSIBILITY_MALUS
-        if (isHostile()) {
+        if (!isHostile()) {
             accessibilityMod += NON_HOSTILE_ACCESSIBILITY_MALUS
         }
         market.accessibilityMod.modifyFlat(id, accessibilityMod, "IAIIC Interference")
@@ -60,7 +60,7 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
         if (!marketIsSuspicious()) {
             tooltip.addPara(
-                "The IAIIC seems to be ignoring ${market.name}, likely due to the limited AI presence.", 20f
+                "The IAIIC seems to be ignoring ${market.name}, likely due to the limited AI presence.", 10f
             )
             return
         }

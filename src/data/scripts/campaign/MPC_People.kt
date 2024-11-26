@@ -147,7 +147,10 @@ object MPC_People {
             IAIICLeader.gender = FullName.Gender.FEMALE
             IAIICLeader.voice = Voices.SOLDIER
 
-            IAIICLeader.stats.setSkillLevel(Skills.HYPERCOGNITION, 1f) // PLACEHOLDER
+            IAIICLeader.stats.level = 10
+            IAIICLeader.stats.setSkillLevel("MPC_fleet_logistics", 1f)
+            IAIICLeader.stats.setSkillLevel("MPC_space_operations", 1f)
+            IAIICLeader.stats.setSkillLevel("MPC_planetary_operations", 1f)
 
             importantPeople.addPerson(IAIICLeader)
             MPC_importantPeople[IAIIC_LEADER] = IAIICLeader

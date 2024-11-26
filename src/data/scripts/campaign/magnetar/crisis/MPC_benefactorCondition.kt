@@ -14,9 +14,11 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
 
         val market = getMarket() ?: return
         val intel = MPC_IAIICFobIntel.get() ?: return
-        val fleetMult = intel.getFleetMultFromContributingFactions()
+        val escalationLevel = (1 + intel.escalationLevel)
+        val fleetMult = intel.getFleetMultFromContributingFactions() * escalationLevel
 
         market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMult(id, fleetMult, name)
+        market.upkeepMult.modifyMult(id, escalationLevel, "Escalation")
     }
 
     override fun unapply(id: String?) {
@@ -25,6 +27,7 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
 
         val market = getMarket() ?: return
         market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
+        market.upkeepMult.unmodify(id)
     }
 
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI?, expanded: Boolean) {
@@ -33,11 +36,18 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
         val intel = MPC_IAIICFobIntel.get() ?: return
         val fleetMult = intel.getFleetMultFromContributingFactions()
 
+        val escalationLevel = (1 + intel.escalationLevel)
         tooltip.addPara(
             "Fleet size increased by %s, based on contributions by external factions",
             5f,
             Misc.getHighlightColor(),
-            niko_MPC_stringUtils.toPercent(fleetMult)
+            niko_MPC_stringUtils.toPercent(1 - fleetMult)
+        )
+        tooltip.addPara(
+            "Fleet size contribution and market upkeep multiplied by %s due to escalation",
+            5f,
+            Misc.getHighlightColor(),
+            "x${escalationLevel}"
         )
     }
 }

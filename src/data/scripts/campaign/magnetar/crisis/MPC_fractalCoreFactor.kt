@@ -175,7 +175,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
     private fun spawnFOB(fractalColony: MarketAPI, fractalSystem: StarSystemAPI, foundDist: Float): Boolean {
         val station = fractalColony.starSystem.addCustomEntity(niko_MPC_ids.MPC_FOB_ID, FOB_MARKET_NAME, "MPC_IAIICFOB", niko_MPC_ids.IAIIC_FAC_ID)
-        station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 180f)
+        station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 420f)
         val market = createMarket(station)
         station.makeImportant(niko_MPC_ids.MPC_FOB_ID, Float.MAX_VALUE)
 
@@ -210,9 +210,11 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.addIndustry(Industries.HIGHCOMMAND)
         val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
         HC.isImproved = true
+        HC.aiCoreId = Commodities.ALPHA_CORE
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
         market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
+        market.getIndustry(Industries.HEAVYBATTERIES).aiCoreId = Commodities.ALPHA_CORE
         market.addIndustry(Industries.ORBITALWORKS)
         market.getIndustry(Industries.ORBITALWORKS).specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
         market.addIndustry(Industries.WAYSTATION)
@@ -221,6 +223,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
         market.addCondition(Conditions.POPULATION_4)
         market.conditions.forEach { it.isSurveyed = true }
+        market.surveyLevel = MarketAPI.SurveyLevel.FULL
         if (niko_MPC_settings.indEvoEnabled) {
             market.addCondition(Ids.COND_MINERING)
             (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()

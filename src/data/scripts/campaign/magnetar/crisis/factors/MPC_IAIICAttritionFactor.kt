@@ -26,7 +26,7 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
         if (MPC_IAIICInterferenceCondition.isHostile()) {
             progress *= NON_HOSTILE_PROGRESS_MULT
         }
-        progress.coerceAtLeast(MIN_PROGRESS)
+        progress = progress.coerceAtLeast(MIN_PROGRESS)
 
         return progress.roundToInt()
     }
@@ -39,7 +39,7 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
         return object : BaseFactorTooltip() {
             override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
                 tooltip.addPara(
-                    "The hands behind the IAIIC grow weary as time goes on, and resource expenditure climbs. Attrition is based on " +
+                    "The hands behind the IAIIC grow weary as time goes on and resource expenditure climbs. Attrition is based on " +
                         "the IAIIC's relative strength in your systems, which is currently %s.",
                     5f,
                     Misc.getHighlightColor(),
@@ -52,7 +52,7 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
                     "${MIN_PROGRESS.toInt()}"
                 )
 
-                if (MPC_IAIICInterferenceCondition.isHostile()) {
+                if (!MPC_IAIICInterferenceCondition.isHostile()) {
                     tooltip.addPara(
                         "Due to their nominally \"non-hostile\" stance against you, the IAIIC's rate of attrition is %s. Declaring war would" +
                         " surely escalate the conflict and speed things up.",
@@ -63,6 +63,10 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
                 }
             }
         }
+    }
+
+    override fun shouldShow(intel: BaseEventIntel?): Boolean {
+        return true
     }
 
 }
