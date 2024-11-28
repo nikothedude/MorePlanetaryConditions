@@ -65,6 +65,14 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
             return true
         }
+
+        fun MarketAPI.addSpecialItems() {
+            getIndustry(Industries.HIGHCOMMAND)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry(Industries.STARFORTRESS_HIGH)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry(Industries.HEAVYBATTERIES)?.specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
+            getIndustry(Industries.ORBITALWORKS)?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
+        }
     }
 
     override fun getDesc(intel: BaseEventIntel?): String {
@@ -206,18 +214,15 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.addIndustry(Industries.POPULATION)
         market.addIndustry(Industries.MEGAPORT)
         market.addIndustry(Industries.STARFORTRESS_HIGH)
-        market.getIndustry(Industries.STARFORTRESS_HIGH).aiCoreId = Commodities.ALPHA_CORE // yes, theyre hypocrits
         market.addIndustry(Industries.HIGHCOMMAND)
         val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
         HC.isImproved = true
-        HC.aiCoreId = Commodities.ALPHA_CORE
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
-        market.getIndustry(Industries.HEAVYBATTERIES).specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
-        market.getIndustry(Industries.HEAVYBATTERIES).aiCoreId = Commodities.ALPHA_CORE
         market.addIndustry(Industries.ORBITALWORKS)
-        market.getIndustry(Industries.ORBITALWORKS).specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
         market.addIndustry(Industries.WAYSTATION)
+
+        market.addSpecialItems()
 
         market.addCondition("MPC_FOB")
         market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)

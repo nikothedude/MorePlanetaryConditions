@@ -2,6 +2,7 @@ package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
@@ -15,15 +16,22 @@ import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.magnetar.crisis.MPC_factionContribution
+import data.scripts.MPC_delayedExecution
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
+import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
+import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution
+import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
+import data.scripts.campaign.skills.MPC_spaceOperations
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_settings
+import lunalib.lunaExtensions.getKnownShipSpecs
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.isPatrol
 import org.magiclib.kotlin.isWarFleet
@@ -35,34 +43,105 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     val affectedMarkets = HashSet<MarketAPI>()
     val checkInterval = IntervalUtil(1f, 1.1f)
     var escalationLevel: Float = 0f
-    val factionContributions = HashSet<MPC_factionContribution>()
+    /** If true, [sanitizeFactionContributions] will be ran on the next advance tick. */
+    var sanitizeContributions: Boolean = false
+    var abandonedStage: Stage? = null
+    val factionContributions = generateContributions()
         get() {
             sanitizeFactionContributions(field)
             return field
         }
 
-    private fun sanitizeFactionContributions(contributions: HashSet<MPC_factionContribution> = factionContributions) {
+    private fun generateContributions(): ArrayList<MPC_factionContribution> {
+        val list = ArrayList<MPC_factionContribution>()
+
+        list += MPC_factionContribution(
+            Factions.HEGEMONY,
+            1.7f,
+            removeContribution = {
+                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            },
+            removeNextAction = true,
+            requireMilitary = true,
+            repOnRemove = -40f
+        )
+        list += MPC_factionContribution(
+            Factions.LUDDIC_CHURCH,
+            1.2f,
+            removeContribution = {
+                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            },
+            removeNextAction = true,
+            requireMilitary = true,
+            repOnRemove = -40f
+        )
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.9f,
+            removeContribution = null,
+            removeNextAction = true,
+            requireMilitary = false,
+            repOnRemove = -40f
+        )
+        list += MPC_factionContribution(
+            Factions.DIKTAT,
+            0.8f,
+            removeContribution = {
+                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            },
+            removeNextAction = true,
+            requireMilitary = true,
+            repOnRemove = -40f
+        )
+        list += MPC_factionContribution(
+            Factions.TRITACHYON,
+            0.7f,
+            removeContribution = null,
+            removeNextAction = false,
+            requireMilitary = false,
+            repOnRemove = -40f
+        )
+        list += MPC_factionContribution(
+            Factions.LUDDIC_PATH,
+            0.4f,
+            removeContribution = null,
+            removeNextAction = false,
+            requireMilitary = false,
+            repOnRemove = -50f
+        )
+
+        sanitizeContributions = true
+        //sanitizeFactionContributions(list) // no - we should check the next tick
+        return list
+    }
+
+    private fun sanitizeFactionContributions(contributions: ArrayList<MPC_factionContribution> = factionContributions) {
         val iterator = contributions.iterator()
         while (iterator.hasNext()) {
             val contribution = iterator.next()
             if (!BaseHostileActivityFactor.checkFactionExists(contribution.factionId, contribution.requireMilitary)) {
-                contribution.onRemoved(true)
+                contribution.onRemoved(this, true)
                 iterator.remove()
             }
         }
     }
 
 
-    enum class Stage {
-        START,
-        FIRST_RAID,
-        SECOND_RAID,
-        FIRST_ESCALATION,
-        THIRD_RAID,
-        BLOCKADE,
-        SECOND_ESCALATION,
-        FOURTH_RAID,
-        ALL_OR_NOTHING;
+    enum class Stage(
+        val stageName: String,
+        /** If true, losing a faction's pledge to the IAIIC can remove the stage before it fires.*/
+        val isExpendable: Boolean = true
+    ) {
+
+        START("Start", false),
+        FIRST_RAID("IAIIC Raid"),
+        SECOND_RAID("IAIIC Raid"),
+        FIRST_ESCALATION("Escalation", false),
+        THIRD_RAID("IAIIC Raid"),
+        BLOCKADE("IAIIC Blockade"),
+        SECOND_ESCALATION("Escalation", false),
+        FOURTH_RAID("IAIIC Raid"),
+        ALL_OR_NOTHING("All-out attack", false);
     }
 
     companion object {
@@ -95,10 +174,10 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             return points
         }
 
-        fun getFleetMultFromContributingFactions(contributions: MutableSet<MPC_factionContribution>): Float {
+        fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
             var mult = 1f
             for (entry in contributions) {
-                mult += entry.fleetMult
+                mult += entry.fleetMultIncrement
             }
             return mult
         }
@@ -131,13 +210,13 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         addFactor(MPC_IAIICShortageFactor())
         addFactor(MPC_IAIICAttritionFactor())
 
-        addStage(Stage.FIRST_RAID, 200)
-        addStage(Stage.SECOND_RAID, 275)
-        addStage(Stage.FIRST_ESCALATION, 325)
-        addStage(Stage.THIRD_RAID, 400)
-        addStage(Stage.BLOCKADE, 500)
-        addStage(Stage.SECOND_ESCALATION, 600)
-        addStage(Stage.FOURTH_RAID, 700)
+        addStage(Stage.FIRST_RAID, 275)
+        addStage(Stage.SECOND_RAID, 350)
+        addStage(Stage.FIRST_ESCALATION, 425)
+        addStage(Stage.THIRD_RAID, 500)
+        addStage(Stage.BLOCKADE, 600)
+        addStage(Stage.SECOND_ESCALATION, 700)
+        addStage(Stage.FOURTH_RAID, 800)
 
         addStage(Stage.ALL_OR_NOTHING, 1000)
     }
@@ -199,55 +278,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     override fun getStageTooltipImpl(stageId: Any?): TooltipMakerAPI.TooltipCreator? {
         if (stageId !is Stage) return null
 
-        when (stageId) {
-            Stage.FIRST_RAID, Stage.SECOND_RAID, Stage.THIRD_RAID, Stage.FOURTH_RAID -> {
-                return object : BaseFactorTooltip() {
-                    override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
-                        val opad = 10f
+        return object : BaseFactorTooltip() {
+            override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
+                val opad = 10f
 
-                        tooltip.addTitle("IAIIC Raid")
+                tooltip.addTitle(stageId.stageName)
 
-                        addStageDesc(tooltip, stageId, opad, true)
-                    }
-                }
-            }
-            Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> {
-                return object : BaseFactorTooltip() {
-                    override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
-                        val opad = 10f
-
-                        tooltip.addTitle("Escalation")
-
-                        addStageDesc(tooltip, stageId, opad, true)
-                    }
-                }
-            }
-
-            Stage.BLOCKADE -> {
-                return object : BaseFactorTooltip() {
-                    override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
-                        val opad = 10f
-
-                        tooltip.addTitle("IAIIC Blockade")
-
-                        addStageDesc(tooltip, stageId, opad, true)
-                    }
-                }
-            }
-
-            Stage.ALL_OR_NOTHING -> {
-                return object : BaseFactorTooltip() {
-                    override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
-                        val opad = 10f
-
-                        tooltip.addTitle("All-out attack")
-
-                        addStageDesc(tooltip, stageId, opad, true)
-                    }
-                }
+                addStageDesc(tooltip, stageId, opad, true)
             }
         }
-        return null
     }
 
     private fun addStageDesc(info: TooltipMakerAPI, stage: Stage, initPad: Float, forTooltip: Boolean) {
@@ -261,11 +300,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> {
                 val label = info.addPara(
                     "Feeling the pressure, the IAIIC's benefactors will pour more resources into the project. This will " +
-                        "%s and %s, but %s, leading to faster political attrition - in other words, the IAIIC's benefactors will " +
+                        "%s, %s, and %s, but %s, leading to faster political attrition - in other words, the IAIIC's benefactors will " +
                         "want the conflict to end even faster.",
                     initPad,
                     Misc.getHighlightColor(),
-                    "repair the FOB", "increase the number of patrols launched", "also increase the IAIIC's conflict fatigue"
+                    "repair the FOB", "respawn all patrols", "increase size of launched fleets", "also increase the IAIIC's conflict fatigue"
                 )
                 label.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
             }
@@ -304,24 +343,114 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
     }
 
+    override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
+        super.addBulletPoints(info, mode, isUpdate, tc, initPad)
+        if (info == null) return
+
+        if (!isUpdate) return
+        val data = getListInfoParam()
+        if (data is MPC_factionContributionChangeData) {
+            val contribution = data.contribution
+            val faction = Global.getSector().getFaction(contribution.factionId)
+
+            when (data.reason) {
+                MPC_changeReason.PULLED_OUT -> {
+                    val label = info.addPara(
+                        "%s pulled out of %s",
+                        0f,
+                        faction.color,
+                        faction.displayName, "IAIIC"
+                    )
+                    label.setHighlightColors(
+                        faction.color,
+                        Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).color
+                    )
+                }
+
+                MPC_changeReason.FACTION_DIED -> {
+                    val label = info.addPara(
+                        "%s unable to provide support to %s",
+                        0f,
+                        Misc.getHighlightColor(),
+                        faction.displayName, "IAIIC"
+                    )
+                    label.setHighlightColors(
+                        faction.color,
+                        Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).color
+                    )
+                }
+
+                MPC_changeReason.JOINED -> { // TODO: this is not supported yet
+                    info.addPara(
+                        "%s joins the IAIIC project",
+                        0f,
+                        Misc.getHighlightColor(),
+                        faction.displayName
+                    )
+                }
+            }
+
+            if (contribution.fleetMultIncrement > 0f) {
+                val label = info.addPara(
+                    "%s fleet-size reduced by %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "IAIIC", contribution.getStringifiedFleetsize()
+                )
+                label.setHighlightColors(
+                    Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).color,
+                    Misc.getHighlightColor()
+                )
+            }
+
+            if (abandonedStage != null) {
+                val name = abandonedStage!!.stageName
+                info.addPara(
+                    "Upcoming %s aborted",
+                    0f,
+                    Misc.getHighlightColor(),
+                    name
+                )
+                abandonedStage = null
+            }
+        }
+    }
+
+    override fun getCommMessageSound(): String? {
+        if (isSendingUpdate) {
+            return getSoundMajorPosting()
+        }
+        return getSoundColonyThreat()
+    }
+
     /** Increases amount of fleets launched by the FOB and repairs all industries, but increases conflict fatigue. */
     private fun escalate(amount: Float) {
-        val FOB = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return
+        val FOB = MPC_fractalCoreFactor.getFOB() ?: return
         FOB.industries.forEach {
             if (it.disruptedDays > 0.5f) {
                 it.setDisrupted(0.5f)
             }
         }
-        if (FOB.memoryWithoutUpdate[niko_MPC_ids.MPC_IAIIC_ESCALATION_ID] == null) {
-            FOB.memoryWithoutUpdate[niko_MPC_ids.MPC_IAIIC_ESCALATION_ID] = 0f
-        }
-        val existingAmount = FOB.memoryWithoutUpdate.getFloat(niko_MPC_ids.MPC_IAIIC_ESCALATION_ID)
-        FOB.memoryWithoutUpdate[niko_MPC_ids.MPC_IAIIC_ESCALATION_ID] = (existingAmount + amount)
+        FOB.addSpecialItems()
+        escalationLevel += amount
+        FOB.reapplyConditions()
+        MPC_delayedExecution(
+            {
+                MPC_spaceOperations.getPatrol(FOB)?.advance(Float.MAX_VALUE)
+            },
+            0.2f,
+            runWhilePaused = false,
+            useDays = true
+        ).start() // respawn all the fleets
     }
 
     override fun advanceImpl(amount: Float) {
         super.advanceImpl(amount)
 
+        if (sanitizeContributions) {
+            factionContributions // causes sanitization
+            sanitizeContributions = false
+        }
         val days = Misc.getDays(amount)
         checkInterval.advance(days)
         val elapsed = checkInterval.intervalElapsed()
@@ -373,6 +502,29 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         return true
     }
+
+    /** Removes the next raid, blockade, whatever. Does NOT remove escalation, or the final push. */
+    fun removeNextAction() {
+        var foundStage: EventStageData? = null
+
+        for (stage in this.stages) {
+            val stageId = stage.id as Stage
+            if (stage.wasEverReached) continue
+            if (stageId.isExpendable) {
+                foundStage = stage
+                break
+            }
+        }
+        if (foundStage != null) {
+            abandonedStage = foundStage.id as Stage?
+            stages.remove(foundStage)
+        }
+
+        return
+    }
+
+
+    // LISTENER CRAP
 
     fun getFaction(): FactionAPI {
         return Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)

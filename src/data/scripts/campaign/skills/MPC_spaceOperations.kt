@@ -1,6 +1,7 @@
 package data.scripts.campaign.skills
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.LevelBasedEffect
 import com.fs.starfarer.api.characters.MarketSkillEffect
@@ -13,6 +14,7 @@ class MPC_spaceOperations {
 
     companion object {
         const val SHIP_QUALITY_PERCENT = 0.25f
+        fun getPatrol(market: MarketAPI): MilitaryBase? = (market.getIndustry(Industries.MILITARYBASE) ?: market.getIndustry(Industries.HIGHCOMMAND) ?: market.getIndustry(Industries.PATROLHQ)) as? MilitaryBase
     }
 
     class Market1: MarketSkillEffect {
@@ -56,7 +58,7 @@ class MPC_spaceOperations {
         override fun runWhilePaused(): Boolean = false
 
         override fun advance(amount: Float) {
-            val militaryBase = (market.getIndustry(Industries.MILITARYBASE) ?: market.getIndustry(Industries.HIGHCOMMAND) ?: market.getIndustry(Industries.PATROLHQ)) as? MilitaryBase ?: return
+            val militaryBase = getPatrol(market) ?: return
             militaryBase.advance(amount * amountMult)
         }
     }

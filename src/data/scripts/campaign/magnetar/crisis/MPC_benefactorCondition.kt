@@ -38,7 +38,7 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
 
         val escalationLevel = (1 + intel.escalationLevel)
         tooltip.addPara(
-            "Fleet size increased by %s, based on contributions by external factions",
+            "Fleet size increased by %s, based on contributions from external factions",
             5f,
             Misc.getHighlightColor(),
             niko_MPC_stringUtils.toPercent(1 - fleetMult)
