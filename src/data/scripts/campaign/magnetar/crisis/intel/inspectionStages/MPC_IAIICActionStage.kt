@@ -22,9 +22,12 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionOrders
+import data.utilities.niko_MPC_ids
 
 class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStage(raid), FleetActionDelegate {
     var REP_PENALTY_HID_STUFF = -0.2f
+    var REP_PENALTY_DISRUPTED = -0.2f
     var REP_PENALTY_NORMAL = -0.1f
 
     protected var playerTargeted = false
@@ -33,12 +36,15 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
 
     protected var untilAutoresolve = 0f
 
+    companion object {
+        const val HIDE_CHANCE = 80f
+    }
 
     init {
         playerTargeted = target.isPlayerOwned // I mean, it's player-targeted by nature, but still
         untilAutoresolve = 5f
         val intel = intel as MPC_IAIICInspectionIntel
-        if (intel.orders == AntiInspectionOrders.RESIST) {
+        if (intel.orders == MPC_IAIICInspectionOrders.RESIST) {
             //untilAutoresolve = 30f;
             untilAutoresolve = 15f + 5f * Math.random().toFloat()
         }
@@ -127,7 +133,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         status = RaidStageStatus.SUCCESS
         val hostile = market!!.faction.isHostileTo(intel.faction)
         val orders = intel.orders
-        if (hostile || orders == AntiInspectionOrders.RESIST) {
+        if (hostile || orders == MPC_IAIICInspectionOrders.RESIST) {
             //RecentUnrest.get(target).add(3, Misc.ucFirst(intel.getFaction().getPersonNamePrefix()) + " inspection");
             //float str = MPC_IAIICInspectionIntel.DEFAULT_INSPECTION_GROUND_STRENGTH;
             var str = intel.assembleStage.origSpawnFP * 3f
@@ -143,9 +149,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             )
             Misc.setRaidedTimestamp(market)
             removeCoresAndApplyResult(fleet)
-        } else if (orders == AntiInspectionOrders.BRIBE) {
-            intel.outcome = HegemonyInspectionOutcome.BRIBED
-        } else if (orders == AntiInspectionOrders.COMPLY) {
+        } else if (orders == MPC_IAIICInspectionOrders.COMPLY) {
             removeCoresAndApplyResult(fleet)
         }
 
@@ -171,8 +175,10 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
     protected fun removeCoresAndApplyResult(fleet: CampaignFleetAPI?) {
         val intel = intel as MPC_IAIICInspectionIntel
         val orders = intel.orders
-        val resist = orders == AntiInspectionOrders.RESIST
-        val found = removeCores(fleet, resist)
+        val resist = orders == MPC_IAIICInspectionOrders.RESIST
+        val hiding = orders == MPC_IAIICInspectionOrders.HIDE_CORES
+        val hidingEffective = !Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.ALREADY_HID_CORES)
+        val found = removeCores(fleet, resist, hiding, hidingEffective)
         if (coresRemoved == null) coresRemoved = ArrayList()
         coresRemoved!!.clear()
         coresRemoved!!.addAll(found)
@@ -182,6 +188,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         for (id: String? in found) {
             val spec = Global.getSettings().getCommoditySpec(id)
             valFound += spec.basePrice.toInt()
+            if (id == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) continue // it just gets destroyed outright
             fleet?.cargo?.addCommodity(id, 1f)
         }
         for (id: String? in expected) {
@@ -192,15 +199,23 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             valExpected = 30000
         }
 
+        if (hiding && hidingEffective) {
+            intel.outcome = MPC_IAIICInspectionOutcomes.INVESTIGATION_DISRUPTED
+            Global.getSector().memoryWithoutUpdate[niko_MPC_ids.ALREADY_HID_CORES] = true
+            for (curr: Industry in target.industries) {
+                curr.setDisrupted(intel.random.nextFloat() * 35f + 15f)
+            }
+            intel.applyRepPenalty(REP_PENALTY_DISRUPTED)
+        }
         //resist = false;
-        if (!resist && valExpected > valFound * 1.25f) {
-            intel.outcome = HegemonyInspectionOutcome.FOUND_EVIDENCE_NO_CORES
+        else if (!resist && valExpected > valFound * 1.25f) {
+            intel.outcome = MPC_IAIICInspectionOutcomes.FOUND_EVIDENCE_NO_CORES
             for (curr: Industry in target!!.industries) {
                 curr.setDisrupted(intel.random.nextFloat() * 45f + 15f)
             }
             intel.applyRepPenalty(REP_PENALTY_HID_STUFF)
         } else {
-            intel.outcome = HegemonyInspectionOutcome.CONFISCATE_CORES
+            intel.outcome = MPC_IAIICInspectionOutcomes.CONFISCATE_CORES
             intel.applyRepPenalty(REP_PENALTY_NORMAL)
         }
     }
@@ -209,7 +224,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         return coresRemoved
     }
 
-    protected fun removeCores(inspector: CampaignFleetAPI?, resist: Boolean): List<String> {
+    protected fun removeCores(inspector: CampaignFleetAPI?, resist: Boolean, hiding: Boolean, hidingEffective: Boolean): List<String> {
         val intel = intel as MPC_IAIICInspectionIntel
         //float str = MPC_IAIICInspectionIntel.DEFAULT_INSPECTION_GROUND_STRENGTH;
         //float str = intel.getAssembleStage().getOrigSpawnFP() * Misc.FP_TO_GROUND_RAID_STR_APPROX_MULT;
@@ -223,13 +238,16 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             val id = curr.aiCoreId
             if (id != null) {
                 if (resist && intel.random.nextFloat() > re) continue
+                if (hiding && hidingEffective && intel.random.nextFloat() <= HIDE_CHANCE) continue
                 result.add(id)
                 curr.aiCoreId = null
             }
         }
         val admin = target!!.admin
         if (admin.isAICore) {
-            if (!resist || intel.random.nextFloat() < re) {
+            if (hiding && hidingEffective && admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+
+            } else if (!resist || intel.random.nextFloat() < re) {
                 result.add(admin.aiCoreId)
                 target!!.admin = null
             }
@@ -271,7 +289,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         val enemyStr = WarSimScript.getEnemyStrength(intel.faction, target!!.starSystem, true)
         val hostile = target!!.faction.isHostileTo(intel.faction)
 
-        //AntiInspectionOrders orders = ((MPC_IAIICInspectionIntel) intel).getOrders();
+        //MPC_IAIICInspectionOrders orders = ((MPC_IAIICInspectionIntel) intel).getOrders();
 
         //if (hostile || )
         val defensiveStr = enemyStr + WarSimScript.getStationStrength(
@@ -301,13 +319,12 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         resetRoutes()
         val hostile = target!!.faction.isHostileTo(intel.faction)
         val orders = (intel as MPC_IAIICInspectionIntel).orders
-        if (!hostile && orders == AntiInspectionOrders.RESIST) {
+        if (!hostile && orders == MPC_IAIICInspectionOrders.RESIST) {
             (intel as MPC_IAIICInspectionIntel).makeHostileAndSendUpdate()
         } else {
             (intel as MPC_IAIICInspectionIntel).sendInSystemUpdate()
         }
         gaveOrders = false
-        (intel as MPC_IAIICInspectionIntel).isEnteredSystem = true
 
         //FactionAPI faction = intel.getFaction();
         val routes = RouteManager.getInstance().getRoutesForSource(intel.routeSourceId)
@@ -330,9 +347,9 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         val opad = 10f
         val intel = intel as MPC_IAIICInspectionIntel
         val orders = intel.orders
-        val resist = orders == AntiInspectionOrders.RESIST
+        val resist = orders == MPC_IAIICInspectionOrders.RESIST
         if (status == RaidStageStatus.FAILURE) {
-            if (intel.outcome == HegemonyInspectionOutcome.COLONY_NO_LONGER_EXISTS) {
+            if (intel.outcome == MPC_IAIICInspectionOutcomes.COLONY_NO_LONGER_EXISTS) {
                 info.addPara("The inspection has been aborted.", opad)
             } else {
                 info.addPara(
@@ -347,12 +364,19 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             }
             cores.sort()
             when (intel.outcome) {
-                HegemonyInspectionOutcome.BRIBED -> info.addPara(
-                    "The funds you've allocated have been used to resolve the inspection to the " +
-                            "satisfaction of all parties.", opad
-                )
+                MPC_IAIICInspectionOutcomes.INVESTIGATION_DISRUPTED -> {
+                    if (!cores.isEmpty) {
+                        info.addPara("The inspectors have confiscated the following AI cores:", opad)
+                        info.showCargo(cores, 10, true, opad)
+                    } else {
+                        info.addPara("The inspectors have not found any AI cores.", opad)
+                    }
+                    info.addPara(
+                        "There was clear evidence of hastily-done obscuration work, inspiring the inspectors to investigate with great zeal. Local operations have been heavily disrupted.", opad
+                    )
+                }
 
-                HegemonyInspectionOutcome.CONFISCATE_CORES -> if (!cores.isEmpty) {
+                MPC_IAIICInspectionOutcomes.CONFISCATE_CORES -> if (!cores.isEmpty) {
                     info.addPara("The inspectors have confiscated the following AI cores:", opad)
                     info.showCargo(cores, 10, true, opad)
                 } else {
@@ -363,7 +387,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                     }
                 }
 
-                HegemonyInspectionOutcome.FOUND_EVIDENCE_NO_CORES -> {
+                MPC_IAIICInspectionOutcomes.FOUND_EVIDENCE_NO_CORES -> {
                     if (!cores.isEmpty) {
                         info.addPara("The inspectors have confiscated the following AI cores:", opad)
                         info.showCargo(cores, 10, true, opad)

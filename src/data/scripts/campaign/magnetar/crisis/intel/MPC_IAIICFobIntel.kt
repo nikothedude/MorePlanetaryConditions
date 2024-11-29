@@ -11,7 +11,9 @@ import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactio
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
 import com.fs.starfarer.api.impl.campaign.intel.events.*
+import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
@@ -32,9 +34,9 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_settings
 import lunalib.lunaExtensions.getKnownShipSpecs
-import org.magiclib.kotlin.getMarketsInLocation
-import org.magiclib.kotlin.isPatrol
-import org.magiclib.kotlin.isWarFleet
+import lunalib.lunaExtensions.getMarketsCopy
+import org.lazywizard.lazylib.MathUtils
+import org.magiclib.kotlin.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
@@ -521,6 +523,48 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
 
         return
+    }
+
+    /** Ends the event. Victory, or defeat. */
+    fun end(reason: MPC_IAIICFobEndReason, dialog: InteractionDialogAPI? = null) {
+        if (dialog == null) {
+            sendUpdateIfPlayerHasIntel(reason, false)
+        } else {
+            sendUpdateIfPlayerHasIntel(reason, dialog.textPanel)
+        }
+
+        val fob = MPC_fractalCoreFactor.getFOB()
+        dismissIAIICFleets()
+        if (reason.consideredVictory) {
+            if (fob != null) {
+                evacuateFob(fob)
+                DecivTracker.decivilize(fob, false,  false)
+                beginCoreUpgrade()
+            }
+        } else {
+            val params = DebrisFieldParams(
+                500f,
+                30f,
+                90f,
+                0f
+            )
+            val containingLoc = fob?.containingLocation
+            val fobEntity = fob?.primaryEntity
+            if (containingLoc != null && fobEntity != null) {
+                val field = containingLoc.addDebrisField(params, MathUtils.getRandom())
+                val token = containingLoc.createToken(fobEntity.location)
+                token.orbit = fobEntity.orbit.makeCopy()
+                field.setCircularOrbit(token, 0f, 0f, 100f)
+                fobEntity.fadeAndExpire(1f)
+            }
+        }
+        killIAIIC()
+    }
+
+    private fun killIAIIC() {
+        for (market in Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).getMarketsCopy()) {
+            market.factionId = Factions.INDEPENDENT
+        }
     }
 
 
