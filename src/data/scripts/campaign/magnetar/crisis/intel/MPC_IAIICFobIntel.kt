@@ -9,8 +9,9 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
+import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
 import com.fs.starfarer.api.impl.campaign.intel.events.*
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
@@ -21,6 +22,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution
@@ -49,17 +51,104 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     var sanitizeContributions: Boolean = false
     var abandonedStage: Stage? = null
     val factionContributions = generateContributions()
-        get() {
-            sanitizeFactionContributions(field)
-            return field
+    fun getFactionContributionsExternal(): ArrayList<MPC_factionContribution> {
+        sanitizeFactionContributions(factionContributions)
+        return factionContributions
+    }
+
+    fun removeContribution(contribution: MPC_factionContribution, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null) {
+        factionContributions -= contribution
+        contribution.onRemoved(this, becauseFactionDead, dialog)
+        checkContributionValues()
+    }
+
+    private fun checkContributionValues() {
+        val fleetSize = getFleetMultFromContributingFactions()
+
+        if (fleetSize <= MIN_FLEET_SIZE_TIL_GIVE_UP) {
+            end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
         }
+    }
+
+    private fun sanitizeFactionContributions(contributions: ArrayList<MPC_factionContribution> = factionContributions) {
+        val iterator = contributions.iterator()
+        while (iterator.hasNext()) {
+            val contribution = iterator.next()
+            if (!BaseHostileActivityFactor.checkFactionExists(contribution.factionId, contribution.requireMilitary)) {
+                contribution.onRemoved(this, true)
+                iterator.remove()
+            }
+        }
+    }
+
+
+    enum class Stage(
+        val stageName: String,
+        /** If true, losing a faction's pledge to the IAIIC can remove the stage before it fires.*/
+        val isExpendable: Boolean = true
+    ) {
+
+        START("Start", false),
+        FIRST_RAID("IAIIC Raid"),
+        SECOND_RAID("IAIIC Raid"),
+        FIRST_ESCALATION("Escalation", false),
+        THIRD_RAID("IAIIC Raid"),
+        BLOCKADE("IAIIC Blockade"),
+        SECOND_ESCALATION("Escalation", false),
+        FOURTH_RAID("IAIIC Raid"),
+        ALL_OR_NOTHING("All-out attack", false);
+    }
+
+    companion object {
+        const val KEY = "\$MPC_IAIICIntel"
+        const val PROGRESS_MAX = 1000
+        const val FP_PER_POINT = 2
+        const val HEGEMONY_CONTRIBUTION = 1.7f
+        const val CHURCH_CONTRIBUTION = 1.2f
+        /** If overall contribution reaches or falls below this, the event ends. */
+        const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
+
+        fun get(): MPC_IAIICFobIntel? {
+            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_IAIICFobIntel
+        }
+
+        fun addFactorCreateIfNecessary(factor: EventFactor?, dialog: InteractionDialogAPI?) {
+            if (get() == null) {
+                MPC_IAIICFobIntel()
+            }
+            if (get() != null) {
+                get()!!.addFactor(factor, dialog)
+            }
+        }
+
+        fun getIAIICStrengthInSystem(): Float {
+            val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return 0f
+            return getRelativeFactionStrength(niko_MPC_ids.IAIIC_FAC_ID, fractalColony.starSystem)
+        }
+
+        fun computeShipsDestroyedPoints(fleetPointsDestroyed: Float): Int {
+            if (fleetPointsDestroyed <= 0) return 0
+            var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
+            if (points < 1) points = 1
+            return points
+        }
+
+        fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
+            var mult = 1f
+            for (entry in contributions) {
+                mult += entry.fleetMultIncrement
+            }
+            return mult
+        }
+
+    }
 
     private fun generateContributions(): ArrayList<MPC_factionContribution> {
         val list = ArrayList<MPC_factionContribution>()
 
         list += MPC_factionContribution(
             Factions.HEGEMONY,
-            1.7f,
+            HEGEMONY_CONTRIBUTION,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -69,7 +158,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         )
         list += MPC_factionContribution(
             Factions.LUDDIC_CHURCH,
-            1.2f,
+            CHURCH_CONTRIBUTION = 1.2f,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -117,76 +206,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         return list
     }
 
-    private fun sanitizeFactionContributions(contributions: ArrayList<MPC_factionContribution> = factionContributions) {
-        val iterator = contributions.iterator()
-        while (iterator.hasNext()) {
-            val contribution = iterator.next()
-            if (!BaseHostileActivityFactor.checkFactionExists(contribution.factionId, contribution.requireMilitary)) {
-                contribution.onRemoved(this, true)
-                iterator.remove()
-            }
-        }
-    }
-
-
-    enum class Stage(
-        val stageName: String,
-        /** If true, losing a faction's pledge to the IAIIC can remove the stage before it fires.*/
-        val isExpendable: Boolean = true
-    ) {
-
-        START("Start", false),
-        FIRST_RAID("IAIIC Raid"),
-        SECOND_RAID("IAIIC Raid"),
-        FIRST_ESCALATION("Escalation", false),
-        THIRD_RAID("IAIIC Raid"),
-        BLOCKADE("IAIIC Blockade"),
-        SECOND_ESCALATION("Escalation", false),
-        FOURTH_RAID("IAIIC Raid"),
-        ALL_OR_NOTHING("All-out attack", false);
-    }
-
-    companion object {
-        const val KEY = "\$MPC_IAIICIntel"
-        const val PROGRESS_MAX = 1000
-        const val FP_PER_POINT = 2
-
-        fun get(): MPC_IAIICFobIntel? {
-            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_IAIICFobIntel
-        }
-
-        fun addFactorCreateIfNecessary(factor: EventFactor?, dialog: InteractionDialogAPI?) {
-            if (get() == null) {
-                MPC_IAIICFobIntel()
-            }
-            if (get() != null) {
-                get()!!.addFactor(factor, dialog)
-            }
-        }
-
-        fun getIAIICStrengthInSystem(): Float {
-            val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return 0f
-            return getRelativeFactionStrength(niko_MPC_ids.IAIIC_FAC_ID, fractalColony.starSystem)
-        }
-
-        fun computeShipsDestroyedPoints(fleetPointsDestroyed: Float): Int {
-            if (fleetPointsDestroyed <= 0) return 0
-            var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
-            if (points < 1) points = 1
-            return points
-        }
-
-        fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
-            var mult = 1f
-            for (entry in contributions) {
-                mult += entry.fleetMultIncrement
-            }
-            return mult
-        }
-
-    }
     fun getFleetMultFromContributingFactions(): Float {
-        return Companion.getFleetMultFromContributingFactions(this.factionContributions)
+        return Companion.getFleetMultFromContributingFactions(getFactionContributionsExternal())
     }
 
     init {
@@ -415,11 +436,54 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                 )
                 abandonedStage = null
             }
+        } else if (data is MPC_IAIICFobEndReason) {
+            info.addPara(
+                "Event over",
+                initPad
+            )
+            when (data) {
+                MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST -> {
+                    info.addPara(
+                        "Target colony no longer exists",
+                        initPad
+                    )
+                }
+                MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED -> {
+                    info.addPara(
+                        "Exotic intelligence seized",
+                        initPad
+                    )
+                }
+                MPC_IAIICFobEndReason.FAILED_ALL_OUT_ATTACK -> {
+                    info.addPara(
+                        "%s suffers crushing defeat!",
+                        initPad,
+                        getFaction().color,
+                        "IAIIC"
+                    )
+                }
+                MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS -> {
+                    info.addPara(
+                        "%s crumbles as the sector abandons it!",
+                        initPad,
+                        getFaction().color,
+                        "IAIIC"
+                    )
+                }
+            }
         }
     }
 
     override fun getCommMessageSound(): String? {
         if (isSendingUpdate) {
+            val data = getListInfoParam()
+            if (data is MPC_IAIICFobEndReason) {
+                if (data.consideredVictory) {
+                    return Sounds.REP_GAIN
+                } else {
+                    return Sounds.REP_LOSS
+                }
+            }
             return getSoundMajorPosting()
         }
         return getSoundColonyThreat()
@@ -534,12 +598,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
 
         val fob = MPC_fractalCoreFactor.getFOB()
-        dismissIAIICFleets()
+        dismissCombatFleets()
+        if (fob != null) {
+            evacuateFob(fob)
+        }
         if (reason.consideredVictory) {
+            beginCoreUpgrade()
             if (fob != null) {
-                evacuateFob(fob)
+                fob.removeCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
                 DecivTracker.decivilize(fob, false,  false)
-                beginCoreUpgrade()
             }
         } else {
             val params = DebrisFieldParams(
@@ -559,6 +626,71 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             }
         }
         killIAIIC()
+    }
+
+    private fun beginCoreUpgrade() {
+        MPC_delayedExecution(
+            { MPC_fractalUpgradeIntel() },
+            30f,
+            false,
+            useDays = true
+        ).start()
+    }
+
+    private fun dismissCombatFleets() {
+        val targetColony = MPC_fractalCoreFactor.getFOB() ?: MPC_hegemonyFractalCoreCause.getFractalColony() ?: return
+        for (fleet in targetColony.containingLocation.fleets.filter { it.faction.id == niko_MPC_ids.IAIIC_FAC_ID && !it.isTrader() }) {
+            val evacLoc = getEvacLoc(targetColony) ?: return fleet.despawn()
+            fleet.clearAssignments()
+            fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, evacLoc.primaryEntity, Float.MAX_VALUE, "returning to ${evacLoc.name}")
+        }
+
+        for (fleet in MPC_fractalCrisisHelpers.getAssistanceFleets()) {
+            val despawnLoc = fleet.getSourceMarket()?.primaryEntity ?: Global.getSector().economy.marketsCopy.randomOrNull()?.primaryEntity ?: continue
+            fleet.clearAssignments()
+            fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, despawnLoc, Float.MAX_VALUE, "returning to ${despawnLoc.name}")
+        }
+    }
+
+    private fun evacuateFob(fob: MarketAPI) {
+        val numOfFleets = fob.size
+        var fleetsLeft = numOfFleets
+        while (fleetsLeft-- > 0) {
+            val evacLoc = getEvacLoc(fob) ?: continue
+            val fleet = createEvacFleet(fob)
+
+            fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, evacLoc.primaryEntity, Float.MAX_VALUE, "evacuating to ${evacLoc.name}")
+        }
+    }
+
+    private fun getEvacLoc(fob: MarketAPI): MarketAPI? {
+        val tryOne = Global.getSector().economy.marketsCopy.filter { it.factionId == Factions.INDEPENDENT }
+        if (tryOne.isNotEmpty()) return tryOne.randomOrNull()
+        val tryTwo = Global.getSector().economy.marketsCopy.filter { !it.faction.isHostileTo(niko_MPC_ids.IAIIC_FAC_ID) }
+        if (tryTwo.isNotEmpty()) return tryTwo.randomOrNull()
+
+        return Global.getSector().economy.marketsCopy.randomOrNull()
+    }
+
+    private fun createEvacFleet(fob: MarketAPI): CampaignFleetAPI {
+        val params = FleetParamsV3(
+            fob,
+            FleetTypes.TRADE_LINER,
+            40f,
+            100f,
+            30f,
+            50f,
+            150f,
+            0f,
+            0f
+        )
+        val fleet = FleetFactoryV3.createFleet(params)
+        fleet.name = "Evacuation Fleet"
+
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
+        fleet.memoryWithoutUpdate["\$MPC_evacFleet"] = true
+
+        return fleet
     }
 
     private fun killIAIIC() {

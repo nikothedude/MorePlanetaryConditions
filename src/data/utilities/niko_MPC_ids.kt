@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val IAIIC_CRISIS_ASSISTANCE_FLEETS = "\$MPC_IAIICCrisisAssistanceFleets"
     const val ALREADY_HID_CORES = "\$MPC_alreadyHidCores"
     const val MPC_BENEFACTOR_CONDID = "MPC_benefactors"
     const val MPC_LOST_FRACTAL_CORE = "\$MPC_playerLostFractalCore"

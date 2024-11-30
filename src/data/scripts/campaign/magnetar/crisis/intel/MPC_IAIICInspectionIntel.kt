@@ -53,6 +53,15 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         if (action?.getCoresRemoved()?.contains(niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) == true) {
             MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED)
         }
+        if (repResult != null && repResult!!.delta != 0f) {
+            Global.getSector().adjustPlayerReputation(
+                RepActionEnvelope(
+                    RepActions.CUSTOM,
+                    -repResult!!.delta, null, null, false, true, "Hostilities Ended"
+                ),
+                getFaction().id
+            )
+        }
         /*if (listener != null && outcome != null) {
             listener.notifyInspectionEnded(outcome)
         }*/
@@ -206,7 +215,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                 info.addPara("%s AI $cores confiscated", initPad, tc, h, "" + num)
                 initPad = 0f
             }
-            if (outcome == MPC_IAIICInspectionOutcomes.FOUND_EVIDENCE_NO_CORES) {
+            if (outcome == MPC_IAIICInspectionOutcomes.FOUND_EVIDENCE_NO_CORES || outcome == MPC_IAIICInspectionOutcomes.INVESTIGATION_DISRUPTED) {
                 val other = target.faction
                 info.addPara(
                     "Operations at %s disrupted", initPad, tc,

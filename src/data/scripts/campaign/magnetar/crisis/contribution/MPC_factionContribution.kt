@@ -43,10 +43,9 @@ data class MPC_factionContribution(
         }
     }
 
-    fun remove(dialog: InteractionDialogAPI?) {
+    fun remove(dialog: InteractionDialogAPI?, becauseFactionDead: Boolean) {
         val intel = MPC_IAIICFobIntel.get() ?: return
-        intel.factionContributions -= this // it's getter does not call remove so it cant really go wrong. right?
-        onRemoved(intel, false, dialog)
+        intel.removeContribution(this, becauseFactionDead, dialog)
     }
 
     fun getStringifiedFleetsize(): String {

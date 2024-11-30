@@ -215,7 +215,9 @@
 	"custom":{
 		"offersCommissions":false,
 		"engagesInHostilities":false,
-		"buysAICores":false,
+		"buysAICores":true,
+		"AICoreValueMult":0.1,
+		"AICoreRepMult":4,
 		"buysSurveyData":false,
 		"hostilityImpactOnGrowth":true,
 		"caresAboutAtrocities":false,
