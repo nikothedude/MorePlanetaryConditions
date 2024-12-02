@@ -17,11 +17,14 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_marketUtils.addMarketPeople
 import data.utilities.niko_MPC_settings
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
@@ -190,18 +193,24 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         initFOBFleets(station, market, fractalSystem)
 
         MPC_IAIICFobIntel()
+        market.reapplyConditions()
+        market.reapplyIndustries()
+        MPC_delayedExecution(
+            {
+                market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("AAA", 500f)
+                market.respawnAllFleets()
+                market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify("AAA") // i dont know why
+                // but the fleets spawn with a fuckload of dmods here for some reason. this is just to counter it
+
+            },
+            0.2f,
+            false,
+            useDays = true
+        ).start()
         //FOBIntel.setListener(this)
         //Global.getSector().intelManager.addIntel(FOBIntel)
 
         return true
-    }
-
-    private fun initFOBFleets(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
-        initMercFleet(station, market, fractalSystem)
-    }
-
-    private fun initMercFleet(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
-        return
     }
 
     protected fun createMarket(FOBStation: SectorEntityToken): MarketAPI {
@@ -240,6 +249,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.isUseStockpilesForShortages = true
         market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
         market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
+        addMarketPeople(market)
         /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
         for (com in market.commoditiesCopy) {
             val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)
@@ -248,7 +258,19 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         }*/
 
         Global.getSector().economy.addMarket(market, true)
+
+        market.reapplyConditions()
+        market.reapplyIndustries()
+
         return market
+    }
+
+    private fun initFOBFleets(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
+        initMercFleet(station, market, fractalSystem)
+    }
+
+    private fun initMercFleet(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {
+        return
     }
 
     override fun createFleet(system: StarSystemAPI?, random: Random?): CampaignFleetAPI? {

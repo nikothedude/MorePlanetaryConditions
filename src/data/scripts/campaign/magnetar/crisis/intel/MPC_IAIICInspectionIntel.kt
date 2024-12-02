@@ -50,7 +50,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             }
             //sendOutcomeUpdate(); // don't do this - base raid sends an UPDATE_FAILED so we're good already
         }
-        if (action?.getCoresRemoved()?.contains(niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) == true) {
+        if (action?.coresRemoved?.contains(niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) == true) {
             MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED)
         }
         if (repResult != null && repResult!!.delta != 0f) {
@@ -208,7 +208,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         }
         if (getListInfoParam() == OUTCOME_UPDATE) {
             if (action !is MPC_IAIICActionStage) return
-            val num: Int = (action as MPC_IAIICActionStage).getCoresRemoved()?.size ?: return
+            val num: Int = (action as MPC_IAIICActionStage).coresRemoved?.size ?: return
             if (num > 0) {
                 var cores = "cores"
                 if (num == 1) cores = "core"
@@ -267,7 +267,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             info.addPara("Inspection under way", tc, initPad)
             initPad = 0f
         } else if (outcome != null) {
-            val num: Int = (action as MPC_IAIICActionStage).getCoresRemoved()?.size ?: return
+            val num: Int = (action as MPC_IAIICActionStage).coresRemoved?.size ?: return
             if (num > 0) {
                 var cores = "cores"
                 if (num == 1) cores = "core"

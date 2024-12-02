@@ -39,8 +39,10 @@
 			"sindrian_diktat":0.1,
 			"lions_guard":0.05,
 			"LG_bp":0.05,
+			"persean":0,
 		},
 		"hulls":{
+			"invictus":0.2,
 			"hyperion":0.25,
 			"scarab":0.25,
 			"monitor":0.25,
@@ -57,6 +59,52 @@
 	"knownShips":{
 		"tags":["ind", "independent", "hegemony", "luddic_church", "LC_bp", "sindrian_diktat", "lions_guard", "LG_bp"],
 		"hulls":[
+			"cerberus",
+			"crig",
+			"ox",
+			"dram",
+			"phaeton",
+			"prometheus",
+			"shepherd",
+			"mule",
+			"venture",
+			"atlas",
+			"hermes",
+			"mudskipper",
+			"nebula",
+			"valkyrie",
+			"starliner",
+			"tarsus",
+			"colossus",
+			"buffalo_hegemony",
+			
+			"hound_hegemony",
+			"kite_hegemony",
+			"wolf_hegemony",
+			"lasher",
+			"centurion",
+			"gremlin",
+			#"vanguard", ? - no, LC
+			
+			"condor",
+			"enforcer",
+			"enforcer_xiv",
+			#"manticore", ? - no, LC
+			
+			"eagle",
+			"dominator",
+			"dominator_xiv",
+			"eagle_xiv",
+			"falcon_xiv",
+			"mora",
+			"grendel", # 0 phase doctrine, but added to combatLarge elsewhere in this file
+			
+			"legion",
+			"onslaught",
+			"onslaught_xiv",
+			
+			"retribution",
+			"invictus",
 		],
 	},
 	# listing ships here will make the faction mostly use them even if other hulls become available
@@ -68,6 +116,15 @@
 	"knownFighters":{
 		"tags":["ind", "independent", "hegemony", "luddic_church", "LC_bp", "sindrian_diktat", "lions_guard", "LG_bp"],
 		"fighters":[
+			"talon_wing",
+			"broadsword_wing",
+			"warthog_wing",
+			"piranha_wing",
+			"hoplon_wing",
+			"longbow_wing",
+			"broadsword_wing",
+			"perdition_wing",
+			"talon_wing",
 		],
 	},
 	"priorityFighters":{
@@ -78,6 +135,64 @@
 	"knownWeapons":{
 		"tags":["ind", "independent", "hegemony", "luddic_church", "LC_bp", "sindrian_diktat", "lions_guard", "LG_bp"],
 		"weapons":[
+			"lightmg",
+			"lightdualmg",
+			"vulcan",
+			"lightac",
+			"lightdualac",
+			"lightag",
+			"lightneedler",
+			"railgun",
+
+			"heavymortar",
+			"chaingun",
+			"heavyac",
+			"hveldriver",
+			"heavymauler",
+			"heavyneedler",
+			"flak",
+			"dualflak",
+			
+			"gauss",
+			"hephag",
+			"mark9",
+			"devastator",
+			"multineedler",
+			
+			
+			"reaper",
+			"atropos",
+			"atropos_single",
+			"swarmer",
+			"annihilator",
+			"heatseeker",
+			"harpoon",
+			"harpoon_single",
+			"breach",
+			"sabot",
+			"sabot_single",
+			
+			"pilum",
+			"breachpod",
+			"harpoonpod",
+			"sabotpod",
+			"phasecl",
+			"typhoon",
+			
+			# not mountable on any Hegemony ships (except the Legion XIV, which they don't have immediate access to);
+			# still available to buy from them
+			"cyclone",
+			"hurricane",
+			"squall",
+			"locust",
+			
+			"taclaser",
+			"pdlaser",
+			"lrpdlaser",
+			"ioncannon",
+			"gravitonbeam",
+			"pulselaser",
+			"phasebeam",
 		],
 	},
 	"priorityWeapons":{
@@ -86,7 +201,7 @@
 		],
 	},
 	"knownHullMods":{
-		"tags":["standard", "ind", "independent", "hegemony", "luddic_church", "LC_bp", "sindrian_diktat", "lions_guard", "LG_bp"],
+		"tags":["standard", "ind", "independent", "hegemony", "luddic_church", "LC_bp", "sindrian_diktat", "lions_guard", "LG_bp", "merc"],
 		"hullMods":[
 		],
 	},
@@ -101,6 +216,27 @@
 		"atropos_single":5,
 		"swarmer":10,
 		"harpoon":10,
+		
+		"vulcan":10,
+		"lightag":5,
+		"lightneedler":10,
+		"railgun":10,
+
+		"hveldriver":10,
+		"heavymauler":10,
+		"heavyneedler":10,
+		"flak":5,
+		"dualflak":5,
+		
+		"gauss":10,
+		"hephag":10,
+		"multineedler":5,
+		
+		"sabot":5,
+		"reaper":5,
+		"breachpod":5,
+		"harpoonpod":5,
+		"sabotpod":5,
 	},
 	"fighterSellFrequency":{
 	},

@@ -7,13 +7,18 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.campaign.NPCHassler
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
-import com.fs.starfarer.api.impl.campaign.intel.events.*
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -23,7 +28,8 @@ import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers
-import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
+import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
@@ -31,7 +37,6 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
-import data.scripts.campaign.skills.MPC_spaceOperations
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_settings
@@ -44,6 +49,7 @@ import kotlin.math.roundToInt
 
 class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
+    var removeBlueprintFunctions: HashSet<() -> Unit> = HashSet()
     val affectedMarkets = HashSet<MarketAPI>()
     val checkInterval = IntervalUtil(1f, 1.1f)
     var escalationLevel: Float = 0f
@@ -88,7 +94,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         val isExpendable: Boolean = true
     ) {
 
-        START("Start", false),
+        START("IAIIC Investigations", false),
         FIRST_RAID("IAIIC Raid"),
         SECOND_RAID("IAIIC Raid"),
         FIRST_ESCALATION("Escalation", false),
@@ -102,11 +108,16 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     companion object {
         const val KEY = "\$MPC_IAIICIntel"
         const val PROGRESS_MAX = 1000
-        const val FP_PER_POINT = 2
+        const val FP_PER_POINT = 0.8f
         const val HEGEMONY_CONTRIBUTION = 1.7f
         const val CHURCH_CONTRIBUTION = 1.2f
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
+        const val BASE_INSPECTION_FP = 200f
+
+        fun getFOB(): MarketAPI? {
+            return MPC_fractalCoreFactor.getFOB()
+        }
 
         fun get(): MPC_IAIICFobIntel? {
             return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_IAIICFobIntel
@@ -122,7 +133,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
 
         fun getIAIICStrengthInSystem(): Float {
-            val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony() ?: return 0f
+            val fractalColony = getFractalColony() ?: return 0f
             return getRelativeFactionStrength(niko_MPC_ids.IAIIC_FAC_ID, fractalColony.starSystem)
         }
 
@@ -158,7 +169,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         )
         list += MPC_factionContribution(
             Factions.LUDDIC_CHURCH,
-            CHURCH_CONTRIBUTION = 1.2f,
+            CHURCH_CONTRIBUTION,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -215,7 +226,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         setup()
 
-        val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony()!!
+        val fractalColony = getFractalColony()!!
         AICoreAdmin.get(fractalColony)!!.daysActive = 500f // so it cant be removed anymore
         Global.getSector().intelManager.addIntel(this, false, null)
         Global.getSector().addListener(this)
@@ -232,6 +243,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         //addFactor(MPC_IAIICTradeDestroyedFactorHint()) // the shortage factor already does this
         addFactor(MPC_IAIICShortageFactor())
         addFactor(MPC_IAIICAttritionFactor())
+
+        addStage(Stage.START, 0)
 
         addStage(Stage.FIRST_RAID, 275)
         addStage(Stage.SECOND_RAID, 350)
@@ -274,8 +287,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         if (stage == null) return
 
         when (stage.id) {
+            Stage.START -> {}
             Stage.FIRST_RAID -> {
-
+                val FOB = getFOB() ?: return
+                val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
+                MPC_IAIICInspectionIntel(FOB, colony, BASE_INSPECTION_FP)
             }
             Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> escalate(2f)
             Stage.BLOCKADE -> {
@@ -337,7 +353,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                     "force you to \"cooperate\". It is likely the blockading force will be %s, and may require precision strikes to defeat.",
                     initPad,
                     Misc.getHighlightColor(),
-                    "${MPC_hegemonyFractalCoreCause.getFractalColony()?.starSystem?.name}", "very strong"
+                    "${getFractalColony()?.starSystem?.name}", "very strong"
                 )
             }
             Stage.ALL_OR_NOTHING -> {
@@ -347,7 +363,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                     "rather, out of desperation, a single all-out-strike against %s will take place, seeking to find evidence of your \"exotic intelligence\".",
                     initPad,
                     Misc.getHighlightColor(),
-                    "pull out of the project", "${MPC_hegemonyFractalCoreCause.getFractalColony()?.name}"
+                    "pull out of the project", "${getFractalColony()?.name}"
                 )
                 info.addPara(
                     "The strength of this theoretical attack is a subject of intense debate amongst your brass, but it's estimated" +
@@ -369,6 +385,10 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
         if (info == null) return
+
+        if (addEventFactorBulletPoints(info, mode, isUpdate, tc, initPad)) {
+            return
+        }
 
         if (!isUpdate) return
         val data = getListInfoParam()
@@ -502,7 +522,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         FOB.reapplyConditions()
         MPC_delayedExecution(
             {
-                MPC_spaceOperations.getPatrol(FOB)?.advance(Float.MAX_VALUE)
+                FOB.respawnAllFleets()
             },
             0.2f,
             runWhilePaused = false,
@@ -528,9 +548,12 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             checkPlayerRep()
         }
 
-        val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony()
+        val fractalColony = getFractalColony()
         if (fractalColony == null) {
-            TODO("add a contingency for if the fractal colony is destroyed")
+            end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
+        }
+        else if (fractalColony.containingLocation != getFOB()?.containingLocation) {
+            end(MPC_IAIICFobEndReason.FRACTAL_COLONY_MOVED)
         }
     }
 
@@ -545,7 +568,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         for (market in affectedMarkets) {
             assignOrUnassignDeficit(market)
         }
-        val fractalSystem = MPC_hegemonyFractalCoreCause.getFractalColony()?.starSystem ?: return
+        val fractalSystem = getFractalColony()?.starSystem ?: return
         for (market in fractalSystem.getMarketsInLocation()) { // in case markets change hands, we should check for all markets
             assignOrUnassignDeficit(market)
         }
@@ -562,7 +585,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     }
 
     private fun MarketAPI.shouldHaveDeficit(): Boolean {
-        val fractalSystem = MPC_hegemonyFractalCoreCause.getFractalColony()?.starSystem ?: return false
+        val fractalSystem = getFractalColony()?.starSystem ?: return false
         if (containingLocation != fractalSystem) return false
         if (!isPlayerOwned) return false
 
@@ -617,6 +640,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             )
             val containingLoc = fob?.containingLocation
             val fobEntity = fob?.primaryEntity
+            DecivTracker.decivilize(fob, false,  false)
             if (containingLoc != null && fobEntity != null) {
                 val field = containingLoc.addDebrisField(params, MathUtils.getRandom())
                 val token = containingLoc.createToken(fobEntity.location)
@@ -638,7 +662,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     }
 
     private fun dismissCombatFleets() {
-        val targetColony = MPC_fractalCoreFactor.getFOB() ?: MPC_hegemonyFractalCoreCause.getFractalColony() ?: return
+        val targetColony = MPC_fractalCoreFactor.getFOB() ?: getFractalColony() ?: return
         for (fleet in targetColony.containingLocation.fleets.filter { it.faction.id == niko_MPC_ids.IAIIC_FAC_ID && !it.isTrader() }) {
             val evacLoc = getEvacLoc(targetColony) ?: return fleet.despawn()
             fleet.clearAssignments()
@@ -734,7 +758,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         val playerFleet = Global.getSector().playerFleet
         val playerLoc = playerFleet.starSystem ?: return
-        val fractalSystem = MPC_hegemonyFractalCoreCause.getFractalColony()?.starSystem ?: return
+        val fractalSystem = getFractalColony()?.starSystem ?: return
         if (!battle.playerSide.contains(primaryWinner)) return
         val isNear = (playerLoc == fractalSystem || Misc.isNear(playerFleet, fractalSystem.location))
         if (!isNear) return
@@ -754,7 +778,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         val points = computeShipsDestroyedPoints(fpDestroyed)
         if (points > 0) {
             //points = 700;
-            val factor = MPC_IAIICMilitaryDestroyedFactor(-1 * points)
+            val factor = MPC_IAIICMilitaryDestroyedFactor(1 * points)
             //sendUpdateIfPlayerHasIntel(factor, false); // addFactor now sends update
             addFactor(factor)
         }
@@ -777,6 +801,13 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     }
 
     override fun reportFleetSpawned(fleet: CampaignFleetAPI?) {
+        if (fleet == null) return
+        val source = fleet.getSourceMarket() ?: return
+        if (source.faction.id != niko_MPC_ids.IAIIC_FAC_ID) return
+        if (!fleet.isPatrol()) return
+
+        fleet.addScript(NPCHassler(fleet, source.starSystem))
+
         return
     }
 

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.skills.MPC_spaceOperations
 import data.utilities.niko_MPC_stringUtils
 
 class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
@@ -15,9 +16,9 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
         val market = getMarket() ?: return
         val intel = MPC_IAIICFobIntel.get() ?: return
         val escalationLevel = (1 + intel.escalationLevel)
-        val fleetMult = intel.getFleetMultFromContributingFactions() * escalationLevel
+        val fleetMult = (intel.getFleetMultFromContributingFactions() * escalationLevel) - 1f
 
-        market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMult(id, fleetMult, name)
+        market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, fleetMult, name)
         market.upkeepMult.modifyMult(id, escalationLevel, "Escalation")
     }
 
@@ -41,7 +42,7 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
             "Fleet size increased by %s, based on contributions from external factions",
             5f,
             Misc.getHighlightColor(),
-            niko_MPC_stringUtils.toPercent(1 - fleetMult)
+            niko_MPC_stringUtils.toPercent(fleetMult - 1)
         )
         tooltip.addPara(
             "Fleet size contribution and market upkeep multiplied by %s due to escalation",

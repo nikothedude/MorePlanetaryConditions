@@ -1,22 +1,20 @@
 package data.utilities
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.FactionAPI
-import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.CommodityOnMarketAPI
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.econ.MarketConditionAPI
+import com.fs.starfarer.api.characters.ImportantPeopleAPI
+import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.econ.ResourceDepositsCondition
 import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
 import com.fs.starfarer.api.impl.campaign.econ.impl.OrbitalStation
 import com.fs.starfarer.api.impl.campaign.econ.impl.Spaceport
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
-import com.fs.starfarer.api.impl.campaign.ids.Commodities
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.Industries
-import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.util.Pair
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
@@ -31,8 +29,10 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrow
 import data.utilities.niko_MPC_debugUtils.logDataOf
 import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
 import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
+import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lwjgl.util.vector.Vector2f
+import org.selkie.kol.helpers.MarketHelpers
 
 object niko_MPC_marketUtils {
 
@@ -386,7 +386,12 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.isFractalMarket(): Boolean {
-        return (admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID)
+        return (isGoodToBeFOBTarget() && admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID)
+    }
+
+    fun MarketAPI.isGoodToBeFOBTarget(): Boolean {
+        if (niko_MPC_settings.indEvoEnabled && hasIndustry(Ids.RIFTGEN)) return false
+        return true
     }
 
     fun MarketAPI.addConditionIfNotPresent(conditionId: String): MarketConditionAPI {
@@ -412,5 +417,114 @@ object niko_MPC_marketUtils {
         }
 
         return largestMarket
+    }
+
+    fun addMarketPeople(market: MarketAPI) {
+        val ip: ImportantPeopleAPI = Global.getSector().importantPeople
+        if (market.memoryWithoutUpdate.getBoolean(MemFlags.MARKET_DO_NOT_INIT_COMM_LISTINGS)) return
+        var addedPerson = false
+        if (market.hasIndustry(Industries.MILITARYBASE) || market.hasIndustry(Industries.HIGHCOMMAND)) {
+            var rankId: String = Ranks.GROUND_MAJOR
+            if (market.size >= 6) {
+                rankId = Ranks.GROUND_GENERAL
+            } else if (market.size >= 4) {
+                rankId = Ranks.GROUND_COLONEL
+            }
+            addPerson(ip, market, rankId, Ranks.POST_BASE_COMMANDER, true)
+            addedPerson = true
+        }
+        var hasStation = false
+        for (curr in market.industries) {
+            if (curr.spec.hasTag(Industries.TAG_STATION)) {
+                hasStation = true
+                continue
+            }
+        }
+        if (hasStation) {
+            var rankId: String = Ranks.SPACE_COMMANDER
+            if (market.size >= 6) {
+                rankId = Ranks.SPACE_ADMIRAL
+            } else if (market.size >= 4) {
+                rankId = Ranks.SPACE_CAPTAIN
+            }
+            addPerson(ip, market, rankId, Ranks.POST_STATION_COMMANDER, true)
+            addedPerson = true
+        }
+
+//			if (market.hasIndustry(Industries.WAYSTATION)) {
+//				// kept here as a reminder to check core plugin again when needed
+//			}
+        if (market.hasSpaceport()) {
+            //person.setRankId(Ranks.SPACE_CAPTAIN);
+            addPerson(ip, market, null, Ranks.POST_PORTMASTER, true)
+            addedPerson = true
+        }
+        if (addedPerson) {
+            addPerson(ip, market, Ranks.SPACE_COMMANDER, Ranks.POST_SUPPLY_OFFICER, true)
+            addedPerson = true
+        }
+        if (!addedPerson) {
+            addPerson(ip, market, Ranks.CITIZEN, Ranks.POST_ADMINISTRATOR, true)
+        }
+    }
+
+    // Copied from Nexerelin / Histidine
+    fun getPerson(market: MarketAPI, postId: String): PersonAPI? {
+        for (dir in market.commDirectory.entriesCopy) {
+            if (dir.type == CommDirectoryEntryAPI.EntryType.PERSON) {
+                val person = dir.entryData as PersonAPI
+                if (person.postId == postId) {
+                    return person
+                }
+            }
+        }
+        return null
+    }
+
+    fun hasPerson(market: MarketAPI, postId: String): Boolean {
+        return getPerson(market, postId) != null
+    }
+
+    fun addPerson(
+        ip: ImportantPeopleAPI, market: MarketAPI,
+        rankId: String?, postId: String, noDuplicate: Boolean
+    ): PersonAPI? {
+        if (noDuplicate && hasPerson(market, postId)) return null
+        val person = market.faction.createRandomPerson()
+        if (rankId != null) person.rankId = rankId
+        person.postId = postId
+        market.commDirectory.addPerson(person)
+        market.addPerson(person)
+        ip.addPerson(person)
+        ip.getData(person).location.market = market
+        ip.checkOutPerson(person, "permanent_staff")
+        if ((postId == Ranks.POST_BASE_COMMANDER) || postId == Ranks.POST_STATION_COMMANDER || postId == Ranks.POST_ADMINISTRATOR) {
+            if (market.size >= 8) {
+                person.setImportanceAndVoice(PersonImportance.VERY_HIGH, StarSystemGenerator.random)
+            } else if (market.size >= 6) {
+                person.setImportanceAndVoice(PersonImportance.HIGH, StarSystemGenerator.random)
+            } else {
+                person.setImportanceAndVoice(PersonImportance.MEDIUM, StarSystemGenerator.random)
+            }
+        } else if (postId == Ranks.POST_PORTMASTER) {
+            if (market.size >= 8) {
+                person.setImportanceAndVoice(PersonImportance.HIGH, StarSystemGenerator.random)
+            } else if (market.size >= 6) {
+                person.setImportanceAndVoice(PersonImportance.MEDIUM, StarSystemGenerator.random)
+            } else if (market.size >= 4) {
+                person.setImportanceAndVoice(PersonImportance.LOW, StarSystemGenerator.random)
+            } else {
+                person.setImportanceAndVoice(PersonImportance.VERY_LOW, StarSystemGenerator.random)
+            }
+        } else if (postId == Ranks.POST_SUPPLY_OFFICER) {
+            if (market.size >= 6) {
+                person.setImportanceAndVoice(PersonImportance.MEDIUM, StarSystemGenerator.random)
+            } else if (market.size >= 4) {
+                person.setImportanceAndVoice(PersonImportance.LOW, StarSystemGenerator.random)
+            } else {
+                person.setImportanceAndVoice(PersonImportance.VERY_LOW, StarSystemGenerator.random)
+            }
+        }
+        return person
     }
 }

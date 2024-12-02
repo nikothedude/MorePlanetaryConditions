@@ -1,0 +1,7 @@
+Start
+    After a while of having fractal core installed, event happens
+    Then, the exotic intellignceh ostile activity apepars
+
+    The normal HA path happens until it triggers
+
+FOB spawns

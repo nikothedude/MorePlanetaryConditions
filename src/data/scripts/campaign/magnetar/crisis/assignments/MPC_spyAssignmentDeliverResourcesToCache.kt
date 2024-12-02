@@ -37,7 +37,7 @@ class MPC_spyAssignmentDeliverResourcesToCache(): MPC_spyAssignment() {
     var playerSawCache = false
 
     companion object {
-        const val DISTANCE = 7f
+        const val DISTANCE = 5.4f
         const val DISTANCE_TO_TARGET_TO_DELIVER = 300f
 
         const val TIME_NEEDED_TO_FINISH_UNLOADING = 1.2f // days

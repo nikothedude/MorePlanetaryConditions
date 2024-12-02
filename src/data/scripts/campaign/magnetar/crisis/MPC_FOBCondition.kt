@@ -14,7 +14,7 @@ import data.utilities.niko_MPC_stringUtils
 class MPC_FOBCondition: niko_MPC_baseNikoCondition(), MarketImmigrationModifier {
     companion object {
         const val ACCESSABILITY_MALUS = -10f
-        const val STABILITY_BONUS = 1f
+        const val STABILITY_BONUS = 3f
 
         const val MAX_DISRUPTED_DURATION_DAYS = 30f
         const val MAX_MARKET_SIZE = 5

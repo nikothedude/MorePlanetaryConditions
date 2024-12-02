@@ -28,6 +28,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -66,7 +67,6 @@ import kotlin.collections.setOf
 import kotlin.collections.toMutableSet
 
 class niko_MPC_modPlugin : BaseModPlugin() {
-
     companion object {
         const val modId = "niko_morePlanetaryConditions"
         val conditionsNotAllowedInCoreWorlds: MutableSet<String> = hashSetOf(
@@ -79,7 +79,24 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             "niko_MPC_derelictEscort"
         )
         var currVersion = Global.getSettings().modManager.getModSpec(modId).version
+        val facsIAIICKnowsShipsFrom = hashSetOf(Factions.HEGEMONY, Factions.TRITACHYON, Factions.DIKTAT, Factions.LIONS_GUARD, Factions.INDEPENDENT, Factions.LUDDIC_CHURCH)
+
+        fun setupIAIICBlueprints() {
+            val intel = MPC_IAIICFobIntel.get() ?: return
+            val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
+            for (faction in facsIAIICKnowsShipsFrom) {
+                IAIIC.knownShips.addAll(Global.getSector().getFaction(faction).knownShips)
+                IAIIC.knownFighters.addAll(Global.getSector().getFaction(faction).knownFighters)
+                IAIIC.knownHullMods.addAll(Global.getSector().getFaction(faction).knownHullMods)
+                IAIIC.knownWeapons.addAll(Global.getSector().getFaction(faction).knownWeapons)
+                IAIIC.knownIndustries.addAll(Global.getSector().getFaction(faction).knownIndustries)
+            }
+            intel.removeBlueprintFunctions.forEach { it() }
+
+            IAIIC.clearShipRoleCache()
+        }
     }
+
 
     @Throws(RuntimeException::class)
     override fun onApplicationLoad() {
@@ -99,6 +116,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
         addSpecialItemsToItemRepo()
         StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
+
+        Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
 
         // TODO
        /*throw java.lang.RuntimeException(
@@ -199,14 +218,13 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
 
         MPC_People.createCharacters() // safe to call multiple times
+        setupIAIICBlueprints()
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()
         }
 
         LunaSettings.addSettingsListener(settingsChangedListener())
-
-
     }
 
     override fun beforeGameSave() {
@@ -266,7 +284,16 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.LUDDIC_CHURCH, RepLevel.WELCOMING)
         IAIIC.setRelationship(Factions.INDEPENDENT, RepLevel.FAVORABLE)
         IAIIC.setRelationship(Factions.DIKTAT, -0.05f)
+        IAIIC.setRelationship(Factions.PIRATES, -0.5f)
+        IAIIC.setRelationship(Factions.REMNANTS, -0.5f)
+        IAIIC.setRelationship(Factions.LUDDIC_PATH, -0.5f) // only officially
         IAIIC.setRelationship(Factions.PLAYER, -0.2f)
+
+        for (faction in Global.getSector().allFactions.filter { Global.getSector().getFaction(Factions.HEGEMONY).isHostileTo(it) }) {
+            IAIIC.setRelationship(faction.id, Global.getSector().getFaction(Factions.HEGEMONY).getRelationshipLevel(faction))
+        }
+
+        setupIAIICBlueprints()
 
         doSpecialProcgen(true)
     }

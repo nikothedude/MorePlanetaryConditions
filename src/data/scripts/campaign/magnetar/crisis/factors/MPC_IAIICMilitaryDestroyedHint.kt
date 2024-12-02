@@ -10,6 +10,6 @@ class MPC_IAIICMilitaryDestroyedHint() : MPC_IAIICMilitaryDestroyedFactor(0) {
     }
 
     override fun shouldShow(intel: BaseEventIntel?): Boolean {
-        return !hasOtherFactorsOfClass(intel, MPC_IAIICMilitaryDestroyedHint::class.java)
+        return !hasOtherFactorsOfClass(intel, MPC_IAIICMilitaryDestroyedFactor::class.java)
     }
 }

@@ -12,8 +12,8 @@ import data.utilities.niko_MPC_ids
 class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
     companion object {
-        const val BASE_ACCESSIBILITY_MALUS = -0.10f
-        const val BASE_STABILITY_MALUS = -1f
+        const val BASE_ACCESSIBILITY_MALUS = -0.20f
+        const val BASE_STABILITY_MALUS = -2f
         const val NON_HOSTILE_ACCESSIBILITY_MALUS = -0.25f
 
         const val MIN_COLONY_SIZE_FOR_DEFICIT = 4

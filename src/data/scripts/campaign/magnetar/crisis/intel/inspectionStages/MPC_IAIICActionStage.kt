@@ -171,7 +171,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         }
     }
 
-    protected var coresRemoved: MutableList<String>? = ArrayList()
+    var coresRemoved: MutableList<String>? = ArrayList()
     protected fun removeCoresAndApplyResult(fleet: CampaignFleetAPI?) {
         val intel = intel as MPC_IAIICInspectionIntel
         val orders = intel.orders
@@ -218,10 +218,6 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             intel.outcome = MPC_IAIICInspectionOutcomes.CONFISCATE_CORES
             intel.applyRepPenalty(REP_PENALTY_NORMAL)
         }
-    }
-
-    fun getCoresRemoved(): List<String>? {
-        return coresRemoved
     }
 
     protected fun removeCores(inspector: CampaignFleetAPI?, resist: Boolean, hiding: Boolean, hidingEffective: Boolean): List<String> {
