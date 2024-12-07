@@ -21,6 +21,7 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.BLIND_JUMPING
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import kotlin.math.abs
 
 class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTerrain {
     companion object {
@@ -58,7 +59,6 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         val fleet = entity as? CampaignFleetAPI ?: return
 
         if (flareManager.isInActiveFlareArc(fleet)) {
-
             fleet.stats.removeTemporaryMod(modId + "_7")
             fleet.stats.addTemporaryModMult(
                 0.1f, modId + "_2",
@@ -160,7 +160,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         }
 
         val currWindBurn = intensity * maxWindBurn
-        val maxFleetBurnIntoWind = maxFleetBurn - Math.abs(currWindBurn)
+        val maxFleetBurnIntoWind = maxFleetBurn - abs(currWindBurn)
 
         val angle = Misc.getAngleInDegreesStrict(this.entity.location, fleet.location)
         val windDir = Misc.getUnitVectorAtDegreeAngle(angle)

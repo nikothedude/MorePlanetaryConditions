@@ -18,7 +18,6 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
-import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -57,6 +56,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     var sanitizeContributions: Boolean = false
     var abandonedStage: Stage? = null
     val factionContributions = generateContributions()
+    var embargoState = EmbargoState.INACTIVE
     fun getFactionContributionsExternal(): ArrayList<MPC_factionContribution> {
         sanitizeFactionContributions(factionContributions)
         return factionContributions
@@ -105,6 +105,12 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         ALL_OR_NOTHING("All-out attack", false);
     }
 
+    enum class EmbargoState(val isActive: Boolean = false) {
+        INACTIVE,
+        ACTIVE(true),
+        DECAYING(true);
+    }
+
     companion object {
         const val KEY = "\$MPC_IAIICIntel"
         const val PROGRESS_MAX = 1000
@@ -114,6 +120,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
         const val BASE_INSPECTION_FP = 200f
+        const val DAYS_EMBARGO_LINGERS_FOR = 20f
 
         fun getFOB(): MarketAPI? {
             return MPC_fractalCoreFactor.getFOB()
@@ -219,6 +226,29 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     fun getFleetMultFromContributingFactions(): Float {
         return Companion.getFleetMultFromContributingFactions(getFactionContributionsExternal())
+    }
+
+    fun getTotalEmbargoValue(market: MarketAPI?): Float {
+        if (!embargoState.isActive) return 0f
+        var base = 0f
+
+        for (contribution in factionContributions) {
+            val factionId = contribution.factionId
+            val faction = Global.getSector().getFaction(factionId) ?: continue
+
+            base += getEmbargoValue(faction, contribution, market)
+        }
+        return base
+    }
+
+    fun getEmbargoValue(faction: FactionAPI, contribution: MPC_factionContribution, market: MarketAPI?): Float {
+        if (!embargoState.isActive) return 0f
+        var base = 0f
+        if (faction.isHostileTo(Global.getSector().playerFaction)) return 0f // already handled
+        for (theirMarket in faction.getMarketsCopy().filter { market == null || it.econGroup == market.econGroup }) {
+            base += (contribution.baseMarketEmbargoValue * (theirMarket.size - 2))
+        }
+        return base
     }
 
     init {

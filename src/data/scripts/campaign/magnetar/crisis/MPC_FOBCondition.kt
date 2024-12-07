@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.population.PopulationComposition
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils
 
 class MPC_FOBCondition: niko_MPC_baseNikoCondition(), MarketImmigrationModifier {
@@ -112,6 +113,15 @@ class MPC_FOBCondition: niko_MPC_baseNikoCondition(), MarketImmigrationModifier 
             Misc.getNegativeHighlightColor(),
             "$MAX_MARKET_SIZE"
         )
+
+        if (niko_MPC_settings.nexLoaded) {
+            tooltip.addPara(
+                "Ground battle damage received reduced by %s for all troops",
+                10f,
+                Misc.getHighlightColor(),
+                "${MPC_FOBConditionNexEffect.DMG_MULT}x"
+            )
+        }
     }
 
     fun getEffectiveFleetSizeMult(): Float {

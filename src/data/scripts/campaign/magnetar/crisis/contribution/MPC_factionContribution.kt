@@ -12,7 +12,8 @@ data class MPC_factionContribution(
     val removeContribution: ((IAIIC: FactionAPI) -> Unit)?,
     val removeNextAction: Boolean = false,
     val requireMilitary: Boolean = false,
-    val repOnRemove: Float? = null
+    val repOnRemove: Float? = null,
+    val baseMarketEmbargoValue: Float = 1f
 ) {
 
     fun onRemoved(intel: MPC_IAIICFobIntel, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null) {

@@ -193,8 +193,6 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         initFOBFleets(station, market, fractalSystem)
 
         MPC_IAIICFobIntel()
-        market.reapplyConditions()
-        market.reapplyIndustries()
         MPC_delayedExecution(
             {
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("AAA", 500f)
@@ -230,6 +228,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
         market.addIndustry(Industries.ORBITALWORKS)
         market.addIndustry(Industries.WAYSTATION)
+        market.addIndustry("MPC_FOBIAIICPatherResist")
 
         market.addSpecialItems()
 
