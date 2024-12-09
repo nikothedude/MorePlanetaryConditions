@@ -24,6 +24,7 @@ import data.scripts.campaign.magnetar.crisis.intel.inspectionStages.MPC_IAIICIns
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val inspectionFP: Float): RaidIntel(target.starSystem, from.faction, null), RaidDelegate {
 
@@ -39,9 +40,26 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         val MADE_HOSTILE_UPDATE = Any()
         val ENTERED_SYSTEM_UPDATE = Any()
         val OUTCOME_UPDATE = Any()
+
+        fun getAICores(target: MarketAPI): MutableList<String> {
+            val cores = ArrayList<String>()
+
+            for (curr in target.industries) {
+                val id = curr?.aiCoreId
+                if (id != null) {
+                    cores.add(id)
+                }
+            }
+            val admin: PersonAPI = target.admin
+            if (admin.isAICore) {
+                cores += (admin.aiCoreId)
+            }
+            return cores
+        }
     }
 
     override fun notifyRaidEnded(raid: RaidIntel?, status: RaidStageStatus?) {
+        MPC_IAIICInspectionPrepIntel.get()?.inspectionEnded(this)
         if (outcome == null && failStage >= 0) {
             if (!target.isInEconomy || !target.isPlayerOwned) {
                 outcome = MPC_IAIICInspectionOutcomes.COLONY_NO_LONGER_EXISTS
@@ -71,16 +89,9 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         setup()
     }
     fun setup() {
-        for (curr in target.industries) {
-            val id = curr?.aiCoreId
-            if (id != null) {
-                expectedCores.add(id)
-            }
-        }
-        val admin: PersonAPI = target.admin
-        if (admin.isAICore) {
-            expectedCores += (admin.aiCoreId)
-            if (admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) targettingFractalCore = true
+        expectedCores.addAll(getAICores(target))
+        if (expectedCores.contains(niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID)) {
+            targettingFractalCore = true
         }
 
         val orgDur = 20f + 10f * Math.random().toFloat()

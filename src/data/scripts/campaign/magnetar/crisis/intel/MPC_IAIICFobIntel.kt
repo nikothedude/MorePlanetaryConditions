@@ -108,7 +108,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     enum class EmbargoState(val isActive: Boolean = false) {
         INACTIVE,
         ACTIVE(true),
-        DECAYING(true);
+        DECAYING(true); // after youve sued for peace, it lingers for a while
     }
 
     companion object {
@@ -119,7 +119,6 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         const val CHURCH_CONTRIBUTION = 1.2f
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
-        const val BASE_INSPECTION_FP = 200f
         const val DAYS_EMBARGO_LINGERS_FOR = 20f
 
         fun getFOB(): MarketAPI? {
@@ -260,6 +259,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         AICoreAdmin.get(fractalColony)!!.daysActive = 500f // so it cant be removed anymore
         Global.getSector().intelManager.addIntel(this, false, null)
         Global.getSector().addListener(this)
+        MPC_IAIICInspectionPrepIntel(this)
         isImportant = true
     }
 
@@ -547,8 +547,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                 it.setDisrupted(0.5f)
             }
         }
-        FOB.addSpecialItems()
         escalationLevel += amount
+        FOB.addSpecialItems()
         FOB.reapplyConditions()
         MPC_delayedExecution(
             {
