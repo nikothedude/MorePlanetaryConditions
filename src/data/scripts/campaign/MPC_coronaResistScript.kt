@@ -1,7 +1,6 @@
 package data.scripts.campaign
 
 import com.fs.starfarer.api.campaign.*
-import com.fs.starfarer.api.fleet.FleetAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.Misc
@@ -13,12 +12,8 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.CORONA_RESIST_MEMORY_FLAG
 import data.utilities.niko_MPC_industryIds
 import com.fs.starfarer.api.util.IntervalUtil
-//import org.apache.log4j.Logger;
-
-
 
 open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_baseNikoScript() {
-    //var logger: Logger = Logger.getLogger("MPC_coronaResistScript")
     var coronaResistance: Float = 0.0f
     open var terrainMovementDivisor: Float = 40f
     private val affecting: MutableSet<FleetMemberAPI> = HashSet()
@@ -38,7 +33,6 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
     }
 
     private fun iterateThroughAffected(){
-        //if(logger==null){logger=Logger.getLogger("MPC_coronaResistScript")}
         val iter = affecting.iterator()
         val fleetBin: MutableSet<CampaignFleetAPI> = HashSet()
 
@@ -55,7 +49,6 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
                 shouldRemove=true
             }
             if(shouldRemove){
-                //logger.info("MPC_coronaResistScript:shouldRemove:"+it.id)
                 unAffectFleetMember(it)
                 iter.remove()
             }
