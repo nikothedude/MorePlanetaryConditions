@@ -22,8 +22,10 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
     override fun apply() {
         super.apply(true)
         if (reapplying) return
-        script = MPC_coronaResistStructureScript(market.primaryEntity, this)
-        if (!script!!.started){script!!.start()}
+        if (script == null) {
+            script = MPC_coronaResistStructureScript(market.primaryEntity, this)
+        }
+        script?.start()
     }
 
     override fun unapply() {

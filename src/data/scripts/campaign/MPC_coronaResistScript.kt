@@ -13,11 +13,15 @@ import data.utilities.niko_MPC_ids.CORONA_RESIST_MEMORY_FLAG
 import data.utilities.niko_MPC_industryIds
 import com.fs.starfarer.api.util.IntervalUtil
 
-open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_baseNikoScript() {
+open class MPC_coronaResistScript(val entity: SectorEntityToken): niko_MPC_baseNikoScript() {
     var coronaResistance: Float = 0.0f
     open var terrainMovementDivisor: Float = 40f
     private val affecting: MutableSet<FleetMemberAPI> = HashSet()
-    var interval = IntervalUtil(1f, 1f);
+    var interval = IntervalUtil(1f, 1f)
+        get() {
+            if (field == null) field = IntervalUtil(1f, 1f)
+            return field
+        }
 
     override fun startImpl() {
         entity.addScript(this)
@@ -39,7 +43,7 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
         while (iter.hasNext()){
             val it = iter.next()
             var shouldRemove=false
-            if((it.fleetData==null)||(it.fleetData.fleet==null)){
+            if((it.fleetData == null)||(it.fleetData.fleet == null)){
                 shouldRemove=true
             }
             else if (!shouldAffectFleet((it.fleetData.fleet))){
@@ -54,7 +58,7 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
             }
         }
 
-        val iter2=fleetBin.iterator()
+        val iter2 = fleetBin.iterator()
         while (iter2.hasNext()) {
             val it = iter2.next()
             it.memoryWithoutUpdate?.unset(CORONA_RESIST_MEMORY_FLAG)
@@ -64,13 +68,12 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
 
     override fun advance(amount: Float) {
         val days = Misc.getDays(amount)
-        if (interval==null){interval = IntervalUtil(1f, 1f);}
 
         interval.advance(days)
         if(interval.intervalElapsed()) {
             iterateThroughAffected()
         }
-        interateThroughFleets(days)
+        iterateThroughFleets(days)
     }
 
     open fun unapplyToFleets() {
@@ -78,21 +81,21 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
         val fleetBin: MutableSet<CampaignFleetAPI> = HashSet()
         while (iter.hasNext()){
             val it = iter.next()
-            if (((it.fleetData!=null)&&(it.fleetData.fleet != null))&&(!fleetBin.contains(it.fleetData.fleet))) {
+            if (((it.fleetData != null)&&(it.fleetData.fleet != null))&&(!fleetBin.contains(it.fleetData.fleet))) {
                 fleetBin.add(it.fleetData.fleet)
             }
             unAffectFleetMember(it)
             iter.remove()
         }
         affecting.clear()
-        val iter2=fleetBin.iterator()
+        val iter2 = fleetBin.iterator()
         while (iter2.hasNext()) {
             val it = iter2.next()
             it.memoryWithoutUpdate?.unset(CORONA_RESIST_MEMORY_FLAG)
         }
     }
 
-    private fun interateThroughFleets(days: Float) {
+    private fun iterateThroughFleets(days: Float) {
         for (fleet in getTargetFleets()) {
             if (!shouldAffectFleet(fleet)) continue
             affectFleet(fleet, days)
