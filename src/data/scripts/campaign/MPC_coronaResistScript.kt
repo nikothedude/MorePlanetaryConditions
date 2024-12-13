@@ -44,7 +44,7 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken,): niko_MPC_base
             }
             else if (!shouldAffectFleet((it.fleetData.fleet))){
                 if (!fleetBin.contains(it.fleetData.fleet)){
-                    fleetBin.add(it.fleetData.fleet)
+                    fleetBin += it.fleetData.fleet
                 }
                 shouldRemove=true
             }
