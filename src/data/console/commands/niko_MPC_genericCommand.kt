@@ -17,6 +17,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin.CoronaParams
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.singularity.MPC_energyFieldInstance
 import data.scripts.campaign.singularity.MPC_singularityHyperspaceProximityChecker
 import data.utilities.MPC_abyssUtils
@@ -34,7 +35,7 @@ class niko_MPC_genericCommand: BaseCommand {
         const val CHANCE_FOR_MOORED_DMODS = 90f
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
-        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SINGULARITY_SYSTEM_MEMID] != null) return BaseCommand.CommandResult.ERROR
+        /*if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SINGULARITY_SYSTEM_MEMID] != null) return BaseCommand.CommandResult.ERROR
 
         val tmp = args.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         if (tmp.size == 1) {
@@ -322,7 +323,9 @@ class niko_MPC_genericCommand: BaseCommand {
 
         system.addTag(Tags.THEME_SPECIAL)
         system.addTag(Tags.THEME_HIDDEN)
-        system.addTag(Tags.THEME_INTERESTING)
+        system.addTag(Tags.THEME_INTERESTING)*/
+
+        MPC_IAIICFobIntel.get()?.progress = 125
 
         return BaseCommand.CommandResult.SUCCESS
     }

@@ -64,26 +64,26 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             val duration = 100f
             val params = MilitaryResponseParams(
                 ActionType.HOSTILE,
-                "MPC_IAIIC_" + target!!.id,
+                "MPC_IAIIC_" + target.id,
                 intel.faction,
-                target!!.primaryEntity,
+                target.primaryEntity,
                 1f,
                 duration
             )
             val script = MilitaryResponseScript(params)
-            target!!.containingLocation.addScript(script)
-            scripts!!.add(script)
+            target.containingLocation.addScript(script)
+            scripts?.add(script)
             val defParams = MilitaryResponseParams(
                 ActionType.HOSTILE,
-                "defMPC_IAIIC_" + target!!.id,
-                target!!.faction,
-                target!!.primaryEntity,
+                "defMPC_IAIIC_" + target.id,
+                target.faction,
+                target.primaryEntity,
                 1f,
                 duration
             )
             val defScript = MilitaryResponseScript(defParams)
-            target!!.containingLocation.addScript(defScript)
-            scripts!!.add(defScript)
+            target.containingLocation.addScript(defScript)
+            scripts?.add(defScript)
         }
     }
 
@@ -102,12 +102,12 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
 //		}
         abortIfNeededBasedOnFP(true)
         if (status != RaidStageStatus.ONGOING) return
-        val inSpawnRange = RouteManager.isPlayerInSpawnRange(target!!.primaryEntity)
+        val inSpawnRange = RouteManager.isPlayerInSpawnRange(target.primaryEntity)
         if (!inSpawnRange && untilAutoresolve <= 0) {
             autoresolve()
             return
         }
-        if (!target!!.isInEconomy || !target!!.isPlayerOwned) {
+        if (!target.isInEconomy || !target.isPlayerOwned) {
             status = RaidStageStatus.FAILURE
             removeMilScripts()
             giveReturnOrdersToStragglers(routes)
@@ -131,7 +131,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         }
         val intel = intel as MPC_IAIICInspectionIntel
         status = RaidStageStatus.SUCCESS
-        val hostile = market!!.faction.isHostileTo(intel.faction)
+        val hostile = market.faction.isHostileTo(intel.faction)
         val orders = intel.orders
         if (hostile || orders == MPC_IAIICInspectionOrders.RESIST) {
             //RecentUnrest.get(target).add(3, Misc.ucFirst(intel.getFaction().getPersonNamePrefix()) + " inspection");
@@ -176,9 +176,9 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         val intel = intel as MPC_IAIICInspectionIntel
         val orders = intel.orders
         val resist = orders == MPC_IAIICInspectionOrders.RESIST
-        val hiding = orders == MPC_IAIICInspectionOrders.HIDE_CORES
-        val hidingEffective = !Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.ALREADY_HID_CORES)
-        val found = removeCores(fleet, resist, hiding, hidingEffective)
+        //val hiding = orders == MPC_IAIICInspectionOrders.HIDE_CORES
+        //val hidingEffective = !Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.ALREADY_HID_CORES)
+        val found = removeCores(fleet, resist, false, false)
         if (coresRemoved == null) coresRemoved = ArrayList()
         coresRemoved!!.clear()
         coresRemoved!!.addAll(found)
@@ -199,18 +199,18 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             valExpected = 30000
         }
 
-        if (hiding && hidingEffective) {
+        /*if (hiding && hidingEffective) {
             intel.outcome = MPC_IAIICInspectionOutcomes.INVESTIGATION_DISRUPTED
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.ALREADY_HID_CORES] = true
             for (curr: Industry in target.industries) {
                 curr.setDisrupted(intel.random.nextFloat() * 35f + 15f)
             }
             intel.applyRepPenalty(REP_PENALTY_DISRUPTED)
-        }
+        }*/
         //resist = false;
         else if (!resist && valExpected > valFound * 1.25f) {
             intel.outcome = MPC_IAIICInspectionOutcomes.FOUND_EVIDENCE_NO_CORES
-            for (curr: Industry in target!!.industries) {
+            for (curr: Industry in target.industries) {
                 curr.setDisrupted(intel.random.nextFloat() * 45f + 15f)
             }
             intel.applyRepPenalty(REP_PENALTY_HID_STUFF)
@@ -230,7 +230,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         //str = 100000f;
         val re = MarketCMD.getRaidEffectiveness(target, str)
         val result: MutableList<String> = ArrayList()
-        for (curr: Industry in target!!.industries) {
+        for (curr: Industry in target.industries) {
             val id = curr.aiCoreId
             if (id != null) {
                 if (resist && intel.random.nextFloat() > re) continue
@@ -239,16 +239,16 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                 curr.aiCoreId = null
             }
         }
-        val admin = target!!.admin
+        val admin = target.admin
         if (admin.isAICore) {
             if (hiding && hidingEffective && admin.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
 
             } else if (!resist || intel.random.nextFloat() < re) {
                 result.add(admin.aiCoreId)
-                target!!.admin = null
+                target.admin = null
             }
         }
-        target!!.reapplyIndustries()
+        target.reapplyIndustries()
         val missing: MutableList<String> = ArrayList(intel.expectedCores)
         for (id: String in result) {
             missing.remove(id)
@@ -281,16 +281,16 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
     }
 
     protected fun autoresolve() {
-        val str = WarSimScript.getFactionStrength(intel.faction, target!!.starSystem)
-        val enemyStr = WarSimScript.getEnemyStrength(intel.faction, target!!.starSystem, true)
-        val hostile = target!!.faction.isHostileTo(intel.faction)
+        val str = WarSimScript.getFactionStrength(intel.faction, target.starSystem)
+        val enemyStr = WarSimScript.getEnemyStrength(intel.faction, target.starSystem, true)
+        val hostile = target.faction.isHostileTo(intel.faction)
 
         //MPC_IAIICInspectionOrders orders = ((MPC_IAIICInspectionIntel) intel).getOrders();
 
         //if (hostile || )
         val defensiveStr = enemyStr + WarSimScript.getStationStrength(
-            target!!.faction,
-            target!!.starSystem, target!!.primaryEntity
+            target.faction,
+            target.starSystem, target.primaryEntity
         )
         if (hostile && defensiveStr >= str) {
             status = RaidStageStatus.FAILURE
@@ -313,7 +313,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
 
     override fun updateRoutes() {
         resetRoutes()
-        val hostile = target!!.faction.isHostileTo(intel.faction)
+        val hostile = target.faction.isHostileTo(intel.faction)
         val orders = (intel as MPC_IAIICInspectionIntel).orders
         if (!hostile && orders == MPC_IAIICInspectionOrders.RESIST) {
             (intel as MPC_IAIICInspectionIntel).makeHostileAndSendUpdate()
@@ -321,14 +321,15 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             (intel as MPC_IAIICInspectionIntel).sendInSystemUpdate()
         }
         gaveOrders = false
+        (intel as MPC_IAIICInspectionIntel).enteredSystem = true
 
         //FactionAPI faction = intel.getFaction();
         val routes = RouteManager.getInstance().getRoutesForSource(intel.routeSourceId)
         for (route: RouteData in routes) {
-            if (target!!.starSystem != null) { // so that fleet may spawn NOT at the target
-                route.addSegment(RouteSegment(Math.min(5f, untilAutoresolve), target!!.starSystem.center))
+            if (target.starSystem != null) { // so that fleet may spawn NOT at the target
+                route.addSegment(RouteSegment(Math.min(5f, untilAutoresolve), target.starSystem.center))
             }
-            route.addSegment(RouteSegment(1000f, target!!.primaryEntity))
+            route.addSegment(RouteSegment(1000f, target.primaryEntity))
         }
     }
 
@@ -350,7 +351,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             } else {
                 info.addPara(
                     "The inspection task force has been defeated by the defenders of " +
-                            target!!.name + ". The inspection is now over.", opad
+                            target.name + ". The inspection is now over.", opad
                 )
             }
         } else if (status == RaidStageStatus.SUCCESS) {
@@ -397,7 +398,7 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                 }
             }
         } else if (curr == index) {
-            info.addPara("The inspection of " + target!!.name + " is currently under way.", opad)
+            info.addPara("The inspection of " + target.name + " is currently under way.", opad)
         }
     }
 

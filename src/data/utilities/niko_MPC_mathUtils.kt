@@ -3,6 +3,8 @@ package data.utilities
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanoforgeCommodityDataStore
 import org.jetbrains.annotations.Contract
 import org.lazywizard.lazylib.MathUtils
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -39,11 +41,14 @@ object niko_MPC_mathUtils {
         return anchor*((this) / anchor).roundToInt()
     }
 
-    inline fun randomlyDistributeBudgetAcrossCommodities(
+    inline fun randomlyDistributeBudgetAcrossEntries(
         entries: Collection<String>,
         remainingScore: Float,
-        getMin: (budget: Float, remainingRuns: Int, entry: String) -> Float = { budget, remainingRuns, entry, ->
-            if (budget < 0) (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) else 0f},) : MutableMap<String, Int> {
+        getMin: (budget: Float, remainingRuns: Int, entry: String) -> Float = {
+            budget, remainingRuns, entry, -> if (budget < 0) (budget - remainingRuns).roundToMultipleOf(overgrownNanoforgeCommodityDataStore[entry]!!.cost) else 0f
+        },
+    ) : MutableMap<String, Int> {
+
         val distributedMap = randomlyDistributeNumberAcrossEntries(
             entries,
             remainingScore,
@@ -112,5 +117,17 @@ object niko_MPC_mathUtils {
 
     fun Float.roundNumTo(decimalPoints: Int): Float {
         return this.toDouble().roundNumTo(decimalPoints).toFloat()
+    }
+
+    fun prob(chance: Int, random: Random = MathUtils.getRandom()): Boolean {
+        return prob(chance.toDouble(), random)
+    }
+
+    fun prob(chance: Float, random: Random = MathUtils.getRandom()): Boolean {
+        return prob(chance.toDouble(), random)
+    }
+
+    fun prob(chance: Double, random: Random = MathUtils.getRandom()): Boolean {
+        return (random.nextFloat() * 100f < chance)
     }
 }

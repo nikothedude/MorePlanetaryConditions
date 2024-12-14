@@ -68,4 +68,10 @@
 			{"file":"sounds/sfx_impacts/explosion_missile_01.ogg","pitch":1.2,"volume":0.8},
 		],
 	},	
+	"MPC_IAIIC_INTEL_START":{
+		"sounds":[
+			{"file":"sounds/MPC_IAIICAlert.ogg", "pitch":1.0,"volume":0.6},
+		],
+	},
+
 }

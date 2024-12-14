@@ -17,7 +17,7 @@ import data.utilities.niko_MPC_marketUtils.getProducableCommoditiesForOvergrownN
 import data.utilities.niko_MPC_marketUtils.hasNonJunkStructures
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_mathUtils.ensureIsJsonValidFloat
-import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossCommodities
+import data.utilities.niko_MPC_mathUtils.randomlyDistributeBudgetAcrossEntries
 import data.utilities.niko_MPC_mathUtils.randomlyDistributeNumberAcrossEntries
 import data.utilities.niko_MPC_settings.ANCHOR_POINT_FOR_DEFENSE
 import data.utilities.niko_MPC_settings.HARD_LIMIT_FOR_DEFENSE
@@ -92,7 +92,7 @@ enum class overgrownNanoforgeEffectPrototypes(
             }
 
             val pickedCommodity = picker.pick() ?: return null
-            val themeToScore = randomlyDistributeBudgetAcrossCommodities(setOf(pickedCommodity), maxBudget) //assign quantities to the things
+            val themeToScore = randomlyDistributeBudgetAcrossEntries(setOf(pickedCommodity), maxBudget) //assign quantities to the things
             if (shouldInvert) {
                 for (entry in themeToScore.entries) {
                     val commodityId = entry.key

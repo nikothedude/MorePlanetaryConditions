@@ -12,7 +12,11 @@ class MPC_FOBIAIICPatherResist: BaseIndustry() {
     }
 
     override fun getPatherInterest(): Float {
-        if (MPC_IAIICFobIntel.get()?.factionContributions?.any { it.factionId == Factions.LUDDIC_PATH } != true) return 0f
+        if (MPC_IAIICFobIntel.get()?.getFactionContributionsExternal()?.any { it.factionId == Factions.LUDDIC_PATH } != true) return 0f
         return -Float.MAX_VALUE
+    }
+
+    override fun isHidden(): Boolean { //hidden structures dont block structure construction
+        return true
     }
 }

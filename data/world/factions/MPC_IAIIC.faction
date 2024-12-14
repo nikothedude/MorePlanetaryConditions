@@ -349,6 +349,7 @@
 		},
 	},
 	"custom":{
+		"allowsTransponderOffTrade":false,
 		"offersCommissions":false,
 		"engagesInHostilities":false,
 		"buysAICores":true,

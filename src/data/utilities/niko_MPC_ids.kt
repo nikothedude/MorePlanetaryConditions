@@ -2,6 +2,8 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val OFF_DUTY = "\$MPC_offDuty"
+    const val FRACTAL_CRISIS_ASSISTANCE_FLEET = "\$MPC_fractalCrisisAssistanceFleet"
     const val IAIIC_CRISIS_ASSISTANCE_FLEETS = "\$MPC_IAIICCrisisAssistanceFleets"
     const val ALREADY_HID_CORES = "\$MPC_alreadyHidCores"
     const val MPC_BENEFACTOR_CONDID = "MPC_benefactors"
@@ -21,6 +23,9 @@ object niko_MPC_ids {
     const val MAGNETAR_STAR_SCRIPT_MEMID = "\$MPC_magnetarStarScript"
     const val FRACTAL_OPTIMIZATIONS_SKILL_ID = "MPC_fractalOptimizations"
     const val TRANSCENDANT_CONCIOUSNESS_SKILL_ID = "MPC_transcendentConciousness"
+    const val BATTLEMIND_SKILL_ID = "MPC_battlemind"
+    const val ROUTING_OPTIMIZATION_SKILL_ID = "MPC_routingOptimizations"
+    const val FRACTAL_CORE_UPGRADED = "\$MPC_fractalCoreUpgraded"
     const val SLAVED_OMEGA_CORE_COMMID = "MPC_slavedOmegaCore"
     const val OMAN_BOMBARD_COST_ID = "\$MPC_OManBombardCost"
     const val IMMUNE_TO_OMEGA_CLEARING = "\$MPC_immuneToOmegaClearing"

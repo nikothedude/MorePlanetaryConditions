@@ -36,7 +36,7 @@ abstract class niko_MPC_baseNikoScript: EveryFrameScriptWithCleanup{
     protected abstract fun startImpl()
     protected abstract fun stopImpl()
 
-    open fun start() {
+    fun start() {
         if (!started) startImpl()
         started = true
     }

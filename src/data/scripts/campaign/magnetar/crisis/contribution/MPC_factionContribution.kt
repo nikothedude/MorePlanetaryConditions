@@ -9,6 +9,8 @@ import data.utilities.niko_MPC_ids
 data class MPC_factionContribution(
     val factionId: String,
     val fleetMultIncrement: Float,
+    /** Changes the effectiveness of sabotage actions. */
+    val sabotageMultIncrement: Float,
     val removeContribution: ((IAIIC: FactionAPI) -> Unit)?,
     val removeNextAction: Boolean = false,
     val requireMilitary: Boolean = false,

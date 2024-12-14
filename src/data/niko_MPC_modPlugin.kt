@@ -29,6 +29,7 @@ import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspa
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobInvasionListener
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -224,6 +225,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             listener.onGameLoad()
         }
 
+        MPC_IAIICFobInvasionListener.get(true)
         LunaSettings.addSettingsListener(settingsChangedListener())
     }
 
@@ -292,6 +294,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         for (faction in Global.getSector().allFactions.filter { Global.getSector().getFaction(Factions.HEGEMONY).isHostileTo(it) }) {
             IAIIC.setRelationship(faction.id, Global.getSector().getFaction(Factions.HEGEMONY).getRelationshipLevel(faction))
         }
+        IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
 
         setupIAIICBlueprints()
 

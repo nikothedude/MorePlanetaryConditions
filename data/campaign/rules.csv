@@ -940,6 +940,14 @@ SetTextHighlights ""didn't have""","""The domain didn't want anything to do with
 # Post-magnetar,,,,,,
 MPC_RACAFractalCore,RemoveAICoreAdmin,"MPC_RACACMD isFractalCore","MPC_RACACMD
 ShowPic ai_core_uninstall",,,"dismiss instantly if not in crisis, but dont if crisis is active?"
+MPC_IAIICRepSuspicious,RelationshipLevelDesc,"$faction.rel == SUSPICIOUS
+$faction.id == MPC_IAIIC",,"As far as diplomacy goes, this is likely as far as you'll get with the IAIIC. Docking requests are accepted with only begrudging protest, and unsanctioned trade-stops are performed with as much cordality as is possible. Still, your faction continues to be harassed by green-and-grey uniforms, and it's likely only a matter of time before the conflict escalates.",,
+MPC_IAIICRepInhospitable,RelationshipLevelDesc,"$faction.rel == INHOSPITABLE
+$faction.id == MPC_IAIIC",,"Commlinks are rejected with cut-and-paste rejection phrases, and your civil protection are beginning to usher out the hordes of green-and-grey uniforms stalking your streets. Still, this isn't stopping the unsanctioned ship-searches, nor the inevitable border skirmishes. Both sides have their finger on the trigger, waiting to fire.",,
+MPC_IAIICRepHostile,RelationshipLevelDesc,"$faction.rel == HOSTILE
+$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.",,
+MPC_IAIICRepVengeful,RelationshipLevelDesc,"$faction.rel == VENGEFUL
+$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.",,
 ,,,,,,
 # BarMagn,,,,,,
 MPC_hegemonySpyInit,DialogOptionSelected,"$option == marketVisitBar

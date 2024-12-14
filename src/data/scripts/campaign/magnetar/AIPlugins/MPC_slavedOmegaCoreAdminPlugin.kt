@@ -40,6 +40,9 @@ class MPC_slavedOmegaCoreAdminPlugin: AICoreAdminPlugin {
         person.stats.setSkillLevel(Skills.INDUSTRIAL_PLANNING, 1f)
         person.stats.setSkillLevel(Skills.HYPERCOGNITION, 1f)
         person.stats.setSkillLevel(niko_MPC_ids.TRANSCENDANT_CONCIOUSNESS_SKILL_ID, 1f);
+        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.FRACTAL_CORE_UPGRADED)) {
+            person.stats.setSkillLevel(niko_MPC_ids.ROUTING_OPTIMIZATION_SKILL_ID, 1f)
+        }
 
         return person
     }

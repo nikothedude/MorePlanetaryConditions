@@ -6,25 +6,22 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
-import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.fleets.RouteLocationCalculator
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.intel.inspection.HIAssembleStage
-import com.fs.starfarer.api.impl.campaign.intel.inspection.HIOrganizeStage
-import com.fs.starfarer.api.impl.campaign.intel.inspection.HIReturnStage
-import com.fs.starfarer.api.impl.campaign.intel.inspection.HITravelStage
-import com.fs.starfarer.api.impl.campaign.intel.inspection.HegemonyInspectionIntel.HegemonyInspectionOutcome
+import com.fs.starfarer.api.impl.campaign.intel.inspection.*
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel.RaidDelegate
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.intel.inspectionStages.MPC_IAIICActionStage
 import data.scripts.campaign.magnetar.crisis.intel.inspectionStages.MPC_IAIICInspectionOutcomes
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.input.Keyboard
 import java.util.*
-import kotlin.collections.ArrayList
 
 class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val inspectionFP: Float): RaidIntel(target.starSystem, from.faction, null), RaidDelegate {
 
@@ -34,12 +31,16 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
     var orders: MPC_IAIICInspectionOrders = MPC_IAIICInspectionOrders.RESIST
     var outcome: MPC_IAIICInspectionOutcomes? = null
     protected var action: MPC_IAIICActionStage? = null
-
+    var enteredSystem: Boolean = false
+    var investedCredits: Int = 0
 
     companion object {
         val MADE_HOSTILE_UPDATE = Any()
         val ENTERED_SYSTEM_UPDATE = Any()
         val OUTCOME_UPDATE = Any()
+        val BUTTON_CHANGE_ORDERS: Any = Any()
+        const val BASE_BRIBE_VALUE = 400000
+        const val BRIBE_REPEAT_MULT_EXP_BASE = 4f // it REALLY starts to take off
 
         fun getAICores(target: MarketAPI): MutableList<String> {
             val cores = ArrayList<String>()
@@ -129,6 +130,110 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         Global.getSector().intelManager.addIntel(this)
     }
 
+    override fun createSmallDescription(info: TooltipMakerAPI, width: Float, height: Float) {
+        //super.createSmallDescription(info, width, height);
+        val h = Misc.getHighlightColor()
+        val g = Misc.getGrayColor()
+        val tc = Misc.getTextColor()
+        val pad = 3f
+        val opad = 10f
+        info.addImage(factionForUIColors.logo, width, 128f, opad)
+        val faction = getFaction()
+        val has = faction.displayNameHasOrHave
+        val `is` = faction.displayNameIsOrAre
+
+        //AssembleStage as = getAssembleStage();
+        //MarketAPI source = as.getSources().get(0);
+        val strDesc = raidStrDesc
+        val numFleets = origNumFleets.toInt()
+        var fleets = "fleets"
+        if (numFleets == 1) fleets = "fleet"
+        var label = info.addPara(
+            Misc.ucFirst(faction.displayNameWithArticle) + " " + `is` +
+                    " targeting %s for an inspection due to the suspected use of AI cores there." +
+                    " The task force is projected to be " + strDesc + " and is likely comprised of " +
+                    "" + numFleets + " " + fleets + ".",
+            opad, faction.baseUIColor, target.name
+        )
+        label.setHighlight(faction.displayNameWithArticleWithoutArticle, target.name, strDesc, "" + numFleets)
+        label.setHighlightColors(faction.baseUIColor, target.faction.baseUIColor, h, h)
+        if (outcome == null) {
+            addStandardStrengthComparisons(info, target, target.faction, true, false, "inspection", "inspection's")
+        }
+        info.addSectionHeading(
+            "Status",
+            faction.baseUIColor, faction.darkUIColor, Alignment.MID, opad
+        )
+        for (stage: RaidStage in stages) {
+            stage.showStageInfo(info)
+            if (getStageIndex(stage) == failStage) break
+        }
+        if (outcome == null) {
+            val pf = Global.getSector().playerFaction
+            info.addSectionHeading(
+                "Your orders",
+                pf.baseUIColor, pf.darkUIColor, Alignment.MID, opad
+            )
+            val hostile = getFaction().isHostileTo(Factions.PLAYER)
+            if (hostile) {
+                label = info.addPara(
+                    (Misc.ucFirst(faction.displayNameWithArticle) + " " + `is` +
+                            " hostile towards " + pf.displayNameWithArticle + ". Your forces will attempt to resist the inspection."),
+                    opad
+                )
+                label.setHighlight(
+                    faction.displayNameWithArticleWithoutArticle,
+                    pf.displayNameWithArticleWithoutArticle
+                )
+                label.setHighlightColors(faction.baseUIColor, pf.baseUIColor)
+            } else {
+                when (orders) {
+                    MPC_IAIICInspectionOrders.COMPLY -> info.addPara(
+                        ("The authorities at " + target.name + " will comply with the inspection. " +
+                                "It is certain to find any AI cores currently in use."), opad
+                    )
+
+                    MPC_IAIICInspectionOrders.BRIBE -> info.addPara(
+                        "You've allocated enough funds to ensure the inspection " +
+                                "will produce a satisfactory outcome all around.", opad
+                    )
+
+                    MPC_IAIICInspectionOrders.RESIST -> info.addPara(
+                        "Your space and ground forces will attempt to resist the inspection.",
+                        opad
+                    )
+                    /*MPC_IAIICInspectionOrders.HIDE_CORES -> info.addPara(
+                        "The authorities at ${target.name} will hide the AI cores. It is likely this will only work once.",
+                        opad
+                    )*/
+                }
+                if (!enteredSystem) {
+                    val button = info.addButton(
+                        "Change orders", BUTTON_CHANGE_ORDERS,
+                        pf.baseUIColor, pf.darkUIColor,
+                        (width).toInt().toFloat(), 20f, opad * 2f
+                    )
+                    button.setShortcut(Keyboard.KEY_T, true)
+                } else {
+                    info.addPara(
+                        "The inspection task force is active and there's no time to implement new orders.",
+                        opad
+                    )
+                }
+            }
+        } else {
+            //addBulletPoints(info, ListInfoMode.IN_DESC);
+            bullet(info)
+            if (repResult != null) {
+                addAdjustmentMessage(
+                    repResult!!.delta, faction, null,
+                    null, null, info, tc, false, opad
+                )
+            }
+            unindent(info)
+        }
+    }
+
     protected var repResult: ReputationAdjustmentResult? = null
     fun makeHostileAndSendUpdate() {
         val hostile = getFaction().isHostileTo(Factions.PLAYER)
@@ -199,7 +304,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                 faction.baseUIColor, faction.displayName
             )
             initPad = 0f
-            CoreReputationPlugin.addAdjustmentMessage(
+            addAdjustmentMessage(
                 repResult!!.delta, faction, null,
                 null, null, info, tc, isUpdate, initPad
             )
@@ -237,7 +342,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             }
             initPad = 0f
             if (repResult != null) {
-                CoreReputationPlugin.addAdjustmentMessage(
+                addAdjustmentMessage(
                     repResult!!.delta, faction, null,
                     null, null, info, tc, isUpdate, initPad
                 )
@@ -271,26 +376,33 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                 info.addPara("Defenders will resist", tc, initPad)
             } else if (orders == MPC_IAIICInspectionOrders.COMPLY) {
                 info.addPara("Defenders will comply", tc, initPad)
-            } else if (orders == MPC_IAIICInspectionOrders.HIDE_CORES) {
+                /*} else if (orders == MPC_IAIICInspectionOrders.HIDE_CORES) {
                 info.addPara("Cores will be hidden", tc, initPad)
-            }
-        } else if (outcome == null && action!!.elapsed > 0) {
-            info.addPara("Inspection under way", tc, initPad)
-            initPad = 0f
-        } else if (outcome != null) {
-            val num: Int = (action as MPC_IAIICActionStage).coresRemoved?.size ?: return
-            if (num > 0) {
-                var cores = "cores"
-                if (num == 1) cores = "core"
-                info.addPara("%s AI $cores confiscated", initPad, tc, h, "" + num)
+            }*/
+            } else if (outcome == null && action!!.elapsed > 0) {
+                info.addPara("Inspection under way", tc, initPad)
                 initPad = 0f
-            } else if (outcome == MPC_IAIICInspectionOutcomes.DEFEATED) {
-                //info.addPara("Inspection failed", tc, initPad);
-            }
-            //			info.addPara("Inspection under way", tc, initPad);
+            } else if (outcome != null) {
+                val num: Int = (action as MPC_IAIICActionStage).coresRemoved?.size ?: return
+                if (num > 0) {
+                    var cores = "cores"
+                    if (num == 1) cores = "core"
+                    info.addPara("%s AI $cores confiscated", initPad, tc, h, "" + num)
+                    initPad = 0f
+                } else if (outcome == MPC_IAIICInspectionOutcomes.DEFEATED) {
+                    //info.addPara("Inspection failed", tc, initPad);
+                }
+                //			info.addPara("Inspection under way", tc, initPad);
 //			initPad = 0f;
+            }
+            unindent(info)
         }
-        unindent(info)
+    }
+
+    override fun buttonPressConfirmed(buttonId: Any?, ui: IntelUIAPI?) {
+        if (buttonId == BUTTON_CHANGE_ORDERS) {
+            ui!!.showDialog(null, MPC_IAIICInspectionDialogPluginImpl(this, ui))
+        }
     }
 
 }

@@ -3,14 +3,17 @@ package data.scripts.campaign.magnetar.crisis.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
+import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICInspectionPrepFactor
 import data.utilities.niko_MPC_ids
+import java.awt.Color
 
 class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIntel() {
 
@@ -32,7 +35,7 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
         INSPECTION_UNDERWAY {
             override fun createDesc(tooltip: TooltipMakerAPI, progress: Int) {
                 tooltip.addPara(
-                    "An inspection is already underway, and the IAIIC will not prepare for a new one until the current one is finished.",
+                    "An inspection is already underway.",
                     5f
                 )
             }
@@ -104,7 +107,7 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
         addFactor(MPC_IAIICInspectionPrepFactor())
 
         addStage(Stage.START, 0)
-        addStage(Stage.END, 0)
+        addStage(Stage.END, getMaxProgress())
         isImportant = true
 
         Global.getSector().intelManager.addIntel(this, true, null)
@@ -126,7 +129,28 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
 
         val stage = stageId as? Stage ?: return
         if (isStageActive(stageId)) {
-            addStageDesc(info, stage, small, false)
+            if (stageId == Stage.START) {
+                info.addPara(
+                    "The IAIIC's \"official\" reason for existing is to investigate your space for AI cores. They will " +
+                    "indefinitely prepare and launch AI inspections against you, with zeal only seen in the most faithful of luddic knights.",
+                    0f
+                )
+                info.addPara(
+                    "AI inspections can be handled in a number of ways, including %s, %s, or %s. Unfortunately, the scrupulous nature of the IAIIC " +
+                    "necessitates %s to smooth things over, with no upper limit on the \"generosity\" they may expect from you.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "bribes", "removing AI cores", "fighting", "large donations"
+                )
+                info.addPara(
+                    "%s",
+                    10f,
+                    Misc.getNegativeHighlightColor(),
+                    "If the fractal core is taken from ${MPC_hegemonyFractalCoreCause.getFractalColony()?.name}, the IAIIC will have accomplished their objectives."
+                )
+            } else {
+                addStageDesc(info, stage, small, false)
+            }
         }
     }
 
@@ -189,9 +213,19 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
         }
     }
 
+    override fun getName(): String {
+        return "IAIIC AI Inspections"
+    }
+
+    override fun getBarColor(): Color? {
+        var color = MPC_IAIICFobIntel.getFaction().baseUIColor
+        color = Misc.interpolateColor(color, Color.black, 0.25f)
+        return color
+    }
+
     override fun getStageIconImpl(stageId: Any?): String? {
         val esd = getDataFor(stageId) ?: return null
-        return Global.getSettings().getSpriteName("events", "MPC_IAIIC_PREP" + (esd.id as Stage).name)
+        return Global.getSettings().getSpriteName("events", "MPC_IAIIC_PREP_" + (esd.id as Stage).name)
     }
 
     override fun getIcon(): String? {
@@ -200,5 +234,12 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
 
     fun inspectionEnded(inspection: MPC_IAIICInspectionIntel) {
         activeInspection = null
+    }
+
+    override fun getIntelTags(map: SectorMapAPI?): Set<String>? {
+        val tags = super.getIntelTags(map)
+        tags.add(Tags.INTEL_COLONIES)
+        tags.add(niko_MPC_ids.IAIIC_FAC_ID)
+        return tags
     }
 }

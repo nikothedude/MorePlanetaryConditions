@@ -3,24 +3,36 @@ package data.scripts.campaign.magnetar.crisis.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
+import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.campaign.listeners.ColonyPlayerHostileActListener
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.NPCHassler
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
-import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
-import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
-import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
-import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.*
+import com.fs.starfarer.api.impl.campaign.intel.group.FGBlockadeAction.FGBlockadeParams
+import com.fs.starfarer.api.impl.campaign.intel.group.FGRaidAction.FGRaidType
+import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel
+import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI.GenericRaidParams
+import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission.FleetStyle
+import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
+import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
@@ -36,18 +48,31 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
+import data.scripts.campaign.magnetar.crisis.intel.blockade.MPC_IAIICBlockadeFGI
+import data.scripts.campaign.magnetar.crisis.intel.bombard.MPC_IAIICBombardFGI
+import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotage
+import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageType
+import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
+import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalSupportFleetAssignmentAI
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
+import data.utilities.niko_MPC_mathUtils.prob
 import data.utilities.niko_MPC_settings
+import exerelin.campaign.TransponderCheckBlockScript
 import lunalib.lunaExtensions.getKnownShipSpecs
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
 import java.awt.Color
+import java.util.*
+import kotlin.collections.HashSet
 import kotlin.math.roundToInt
 
-class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
+class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupIntel.FGIEventListener,
+    ColonyPlayerHostileActListener {
 
+    var daysLeftTilNextRetaliate: Float = 0f
     var removeBlueprintFunctions: HashSet<() -> Unit> = HashSet()
     val affectedMarkets = HashSet<MarketAPI>()
     val checkInterval = IntervalUtil(1f, 1.1f)
@@ -57,6 +82,14 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     var abandonedStage: Stage? = null
     val factionContributions = generateContributions()
     var embargoState = EmbargoState.INACTIVE
+    var sabotageRandom = Random()
+        get() {
+            if (field == null) field = Random()
+            return field
+        }
+
+    val support: MutableSet<MPC_fractalCrisisSupport> = HashSet()
+
     fun getFactionContributionsExternal(): ArrayList<MPC_factionContribution> {
         sanitizeFactionContributions(factionContributions)
         return factionContributions
@@ -90,19 +123,35 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     enum class Stage(
         val stageName: String,
+        val spriteId: String,
         /** If true, losing a faction's pledge to the IAIIC can remove the stage before it fires.*/
-        val isExpendable: Boolean = true
+        val isExpendable: Boolean = true,
+        val canBeSubstituted: Boolean = false
     ) {
+        START("IAIIC Investigations", "MPC_IAIIC_START", false),
 
-        START("IAIIC Investigations", false),
-        FIRST_RAID("IAIIC Raid"),
-        SECOND_RAID("IAIIC Raid"),
-        FIRST_ESCALATION("Escalation", false),
-        THIRD_RAID("IAIIC Raid"),
-        BLOCKADE("IAIIC Blockade"),
-        SECOND_ESCALATION("Escalation", false),
-        FOURTH_RAID("IAIIC Raid"),
-        ALL_OR_NOTHING("All-out attack", false);
+        // targets military infrastructure in-system
+        FIRST_BOMBARDMENT("Targeted Bombardments", "MPC_IAIIC_BOMBARDMENT", canBeSubstituted = true),
+        // randomly rolled sabotage action(?)
+        FIRST_SABOTAGE("Sabotage", "MPC_IAIIC_SABOTAGE"),
+        FIRST_ESCALATION("Escalation", "MPC_IAIIC_ESCALATION", false),
+        SECOND_BOMBARDMENT("Targeted Bombardments", "MPC_IAIIC_BOMBARDMENT", canBeSubstituted = true),
+        SECOND_SABOTAGE("Sabotage", "MPC_IAIIC_SABOTAGE"),
+        BLOCKADE("Blockade", "MPC_IAIIC_BLOCKADE"),
+        SECOND_ESCALATION("Escalation", "MPC_IAIIC_ESCALATION", false),
+        THIRD_BOMBARDMENT("Targeted Bombardments", "MPC_IAIIC_BOMBARDMENT", canBeSubstituted =  true),
+        ALL_OR_NOTHING("All-out attack", "MPC_IAIIC_ALL_OR_NOTHING", false);
+
+        fun getActualName(isHostile: Boolean): String {
+            if (canBeSubstituted && !isHostile) return "Sabotage" else return stageName
+        }
+
+        fun getSprite(isHostile: Boolean): String {
+            if (canBeSubstituted && !isHostile) {
+                return Global.getSettings().getSpriteName("events", "MPC_IAIIC_SABOTAGE")
+            }
+            return Global.getSettings().getSpriteName("events", spriteId)
+        }
     }
 
     enum class EmbargoState(val isActive: Boolean = false) {
@@ -113,6 +162,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     companion object {
         const val KEY = "\$MPC_IAIICIntel"
+        const val RETALIATE_COOLDOWN_DAYS = 60f
         const val PROGRESS_MAX = 1000
         const val FP_PER_POINT = 0.8f
         const val HEGEMONY_CONTRIBUTION = 1.7f
@@ -120,6 +170,10 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
         const val DAYS_EMBARGO_LINGERS_FOR = 20f
+
+        const val BASE_SABOTAGE_RESISTANCE = 7f
+        const val SABOTAGE_SUBVERSION_CHANCE_PER_OPERATIVE_LEVEL = 11f
+        const val MAX_OPERATIVE_RESISTANCE = 85f
 
         fun getFOB(): MarketAPI? {
             return MPC_fractalCoreFactor.getFOB()
@@ -158,6 +212,61 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             return mult
         }
 
+        fun getSabotageMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
+            var mult = 1f
+            for (entry in contributions) {
+                mult += entry.sabotageMultIncrement
+            }
+            return mult
+        }
+
+        fun getMilitaryTargets(addFractal: Boolean = true, includeHeavyIndustry: Boolean = true, includePatrolHQ: Boolean = false): MutableSet<MarketAPI> {
+            val targets = HashSet<MarketAPI>()
+
+            if (addFractal) {
+                val fractalColony = getFractalColony() ?: return targets
+                targets += fractalColony
+            }
+            val FOB = getFOB() ?: return targets
+            for (market in FOB.starSystem.getMarketsInLocation()) {
+                if (!isValidMilitaryTarget(market, includeHeavyIndustry, includePatrolHQ)) continue
+                targets += market
+            }
+
+            return targets
+        }
+
+        fun getGenericTargets(): MutableSet<MarketAPI> {
+            val targets = HashSet<MarketAPI>()
+
+            val fractalColony = getFractalColony() ?: return targets
+            targets += fractalColony
+
+            /*for (market in fractalColony.starSystem.getMarketsInLocation()) {
+                if (!marketIsEnemy(market)) continue
+                targets += market
+            }*/
+
+            return targets
+        }
+
+        fun isValidMilitaryTarget(market: MarketAPI, includeHeavyIndustry: Boolean = true, includePatrolHQ: Boolean = false): Boolean {
+            if (!marketIsEnemy(market)) return false
+            if (!market.isMilitary()) return false
+            if (includePatrolHQ && !market.industries.any { it is MilitaryBase }) return false
+            if (includeHeavyIndustry && !market.hasHeavyIndustry()) return false
+
+            return true
+        }
+
+        fun marketIsEnemy(market: MarketAPI): Boolean {
+            return (market.isPlayerOwned || (market.faction.isHostileTo(getFaction())))
+        }
+
+        fun getFaction(): FactionAPI {
+            return Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+        }
+
     }
 
     private fun generateContributions(): ArrayList<MPC_factionContribution> {
@@ -166,6 +275,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.HEGEMONY,
             HEGEMONY_CONTRIBUTION,
+            0.3f,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -176,6 +286,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.LUDDIC_CHURCH,
             CHURCH_CONTRIBUTION,
+            0f,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -186,6 +297,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
             0.9f,
+            0.1f,
             removeContribution = null,
             removeNextAction = true,
             requireMilitary = false,
@@ -194,6 +306,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.DIKTAT,
             0.8f,
+            0.3f,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
@@ -204,6 +317,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.TRITACHYON,
             0.7f,
+            1f,
             removeContribution = null,
             removeNextAction = false,
             requireMilitary = false,
@@ -212,6 +326,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         list += MPC_factionContribution(
             Factions.LUDDIC_PATH,
             0.4f,
+            0.7f,
             removeContribution = null,
             removeNextAction = false,
             requireMilitary = false,
@@ -276,13 +391,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         addStage(Stage.START, 0)
 
-        addStage(Stage.FIRST_RAID, 275)
-        addStage(Stage.SECOND_RAID, 350)
-        addStage(Stage.FIRST_ESCALATION, 425)
-        addStage(Stage.THIRD_RAID, 500)
-        addStage(Stage.BLOCKADE, 600)
-        addStage(Stage.SECOND_ESCALATION, 700)
-        addStage(Stage.FOURTH_RAID, 800)
+        addStage(Stage.FIRST_BOMBARDMENT, 100)
+        addStage(Stage.FIRST_SABOTAGE, 200)
+        addStage(Stage.FIRST_ESCALATION, 300)
+        addStage(Stage.SECOND_BOMBARDMENT, 400)
+
+        addStage(Stage.SECOND_ESCALATION, 570)
+        addStage(Stage.THIRD_BOMBARDMENT, 600)
+        addStage(Stage.SECOND_SABOTAGE, 700)
+        addStage(Stage.BLOCKADE, 800)
 
         addStage(Stage.ALL_OR_NOTHING, 1000)
     }
@@ -306,30 +423,49 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     override fun getStageIconImpl(stageId: Any?): String? {
         val esd = getDataFor(stageId) ?: return null
-        return Global.getSettings().getSpriteName("events", "MPC_IAIIC_" + (esd.id as Stage).name)
+        return (esd.id as Stage).getSprite(isHostile())
     }
 
     override fun getIcon(): String? {
-        return Global.getSettings().getSpriteName("events", "MPC_IAIIC_START")
+        return Global.getSettings().getSpriteName("events", "MPC_IAIIC_ICON")
     }
 
     override fun notifyStageReached(stage: EventStageData?) {
         if (stage == null) return
 
+        if (stage.id is Stage) {
+            val id = stage.id as Stage
+            if (id.canBeSubstituted && !isHostile()) {
+                return sabotage()
+            }
+        }
+
         when (stage.id) {
             Stage.START -> {}
-            Stage.FIRST_RAID -> {
-                val FOB = getFOB() ?: return
-                val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
-                MPC_IAIICInspectionIntel(FOB, colony, BASE_INSPECTION_FP)
+            Stage.FIRST_BOMBARDMENT, Stage.SECOND_BOMBARDMENT, Stage.THIRD_BOMBARDMENT -> {
+                startBombardment()
             }
             Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> escalate(2f)
             Stage.BLOCKADE -> {
-
+                startBlockade()
+            }
+            Stage.FIRST_SABOTAGE, Stage.SECOND_SABOTAGE -> {
+                sabotage()
             }
             Stage.ALL_OR_NOTHING -> {
                 // HERE WE GO
             }
+        }
+    }
+
+    fun isHostile(): Boolean {
+        return getFaction().isHostileTo(Global.getSector().playerFaction)
+    }
+
+    private fun sabotage() {
+        val sabotage = MPC_IAIICSabotageType.addApplicableSabotage(sabotageRandom)
+        if (sabotage.isNotEmpty()) {
+            sendUpdateIfPlayerHasIntel(sabotage, false)
         }
     }
 
@@ -340,7 +476,84 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         val stage = stageId as? Stage ?: return
         if (isStageActive(stageId)) {
+            if (stageId == Stage.START) {
+                val colony = getFractalColony() ?: return
+                val sys = colony.starSystem
+                val systemName = sys.nameWithNoType
+                val FOBString = getFOB()?.name
+
+                info.addPara("The IAIIC has set up " +
+                    "a base in %s, using it as a launchpad to harass and raid your citizenship.",
+                    0f,
+                    Misc.getHighlightColor(),
+                    systemName
+                )
+                info.addPara(
+                    "With the support of certain major factors in the sector, the IAIIC is a %s, and has the potential to become even more threatening. " +
+                    "However, if this support was to be stripped away, the IAIIC may become little more than a nuisance.",
+                    0f,
+                    Misc.getNegativeHighlightColor(),
+                    "major threat"
+                )
+
+                val targetW = 150f
+                val fobW = 80f
+                info.beginTable(
+                    factionForUIColors, 20f,
+                    "Target", targetW,
+                    "IAIIC Base", fobW
+                )
+                info.addTableHeaderTooltip(0, (object: BaseFactorTooltip() {
+                    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                        tooltip?.addPara(
+                            "The target of the bulk of the IAIIC's suspicion." +
+                            "" +
+                            "\n\nMore likely to be targeted by raids and inspections - likely due to your \"creative\" choice of %s.",
+                            0f,
+                            Misc.getHighlightColor(),
+                            "colony administrator"
+                        )
+                    }
+                }))
+                info.addTableHeaderTooltip(1, (object: BaseFactorTooltip() {
+                    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean, tooltipParam: Any?) {
+                        val label = tooltip?.addPara(
+                            "The launchpad of the IAIIC into your space." +
+                                    "" +
+                                "\n\nDestroying or taking over this market will unceremoniously end the IAIIC's efforts - though that's easier said than done." +
+                                "\n\nBe warned; MilSec suggests sleeper cells of IAIIC saboteurs in our space ready to %s in retaliation of any %s we take against %s.",
+                            0f,
+                            Misc.getNegativeHighlightColor(),
+                            "sabotage our colonies", "directly hostile actions", "${getFOB()?.name}"
+                        )
+                        label?.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), getFaction().baseUIColor)
+                    }
+                }))
+                info.makeTableItemsClickable()
+
+                info.addRowWithGlow(
+                    Alignment.MID, Misc.getBasePlayerColor(), colony.name,
+                    Alignment.MID, getFaction().color, FOBString
+                )
+                info.addTooltipToAddedRow(object:BaseFactorTooltip() {
+                    override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any?) {
+                        val w = tooltip.widthSoFar
+                        val h = (w / 1.6f).roundToInt().toFloat()
+                        tooltip.addSectorMap(w, h, sys, 0f)
+                        tooltip.addPara("Click to open map", Misc.getGrayColor(), 5f)
+                    }
+                }, TooltipLocation.LEFT, false)
+                info.setIdForAddedRow(getFOB())
+                info.addTable("None", -1, 5f)
+                info.addSpacer(3f)
+            }
             addStageDesc(info, stage, small, false)
+        }
+    }
+
+    override fun tableRowClicked(ui: IntelUIAPI, data: TableRowClickData) {
+        if (data.rowId is MarketAPI) {
+            ui.showOnMap((data.rowId as MarketAPI).primaryEntity)
         }
     }
 
@@ -351,7 +564,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any) {
                 val opad = 10f
 
-                tooltip.addTitle(stageId.stageName)
+                tooltip.addTitle(stageId.getActualName(isHostile()))
 
                 addStageDesc(tooltip, stageId, opad, true)
             }
@@ -359,13 +572,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
     }
 
     private fun addStageDesc(info: TooltipMakerAPI, stage: Stage, initPad: Float, forTooltip: Boolean) {
+        if (stage.canBeSubstituted && !isHostile()) {
+            return addSabotageDesc(info, stage, initPad, true)
+        }
+
         when (stage) {
-            Stage.FIRST_RAID, Stage.SECOND_RAID, Stage.THIRD_RAID, Stage.FOURTH_RAID -> {
-                info.addPara(
-                    "The IAIIC will launch a raid on your colonies with the intent of obtaining (and destroying) your AI cores. This will " +
-                    "automatically succeed if your faction is not hostile to the IAIIC.", initPad
-                )
-            }
             Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> {
                 val label = info.addPara(
                     "Feeling the pressure, the IAIIC's benefactors will pour more resources into the project. This will " +
@@ -376,6 +587,18 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                     "repair the FOB", "respawn all patrols", "increase size of launched fleets", "also increase the IAIIC's conflict fatigue"
                 )
                 label.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
+            }
+            Stage.FIRST_BOMBARDMENT, Stage.SECOND_BOMBARDMENT, Stage.THIRD_BOMBARDMENT -> {
+                info.addPara(
+                    "The IAIIC will launch a targeted bombardment against in-system military infrastructure, or civilian if " +
+                    "no military presence exists. %s.",
+                    5f,
+                    Misc.getNegativeHighlightColor(),
+                    "The colony harboring the fractal core will always be targeted"
+                )
+            }
+            Stage.FIRST_SABOTAGE, Stage.SECOND_SABOTAGE -> {
+                return addSabotageDesc(info, stage, initPad, false)
             }
             Stage.BLOCKADE -> {
                 info.addPara(
@@ -412,6 +635,56 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
     }
 
+    private fun addSabotageDesc(info: TooltipMakerAPI, stage: Stage, initPad: Float, isSubstituted: Boolean) {
+        info.addPara(
+            "The IAIIC will launch covert actions against your faction, causing varying levels of disorder amongst your colonies.",
+            5f
+        )
+        val stringAndColor = getSabotagePowerString()
+        info.addPara(
+            "The IAIIC delegates it's covert actions to the more cunning members of it's benefactory. As it stands, IntSec estimates " +
+            "the threat of subterfuge to be %s.",
+            5f,
+            stringAndColor.second,
+            stringAndColor.first
+        )
+        if (niko_MPC_settings.nexLoaded) {
+            info.addPara(
+                "%s will passively act to prevent sabotage against the market they are stationed on, but cannot be relied upon - even if highly skilled.",
+                5f,
+                Misc.getHighlightColor(),
+                "Operatives"
+            )
+        }
+
+        if (isSubstituted) {
+            info.addPara(
+                "If your faction was to turn hostile against the IAIIC, this stage would transform into a %s.",
+                5f,
+                Misc.getHighlightColor(),
+                stage.stageName
+            )
+        }
+    }
+
+    private fun getSabotagePowerString(): Pair<String, Color> {
+        val strength = getSabotageMultFromContributingFactions(factionContributions)
+
+        if (strength >= 2.5f) {
+            return Pair("extreme", Misc.getNegativeHighlightColor())
+        }
+        if (strength >= 2f) {
+            return Pair("severe", Misc.getNegativeHighlightColor())
+        }
+        if (strength >= 1.5f) {
+            return Pair("moderate", Misc.getHighlightColor())
+        }
+        if (strength <= 1.5f) {
+            return Pair("minor", Misc.getPositiveHighlightColor())
+        }
+        return Pair("massive", Misc.getNegativeHighlightColor())
+    }
+
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
         if (info == null) return
@@ -422,7 +695,53 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
         if (!isUpdate) return
         val data = getListInfoParam()
-        if (data is MPC_factionContributionChangeData) {
+        if (data is EventStageData) {
+            info.addPara(
+                "Stage reached: %s",
+                0f,
+                Misc.getHighlightColor(),
+                (data.id as Stage).getActualName(isHostile())
+            )
+        }
+        else if (data is Collection<*> && data.any { it is MPC_IAIICSabotageType.MPC_IAIICSabotageResultData }) {
+            val sabotageList = data as Collection<MPC_IAIICSabotageType.MPC_IAIICSabotageResultData>
+            val rand = data.random()
+            val randInstance = rand.sabotage
+            info.addPara(
+                "Markets sabotaged: %s",
+                0f,
+                Misc.getHighlightColor(),
+                randInstance.baseName
+            )
+            for (entry in sabotageList) {
+                var baseString = "${BaseIntelPlugin.INDENT}${entry.target.name}"
+                var highlights: String? = null
+                if (!entry.result.isSuccess) {
+                    highlights = "(${entry.result.message})"
+                    baseString += " %s"
+                }
+
+                val label = info.addPara(
+                    "${BaseIntelPlugin.INDENT}${entry.target.name}",
+                    5f
+                )
+                if (highlights != null) {
+                    label.setHighlight(highlights)
+                    label.setHighlightColors(Misc.getHighlightColor())
+                }
+            }
+        }
+        else if (data is RetaliateReason) {
+            when (data) {
+                RetaliateReason.ATTACKED_FOB -> {
+                    info.addPara(
+                        "Retaliation imminent due to hostile actions!",
+                        0f
+                    )
+                }
+            }
+        }
+        else if (data is MPC_factionContributionChangeData) {
             val contribution = data.contribution
             val faction = Global.getSector().getFaction(contribution.factionId)
 
@@ -534,17 +853,20 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
                     return Sounds.REP_LOSS
                 }
             }
+            else if (data is EventStageData) {
+                return getSoundColonyThreat()
+            }
             return getSoundMajorPosting()
         }
-        return getSoundColonyThreat()
+        return "MPC_IAIIC_INTEL_START"
     }
 
     /** Increases amount of fleets launched by the FOB and repairs all industries, but increases conflict fatigue. */
     private fun escalate(amount: Float) {
         val FOB = MPC_fractalCoreFactor.getFOB() ?: return
         FOB.industries.forEach {
-            if (it.disruptedDays > 0.5f) {
-                it.setDisrupted(0.5f)
+            if (it.disruptedDays > 0f) {
+                it.setDisrupted(0f)
             }
         }
         escalationLevel += amount
@@ -568,6 +890,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             sanitizeContributions = false
         }
         val days = Misc.getDays(amount)
+        daysLeftTilNextRetaliate = (daysLeftTilNextRetaliate - days).coerceAtLeast(0f)
         checkInterval.advance(days)
         val elapsed = checkInterval.intervalElapsed()
         // idk why i have to do this, but this is like a quantum slit bug
@@ -657,6 +980,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
         if (reason.consideredVictory) {
             beginCoreUpgrade()
+            beginHumanitarianAction()
             if (fob != null) {
                 fob.removeCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
                 DecivTracker.decivilize(fob, false,  false)
@@ -680,6 +1004,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
             }
         }
         killIAIIC()
+        support.forEach {
+            it.recallFleets(MPC_fractalSupportFleetAssignmentAI.ReturnReason.EVENT_OVER)
+            Global.getSector().intelManager.removeIntel(it)
+        }
+        support.clear()
+    }
+
+    private fun beginHumanitarianAction() {
+        TODO("Not yet implemented")
     }
 
     private fun beginCoreUpgrade() {
@@ -753,12 +1086,109 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         }
     }
 
+    // you cannot overflow in this intel
+    override fun setProgress(progress: Int) {
+        var lowestReachableProgress = 0
+        for (stage in stages) {
+            if (stage.wasEverReached) continue
+            if (stage.progress > lowestReachableProgress) lowestReachableProgress = stage.progress
+        }
+        super.setProgress(progress.coerceAtMost(lowestReachableProgress))
+    }
+
+    private fun startBombardment() {
+        val FOB = getFOB() ?: return
+        val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
+        val validTargets = getMilitaryTargets()
+        //if (validTargets.isEmpty()) validTargets = getGenericTargets()
+
+        val params = GenericRaidParams(Random(random.nextLong()), true)
+        params.makeFleetsHostile = false // will be made hostile when they arrive, not before
+        params.factionId = FOB.factionId
+        params.source = FOB
+
+        params.prepDays = 20f + (MathUtils.getRandomNumberInRange(5f, 9f))
+        params.payloadDays = 27f + 7f * random.nextFloat()
+
+        params.raidParams.where = colony.starSystem
+        params.raidParams.tryToCaptureObjectives = false
+        params.raidParams.bombardment = MarketCMD.BombardType.TACTICAL
+        params.raidParams.allowAnyHostileMarket = true
+        params.raidParams.type = if (prob(50, random)) FGRaidType.SEQUENTIAL else FGRaidType.CONCURRENT // sequential or concurrent? not sure
+        //params.raidParams.allowNonHostileTargets = true
+        params.raidParams.allowedTargets.addAll(validTargets)
+
+        params.style = FleetStyle.STANDARD
+
+        val fleetSizeMult: Float = FOB.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
+
+        val f: Float = HostileActivityEventIntel.get()?.getMarketPresenceFactor(colony.starSystem) ?: 6f
+
+        var totalDifficulty = (fleetSizeMult * 22f * (1f * f))
+
+        params.fleetSizes.add(10)
+
+        while (totalDifficulty > 0) {
+            val min = 7
+            val max = 10
+
+            //int diff = Math.round(StarSystemGenerator.getNormalRandom(random, min, max));
+            val diff = min + random.nextInt(max - min + 1)
+            params.fleetSizes.add(diff)
+            totalDifficulty -= diff.toFloat()
+        }
+
+        val bombardFGI = MPC_IAIICBombardFGI(params)
+        bombardFGI.listener = this
+        Global.getSector().intelManager.addIntel(bombardFGI)
+    }
+
+    fun startBlockade() {
+        val FOB = getFOB() ?: return
+        val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
+
+        val params = GenericRaidParams(Random(random.nextLong()), true)
+        params.factionId = getFaction().id
+        params.source = FOB
+
+        params.prepDays = 20f + (random.nextFloat() * 3f)
+        params.payloadDays = 365f
+
+        params.makeFleetsHostile = false
+
+        val bParams = FGBlockadeParams()
+        bParams.where = colony.starSystem
+        bParams.targetFaction = Factions.PLAYER
+
+        params.style = FleetStyle.STANDARD
+
+        val fleetSizeMult: Float = FOB.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
+
+        val f: Float = HostileActivityEventIntel.get()?.getMarketPresenceFactor(colony.starSystem) ?: 6f
+
+        var totalDifficulty = (fleetSizeMult * 50f * (1f * f)).coerceAtMost(200f)
+
+        // mostly maxed-out fleets, some smaller ones
+
+        // mostly maxed-out fleets, some smaller ones
+        while (totalDifficulty > 0) {
+            var max = 5f
+            var min = 3f
+            if (random.nextFloat() > 0.3f) {
+                min = totalDifficulty.coerceAtMost(10f).toInt().toFloat()
+                max = totalDifficulty.coerceAtMost(10f).toInt().toFloat()
+            }
+            val diff = StarSystemGenerator.getNormalRandom(random, min, max).roundToInt()
+            params.fleetSizes.add(diff)
+            totalDifficulty -= diff.toFloat()
+        }
+
+        val blockade = MPC_IAIICBlockadeFGI(params, bParams)
+        blockade.listener = this
+        Global.getSector().intelManager.addIntel(blockade)
+    }
 
     // LISTENER CRAP
-
-    fun getFaction(): FactionAPI {
-        return Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
-    }
 
     override fun reportPlayerOpenedMarket(market: MarketAPI?) {
         return
@@ -786,6 +1216,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         if (isEnded || isEnding) return
         if (!battle.isPlayerInvolved) return
 
+        checkBattleForFactors(primaryWinner, battle)
+        //checkBattleForRetaliation(primaryWinner, battle)
+    }
+
+    private fun checkBattleForFactors(primaryWinner: CampaignFleetAPI, battle: BattleAPI) {
         val playerFleet = Global.getSector().playerFleet
         val playerLoc = playerFleet.starSystem ?: return
         val fractalSystem = getFractalColony()?.starSystem ?: return
@@ -836,7 +1271,13 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
         if (source.faction.id != niko_MPC_ids.IAIIC_FAC_ID) return
         if (!fleet.isPatrol()) return
 
+        if (true) {
+            Global.getSector().removeScriptsOfClass(TransponderCheckBlockScript::class.java)
+            niko_MPC_debugUtils.log.error("NIKO FORGOT TO REMOVE THE FUCKING DEBUG REMOVAL")
+        }
+
         fleet.addScript(NPCHassler(fleet, source.starSystem))
+        fleet.memoryWithoutUpdate["\$nex_ignoreTransponderBlockCheck"] = true
 
         return
     }
@@ -879,6 +1320,72 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener {
 
     override fun reportPlayerDidNotTakeCargo(cargo: CargoAPI?) {
         return
+    }
+
+    // FGI STUFF
+    override fun reportFGIAborted(intel: FleetGroupIntel?) {
+        return
+    }
+
+    // COLONY HOSTILE ACTION STUFF
+
+    override fun reportRaidForValuablesFinishedBeforeCargoShown(
+        dialog: InteractionDialogAPI?,
+        market: MarketAPI?,
+        actionData: MarketCMD.TempData?,
+        cargo: CargoAPI?
+    ) {
+        if (market == getFOB()) {
+            retaliate(RetaliateReason.ATTACKED_FOB, dialog?.textPanel)
+        }
+    }
+
+    override fun reportRaidToDisruptFinished(
+        dialog: InteractionDialogAPI?,
+        market: MarketAPI?,
+        actionData: MarketCMD.TempData?,
+        industry: Industry?
+    ) {
+        if (market == getFOB()) {
+            retaliate(RetaliateReason.ATTACKED_FOB, dialog?.textPanel)
+        }
+    }
+
+    override fun reportTacticalBombardmentFinished(
+        dialog: InteractionDialogAPI?,
+        market: MarketAPI?,
+        actionData: MarketCMD.TempData?
+    ) {
+        if (market == getFOB()) {
+            retaliate(RetaliateReason.ATTACKED_FOB, dialog?.textPanel)
+        }
+    }
+
+    override fun reportSaturationBombardmentFinished(
+        dialog: InteractionDialogAPI?,
+        market: MarketAPI?,
+        actionData: MarketCMD.TempData?
+    ) {
+        if (market == getFOB()) {
+            retaliate(RetaliateReason.ATTACKED_FOB, dialog?.textPanel)
+        }
+    }
+
+    enum class RetaliateReason {
+        ATTACKED_FOB,
+    }
+    /** Called if the player attacks the FOB. Triggers sabotage. */
+    fun retaliate(reason: RetaliateReason, dialog: TextPanelAPI? = null) {
+        if (daysLeftTilNextRetaliate > 0f) return
+
+        if (dialog != null) {
+            sendUpdateIfPlayerHasIntel(reason, dialog)
+        } else {
+            sendUpdateIfPlayerHasIntel(reason, false)
+        }
+
+        MPC_delayedExecution({ if (!isEnded) { sabotage() } },0.3f, runWhilePaused = false, useDays = true).start()
+        daysLeftTilNextRetaliate = RETALIATE_COOLDOWN_DAYS
     }
 
 }

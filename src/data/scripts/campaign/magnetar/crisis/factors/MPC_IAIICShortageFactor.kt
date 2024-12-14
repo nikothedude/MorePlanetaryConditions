@@ -49,7 +49,7 @@ class MPC_IAIICShortageFactor: BaseEventFactor() {
         val market = MPC_fractalCoreFactor.getFOB() ?: return 0f
         for (demandedComm in market.demandData.demandList) {
             val data = market.getCommodityData(demandedComm.baseCommodity.id) ?: continue
-            val deficit = data.deficitQuantity
+            val deficit = (data.deficitQuantity / 1000f)
             points += deficit
         }
 
