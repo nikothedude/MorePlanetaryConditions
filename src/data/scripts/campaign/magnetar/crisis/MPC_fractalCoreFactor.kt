@@ -73,8 +73,10 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry(Industries.HIGHCOMMAND)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.STARFORTRESS_HIGH)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
             getIndustry(Industries.ORBITALWORKS)?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
+            getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
         }
     }
 
@@ -228,6 +230,12 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
         market.addIndustry(Industries.ORBITALWORKS)
         market.addIndustry(Industries.WAYSTATION)
+        if (niko_MPC_settings.indEvoEnabled) {
+            market.addIndustry("IndEvo_embassy")
+            market.addIndustry("IndEvo_ReqCenter")
+            market.addIndustry("IndEvo_IntArray")
+            market.addIndustry("IndEvo_Academy")
+        }
         market.addIndustry("MPC_FOBIAIICPatherResist")
 
         market.addSpecialItems()
@@ -238,6 +246,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         market.conditions.forEach { it.isSurveyed = true }
         market.surveyLevel = MarketAPI.SurveyLevel.FULL
         if (niko_MPC_settings.indEvoEnabled) {
+            market.memoryWithoutUpdate[MineFieldCondition.NO_ADD_BELT_VISUAL] = true
             market.addCondition(Ids.COND_MINERING)
             (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()
         }

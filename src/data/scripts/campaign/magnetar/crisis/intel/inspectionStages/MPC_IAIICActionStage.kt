@@ -151,6 +151,8 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
             removeCoresAndApplyResult(fleet)
         } else if (orders == MPC_IAIICInspectionOrders.COMPLY) {
             removeCoresAndApplyResult(fleet)
+        } else if (orders == MPC_IAIICInspectionOrders.BRIBE) {
+            intel.outcome = MPC_IAIICInspectionOutcomes.BRIBED
         }
 
 //		if (fleet != null) {
@@ -396,6 +398,22 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                                 "in trying to find them. Local operations have been significantly disrupted.", opad
                     )
                 }
+                MPC_IAIICInspectionOutcomes.COLONY_NO_LONGER_EXISTS -> {
+                    info.addPara("The target colony no longer exists. The inspection is now over.", opad)
+                }
+                MPC_IAIICInspectionOutcomes.DEFEATED -> {
+                    info.addPara(
+                        "The inspection task force has been defeated by the defenders of " +
+                                target.name + ". The inspection is now over.", opad
+                    )
+                }
+                MPC_IAIICInspectionOutcomes.BRIBED -> {
+                    info.addPara(
+                        "The funds you've allocated have been used to resolve the inspection to the " +
+                                "satisfaction of all parties.", opad
+                    )
+                }
+                null -> return
             }
         } else if (curr == index) {
             info.addPara("The inspection of " + target.name + " is currently under way.", opad)

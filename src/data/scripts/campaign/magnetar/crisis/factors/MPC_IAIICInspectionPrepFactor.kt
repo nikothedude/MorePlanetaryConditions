@@ -11,12 +11,13 @@ import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionPrepIntel
 
 class MPC_IAIICInspectionPrepFactor: BaseEventFactor() {
     companion object {
-        const val BASE_PROGRESS = 1
+        const val BASE_PROGRESS = 35
     }
 
     override fun getProgress(intel: BaseEventIntel?): Int {
         val prepIntel = MPC_IAIICInspectionPrepIntel.get() ?: return 0
         val prepState = prepIntel.getPreparingState()
+        if (MPC_IAIICFobIntel.get()?.currentAction != null) return 0
         if (prepState.isPreparing) return BASE_PROGRESS else return 0
     }
 

@@ -19,4 +19,8 @@ class MPC_FOBIAIICPatherResist: BaseIndustry() {
     override fun isHidden(): Boolean { //hidden structures dont block structure construction
         return true
     }
+
+    override fun isAvailableToBuild(): Boolean {
+        return false
+    }
 }

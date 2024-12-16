@@ -938,16 +938,13 @@ SetTextHighlights ""didn't have""","""The domain didn't want anything to do with
 "#END Historian",,,,,,
 ,,,,,,
 # Post-magnetar,,,,,,
-MPC_RACAFractalCore,RemoveAICoreAdmin,"MPC_RACACMD isFractalCore","MPC_RACACMD
-ShowPic ai_core_uninstall",,,"dismiss instantly if not in crisis, but dont if crisis is active?"
-MPC_IAIICRepSuspicious,RelationshipLevelDesc,"$faction.rel == SUSPICIOUS
-$faction.id == MPC_IAIIC",,"As far as diplomacy goes, this is likely as far as you'll get with the IAIIC. Docking requests are accepted with only begrudging protest, and unsanctioned trade-stops are performed with as much cordality as is possible. Still, your faction continues to be harassed by green-and-grey uniforms, and it's likely only a matter of time before the conflict escalates.",,
-MPC_IAIICRepInhospitable,RelationshipLevelDesc,"$faction.rel == INHOSPITABLE
-$faction.id == MPC_IAIIC",,"Commlinks are rejected with cut-and-paste rejection phrases, and your civil protection are beginning to usher out the hordes of green-and-grey uniforms stalking your streets. Still, this isn't stopping the unsanctioned ship-searches, nor the inevitable border skirmishes. Both sides have their finger on the trigger, waiting to fire.",,
-MPC_IAIICRepHostile,RelationshipLevelDesc,"$faction.rel == HOSTILE
-$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.",,
-MPC_IAIICRepVengeful,RelationshipLevelDesc,"$faction.rel == VENGEFUL
-$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.",,
+MPC_patherFleetPopOptions,LPTitheOptions,"MPC_factionInvolvedInIAIIC luddic_path",,,"1:MPC_askPatherFleetAboutInvolvement:""Would you happen to know anything about the IAIIC?""",
+MPC_askPatherFleetAboutInvolvement,DialogOptionSelected,"$option == MPC_askPatherFleetAboutInvolvement","RemoveOption MPC_askPatherFleetAboutInvolvement
+AddText ""It would seem this isn't the right place to ask, if the pathers really are involved.""","$HeOrShe sneers. ""Yes..."" $heOrShe starts, words drawling in counter-action to your suspicion. ""only that they are useful tools of Moloch! I detest their obsession with technology, but I can't deny-"" $heorShe spits. ""-they're useful for dealing with heretics such as you.""
+OR
+""No."" $HeOrShe growls forcefully.
+OR
+""A holy warrior such as me does not need to concern $himOrHerself with such matters - all I must do is-"" $heOrShe slams $hisOrHer well-worn desk for effect. ""Bring the hammer of Ludd on servants of Moloch such as yourself!"" $HeOrShe sneers.",,
 ,,,,,,
 # BarMagn,,,,,,
 MPC_hegemonySpyInit,DialogOptionSelected,"$option == marketVisitBar
@@ -960,7 +957,7 @@ MPC_hegemonySpyContinue,DialogOptionSelected,"$option == MPC_hegemonySpyContinue
 
 What makes you doubletake is a small detail you notice in a moment of thoughtlessness: The officials slapping magcuffs on the groaning drunk aren't wearing MuniSec uniforms. You still recognize them, but...","MPC_hegemonySpyContinueTwo:Take a closer look",
 MPC_hegemonySpyContinueTwo,DialogOptionSelected,"$option == MPC_hegemonySpyContinueTwo","SetTextHighlights ""IntSec""
-BeginConversation MPC_playerFacIntsecSquadChief false true
+BeginConversation MPC_playerFacIntsecSquadChief
 ShowSecondPerson MPC_hegemonySpy","""IntSec, $playerSirOrMadam"". Your leftmost guard speaks up, their sentinel instincts naturally bringing their attention to yours. You take a sharp breath - this is no normal arrest. Whoever this patron is has caught the ire of your faction's intelligence branch, which is no small feat. Only a handful of things can prompt such brazen an arrest, and you can't say you're not curious as to what.","0:MPC_hegemonySpyFlagDownOfficer:Flag down the squad chief
 10:MPC_hegemonySpyBeStupidAndLoud:Loudly announce your presence
 20:MPC_hegemonySpyWaitForLeave:Simply wait for them to leave
@@ -1019,10 +1016,10 @@ AdjustRep independent SUSPICIOUS -5
 AdjustRep luddic_path SUSPICIOUS -5","You give $personFirstName a salute, and spin around to take your leave. 
 
 $HeOrShe hesitates. ""$PlayerSirOrMadam-"" $heOrShe blurts out, tone suddenly having dropped. ""-there's something I forgot to tell you."" Turning back, you make sure to give her $himOrHer your best impatient stare. $HeOrShe responds immediately. ""-we've been picking up some chatter in the external comm-nets. As soon as he sent his signal, we picked up a significant increase in church, hegemony, KKL, tri-tach and even some pather comms. Coupled with an increase of scouting fleets by those factions..."" $heOrShe takes a breath. ""I think we're looking at a coordinated operation, $playerSirOrMadam.""","MPC_hegemonySpyLeaveOfficeTwo:Continue",
-MPC_hegemonySpyLeaveOfficeTwo,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOfficeTwo","FireBest BarPrintDesc
+MPC_hegemonySpyLeaveOfficeTwo,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOfficeTwo","EndConversation
+FireBest BarPrintDesc
 BarCMD showOptions
 BarCMD playAmbience
-EndConversation
 $global.MPC_investigatedHSpyPreliminary = true","With that, $heOrShe offers a salute. ""That's all, $playerSirOrMadam."" $heOrShe states, hiding the trepidation of $hisOrHer previous statement under a wall of professionalism. You nod, and take your leave, joining your bodyguards outside and back into the bar. You can't help but feel a few more pairs on eyes on the back of your neck.",,
 "#END BarMagn",,,,,,
 ,,,,,,
@@ -1105,5 +1102,261 @@ Almost as an afterthought, $heOrShe adds ""Just to be clear, the pirates in ques
 ",,
 MPC_spyFleetWhyDumpedCacheRelent,DialogOptionSelected,"$option == MPC_spyFleetWhyDumpedCacheRelent","FireAll PopulateOptions","$HeOrShe nods. ""Of course, $playerSirOrMadam.""",,
 "#END Spy Fleets",,,,,,
+,,,,,,
+# IAIIC Fleet Comms,,,,,,
+MPC_IAIICPatrolPopulate,PopulateOptions,"MPC_IAIICFleetCMD isPatrol
+$menuState == fleetConvMain
+!$MPC_complained",,,"10:MPC_IAIICPatrolComplain:""This is MY soverign territory, and you are intruding on it!""",
+MPC_IAIICPatrolComplain,DialogOptionSelected,"$option == MPC_IAIICPatrolComplain","SetTextHighlights ""Domain"" ""venture capitalist"" ""Jill Mirthson"" ""Ark FOB""
+AdjustRepActivePerson HOSTILE -1
+$MPC_complained = true 0
+
+ShowDefaultVisual
+EndConversation","$personName glares. """"Soverign territory?"""" $HeOrShe seethes, infuriated by those words alone. ""$PlayerSirOrMadam, this is territory of the Domain, not of some irresponsible venture capitalist."" $heOrShe growls. 
+
+$HeOrShe takes a deep breath, speaking carefully. ""If you have any complaints, bring them up with our commander, Jill Mirthson."" $heOrShe says. ""She commands us from Ark FOB, on the outskirts of-"" $heOrShe pauses. ""-OUR system, $PlayerSirOrMadam.""
+
+Without even another word, $heOrShe cuts comms. You are left with a feeling of patient anger. ",,
+"#END IAIIC Fleet Comms",,,,,,
+,,,,,,
+# RACAFractal,,,,,,
+MPC_RACAFractalCore,RemoveAICoreAdmin,"MPC_RACACMD isFractalCore","FireBest MPC_RACAFractalCoreTwo
+ShowPic ai_core_uninstall
+",,,"dismiss instantly if not in crisis, but dont if crisis is active?"
+MPC_RACAFCFightingIAIIC,MPC_RACAFractalCoreTwo,"MPC_RACACMD fightingIAIIC","FireBest MPC_RACAFCFightingIAIICTwo",,,
+MPC_RACAFCNoHostilities,MPC_RACAFractalCoreTwo,"!MPC_RACACMD fightingIAIIC score:20","DismissDialog override",,,"skips this, opens the menu"
+MPC_RACAFCFightingIAIICTwoInitial,MPC_RACAFCFightingIAIICTwo,"!$global.MPC_RACAFCGotExposition",,"You give the order to quietly disconnect the AI core governing $marketName and remove it from the control bunker to be placed in secure storage.
+
+The tech in charge of carrying out the job reports in, baffled - the core is nowhere to be found.
+
+After a short but fraught delay, your TriPad chimes to announce a call from an anonymous source.","MPC_RACAFC_answer:Accept the connection request
+MPC_RACAFC_force:Order the AI core removed from power
+RACA_ignore:Leave the AI core in control and let things be",
+MPC_RACAFCFightingIAIICTwoExpDone,MPC_RACAFCFightingIAIICTwo,"$global.MPC_RACAFCGotExposition score:20","ShowPersonVisual
+
+FireAll MPC_RACAFC_populateOptions","You re-open the commlink to $personName.",,
+MPC_RACAFC_force,DialogOptionSelected,"$option == MPC_RACAFC_force",,"Removing the AI core from direct control will let you appoint another administrator. However, you'll still have the problem of a rogue AI operating somewhere on $marketName, and making nice later might not be an option.","MPC_RACAFC_confirm:Confirm the order
+RACA_ignore:Leave the AI core in control and let things be
+(dev)RACA_override:Remove the AI core [dev mode only]",
+MPC_RACAFC_confirm,DialogOptionSelected,"$option == MPC_RACAFC_confirm","$triedToRemoveCore = true","You give the go-ahead, and your workers start work immediately, changing passkeys, disconnecting remote access wiring, and installing the latest hegemony anti-AI packages within your software. 
+
+...but nothing happens.
+
+Despite all obvious entry points being disconnected, $marketName's systems remain under control of the rogue AI. In fact, it's operations seem to be utterly unaffected, even during the disconnection process. Your workers double, triple, than quadruple check, and confirm that nothing was missed. By all means, it should be impossible for the AI to still be in control. 
+
+And yet, you feel yourself snapped out of your mystified trance by the repeated ringing of your TriPad.","MPC_RACAFC_answer:Accept the connection request
+RACA_ignore:Leave the AI core in control and let things be",
+MPC_RACAFC_answer,DialogOptionSelected,"$option == MPC_RACAFC_answer","ShowPersonVisual
+$global.MPC_RACAFCGotExposition = true
+
+FireAll MPC_RACAFC_populateOptions","oh whatever get back to this later, TLDR 1. it cant be contained 2. it wants to see how you fight the IAIIC and 3. giving it tot he IAIIC is a valid action it wont protest
+
+","10:MPC_RACAFC_whyObserve:Ask the $personName why it wants to observe the conflict",
+MPC_RACAFC_whyObserve,DialogOptionSelected,"$option == MPC_RACAFC_whyObserve",,"Your question elicits no response from the $personName.",,
+MPC_RACAFC_addSurrenderOption,MPC_RACAFC_populateOptions,,,,"50:MPC_RACAFC_surrenderOption:Consider handing the core over to the IAIIC
+20:MPC_RACAFC_cutComm:Cut the comm link",
+MPC_RACAFC_surrenderOption,DialogOptionSelected,"$option == MPC_RACAFC_surrenderOption",,"The $personName has guaranteed it's cooperation if you choose to hand it over to the IAIIC, as it considers it a valid course of action for you to take. Sacrificing the core will end the IAIIC's reign of terror, but you'll gain nothing from it.","0:MPC_RACAFC_confirmSurrender:Confirm the surrender
+10:MPC_RACAFC_denySurrender:Reconsider",
+MPC_RACAFC_confirmSurrender,DialogOptionSelected,"$option == MPC_RACAFC_confirmSurrender","MPC_RACACMD sacrifice","You transmit the order to $personName, which immediately re-confirms your order. An instant later, the link disconnects, and your Tripad pings - a stealth shuttle has launched from the surface of $marketName, and is headed directly towards Ark FOB. 
+
+Sighing, you close the door behind you and resolve yourself never to let yourself get caught off guard like this again.","0:defaultLeave:Continue",
+MPC_RACAFC_denySurrender,DialogOptionSelected,"$option == MPC_RACAFC_denySurrender","FireAll MPC_RACAFC_populateOptions","You reconsider your options.",,
+MPC_RACAFC_cutComm,DialogOptionSelected,"$option == MPC_RACAFC_cutComm","DismissDialog",,,
+"#END RACAFractal",,,,,,
+,,,,,,
+# IAIIC Rep,,,,,,
+MPC_IAIICRepSuspicious,RelationshipLevelDesc,"$faction.rel == SUSPICIOUS
+$faction.id == MPC_IAIIC",,"As far as diplomacy goes, this is likely as far as you'll get with the IAIIC. Docking requests are accepted with only begrudging protest, and unsanctioned trade-stops are performed with as much cordality as is possible. Still, your faction continues to be harassed by green-and-grey uniforms, and it's likely only a matter of time before the conflict escalates.",,
+MPC_IAIICRepInhospitable,RelationshipLevelDesc,"$faction.rel == INHOSPITABLE
+$faction.id == MPC_IAIIC",,"Commlinks are rejected with cut-and-paste rejection phrases, and your civil protection are beginning to usher out the hordes of green-and-grey uniforms stalking your streets. Still, this isn't stopping the unsanctioned ship-searches, nor the inevitable border skirmishes. Both sides have their finger on the trigger, waiting to fire.",,
+MPC_IAIICRepHostile,RelationshipLevelDesc,"$faction.rel == HOSTILE
+$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.
+
+At this stage, performing missions and turning in AI cores will not restore your reputation beyond hostile. You have to speak with the IAIIC leader to sue for peace.",,
+MPC_IAIICRepVengeful,RelationshipLevelDesc,"$faction.rel == VENGEFUL
+$faction.id == MPC_IAIIC",,"Your conflict with the IAIIC has escalated into full-blown war. The IAIIC military is mobilized and preparing elaborate campaigns against your space, and battle is at all angles. Thankfully, your colonies are mostly free of the sneering greencaps, but you can still feel their presence - mostly their sabotage.
+
+At this stage, performing missions and turning in AI cores will not restore your reputation beyond hostile. You have to speak with the IAIIC leader to sue for peace.",,
+"#END IAIIC Rep",,,,,,
+,,,,,,
+# Delayed Repair,,,,,,
+MPC_marketAddOptionDelayedRepair,PopulateOptions,"$hasMarket
+$menuState == main
+$tradeMode == OPEN
+RepairAvailable
+RepairNeeded
+RepairEnoughSupplies
+
+MPC_canDelayedRepair","$MPC_delayedRepairTime = $global.MPC_delayedRepairTime
+RemoveOption marketRepair
+
+SetTooltip MPC_delayedMarketRepair ""Full repairs require $repairSupplyCost supplies. $supplies supplies are available.\n\nDue to the proximity of nearby raiding fleets, IAIIC agents are sabotaging the repair facilities, necessitating $MPC_delayedRepairTime days to repair your fleet.""
+
+SetTooltipHighlightColors MPC_delayedMarketRepair buttonShortcut buttonShortcut buttonShortcut
+SetTooltipHighlights MPC_delayedMarketRepair $global.repairSupplyCost $player.supplies $MPC_delayedRepairTime
+SetShortcut MPC_delayedMarketRepair ""A"" true
+",,"15:MPC_delayedMarketRepair:Begin repairs of your ships at the dockyard",
+MPC_delayedMarketRepair,DialogOptionSelected,"$option == MPC_delayedMarketRepair","MPC_looseWait $MPCRepairwait $MPC_delayedRepairTime $MPCRepairsFinished $MPCRepairinterrupted $MPCRepairinprogress ""Repairing...""",,,
+MPC_repairsFinished,OpenInteractionDialog,"$hasMarket
+$MPCRepairsFinished score: 500000","$MPCRepairsFinished = null
+FireBest MPC_repairsFinishedTwo
+",,,
+MPC_repairsFinishedNeedsAndAffords,MPC_repairsFinishedTwo,"RepairAvailable
+RepairNeeded
+RepairEnoughSupplies","RepairAll
+FireBest OpenInteractionDialog
+SetTextHighlights $global.repairSupplyCost","Your $shipOrFleet undergoes full repairs and is restored to maximum combat readiness, at the cost of $global.repairSupplyCost supplies.",,
+MPC_repairsFinishedDoesntNeed,MPC_repairsFinishedTwo,"RepairAvailable
+!RepairNeeded","FireBest OpenInteractionDialog","You are no longer in need of the dockyard's services due to your own crew's repairs.",,
+MPC_repairsFinishedCantAfford,MPC_repairsFinishedTwo,"RepairAvailable
+RepairNeeded
+!RepairEnoughSupplies","FireBest OpenInteractionDialog
+SetTextHighlights $global.repairSupplyCost","Unfortunately, your $shipOrFleet lacks the requisite $global.repairSupplyCost supplies needed to finish repairs.",,
+"#END Delayed Repair",,,,,,
+,,,,,,
+# Pather Initial bar Event,,,,,,
+MPC_IAIICCLRPBarTwo,AddBarEvents,"MPC_IAIICPatherCMD canCreateSecondBarEvent","AddBarEvent MPC_IAIICLPBarEventTwo ""Slide into the well-dressed pather's booth"" ""TODO."" highlight",,,
+MPC_IAIICLPBarIntroEvent,DialogOptionSelected,"$option == MPC_IAIICLPBarIntroEvent","BeginConversation MPC_playerFacIntsecSquadChief
+SetTextHighlights ""We've got something""","$HeOrShe greets you with the cordiality you've come to expect from your subordinates - that is, buying you a cheap drink, of course. ""$PlayerSirOrMadam,"" $heOrShe starts, as you sip on your brandy. ""You're aware of the... forces, in our system, right?"" $HisOrHer expression pains, understanding just how hard IntSec - and by extension, $heOrShe - dropped the ball this time. ""Well-"" $heOrShe swallows $hisOrHer professional guilt with a shot of rather unprofessional alcohol. ""We've got something.""","0:MPC_IAIICLPBarIntroEventTwo:Continue",
+MPC_IAIICLPBarIntroEventTwo,DialogOptionSelected,"$option == MPC_IAIICLPBarIntroEventTwo","SetTextHighlights ""path"" ""minimum"" ""figured out how to contact them"" ""Luddic Path bars""
+SetTextHighlightColors luddic_path highlight highlight luddic_path
+
+MPC_IAIICPatherCMD createIntel
+$global.MPC_didInitialIAIICLPBarEvent = true","$HeOrShe activates the privacy emitter that had been lying on the tabletop, and soon the debaucherous roar of the bar is replaced by a low hum and then, finally, nothing, as the two of you enter your own little world of secrets, hidden only by the blurred hex-field oh-so-common in these establishments.
+
+""We've got solid intel that the path is, at minimum, helping the IAIIC with it's subterfuge. No surprise there, but what's got me here today is this..."" $HeOrShe produces a small datachip and hands it to you. $HeOrShe narrates as you read. ""We've managed to pin down the sects responsible for the IAIIC's subterfuge - at least, part of it. Part of the, subterfuge, that is-"" $heOrShe sputters, but recovers quickly under your withering gaze.
+""The point is-"" $heOrShe taps your TriPad, drawing your attention to a small subsection of the report. ""-we've figured out how to contact them."" $HeOrShe lays out the clothing, demeanour, and typical hideouts of this sect - Luddic Path bars.","0:MPC_IAIICLPBarIntroEventThree:Thank the officer, and be on your way",
+MPC_IAIICLPBarIntroEventThree,DialogOptionSelected,"$option == MPC_IAIICLPBarIntroEventThree","EndConversation
+$MPC_didInitialIAIICLPBarEvent = true
+FireBest BarPrintDesc
+BarCMD showOptions
+BarCMD playAmbience","""Of course, Commander."" $HeOrShe offers a quick salute, before dropping the privacy field, allowing the cacophony of the outside world to re-enter. You quickly finish your drink, before making your way back into the bar.",,
+"#END Pather Initial bar Event",,,,,,
+,,,,,,
+"# Meet pather at pather bar, discuss terms",,,,,,
+NEW RULE,,,,,,
+"#END Meet pather at pather bar, discuss terms",,,,,,
+,,,,,,
+# TriTach,,,,,,
+MPC_IAIICTTOptNotContact,,"$isPerson
+$personFaction.id == tritachyon
+Commission personCanGiveCommission
+MPC_IAIICTriTachCMD canDoOptions
+!$isContact
+",,,"MPC_IAIICTTMakeDeal:""Do you know anything about Tri-Tachyon's involvement with the IAIIC?""",
+MPC_IAIICTTOptContact,PopulateOptions,"$isPerson
+$personFaction.id == tritachyon
+
+MPC_IAIICTriTachCMD canDoOptions
+
+$isContact
+$id != arroyo",,,"MPC_IAIICTTMakeDeal:""Do you know anything about Tri-Tachyon's involvement with the IAIIC?""",
+MPC_IAIICTTOptContactArroyo,PopulateOptions,"$isPerson
+$personFaction.id == tritachyon
+
+MPC_IAIICTriTachCMD canDoOptions
+
+$isContact
+$id == arroyo",,,"MPC_IAIICTTMakeDeal:""Do you happen to know anything about the IAIIC, Rayan?""",
+MPC_IAIICTTOptSelNoContact,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
+!$isContact score:100","AddTextSmall ""Requires a known contact"" bad
+RemoveOption MPC_IAIICTTMakeDeal","""I'm sorry,"" $Post $personLastName says, ""I'm afraid I can't help you with that request. I must also inform you that Company guidelines require that I report this conversation to my superior; I'm sure they will... take care of you.""
+
+$HeOrShe produces an insincere smile.",,
+ttMakeDealOptNotContactArroyo,PopulateOptions,"$isPerson
+$personFaction.id == tritachyon
+$player.counterRaidedTriTach
+!$player.hasTriTachDeal
+!$player.brokeTriTachDeal
+!$isContact
+$id == arroyo",,,"ttMakeDeal:""I'd like to discuss the possibility of a deal to solve my ongoing 'friction' with Tri-Tachyon.""",
+genericRePopulateOptions,DialogOptionSelected,"$option == genericGoBack","FireAll PopulateOptions",,,
+ttMakeDealOptSelNoHostile,DialogOptionSelected,"$option == ttMakeDeal
+RepIsAtBest tritachyon HOSTILE score:100","HA_CMD printTriTachDealRepReq
+RemoveOption ttMakeDeal","""I'm sorry,"" $Post $personLastName says, ""but you appear to be engaged in a state of overt hostility with the Tri-Tachyon Corporation.""
+
+""Corporate guidelines expressly forbid official negotiation with polities, corporations, and entities which are actively engaged in destructive acts against Company property and human resources."" 
+
+$HeOrShe produces an insincere smile.",,
+ttMakeDealOptSelNoHostileArroyo,DialogOptionSelected,"$option == ttMakeDeal
+RepIsAtBest tritachyon HOSTILE score:100
+$id == arroyo","HA_CMD printTriTachDealRepReq
+RemoveOption ttMakeDeal","""Really?"" Arroyo's tone is irritated. ""You're in the middle of a declared open war with Tri-Tachyon and you expect them to listen to some clever little deal I bring to them on your behalf?"" 
+
+""Star above,"" he shakes his head almost disbelieving. ""The PR hit alone..."" ",,
+ttMakeDealOptSelNoHostileArroyoContact,DialogOptionSelected,"$option == ttMakeDeal
+RepIsAtBest tritachyon HOSTILE score:100
+$isContact
+$id == arroyo","HA_CMD printTriTachDealRepReq
+RemoveOption ttMakeDeal","""Really?"" Arroyo looks irritated. ""First things first: you don't call me 'Rayan'.""
+
+""Second, how can you possibly believe it would be that simple? You're in the middle of a declared open war with Tri-Tachyon. They're aren't going to simply cut a deal with you through me."" 
+
+He shakes his head. ""Just imagine. The PR would be terrible.""",,
+ttMakeDealOptSelNoContactArroyo,DialogOptionSelected,"$option == ttMakeDeal
+!$isContact score:100
+$id == arroyo","AddTextSmall ""Requires a known contact"" bad
+RemoveOption ttMakeDeal","""No,"" he says.
+
+Arroyo doesn't quite smile, but seems somehow satisfied with himself.",,
+ttMakeDealOptSelNoUnimportant,DialogOptionSelected,"$option == ttMakeDeal
+$isContact
+!$importanceAtLeastHigh score:100","AddTextSmall ""Contact must have high importance"" bad
+RemoveOption ttMakeDeal","""Ah,"" $HeOrShe begins. ""Your proposal is intriguing. The trouble is...  hmm."" $HeOrShe thinks for a moment.
+
+""I'd like to help you, I really would. However it is my sincerely held belief that bringing this proposal to my superiors is substantially more likely to impede my career than promote it.""
+
+""I'm sure you both understand and empathize with my predicament."" $HeOrShe shrugs as if apologizing.",,
+ttMakeDealOptSelContact,DialogOptionSelected,"$option == ttMakeDeal
+$isContact",,"You explain your perspective on the situation, and the Tri-Tachyon $Post nods along, nothing seeming to come as a surprise.
+
+""I see you, I hear you, and I believe that tgoether we can solve this misunderstanding,"" $heOrShe says, voice warmed by client-relations protocol training. $HeOrShe shifts to an apologetic look, ""Of course I wouldn't want you to think that I was behind any of this. Tri-Tachyon is a big believer in healthy internal competition, and some executives become ... overenthusiastic."" $HeOrShe shakes her head, ""Terribly misjudged and disrespectful of the business relationship you and I have built together."" 
+
+$HisOrHer contenance shifts seamlessly to negotiation-mode, ""So if you'll allow me to walk you through a modest proposal...""","ttMakeDeal2:Review the proposal",
+ttMakeDealOptSelContactLowTrust,DialogOptionSelected,"$option == ttMakeDeal
+$isContact
+$player.untrustworthy > 2",,"You explain your perspective on the situation. The Tri-Tachyon $Post looks, if anything, more and more skeptical.
+
+""What we have is a bit of a 'trust gap'. You've broken some very important agreements made with various parties. This complicates the pitch. But I do believe that we can downplay this misunderstanding,"" $heOrShe explains, voice warmed by client-relations protocol training.
+
+""The Tri-Tachyon corporation has working experience with post-crisis PR difficulties, and I suspect that certain executives could be persuaded to come to an understanding about your past actions."" $HeOrShe smiles brightly. ""After all, one of our core values is 'thinking outside the box'.""
+
+$HisOrHer contenance shifts seamlessly to negotiation-mode, ""So if you'll allow me to walk you through a modest proposal...""","ttMakeDeal2:Review the proposal",
+ttMakeDealOptSelContact2,DialogOptionSelected,"$option == ttMakeDeal2","SetTextHighlights ""increased accessibility""","$PersonName reviews a package of terms. Data-sharing of certain nav charts and commodity futures projections, mutual safety protocols for trade fleets, shared field and in-dock servicing arrangements. What it amounts to is increased accessibility for your colonies' trade based on market size- and, proportionally, for Tri-Tachyon as well. 
+
+""'Cartel' is such an unpleasant word,"" $heOrShe says. ""I prefer - and Marketing agrees with this - to think of our proposal to you as a strategic partnership which will enhance Tri-Tachyon shareholder value, increase customer satisfaction, and,"" $heOrShe smiles hungrily, ""make us both a lot of credits.""","ttDealConfirm:Confirm the deal
+cutCommLink:Cut the comm link",
+ttMakeDealOptSelContactConfirm,DialogOptionSelected,"$option == ttDealConfirm","HA_CMD makeTriTachDeal","""It's been a pleasure doing business with you, $playerName. I'm glad we can profitably put that all of that unpleasantness behind us.""","cutCommLink:Cut the comm link",
+ttMakeDealOptSelContactArroyo,DialogOptionSelected,"$option == ttMakeDeal
+$isContact
+$id == arroyo",,"""Hm,"" Arroyo leans back, thoughtful.
+
+""First,"" he says. ""You don't call me 'Rayan'.""
+
+He drums his fingers on his onyx desk, thinking. ""There may be a way to make this work,"" he says speculatively. ""Tri-Tachyon believes in internal competition, and if the reports I'm reading are any indication, the senior execs behind your 'friction' have somewhat overplayed their hand. The Financial Predictor section is seeing a lot of red coming up despite their best efforts to cover it up, and that means blood will spill.""
+
+""Figuratively, of course."" A fierce smile begins to grow on Rayan's face. ""Unless... well, let's talk details.""","ttMakeDealArroyo2:Continue",
+ttMakeDealOptSelContactArroyoLowTrust,DialogOptionSelected,"$option == ttMakeDeal
+$isContact
+$id == arroyo
+$player.untrustworthy > 2",,"""First order of business,"" Arroyo says. ""You don't call me 'Rayan'.""
+
+""Second, you must think pretty highly of yourself to think you've got a chance after the agreements you've broken."" He drums his fingers on his onyx desk, considering your reputation perhaps, then stops.
+
+""There may be a way to play this,"" he says. ""Tri-Tachyon believes in internal competition, and if the reports I'm reading are any indication, the senior execs behind your 'friction' have somewhat overplayed their hand. The Financial Predictor array is seeing a lot of red coming up despite their best efforts to cover it up, and that means blood will spill.""
+
+""Figuratively, of course."" A fierce smile begins to grow on Rayan's face. ""Unless... well, let's talk details.""","ttMakeDealArroyo2:Continue",
+ttMakeDealOptSelContactArroyo2,DialogOptionSelected,"$option == ttMakeDealArroyo2","SetTextHighlights ""increased accessibility""","Arroyo pulls up a shared document context and rapidly assembles a package of terms to present to his contacts at the highest levels of Tri-Tachyon: Data-sharing of certain nav charts and commodity futures projections, mutual safety protocols for trade fleets, shared field and in-dock servicing arrangements. 
+
+What it amounts to is increased accessibility for your colonies' proportional to their market size. And, in turn, proportional gains to Tri-Tachyon's trade access.
+
+""It's not exactly a cartel, but it's a good first step,"" Rayan says. ""You both gain opportunities and, of course,"" his smile returns, ""I get my percentage for arranging the deal while cutting down a few upjumped vac-heads in the executive corps. Win-win-win.""
+
+He leans back, admiring his work. ""It's a good deal, $playerName. I suggest you take it.""","ttDealConfirmArroyo:Confirm the deal
+cutCommLink:Cut the comm link",
+ttMakeDealOptSelContactArroyoConfirm,DialogOptionSelected,"$option == ttDealConfirmArroyo","HA_CMD makeTriTachDeal","""Smart move,"" he says as you upload your encrypted signature to confirm the terms.
+
+""Now I've got some calls to make. Get out of here and stay out of trouble. You can thank me when the credits start rolling in.""","cutCommLink:Cut the comm link",
+"#END TriTach",,,,,,
 "#END Post-magnetar",,,,,,
 

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.InteractionDialogPlugin
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Sounds
 import com.fs.starfarer.api.impl.campaign.rulecmd.AddRemoveCommodity
 import com.fs.starfarer.api.impl.campaign.rulecmd.SetStoryOption
@@ -20,6 +21,9 @@ class MPC_IAIICInspectionDialogPluginImpl(
     val ui: IntelUIAPI
 ): InteractionDialogPlugin {
 
+    companion object {
+        const val HOSTILE_BRIBE_MULT = 1.5f
+    }
     lateinit var dialog: InteractionDialogAPI
 
     private enum class OptionId {
@@ -49,17 +53,22 @@ class MPC_IAIICInspectionDialogPluginImpl(
     }
 
     override fun optionMousedOver(optionText: String?, optionData: Any?) {
-        TODO("Not yet implemented")
+        return
     }
 
     override fun advance(amount: Float) {
-        TODO("Not yet implemented")
+        return
     }
 
     protected fun computeBribeAmount(): Int {
         val inspectionTimes = MPC_IAIICInspectionPrepIntel.get()?.inspectionsUndergone ?: 0
+        val isHostile = intel.faction.isHostileTo(Factions.PLAYER)
+        var base = (BRIBE_REPEAT_MULT_EXP_BASE.pow(inspectionTimes) * BASE_BRIBE_VALUE).toInt()
+        if (isHostile) {
+            base = (base * HOSTILE_BRIBE_MULT).toInt()
+        }
         // no cap, you can get to INSANE numbers
-        return (BRIBE_REPEAT_MULT_EXP_BASE.pow(inspectionTimes) * BASE_BRIBE_VALUE).toInt()
+        return base
     }
 
     protected fun printOptionDesc(orders: MPC_IAIICInspectionOrders, inConfirm: Boolean) {
@@ -77,6 +86,7 @@ class MPC_IAIICInspectionDialogPluginImpl(
                     Misc.getHighlightColor(),
                     "significantly more credits", "no limit"
                 )
+                val isHostile = intel.faction.isHostileTo(Factions.PLAYER)
                 if (inConfirm) {
                     textPanel.addPara(
                         "Once this order is given and the funds and agents dispatched, it can not be " +
@@ -94,6 +104,13 @@ class MPC_IAIICInspectionDialogPluginImpl(
                         "A total of %s should be enough to get the job done.", costColor,
                         Misc.getDGSCredits(bribe.toFloat())
                     )
+                    if (isHostile) {
+                        textPanel.addPara(
+                            "Due to your less-than-stellar standing with the IAIIC, the requisite credits are increased by %s.",
+                            Misc.getHighlightColor(),
+                            "${HOSTILE_BRIBE_MULT}x"
+                        )
+                    }
                     textPanel.addPara(
                         "You have %s available.", Misc.getHighlightColor(),
                         Misc.getDGSCredits(credits.toFloat())
@@ -127,7 +144,7 @@ class MPC_IAIICInspectionDialogPluginImpl(
                             "they're able to confiscate any AI cores.")
                 )
                 textPanel.addPara(
-                    "The IAIIC will become immediately aware of this the moment you give the order (due to their advanced IntSec), but will" +
+                    "The IAIIC will become immediately aware of this the moment you give the order (due to their advanced IntSec), but will " +
                         "choose not to engage in open conflict until \"pushed to their limit\" (that is, their task force encountering resistance)."
                 )
             }
@@ -138,20 +155,23 @@ class MPC_IAIICInspectionDialogPluginImpl(
         val options = dialog.optionPanel
         options.clearOptions()
         val curr: MPC_IAIICInspectionOrders = intel.orders
+        val isHostile = intel.faction.isHostileTo(Factions.PLAYER)
         if (curr != MPC_IAIICInspectionOrders.BRIBE) {
+            if (!isHostile) {
+                options.addOption(
+                    "Order the local authorities to comply with the inspection",
+                    OptionId.COMPLY,
+                    null
+                )
+            }
             options.addOption(
-                "Order the local authorities to comply with the inspection",
-                OptionId.COMPLY,
+                "Order your local forces to resist the inspection",
+                OptionId.RESIST,
                 null
             )
             options.addOption(
                 "Allocate sufficient funds to bribe or otherwise handle the inspectors",
                 OptionId.BRIBE,
-                null
-            )
-            options.addOption(
-                "Order your local forces to resist the inspection",
-                OptionId.RESIST,
                 null
             )
             dialog.setOptionColor(OptionId.BRIBE, Misc.getStoryOptionColor())
@@ -281,8 +301,8 @@ class MPC_IAIICInspectionDialogPluginImpl(
 
     }
 
-    override fun getContext(): Any {
-        TODO("Not yet implemented")
+    override fun getContext(): Any? {
+        return null
     }
 
     override fun getMemoryMap(): MutableMap<String, MemoryAPI>? = null

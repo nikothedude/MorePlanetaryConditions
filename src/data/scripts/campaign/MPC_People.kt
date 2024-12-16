@@ -26,6 +26,8 @@ object MPC_People {
     const val IAIIC_LEADER = "MPC_IAIIC_Leader"
     const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
 
+    const val ARROW_PATHER = "MPC_arrowPather"
+
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -169,6 +171,19 @@ object MPC_People {
 
             importantPeople.addPerson(IAIICMercCommander)
             MPC_importantPeople[IAIIC_MERC_COMMANDER] = IAIICMercCommander
+        }
+
+        if (MPC_importantPeople[ARROW_PATHER] == null) {
+            val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
+
+            arrowPather.id = IAIIC_MERC_COMMANDER
+            arrowPather.rankId = Ranks.SPACE_COMMANDER
+            arrowPather.postId = Ranks.POST_SPACER
+            arrowPather.importance = PersonImportance.MEDIUM
+            arrowPather.name = FullName("Jishino", "Mentsu", FullName.Gender.MALE)
+            arrowPather.gender = FullName.Gender.MALE
+            arrowPather.voice = Voices.PATHER
+
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

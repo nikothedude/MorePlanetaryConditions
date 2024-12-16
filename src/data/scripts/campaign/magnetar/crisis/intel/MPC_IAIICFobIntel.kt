@@ -13,6 +13,7 @@ import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.NPCHassler
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
+import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
@@ -23,7 +24,9 @@ import com.fs.starfarer.api.impl.campaign.intel.events.*
 import com.fs.starfarer.api.impl.campaign.intel.group.FGBlockadeAction.FGBlockadeParams
 import com.fs.starfarer.api.impl.campaign.intel.group.FGRaidAction.FGRaidType
 import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel
+import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI
 import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI.GenericRaidParams
+import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission.FleetStyle
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
@@ -38,7 +41,6 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
-import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
@@ -50,7 +52,6 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedH
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
 import data.scripts.campaign.magnetar.crisis.intel.blockade.MPC_IAIICBlockadeFGI
 import data.scripts.campaign.magnetar.crisis.intel.bombard.MPC_IAIICBombardFGI
-import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotage
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageType
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalSupportFleetAssignmentAI
@@ -60,13 +61,14 @@ import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_mathUtils.prob
 import data.utilities.niko_MPC_settings
 import exerelin.campaign.TransponderCheckBlockScript
+import indevo.exploration.minefields.MineBeltTerrainPlugin
+import indevo.ids.Ids
 import lunalib.lunaExtensions.getKnownShipSpecs
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
 import java.awt.Color
 import java.util.*
-import kotlin.collections.HashSet
 import kotlin.math.roundToInt
 
 class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupIntel.FGIEventListener,
@@ -89,6 +91,26 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         }
 
     val support: MutableSet<MPC_fractalCrisisSupport> = HashSet()
+    var currentAction: BaseIntelPlugin? = null
+        get() {
+            if (field != null) {
+                if (field is GenericRaidFGI) {
+                    val FGI = field as GenericRaidFGI
+                    if (FGI!!.isAborted || FGI!!.isFailed || FGI!!.isSucceeded || FGI!!.isEnded || FGI!!.isEnding) {
+                        field = null
+                    }
+                }
+                if (field is RaidIntel) {
+                    val raidIntel = field as RaidIntel
+                    if (raidIntel.isFailed || raidIntel.isSucceeded || raidIntel.isEnding || raidIntel.isEnded) {
+                        field = null
+                    }
+                }
+            }
+            return field
+        }
+    /** If true, reputation can go above hostile for this frame. */
+    var acceptingPeaceOneFrame: Boolean = false
 
     fun getFactionContributionsExternal(): ArrayList<MPC_factionContribution> {
         sanitizeFactionContributions(factionContributions)
@@ -113,7 +135,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         val iterator = contributions.iterator()
         while (iterator.hasNext()) {
             val contribution = iterator.next()
-            if (!BaseHostileActivityFactor.checkFactionExists(contribution.factionId, contribution.requireMilitary)) {
+            if (!contribution.contributorExists()) {
                 contribution.onRemoved(this, true)
                 iterator.remove()
             }
@@ -160,11 +182,17 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         DECAYING(true); // after youve sued for peace, it lingers for a while
     }
 
+    enum class PeacePossibility(val canSueForPeace: Boolean) {
+        YES(true),
+        ALREADY_AT_PEACE(false),
+        HOSTILITIES_ACTIVE(false)
+    }
+
     companion object {
         const val KEY = "\$MPC_IAIICIntel"
         const val RETALIATE_COOLDOWN_DAYS = 60f
         const val PROGRESS_MAX = 1000
-        const val FP_PER_POINT = 0.8f
+        const val FP_PER_POINT = 0.1f
         const val HEGEMONY_CONTRIBUTION = 1.7f
         const val CHURCH_CONTRIBUTION = 1.2f
         /** If overall contribution reaches or falls below this, the event ends. */
@@ -267,6 +295,16 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             return Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
         }
 
+        fun getPeacePossibility(): PeacePossibility {
+            val intel = MPC_IAIICFobIntel.get()
+            if (intel != null) {
+                if (intel.currentAction != null) return PeacePossibility.HOSTILITIES_ACTIVE
+                if (intel.isHostile()) return PeacePossibility.ALREADY_AT_PEACE
+
+            }
+            return PeacePossibility.YES
+        }
+
     }
 
     private fun generateContributions(): ArrayList<MPC_factionContribution> {
@@ -301,7 +339,10 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             removeContribution = null,
             removeNextAction = true,
             requireMilitary = false,
-            repOnRemove = -40f
+            contributorExists = {
+                    Global.getSector().economy.getMarket("new_maxios")?.hasCondition(Conditions.DECIVILIZED) != true
+            },
+            repOnRemove = -15f
         )
         list += MPC_factionContribution(
             Factions.DIKTAT,
@@ -495,6 +536,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                     Misc.getNegativeHighlightColor(),
                     "major threat"
                 )
+                addBenefactorSection(info)
+                info.addPara(
+                    "Avenues of diplomacy exist outside violence; less \"motivated\" polities may be amenable to a favor or two.",
+                    0f
+                )
 
                 val targetW = 150f
                 val fobW = 80f
@@ -521,12 +567,13 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                             "The launchpad of the IAIIC into your space." +
                                     "" +
                                 "\n\nDestroying or taking over this market will unceremoniously end the IAIIC's efforts - though that's easier said than done." +
-                                "\n\nBe warned; MilSec suggests sleeper cells of IAIIC saboteurs in our space ready to %s in retaliation of any %s we take against %s.",
+                                "\n\nBe warned; MilSec suggests sleeper cells of IAIIC saboteurs in our space ready to %s in retaliation of any %s we take against %s. \n" +
+                                "Additionally, these sleeper cells may become active during raids and %s, causing %s.",
                             0f,
                             Misc.getNegativeHighlightColor(),
-                            "sabotage our colonies", "directly hostile actions", "${getFOB()?.name}"
+                            "sabotage our colonies", "directly hostile actions", "${getFOB()?.name}", "sabotage repair yards", "repairs to take time"
                         )
-                        label?.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), getFaction().baseUIColor)
+                        label?.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), getFaction().baseUIColor, Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
                     }
                 }))
                 info.makeTableItemsClickable()
@@ -549,6 +596,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             }
             addStageDesc(info, stage, small, false)
         }
+    }
+
+    private fun addBenefactorSection(info: TooltipMakerAPI) {
+        info.addPara("Probable benefactors:", 10f)
+        info.setBulletedListMode(BaseIntelPlugin.BULLET)
+        for (entry in MPC_benefactorDataStore.get().probableBenefactors) {
+            entry.addBullet(info)
+        }
+        info.setBulletedListMode(null)
     }
 
     override fun tableRowClicked(ui: IntelUIAPI, data: TableRowClickData) {
@@ -713,16 +769,18 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                 Misc.getHighlightColor(),
                 randInstance.baseName
             )
+            val oldMode = info.bulletedListPrefix
+            info.setBulletedListMode("${BaseIntelPlugin.INDENT}${oldMode}")
             for (entry in sabotageList) {
-                var baseString = "${BaseIntelPlugin.INDENT}${entry.target.name}"
+                var baseString = "${entry.target.name}"
                 var highlights: String? = null
                 if (!entry.result.isSuccess) {
                     highlights = "(${entry.result.message})"
-                    baseString += " %s"
+                    baseString += " $highlights"
                 }
 
                 val label = info.addPara(
-                    "${BaseIntelPlugin.INDENT}${entry.target.name}",
+                    baseString,
                     5f
                 )
                 if (highlights != null) {
@@ -730,6 +788,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                     label.setHighlightColors(Misc.getHighlightColor())
                 }
             }
+            info.setBulletedListMode(oldMode)
         }
         else if (data is RetaliateReason) {
             when (data) {
@@ -880,18 +939,31 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             runWhilePaused = false,
             useDays = true
         ).start() // respawn all the fleets
+        val recentUnrest: RecentUnrest = RecentUnrest.get(FOB) ?: return
+        if (recentUnrest.penalty > 1) {
+            val toStabilize = (recentUnrest.penalty - (recentUnrest.penalty - 1))
+            recentUnrest.counter(toStabilize, "Colony stabilized") // yeaaaah bitch they have the stabilize button too!!! fuck you!!!!
+        }
     }
 
     override fun advanceImpl(amount: Float) {
         super.advanceImpl(amount)
+        acceptingPeaceOneFrame = false
 
         if (sanitizeContributions) {
-            factionContributions // causes sanitization
+            sanitizeFactionContributions(factionContributions) // causes sanitization
             sanitizeContributions = false
         }
         val days = Misc.getDays(amount)
         daysLeftTilNextRetaliate = (daysLeftTilNextRetaliate - days).coerceAtLeast(0f)
         checkInterval.advance(days)
+
+        if (true) {
+            Global.getSector().removeScriptsOfClass(TransponderCheckBlockScript::class.java)
+            niko_MPC_debugUtils.log.error("NIKO FORGOT TO REMOVE THE FUCKING DEBUG REMOVAL")
+
+            getFractalColony()?.starSystem?.fleets?.filter { it.isPatrol() && it.faction.id == niko_MPC_ids.IAIIC_FAC_ID }?.forEach { it.memoryWithoutUpdate.setFlagWithReason(MemFlags.MEMORY_KEY_PATROL_ALLOW_TOFF, "player_system_owner", false, 0.1f) }
+        }
         val elapsed = checkInterval.intervalElapsed()
         // idk why i have to do this, but this is like a quantum slit bug
         // if you dont define the var, you dont observe it being true in the debugger, so it doesnt work
@@ -912,8 +984,23 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
     private fun checkPlayerRep() {
         val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
-        if (IAIIC.relToPlayer.rel >= niko_MPC_settings.MAX_IAIIC_REP) {
+        if (IAIIC.relToPlayer.rel > niko_MPC_settings.MAX_IAIIC_REP) {
             IAIIC.setRelationship(Factions.PLAYER, niko_MPC_settings.MAX_IAIIC_REP)
+        }
+    }
+
+    override fun reportPlayerReputationChange(faction: String?, delta: Float) {
+        if (faction != niko_MPC_ids.IAIIC_FAC_ID) return
+        val IAIIC = getFaction()
+        if (IAIIC.relToPlayer.rel > niko_MPC_settings.MAX_IAIIC_REP) {
+            IAIIC.setRelationship(Factions.PLAYER, niko_MPC_settings.MAX_IAIIC_REP)
+            return
+        }
+        if (acceptingPeaceOneFrame) return
+        val oldRep = IAIIC.relToPlayer.rel - delta
+        val oldRepLevel = RepLevel.getLevelFor(oldRep)
+        if (oldRepLevel.ordinal <= RepLevel.HOSTILE.ordinal) {
+            IAIIC.setRelationship(Factions.PLAYER, -0.5f)
         }
     }
 
@@ -988,19 +1075,46 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         } else {
             val params = DebrisFieldParams(
                 500f,
-                30f,
+                3.2f,
                 90f,
                 0f
             )
             val containingLoc = fob?.containingLocation
             val fobEntity = fob?.primaryEntity
             DecivTracker.decivilize(fob, false,  false)
+            //fob?.removeRadioChatter()
+
+            //remove junk
             if (containingLoc != null && fobEntity != null) {
+                for (entity in containingLoc.customEntities.toList()) {
+                    if (entity.orbitFocus != fobEntity) continue
+                    containingLoc.removeEntity(entity)
+                }
                 val field = containingLoc.addDebrisField(params, MathUtils.getRandom())
                 val token = containingLoc.createToken(fobEntity.location)
                 token.orbit = fobEntity.orbit.makeCopy()
                 field.setCircularOrbit(token, 0f, 0f, 100f)
                 fobEntity.fadeAndExpire(1f)
+                if (niko_MPC_settings.indEvoEnabled) {
+                    fob.removeCondition(Ids.COND_MINERING)
+                    var minefield: MineBeltTerrainPlugin? = null
+                    for (terrain in containingLoc.terrainCopy) {
+                        if (terrain.plugin is MineBeltTerrainPlugin) {
+                            val localField = terrain.plugin as MineBeltTerrainPlugin
+                            if (!localField.primary.id.contains("MPC_arkFOB")) continue
+                            minefield = localField
+                            break
+                        }
+                    }
+                    if (minefield != null) {
+                        containingLoc.removeEntity(minefield.entity)
+                        for (mine in containingLoc.customEntities.filter { it.customEntityType == "IndEvo_mine" }) {
+                            if (mine.orbitFocus == minefield.entity) {
+                                containingLoc.removeEntity(mine)
+                            }
+                        }
+                    }
+                }
             }
         }
         killIAIIC()
@@ -1009,10 +1123,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             Global.getSector().intelManager.removeIntel(it)
         }
         support.clear()
+        Global.getSector().intelManager.removeIntel(this)
+        Global.getSector().memoryWithoutUpdate[KEY] = null
+        MPC_IAIICInspectionPrepIntel.get()?.end()
+        currentAction?.endImmediately()
+        endImmediately()
     }
 
     private fun beginHumanitarianAction() {
-        TODO("Not yet implemented")
+        return
     }
 
     private fun beginCoreUpgrade() {
@@ -1030,12 +1149,6 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             val evacLoc = getEvacLoc(targetColony) ?: return fleet.despawn()
             fleet.clearAssignments()
             fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, evacLoc.primaryEntity, Float.MAX_VALUE, "returning to ${evacLoc.name}")
-        }
-
-        for (fleet in MPC_fractalCrisisHelpers.getAssistanceFleets()) {
-            val despawnLoc = fleet.getSourceMarket()?.primaryEntity ?: Global.getSector().economy.marketsCopy.randomOrNull()?.primaryEntity ?: continue
-            fleet.clearAssignments()
-            fleet.addAssignment(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, despawnLoc, Float.MAX_VALUE, "returning to ${despawnLoc.name}")
         }
     }
 
@@ -1073,6 +1186,10 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         val fleet = FleetFactoryV3.createFleet(params)
         fleet.name = "Evacuation Fleet"
+        fob.containingLocation.addEntity(fleet)
+        fleet.containingLocation = fob.containingLocation
+        fleet.setLocation(fob.primaryEntity.location.x, fob.primaryEntity.location.y)
+        fleet.facing = MathUtils.getRandomNumberInRange(0f, 360f)
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
         fleet.memoryWithoutUpdate["\$MPC_evacFleet"] = true
@@ -1084,14 +1201,18 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         for (market in Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).getMarketsCopy()) {
             market.factionId = Factions.INDEPENDENT
         }
+        getFaction().isShowInIntelTab = false
     }
 
     // you cannot overflow in this intel
     override fun setProgress(progress: Int) {
-        var lowestReachableProgress = 0
+        var lowestReachableProgress = Int.MAX_VALUE
+        val diff = (progress - this.progress)
+        if (diff > 0 && currentAction != null) return
         for (stage in stages) {
+            if (stage.id == Stage.START) continue
             if (stage.wasEverReached) continue
-            if (stage.progress > lowestReachableProgress) lowestReachableProgress = stage.progress
+            if (stage.progress < lowestReachableProgress) lowestReachableProgress = stage.progress
         }
         super.setProgress(progress.coerceAtMost(lowestReachableProgress))
     }
@@ -1115,6 +1236,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         params.raidParams.bombardment = MarketCMD.BombardType.TACTICAL
         params.raidParams.allowAnyHostileMarket = true
         params.raidParams.type = if (prob(50, random)) FGRaidType.SEQUENTIAL else FGRaidType.CONCURRENT // sequential or concurrent? not sure
+        params.noun = "Bombardment"
+        params.raidParams.raidsPerColony = 1
         //params.raidParams.allowNonHostileTargets = true
         params.raidParams.allowedTargets.addAll(validTargets)
 
@@ -1126,11 +1249,9 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
         var totalDifficulty = (fleetSizeMult * 22f * (1f * f))
 
-        params.fleetSizes.add(10)
-
         while (totalDifficulty > 0) {
-            val min = 7
-            val max = 10
+            val min = 13
+            val max = 15
 
             //int diff = Math.round(StarSystemGenerator.getNormalRandom(random, min, max));
             val diff = min + random.nextInt(max - min + 1)
@@ -1141,6 +1262,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         val bombardFGI = MPC_IAIICBombardFGI(params)
         bombardFGI.listener = this
         Global.getSector().intelManager.addIntel(bombardFGI)
+        currentAction = bombardFGI
     }
 
     fun startBlockade() {
@@ -1186,6 +1308,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         val blockade = MPC_IAIICBlockadeFGI(params, bParams)
         blockade.listener = this
         Global.getSector().intelManager.addIntel(blockade)
+        currentAction = blockade
     }
 
     // LISTENER CRAP
@@ -1221,6 +1344,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
     }
 
     private fun checkBattleForFactors(primaryWinner: CampaignFleetAPI, battle: BattleAPI) {
+        if (currentAction != null) return
+
         val playerFleet = Global.getSector().playerFleet
         val playerLoc = playerFleet.starSystem ?: return
         val fractalSystem = getFractalColony()?.starSystem ?: return
@@ -1271,11 +1396,6 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         if (source.faction.id != niko_MPC_ids.IAIIC_FAC_ID) return
         if (!fleet.isPatrol()) return
 
-        if (true) {
-            Global.getSector().removeScriptsOfClass(TransponderCheckBlockScript::class.java)
-            niko_MPC_debugUtils.log.error("NIKO FORGOT TO REMOVE THE FUCKING DEBUG REMOVAL")
-        }
-
         fleet.addScript(NPCHassler(fleet, source.starSystem))
         fleet.memoryWithoutUpdate["\$nex_ignoreTransponderBlockCheck"] = true
 
@@ -1295,10 +1415,6 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
     }
 
     override fun reportShownInteractionDialog(dialog: InteractionDialogAPI?) {
-        return
-    }
-
-    override fun reportPlayerReputationChange(faction: String?, delta: Float) {
         return
     }
 
@@ -1389,3 +1505,4 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
     }
 
 }
+

@@ -1,8 +1,9 @@
 package data.scripts.campaign.magnetar.crisis
 
 import exerelin.campaign.intel.groundbattle.plugins.BaseGroundBattlePlugin
+import exerelin.campaign.intel.groundbattle.plugins.MarketConditionPlugin
 
-class MPC_FOBConditionNexEffect: BaseGroundBattlePlugin() {
+class MPC_FOBConditionNexEffect: MarketConditionPlugin() {
 
     companion object {
         const val id = "MPC_FOBConditionNexEffect"

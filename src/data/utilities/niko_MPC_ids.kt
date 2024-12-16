@@ -2,6 +2,9 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val PATHER_SECT_NAME = "\$MPC_sectName"
+    const val IAIIC_INSPECTION_FLEET = "\$MPC_IAIICInspectionFleet"
+    const val DELAYED_REPAIR_TIME_ID = "\$MPC_delayedRepairTime"
     const val OFF_DUTY = "\$MPC_offDuty"
     const val FRACTAL_CRISIS_ASSISTANCE_FLEET = "\$MPC_fractalCrisisAssistanceFleet"
     const val IAIIC_CRISIS_ASSISTANCE_FLEETS = "\$MPC_IAIICCrisisAssistanceFleets"

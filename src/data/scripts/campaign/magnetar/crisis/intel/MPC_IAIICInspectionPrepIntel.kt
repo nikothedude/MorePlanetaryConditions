@@ -2,6 +2,7 @@ package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.StarSystemAPI
+import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
@@ -117,7 +118,7 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
     fun getPreparingState(): PreparingStates {
         if (activeInspection != null) return PreparingStates.INSPECTION_UNDERWAY
         val fractalSystem = getTargetSystem() ?: return PreparingStates.NO_TARGET
-        if (getAICores(fractalSystem).values.all { it.isEmpty() }) return PreparingStates.NO_CORES
+        if (getAICores(fractalSystem).values.all { it.isEmpty() }) return PreparingStates.NO_CORES // cant happen but might as well include
 
         return PreparingStates.PREPARING
     }
@@ -177,7 +178,8 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
                 val target = getNewTargetColony() ?: return
                 val FOB = MPC_IAIICFobIntel.getFOB() ?: return
 
-                MPC_IAIICInspectionIntel(FOB, target, BASE_INSPECTION_FP)
+                activeInspection = MPC_IAIICInspectionIntel(FOB, target, BASE_INSPECTION_FP)
+                setProgress(0) // reset!
             }
         }
     }
@@ -241,5 +243,24 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
         tags.add(Tags.INTEL_COLONIES)
         tags.add(niko_MPC_ids.IAIIC_FAC_ID)
         return tags
+    }
+
+    override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
+        if (!isUpdate) return
+        val data = getListInfoParam()
+        if (data is EventStageData) {
+            info?.addPara(
+                "Stage reached: %s",
+                0f,
+                Misc.getHighlightColor(),
+                (data.id as Stage).stageName
+            )
+        }
+    }
+
+    fun end() {
+        activeInspection?.endImmediately()
+        Global.getSector().intelManager.removeIntel(this)
+        Global.getSector().memoryWithoutUpdate[KEY] = null
     }
 }

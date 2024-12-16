@@ -14,11 +14,12 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
     companion object {
         const val NON_HOSTILE_PROGRESS_MULT = 0.25f
 
-        const val BASE_PROGRESS = 60f
-        const val MIN_PROGRESS = 5f
+        const val BASE_PROGRESS = 30f
+        const val MIN_PROGRESS = 1f
     }
 
     override fun getProgress(intel: BaseEventIntel?): Int {
+        if (MPC_IAIICFobIntel.get()?.currentAction != null) return 0
         var progress = BASE_PROGRESS
 
         val IAIICStrength = MPC_IAIICFobIntel.getIAIICStrengthInSystem()
@@ -45,6 +46,13 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
                     Misc.getHighlightColor(),
                     ("${(MPC_IAIICFobIntel.getIAIICStrengthInSystem() * 100f).toInt()}%")
                 )
+                if (MPC_IAIICFobIntel.get()?.currentAction != null) {
+                    tooltip.addPara(
+                        "Progress is paused while a hostile action is on-going.",
+                        5f
+                    )
+                    return
+                }
                 tooltip.addPara(
                     "Progress can never fall below %s.",
                     5f,

@@ -5,5 +5,6 @@ enum class MPC_IAIICInspectionOutcomes {
     CONFISCATE_CORES,
     INVESTIGATION_DISRUPTED,
     FOUND_EVIDENCE_NO_CORES,
-    DEFEATED;
+    DEFEATED,
+    BRIBED;
 }

@@ -36,9 +36,9 @@
    
   ],
   "wings": [
-    "MPC_pickheadWing",
-	"MPC_pickheadWing",
-	"MPC_minecartWing",
-	"MPC_minecartWing"
+    "MPC_pickhead_wing",
+	"MPC_pickhead_wing",
+	"MPC_minecart_wing",
+	"MPC_minecart_wing"
   ]
 }

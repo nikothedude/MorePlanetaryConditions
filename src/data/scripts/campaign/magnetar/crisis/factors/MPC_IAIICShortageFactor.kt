@@ -6,6 +6,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import java.awt.Color
 import kotlin.math.ceil
 import kotlin.math.roundToInt
@@ -28,6 +29,13 @@ class MPC_IAIICShortageFactor: BaseEventFactor() {
                         "benefactors may begin having second thoughts.",
                     0f
                 )
+                if (MPC_IAIICFobIntel.get()?.currentAction != null) {
+                    tooltip.addPara(
+                        "Progress is paused while a hostile action is on-going.",
+                        5f
+                    )
+                    return
+                }
                 tooltip.addPara(
                     "Shortages can be caused by %s, %s, or %s. Note that the ${MPC_fractalCoreFactor.getFOB()?.name} has stockpiles, " +
                         "so it may be difficult to cause a shortage.",
@@ -40,6 +48,8 @@ class MPC_IAIICShortageFactor: BaseEventFactor() {
     }
 
     override fun getProgress(intel: BaseEventIntel?): Int {
+        if (MPC_IAIICFobIntel.get()?.currentAction != null) return 0
+
         return ceil((getShortagePoints() * SHORTAGE_TO_PROGRESS_MULT).toDouble()).toInt()
     }
 

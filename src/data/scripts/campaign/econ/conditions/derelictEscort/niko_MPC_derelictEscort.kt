@@ -366,6 +366,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.facing = facingToUse
 
         setupEscortFleet(fleet, target, faction)
+        fleet.memoryWithoutUpdate.set(MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS, true, 3f)
         return fleet
     }
 

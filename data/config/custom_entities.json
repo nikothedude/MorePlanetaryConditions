@@ -305,9 +305,12 @@
 	},
 
 	"MPC_IAIICFOB": {
-		"baseId":"station_lowtech3",
+		"baseId":"station_hightech3",
 		"defaultName":"Military FOB",
 		"customDescriptionId":"MPC_IAIICFOB",
+
+		"spriteWidth":180,
+		"spriteHeight":185
 	},
 
 	"MPC_singularityGuardStation":{

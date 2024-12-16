@@ -1,8 +1,8 @@
 {
 	"conditions":{
 		"MPC_FOB":{
-			"desc":"Defensive emplacements litter the interior, reducing damage taken by all troops by 65%. Troops holding an industry receive an additional 25% damage taken reduction.",
-			"highlights":["reducing damage taken", "75%"],
+			"desc":"Defensive emplacements litter the interior, reducing damage taken by all troops by 65%.",
+			"highlights":["reducing damage taken", "65%"],
 			"color":[155,139,134,255],
 			"plugin":"data.scripts.campaign.magnetar.crisis.MPC_FOBConditionNexEffect",
 			

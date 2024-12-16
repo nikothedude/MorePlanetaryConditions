@@ -15,6 +15,7 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.Spaceport
 import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.util.Pair
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
@@ -31,8 +32,8 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeHandlerMemoryId
 import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
+import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
-import org.selkie.kol.helpers.MarketHelpers
 
 object niko_MPC_marketUtils {
 
@@ -526,5 +527,16 @@ object niko_MPC_marketUtils {
             }
         }
         return person
+    }
+
+    fun MarketCMD.doIndustrialBombardment(faction: FactionAPI, market: MarketAPI) {
+        doBombardment(faction, MarketCMD.BombardType.TACTICAL)
+        market.industries.forEach {
+            if (it.spec.hasTag(Industries.TAG_HEAVYINDUSTRY)) {
+                var dur = MarketCMD.getBombardDisruptDuration()
+                dur *= StarSystemGenerator.getNormalRandom(MathUtils.getRandom(), 1f, 1.25f).toInt()
+                it.setDisrupted(dur.toFloat())
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobInvasionListener
+import data.scripts.campaign.magnetar.crisis.intel.MPC_luddicContributionIntel.Companion.SECT_NAME
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -171,6 +172,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         super.onGameLoad(newGame)
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.OMAN_BOMBARD_COST_ID] = niko_MPC_settings.OMAN_BOMBARD_COST
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DELAYED_REPAIR_TIME_ID] = niko_MPC_settings.DELAYED_REPAIR_TIME
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PATHER_SECT_NAME] = SECT_NAME
 
         MPC_compatabilityUtils.run(currVersion)
 

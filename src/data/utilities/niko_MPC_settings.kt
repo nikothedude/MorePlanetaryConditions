@@ -19,8 +19,9 @@ import java.io.IOException
 object niko_MPC_settings {
 
     var MAGNETAR_DISABLED = false
-    const val MAX_IAIIC_REP = 0.24f
+    const val MAX_IAIIC_REP = -0.24f
     const val OMAN_BOMBARD_COST = 200
+    const val DELAYED_REPAIR_TIME = 1f
     /** If true, fleets in the magnetar system can drop omega weapons. */
     var MAGNETAR_DROP_OMEGA_WEAPONS = false
 

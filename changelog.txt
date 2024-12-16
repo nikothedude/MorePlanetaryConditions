@@ -1,21 +1,6 @@
 5.0.0
 NOT SAVE COMPATIBLE
 
-The abyss is a no-mans land. Noone enters, noone leaves. Except the insane.
-   What would happen
-
- If we found something?   What if we looked inside?
-   And what would happen
-     If
-        It
-            Stared
-                    Back
-
-Added a new secret to the abyss
-    A long lost expedition
-    A terrifying secret
-    A horrible betrayal
-
 Magnetar guardian now has rift torps
     You asked for this
 Magnetar guard fleets now ignore your comms
@@ -25,7 +10,11 @@ Certain dialog options now adjust your ethos
 
 The world now reacts to your exploration in the magnetar system
     The hegemony will get angry if you use a fractal core in a colony
-    The diktat is very interested in your ionized pulse
+        This triggers a end-game crisis, so be ready
+
+Spearhead health and speed buffed
+
+Minecart/Pickhead buffed
 
 4.0.0
 NOT SAVE COMPATIBLE

@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.ReputationActionResponsePlugin.ReputationAdjustmentResult
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
@@ -8,8 +9,12 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.fleets.RouteLocationCalculator
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.intel.inspection.*
+import com.fs.starfarer.api.impl.campaign.intel.inspection.HIAssembleStage
+import com.fs.starfarer.api.impl.campaign.intel.inspection.HIOrganizeStage
+import com.fs.starfarer.api.impl.campaign.intel.inspection.HIReturnStage
+import com.fs.starfarer.api.impl.campaign.intel.inspection.HITravelStage
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel.RaidDelegate
 import com.fs.starfarer.api.ui.Alignment
@@ -21,6 +26,7 @@ import data.scripts.campaign.magnetar.crisis.intel.inspectionStages.MPC_IAIICIns
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.input.Keyboard
+import org.lwjgl.util.vector.Vector2f
 import java.util.*
 
 class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val inspectionFP: Float): RaidIntel(target.starSystem, from.faction, null), RaidDelegate {
@@ -39,7 +45,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         val ENTERED_SYSTEM_UPDATE = Any()
         val OUTCOME_UPDATE = Any()
         val BUTTON_CHANGE_ORDERS: Any = Any()
-        const val BASE_BRIBE_VALUE = 400000
+        const val BASE_BRIBE_VALUE = 1000000
         const val BRIBE_REPEAT_MULT_EXP_BASE = 4f // it REALLY starts to take off
 
         fun getAICores(target: MarketAPI): MutableList<String> {
@@ -128,6 +134,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         isImportant = true
 
         Global.getSector().intelManager.addIntel(this)
+        MPC_IAIICFobIntel.get()?.currentAction = this
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI, width: Float, height: Float) {
@@ -186,6 +193,12 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                     pf.displayNameWithArticleWithoutArticle
                 )
                 label.setHighlightColors(faction.baseUIColor, pf.baseUIColor)
+                if (orders == MPC_IAIICInspectionOrders.BRIBE) {
+                    info.addPara(
+                        "Luckily, your allocated funds should still ensure a satisfactory outcome all-round.",
+                        opad
+                    )
+                }
             } else {
                 when (orders) {
                     MPC_IAIICInspectionOrders.COMPLY -> info.addPara(
@@ -207,19 +220,19 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                         opad
                     )*/
                 }
-                if (!enteredSystem) {
-                    val button = info.addButton(
-                        "Change orders", BUTTON_CHANGE_ORDERS,
-                        pf.baseUIColor, pf.darkUIColor,
-                        (width).toInt().toFloat(), 20f, opad * 2f
-                    )
-                    button.setShortcut(Keyboard.KEY_T, true)
-                } else {
-                    info.addPara(
-                        "The inspection task force is active and there's no time to implement new orders.",
-                        opad
-                    )
-                }
+            }
+            if (!enteredSystem) {
+                val button = info.addButton(
+                    "Change orders", BUTTON_CHANGE_ORDERS,
+                    pf.baseUIColor, pf.darkUIColor,
+                    (width).toInt().toFloat(), 20f, opad * 2f
+                )
+                button.setShortcut(Keyboard.KEY_T, true)
+            } else {
+                info.addPara(
+                    "The inspection task force is active and there's no time to implement new orders.",
+                    opad
+                )
             }
         } else {
             //addBulletPoints(info, ListInfoMode.IN_DESC);
@@ -255,6 +268,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
 
     fun sendOutcomeUpdate() {
         sendUpdateIfPlayerHasIntel(OUTCOME_UPDATE, false)
+        MPC_IAIICInspectionPrepIntel.get()?.inspectionEnded(this)
     }
 
     fun applyRepPenalty(delta: Float) {
@@ -289,7 +303,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         bullet(info)
         val isUpdate = getListInfoParam() != null
         val hostile = getFaction().isHostileTo(Factions.PLAYER)
-        if (hostile) {
+        if (hostile && orders != MPC_IAIICInspectionOrders.BRIBE) { // bribes ALWAYS work
             orders = MPC_IAIICInspectionOrders.RESIST
         }
         if (getListInfoParam() == MADE_HOSTILE_UPDATE) {
@@ -339,6 +353,10 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                 )
                 //info.addPara("Operations disrupted by inspection", initPad, h, "" + num);
             } else if (outcome == MPC_IAIICInspectionOutcomes.CONFISCATE_CORES) {
+            } else if (outcome == MPC_IAIICInspectionOutcomes.DEFEATED) {
+                info.addPara(
+                    "Inspection defeated", initPad
+                )
             }
             initPad = 0f
             if (repResult != null) {
@@ -374,6 +392,9 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             initPad = 0f
             if (hostile || orders == MPC_IAIICInspectionOrders.RESIST) {
                 info.addPara("Defenders will resist", tc, initPad)
+                if (orders == MPC_IAIICInspectionOrders.BRIBE) {
+                    info.addPara("Inspectors bribed", tc, 0f)
+                }
             } else if (orders == MPC_IAIICInspectionOrders.COMPLY) {
                 info.addPara("Defenders will comply", tc, initPad)
                 /*} else if (orders == MPC_IAIICInspectionOrders.HIDE_CORES) {
@@ -399,10 +420,30 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
         }
     }
 
+    override fun sendUpdateIfPlayerHasIntel(listInfoParam: Any, onlyIfImportant: Boolean, sendIfHidden: Boolean) {
+        if (listInfoParam === UPDATE_RETURNING) {
+            // we're using sendOutcomeUpdate() to send an end-of-event update instead
+            return
+        }
+        super.sendUpdateIfPlayerHasIntel(listInfoParam, onlyIfImportant, sendIfHidden)
+    }
+
     override fun buttonPressConfirmed(buttonId: Any?, ui: IntelUIAPI?) {
         if (buttonId == BUTTON_CHANGE_ORDERS) {
             ui!!.showDialog(null, MPC_IAIICInspectionDialogPluginImpl(this, ui))
         }
+    }
+
+    override fun createFleet(
+        factionId: String?,
+        route: RouteManager.RouteData?,
+        market: MarketAPI?,
+        locInHyper: Vector2f?,
+        random: Random?
+    ): CampaignFleetAPI? {
+        val fleet = super.createFleet(factionId, route, market, locInHyper, random) ?: return null
+        fleet.memoryWithoutUpdate[niko_MPC_ids.IAIIC_INSPECTION_FLEET] = true
+        return fleet
     }
 
 }

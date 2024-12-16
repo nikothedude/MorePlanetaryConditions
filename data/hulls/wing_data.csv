@@ -1,6 +1,6 @@
 id,variant,tags,tier,rarity,fleet pts,op cost,formation,range,attackRunRange,attackPositionOffset,num,role,role desc,refit,base value,,,,,,,,,,,,,number
-MPC_pickheadWing,MPC_pickhead_Interceptor,"no_sell, interceptor, MPC_derelict, interceptor4, auto_fighter, merc, hist1t",2,,3,3,CLAW,3000,200,700,6,INTERCEPTOR,Mining Drone,5,10000,,,,,,,,,,,,,500
-MPC_minecartWing,MPC_minecart_Shuttle,"no_sell, interceptor, MPC_derelict, fighter3, auto_fighter, merc, hist1t",2,,4,4,BOX,2000,300,700,2,FIGHTER,Cargo Drone,8,10000,,,,,,,,,,,,,500
+MPC_pickhead_wing,MPC_pickhead_Interceptor,"no_sell, interceptor, MPC_derelict, interceptor4, auto_fighter, merc, hist1t",2,,3,2,CLAW,4000,200,700,6,INTERCEPTOR,Mining Drone,3,10000,,,,,,,,,,,,,500
+MPC_minecart_wing,MPC_minecart_Shuttle,"no_sell, interceptor, MPC_derelict, fighter3, auto_fighter, merc, hist1t",2,,4,4,BOX,2000,300,700,2,FIGHTER,Cargo Drone,8,10000,,,,,,,,,,,,,500
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,31
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,32
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,33

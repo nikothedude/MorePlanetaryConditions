@@ -3,6 +3,7 @@ package data.scripts.campaign.magnetar.crisis.contribution
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_ids
 
@@ -14,6 +15,7 @@ data class MPC_factionContribution(
     val removeContribution: ((IAIIC: FactionAPI) -> Unit)?,
     val removeNextAction: Boolean = false,
     val requireMilitary: Boolean = false,
+    val contributorExists: (() -> Boolean) = ({ !BaseHostileActivityFactor.checkFactionExists(factionId, requireMilitary) }),
     val repOnRemove: Float? = null,
     val baseMarketEmbargoValue: Float = 1f
 ) {
