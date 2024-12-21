@@ -6,11 +6,9 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
-import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import data.utilities.niko_MPC_ids
-import org.magiclib.kotlin.getNumEliteSkills
 
 object MPC_People {
     const val KANTA_GOON_ONE = "MPC_kanta_goon_one"
@@ -27,6 +25,13 @@ object MPC_People {
     const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
 
     const val ARROW_PATHER = "MPC_arrowPather"
+
+    const val DONN_PIRATE = "MPC_donnPirate"
+
+    const val ARRESTING_KNIGHT_OFFICER = "MPC_arrestingKnightOfficer"
+
+    const val TRITACH_BRUISER_ONE = "MPC_triTachBruiserOne"
+    const val TRITACH_BRUISER_TWO = "MPC_triTachBruiserTwo"
 
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
@@ -176,14 +181,71 @@ object MPC_People {
         if (MPC_importantPeople[ARROW_PATHER] == null) {
             val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
 
-            arrowPather.id = IAIIC_MERC_COMMANDER
-            arrowPather.rankId = Ranks.SPACE_COMMANDER
-            arrowPather.postId = Ranks.POST_SPACER
+            arrowPather.id = ARROW_PATHER
+            arrowPather.rankId = Ranks.CITIZEN
+            arrowPather.postId = Ranks.CITIZEN
             arrowPather.importance = PersonImportance.MEDIUM
-            arrowPather.name = FullName("Jishino", "Mentsu", FullName.Gender.MALE)
             arrowPather.gender = FullName.Gender.MALE
             arrowPather.voice = Voices.PATHER
 
+            importantPeople.addPerson(arrowPather)
+            MPC_importantPeople[ARROW_PATHER] = arrowPather
+        }
+
+        if (MPC_importantPeople[DONN_PIRATE] == null) {
+            val pirate = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson()
+
+            pirate.id = DONN_PIRATE
+            pirate.rankId = Ranks.SPACE_COMMANDER
+            pirate.postId = Ranks.POST_SPACER
+            pirate.importance = PersonImportance.HIGH
+            pirate.voice = Voices.VILLAIN
+
+            importantPeople.addPerson(pirate)
+            MPC_importantPeople[DONN_PIRATE] = pirate
+        }
+
+        if (MPC_importantPeople[ARRESTING_KNIGHT_OFFICER] == null) {
+            val knight = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(FullName.Gender.MALE)
+
+            knight.id = ARRESTING_KNIGHT_OFFICER
+            knight.rankId = Ranks.KNIGHT_CAPTAIN
+            knight.postId = Ranks.POST_BASE_COMMANDER
+            knight.importance = PersonImportance.HIGH
+            knight.voice = Voices.SOLDIER
+            knight.name = FullName("Jefferson", "Kelk", FullName.Gender.MALE)
+            knight.gender = FullName.Gender.MALE
+
+            importantPeople.addPerson(knight)
+            MPC_importantPeople[ARRESTING_KNIGHT_OFFICER] = knight
+        }
+
+        if (MPC_importantPeople[TRITACH_BRUISER_ONE] == null) {
+            val bruiserOne = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(FullName.Gender.MALE)
+
+            bruiserOne.id = TRITACH_BRUISER_ONE
+            bruiserOne.rankId = Ranks.AGENT
+            bruiserOne.rankId = Ranks.POST_AGENT
+
+            bruiserOne.importance = PersonImportance.MEDIUM
+            bruiserOne.voice = Voices.SOLDIER
+
+            importantPeople.addPerson(bruiserOne)
+            MPC_importantPeople[TRITACH_BRUISER_ONE] = bruiserOne
+        }
+
+        if (MPC_importantPeople[TRITACH_BRUISER_TWO] == null) {
+            val bruiserTwo = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(FullName.Gender.MALE)
+
+            bruiserTwo.id = TRITACH_BRUISER_TWO
+            bruiserTwo.rankId = Ranks.AGENT
+            bruiserTwo.rankId = Ranks.POST_AGENT
+
+            bruiserTwo.importance = PersonImportance.MEDIUM
+            bruiserTwo.voice = Voices.SOLDIER
+
+            importantPeople.addPerson(bruiserTwo)
+            MPC_importantPeople[TRITACH_BRUISER_TWO] = bruiserTwo
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

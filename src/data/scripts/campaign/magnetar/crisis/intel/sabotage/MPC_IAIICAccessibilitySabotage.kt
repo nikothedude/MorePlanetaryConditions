@@ -10,7 +10,7 @@ class MPC_IAIICAccessibilitySabotage(market: MarketAPI, params: MPC_IAIICSabotag
     companion object {
         const val BASE_ACCESSIBILITY_MALUS = -0.2f
         const val MIN_PERCENT_OF_COLONIES = 0.33f
-        const val MAX_COLONIES = 3f
+        const val MAX_COLONIES = 5f
         const val BASE_TIME_DAYS = 65f
         const val TIME_VARIATION = 14f
     }

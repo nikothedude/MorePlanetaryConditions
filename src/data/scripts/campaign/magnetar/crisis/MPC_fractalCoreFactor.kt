@@ -70,10 +70,14 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         }
 
         fun MarketAPI.addSpecialItems() {
+            industries.forEach { it.aiCoreId = Commodities.BETA_CORE }
+
             getIndustry(Industries.HIGHCOMMAND)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.STARFORTRESS_HIGH)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
-            getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
+            getIndustry("IndEvo_embassy")?.aiCoreId = Commodities.GAMMA_CORE
+            getIndustry("IndEvo_Ambassy")?.aiCoreId = Commodities.GAMMA_CORE
+            //getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
             getIndustry(Industries.ORBITALWORKS)?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)

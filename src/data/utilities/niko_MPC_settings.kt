@@ -18,6 +18,7 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    const val ARRAY_SCAN_TIME = 4f
     var MAGNETAR_DISABLED = false
     const val MAX_IAIIC_REP = -0.24f
     const val OMAN_BOMBARD_COST = 200

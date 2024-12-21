@@ -43,11 +43,13 @@
 		},
 		"hulls":{
 			"invictus":0.2,
+			"onslaught":0.6,
 			"hyperion":0.25,
 			"scarab":0.25,
 			"monitor":0.25,
 			"tempest":0.5,
 			"aurora":0.5,
+			"paragon":0.5
 		},
 	},
 	# ships the faction gets access to when importing S&W out-of-faction

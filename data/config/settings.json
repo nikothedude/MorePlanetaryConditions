@@ -50,6 +50,11 @@
 		"niko_MPC_ecmOptionModThreshTwo":0,
 		"niko_MPC_ecmOptionModThreshThree":0,
 		"niko_MPC_ecmOptionModThreshFour":0,
+		
+		"MPC_pressAboutBM":1,
+		"MPC_seeBMContact":0,
+		"MPC_getDownPayment":0,
+		"MPC_suicide":0,
 	},
 
 	 "designTypeColors":{

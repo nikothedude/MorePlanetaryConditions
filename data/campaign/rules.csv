@@ -25,7 +25,8 @@ niko_MPC_entityHasSatellites
 $market.isPlanetConditionMarketOnly","FireBest OpenInteractionDialog","The satellites in orbit of $entityName are currently protected by the artillery station, which you will have to engage first.",,
 ,,,,,,
 # Satellites Blocking Access,,,,,,
-niko_MPC_genericSatelliteBlock,niko_MPC_satellitesBlockingAccess,,"FireAll niko_MPC_satellitesBlocking_PopulateOptions
+niko_MPC_genericSatelliteBlock,niko_MPC_satellitesBlockingAccess,,"ShowDefaultVisual
+FireAll niko_MPC_satellitesBlocking_PopulateOptions
 FireBest niko_MPC_satellitesBlockingText",,,
 ,,,,,,
 # Populating Options,,,,,,
@@ -1215,7 +1216,7 @@ SetTextHighlights $global.repairSupplyCost","Unfortunately, your $shipOrFleet la
 "#END Delayed Repair",,,,,,
 ,,,,,,
 # Pather Initial bar Event,,,,,,
-MPC_IAIICCLRPBarTwo,AddBarEvents,"MPC_IAIICPatherCMD canCreateSecondBarEvent","AddBarEvent MPC_IAIICLPBarEventTwo ""Slide into the well-dressed pather's booth"" ""TODO."" highlight",,,
+MPC_IAIICLPBarIntro,CreateBarEvent,"MPC_IAIICPatherCMD canCreateFirstBarEvent","AddBarEvent MPC_IAIICLPBarIntroEvent ""Meet the IntSec officer in their booth"" ""TODO."" highlight",,,
 MPC_IAIICLPBarIntroEvent,DialogOptionSelected,"$option == MPC_IAIICLPBarIntroEvent","BeginConversation MPC_playerFacIntsecSquadChief
 SetTextHighlights ""We've got something""","$HeOrShe greets you with the cordiality you've come to expect from your subordinates - that is, buying you a cheap drink, of course. ""$PlayerSirOrMadam,"" $heOrShe starts, as you sip on your brandy. ""You're aware of the... forces, in our system, right?"" $HisOrHer expression pains, understanding just how hard IntSec - and by extension, $heOrShe - dropped the ball this time. ""Well-"" $heOrShe swallows $hisOrHer professional guilt with a shot of rather unprofessional alcohol. ""We've got something.""","0:MPC_IAIICLPBarIntroEventTwo:Continue",
 MPC_IAIICLPBarIntroEventTwo,DialogOptionSelected,"$option == MPC_IAIICLPBarIntroEventTwo","SetTextHighlights ""path"" ""minimum"" ""figured out how to contact them"" ""Luddic Path bars""
@@ -1234,11 +1235,13 @@ BarCMD playAmbience","""Of course, Commander."" $HeOrShe offers a quick salute, 
 "#END Pather Initial bar Event",,,,,,
 ,,,,,,
 "# Meet pather at pather bar, discuss terms",,,,,,
-NEW RULE,,,,,,
+MPC_IAIICCLRPBarTwo,AddBarEvents,"MPC_IAIICPatherCMD canCreateSecondBarEvent","AddBarEvent MPC_IAIICLPBarEventTwo ""Slide into the well-dressed pather's booth"" ""TODO."" highlight",,,
 "#END Meet pather at pather bar, discuss terms",,,,,,
 ,,,,,,
 # TriTach,,,,,,
-MPC_IAIICTTOptNotContact,,"$isPerson
+,,,,,,
+"# Go to contact, ask about IAIIC",,,,,,
+MPC_IAIICTTOptNotContact,PopulateOptions,"$isPerson
 $personFaction.id == tritachyon
 Commission personCanGiveCommission
 MPC_IAIICTriTachCMD canDoOptions
@@ -1256,107 +1259,712 @@ $personFaction.id == tritachyon
 
 MPC_IAIICTriTachCMD canDoOptions
 
-$isContact
 $id == arroyo",,,"MPC_IAIICTTMakeDeal:""Do you happen to know anything about the IAIIC, Rayan?""",
 MPC_IAIICTTOptSelNoContact,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 !$isContact score:100","AddTextSmall ""Requires a known contact"" bad
 RemoveOption MPC_IAIICTTMakeDeal","""I'm sorry,"" $Post $personLastName says, ""I'm afraid I can't help you with that request. I must also inform you that Company guidelines require that I report this conversation to my superior; I'm sure they will... take care of you.""
 
 $HeOrShe produces an insincere smile.",,
-ttMakeDealOptNotContactArroyo,PopulateOptions,"$isPerson
-$personFaction.id == tritachyon
-$player.counterRaidedTriTach
-!$player.hasTriTachDeal
-!$player.brokeTriTachDeal
-!$isContact
-$id == arroyo",,,"ttMakeDeal:""I'd like to discuss the possibility of a deal to solve my ongoing 'friction' with Tri-Tachyon.""",
-genericRePopulateOptions,DialogOptionSelected,"$option == genericGoBack","FireAll PopulateOptions",,,
-ttMakeDealOptSelNoHostile,DialogOptionSelected,"$option == ttMakeDeal
+MPC_IAIICTTOptSelNoHostile,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 RepIsAtBest tritachyon HOSTILE score:100","HA_CMD printTriTachDealRepReq
-RemoveOption ttMakeDeal","""I'm sorry,"" $Post $personLastName says, ""but you appear to be engaged in a state of overt hostility with the Tri-Tachyon Corporation.""
+RemoveOption MPC_IAIICTTMakeDeal","""I'm sorry,"" $Post $personLastName says, ""but you appear to be engaged in a state of overt hostility with the Tri-Tachyon Corporation.""
 
 ""Corporate guidelines expressly forbid official negotiation with polities, corporations, and entities which are actively engaged in destructive acts against Company property and human resources."" 
 
 $HeOrShe produces an insincere smile.",,
-ttMakeDealOptSelNoHostileArroyo,DialogOptionSelected,"$option == ttMakeDeal
+MPC_IAIICTTOptSelNoHostileArroyo,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 RepIsAtBest tritachyon HOSTILE score:100
 $id == arroyo","HA_CMD printTriTachDealRepReq
-RemoveOption ttMakeDeal","""Really?"" Arroyo's tone is irritated. ""You're in the middle of a declared open war with Tri-Tachyon and you expect them to listen to some clever little deal I bring to them on your behalf?"" 
+RemoveOption MPC_IAIICTTMakeDeal","""Really?"" Arroyo's tone is irritated. ""You're in the middle of a declared open war with Tri-Tachyon and you expect them to tolerate me discussing-"" He catches his words, speaking slowly just for a moment. ""-unproven rumors?"" 
 
-""Star above,"" he shakes his head almost disbelieving. ""The PR hit alone..."" ",,
-ttMakeDealOptSelNoHostileArroyoContact,DialogOptionSelected,"$option == ttMakeDeal
+""Star above,"" he shakes his head almost disbelieving. ""You must really be naive.""",,
+MPC_IAIICTTOptSelNoHostileArroyoContact,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 RepIsAtBest tritachyon HOSTILE score:100
 $isContact
 $id == arroyo","HA_CMD printTriTachDealRepReq
-RemoveOption ttMakeDeal","""Really?"" Arroyo looks irritated. ""First things first: you don't call me 'Rayan'.""
+RemoveOption MPC_IAIICTTMakeDeal
 
-""Second, how can you possibly believe it would be that simple? You're in the middle of a declared open war with Tri-Tachyon. They're aren't going to simply cut a deal with you through me."" 
+SetTextHighlights ""hot""","""Really?"" Arroyo looks irritated. ""First things first: you don't call me 'Rayan'.""
 
-He shakes his head. ""Just imagine. The PR would be terrible.""",,
-ttMakeDealOptSelNoContactArroyo,DialogOptionSelected,"$option == ttMakeDeal
+""Second, how can you possibly believe it would be that simple? You're in the middle of a declared open war with Tri-Tachyon. Even if I wanted to, which I DON'T-"" he makes a point to emphasize. ""-you can't seriously expect me to discuss unproven rumors of a proxy war!"" He scowls, looking off into something like he's searching for listeners. 
+
+He shakes his head. ""Come back when things are a little less hot.""",,
+MPC_IAIICTTOptSelNoContactArroyo,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 !$isContact score:100
 $id == arroyo","AddTextSmall ""Requires a known contact"" bad
-RemoveOption ttMakeDeal","""No,"" he says.
+RemoveOption MPC_IAIICTTMakeDeal","""No,"" he says.
 
 Arroyo doesn't quite smile, but seems somehow satisfied with himself.",,
-ttMakeDealOptSelNoUnimportant,DialogOptionSelected,"$option == ttMakeDeal
+MPC_IAIICTTOptSelNoUnimportant,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 $isContact
 !$importanceAtLeastHigh score:100","AddTextSmall ""Contact must have high importance"" bad
-RemoveOption ttMakeDeal","""Ah,"" $HeOrShe begins. ""Your proposal is intriguing. The trouble is...  hmm."" $HeOrShe thinks for a moment.
+RemoveOption MPC_IAIICTTMakeDeal","$HeOrShe stiffens, though $hisOrHer customer relations training kicks in near-immediately and forces $hisOrHer to smile. ""I'm... sorry, $playerSirOrMadam, but I-I don't know what you're talking about."" $HeOrShe hastily produces $hisOrHer TriPad, covering $hisOrHer face with it. ""Tri-Tachyon would never assist in such... debaucherous activities in your space, I assure you. Now, could I interest you in some jobs, perhaps...?""
 
-""I'd like to help you, I really would. However it is my sincerely held belief that bringing this proposal to my superiors is substantially more likely to impede my career than promote it.""
+You instinctually tune out the sell-speak near the end and boil $hisOrHer words down to their bare essentials: ""They're breathing down my neck.""",,
+MPC_IAIICTTOptSelContact,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
+$isContact",,"$HisOrHer corporate smile falters for only a mere moment. ""Ah, I assure you, the Tri-Tachyon corporation would never sanction such..."" $heOrShe contemplates $hisOrHer next words. ""Lawless, activites, $playerSirOrMadam."" 
 
-""I'm sure you both understand and empathize with my predicament."" $HeOrShe shrugs as if apologizing.",,
-ttMakeDealOptSelContact,DialogOptionSelected,"$option == ttMakeDeal
-$isContact",,"You explain your perspective on the situation, and the Tri-Tachyon $Post nods along, nothing seeming to come as a surprise.
+$HisOrHer eye gleams, and $hisOrHer attention is suddenly grabbed by an object adjacent to $hisOrHer vidlink. ""Ah - excuse me, $playerSirOrMadam, an associate of mine is calling, and by the looks of it..."" $heOrShe cringes, momentarily forgetting $hisOrHer corporate PR training to ""always smile"". ""It's... rather important."" $HeOrShe turns back, giving you $hisOrHer best corpo-sympathy smile. ""I'm sorry - you wouldn't mind if I put you on hold, would you?""","MPC_IAIICTTHoldOk:""Of course.""
+MPC_IAIICTTHoldImpatient:""I'm sure whatever it is can wait.""",
+MPC_IAIICTTHoldOk,DialogOptionSelected,"$option == MPC_IAIICTTHoldOk","HideFirstPerson","$HisOrHer smile widens grotesquely. ""Tri-Tachyon thanks you for your patience."" And with that, the commlink flickers to a rotating Tri-Tachyon crest, filling your ears with the same AI-generated music you've learned to tune out thousands of times before.","MPC_IAIICTTHoldContinue:Wait",
+MPC_IAIICTTHoldImpatient,DialogOptionSelected,"$option == MPC_IAIICTTHoldImpatient","HideFirstPerson","Before you can even finish your sentence, the commlink dies, replaced by a cheerfully spinning Tri-Tachyon logo, and hold music only a composer could love. You scowl, and consider lodging a spiteful complaint against the clearly rude executive.","MPC_IAIICTTHoldContinue:Wait
+MPC_IAIICTTHoldLodgeComplaint:Lodge a complaint",
+MPC_IAIICTTHoldLodgeComplaint,DialogOptionSelected,"$option == MPC_IAIICTTHoldLodgeComplaint","AddTextSmall ""Filed complaint against $personName"" highlight
+RemoveOption MPC_IAIICTTHoldLodgeComplaint
+$player.MPC_lodgedComplaintAgainstContact = true","You pull up the Tri-Tachyon personnel complaints page, dismissing the endless torrent of holo-ads along the way, and submit a complaint full of flowery language. ""Hostile"", ""Inconsiderate"" - and your favorite crawler keyword, ""Moralist"" - just to be sure.",,
+MPC_IAIICTTHoldContinue,DialogOptionSelected,"$option == MPC_IAIICTTHoldContinue","SetTextHighlights ""incoming communications request""","You're well accustomed to TriTachyon's simultaneously long and inconsistent wait times - something about ""psychoanalytic exploitation"" to keep the customer ""on their toes"". Apparantly, this increases profit. To you, all it does is give you an excuse to take out your TriPad and approve personnel transfers.
 
-""I see you, I hear you, and I believe that tgoether we can solve this misunderstanding,"" $heOrShe says, voice warmed by client-relations protocol training. $HeOrShe shifts to an apologetic look, ""Of course I wouldn't want you to think that I was behind any of this. Tri-Tachyon is a big believer in healthy internal competition, and some executives become ... overenthusiastic."" $HeOrShe shakes her head, ""Terribly misjudged and disrespectful of the business relationship you and I have built together."" 
+But before the glass of the PDA can even feel your fingertips, your comms monitor rings out. An incoming communications request. You routinely bring up the callstats, only to be confused by what lights the screen...","MPC_IAIICTTHoldLookCloser:Take a look",
+MPC_IAIICTTHoldLookCloser,DialogOptionSelected,"$option == MPC_IAIICTTHoldLookCloser","SetTextHighlights ""SRC"" ""CLR"" ""ARGSEC"" ""CSTM""","You turn your attention to the bright segment-text now lighting your comms panel.
+     SRC:UNK
+     CLR:UNK
+     ARGSEC:5855KHHJK
+     CSTM:PICK UP
 
-$HisOrHer contenance shifts seamlessly to negotiation-mode, ""So if you'll allow me to walk you through a modest proposal...""","ttMakeDeal2:Review the proposal",
-ttMakeDealOptSelContactLowTrust,DialogOptionSelected,"$option == ttMakeDeal
+Your technology officer quickly runs the calltrace through a AM-scan, prompting your security panel to ping cheerfully with no anomalies. Clearly, whoever, or whatever, is calling you isn't doing so in bad faith. But why hide their identity? Why no prompting? Whatever this is, at least you're sure connecting won't trigger a cascade failure in your $shipOrFleet's delta matrices, so it should be safe. Should.","MPC_IAIICTTHoldPickUp:Answer the hail
+MPC_IAIICTTHoldPickUpSkeptic:Answer the hail, but isolate it to a virtual environment",
+MPC_IAIICTTHoldPickUp,DialogOptionSelected,"$option == MPC_IAIICTTHoldPickUp","ShowFirstPerson
+FireAll MPC_IAIICTTHoldPickUp2","The spinning tri-tach logo subtly glitches before transforming into the now-deathly serious visage of $personName, backed by the tell-tale hexblur of a privacy field.",,
+MPC_IAIICTTHoldPickUpSkeptic,DialogOptionSelected,"$option == MPC_IAIICTTHoldPickUpSkeptic
+$id != arroyo","ShowFirstPerson","The spinning tri-tach logo subtly glitches before transforming into the now-deathly serious visage of $personName, backed by the tell-tale hexblur of a privacy field. $HeOrShe scowls at the blackened screen in front of $himOrHer, allthewhile analysis is ran on the commfeed. No malicious actors, no hostile packages - just a normal datastream. You sigh in relief.
+
+""Hello? If you're there, say something. I think your camera is deactivated."" $HeOrShe seems to be getting more nervous by the second.","MPC_IAIICTTHoldPickUpSkepticActivateCamera:Reroute the commlink into your terminal",
+MPC_IAIICTTHoldPickUpSkepticActivateCamera,DialogOptionSelected,"$option == MPC_IAIICTTHoldPickUpSkepticActivateCamera","FireAll MPC_IAIICTTHoldPickUp2","$HisOrHer eyes light up in your skintone as $hisOrHer feed finally resolves to you. ""Ah, there you are."" $heOrShe sighs, relaxing.",,
+MPC_IAIICTTHoldPickUp2,MPC_IAIICTTHoldPickUp2,"$id != arroyo",,"$HeOrShe straightens. ""Apologies for the subterfuge. Amongst the execs, the topic of the IAIIC is... touchy, to say the least..."" $heOrShe takes a moment to confirm the privacy field is working - and sighs a breath of relief at the soft buzz of fingers against energywall. ""I couldn't use the official channels, as they're, ah, monitored.""","MPC_IAIICTTIsInvolved:""Is Tri-Tachyon involved in the IAIIC in any way?""","""We're not supposed to discuss this, but, mh, for my favorite customer?""  $HeOrShe curtly smiles. ""I'd be glad, no, happy, to share... facts. Free of charge, in fact! Call it... charity.""
+
+Charity? Like ever."
+MPC_IAIICTTIsInvolved,DialogOptionSelected,"$option == MPC_IAIICTTIsInvolved","SetTextHighlights ""do for me""","""Well,"" $heOrShe starts, grinning like a predatory animal. ""That depends on what you can do for me.""
+
+""And, ah,"" $heOrShe adds. ""For the Tri-Tachyon corporation. Of course.""","MPC_IAIICTTIsInvolvedTwo:""Of course.""",
+MPC_IAIICTTIsInvolvedTwo,DialogOptionSelected,"$option == MPC_IAIICTTIsInvolvedTwo",,"""The relationship between the IAIIC and Tri-Tachyon is... how can I put it, hm... complicated?"" $HeOrShe teases, very well knowing the answer. ""I could be persuaded to... remember... but, you see, my memory is woefully strained under the stress of... oh, I can't even say it!"" $heOrShe feigns, making a show of wiping off $hisOrHer brow.","MPC_IAIICTTGetToPoint:""Get to the point.""
+MPC_IAIICTTSympathize:""Is there anything I can do to help?""
+MPC_IAIICTTSympathizeSarcastic:""Is there anything I can do to help? (sarcastic)""
+",
+MPC_IAIICTTGetToPoint,DialogOptionSelected,"$option == MPC_IAIICTTGetToPoint","FireBest MPC_IAIICTTExplainJob","$HeOrShe frowns. ""Not one for theatrics, I see. Very well...""",,
+MPC_IAIICTTSympathize,DialogOptionSelected,"$option == MPC_IAIICTTSympathize","FireBest MPC_IAIICTTExplainJob","$HeOrShe smiles with a hint of mirth. ""Yes, Captain, I believe there is...""",,
+MPC_IAIICTTSympathizeSarcastic,DialogOptionSelected,"$option == MPC_IAIICTTSympathizeSarcastic","FireBest MPC_IAIICTTExplainJob 
+$player.ethosSarcastic++","$HeOrShe smiles with a hint of mirth. ""Yes, Captain, I believe there is...""",,
+MPC_IAIICTTExplainJob,MPC_IAIICTTExplainJob,"$id != arroyo","SetTextHighlights ""cache""","$HeOrShe takes a breath. ""Over the past... ten cycles or so, someone has been acquiring, let's just call it... intel, on Tri-Tachyon personnel. Some power-grab, if I had to guess."" $HeOrShe sets $hisOrHer fingers together, staring directly at you.
+
+""I want you to retrieve that intel for me.""","0:MPC_IAIICTTBMWho:""Who is responsible for this?""
+10:MPC_IAIICTTBMWhat:""What sort of 'intel' are we talking about here?""
+20:MPC_IAIICTTBMHow:""How am I supposed to find this 'intel'?""
+30:MPC_IAIICTTBMWhyNotTellMeAboutIAIIC:""Why can't you just tell me about the damn IAIIC?!""",
+MPC_IAIICTTBMWho,DialogOptionSelected,"$option == MPC_IAIICTTBMWho
+$id != arroyo","SetTextHighlights ""important""
+RemoveOption MPC_IAIICTTBMWho","""Honestly? I don't know!"" $HeOrShe shrugs. All I - and my contacts - know is that whoever it is took great strides to cover their tracks."" 
+
+""Someone rather competent, I'd guess."" $HeOrShe nods.",,
+MPC_IAIICTTBMWhat,DialogOptionSelected,"$option == MPC_IAIICTTBMWhat
+$id != arroyo","RemoveOption MPC_IAIICTTBMWhat
+
+AddOption 50 MPC_IAIICTTBMPress ""I won't accept your 'task' unless you tell me what's going on here.""
+SetStoryOption MPC_IAIICTTBMPress 1 MPC_pressAboutBM ui_char_spent_story_point ""Pressed Tri-Tachyon contact about contents of a secret intel package""","$HeOrShe puts on her best corporate smile. ""I'm sorry, $playerSirOrMadam, but that's not within the realm of this contract. You must understand;"" $HeOrShe politely folds $hisOrHer hands. ""Tri-Tachyon operates on a need-to-know basis.""
+
+In other words, ""none of your business"". Classy.",,"TODO: story option to press them on it?"
+MPC_IAIICTTBMPress,DialogOptionSelected,"$option == MPC_IAIICTTBMPress","RemoveOption MPC_IAIICTTBMPress
+AdjustRepActivePerson SUSPICIOUS -1
+
+SetTextHighlights ""will""
+
+AddOption 50 cutCommLink ""Neither do I. (Leave)""","$HisOrHer forced smile twitches. 
+
+""I don't think you understand, $PlayerSirOrMadam... I will not discuss this with you."" $HeOrShe takes a resolving breath. ""If you have a problem with this... I don't believe we can do business.""",,
+MPC_IAIICTTBMWhyNotTellMeAboutIAIIC,DialogOptionSelected,"$option == MPC_IAIICTTBMWhyNotTellMeAboutIAIIC
+$id != arroyo","RemoveOption MPC_IAIICTTBMWhyNotTellMeAboutIAIIC","$HeOrShe waits for you to finish grumbling, before simply stating ""Because it would be unprofitable."" $HeOrShe smirks.",,
+MPC_IAIICTTBMHow,DialogOptionSelected,"$option == MPC_IAIICTTBMHow
+$id != arroyo","SetTextHighlights ""small black box"" ""two meters across"" ""same for it's length"" ""half a meter tall""","Before you even finish your sentence, $heOrShe transfers a small datapak containing an objectspec, made for use as a sensor package. ""A small black box, coated in stealth-paint. That's all my contact told me."" $HeOrShe draws up $hisOrHer own holo-pad with the same contents as yours. ""About two meters across, same for it's length, and half a meter tall.""
+
+""As for where?"" $HeOrShe makes a show of grimacing, dismissing the holo-display. ""That's the one part I was never told..."" $heOrShe sighs. ""You'll have to piece that together yourself. But, captain - what is a job without a little adventure?"" $HeOrShe tilts $hisOrHer head playfully, ignoring your look of irritation. 
+
+""Find this for me... and I might be persuaded to remember about the IAIIC.""
+
+","MPC_IAIICTTBMAccept:""Alright. Where do I start?""
+MPC_IAIICTTBMAbort:""This is too much. Not right now. (Leave)""",
+MPC_IAIICTTBMAccept,DialogOptionSelected,"$option == MPC_IAIICTTBMAccept
+$id != arroyo","MPC_IAIICTriTachCMD beginSearch
+
+SetTextHighlightColors tritachyon tritachyon
+SetTextHighlights ""Eochu Bres"" ""Hybrasil""
+
+AddTextSmall ""Received data filters"" highlight","$HeOrShe smiles. ""I'm glad you could see the benefits of this arrangement. Firstly,"" $heOrShe raps $hisOrHer desk. ""Don't go asking around on Eochu Bres."" $HeOrShe shivers. ""While not an explosively bad idea, we're fairly certain the target has agents there - well, more than usual, at least."" 
+
+""Secondly, I suggest you take a peek in the Hybrasil star system. We're fairly certain our adversary did most of their data-gathering there, and as such, is a prime target for searching. You don't have to be specific - just the mention of a mysterious data broker might get lips open."" $HeOrShe winks. 
+
+$HeOrShe transmits a small datapackage to you, containing various data-filters. ""We've compiled a number of filters we think will help in scrounging for anything relevant, in case you decide to do some data-analysis.""","cutCommLink:""Let's just hope your intel is good. (Leave)""",
+MPC_IAIICTTBMAbort,DialogOptionSelected,"$option == MPC_IAIICTTBMAbort
+$id != arroyo","$option = cutCommLink 0
+FireBest DialogOptionSelected","""Ah, that's too bad. Next time, hm?"" $HeOrShe smiles curtly as $heOrShe disables $hisOrHer privacy field. ""Tri-Tachyon wishes you a very profitable day.""",,
+,,,,,,
+MPC_IAIICTTOptSelContactArroyo,DialogOptionSelected,"$option == MPC_IAIICTTMakeDeal
 $isContact
-$player.untrustworthy > 2",,"You explain your perspective on the situation. The Tri-Tachyon $Post looks, if anything, more and more skeptical.
+$id == arroyo score:50",,"$HisOrHer corporate smile falters for only a mere moment. ""Ah, I assure you, the Tri-Tachyon corporation would never sanction such..."" $heOrShe contemplates $hisOrHer next words. ""Lawless, activites, $playerSirOrMadam."" 
 
-""What we have is a bit of a 'trust gap'. You've broken some very important agreements made with various parties. This complicates the pitch. But I do believe that we can downplay this misunderstanding,"" $heOrShe explains, voice warmed by client-relations protocol training.
+$HisOrHer eye gleams, and $hisOrHer attention is suddenly grabbed by an object adjacent to $hisOrHer vidlink. ""Ah - excuse me, $playerSirOrMadam, an associate of mine is calling, and by the looks of it..."" $heOrShe cringes, momentarily forgetting $hisOrHer corporate PR training to ""always smile"". ""It's... rather important."" $HeOrShe turns back, giving you $hisOrHer best corpo-sympathy smile. ""I'm sorry - you wouldn't mind if I put you on hold, would you?""","MPC_IAIICTTHoldOk:""Of course.""
+MPC_IAIICTTHoldImpatient:""I'm sure whatever it is can wait.""",
+MPC_IAIICTTHoldOkArroyo,DialogOptionSelected,"$option == MPC_IAIICTTHoldOk
+$id == arroyo score:50","HideFirstPerson","$HisOrHer smile widens grotesquely. ""Tri-Tachyon thanks you for your patience."" And with that, the commlink flickers to a rotating Tri-Tachyon crest, filling your ears with the same AI-generated music you've learned to tune out thousands of times before.","MPC_IAIICTTHoldContinue:Wait",
+MPC_IAIICTTHoldImpatientArroyo,DialogOptionSelected,"$option == MPC_IAIICTTHoldImpatient
+$id == arroyo score:50","HideFirstPerson","Before you can even finish your sentence, the commlink dies, replaced by a cheerfully spinning Tri-Tachyon logo, and hold music only a composer could love. You scowl, and consider lodging a spiteful complaint against the clearly rude executive.","MPC_IAIICTTHoldContinue:Wait
+MPC_IAIICTTHoldLodgeComplaint:Lodge a complaint",
+MPC_IAIICTTHoldPickUpSkepticArroyo,DialogOptionSelected,"$option == MPC_IAIICTTHoldPickUpSkeptic
+$id == arroyo score:50","ShowFirstPerson","The spinning tri-tach logo subtly glitches before transforming into the now-deathly serious visage of $personName, backed by the tell-tale hexblur of a privacy field. $HeOrShe scowls at the blackened screen in front of her, allthewhile analysis is ran on the commfeed. No malicious actors, no hostile packages - just a normal datastream. You sigh in relief.
 
-""The Tri-Tachyon corporation has working experience with post-crisis PR difficulties, and I suspect that certain executives could be persuaded to come to an understanding about your past actions."" $HeOrShe smiles brightly. ""After all, one of our core values is 'thinking outside the box'.""
+""Hello? If you're there, say something. I think your camera is deactivated."" $HeOrShe seems to be getting more nervous by the second.","MPC_IAIICTTHoldPickUpSkepticActivateCamera:Reroute the commlink into your terminal",
+MPC_IAIICTTHoldPickUpSkepticActivateCameraArroyo,DialogOptionSelected,"$option == MPC_IAIICTTHoldPickUpSkepticActivateCamera
+$id == arroyo score:50","FireAll MPC_IAIICTTHoldPickUp2","$HisOrHer eyes light up in your skintone as $hisOrHer feed finally resolves to you. ""Ah, there you are."" $heOrShe sighs, relaxing.",,
+MPC_IAIICTTHoldPickUp2Arroyo,MPC_IAIICTTHoldPickUp2,"$id == arroyo score:50",,"$HeOrShe straightens. ""Apologies for the subterfuge. Amongst the execs, the topic of the IAIIC is... touchy, to say the least..."" $heOrShe takes a moment to confirm the privacy field is working - and sighs a breath of relief at the soft buzz of fingers against energywall. ""I couldn't use the official channels, as they're, ah, monitored.""","MPC_IAIICTTIsInvolved:""Is Tri-Tachyon involved in the IAIIC in any way?""","""We're not supposed to discuss this, but, mh, for my favorite customer?""  $HeOrShe curtly smiles. ""I'd be glad, no, happy, to share... facts. Free of charge, in fact! Call it... charity.""
 
-$HisOrHer contenance shifts seamlessly to negotiation-mode, ""So if you'll allow me to walk you through a modest proposal...""","ttMakeDeal2:Review the proposal",
-ttMakeDealOptSelContact2,DialogOptionSelected,"$option == ttMakeDeal2","SetTextHighlights ""increased accessibility""","$PersonName reviews a package of terms. Data-sharing of certain nav charts and commodity futures projections, mutual safety protocols for trade fleets, shared field and in-dock servicing arrangements. What it amounts to is increased accessibility for your colonies' trade based on market size- and, proportionally, for Tri-Tachyon as well. 
+Charity? Like ever."
+MPC_IAIICTTIsInvolvedArroyo,DialogOptionSelected,"$option == MPC_IAIICTTIsInvolved","SetTextHighlights ""do for me""","""Well,"" $heOrShe starts, grinning like a predatory animal. ""That depends on what you can do for me.""
 
-""'Cartel' is such an unpleasant word,"" $heOrShe says. ""I prefer - and Marketing agrees with this - to think of our proposal to you as a strategic partnership which will enhance Tri-Tachyon shareholder value, increase customer satisfaction, and,"" $heOrShe smiles hungrily, ""make us both a lot of credits.""","ttDealConfirm:Confirm the deal
-cutCommLink:Cut the comm link",
-ttMakeDealOptSelContactConfirm,DialogOptionSelected,"$option == ttDealConfirm","HA_CMD makeTriTachDeal","""It's been a pleasure doing business with you, $playerName. I'm glad we can profitably put that all of that unpleasantness behind us.""","cutCommLink:Cut the comm link",
-ttMakeDealOptSelContactArroyo,DialogOptionSelected,"$option == ttMakeDeal
-$isContact
-$id == arroyo",,"""Hm,"" Arroyo leans back, thoughtful.
+""And, ah,"" $heOrShe adds. ""For the Tri-Tachyon corporation. Of course.""","MPC_IAIICTTIsInvolvedTwo:""Of course.""",
+MPC_IAIICTTIsInvolvedTwoArroyo,DialogOptionSelected,"$option == MPC_IAIICTTIsInvolvedTwo",,"""The relationship between the IAIIC and Tri-Tachyon is... how can I put it, hm... complicated?"" $HeOrShe teases, very well knowing the answer. ""I could be persuaded to... remember... but, you see, my memory is woefully strained under the stress of... oh, I can't even say it!"" $heOrShe feigns, making a show of wiping off $hisOrHer brow.","MPC_IAIICTTGetToPoint:""Get to the point.""
+MPC_IAIICTTSympathize:""Is there anything I can do to help?""
+MPC_IAIICTTSympathizeSarcastic:""Is there anything I can do to help? (sarcastic)""
+",
+MPC_IAIICTTGetToPointArroyo,DialogOptionSelected,"$option == MPC_IAIICTTGetToPoint
+$id == arroyo score:50","FireBest MPC_IAIICTTExplainJob","$HeOrShe frowns. ""Not one for theatrics, I see. Very well...""",,
+MPC_IAIICTTSympathizeArroyo,DialogOptionSelected,"$option == MPC_IAIICTTSympathize
+$id == arroyo score:50","FireBest MPC_IAIICTTExplainJob","$HeOrShe smiles with a hint of mirth. ""Yes, Captain, I believe there is...""",,
+MPC_IAIICTTSympathizeSarcasticArroyo,DialogOptionSelected,"$option == MPC_IAIICTTSympathizeSarcastic
+$id == arroyo score:50","FireBest MPC_IAIICTTExplainJob 
+$player.ethosSarcastic++","$HeOrShe smiles with a hint of mirth. ""Yes, Captain, I believe there is...""",,
+MPC_IAIICTTExplainJobArroyo,MPC_IAIICTTExplainJob,"$id == arroyo score:50","SetTextHighlights ""cache""","$HeOrShe takes a breath. ""Over the past... ten cycles or so, someone has been acquiring, let's just call it... intel, on Tri-Tachyon personnel. Some power-grab, if I had to guess."" $HeOrShe sets $hisOrHer fingers together, staring directly at you.
 
-""First,"" he says. ""You don't call me 'Rayan'.""
+""I want you to retrieve that intel for me.""","0:MPC_IAIICTTBMWho:""Who is responsible for this?""
+10:MPC_IAIICTTBMWhat:""What sort of 'intel' are we talking about here?""
+20:MPC_IAIICTTBMHow:""How am I supposed to find this 'intel'?""
+30:MPC_IAIICTTBMWhyNotTellMeAboutIAIIC:""Why can't you just tell me about the damn IAIIC?!""",
+MPC_IAIICTTBMWhoArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMWho
+$id == arroyo score:50","SetTextHighlights ""important""
+RemoveOption MPC_IAIICTTBMWho","""Honestly? I don't know!"" $HeOrShe shrugs. All I - and my contacts - know is that whoever it is took great strides to cover their tracks."" 
 
-He drums his fingers on his onyx desk, thinking. ""There may be a way to make this work,"" he says speculatively. ""Tri-Tachyon believes in internal competition, and if the reports I'm reading are any indication, the senior execs behind your 'friction' have somewhat overplayed their hand. The Financial Predictor section is seeing a lot of red coming up despite their best efforts to cover it up, and that means blood will spill.""
+""Someone rather competent, I'd guess."" $HeOrShe nods.",,
+MPC_IAIICTTBMWhatArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMWhat
+$id == arroyo score:50","RemoveOption MPC_IAIICTTBMWhat
 
-""Figuratively, of course."" A fierce smile begins to grow on Rayan's face. ""Unless... well, let's talk details.""","ttMakeDealArroyo2:Continue",
-ttMakeDealOptSelContactArroyoLowTrust,DialogOptionSelected,"$option == ttMakeDeal
-$isContact
-$id == arroyo
-$player.untrustworthy > 2",,"""First order of business,"" Arroyo says. ""You don't call me 'Rayan'.""
+AddOption 50 MPC_IAIICTTBMPress ""\""I won't accept your 'task' unless you tell me what's going on here.\""""
+SetStoryOption MPC_IAIICTTBMPress 1 MPC_pressAboutBM ui_char_spent_story_point ""Pressed Tri-Tachyon contact about contents of a secret intel package""","$HeOrShe puts on her best corporate smile. ""I'm sorry, $playerSirOrMadam, but that's not within the realm of this contract. You must understand;"" $HeOrShe politely folds $hisOrHer hands. ""Tri-Tachyon operates on a need-to-know basis.""
 
-""Second, you must think pretty highly of yourself to think you've got a chance after the agreements you've broken."" He drums his fingers on his onyx desk, considering your reputation perhaps, then stops.
+In other words, ""none of your business"". Classy.",,"TODO: story option to press them on it?"
+MPC_IAIICTTBMPressArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMPress
+$id == arroyo score:50","RemoveOption MPC_IAIICTTBMPress
+AddOption 50 cutCommLink ""\""Neither do I. (Leave)\""""
 
-""There may be a way to play this,"" he says. ""Tri-Tachyon believes in internal competition, and if the reports I'm reading are any indication, the senior execs behind your 'friction' have somewhat overplayed their hand. The Financial Predictor array is seeing a lot of red coming up despite their best efforts to cover it up, and that means blood will spill.""
+SetTextHighlights ""will""
+AdjustRepActivePerson SUSPICIOUS -1","$HisOrHer forced smile twitches. 
 
-""Figuratively, of course."" A fierce smile begins to grow on Rayan's face. ""Unless... well, let's talk details.""","ttMakeDealArroyo2:Continue",
-ttMakeDealOptSelContactArroyo2,DialogOptionSelected,"$option == ttMakeDealArroyo2","SetTextHighlights ""increased accessibility""","Arroyo pulls up a shared document context and rapidly assembles a package of terms to present to his contacts at the highest levels of Tri-Tachyon: Data-sharing of certain nav charts and commodity futures projections, mutual safety protocols for trade fleets, shared field and in-dock servicing arrangements. 
+""I don't think you understand, $PlayerSirOrMadam... I will not discuss this with you."" $HeOrShe takes a resolving breath. ""If you have a problem with this... I don't believe we can do business.""",,
+MPC_IAIICTTBMWhyNotTellMeAboutIAIICArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMWhyNotTellMeAboutIAIIC
+$id == arroyo score:50","RemoveOption MPC_IAIICTTBMWhyNotTellMeAboutIAIIC","$HeOrShe waits for you to finish grumbling, before simply stating ""Because it would be unprofitable."" $HeOrShe smirks.",,
+MPC_IAIICTTBMHowArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMHow
+$id == arroyo score:50","SetTextHighlights ""small black box"" ""two meters across"" ""same for it's length"" ""half a meter tall""","Before you even finish your sentence, $heOrShe transfers a small datapak containing an objectspec, made for use as a sensor package. ""A small black box, coated in stealth-paint. That's all my contact told me."" $HeOrShe draws up $hisOrHer own holo-pad with the same contents as yours. ""About two meters across, same for it's length, and half a meter tall.""
 
-What it amounts to is increased accessibility for your colonies' proportional to their market size. And, in turn, proportional gains to Tri-Tachyon's trade access.
+""As for where?"" $HeOrShe makes a show of grimacing, dismissing the holo-display. ""That's the one part I was never told..."" $heOrShe sighs. ""You'll have to piece that together yourself. But, captain - what is a job without a little adventure?"" $HeOrShe tilts $hisOrHer head playfully, ignoring your look of irritation. 
 
-""It's not exactly a cartel, but it's a good first step,"" Rayan says. ""You both gain opportunities and, of course,"" his smile returns, ""I get my percentage for arranging the deal while cutting down a few upjumped vac-heads in the executive corps. Win-win-win.""
+""Find this for me... and I might be persuaded to remember about the IAIIC.""
 
-He leans back, admiring his work. ""It's a good deal, $playerName. I suggest you take it.""","ttDealConfirmArroyo:Confirm the deal
-cutCommLink:Cut the comm link",
-ttMakeDealOptSelContactArroyoConfirm,DialogOptionSelected,"$option == ttDealConfirmArroyo","HA_CMD makeTriTachDeal","""Smart move,"" he says as you upload your encrypted signature to confirm the terms.
+","MPC_IAIICTTBMAccept:""Alright. Where do I start?""
+MPC_IAIICTTBMAbort:""This is too much. Not right now. (Leave)""",
+MPC_IAIICTTBMAcceptArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMAccept
+$id == arroyo score:50","MPC_IAIICTriTachCMD beginSearch
 
-""Now I've got some calls to make. Get out of here and stay out of trouble. You can thank me when the credits start rolling in.""","cutCommLink:Cut the comm link",
+SetTextHighlightColors tritachyon tritachyon
+SetTextHighlights ""Eochu Bres"" ""Hybrasil""","$HeOrShe smiles. ""I'm glad you could see the benefits of this arrangement. Firstly,"" $heOrShe raps $hisOrHer desk. ""Don't go asking around on Eochu Bres."" $HeOrShe shivers. ""While not an explosively bad idea, we're fairly certain the target has agents there - well, more than usual, at least."" 
+
+""Secondly, I suggest you take a peek in the Hybrasil star system. We're fairly certain our adversary did most of their data-gathering there, and as such, is a prime target for searching."" 
+
+$HeOrShe smiles. ""Sorry, $PlayerSirOrMadam, but we don't have anymore info for you. As I said - very good OpSec here."" 
+
+""Happy hunting!""","cutCommLink:""Let's just hope your intel is good."" (Leave)",
+MPC_IAIICTTBMAbortArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMAbort
+$id == arroyo score:50","$option = cutCommLink 0
+FireBest DialogOptionSelected","""Ah, that's too bad. Next time, hm?"" $HeOrShe smiles curtly as $heOrShe disables $hisOrHer privacy field. ""Tri-Tachyon wishes you a very profitable day.""",,
+"#END Go to contact, ask about IAIIC",,,,,,
+,,,,,,
+# Relay,,,,,,
+MPC_IAIICTTBMRelay,COB_AddOptions,"MPC_IAIICTriTachCMD canSearchCommsRelay","ShowDefaultVisual
+FireBest MPC_IAIICTBMRelayModifyOption",,"50:MPC_IAIICTTBMInspectRelay:Inspect the relay's datalogs","MPC_IAIICTTBMRelayPrintHostilesText"
+MPC_IAIICTBMRelayModifyOptionTracked,MPC_IAIICTBMRelayModifyOption,"IsSeenByAnyFleet","SetEnabled MPC_IAIICTTBMInspectRelay false
+SetTooltip MPC_IAIICTTBMInspectRelay ""Your $shipOrFleet is currently being tracked by a nearby fleet.""",,,
+MPC_IAIICTTBMInspectRelay,DialogOptionSelected,"$option == MPC_IAIICTTBMInspectRelay","SetTextHighlightColors tritachyon
+SetTextHighlights ""Tri-Tachyon personnel files""","Your technology officer expertly jacks into the relay's mainframe, and it's only a few moments before it light up like a overfluxed lasher as your bridge crew feeds it the data-filters you received from your contact.
+
+It only takes a few minutes for a full analysis to complete and be summarily transferred to your personal console. The filters have been too tightly-knit to inspect, so you hope the results of this dataset will give you some idea as to what these filters might be looking for.
+
+What you receive is infuriating. Instead of the correspondances and travel logs you'd expect from a spatiolocator, in the tightly formatted output you find only scattered Tri-Tachyon personnel files.","MPC_IAIICTTBMInspectTwo:Look closely",
+MPC_IAIICTTBMInspectTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMInspectTwo","MPC_IAIICTriTachCMD incrementEvidence
+$global.MPC_searchedEladaRelay = true","Deep in the bottom of the outputted list is a single object of interest: A fleet departure, approximately three months back, by a highly ranked Tri-Tachyon executive, whos name has, sadly, been redacted. ""The direction is redacted, but it includes the estimated round-trip time."" The officer turns to you. ""A month, captain."" A flightpath of that distance must reach, at minimum, the outskirts of the sector.","defaultLeave:Pat the officer on their back and leave",
+"#END Relay",,,,,,
+,,,,,,
+"# Go to bar, search for someone who knows anything",,,,,,
+,,,,,,
+# TT,,,,,,
+MPC_IAIICTTBMTTBarSearch,AddBarEvents,"MPC_IAIICTriTachCMD canDoTTBMContactBarEvent","AddBarEvent MPC_IAIICTTBMTTBarSearchEvent ""Look for anyone who will talk about the intel broker"" ""This would be a great place to search for clues as to the broker's identity."" highlight",,,
+MPC_IAIICTTBMTTBarSearchEvent,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchEvent","SetStoryOption MPC_IAIICTTBMTTBarSearchSeePerson 1 MPC_seeBMContact ui_char_spent_story_point ""Took a closer look in a Tri-Tachyon bar""","You meander the premises, searching for chances to network. You drop company-approved buzzwords like ""opportunity"" and ""reciprocal"" like a stealth-transport landing marines, with the occasional less-than-approved phrases for the most ""interested"" parties. 
+
+Unfortunately, you seem to get very little headway with this tactic. The most common reaction you observe is mere cold indifference, as if they hadn't heard you at all. More ""direct"" targets shoot you a nasty smile, muttering something about ""mandated op-sec"", and wishing you to have a ""profitable day"" - before activating their privacy field, ushering you away.
+
+Eventually, it becomes clear that you're becoming a disturbance, and a pair of enforcers walk over to you and pat your shoulder. ""I'm sorry,"" one of them starts. ""But you're disturbing the patronage... please, if you'd like to find a client for an opportunity, Tri-Tachyon can offer you the Tri-Labor market..."" They begin ushering you out, making sure to keep one hand on their stun batons. You notice they're rather forceful with the way they push and shove.","MPC_IAIICTTBMTTBarSearchLeaveQuietely:""Of course, officers. I'll just be on my way...""
+MPC_IAIICTTBMTTBarSearchTugAtGuards:Struggle against the guards, trying to buy yourself some more time","MPC_IAIICTTBMTTBarSearchSeePerson:Snap your head to the 5th booth to your right on a hunch
+SetStoryOption MPC_IAIICTTBMTTBarSearchSeePerson 1 MPC_seeBMContact ui_char_spent_story_point ""Took a closer look in a Tri-Tachyon bar""
+
+You take one last look around the bar before your forced exit, looking for anything, anyone, that might give a lead..."
+MPC_IAIICTTBMTTBarSearchLeaveQuietely,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchLeaveQuietely","AdjustRep tritachyon SUSPICIOUS -5
+
+$global.MPC_leftTTBMContactInBar = true
+BarCMD leaveBar","You sigh and wave your stiffened bodyguards off, moving with the guards to the exit. ""Thank you for your cooperation, $PlayerSirOrMadam."" A guard mutters. They lean into your ear; ""Tri-Tachyon does not take inquiries into the activities of it's... members... lightly, $playerSirOrMadam. We project... difficulties, between us, if you try this again."" They withdraw, putting on the trademarked Tri-Tachyon Customer Appeasement smile. ""Have a productive, and profitable, day.""
+
+You get the feeling you won't get a chance to ask about this again.",,
+MPC_IAIICTTBMTTBarSearchTugAtGuards,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchTugAtGuards","SetTextHighlights ""burnt flesh""
+PlaySound MPC_rapidEMP","You shout and grunt, drawing the attention of nearby patrons, who watch you with a mix of irritation and amusement. ""$PlayerSirOrMadam - please, don't make this anymore difficult than it has to be-"" a guard protests, trying to wrangle you into position as you kick at them. It's then you hear a sharp crackle and see black. The last thing you smell is burnt flesh.","MPC_IAIICTTBMTTBarSearchWakeUp:Wake up",
+MPC_IAIICTTBMTTBarSearchWakeUp,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchWakeUp","AdjustRep tritachyon INHOSPITABLE -10
+$global.MPC_leftTTBMContactInBar = true","You emerge from the infinite blackness within a transport shuttle en-route to your $shipOrFleet on a medical bed, surrounded by your bodyguards, whom carefully bandage a burn wound on your torso.
+
+It only takes half a second for the pain to engulf you, and about 5 more until the newly-administered painkillers kick in. The civilian pilot tsks. ""Looks like you pissed off the wrong people, Captain... Tri-Tach is usually real tolerant of shady characters.""
+
+Groaning, you ask (painfully) for a SitRep. Your nearest guard speaks up. ""After you, uh, tried clawing the face of one of the guards, they... stunned you. Over and over. And threw you out."" They grimace. ""Damn lucky you didn't get shot, honestly..."" 
+
+You get the feeling Tri-Tach won't tolerate your ""antics"" any further. Time for a more subtle approach.
+","MPC_IAIICTTBMTTBarSearchReturn:Return to your $shipOrFleet",
+MPC_IAIICTTBMTTBarSearchSeePerson,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchSeePerson",,"You're not sure why, but something draws your attention. In the split second before you're forced out of the bar, you make eye contact with someone. A pale-skinned woman,",,
+MPC_IAIICTTBMTTBarSearchReturn,DialogOptionSelected,"$option == MPC_IAIICTTBMTTBarSearchReturn","BarCMD leaveBar",,,
+"#END TT",,,,,,
+,,,,,,
+# Donn,,,,,,
+MPC_IAIICTTBMDonnBarSearch,AddBarEvents,"MPC_IAIICTriTachCMD canDoPirateBMContactBarEvent","AddBarEvent MPC_IAIICTTBMDonnBarSearchEvent ""Look for anyone who will talk about the intel broker"" ""This would be a great place to search for clues as to the broker's identity."" highlight",,,
+MPC_IAIICTTBMDonnBarSearchEvent,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarSearchEvent","BeginConversation MPC_donnPirate
+FireBest MPC_IAIICTTBMDonnBarSearchEventStart",,,
+MPC_IAIICTTBMDonnBarSearchEventStart,MPC_IAIICTTBMDonnBarSearchEventStart,,"BeginConversation MPC_donnPirate
+SetTextHighlights ""It isn't working"" ""time""","You wander the bar, tapping shoulders and joining toasts, making a show to laugh and celebrate the latest freighter raid, which does much to amuse the underground patronage. Despite your efforts to loosen lips, however, it proves inefficient - the minute you drop your vague queries, faces scrunch and spit, turning away and refusing to talk. It's hard to tell if this is anything more than the typical pirate skepticism. 
+
+Eventually, however, your questions obtain you a invitation to sit beside a well-dressed spacer, donned in lavish jewelry, and armed with a overdriven magpistol to ward off those who'd take them. ""Playing a dangerous game, you are. Your, uh, 'playing dumb'? $HeOrShe laughs, slapping $hisOrHer thigh. Suddenly, $hisOrHer tone drops. ""It isn't working. Everyone knows who you're talking about. And, uh, those that don't-"" $heOrShe smacks $hisOrHer lips. ""Kinda stupid, you dig me? Not worth your time."" ","MPC_IAIICTTBMDonnBarSearchEventTwo:""And are you?""",
+MPC_IAIICTTBMDonnBarSearchEventTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarSearchEventTwo","SetTextHighlightColors pirate luddic_church
+SetTextHighlights ""Donn"" ""Gilead""
+
+SetStoryOption MPC_IAIICTTBMDonnBarSkeptical 1 MPC_getDownPayment ui_char_spent_story_point ""Got a down payment from a pirate""
+","$HeOrShe lets out a crusty laugh, not unlike a failing ventilation unit. ""Impatient, are we? Well, you have a good eye for business."" $HisOrHer eye gleams, and $heOrShe leans into a murmur. ""I need transport off Donn. Take me to Gilead, and I'll tell you - and give you - everything I know.""","MPC_IAIICTTBMDonnBarWhyGilead:""Why Gilead specifically?""
+MPC_IAIICTTBMDonnBarDangers:""What's with the cloak-and-dagger?""
+MPC_IAIICTTBMDonnBarSkeptical:""And how can I be sure I can trust you?""
+MPC_IAIICTTBMDonnBarAccept:""I'll do it.""",
+MPC_IAIICTTBMDonnBarWhyGilead,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarWhyGilead","RemoveOption MPC_IAIICTTBMDonnBarWhyGilead
+SetTextHighlights ""I"" ""Data cache""","""Does it really matter to you?"" $heOrShe grumbles, then sighs in defeat. ""Look - there's only so much I can tell you. On Gilead is... a..."" $heOrShe considers $hisOrHer words. ""Data cache. Once I get there, I'll give you the coordinates. Apart from that, well, you know Gilead. Easy to blend in as a pilgrim, or something."" $HeOrShe contemplates something, then decides against it.",,
+MPC_IAIICTTBMDonnBarDangers,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarDangers","RemoveOption MPC_IAIICTTBMDonnBarDangers
+SetTextHighlights ""WARRANTS"" ""ARREST""","""Do you really need to ask?"" $HeOrShe judges you. ""A well-dressed outlaw in a pirate bar, trying to get to a church world? Look - I'll make it simple for you."" $HeOrShe crosses a leg. ""I have WARRANTS. For my ARREST. Understand?""
+
+$HeOrShe ignores your answer.",,
+MPC_IAIICTTBMDonnBarSkeptical,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarSkeptical","RemoveOption MPC_IAIICTTBMDonnBarSkeptical
+AddTextSmall ""Received downpayment of $global.MPC_downPaymentDGS"" highlight
+AddCredits $global.MPC_downPaymentAmount
+$global.MPC_acceptedDownPayment = true
+","$HeOrShe sighs. ""By ludd's tears, we're really doing this? Okay, okay, fine!"" $HeOrShe slaps $hisOrHer hands on the table, and grumbles. ""Look-"" $heOrShe pulls out a credchit. ""Take this as down payment, alright? You can give it back once I tell you what I know.""",,
+MPC_IAIICTTBMDonnBarAccept,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarAccept",,"$HeOrShe flashes a yellowed grin. ""You won't regret this, Captain. Oh, and one more thing-"" $heOrShe holds up a finger, looking to your nearest guard, craning $hisOrHer head to get a better appraisal. ""Could this one walk me back to your $shipOrFleet...?"" $HeOrShe giggles, prompting no response from your elite bodyguards. ""I hope you understand - I'm a wanted man.""","MPC_IAIICTTBMDonnBarAcceptYes:Yes
+MPC_IAIICTTBMDonnBarAcceptNo:No
+MPC_IAIICTTBMDonnBarAcceptWtf:No (forcefully)",
+MPC_IAIICTTBMDonnBarAcceptYes,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarAcceptYes","MPC_IAIICTriTachCMD beginPirateDelivery
+$global.MPC_foundPirateBMContactInBar = true","You ignore the protesting gaze of your guard and wave them away. They swallow, then salute stiffly, joining $personName's side. $HeOrShe pats the guard's shoulder. ""You'll keep me safe, right?"" $HeOrShe snorts, dragging them along them as they walk outside the bar. All you can do is sigh.","MPC_IAIICTTBMDonnBarEnd:Return to your fleet",
+MPC_IAIICTTBMDonnBarAcceptNo,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarAcceptNo","MPC_IAIICTriTachCMD beginPirateDelivery
+$global.MPC_foundPirateBMContactInBar = true","$HisOrHer playful smile doesn't inch. ""Ah well. With you, then!"" $HeOrHer joins your side - a little too close for comfort. You get the feeling $heOrShe enjoys this. You certainly don't.","MPC_IAIICTTBMDonnBarEnd:Return to your fleet",
+MPC_IAIICTTBMDonnBarAcceptWtf,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarAcceptWtf","MPC_IAIICTriTachCMD beginPirateDelivery
+AdjustRepActivePerson SUSPICIOUS -1
+$global.MPC_foundPirateBMContactInBar = true","$HeOrShe falters in the face of your momentary assault. ""...right... I... I'll get-on my way to the $shipOrFleet, then..."" $heOrShe mutters, trying $hisOrHer best to maintain $hisOrHer smile. $HeOrShe trudges away, ignoring your entandre - proving your theory $heOrShe only wanted to take a guard to torment you.
+
+What a horrendous individual.","MPC_IAIICTTBMDonnBarEnd:Return to your fleet",
+MPC_IAIICTTBMDonnBarEnd,DialogOptionSelected,"$option == MPC_IAIICTTBMDonnBarEnd","EndConversation
+BarCMD leaveBar",,,
+"#END Donn",,,,,,
+,,,,,,
+# Cethlenn,,,,,,
+MPC_IAIICTTBMCethlennBarSearch,AddBarEvents,"MPC_IAIICTriTachCMD canDoIndieBMContactBarEvent","AddBarEvent MPC_IAIICTTBMCethlennBarSearchEvent ""Look for anyone who will talk about the intel broker"" ""This would be a great place to search for clues as to the broker's identity."" highlight",,,
+MPC_IAIICTTBMCethlennBarSearchEvent,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchEvent",,"Quite aware of the Tri-Tachyon influence on this polity, you opt for caution. Buzzwords and codephrases flow out your mouth like wind, and you ensure alcohol keeps pouring like water. Eventually, you come to the conclusion that most patrons either don't know what you're getting at, or recognize it and decide not to share anything.
+
+You might have to up the ante.","MPC_IAIICTTBMCethlennBarSearchEventPushLuck:Push your luck
+MPC_IAIICTTBMCethlennBarSearchEventAbort:Change your mind, and give up this pursuit",
+MPC_IAIICTTBMCethlennBarSearchEventAbort,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchEventAbort","$global.MPC_failedIndieBMContact = true
+BarCMD leaveBar","You wisely abandon this course of action.",,
+MPC_IAIICTTBMCethlennBarSearchEventPushLuck,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchEventPushLuck",,"You didn't come all this way and use some of your best wit just to give up now. You drop your careful demeanour and start asking the *hard* questions. ""Do you know anything about someone gathering intel on Tri-Tach employees around here?"" ""I need to know about the data broker."" ""Ever heard of any execs doing strange things around here?""
+
+The most common reaction is a nervous smile, and a scoot away. The second most common is a death glare. The third most common is a grifter trying to sell you something in a completely unrelated counter-offer. It soon becomes clear that your efforts are for naught - all possible contact points are exhausted. You slump your shoulders and move to exit the bar for greener pastures, only to bounce off two hulking men blocking the exit.","MPC_IAIICTTBMCethlennBarSearchBeginConfrontation:Stagger backwards",
+MPC_IAIICTTBMCethlennBarSearchBeginConfrontation,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchBeginConfrontation","BeginConversation MPC_triTachBruiserOne
+ShowSecondPerson MPC_triTachBruiserTwo
+
+FireBest MPC_IAIICTTBMCethlennBarSearchBeginConfrontationImpl",,,
+MPC_IAIICTTBMCethlennBarSearchBeginConfrontationImpl,MPC_IAIICTTBMCethlennBarSearchBeginConfrontationImpl,,"SetStoryOption MPC_IAIICTTBMCethlennBarSearchCoaxInfo 1 MPC_getDownPayment ui_char_spent_story_point ""Got data broker intel out of some Tri-Tach bruisers""","Before you stands a pair of Tri-Tach bruisers, scowling at you with arms crossed. Your bodyguards instinctively take protective formation in front of you, a wall of meat and metal between the threat. Their gaze doesnt deviate from you, like a predator on herded prey. 
+
+The first one steps forward, into the unlit stunprod of a guard, almost challenging you. ""We don't like it when you ask these questions. Privacy violation, you know?"" 
+The second one joins him. ""Yeah - real rude. You're making people real uncomfortable."" He cracks his knuckles, prompting the wall formation to tighten. ""I think people would like it if you left...""
+
+""And never came back.""","MPC_IAIICTTBMCethlennBarSearchCoaxInfo:See if you can coax some info out of these meatheads
+MPC_IAIICTTBMCethlennBarSearchInsultStart:Tell them to emergency burn into a pulsar
+MPC_IAIICTTBMCethlennBarSearchLeaveBefore:This isn't worth it. Just leave",
+MPC_IAIICTTBMCethlennBarSearchInsultStart,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultStart","$player.ethosCocky++
+
+AdjustRepActivePerson HOSTILE -10
+AdjustRepPerson MPC_triTachBruiserTwo HOSTILE -10
+AdjustRep tritachyon SUSPICIOUS -1
+
+$global.MPC_failedIndieBMContact = true","They spare no reaction other than the intensification of their glares. You stand there, smugly triumphant in the battle of ""wits"".","MPC_IAIICTTBMCethlennBarSearchInsultTwo:Prepare your next verbal assault
+MPC_IAIICTTBMCethlennBarSearchInsultTwoSmug:Just stand there, glaring cheerfully
+MPC_IAIICTTBMCethlennBarSearchInsultTwoApologize:Rethink your situation and apologize",
+MPC_IAIICTTBMCethlennBarSearchInsultTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultTwo","MPC_IAIICTriTachCMD lightsOut
+PlaySound MPC_punch
+HideFirstPerson
+HideSecondPerson","You immediately launch into preparations for your next brilliant insult. But before your thought can finish, your vision is suddenly obscured by the blur of reddened flesh, a scream of white, and then black void.","MPC_IAIICTTBMCethlennBarSearchInsultAwaken:Wake up",
+MPC_IAIICTTBMCethlennBarSearchInsultTwoSmug,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultTwoSmug","MPC_IAIICTriTachCMD lightsOut
+PlaySound MPC_punch
+HideFirstPerson
+HideSecondPerson","Your vision is suddenly obscured by the blur of reddened flesh, a screen of pain and white, and then black void.","MPC_IAIICTTBMCethlennBarSearchInsultAwaken:Wake up",
+MPC_IAIICTTBMCethlennBarSearchInsultTwoApologize,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultTwoApologize","MPC_IAIICTriTachCMD lightsOut
+PlaySound MPC_punch
+HideFirstPerson
+HideSecondPerson
+$player.ethosMercy++","Before your apology can escape your lips, your vision is suddenly obscured by the blur of reddened flesh, a screen of pain and white, and then black void.","MPC_IAIICTTBMCethlennBarSearchInsultAwaken:Wake up",
+MPC_IAIICTTBMCethlennBarSearchInsultAwaken,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultAwaken","AddTextSmall ""Received minor brain damage"" bad
+MPC_IAIICTriTachCMD awaken","Your vision gradually returns to you, assailed by floating white spots. You find yourself on a med-center hypobed, prone, surrounded by your guards, and towered by a triage-medic (presumably sent from your $shipOrFleet). You hiss in pain as a cloth dabs at an open gash on your skull, and sigh in relief as your morpitine kicks in.","MPC_IAIICTTBMCethlennBarSearchInsultSitrep:""S... Sitrep?""
+MPC_IAIICTTBMCethlennBarSearchInsultGetUp:Try to get up",
+MPC_IAIICTTBMCethlennBarSearchInsultGetUp,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultGetUp",,"Your vision doubles, than triples, before you finally surrender yourself to the physician's care. ""You were punched in the face, $playerSirOrMadam. Bad."" A guard comments. Answering your grimly inquisitive gaze, they continue, ""Doc over here says you've got a nasty concussion. Nothing a neurostabilizer won't fix, though."" As if on queue, the medic attaches a small framework device onto your temple, and you feel a sharp jolt like an omen's EMP emitter directly in your brain. Before you can reprimand them, the doctor advises ""No piloting for the next week, at least. That stabilizer will keep you in the game until your brain recovers.""","MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened:""What happened to my assailants?""
+MPC_IAIICTTBMCethlennBarSearchInsultWhatHappenedRude:""What happened to those assholes?""
+MPC_IAIICTTBMCethlennBarSearchInsultLeave:Get up and leave, with the assistance of your guards",
+MPC_IAIICTTBMCethlennBarSearchInsultSitrep,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultSitrep",,"Your guards look between eachother, silently deciding who will answer. Finally, one speaks up: ""You were punched in the face, $playerSirOrMadam. Bad."" Answering your grimly inquisitive gaze, they continue, ""Doc over here says you've got a nasty concussion. Nothing a neurostabilizer won't fix, though."" As if on queue, the medic attaches a small framework device onto your temple, and you feel a sharp jolt like an omen's EMP emitter directly in your brain. Before you can reprimand them, the doctor advises ""No piloting for the next week, at least. That stabilizer will keep you in the game until your brain recovers.""","MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened:""What happened to my assailants?""
+MPC_IAIICTTBMCethlennBarSearchInsultWhatHappenedRude:""What happened to those assholes?""
+MPC_IAIICTTBMCethlennBarSearchInsultLeave:Get up and leave, with the assistance of your guards",
+MPC_IAIICTTBMCethlennBarSearchInsultWhatHappenedRude,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultWhatHappenedRude","$option = MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened
+FireBest DialogOptionSelected",,,
+MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened","RemoveOption MPC_IAIICTTBMCethlennBarSearchInsultWhatHappened
+RemoveOption MPC_IAIICTTBMCethlennBarSearchInsultWhatHappenedRude","It takes a moment for your guards to respond. ""We held them down, waited for MuniSec to arrive - didn't take long. They're in the local brig now.""
+
+Good.",,
+MPC_IAIICTTBMCethlennBarSearchInsultLeave,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchInsultLeave","EndConversation
+BarCMD leaveBar","You groan as your muscles fight against you, but the arms of your bodyguards help you up and into your waiting shuttle.",,
+MPC_IAIICTTBMCethlennBarSearchLeaveBefore,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchLeaveBefore","$global.MPC_failedIndieBMContact = true
+EndConversation
+BarCMD leaveBar","They smugly smile as you walk out the door. It seems your line of inquiry here has come to an end.",,
+MPC_IAIICTTBMCethlennBarSearchCoaxInfo,DialogOptionSelected,"$option ==MPC_IAIICTTBMCethlennBarSearchCoaxInfo",,"You're no stranger to dealing with enforcers such as these. They clearly know something. It shouldn't be too hard to get them to slip up.","MPC_IAIICTTBMCethlennBarSearchCoaxInfoTwo:""Are you sure about that? Take a closer look at me.""",
+MPC_IAIICTTBMCethlennBarSearchCoaxInfoTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchCoaxInfoTwo",,"The first goon squints, and the other raises a brow. ""Are we supposed to know you?""","MPC_IAIICTTBMCethlennBarSearchCoaxInfoThree:Put on your best scowl and growl ""You don't recognize your superior?!""",
+MPC_IAIICTTBMCethlennBarSearchCoaxInfoThree,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchCoaxInfoThree","$global.MPC_discoveredBMName = true
+$global.MPC_trickedTriTachBruisers = true
+SetTextHighlights ""Khalidra"" ""simmering""
+
+MPC_IAIICTriTachCMD incrementEvidence","Like a tachyonbolt through oscillating shields, you sense weakness just for a moment in the brief fear of subordination. And you pounce.
+
+Your *tear* into them. How dare they not recognize their boss' second-in-command?! Do they not realize you have authority?! You finish by declaring if they had been just a bit more rude, you'd have discarded their contracts on the spot.
+
+They stand there, now throughly out of their depths, seeking any escape. ""S-sorry, $playerSirOrMadam - we didn't, notice, Khalidra never told us... we... we'll leave you to it..."" The first one blabbers. The second one listening to him speak, gasps and punches him in the back. ""IDIOT! You seriously believed that?! You dolt - you just gave away her name!""
+
+So a woman named Khalidra. Interesting.
+
+The two notice your introspection and turn their attention to you, positively simmering.","MPC_IAIICTTBMCethlennBarSearchCoaxInfoSmile:Smile smugly
+MPC_IAIICTTBMCethlennBarSearchCoaxInfoRun:Make a quick heel-turn and get out while you still can",
+MPC_IAIICTTBMCethlennBarSearchCoaxInfoSmile,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchCoaxInfoSmile","MPC_IAIICTriTachCMD lightsOut
+PlaySound MPC_punch
+HideFirstPerson
+HideSecondPerson
+$player.ethosCocky++","Your vision is suddenly obscured by the blur of reddened flesh, a screen of pain and white, and then black void.","MPC_IAIICTTBMCethlennBarSearchInsultAwaken:Wake up",
+MPC_IAIICTTBMCethlennBarSearchCoaxInfoRun,DialogOptionSelected,"$option == MPC_IAIICTTBMCethlennBarSearchCoaxInfoRun","MPC_IAIICTriTachCMD lightsOut
+PlaySound MPC_punch
+HideFirstPerson
+HideSecondPerson","Before you can react, your vision is suddenly obscured by the blur of reddened flesh, a screen of pain and white, and then black void.","MPC_IAIICTTBMCethlennBarSearchInsultAwaken:Wake up",
+"#END Cethlenn",,,,,,
+"#END Go to bar, search for someone who knows anything",,,,,,
+,,,,,,
+# Deliver pirate to gilead,,,,,,
+MPC_IAIICTTBMDeliverPirateOptionHub,PopulateOptions,"MPC_IAIICTriTachCMD canDeliverPirateToGilead","FireBest MPC_modifyGileadDeliverOption",,"40:MPC_IAIICTTBMDeliverPirateOption:Drop off $global.MPC_deliveryPirateName at the nearest population center",
+MPC_modifyGileadDeliverOptionCantLand,MPC_modifyGileadDeliverOption,"$tradeMode == NONE","SetEnabled MPC_IAIICTTBMDeliverPirateOption false
+SetTooltip MPC_IAIICTTBMDeliverPirateOption ""You are currently unable to dock.""",,,
+MPC_IAIICTTBMDeliverPirateOption,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOption","BeginConversation ""MPC_donnPirate""
+FireBest MPC_IAIICTTBMDeliverPirateOptionBegin",,,
+MPC_IAIICTTBMDeliverPirateOptionBegin,MPC_IAIICTTBMDeliverPirateOptionBegin,,,"You and $personName take a shuttle down to a rather rural part of Gilead, at $hisOrHer request. Traffic control proceeds normally, with only a small prayer exchanged between pilot and controller. Everything appears to be going well, up until the intercom sparks to life with a worried tone.","MPC_IAIICTTBMDeliverPirateOptionTwo:Listen",
+MPC_IAIICTTBMDeliverPirateOptionTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionTwo","SetTextHighlights ""land immediately""","""Captain, we... have a problem."" The pilot speaks. ""I've received orders from the local knights sect to... land immediately. And--aw, shit!"" You stiffen as something seems to be added to the ambient roar of engines. ""They've got a skiff on our flank! Interdictors hot, locked on our engines! They're not saying anything else-Captain I'm sorry but I've got to put her down!""
+
+You glance over to your passenger, who is currently sweating bullets. ""Damn it - how'd they figure it out? Captain-"" $heOrShe nervously glances at you, mouth agape, searching for words. Finanlly, after a eternity of a second, $heOrShe stammers, ""Y-you can't let them take me. Re-remember-"" $heOrShe clears her throat. ""Without me, you can't get that datacache. You won't learn - ANYTHING!"" $HeOrShe swallows, sitting back.
+
+You consider your options, but are broken out of your thought by your pilot's intercom crackling to life. ""C-Captain-"" the pilot stammers. ""There's five now. They've taken a-a claw formation behind us. We... we can't outrun this.""","MPC_IAIICTTBMDeliverPirateOptionLand:Order the pilot to land
+MPC_IAIICTTBMDeliverPirateOptionLandCurse:Curse, and order the pilot to land",
+MPC_IAIICTTBMDeliverPirateOptionTwoDownpayment,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionTwo
+$global.MPC_acceptedDownPayment == true","SetTextHighlights ""land immediately"" ""down payment""","""Captain, we... have a problem."" The pilot speaks. ""I've received orders from the local knights sect to... land immediately. And--aw, shit!"" You stiffen as something seems to be added to the ambient roar of engines. ""They've got a skiff on our flank! Interdictors hot, locked on our engines! They're not saying anything else-Captain I'm sorry but I've got to put her down!""
+
+You glance over to your passenger, who is currently sweating bullets. ""Damn it - how'd they figure it out? Captain-"" $heOrShe nervously glances at you, mouth agape, searching for words. Finanlly, after a eternity of a second, $heOrShe stammers, ""Y-you can't let them take me. Re-remember-"" $heOrShe clears her throat. ""Without me, you can't get that datacache. You won't learn - ANYTHING!"" $HeOrShe swallows, sitting back.
+
+You consider your options, but are broken out of your thought by your pilot's intercom crackling to life. ""C-Captain-"" the pilot stammers. ""There's five now. They've taken a-a claw formation behind us. We... we can't outrun this.""","MPC_IAIICTTBMDeliverPirateOptionLand:Order the pilot to land
+MPC_IAIICTTBMDeliverPirateOptionLandCurse:Curse, and order the pilot to land
+",
+MPC_IAIICTTBMDeliverPirateOptionLandCurse,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionLandCurse","$option = MPC_IAIICTTBMDeliverPirateOptionLand
+FireBest DialogOptionSelected",,,
+MPC_IAIICTTBMDeliverPirateOptionEVADE,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionEVADE","RemoveOption MPC_IAIICTTBMDeliverPirateOptionEVADE
+SetTextHighlights ""A horrible idea""","You take stock of your tactical situation. Five heavily-armed skiffs on your flank, with reinforcements likely only minutes away. Heavy batteries on the ground, ready to rip you apart if you try anything. All in all...
+
+A horrible idea.",,"SetTextHighlights ""You get the distinct feeling that this is a VERY, VERY VERY BAD IDEA.""
+SetStoryOption MPC_IAIICTTBMDeliverPirateOptionEVADEYes 10 MPC_suicide ui_char_spent_story_point ""you wont live to read this lol""
+
+You recall your tactical situation. Outnumbered 5 to 1 in hostile territory. Outgunned, outmaneuvered, surrounded, and mostly unarmed. A victory would be more than a miracle in a situation like this.
+
+You get the distinct feeling that this is a VERY, VERY VERY BAD IDEA. You briefly recontemplate this action.
+
+MPC_IAIICTTBMDeliverPirateOptionEVADEYes:Continue - you're sure of yourself (Very, very bad idea)
+MPC_IAIICTTBMDeliverPirateOptionEVADENo:Wisely reconsider"
+MPC_IAIICTTBMDeliverPirateOptionEVADEYes,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionEVADEYes","SetTextHighlights ""What a stupid way to die.""","Grinning ear to ear, you storm into the cockpit, and shove out the ailing pilot. You skillfully pull the shuttle into a spiralling orbit around the nearest skiff and go weapons hot. Your ears fill with the sound of heavy gunfire as your vision is obscured by the detritus of the now-destroyed patrolboat. Turning to your next target, you notice an incoming barrage of swarmers. Of course, their speed is no match to your piloting ability, and you make a quick dodge to the side.
+
+And then you lose an engine.
+And then you lose your weapons.
+And then the hull is breached.
+
+Failure after failure, shell after shells rip into your shuttle, sending shrapnel to tear into your flesh. Blood splurts all over the floor as you feel your life leave you, and your only thought is...
+
+""What a stupid way to die.""","MPC_IAIICTTBMDeliverPirateOptionSuccumb:Succumb",
+MPC_IAIICTTBMDeliverPirateOptionSuccumb,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionSuccumb","MPC_IAIICTriTachCMD fuckingDie",,,
+MPC_IAIICTTBMDeliverPirateOptionLand,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionLand",,"You order the pilot to carefully set the shuttle down in the nearest clearing - abiding by the knight's instructions. The harsh thrum of the engines come to a hum, then stop. ","MPC_IAIICTTBMDeliverPirateOptionStepOut:Step outside
+MPC_IAIICTTBMDeliverPirateOptionStepOutWith:Step outside, with $global.MPC_deliveryPirateName",
+MPC_IAIICTTBMDeliverPirateOptionStepOutWith,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionStepOutWith","$MPC_steppedOutWithGuy = true 0
+$option = MPC_IAIICTTBMDeliverPirateOptionStepOut
+FireBest DialogOptionSelected",,,
+MPC_IAIICTTBMDeliverPirateOptionStepOut,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionStepOut","ShowSecondPerson MPC_arrestingKnightOfficer","Light from the sun eeks through the crack of the opening door, flooding in with full force to reveal an array of knights aiming CP-rifles at you. In the middle is a tightly-dressed officer, only slightly more adorned than his compatriots.
+
+He looks you over and approaches, extending a hand in greeting.
+
+""Knight-Commander Kelk. And you are?""","MPC_IAIICTTBMDeliverPirateOptionShakeHand:Introduce yourself and shake his hand
+MPC_IAIICTTBMDeliverPirateOptionRemainMotionless:Remain still",
+MPC_IAIICTTBMDeliverPirateOptionRemainMotionless,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionRemainMotionless","SetTextHighlights ""blackmailer""
+FireBest MPC_IAIICTTBMDeliverPirateReferText
+FireAll MPC_IAIICTTBMDeliverPirateLandedOptions","""Ahh..."" You sense a slight frown forming in the corner of his mouth. ""That's disappointing... I was hoping we could start this on a high note. Well... let's get to it, Captain."" 
+
+""I believe you're harboring a... known associate of a quite notorious blackmailer.""",,
+MPC_IAIICTTBMDeliverPirateOptionShakeHand,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionShakeHand","SetTextHighlights ""blackmailer""
+FireBest MPC_IAIICTTBMDeliverPirateReferText
+FireAll MPC_IAIICTTBMDeliverPirateLandedOptions","Kelk smiles. ""Under Ludd's light, the least we can do is give eachother some kindness, even in the darkest times."" he nods to his soldiers, whose aim doesn't waver. ""I believe you're harboring a... known associate of a quite notorious blackmailer.""",,
+MPC_IAIICTTBMDeliverPirateReferTextOut,MPC_IAIICTTBMDeliverPirateReferText,"$MPC_steppedOutWithGuy score:50","FireBest MPC_IAIICTTBMDeliverPirateReferText","His gaze knowingly drifts to $personFirstName, who is busy fidgeting alongside you.",,
+MPC_IAIICTTBMDeliverPirateReferTextNot,MPC_IAIICTTBMDeliverPirateReferText,"!$MPC_steppedOutWithGuy score:50",,"You feel his gaze drift to your shuttle. ""Come on out. I know you're in there, $personFirstName."" Sheepishly, $personFirstName trundles out of into the sun, beside you, fidgeting nervously.",,
+MPC_IAIICTTBMDeliverPirateLandedOptionsStandard,MPC_IAIICTTBMDeliverPirateLandedOptions,,"SetOptionColor MPC_IAIICTTBMDeliverPirateOptionAskAboutBM highlight
+FireBest MPC_IAIICTTBMDeliverPiratePirateReaction
+SetStoryOption MPC_IAIICTTBMDeliverPirateOptionTalkOut 1 MPC_getDownPayment ui_char_spent_story_point ""Appealed to a church officer's sense of justice""","""I would very much like to 'take' this associate, and hold $himOrHer accountable for $hisOrHer crimes. You understand, of course.""
+
+$personFirstName gives you a pleading look. If you let $himOrHer go, you'll never learn what they have to know about this 'blackmailer'. On the other hand, refusing to hand $himOrHer over may cause diplomatic issues with the church, and may not even be possible without a special kind of wit.","0:MPC_IAIICTTBMDeliverPirateOptionAskAboutBM:""Hold on. You said $heOrShe is a associate of a 'blackmailer'?""
+1:MPC_IAIICTTBMDeliverPirateOptionNo:""No.""
+5:MPC_IAIICTTBMDeliverPirateOptionTalkOut:Appeal to the officer's sense of justice
+
+10:MPC_IAIICTTBMDeliverPirateHandOver:Agree to hand over the pirate",
+MPC_IAIICTTBMDeliverPirateOptionAskAboutBM,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionAskAboutBM","RemoveOption MPC_IAIICTTBMDeliverPirateOptionAskAboutBM
+$global.MPC_discoveredBMAntics = true
+
+MPC_IAIICTriTachCMD incrementEvidence","He tilts his head. ""Really? You didn't know? Yes, $personFirstName helped a vile criminal create a full profile on many of our luddic faithful."" He sighs. ""Up until recently, they spent much of their time travelling between faithful colonies and exploiting the impressionable with ""personality quizzes"". He brings his hand to his forehead, suppressing a groan. ""The amount of us that fell for that...""",,
+MPC_IAIICTTBMDeliverPirateOptionNo,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionNo","RemoveOption MPC_IAIICTTBMDeliverPirateOptionNo
+
+AdjustRep luddic_church SUSPICIOUS -2
+AdjustRepPerson MPC_arrestingKnightOfficer SUSPICIOUS -2
+","His smile fades, the hint of genuinity vanishing along with it. ""Captain... I don't believe that's an option."" He frowns darkly, flicking his fingers towards you. The soldiers follow suit with their weapons. ""Give $himOrHer to us, Captain. Ludd wills it.""",,
+MPC_IAIICTTBMDeliverPirateHandOver,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateHandOver","$global.MPC_handedOverPirate = true
+MPC_IAIICTriTachCMD handOverPirate","""N-no Captain, you can't let them do this to me! T-they'll do things to me! Please!"" $HeOrShe stammers, as a pair of soliders grab $himOrHer by the shoulder. Kelk holds up a hand, walking past the squirming $personFirstName to meet you. ""All we'll do is ensure $heOrShe faces the consequences for $hisOrHer crimes. We're not like those corporates $heOrShe is so scared about."" He smiles.
+
+""Thanks to your..."" $heOrShe gestures widely. ""...cooperation, we'll forget everything that happened here. Understand, Captain?""","MPC_IAIICTTBMDeliverPirateHandOverUnderstand:""I understand.""",
+MPC_IAIICTTBMDeliverPirateHandOverUnderstand,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateHandOverUnderstand","SetTextHighlights ""blackmailer"" ""Jennifer Khalidra""","He smiles, and turns to depart with his soldiers. ""See, Captain? Not everything has to be resolved with bloodshed."" You shoot one last glance to $personName before boarding your shuttle, assuring your pilot that you won't be bothered on the way back to the fleet.
+
+On the way to your $shipOrFleet, you ruminate over what occurred on Gilead's surface.
+Despite losing your best shot at learning about the IAIIC, you did learn a few things.
+Firstly, the subject of interest is a blackmailer. Apparantly, they constructed a file on luddic faithful via ""personality tests"". How that was enough to generate a profile boggles your mind, but it should be helpful.","MPC_IAIICTBMDeliverPirateReturnToOrbit:Return to your $shipOrFleet",
+MPC_IAIICTTBMDeliverPirateOptionTalkOut,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionTalkOut",,"You know this type. Virtuous, kind, but with a diehard dedication to justice. You can tell by the way he speaks.","0:MPC_IAIICTTBMDeliverPirateSpecialWhatDo:""Officer. What did $personName do? Them, specifically?""",
+MPC_IAIICTTBMDeliverPirateSpecialWhatDo,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialWhatDo","SetTextHighlights ""accomplice""","His head cranes. ""Hm? What did $heOrShe do? Well-"" he thinks. ""$HeOrShe assisted the blackmailer. They're an accomplice, Captain."" His tone begins to slightly grate.","MPC_IAIICTTBMDeliverPirateSpecialVictim:""Accomplice, or victim?""",
+MPC_IAIICTTBMDeliverPirateSpecialVictim,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialVictim",,"He stops. ""Victim...? Just what are you getting at, captain...?""
+
+You go on to explain how, just like all the hapless faithful, this poor young $manOrWoman has been led astray. $HeOrShe joins your lecture, shrinking to make $himOrHerself less noticeable - playing the role. This blackmailer - this master manipulator - is able of corrupting minds beyond what is reasonable. 
+
+He stares stiffly, brow furrowed, hands folded. He takes a moment to stare at the now shrivelled $personFirstName, and takes a sharp breath. ""..$heOrShe... $hisOrHer role was... rather subdued, I suppose... mere logistical support - transport."" $HeOrShe frowns, turning back to you. ""Still! 52:32! T-""","MPC_IAIICTTBMDeliverPirateSpecialLecture:""'The wicked hand that defiled Ludd's skin withered and died.' But are you not forgetting the verse afterwards, Knight-Commander?""",
+MPC_IAIICTTBMDeliverPirateSpecialLecture,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialLecture",,"He staggers back, mouth agape mid-gasp. Breaking out of his stupor a moment later, he scrambles to find his copy of the Book of Ludd and flip through it. 
+As he finds the verse, his eyelids collapse, and he slaps it closed, sighing. ""...I see your point.""
+
+""'And yet, Ludd graced his hand on the child's cheek, and it was filled with color, life, and laughter.'"" He chuckles - amused by the turn of the situation? Your wit? ""...are you sure this individual will not re-offend? Even in scripture, Ludd practiced punishment before forgiveness.""
+
+He coughs. ""At least in this passage.""","MPC_IAIICTTBMDeliverPirateSpecialForgive:""Look upon this soul. You yourself said the offense was relatively minor. Do you really believe $heOrShe will reoffend?""",
+MPC_IAIICTTBMDeliverPirateSpecialForgive,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialForgive","AdjustRep luddic_church SUSPICIOUS -5","He laughs, shaking his head. ""Oh, of course! Look at that false slouch!"" $personFirstName stiffens at hearing that. ""There's not an ounce of remorse in that body."" He sighs, lowering his head. ""But I cannot deny that I am... dissatisfied with the current situation amongst the Knights. It's becoming a strictly arrest-first-ask-questions-later policy."" 
+
+He contemplates a moment, wondering if his light mutiny would be worth it. Finally, he waves away his soldiers, who obediently lower their weapons. 
+
+""Is $heOrShe a victim? I cannot say, Captain. But..."" he bites his lip. ""I cannot deny it's possibility. But from where I'm standing, here? In the grassy meadow? $HeOrShe looks no different from a mere quickstore robber."" It's then you notice $personFirstName has shed $hisOrHer lavish clothing to adopt a more ragged attire.
+
+He waves you off hastily. ""Go. I'll pretend we never saw you.""","MPC_IAIICTTBMDeliverPirateSpecialSoldiers:""What of your men?""",
+MPC_IAIICTTBMDeliverPirateSpecialSoldiers,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialSoldiers",,"He looks back to them, like a father upon children. ""Ah... my flock."" He lets out a quiet giggle. ""Worry not, Captain-"" he places a hand on your shoulder. ""What would a knight be without his squires? They follow me - less the church."" The hand falls off.","MPC_IAIICTTBMDeliverPirateSpecialBoardShuttle:Board the shuttle
+MPC_IAIICTTBMDeliverPirateSpecialBoardShuttleGood:Board the shuttle and wish the captain well
+",
+MPC_IAIICTTBMDeliverPirateSpecialBoardShuttle,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialBoardShuttle","HideSecondPerson","The door shuts behind you, and your pilot quickly takes off, still sweating over the terrifying encounter you all had only minutes prior.
+
+The atmosphere between you and $personName is as thick as Volturnian deep-seawater. You notice a small crack in $hisOrHer face widening, but by then, it's too late - $hisOrHer hull ruptures and lets loose a torrent of hysterical laughter. 
+
+""HAHAHA! BRILLIANT! BRILLIANT BLOODY JOB, CAPTAIN!"" $HeOrShe claps your shoulder, and you instinctively flinch backwards to avoid narco-laden spittle.
+
+""That victim act was golden, just golden! HaHA! Ohhh-at first I thought you were a sodding maniac but then I realized what you were doing!"" $HeOrShe pokes your chin, and you have to keep a hand at chest-level just to maintain distance. ""You were PLAYING him!""","MPC_IAIICTTBMDeliverPirateSilent:Push $himOrHer off yourself
+MPC_IAIICTTBMDeliverPirateTruth:""No no, I meant everything I said.""
+MPC_IAIICTTBMDeliverPirateLie:""No no, I meant everything I said. (Lie)""",
+MPC_IAIICTTBMDeliverPirateSpecialBoardShuttleGood,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSpecialBoardShuttleGood","$option = MPC_IAIICTTBMDeliverPirateSpecialBoardShuttle
+FireBest DialogOptionSelected",,,
+MPC_IAIICTTBMDeliverPirateSilent,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateSilent","AdjustRepActivePerson SUSPICIOUS -1","You shove $himOrHer off yourself, prompting your guards to do the same. You shoot $himOrHer your best stern glare, a strong warning.
+
+$HeOrShe cries out as $heOrShe flies into the hard plasteel of the shuttle wall. ""G-gack! You-ass, I was just-"" $heOrShe huffs. ""Excited...""
+
+$HeOrShe crosses $hisOrHer arms and remains silent for the rest of the trip, assisted by the bulky arms of your bodyguards separating you two.","MPC_IAIICTBMDeliverPirateArrive:Wait for the shuttle to arrive",
+MPC_IAIICTTBMDeliverPirateTruth,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateTruth","$player.ethosTruth++
+$player.ethosMercy++","$HeOrShe grins. ""Sure, buddy."" $heOrShe mumbles with a giggle. ","MPC_IAIICTBMDeliverPirateArrive:Wait for the shuttle to arrive",
+MPC_IAIICTTBMDeliverPirateLie,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateLie","$player.ethosLiar++","$HeOrShe grins. ""Sure, buddy."" $heOrShe mumbles with a giggle. ","MPC_IAIICTBMDeliverPirateArrive:Wait for the shuttle to arrive",
+MPC_IAIICTBMDeliverPirateArrive,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateArrive",,"On good time, your shuttle arrives at the town. You and $personFirstName file out, flanked by your guards. 
+
+""Well, here we are."" $heOrShe says, examining $hisOrHer surroundings. ""Nothing much to write home about, but - hey, I'll make do!"" $HeOrShe turns to you. ""Unfortunately, that uh, officer-"" $heOrShe scratches $hisOrHer scalp. ""Kinda... spoiled what I was going to tell you... but... you can ask anyway."" $HeOrShe officers a cheeky sympathetic smile.
+
+The two of you quickly find yourselves an isolated alley to discuss matters without prying eyes.","MPC_IAIICTBMDeliverPirateWhatDo:Ask $himOrHer about what $heOrShe actually *did* for the blackmailer
+MPC_IAIICTBMDeliverPirateWhatBMDo:Ask $himOrHer about what the blackmailer was gathering
+MPC_IAIICTBMDeliverPirateCache:Ask $himOrHer about the cache",
+MPC_IAIICTBMDeliverPirateWhatDo,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateWhatDo","RemoveOption MPC_IAIICTBMDeliverPirateWhatDo","""Ah, I was a data pilot."" Noting your confused expression, $heOrShe adds, ""I... mean, I flew around carrying cold-storage copies of the data they  gathered."" 
+
+Noticing your glare, $heOrShe quickly waves $hisOrHer hands across $hisOrHer face. ""I was never allowed to *access* the data! I just flew it around! I don't know anything about the contents other than what the officer told you! Look - all I really know is that they were the typical Ko Combine HGAI format drives, that's all!""
+
+You test another glare, but after getting no response, decide to move onto another line of questioning.",,
+MPC_IAIICTBMDeliverPirateWhatBMDo,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateWhatBMDo","RemoveOption MPC_IAIICTBMDeliverPirateWhatBMDo","""Honestly? I don't know."" $HeOrShe shrugs. ""They never provided me access to the data, and I was just there to pick it up and move it around.""
+
+$HeOrShe shrugs juviantly. ""Sorry. Told you that officer spoiled things!""",,
+MPC_IAIICTBMDeliverPirateCache,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCache
+$global.MPC_acceptedDownPayment != true","AddTextSmall ""Received coordinates for blackmail data cache"" highlight
+MPC_IAIICTriTachCMD getCacheCoords","""Ah - right. I completely forgot in the intensity of our *encounter*."" $HeOrShe giggles, fishing something out of $hisOrHer pocket. A moment later, it comes into view - a small datachip. ""This contains the coordinates to my cache. You should find... uh..."" $HeOrShe's expression painns. ""...I forgot.""
+
+$HeOrShe withers under your intense stare of disappointment. ""Hey, it's been a while, alright?! Like, cycles!"" $HeOrShe sighs, and you pocket the chip. With a nod from you, $heOrShe turns and begins walking away. ""See you later, $playerFirstName-"" $heOrShe catches $himOrHerself. ""Haha-actually-hope to never see you again!"" 
+
+$HeOrShe runs off, disappearing into the thin crowds of the marketplace.","MPC_IAIICTBMDeliverPirateReturnToOrbit:Return to your $shipOrFleet, keeping a lock on the coordinates the whole way",
+MPC_IAIICTBMDeliverPirateCachePayment,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCache
+$global.MPC_acceptedDownPayment score:50","$moneyMPC = $global.MPC_downPaymentDGS 0","""Ah - right. I completely forgot in the intensity of our *encounter*."" $HeOrShe giggles, but stops a moment later. ""...captain. Are you forgetting something?""","MPC_IAIICTBMDeliverPirateCachePaymentWhat:""What?""
+MPC_IAIICTBMDeliverPirateCachePaymentOhYeah:""Oh. Right. *That.*""",
+MPC_IAIICTBMDeliverPirateCachePaymentWhat,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCachePaymentWhat","SetTextHighlights $moneyMPC
+FireBest MPC_IAIICTBMDeliverPirateDownPaymentOptions","""Our *down* payment, Captain!"" $heOrShe glares lightly. ""Remember?! I paid you $moneyMPC credits as insurance. But now that I've told you what I know, I need it back.""",,
+MPC_IAIICTBMDeliverPirateCachePaymentOhYeah,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCachePaymentOhYeah","FireBest MPC_IAIICTBMDeliverPirateDownPaymentOptions","$HeOrShe crosses $hisOrHer arms. ""Come on. I don't have all day.""",,
+MPC_IAIICTBMDeliverPirateDownPaymentOptions,MPC_IAIICTBMDeliverPirateDownPaymentOptions,,"FireAll MPC_IAIICTBMDeliverPirateDownPaymentModifyOptions",,"MPC_IAIICTBMDeliverPirateCachePaymentPay:Return the down payment of $moneyMPC
+MPC_IAIICTBMDeliverPirateCachePaymentRefuse:Refuse",
+MPC_IAIICTBMDeliverPirateDownPaymentModifyOptionsNoMoney,MPC_IAIICTBMDeliverPirateDownPaymentModifyOptions,"$player.credits < $global.MPC_downPaymentAmount","SetEnabled MPC_IAIICTBMDeliverPirateCachePaymentPay false
+SetTooltip MPC_IAIICTBMDeliverPirateCachePaymentPay ""You spent the down payment...""",,,
+MPC_IAIICTBMDeliverPirateCachePaymentPay,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCachePaymentPay","AddCredits -$global.MPC_downPaymentAmount
+AddTextSmall ""Received coordinates for blackmail data cache"" highlight
+
+MPC_IAIICTriTachCMD getCacheCoords","You make the transfer promptly, and $hisOrHer face lights up as $hisOrHer broken-down TriPad registers the transfer. ""See? Business with us 'pirates' pays off!""
+
+$HeOrShe giggles, fishing something out of $hisOrHer pocket. A moment later, it comes into view - a small datachip. ""This contains the coordinates to my cache. You should find... uh..."" $HeOrShe's expression painns. ""...I forgot.""
+
+$HeOrShe withers under your intense stare of disappointment. ""Hey, it's been a while, alright?! Like, cycles!"" $HeOrShe sighs, and you pocket the chip. With a nod from you, $heOrShe turns and begins walking away. ""See you later, $playerFirstName-"" $heOrShe catches $himOrHerself. ""Haha-actually-hope to never see you again!"" 
+
+$HeOrShe runs off, disappearing into the thin crowds of the marketplace.","MPC_IAIICTBMDeliverPirateReturnToOrbit:Return to your $shipOrFleet, keeping a lock on the coordinates the whole way",
+MPC_IAIICTBMDeliverPirateCachePaymentRefuse,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCachePaymentRefuse","MPC_IAIICTriTachCMD didntPay
+AdjustRepActivePerson HOSTILE -50","""What?""
+
+""You can't say NO!"" $heOrShe sputters. ""W-what about the cache?! Didn't you want to learn about the-oh FORGET IT!"" 
+
+$HeOrShe spits at you and storms off. ""I hope I NEVER see you again!"" $HeOrShe disappears into the crowds.","MPC_IAIICTBMDeliverPirateReturnToOrbit:Return to your $shipOrFleet",
+MPC_IAIICTBMDeliverPirateReturnToOrbit,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateReturnToOrbit","EndConversation
+
+$option = defaultLeave
+FireBest DialogOptionSelected",,,
+"#END Deliver pirate to gilead",,,,,,
+,,,,,,
+# Pirate Data Cache,,,,,,
+MPC_IAIITBMExplorePirateCacheHub,PopulateOptions,"MPC_IAIICTriTachCMD canFindCache","FireBest MPC_IAIITBMExplorePirateCacheModifyOptions",,"40:MPC_IAIICTTBMExploreCacheOption:Fly a shuttle down to $global.MPC_deliveryPirateName's data cache",
+MPC_IAIITBMExplorePirateCacheModifyOptionsNoMarines,MPC_IAIITBMExplorePirateCacheModifyOptions,"$player.marines < 5","SetEnabled MPC_IAIICTTBMExploreCacheOption false
+SetTooltip MPC_IAIICTTBMExploreCacheOption ""You need at least 5 marines to raid a suspicious area such as this.""
+SetTooltipHighlights MPC_IAIICTTBMExploreCacheOption ""5""",,,
+MPC_IAIICTTBMExploreCacheOption,DialogOptionSelected,"$option == MPC_IAIICTTBMExploreCacheOption","SetTextHighlights ""discussing where to deposit the blackmail""
+
+MPC_IAIICTriTachCMD searchedCache
+MPC_IAIICTriTachCMD incrementEvidence
+
+$global.MPC_searchedPirateDataCache = true","You order a shuttle crammed with five of your best soldiers - a precaution, nothing more. The shuttle descends upon the marked location - nothing more than open field - without complication (excluding a confused call from STC due to your abnormal flightpath).
+
+Your marines scan the area but find nothing, prompting a further inspection. Routine depth-test shows an abnormality about one meter below the surface, and begin excavating (without notifying the parent polity, of course). Soon enough results emerge in the spotty vidfeed - a rectangular data drive, grey in complexure and with numerous connection ports (as well as being caked in dust due to the pirate's subpar hiding efforts).
+
+You load the datablock onto the shuttle and bring it back to the fleet for analysis. It seems to contain voice clips of the blackmailer discussing where to deposit the blackmail. While vague, it's concrete enough to suggest a general area to search.","defaultLeave:Leave",
+"#END Pirate Data Cache",,,,,,
+,,,,,,
+# Sensor Array,,,,,,
+MPC_IAIICTTBMArrayScanning,COB_AddOptions,"$entity.MPC_beingAnalyzed","FireBest MPC_IAIICTBMArrayModifyScanOption","You've begun to analyze this array's data, but you need more time.","50:MPC_IAIICTTBMScanArrayStart:Resume analysis",
+MPC_IAIICTBMArrayModifyScanOptionTracked,MPC_IAIICTBMArrayModifyScanOption,"IsSeenByAnyFleet","SetEnabled MPC_IAIICTTBMScanArrayStart false
+SetTooltip MPC_IAIICTTBMScanArrayStart ""Your $shipOrFleet is currently being tracked by a nearby fleet.""",,,
+MPC_IAIICTTBMArray,COB_AddOptions,"MPC_IAIICTriTachCMD canSearchSensorArray
+!$entity.MPC_beingAnalyzed","ShowDefaultVisual
+FireBest MPC_IAIICTBMArrayModifyOption",,"50:MPC_IAIICTTBMInspectArray:Attempt to extrapolate something from the array's logs",
+MPC_IAIICTBMArrayModifyOptionTracked,MPC_IAIICTBMArrayModifyOption,"IsSeenByAnyFleet","SetEnabled MPC_IAIICTTBMInspectArray false
+SetTooltip MPC_IAIICTTBMInspectArray ""Your $shipOrFleet is currently being tracked by a nearby fleet.""",,,
+MPC_IAIICTTBMInspectArray,DialogOptionSelected,"$option == MPC_IAIICTTBMInspectArray",,"While unlikely, there's a chance you can get something valuable by applying your contact's datafilter to the array's cached logs. Your electronics officer quickly gets to work jacking into the array's mainframe, which pings in delightment at your intrusion.","MPC_IAIICTTBMInspectArrayTwo:Wait for analysis to complete",
+MPC_IAIICTTBMInspectArrayTwo,DialogOptionSelected,"$option == MPC_IAIICTTBMInspectArrayTwo","SetStoryOption MPC_IAIICTTBMInspectArraySpecial 2 MPC_getDownPayment ui_char_spent_story_point ""Searched Hybrasil sensor array data manually""","Your technology officer calls you over a few minutes later, once the analysis is complete. You eagerly open the output-folder, waiting to see what you've learnt...
+
+Nothing. The application of the filter returned a grand total of zero results. You let out a deep sigh - it was a pipedream, after all.","MPC_IAIICTTBMInspectArraySpecial:Search through the data manually
+defaultLeave:Shake your head and leave
+",
+MPC_IAIICTTBMInspectArraySpecial,DialogOptionSelected,"$option == MPC_IAIICTTBMInspectArraySpecial","$entity.MPC_beingAnalyzed = true
+","So using the filters failed. So be it. You aren't leaving until you have some sort of result.
+
+Your sensors officer double-takes, shocked by your boldness. ""$PlayerSirOrMadam-"" they start. ""That would take at least a week of constant analysis! We don't even know what we're looking for!"" The rest of your bridge crew shares your officer's gaze, clearly desiring the opposite of three extended shifts in a row.","MPC_IAIICTTBMScanArrayStart:""Don't worry. You'll be paid overtime. (Start scanning)""",
+MPC_IAIICTTBMScanArrayStart,DialogOptionSelected,"$option == MPC_IAIICTTBMScanArrayStart","$MPC_arrayScanTime = $global.MPC_arrayScanTime 0
+MPC_scanArrayWait $MPCArrayScanWait $MPC_arrayScanTime $MPCArrayScanComplete $MPCArrayScanInterrupted $MPCArrayScanInProgress ""Analyzing...""",,,
+MPC_arrayScanFinished,OpenInteractionDialog,"$MPCArrayScanComplete score:500000","ShowDefaultVisual
+$global.MPC_searchedHybrasilArray = true
+$entity.MPC_beingAnalyzed = false
+
+SetTextHighlightColors highlight tritachyon highlight highlight
+SetTextHighlights ""five cycles ago"" ""Tri-Tach executives"" ""hiding out in a nebula with their transponder off"" ""hacking the sensor array""
+
+MPC_IAIICTriTachCMD incrementEvidence","After days of grueling analysis by your tired bridge crew, you hear a pair of heavenly utterances: ""Analysis complete...""
+
+You dismiss your crew to a well-earned day off, and pull up the output onto your primary monitor. What you see justifies the mandated overtime. Your officers have pinned down a small section of sensor readings of only a few fleets, about five cycles ago, making odd movements and actions. Curiously, these fleets are all piloted by Tri-Tach executives, who really have no reason to be hiding out in a nebula with their transponder off - or hacking the sensor array. 
+
+Satisfied with your work, you plot a course away from the array, much to the delightment of your helmsmen.","defaultLeave:Leave","SetTextHighlightColors highlight tritachyon highlight highlight
+SetTextHighlights ""five cycles ago"" ""Tri-Tach executives"" ""hiding out in a nebula with their transponder off"" ""hacking the sensor array"""
+"#END Sensor Array",,,,,,
+,,,,,,
+# Return to contact with evidence,,,,,,
+MPC_IAIICTTReturnWithEvidence,PopulateOptions,"MPC_IAIICTriTachCMD canReturnWithEvidence",,,"MPC_IAIICTTPresentIntel:Switch to private comms",
+MPC_IAIICTTPresentIntel,DialogOptionSelected,"$option == MPC_IAIICTTPresentIntel",,"With a covertly dispatched nano-message, $hisOrHer brow raises and makes a show of taking a call. The both of you exchange pleasantries, disconnect, than reconnect a moment later through VPN-assisted private comms.
+
+""You've got an idea on where to find the cache, hm?""","MPCIAIICTTPresentIntelTwo:Present your intel to $himOrHer",
+MPCIAIICTTPresentIntelTwo,DialogOptionSelected,"$option == MPCIAIICTTPresentIntelTwo","FireAll MPC_IAIICTTPresentIntelOptions
+SetTextHighlights ""very very interesting""
+","You transmit all your gathered data in a neatly formatted package for $hisOrHer reading pleasure. $HisOrHer eyes light up as they fall upon $hisOrHer TriPad, $hisOrHer customer-appeasement facade cracking into a carnivorous grin. ""Ah... this is very very interesting.""",,
+MPC_IAIICTTPresentIntelOptions,MPC_IAIICTTPresentIntelOptions,,,,"MPCIAIICTTPresentIntelThree:Continue",
+MPC_IAIICTTPresentIntelReactionSearchedRelay,MPC_IAIICTTPresentIntelOptions,"$global.MPC_searchedEladaRelay","SetTextHighlights ""outskirts""","""A month-long flightplan? Assuming this really is our quarry, that would place the cache on the sector outskirts..."" $HeOrShe taps $hisOrHer chin thoughtfully. ""Unless it's a ploy...""",,
+MPC_IAIICTTPresentIntelReactionKnowsName,MPC_IAIICTTPresentIntelOptions,"$global.MPC_discoveredBMName",,"""You suspect our target is a woman by the name of Khalidra?"" $HeOrShe flashes with recognition, but quickly absorbs $hisOrHer emotion with a smile.",,
+MPC_IAIICTTPresentIntelReactionKnowsIsBM,MPC_IAIICTTPresentIntelOptions,"$global.MPC_discoveredBMAntics",,"""Ah... a blackmailer..."" $heOrShe doesn't seem particularly enthused by this.","MPC_IAIICTTPresentIntelUpset:""Blackmail, huh? Is that why you were so dodgy?""",
+MPC_IAIICTTPresentIntelReactionNotKnowsIsBM,,"!$global.MPC_discoveredBMAntics","RemoveOption MPC_IAIICTTPresentIntelUpset
+",,,
+MPC_IAIICTTPresentIntelUpset,DialogOptionSelected,"$option == MPC_IAIICTTPresentIntelUpset","RemoveOption MPC_IAIICTTPresentIntelUpset
+","$HeOrShe frowns, and sighs. The only thing $heOrShe says is ""Yes.""",,
+MPCIAIICTTPresentIntelThree,DialogOptionSelected,"$option == MPCIAIICTTPresentIntelThree","MPC_IAIICTriTachCMD spawnCache","""This is certainly less than I'd like, but..."" $heOrShe swivels $hisOrHer CompoChair TM to the side and begins entering data at a furious pace into $hisOrHer IntelliCalc. A few cacophonous moments later, the clack of keystroke stops and $heOrShe folds $hisOrHer hands, face lit with the cool blue light of processing dataquery. ""...let's see what my Inquiry Respondance AI has to say about it.","MPCIAIICTTPresentIntelWait:Wait for the query to finish
+MPCIAIICTTPresentIntelIsntThatDangerous:""Isn't that 'AI' Tri-Tachyon? Isn't it monitored?""",
+MPCIAIICTTPresentIntelIsntThatDangerous,DialogOptionSelected,"$option == MPCIAIICTTPresentIntelIsntThatDangerous","RemoveOption MPCIAIICTTPresentIntelIsntThatDangerous","$HeOrShe takes a second to respond, and even then it's rather offhandedly: ""Oh, it's-"" $heOrShe gestures vaguely towards the processing unit. ""Cracked. Pirated."" $HeOrShe says nonchalantly, soon returning to $hisOrHer waiting. It seems this is just ""normal"" for $himOrHer.",,
+MPCIAIICTTPresentIntelWait,DialogOptionSelected,"$option == MPCIAIICTTPresentIntelWait","SetTextHighlights $global.MPC_BMcacheSystemName
+MPC_IAIICTriTachCMD beginCacheSearch","Eventually, the machine emits a small *ping* and $personFirstName springs up, frantically searching through the digital results. 
+
+A smile spreads across $hisOrHer lips, and $heOrShe turns to you. ""We've got a hit, Captain. And only one, for that matter - so no confusion."" Your TriPad buzzes as it receives a data package from $himOrHer, containing two things: A location, and an old Tri-Tachyon Aeronautics flight plan, containing an approximate launch-to-end flightcourse. ""Based off the data we've accrued, it's estimated our target fled to the $global.MPC_BMcacheSystemName system to, as it says, 'investigate a rich ore deposit'."" $HeOrShe shoots you a wink. ""Looks like you have your work cut out for you, captain."" $HeOrShe inhales. ""Travel to this system and find the data cache, return to me with it, and then maybe,"" $heOrShe grins faintly. ""I'll remember something about the IAIIC.""","MPC_IAIICTTPresentIntelHowAIGotLocation:Ask how that 'AI' managed to find the exact flightplan
+MPC_IAIICTTPresentIntelAnyDanger:Inquire about the dangers that may await you in $global.MPC_BMcacheSystemName
+cutCommLink:""I'll get on it. (Leave)""",
+MPC_IAIICTTPresentIntelHowAIGotLocation,DialogOptionSelected,"$option == MPC_IAIICTTPresentIntelHowAIGotLocation","RemoveOption MPC_IAIICTTPresentIntelHowAIGotLocation","$HeOrShe smirks. ""'Tri-Tachyon prides itself on it's upper-echelon delta-level AIs, capable of excelling in any activity it is designed for - while, of course, abiding strictly by the Domain's hyper-specialization intelligence clause."" You don't recall hearing of any specialization clause in your studies.
+
+""You could get 10% off your first purchase of a specialized AI $playerSirOrMadam - you'd just need to use my referral code..."" You deflect $hisOrHer dialogue before $heOrShe has a chance to even say it.",,
+MPC_IAIICTTPresentIntelAnyDanger,DialogOptionSelected,"$option == MPC_IAIICTTPresentIntelAnyDanger","RemoveOption MPC_IAIICTTPresentIntelAnyDanger","""Well, given the lengths this broker has gone to hide themselves from our eye..."" You think back to your ""adventurous"" barhopping. $HeOrShe smacks $hisOrHer lips. ""I'd expect *something*. But what in particular, I couldn't say.""
+
+$HeOrShe thinks a moment. ""Just keep your guard up.""",,
+"#END Return to contact with evidence",,,,,,
+,,,,,,
+# Find Cache,,,,,,
+,,,,,,
+# Cache Interactions,,,,,,
+"#END Cache Interactions",,,,,,
+,,,,,,
+# Defense fleet interactions,,,,,,
+MPC_TTBMHackedDerelictsEncounter,BeginFleetEncounter,"$MPC_TTBMDerelictGuard score:1000","$encounteredAlready = true
+FleetDesc","You notice a plethora of modifications to the ships before you. Namely, a special effort has been paid to ""upgrade"" the drones with high-tech shielding. ",,
+MPC_TTBMHackedDerelictsComms,OpenCommLink,"$entity.MPC_TTBMDerelictGuard score:1000","$menuState = fleetConvMain 0
+FireAll PopulateOptions
+RemoveOption ttTriTachProblems","Your comms officer struggles to create a solid connection between your $shipOrFleet and the drones. Eventually, a spotty Domain flag appears on the commscreen - only to be replaced by a glitched Tri-Tach logo stuck at 34 degrees of rotation.
+
+The ""visage"" of the lead Alpha Core appears on your screen and begins screeching. ""W-wwwelc-cooome cusstommerr -- y-yourr v-vvvessell hasss b-bb-been I-IDDENTIFIED as HO-HOSSTILEE and wi-will bee-s-summarilyy--ERRRAD-I-I-ICATED.""
+
+It lets out a distorted, cheerful fanfare, ""T-T-T-T-Tri-Tachyon wishes you a pleasant, and profitable, DAY.""",,
+MPC_TTBMHackedDerelictsInquireOpt,PopulateOptions,"$entity.MPC_TTBMDerelictGuard",,,"MPC_TTBMHackedDerelictsInquire:""You're here to protect that data cache, aren't you?""",
+MPC_TTBMHackedDerelictsInquire,DialogOptionSelected,"$option == MPC_TTBMHackedDerelictsInquire","$option = cutCommLink
+FireBest DialogOptionSelected","The only response it bothers to provide is an ear-splitting tone strong enough to get you to slam the COMMS-DISCONNECT button.
+
+You'll take that as a non-answer.",,
+"#END Defense fleet interactions",,,,,,
+"#END Find Cache",,,,,,
 "#END TriTach",,,,,,
 "#END Post-magnetar",,,,,,
 

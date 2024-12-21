@@ -363,5 +363,14 @@
 		"spriteWidth":60,
 		"spriteHeight":60,
 		"tags":["has_interaction_dialog", "neutrino", "MPC_singularityStagingStation"],
-	}
+	},
+
+	"MPC_BMDataCache":{
+		"baseId":"cargo_pod_special",
+		"name":"Data cache",
+		"nameInText":"data cache",
+		"shortName":"data cache",
+		"customDescriptionId":"MPC_BMDataCache",
+		"tags":["has_interaction_dialog", "neutrino", "salvage_music", "MPC_BMDataCache"]
+	},
 }

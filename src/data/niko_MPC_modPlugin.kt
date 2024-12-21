@@ -14,11 +14,13 @@ import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.util.Misc
 import com.thoughtworks.xstream.XStream
 import data.compatability.MPC_compatabilityUtils
 import data.scripts.ai.MPC_interceptorMissileAI
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.MPC_hostileActivityHook
+import data.scripts.campaign.econ.MPC_incomeTallyListener
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeOptionsProvider
@@ -34,6 +36,7 @@ import data.scripts.campaign.magnetar.crisis.intel.MPC_luddicContributionIntel.C
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
+import data.scripts.campaign.rulecmd.MPC_IAIICTriTachCMD.Companion.DOWN_PAYMENT
 import data.scripts.campaign.terrain.niko_MPC_mesonField
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
@@ -174,6 +177,11 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.OMAN_BOMBARD_COST_ID] = niko_MPC_settings.OMAN_BOMBARD_COST
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DELAYED_REPAIR_TIME_ID] = niko_MPC_settings.DELAYED_REPAIR_TIME
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PATHER_SECT_NAME] = SECT_NAME
+        Global.getSector().memoryWithoutUpdate["\$MPC_arrayScanTime"] = niko_MPC_settings.ARRAY_SCAN_TIME // days
+
+        Global.getSector().memoryWithoutUpdate["\$MPC_downPaymentAmount"] = DOWN_PAYMENT
+        Global.getSector().memoryWithoutUpdate["\$MPC_downPaymentDGS"] = Misc.getDGSCredits(DOWN_PAYMENT.toFloat())
+        Global.getSector().memoryWithoutUpdate["\$MPC_deliveryPirateName"] = MPC_People.getImportantPeople()[MPC_People.DONN_PIRATE]?.name?.fullName
 
         MPC_compatabilityUtils.run(currVersion)
 
@@ -183,6 +191,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().addTransientListener(niko_MPC_satelliteEventListener(false))
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         Global.getSector().addTransientListener(niko_MPC_omegaWeaponPurger())
+        Global.getSector().addTransientListener(MPC_incomeTallyListener())
         //Global.getSector().addTransientListener(niko_MPC_spyFleetBattleListener())
         MPC_hostileActivityHook().start()
         //MPC_omegaCoreAdminChecker().start()

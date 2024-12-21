@@ -1,7 +1,7 @@
 {
 	
 	#collapseopen MUSIC
-"music":{
+	"music":{
 		"MPC_phaseSystemAmbience":[
 			{"file":"MPC_contactWithTheUnknown.ogg","source":"sounds/music","volume":0.8},
 		],
@@ -10,6 +10,12 @@
 		],
 		
 	# collapseclose
+	},
+	
+	"MPC_punch":{
+		"sounds":[
+			{"file":"sounds/MPC_punch.ogg","pitch":1.0,"volume":1.0},
+		],
 	},
 	
 	"MPC_superheavyDamperStart":[
