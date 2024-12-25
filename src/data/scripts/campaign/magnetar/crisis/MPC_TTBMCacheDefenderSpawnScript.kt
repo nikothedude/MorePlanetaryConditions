@@ -77,10 +77,11 @@ class MPC_TTBMCacheDefenderSpawnScript(
         //fleet.containingLocation = system
         MPC_delayedExecution(
             {
+                fleet.inflateIfNeeded()
+                fleet.inflater = null
+
                 fleet.fleetData.membersListCopy.forEach {
                     val copyVariant = it.variant.clone()
-                    copyVariant.source = VariantSource.REFIT
-                    copyVariant.hullSpec.shieldSpec.innerColor
                     if (copyVariant.hullSpec.shieldType == ShieldAPI.ShieldType.NONE) {
                         copyVariant.addPermaMod(HullMods.MAKESHIFT_GENERATOR, true)
                     }
@@ -95,7 +96,8 @@ class MPC_TTBMCacheDefenderSpawnScript(
                     } else if (!copyVariant.hasHullMod(HullMods.PHASE_ANCHOR)){
                         copyVariant.addPermaMod(HullMods.ADAPTIVE_COILS, true)
                     }
-                    it.setVariant(copyVariant, false, false)
+                    copyVariant.source = VariantSource.REFIT
+                    it.setVariant(copyVariant, false, true)
                     if (prob(70)) {
                         it.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
                     } else {
@@ -110,7 +112,7 @@ class MPC_TTBMCacheDefenderSpawnScript(
                 fleet.setFaction(Factions.TRITACHYON, true)
                 fleet.commander = fleet.flagship.captain
             },
-            0.1f,
+            0f,
             false,
             useDays = false
         ).start()

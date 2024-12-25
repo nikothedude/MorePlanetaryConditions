@@ -16,6 +16,7 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.Waystation
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
+import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.Pair
 import com.fs.starfarer.campaign.econ.Market
 import com.fs.starfarer.campaign.econ.PlanetConditionMarket
@@ -289,7 +290,7 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.isInhabited(): Boolean {
-        return  (!isPlanetConditionMarketOnly && id != "fake_Colonize" && isInEconomy)
+        return (!isPlanetConditionMarketOnly && id != "fake_Colonize" && isInEconomy)
     }
 
     // i want to fucking obliterate this function
@@ -338,7 +339,7 @@ object niko_MPC_marketUtils {
     }
 
     fun MarketAPI.getMaxIndustries(): Int {
-        return stats.dynamic.getStat(Stats.MAX_INDUSTRIES).modifiedInt
+        return Misc.getMaxIndustries(this)
     }
 
     fun Industry.isPopulationAndInfrastructure(): Boolean {

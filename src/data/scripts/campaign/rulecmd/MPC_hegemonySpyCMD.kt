@@ -36,8 +36,8 @@ class MPC_hegemonySpyCMD: BaseCommandPlugin() {
 
         when (command) {
             "canExecute" -> {
-                if (Global.getSector().memoryWithoutUpdate["\$MPC_debugHegemonySpy"] == true) return true
-                if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DID_HEGEMONY_SPY_VISIT] == true) return false
+                if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_debugHegemonySpy")) return true
+                if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false
                 if (Global.getSector().getFaction(Factions.HEGEMONY)?.getFactionMarkets()?.isNotEmpty() != true) return false
                 if (!market.isPlayerOwned) return false
                 if (!market.isFractalMarket()) return false

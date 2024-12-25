@@ -24,7 +24,7 @@ class MPC_benefactorDataStore {
         val addBullet: (info: TooltipMakerAPI) -> Unit = { info -> info.addPara(name, color, 0f) }
     )
 
-    val probableBenefactors = setOf(
+    val probableBenefactors = mutableSetOf(
         benefactorData(Factions.HEGEMONY),
         benefactorData(Factions.LUDDIC_CHURCH),
         benefactorData(Factions.INDEPENDENT, "KKL", addBullet = { info -> info.addPara("%s (Stationed in %s)", 0f,  Global.getSector().getFaction(Factions.INDEPENDENT).baseUIColor, "KKL", "Nova Maxios") }),

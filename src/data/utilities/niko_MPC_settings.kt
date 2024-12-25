@@ -2,6 +2,7 @@ package data.utilities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import data.niko_MPC_modPlugin
 import data.niko_MPC_modPlugin.Companion.modId
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_derelictSatelliteHandler
@@ -18,6 +19,7 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
+    val SPECIAL_SYNCROTRON_FUEL_BOOST = ItemEffectsRepo.SYNCHROTRON_FUEL_BONUS + 2
     const val ARRAY_SCAN_TIME = 4f
     var MAGNETAR_DISABLED = false
     const val MAX_IAIIC_REP = -0.24f

@@ -44,7 +44,7 @@ data class MPC_factionContribution(
             val ourFac = Global.getSector().getFaction(factionId)
 
             if (IAIIC != null && ourFac != null) {
-                ourFac.setRelationship(niko_MPC_ids.IAIIC_FAC_ID, repOnRemove)
+                ourFac.setRelationship(niko_MPC_ids.IAIIC_FAC_ID, repOnRemove * 0.01f)
             }
         }
     }
@@ -55,6 +55,10 @@ data class MPC_factionContribution(
     }
 
     fun getStringifiedFleetsize(): String {
-        return "${(fleetMultIncrement)}x"
+        return "${(fleetMultIncrement * 100).toInt()}%"
+    }
+
+    fun getStringifiedSabotagePotential(): String {
+        return "${(sabotageMultIncrement * 100).toInt()}%"
     }
 }

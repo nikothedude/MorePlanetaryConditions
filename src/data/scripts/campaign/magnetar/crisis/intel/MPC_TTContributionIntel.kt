@@ -14,6 +14,7 @@ import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.quest.MPC_magnetarQuest
 import data.utilities.niko_MPC_ids
 import java.awt.Color
 
@@ -28,7 +29,9 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
         FIND_CACHE,
         RETURN_TO_CONTACT,
         WAIT,
-        RESOLVE;
+        RESOLVE,
+        PAY_UP,
+        OVER;
     }
     enum class PirateTransportState {
         HAS_PIRATE,
@@ -62,11 +65,57 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
         return (super.getIntelTags(map) + mutableSetOf(Factions.TRITACHYON, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
     }
 
+    override fun notifyEnded() {
+        super.notifyEnded()
+
+        Global.getSector().memoryWithoutUpdate[KEY] = null
+    }
+
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
         if (info == null || mode == null) return
 
         if (!isUpdate) return
+        if (listInfoParam is State) {
+            when (listInfoParam) {
+                State.FIND_CACHE -> {
+                    val system = Global.getSector().memoryWithoutUpdate["\$MPC_BMcacheSystemName"] as? String ?: return
+                    info.addPara(
+                        "Find the cache in %s", 0f, Misc.getHighlightColor(), system
+                    )
+                }
+                State.RETURN_TO_CONTACT -> {
+                    info.addPara("Cache acquired", 0f)
+                    info.addPara(
+                        "Return to %s",
+                        5f,
+                        activePerson?.faction?.baseUIColor,
+                        activePerson?.name?.fullName
+                    )
+                }
+                State.WAIT -> {
+                    info.addPara(
+                        "Wait %s", 0f, Misc.getHighlightColor(), "one month"
+                    )
+                }
+                State.RESOLVE -> {
+                    info.addPara(
+                        "Return to %s",
+                        5f,
+                        activePerson?.faction?.baseUIColor,
+                        activePerson?.name?.fullName
+                    )
+                }
+                State.PAY_UP -> {
+                    val label = info.addPara(
+                        "Pay %s alpha cores",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "three"
+                    )
+                }
+            }
+        }
         if (listInfoParam is String) {
             info.addPara(listInfoParam as String, initPad)
         }
@@ -134,7 +183,6 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
             label.setHighlightColors(person.faction.baseUIColor, Global.getSector().getFaction(Factions.TRITACHYON).baseUIColor, Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor)
 
             when (state) {
-
                 State.FIND_EVIDENCE -> {
                     val labelThree = info.addPara(
                         "Currently, you need to %s.",
@@ -147,7 +195,7 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
                         "%s suggested you search around the %s system, but not on %s, due to security concerns.",
                         5f,
                         Misc.getHighlightColor(),
-                        "${person.name.fullName}", "Hybrasil", "Eochu Bres"
+                        "${person.name.fullName}", "Hybrasil", "Tri-Tachyon planets"
                     )
 
                     labelTwo.setHighlightColors(
@@ -215,6 +263,59 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
                     )
                     label.setHighlightColors(
                         person.faction.baseUIColor, Misc.getHighlightColor(), Misc.getHighlightColor()
+                    )
+                }
+                State.RETURN_TO_CONTACT -> {
+                    val label = info.addPara(
+                        "You've obtained the %s, and now must return it to %s.",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "data cache", person.nameString
+                    )
+                    label.setHighlightColors(Misc.getHighlightColor(), person.faction.baseUIColor)
+                }
+                State.WAIT -> {
+                    info.addPara(
+                        "You are currently waiting for %s to finish 'negotiating'.",
+                        5f,
+                        person.faction.baseUIColor,
+                        person.nameString
+                    )
+                }
+                State.RESOLVE -> {
+                    info.addPara(
+                        "You've received a summons from %s.",
+                        5f,
+                        person.faction.baseUIColor,
+                        person.nameString
+                    )
+                }
+                State.PAY_UP -> {
+                    val label2 = info.addPara(
+                        "Despite having retrieved the %s for %s, you're still expected to pay %s for %s to pull out of the %s.",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "data cache", person.nameString, "three alpha cores", "Tri-Tachyon", "IAIIC"
+                    )
+                    label2.setHighlightColors(
+                        Misc.getHighlightColor(),
+                        person.faction.baseUIColor,
+                        Misc.getHighlightColor(),
+                        Global.getSector().getFaction(Factions.TRITACHYON).baseUIColor,
+                        Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor,
+                    )
+                }
+                State.OVER -> {
+                    val label2 = info.addPara(
+                        "You've successfully convinced %s to pull out of the %s, and made %s significantly more wealthy as a result.",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "Tri-Tachyon", "IAIIC", person.nameString
+                    )
+                    label.setHighlightColors(
+                        Global.getSector().getFaction(Factions.TRITACHYON).baseUIColor,
+                        Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor,
+                        person.faction.baseUIColor
                     )
                 }
             }

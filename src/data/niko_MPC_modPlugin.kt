@@ -4,20 +4,24 @@ import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.PluginPick
 import com.fs.starfarer.api.campaign.*
+import com.fs.starfarer.api.campaign.econ.Industry
+import com.fs.starfarer.api.campaign.econ.InstallableIndustryItemPlugin.InstallableItemDescriptionMode
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
 import com.fs.starfarer.api.combat.MissileAIPlugin
 import com.fs.starfarer.api.combat.MissileAPI
 import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.impl.campaign.econ.impl.BoostIndustryInstallableItemEffect
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
-import com.fs.starfarer.api.impl.campaign.intel.bar.events.BarEventManager
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.thoughtworks.xstream.XStream
 import data.compatability.MPC_compatabilityUtils
-import data.scripts.ai.MPC_interceptorMissileAI
+import data.kaysaar.aotd.vok.Ids.AoTDTechIds
+import data.kaysaar.aotd.vok.scripts.research.AoTDMainResearchManager
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.MPC_hostileActivityHook
 import data.scripts.campaign.econ.MPC_incomeTallyListener
@@ -37,15 +41,14 @@ import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
 import data.scripts.campaign.rulecmd.MPC_IAIICTriTachCMD.Companion.DOWN_PAYMENT
-import data.scripts.campaign.terrain.niko_MPC_mesonField
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
-import data.utilities.niko_MPC_ids.mesonFieldGlobalMemoryId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeFleetFactionId
 import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
+import data.utilities.niko_MPC_ids.specialSyncrotronItemId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
@@ -55,21 +58,12 @@ import data.utilities.niko_MPC_settings.SOTF_enabled
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.nexLoaded
-import exerelin.campaign.DiplomacyManager
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.magiclib.kotlin.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
-import kotlin.collections.MutableSet
-import kotlin.collections.any
-import kotlin.collections.hashSetOf
-import kotlin.collections.minusAssign
 import kotlin.collections.set
-import kotlin.collections.setOf
-import kotlin.collections.toMutableSet
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     companion object {
@@ -87,7 +81,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         val facsIAIICKnowsShipsFrom = hashSetOf(Factions.HEGEMONY, Factions.TRITACHYON, Factions.DIKTAT, Factions.LIONS_GUARD, Factions.INDEPENDENT, Factions.LUDDIC_CHURCH)
 
         fun setupIAIICBlueprints() {
-            val intel = MPC_IAIICFobIntel.get() ?: return
             val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
             for (faction in facsIAIICKnowsShipsFrom) {
                 IAIIC.knownShips.addAll(Global.getSector().getFaction(faction).knownShips)
@@ -96,10 +89,20 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                 IAIIC.knownWeapons.addAll(Global.getSector().getFaction(faction).knownWeapons)
                 IAIIC.knownIndustries.addAll(Global.getSector().getFaction(faction).knownIndustries)
             }
-            intel.removeBlueprintFunctions.forEach { it() }
 
             IAIIC.clearShipRoleCache()
+
+            val intel = MPC_IAIICFobIntel.get() ?: return
+            intel.removeBlueprintFunctions.forEach { it() }
         }
+    }
+
+    private fun setupIAIICResearch() {
+        if (!AOTD_vaultsEnabled) return
+        val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
+        val manager = AoTDMainResearchManager.getInstance()
+        val facManager = manager.getSpecificFactionManager(IAIIC) ?: return
+        facManager.getResearchOptionFromRepo(AoTDTechIds.HAZMAT_WORKING_EQUIPMENT)?.isResearched = true
     }
 
 
@@ -137,6 +140,24 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         //add special items
         ItemEffectsRepo.ITEM_EFFECTS[overgrownNanoforgeItemId] = overgrownNanoforgeItemInstance
+        ItemEffectsRepo.ITEM_EFFECTS[specialSyncrotronItemId] = object : BoostIndustryInstallableItemEffect(
+            specialSyncrotronItemId, niko_MPC_settings.SPECIAL_SYNCROTRON_FUEL_BOOST, 2
+        ) {
+            override fun addItemDescriptionImpl(
+                industry: Industry?, text: TooltipMakerAPI, data: SpecialItemData,
+                mode: InstallableItemDescriptionMode, pre: String, pad: Float
+            ) {
+                //text.addPara(pre + "Increases fuel production and demand for volatiles by %s.",
+                text.addPara(
+                    pre + "Increases fuel production output by %s units. Increases demand by %s units.",
+                    pad, Misc.getHighlightColor(), "" + niko_MPC_settings.SPECIAL_SYNCROTRON_FUEL_BOOST, "${2}"
+                )
+            }
+
+            override fun getSimpleReqs(industry: Industry?): Array<String> {
+                return arrayOf(ItemEffectsRepo.NO_ATMOSPHERE)
+            }
+        }
         val spec = Global.getSettings().getSpecialItemSpec(overgrownNanoforgeItemId) ?: return
         val strictBlacklist = setOf(overgrownNanoforgeIndustryId)
         val looseBlacklist = setOf(overgrownNanoforgeJunkStructureId)
@@ -232,6 +253,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         MPC_People.createCharacters() // safe to call multiple times
         setupIAIICBlueprints()
+        setupIAIICResearch()
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()

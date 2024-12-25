@@ -4,6 +4,9 @@
       <root url="jar://$PROJECT_DIR$/../Ashes of  The Domain- Vaults of Knowledge/jars/Vok.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Ashes of  The Domain- Vaults of Knowledge/src" />
+      <root url="file://$PROJECT_DIR$/../Ashes of  The Domain- Vaults of Knowledge/src" />
+    </SOURCES>
   </library>
 </component>

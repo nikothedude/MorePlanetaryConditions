@@ -194,7 +194,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         const val PROGRESS_MAX = 1000
         const val FP_PER_POINT = 0.1f
         const val HEGEMONY_CONTRIBUTION = 1.7f
-        const val CHURCH_CONTRIBUTION = 1.2f
+        const val CHURCH_CONTRIBUTION = 1.4f
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
         const val DAYS_EMBARGO_LINGERS_FOR = 20f
@@ -334,8 +334,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
-            0.9f,
-            0.1f,
+            0.7f,
+            0.3f,
             removeContribution = null,
             removeNextAction = true,
             requireMilitary = false,
@@ -357,7 +357,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.TRITACHYON,
-            0.7f,
+            0.9f,
             1f,
             removeContribution = null,
             removeNextAction = false,
@@ -850,6 +850,18 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                 )
                 label.setHighlightColors(
                     Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).color,
+                    Misc.getHighlightColor()
+                )
+            }
+            if (contribution.sabotageMultIncrement > 0f) {
+                val label = info.addPara(
+                    "%s sabotage potential reduced by %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "IAIIC", contribution.getStringifiedSabotagePotential()
+                )
+                label.setHighlightColors(
+                    getFaction().baseUIColor,
                     Misc.getHighlightColor()
                 )
             }

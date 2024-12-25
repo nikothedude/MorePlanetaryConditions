@@ -25,6 +25,7 @@ object MPC_People {
     const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
 
     const val ARROW_PATHER = "MPC_arrowPather"
+    const val ARROW_PATHER_REP = "MPC_arrowPatherRep"
 
     const val DONN_PIRATE = "MPC_donnPirate"
 
@@ -179,17 +180,29 @@ object MPC_People {
         }
 
         if (MPC_importantPeople[ARROW_PATHER] == null) {
-            val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
+            val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson(FullName.Gender.MALE)
 
             arrowPather.id = ARROW_PATHER
             arrowPather.rankId = Ranks.CITIZEN
             arrowPather.postId = Ranks.CITIZEN
             arrowPather.importance = PersonImportance.MEDIUM
-            arrowPather.gender = FullName.Gender.MALE
             arrowPather.voice = Voices.PATHER
 
             importantPeople.addPerson(arrowPather)
             MPC_importantPeople[ARROW_PATHER] = arrowPather
+        }
+
+        if (MPC_importantPeople[ARROW_PATHER_REP] == null) {
+            val arrowPatherRep = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
+
+            arrowPatherRep.id = ARROW_PATHER_REP
+            arrowPatherRep.rankId = Ranks.GROUND_MAJOR
+            arrowPatherRep.postId = Ranks.POST_BASE_COMMANDER
+            arrowPatherRep.importance = PersonImportance.VERY_HIGH
+            arrowPatherRep.voice = Voices.PATHER
+
+            importantPeople.addPerson(arrowPatherRep)
+            MPC_importantPeople[ARROW_PATHER_REP] = arrowPatherRep
         }
 
         if (MPC_importantPeople[DONN_PIRATE] == null) {

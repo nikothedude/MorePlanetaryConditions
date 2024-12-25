@@ -2,19 +2,26 @@ package data.scripts.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.campaign.PersonImportance
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.rulecmd.missions.BarCMD
 import com.fs.starfarer.api.util.Misc
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_TTBMCacheDefenderSpawnScript
+import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import org.lazywizard.lazylib.MathUtils
+import org.magiclib.kotlin.fadeAndExpire
 import org.magiclib.kotlin.makeImportant
+import org.magiclib.kotlin.makeNonStoryCritical
 import org.magiclib.kotlin.makeStoryCritical
 import kotlin.math.abs
 
@@ -92,7 +99,7 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
                 val person = interactionTarget.activePerson ?: return false
                 val intel = MPC_TTContributionIntel.get(true) ?: return false
                 intel.activePerson = person
-                intel.sendUpdateIfPlayerHasIntel("Find the cache", dialog.textPanel)
+                intel.sendUpdateIfPlayerHasIntel("Search for evidence", dialog.textPanel)
                 Global.getSector().memoryWithoutUpdate["\$MPC_startedSearchForTTBM"] = true
                 interactionTarget.market.makeStoryCritical("\$MPC_TTSearch")
 
@@ -201,6 +208,7 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
             "canReturnWithEvidence" -> {
                 val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_evidenceDone")) return false
+                if (MPC_TTContributionIntel.get(true)?.state != MPC_TTContributionIntel.State.FIND_EVIDENCE) return false
                 if (interactionTarget.activePerson != person) return false
                 return true
             }
@@ -213,9 +221,73 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
                 intel?.state = MPC_TTContributionIntel.State.FIND_CACHE
                 intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.FIND_CACHE, dialog.textPanel)
             }
+            "obtainedCache" -> {
+                val intel = MPC_TTContributionIntel.get(true)
+                intel?.state = MPC_TTContributionIntel.State.RETURN_TO_CONTACT
+                intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.RETURN_TO_CONTACT, dialog.textPanel)
+                interactionTarget.fadeAndExpire(1f)
+            }
 
-            "stupidFuckingTest" -> {
-                dialog.optionPanel.addOption("test", "MPC_IAIICTTPresentIntelUpset")
+            "canGiveCache" -> {
+                val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
+                if (interactionTarget.activePerson != person) return false
+                return MPC_TTContributionIntel.get(true)?.state == MPC_TTContributionIntel.State.RETURN_TO_CONTACT
+            }
+            "cantExtort" -> {
+                return (MPC_IAIICFobIntel.getIAIICStrengthInSystem() * 100f) < 60f
+            }
+            "startWaitForExecs" -> {
+                MPC_delayedExecution(
+                    {
+                        val intel = MPC_TTContributionIntel.get()
+                        intel?.state = MPC_TTContributionIntel.State.RESOLVE
+                        intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.RESOLVE, false, false)
+                    },
+                    30f,
+                    runWhilePaused = false,
+                    useDays = true
+                ).start()
+                val intel = MPC_TTContributionIntel.get()
+                intel?.state = MPC_TTContributionIntel.State.WAIT
+                intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.WAIT, dialog.textPanel)
+            }
+            "upgradeContact" -> {
+                val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
+                person.importance = PersonImportance.VERY_HIGH
+            }
+
+            "isSummoned" -> {
+                val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
+                if (interactionTarget.activePerson != person) return false
+                return (MPC_TTContributionIntel.get(true)?.state == MPC_TTContributionIntel.State.RESOLVE)
+            }
+            "isPayingUp" -> {
+                val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
+                if (interactionTarget.activePerson != person) return false
+                return (MPC_TTContributionIntel.get(true)?.state == MPC_TTContributionIntel.State.PAY_UP)
+            }
+            "payingUpNow" -> {
+                val intel = MPC_TTContributionIntel.get(true)
+                intel?.state = MPC_TTContributionIntel.State.PAY_UP
+                intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.PAY_UP, dialog.textPanel)
+            }
+            "cantPay" -> {
+                return Global.getSector().playerFleet.cargo.getCommodityQuantity(Commodities.ALPHA_CORE) < 3
+            }
+            "RESOLVED" -> {
+                val intel = MPC_IAIICFobIntel.get() ?: return false
+                val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.TRITACHYON } ?: return false
+                MPC_IAIICFobIntel.get()?.removeContribution(toRemove, false, dialog)
+                val intel2 = MPC_TTContributionIntel.get(true) ?: return false
+                intel2.state = MPC_TTContributionIntel.State.OVER
+                intel2.endAfterDelay()
+                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
+                    if (entry.factionId == Factions.TRITACHYON) {
+                        MPC_benefactorDataStore.get().probableBenefactors -= entry
+                        break
+                    }
+                }
+                interactionTarget.market.makeNonStoryCritical("\$MPC_TTSearch")
             }
         }
         return false

@@ -76,11 +76,17 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry(Industries.STARFORTRESS_HIGH)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("IndEvo_embassy")?.aiCoreId = Commodities.GAMMA_CORE
-            getIndustry("IndEvo_Ambassy")?.aiCoreId = Commodities.GAMMA_CORE
+            getIndustry("IndEvo_Academy")?.aiCoreId = Commodities.GAMMA_CORE
             //getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.specialItem = SpecialItemData(Items.DRONE_REPLICATOR, null)
             getIndustry(Industries.ORBITALWORKS)?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
+            getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
+            getIndustry("triheavy")?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
+            getIndustry("triheavy")?.aiCoreId = Commodities.BETA_CORE
+            getIndustry("militarygarrison")?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
+            getIndustry("logisitcbureau")?.aiCoreId = Commodities.BETA_CORE
+            getIndustry(Industries.WAYSTATION)?.aiCoreId = Commodities.BETA_CORE
         }
     }
 
@@ -232,8 +238,15 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         HC.isImproved = true
         market.addIndustry(Industries.HEAVYBATTERIES)
         market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
-        market.addIndustry(Industries.ORBITALWORKS)
-        market.addIndustry(Industries.WAYSTATION)
+        if (niko_MPC_settings.AOTD_vaultsEnabled) {
+            market.addIndustry("triheavy") // skunkworks
+            market.addIndustry("militarygarrison")
+            market.addIndustry("logisitcbureau") // terminus
+            market.getIndustry("militarygarrison")?.isImproved = true
+        } else {
+            market.addIndustry(Industries.ORBITALWORKS)
+            market.addIndustry(Industries.WAYSTATION)
+        }
         if (niko_MPC_settings.indEvoEnabled) {
             market.addIndustry("IndEvo_embassy")
             market.addIndustry("IndEvo_ReqCenter")
