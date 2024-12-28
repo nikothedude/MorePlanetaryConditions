@@ -73,8 +73,8 @@ class MPC_IAIICDKFuelHubFleetSpawner(
         //params.officerNumberMult = 1.5f
 
         val fleet = FleetFactoryV3.createFleet(params)
+        fleet.setFaction(Factions.DIKTAT, true)
         fleet.inflateIfNeeded()
-        //fleet.setFaction(Factions.DIKTAT, true)
 
         //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true
         //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE] = true

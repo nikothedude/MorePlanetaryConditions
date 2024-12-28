@@ -152,7 +152,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             "initialHideoutLanding" -> {
                 val planet = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI ?: return false
                 if (interactionTarget != planet) return false
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
+                val intel = MPC_luddicContributionIntel.get() ?: return false
                 if (intel.state != MPC_luddicContributionIntel.State.GO_TO_HIDEOUT) return false
                 return true
             }
@@ -167,7 +167,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             }
 
             "beginBuildObj" -> {
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
+                val intel = MPC_luddicContributionIntel.get() ?: return false
                 intel.state = MPC_luddicContributionIntel.State.HAND_OVER_MARKET
                 intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.HAND_OVER_MARKET, dialog.textPanel)
                 interactionTarget.market?.addCondition("MPC_arrowPatherCondition")
@@ -187,12 +187,12 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             "canVisitHideoutAgain" -> {
                 val planet = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI ?: return false
                 if (interactionTarget != planet) return false
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
+                val intel = MPC_luddicContributionIntel.get() ?: return false
                 return intel.state == MPC_luddicContributionIntel.State.HAND_OVER_MARKET
             }
 
             "raidFinished" -> {
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
+                val intel = MPC_luddicContributionIntel.get() ?: return false
                 intel.state = MPC_luddicContributionIntel.State.FAILED
                 intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.FAILED, dialog.textPanel)
                 intel.endAfterDelay()
@@ -202,7 +202,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 return interactionTarget.starSystem?.hasTag(Tags.THEME_UNSAFE) == true || (interactionTarget.starSystem.hasPulsar() || interactionTarget.starSystem.hasBlackHole())
             }
             "canAddDedicateOption" -> {
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
+                val intel = MPC_luddicContributionIntel.get() ?: return false
                 if (intel.state != MPC_luddicContributionIntel.State.HAND_OVER_MARKET) return false
                 return interactionTarget.market?.factionId == Factions.PLAYER
             }

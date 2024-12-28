@@ -2472,13 +2472,12 @@ MPC_IAIICDKCruorAdminInitialVisit,,,,,,
 "#END Cruor",,,,,,
 ,,,,,,
 # Fuel hub interaction,,,,,,
-MPC_IAIICDKApproachFuelHub,PopulateOptions,"$entity.id == $global.MPC_IAIICDKSyncroPlanet.id
+MPC_IAIICDKApproachFuelHub,PopulateOptions,"MPC_IAIICDKCMD isFuelHub
 !$global.MPC_lootedDKSyncroPlanet
 !$MPC_skipText","$MPC_skipText = true 0","Even from high orbit the vast fuel infrastructure is visible, spanning thousands of kilometers of automatically constructed fuel-vats and AM catalyzers.",,"$entity == $global.MPC_IAIICDKSyncroPlanet"
 MPC_IAIICDKFuelHubExplore,DialogOptionSelected,"$option == salExplore
-$entity.id == $global.MPC_IAIICDKSyncroPlanet.id score:1000
-!$global.MPC_lootedDKSyncroPlanet","SetTextHighlights ""Syncotron Core""","Your shuttles quickly descend upon the surface of $entityName, and your salvors fan out in all directions. Exploration proceeds apace, though a bit slower due to your ops chief demanding second-and-third checks on every piece of equipment that could be construed as a synchrotron core.","20:MPC_IAIICDKFuelHubExploreTwo:Wait","
-FireBest CheckSalvageSpecial"
+MPC_IAIICDKCMD isFuelHub
+!$global.MPC_lootedDKSyncroPlanet","SetTextHighlights ""Syncotron Core""","Your shuttles quickly descend upon the surface of $entityName, and your salvors fan out in all directions. Exploration proceeds apace, though a bit slower due to your ops chief demanding second-and-third checks on every piece of equipment that could be construed as a synchrotron core.","20:MPC_IAIICDKFuelHubExploreTwo:Wait",
 MPC_IAIICDKFuelHubExploreTwo,DialogOptionSelected,"$option == MPC_IAIICDKFuelHubExploreTwo",,"Time goes by without any notice. You begin to wonder if the salvagers were able to find it after all. 
 
 You are broken out of this thought by a call from your Ops Chief. ""$PlayerSirOrMadam."" Your chief starts. ""One of my crew thinks they've found something."" You peer over to the camfeed your chief is pointing out, and let out a quiet gasp at the sight. Lit only by meek torchlight is a synchrotron core, activity-light spilling green into the surrounding room. Titanic machines surround it, tendrils connecting at a rate of at least once per square meter. Your salvors carefully tip-toe around it, avoiding the now-flamescorched pits of previous AM fuel beneath their feet.

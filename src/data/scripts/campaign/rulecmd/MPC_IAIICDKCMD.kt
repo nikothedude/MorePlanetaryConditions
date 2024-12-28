@@ -110,6 +110,13 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
             "generateCore" -> {
                 return generateSyncroPlanet() != null
             }
+            "isFuelHub" -> {
+                val target = dialog.interactionTarget ?: return false
+                if (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanet"] == null) return false
+                return (target == Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanet"])
+
+                return true
+            }
             "beginSearch" -> {
                 val intel = MPC_DKContributionIntel.get(true) ?: return false
                 intel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.FIND_CORE, dialog.textPanel)
