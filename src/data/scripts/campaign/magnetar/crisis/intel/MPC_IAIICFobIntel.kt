@@ -798,6 +798,13 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                         0f
                     )
                 }
+
+                RetaliateReason.KEPT_SYNCROTRON -> {
+                    info.addPara(
+                        "Covert action imminent!",
+                        0f
+                    )
+                }
             }
         }
         else if (data is MPC_factionContributionChangeData) {
@@ -970,12 +977,12 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         daysLeftTilNextRetaliate = (daysLeftTilNextRetaliate - days).coerceAtLeast(0f)
         checkInterval.advance(days)
 
-        if (true) {
+        /*if (true) {
             Global.getSector().removeScriptsOfClass(TransponderCheckBlockScript::class.java)
             niko_MPC_debugUtils.log.error("NIKO FORGOT TO REMOVE THE FUCKING DEBUG REMOVAL")
 
             getFractalColony()?.starSystem?.fleets?.filter { it.isPatrol() && it.faction.id == niko_MPC_ids.IAIIC_FAC_ID }?.forEach { it.memoryWithoutUpdate.setFlagWithReason(MemFlags.MEMORY_KEY_PATROL_ALLOW_TOFF, "player_system_owner", false, 0.1f) }
-        }
+        }*/
         val elapsed = checkInterval.intervalElapsed()
         // idk why i have to do this, but this is like a quantum slit bug
         // if you dont define the var, you dont observe it being true in the debugger, so it doesnt work
@@ -1501,6 +1508,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
     enum class RetaliateReason {
         ATTACKED_FOB,
+        KEPT_SYNCROTRON;
     }
     /** Called if the player attacks the FOB. Triggers sabotage. */
     fun retaliate(reason: RetaliateReason, dialog: TextPanelAPI? = null) {

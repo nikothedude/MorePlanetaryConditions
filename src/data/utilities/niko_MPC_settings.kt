@@ -19,7 +19,7 @@ import java.io.IOException
 
 object niko_MPC_settings {
 
-    val SPECIAL_SYNCROTRON_FUEL_BOOST = ItemEffectsRepo.SYNCHROTRON_FUEL_BONUS + 2
+    val SPECIAL_SYNCROTRON_FUEL_BOOST = ItemEffectsRepo.SYNCHROTRON_FUEL_BONUS + 4
     const val ARRAY_SCAN_TIME = 4f
     var MAGNETAR_DISABLED = false
     const val MAX_IAIIC_REP = -0.24f

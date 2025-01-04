@@ -14,6 +14,7 @@ import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.MPC_People
 import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD
 import data.utilities.niko_MPC_ids
 import java.awt.Color
@@ -40,11 +41,15 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
     enum class State {
         FIND_CORE,
         RETURN_WITH_CORE,
+        WAIT_FOR_MACARIO,
+        RETURN_TO_MACARIO,
+        SEARCH_FOR_AGENT,
         UPGRADE_FUEL_PROD,
         INFILTRATE_AND_UPGRADE_UMBRA,
         WAIT,
         GIVE_CORES,
         DONE,
+        FAILED;
     }
     var state: State = State.FIND_CORE
 
@@ -86,6 +91,30 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                         getMacario().faction.color, getMacario().nameString
                     )
                 }
+                State.WAIT_FOR_MACARIO -> {
+                    info.addPara(
+                        "Wait %s",
+                        initPad, Misc.getHighlightColor(),
+                        "one week"
+                    )
+                }
+                State.RETURN_TO_MACARIO -> {
+                    info.addPara(
+                        "Return to %s",
+                        initPad, getMacario().faction.color,
+                        "Macario"
+                    )
+                }
+                State.SEARCH_FOR_AGENT -> {
+                    info.addPara(
+                        "Search for %s on %s",
+                        initPad, getMacario().faction.color,
+                        getAgent().nameString, "Volturn"
+                    ).setHighlightColors(
+                        getMacario().faction.color,
+                        Global.getSector().economy.getMarket("volturn")?.faction?.color
+                    )
+                }
                 State.INFILTRATE_AND_UPGRADE_UMBRA -> {
                     info.addPara(
                         "Infiltrate %s",
@@ -100,16 +129,23 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                         "Umbra", "eight"
                     ).setHighlightColors(getUmbra().faction.color, Misc.getHighlightColor())
                 }
+                State.FAILED -> {
+                    info.addPara(
+                        "Failed",
+                        initPad
+                    )
+                }
             }
         }
     }
 
     fun getMacario(): PersonAPI = Global.getSector().importantPeople.getPerson(People.MACARIO)
+    fun getAgent(): PersonAPI = Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR)
     fun getUmbra(): MarketAPI = Global.getSector().economy.getMarket("umbra")
     fun getCorePlanet(): SectorEntityToken? = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanet"] as? SectorEntityToken
 
     override fun getFactionForUIColors(): FactionAPI {
-        return Global.getSector().getFaction(Factions.LUDDIC_PATH)
+        return Global.getSector().getFaction(Factions.DIKTAT)
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
@@ -145,6 +181,34 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                     "KINH-Pattern Synchrotron Core", getMacario().nameString
                 ).setHighlightColors(Misc.getHighlightColor(), getMacario().faction.color)
             }
+            State.WAIT_FOR_MACARIO -> {
+                info.addPara(
+                    "%s is brainstorming a way for you to infiltrate %s and ensure delivery of %s to %s.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "Macario", "Umbra", "volatiles", "Sindria"
+                ).setHighlightColors(
+                    getMacario().faction.color, Global.getSector().economy.getMarket("umbra").faction.color, Misc.getHighlightColor(), Global.getSector().economy.getMarket("sindria").faction.color
+                )
+            }
+            State.RETURN_TO_MACARIO -> {
+                info.addPara(
+                    "You've recieved a summons from %s.",
+                    5f,
+                    getMacario().faction.color,
+                    "Macario"
+                )
+            }
+            State.SEARCH_FOR_AGENT -> {
+                info.addPara(
+                    "A %s agent named %s has gone AWOL, and was last reported on %s. You are to find her and return her to %s for use in the infiltration of %s.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "Diktat", getAgent().nameString, "Volturn", getMacario().nameString, "Umbra"
+                ).setHighlightColors(
+                    factionForUIColors.color, factionForUIColors.color, Global.getSector().economy.getMarket("volturn").faction.color, factionForUIColors.color, Global.getSector().economy.getMarket("volturn").faction.color
+                )
+            }
             State.DONE -> {
                 info.addPara("You have successfully armed the %s with heavy industry, and in doing so, drove a wedged between them and the %s.",
                 5f,
@@ -154,6 +218,9 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                     factionForUIColors.baseUIColor,
                     Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor
                 )
+            }
+            State.FAILED -> {
+                info.addPara("You've failed to separate the diktat from the IAIIC.", 5f)
             }
         }
     }

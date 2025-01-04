@@ -34,6 +34,8 @@ object MPC_People {
     const val TRITACH_BRUISER_ONE = "MPC_triTachBruiserOne"
     const val TRITACH_BRUISER_TWO = "MPC_triTachBruiserTwo"
 
+    const val UMBRA_INFILTRATOR = "MPC_umbraInfiltrator"
+
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -238,7 +240,7 @@ object MPC_People {
 
             bruiserOne.id = TRITACH_BRUISER_ONE
             bruiserOne.rankId = Ranks.AGENT
-            bruiserOne.rankId = Ranks.POST_AGENT
+            bruiserOne.postId = Ranks.POST_AGENT
 
             bruiserOne.importance = PersonImportance.MEDIUM
             bruiserOne.voice = Voices.SOLDIER
@@ -252,13 +254,30 @@ object MPC_People {
 
             bruiserTwo.id = TRITACH_BRUISER_TWO
             bruiserTwo.rankId = Ranks.AGENT
-            bruiserTwo.rankId = Ranks.POST_AGENT
+            bruiserTwo.postId = Ranks.POST_AGENT
 
             bruiserTwo.importance = PersonImportance.MEDIUM
             bruiserTwo.voice = Voices.SOLDIER
 
             importantPeople.addPerson(bruiserTwo)
             MPC_importantPeople[TRITACH_BRUISER_TWO] = bruiserTwo
+        }
+
+        if (MPC_importantPeople[UMBRA_INFILTRATOR] == null) {
+            val infiltrator = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(FullName.Gender.FEMALE)
+
+            infiltrator.id = UMBRA_INFILTRATOR
+            infiltrator.rankId = Ranks.SPECIAL_AGENT
+            infiltrator.postId = Ranks.POST_SPECIAL_AGENT
+            infiltrator.setFaction(Factions.DIKTAT)
+
+            infiltrator.importance = PersonImportance.MEDIUM
+            infiltrator.voice = Voices.SOLDIER
+
+            infiltrator.name = FullName("Hera", "Calibri", FullName.Gender.FEMALE)
+
+            importantPeople.addPerson(infiltrator)
+            MPC_importantPeople[UMBRA_INFILTRATOR] = infiltrator
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

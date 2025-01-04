@@ -2388,7 +2388,10 @@ AddTextSmall ""Requires a major player in Diktat politics"" bad","$HisOrHer face
 "#END Caden",,,,,,
 ,,,,,,
 # Macario,,,,,,
-MPC_IAIICDKAskMacarioAboutIAIIC,PickGreeting,"MPC_IAIICDKCMD canAskMacarioAboutIAIIC score:1250","BeginConversation macario","Dolos Macario, the Spider of Sindria, appears before you. He looks bored.
+,,,,,,
+# First meeting,,,,,,
+MPC_IAIICDKAskMacarioAboutIAIIC,PickGreeting,"$id == macario
+MPC_IAIICDKCMD canAskMacarioAboutIAIIC score:1250","BeginConversation macario","Dolos Macario, the Spider of Sindria, appears before you. He looks bored.
 
 ""Captain, o captain,"" he greets you, his tone bored. ""Not yet."" He winks and goes to hit the shut-off - but pauses, his eyes slowly trawling back up to meet yours.
 
@@ -2465,6 +2468,139 @@ MPC_IAIICDKAskMacarioGTBContinueSix,DialogOptionSelected,"$option == MPC_IAIICDK
 MPC_IAIICDKAskMacarioGloryLeave:""Glory to the Lion."" (Leave)",
 MPC_IAIICDKAskMacarioGloryLeave,DialogOptionSelected,"$option == MPC_IAIICDKAskMacarioGloryLeave","$option = cutCommLink
 FireBest DialogOptionSelected",,,
+"#END First meeting",,,,,,
+,,,,,,
+# Second meeting,,,,,,
+MPC_IAIICDKReturnMacarioWhileHuntingForCore,PickGreeting,"$id == macario
+MPC_IAIICDKCMD deliveringCoreToMacario score:1250","BeginConversation macario
+
+SetShortcut MPC_IAIICDKMacarioDidntFind ESCAPE
+FireBest MPC_IAIICDKMacarioFoundCoreModify","Dolos Macario, the Spider of Sindria, appears before you, politely checking his watch rather than sharing your gaze. 
+
+""Found the core, Spacer?"" He finally offers, tempting a look towards you.","MPC_IAIICDKMacarioFoundCore:""Yes.""
+MPC_IAIICDKMacarioKeeping:""I'm keeping it for myself.""
+MPC_IAIICDKMacarioDidntFind:""No."" (Leave)",
+MPC_IAIICDKMacarioDidntFind,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDidntFind","EndConversation
+ShowDefaultVisual","His withered brow furrows. ""Then why are you bothering me about it?"" he waves you off, turning back to his duties in an instant. ""Go find the core, Spacer. We'll talk then."" He hits the disconnect button before you can get a word in.",,
+MPC_IAIICDKMacarioKeeping,DialogOptionSelected,"$option == MPC_IAIICDKMacarioKeeping","SetTextHighlights ""I won't be able to protect you against the IAIIC""","In a flash, you feel the burning attention of his unveiled hate. ""Are you... SURE about that, Commander?"" he mumbles, paying close attention to the irritation laden between his words. ""If our arrangement would be to end here..."" sharp silver flashes out of his suit-pocket and into his hand, which he caresses threateningly. ""I won't be able to protect you against the IAIIC.""
+
+His scowl deepens. ""Nor the arm of the Lion.""","MPC_IAIICDKMacarioKeepingConfirm:""Yes, I'm certain.""
+MPC_IAIICDKMacarioKeepingCancel:""On second thought...""",
+MPC_IAIICDKMacarioKeepingConfirm,DialogOptionSelected,"$option == MPC_IAIICDKMacarioKeepingConfirm","AdjustRep sindrian_diktat VENGEFUL -20
+AdjustRepActivePerson VENGEFUL -20
+
+MPC_IAIICDKCMD retaliate
+MPC_IAIICDKCMD keepingCore","Upon hearing your words, he jumps out of his chair, the clatter of rolling wheels obscured by his enraged shouting. ""You FOOL! You would throw our entire alliance away for some MINISCULE TECHNOLOGY?"" he hisses, the boiling of his blood obvious through the twitching artery in his temple. 
+
+You watch as he slams his silvery knife into the desk with a harsh thud. ""We will not take this standing down, you wretched spacer."" He scowls.","cutCommLink:Leave",
+MPC_IAIICDKMacarioKeepingCancel,DialogOptionSelected,"$option == MPC_IAIICDKMacarioKeepingCancel","EndConversation
+ShowDefaultVisual","""That's what I thought."" He scowls. ""Come back when you're a little less stupid, mh?"" He cuts the comm link.",,
+MPC_IAIICDKMacarioFoundCoreModifyNoCore,MPC_IAIICDKMacarioFoundCoreModify,"MPC_IAIICDKCMD doesntHaveCoreInCargo","SetEnabled MPC_IAIICDKMacarioFoundCore false
+SetTooltip MPC_IAIICDKMacarioFoundCore ""You do not possess the exotic core.""",,,
+MPC_IAIICDKMacarioFoundCore,DialogOptionSelected,"$option == MPC_IAIICDKMacarioFoundCore",,"His eyes light up in fascination as physical specs fill his datascreen, pouring over every aspect of his new toy with childlike glee. ""...I was expecting something valuable. Maybe another few thousand production per month, but this..."" he licks his lips, and turns to you, a carnivorous grin plastered on his lips. ""Give it to me. Then we can talk business.""","MPC_IAIICDKMacarioDeliverCore:Have the core delivered to a nearby spaceport",
+MPC_IAIICDKMacarioDeliverCore,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDeliverCore","MPC_IAIICDKCMD installCoreIntoFP
+AddRemoveAnyItem SPECIAL MPC_pristineSynchrotron -1","He grins. ""I'll see you again when I've confirmation of it's arrival."" The comm link dies, replaced by the slow spin of the lion's arms emblem.
+
+The shuttle pilot quickly finds themselves a suspiciously placed diktat patrol as an unwanted escort, and, by their own admission, experiences the least congested Sindria in-flight they've ever taken. The core is dropped of under watch of numerous diktat guards, and quickly ushered away under a purple-and-white banner atop a motortruck. Soon enough, your commlink pings to life, showing the less-than-excited visage of Macario. He's sighing, pinching the bridge of his nose. His fingers slip off and pinch the air as he corrects his gaze.
+
+""...we may have an issue, Captain."" He breathes out.","MPC_IAIICDKMacarioDeliverCoreTwo:""And that is?""",
+MPC_IAIICDKMacarioDeliverCoreTwo,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDeliverCoreTwo",,"Yet another digressed sigh escapes his lips as he tries to find a way to articulate his failing. Eventually, he turns and mutters rather manner-of-factly: ""We don't have enough volatiles.""
+
+He responds to your look of surprise with a growl. ""Yes, yes, I should've thought of it! It simply wasn't-"" he agonizes, but only for a short moment - until he stops completely, giving you a flat look. 
+
+He quietly sits in his comfortable-looking chair, and stares at you for exactly four seconds. After that, he speaks.
+
+""It would seem our arrangement must be *continued.*""","MPC_IAIICDKMacarioDeliverCoreTwoComplain:""This seems hardly fair to me.""
+MPC_IAIICDKMacarioHowContinue:""How are you out of volatiles? Can't you just mine more?""",
+MPC_IAIICDKMacarioDeliverCoreTwoComplain,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDeliverCoreTwoComplain","RemoveOption MPC_IAIICDKMacarioDeliverCoreTwoComplain","""Things aren't often fair, Commander."" he sighs. A moment of thought later, he adds, with the smallest of smirks, ""And don't forget, Captain-"" he wags his finger. ""I agreed to help you only if fuel production on Sindria was maximized. No time before.""
+
+You grumble, but from Macario's viewpoint, you'd feel the same way.",,
+MPC_IAIICDKMacarioHowContinue,DialogOptionSelected,"$option == MPC_IAIICDKMacarioHowContinue",,"He hazards a tired look. ""...being the leader of a polity yourself, I'd assumed you'd have a better understanding of geo-economics..."" he shakes his head. ""Salus wouldn't produce enough, even with a siphon station. The hegemony is already eyeing a horribly predatory agreement, and Umbra...""
+
+He stops mid-sentence, the Spider of Sindria suddenly lost in thought. ""Umbra...?"" he snaps his gaze to you, and a slow smile creeps upon his lips. ""...Umbra.""","MPC_IAIICDKMacarioHowContinueTwo:Ask him what the look is for",
+MPC_IAIICDKMacarioHowContinueTwo,DialogOptionSelected,"$option == MPC_IAIICDKMacarioHowContinueTwo","SetTextHighlights ""lay the groundwork""","""Captain..."" he starts. ""I believe... while, it may be too early for us to burn out the 'revolutionaries' of the double-wretch Umbra and Nortia..."" he chuckles, hands now behind his back in a firm pose. ""We may lay the groundwork sooner than anticipated.""
+
+He takes a breath, stepping closer to the camera. ""For far too long, the stagnant hegemons of the XIV battlegroup's faded embers have taken a iron fist on the glorious lion's sovereignty."" He tightens his fist, for effect. ""But with you here, Captain..."" His smile grotesquely expands to encompass the entire width of his face. ""...we may have a way to secure our future.""
+
+He sits, one leg atop the other. ""I want the Diktat to secure it's own volatile production, and Umbra - and you - are the key."" He projects a withered finger towards you, prompting an unconscious hand on your sidearm.","MPC_IAIICDKMacarioHowIncreaseProduction:""But Umbra doesn't have enough volatiles to fuel the new core, right?""
+MPC_IAIICDKMacarioHowGetUmbraToWork:""Umbra is openly belligerent to the Diktat. Why would they send their volatiles?""",
+MPC_IAIICDKMacarioHowIncreaseProduction,DialogOptionSelected,"$option == MPC_IAIICDKMacarioHowIncreaseProduction","RemoveOption MPC_IAIICDKMacarioHowIncreaseProduction","He smiles. ""Correct. If the great Lion was to find a derelict Tri-Tach droneship with an AI core still onboard, or Umbra was to be supplied with *enhancing* factors..."" He makes a long gesture. ""Many paths to this goal, Captain. Many.""",,
+MPC_IAIICDKMacarioHowGetUmbraToWork,DialogOptionSelected,"$option == MPC_IAIICDKMacarioHowGetUmbraToWork","MPC_IAIICDKCMD startWait","""Ah... that I'm not sure about."" He taps his chin, taking a seat.
+
+He suddenly turns. ""I shall make some arrangements. Come back in say... a week."" He smiles. ""Glory to the lion.""","cutCommLink:Leave",
+MPC_IAIICDKReturnMacarioWaiting,PickGreeting,"$id == macario
+MPC_IAIICDKCMD isWaiting score:1250","BeginConversation macario","The familiar tired visage of Dolos Macario appears before you. He looks annoyed.
+
+""Captain, I told you to wait."" he huffs, shaking his head. ""Come back when I summon you."" He cuts the commfeed without any further discussion.
+
+The crest of the Sindrian Diktat internal security ministry slowly turns. ","cutCommLink:Cut the comm link",
+"#END Second meeting",,,,,,
+,,,,,,
+# Third meeting,,,,,,
+MPC_IAIICDKMacarioSummoned,PickGreeting,"$id == macario
+MPC_IAIICDKCMD doneWaiting score:1250","BeginConversation macario","Dolos Macario, the Spider of Sindria, appears before you, an expectant gaze across his eyes and directed towards you. 
+
+""Ah, Captain."" Your comm-panel clicks as your commfeed is speechlessly set to private. ""I see you've received my summons?"" He kneads his fingers together.","MPC_IAIICDKMacarioSummonedYes:""Yes. Do you have something for me?""""",
+MPC_IAIICDKMacarioSummonedYes,DialogOptionSelected,"$option == MPC_IAIICDKMacarioSummonedYes",,"He withdraws a small stack of papers from his coat-pocket and begins laying them out across his desktop - angled in just the right way to deny you visibility through clever light placement.
+
+""Umbra is a hive of scum and villainy - worse even than the traitor-world of Nortia."" he grumbles, filling out a few extra lines of physical text on a paper. ""The 'Antis' steal our rightful resources, scour our future in uncertainty -"" he looks up to you, the tilted light casting a dark show on his face, contrasting to the Internal Security emblem emblazoned on his backwall. ""- and slay our 'valiant defenders'."" He seems less upset about the murder than the economic downturn.
+
+""But..."" his signature warped grin crosses his lips. ""It doesn't have to be that way.""","MPC_IAIICDKMacarioSummonedTwo:Continue",
+MPC_IAIICDKMacarioSummonedTwo,DialogOptionSelected,"$option == MPC_IAIICDKMacarioSummonedTwo","SetTextHighlights ""Militant"" ""entrenched""","""The idiotic revolutionites on Umbra, compared to Nortia, are what we would call..."" his expression melts, feigning deep thought. ""Militant. Deeply entrenched."" He inhales. ""Their 'revolution' is deeply engrained in their tired spirit, and so, alas, a mere takeover would never work."" He pushes the papers forward, finally exposing their contents to you. 
+
+He offers an intense stare. ""A more covert approach is in order.""","MPC_IAIICDKMacarioSummonedThree:Inspect the papers",
+MPC_IAIICDKMacarioSummonedThree,DialogOptionSelected,"$option == MPC_IAIICDKMacarioSummonedThree","ShowSecondPerson MPC_umbraInfiltrator
+SetTextHighlights ""industrial"" ""1st assistant"" ""quartermaster""","The papers, while inverted, are still decipherable enough to tell you some details of Macario's plan. He annotates as you read; ""Hera Calibri - a deep-cover agent I planted a few cycles ago."" He haps his knuckles on hard onyx, prompting your attention. ""She has recently made quite a breakthrough on the industrial side of Umbra... becoming a 1st assistant to their quartermaster."" He pushes another paper forward - a detailed analysis of the ARC's political workings. ""Due to their 'emergency measures'-"" he says with belittlement. ""-if the quartermaster were to be, say, incapacitated..."" he lets his words hang.
+
+""Our dear Calibri would take control of the entire supply end of Umbra.""","MPC_IAIICDKMacarioSummonedNotKill:""So you want me to 'take care' of their quartermaster?""
+MPC_IAIICDKMacarioSummonedKill:""So you want me to kill their quartermaster?""
+MPC_IAIICDCMacarioSummonedFour:""That seems awfully advantageous for the Diktat. Why wait for me, though? Seems easy enough.""",
+MPC_IAIICDKMacarioSummonedNotKill,DialogOptionSelected,"$option == MPC_IAIICDKMacarioSummonedNotKill","RemoveOption MPC_IAIICDKMacarioSummonedNotKill
+RemoveOption MPC_IAIICDKMacarioSummonedKill
+
+SetTextHighlights ""Advantageous""","""Mhm, yes captain."" He smiles thinly, flicking his desk. ""Not everything has to end in violence. Sometimes it's even..."" he takes a breath. ""Advantageous.""",,
+MPC_IAIICDKMacarioSummonedKill,DialogOptionSelected,"$option == MPC_IAIICDKMacarioSummonedKill","RemoveOption MPC_IAIICDKMacarioSummonedNotKill
+RemoveOption MPC_IAIICDKMacarioSummonedKill
+
+SetTextHighlights ""Advantageous""","""Ah, captain, you're not being creative enough."" He taps his head. ""There's other ways to resolve problems such as these. Ways that are more..."" he smacks his lips. ""Advantageous.""
+
+""Though, if needed..."" he shrugs weakly. ""Yes, Captain. A less... gentle approach would be effective."" He frowns, seemingly mildly upset by the thought. Not for the loss of life, you sense.",,
+MPC_IAIICDCMacarioSummonedFour,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFour","SetTextHighlights ""lost contact"" ""Volturn""","""Well..."" he winces, pulling the paper back. ""About three months ago, the internal security division lost contact with her."" He makes a poofing gesture with his hands. ""Poof! Gone. All attempts to make contact have failed, including standard emergency-comms... and worst of all, she's now at risk of losing her hard-earned position within the ARC."" He shivers, seemingly more afraid of the prospect of losing infiltration than losing an agent.
+
+""From field reports, it would appear our agent has vanished off the face of Umbra. Instead..."" he pushes forward another paper - a field report from Volturn. ""She's been sighted on Volturn. Even still, our attempts to contact her consistently end up failing, necessitating..."" He turns to you. ""...an outside factor.""","MPC_IAIICDCMacarioSummonedFive:Continue",
+MPC_IAIICDCMacarioSummonedFive,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFive","SetTextHighlights ""You know what this is""
+AddTextSmall ""Received encrypted Diktat info package"" highlight
+
+MPC_IAIICDKCMD startSearchForAgent","He neatly files all his papers into one stack and sorts it with a hit on the desk. ""Find her, Captain, and report back when you do. And in case she proves belligerent..."" he transmits a encrypted data-pak with a wink. ""Give her this, and tell her 'You know what this is.'"" ","MPC_IAIICDCMacarioSummonedWhat:""What's she doing on Volturn?""
+MPC_IAIICDCMacarioSummonedWhy:""Any idea why she's ignoring you?""
+MPC_IAIICDCMacarioSummonedEnd:""Where do I start?""",
+MPC_IAIICDCMacarioSummonedWhat,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedWhat","RemoveOption MPC_IAIICDCMacarioSummonedWhat
+SetTextHighlights ""treason""","""Frankly, we don't *know*, Captain."" he frowns, inspecting the paperstack for defects. ""She seems to be avoiding us - for what reason, we can't gather.""
+
+He glances up, ""Whatever the case, it's treason. Remind her of this when you see her, yes?""",,
+MPC_IAIICDCMacarioSummonedWhy,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedWhy","RemoveOption MPC_IAIICDCMacarioSummonedWhy","He shakes his head. ""We *hope* it's merely a transponder glitch, but she could also be pursued, or, worse, turned traitor."" He cringes at the thought.",,
+MPC_IAIICDCMacarioSummonedEnd,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedEnd","SetTextHighlights ""utmost""","""Hm."" He touches his chin thoughtfully. ""I can think of two entryways. The first is entering a seedy bar and trying to find anyone who can talk - inconsistent - or, you can attempt to wring any information out of the governer that I was unable to."" He cringes. ""Which is... unlikely.""
+
+""Regardless, Captain-"" he smiles, clapping his hands together. ""After our past operations? You have my utmost confidence."" You sense a hint of sarcasm in his praise, but also a tinge of genuinity.
+
+He files the papers neatly into a nearby drawer, then turns to you. ""I think we both have business to attend to, Captain."" He reaches for the comm-disconnect button. ""Until next time.""
+
+The crest of the Sindrian Diktat internal security ministry slowly turns. ","cutCommLink:Leave",
+"#END Third meeting",,,,,,
+,,,,,,
+# Fourth meeting,,,,,,
+MPC_IAIICDKReturnMacarioWhileHuntingForAgent,PickGreeting,"$id == macario
+MPC_IAIICDKCMD isSearchingForAgent score:1250","BeginConversation macario
+
+SetShortcut MPC_IAIICDKMacarioDidntFindAgent ESCAPE
+FireBest MPC_IAIICDKMacarioFoundAgentModify","Dolos Macario, the Spider of Sindria, appears before you, closely inspecting a finger.
+
+""Have you located our 'knight errant'?"" He finally offers, tempting a look towards you.","MPC_IAIICDKMacarioFoundAgent:""Yes.""
+MPC_IAIICDKMacarioDidntFindAgent:""No."" (Leave)",
+MPC_IAIICDKMacarioFoundAgentModifyNoAgent,MPC_IAIICDKMacarioFoundAgentModify,"!$global.MPC_foundUmbraInfiltrator","SetEnabled MPC_IAIICDKMacarioFoundAgent false
+SetTooltip MPC_IAIICDKMacarioFoundAgent ""You have not, in fact, found the agent.""",,,
+MPC_IAIICDKMacarioDidntFindAgent,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDidntFindAgent","EndConversation","Macario glares, turning back to his fingernails. ""Then go back and search. Don't waste my time."" His foot hits the comms-disconnect before you have a chance to respond.",,
+"#END Fourth meeting",,,,,,
 "#END Macario",,,,,,
 ,,,,,,
 # Cruor,,,,,,
@@ -2522,6 +2658,31 @@ MPC_IAIICDKExpFleetSweetTalkSix,DialogOptionSelected,"$option == MPC_IAIICDKExpF
 MPC_IAIICDKCMD returnExpeditionToSindria
 $global.MPC_IAIICDKTrickedExpeditionCaptain = true","""Y-yes, $playerSirOrMadam."" $HeOrShe faces you and weakly salutes, not daring to look you in the eye. ""Glory to the Lion...""","cutCommLink:""Glory to the Lion.""",
 "#END Fuel hub fleet",,,,,,
+,,,,,,
+# Volturn,,,,,,
+,,,,,,
+# AdminIAIIC,,,,,,
+,,,,,,
+# Searching for agentadmin,,,,,,
+MPC_IAIICDKVolturnAdminOption,PopulateOptions,"!$global.MPC_askedVolturnGovAboutAgent
+$postId == administrator
+$market.id == volturn
+MPC_IAIICDKCMD isSearchingForAgent",,,"1:MPC_IAIICDKVolturnAdminAskAboutAgent:""Do you happen to know anything about a Diktat agent who's gone missing on your planet?""",
+MPC_IAIICDKVolturnAdminAskAboutAgent,DialogOptionSelected,"$option == MPC_IAIICDKVolturnAdminAskAboutAgent
+$global.MPC_askedVolturnGovAboutAgent = true","AdjustRepActivePerson SUSPICIOUS -1
+EndConversation","$HeOrShe glares. ""No! I keep telling you goons, I'm too busy with the damn rebels to spare even a single set of eyes for this 'search' of yours!"" He grumbles, before slamming the disconnect button.
+
+It would seem this line of questioning is fruitless.",,
+"#END Searching for agentadmin",,,,,,
+"#END AdminIAIIC",,,,,,
+,,,,,,
+# BarIAIIC,,,,,,
+,,,,,,
+# Searching for agent,,,,,,
+NEW RULE,AddBarEvents,,"AddBarEvent MPC_",,,
+"#END Searching for agent",,,,,,
+"#END BarIAIIC",,,,,,
+"#END Volturn",,,,,,
 "#END Diktat",,,,,,
 ,,,,,,
 # League,,,,,,

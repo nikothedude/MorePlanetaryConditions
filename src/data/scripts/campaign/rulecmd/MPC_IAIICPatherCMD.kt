@@ -278,6 +278,8 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 intel.state = MPC_luddicContributionIntel.State.DONE
                 intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.DONE, dialog.textPanel)
                 intel.endAfterDelay()
+
+                Global.getSoundPlayer().restartCurrentMusic()
             }
             "pullOut" -> {
                 val intel = MPC_IAIICFobIntel.get() ?: return false

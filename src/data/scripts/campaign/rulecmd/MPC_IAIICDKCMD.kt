@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.PerseanLeagueMembership
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICDKFuelHubFleetSpawner
 import data.scripts.campaign.magnetar.crisis.intel.MPC_DKContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
@@ -99,6 +100,20 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICDKInvestigationStarted")) return false
                 return true
             }
+            "deliveringCoreToMacario" -> {
+                val intel = MPC_DKContributionIntel.get() ?: return false
+                return (intel.state == MPC_DKContributionIntel.State.RETURN_WITH_CORE || intel.state == MPC_DKContributionIntel.State.FIND_CORE)
+            }
+            "retaliate" -> {
+                MPC_IAIICFobIntel.get()?.retaliate(MPC_IAIICFobIntel.RetaliateReason.KEPT_SYNCROTRON, dialog.textPanel)
+            }
+            "keepingCore" -> {
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKInvestigationFailed"] = true
+                val intel = MPC_DKContributionIntel.get() ?: return false
+                intel.state = MPC_DKContributionIntel.State.FAILED
+                intel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.FAILED, dialog.textPanel)
+                intel.endAfterDelay()
+            }
             "installAICoreIntoFP" -> {
                 val sindria = Global.getSector().economy.getMarket("sindria") ?: return false
                 sindria.getIndustry(Industries.FUELPROD)?.aiCoreId = Commodities.GAMMA_CORE
@@ -147,6 +162,48 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 fleet.clearAssignments()
                 val sindria = Global.getSector().economy.getMarket("sindria")?.primaryEntity ?: Global.getSector().economy.marketsCopy.randomOrNull()?.primaryEntity ?: return false
                 fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, sindria, Float.MAX_VALUE, null)
+            }
+            "doesntHaveCoreInCargo" -> {
+                return (!Global.getSector().playerFleet.cargo.stacksCopy.any { it.specialDataIfSpecial?.id == niko_MPC_ids.specialSyncrotronItemId })
+            }
+
+            "startWait" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.WAIT_FOR_MACARIO
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.WAIT_FOR_MACARIO, dialog.textPanel)
+
+                val delay = if (Global.getSettings().isDevMode) 1f else 7f
+                MPC_delayedExecution(
+                    {
+                        val intel = MPC_DKContributionIntel.get()
+                        if (intel != null) {
+                            intel.state = MPC_DKContributionIntel.State.RETURN_TO_MACARIO
+                            intel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.RETURN_TO_MACARIO, false, false)
+                        }
+                    },
+                    delay,
+                    useDays = true,
+                    runWhilePaused = false
+                ).start()
+            }
+
+            "isWaiting" -> {
+                return MPC_DKContributionIntel.get()?.state == MPC_DKContributionIntel.State.WAIT_FOR_MACARIO
+            }
+
+            "doneWaiting" -> {
+                return MPC_DKContributionIntel.get()?.state == MPC_DKContributionIntel.State.RETURN_TO_MACARIO
+            }
+
+            "startSearchForAgent" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.SEARCH_FOR_AGENT
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.SEARCH_FOR_AGENT, dialog.textPanel)
+
+                return true
+            }
+            "isSearchingForAgent" -> {
+                return MPC_DKContributionIntel.get()?.state == MPC_DKContributionIntel.State.SEARCH_FOR_AGENT
             }
         }
 
