@@ -43,6 +43,11 @@ class MPC_slavedOmegaCoreAdminPlugin: AICoreAdminPlugin {
         if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.FRACTAL_CORE_UPGRADED)) {
             person.stats.setSkillLevel(niko_MPC_ids.ROUTING_OPTIMIZATION_SKILL_ID, 1f)
         }
+        if (niko_MPC_settings.astralAscensionEnabled) {
+            person.stats.setSkillLevel("acumenious_oracle", 1f)
+            person.stats.setSkillLevel("delphic_optimiser", 1f)
+            person.stats.setSkillLevel("ethereal_enlightenment", 1f)
+        }
 
         return person
     }

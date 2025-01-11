@@ -37,6 +37,8 @@ object niko_MPC_settings {
     var indEvoEnabled = false
     var AOTD_vaultsEnabled = false
     var SOTF_enabled = false
+    var graphicsLibEnabled = false
+    var astralAscensionEnabled = false
 
     var CONDENSE_OVERGROWN_NANOFORGE_INTEL = false
 

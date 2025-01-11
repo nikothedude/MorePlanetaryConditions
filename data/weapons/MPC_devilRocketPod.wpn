@@ -4,7 +4,7 @@
 	"type":"MISSILE",
 	"size":"LARGE",
 	"turretSprite":"graphics/weapons/MPC_devilLauncher.png",
-	"hardpointSprite":"graphics/weapons/MPC_devilLauncher.png",
+	"hardpointSprite":"graphics/weapons/MPC_devilLauncherTurret.png",
 	"hardpointOffsets":[17, 0],
 	"turretOffsets":[0, 0],
 	"hardpointAngleOffsets":[0],

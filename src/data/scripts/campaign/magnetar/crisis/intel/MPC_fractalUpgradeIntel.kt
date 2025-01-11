@@ -18,7 +18,7 @@ class MPC_fractalUpgradeIntel: BaseIntelPlugin() {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.FRACTAL_CORE_UPGRADED] = true
 
             if (dialog != null) {
-                AddTextSmall().execute(null, dialog, Misc.tokenize("Fractal core upgraded"), null)
+                AddTextSmall().execute(null, dialog, Misc.tokenize("Fractal core upgraded, highlight"), null)
             }
         }
     }

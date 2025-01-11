@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="ungp">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../UnofficialNewGamePlus/jars/ungp.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

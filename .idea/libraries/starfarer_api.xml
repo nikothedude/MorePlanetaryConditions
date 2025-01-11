@@ -24,6 +24,7 @@
     </JAVADOC>
     <SOURCES>
       <root url="file://$PROJECT_DIR$/../../../starsector modding/CommunityApiDocs/src" />
+      <root url="file://$PROJECT_DIR$/../../starsector-core/data" />
     </SOURCES>
     <jarDirectory url="file://$PROJECT_DIR$/../../starsector-core" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/../../starsector-core" recursive="false" />

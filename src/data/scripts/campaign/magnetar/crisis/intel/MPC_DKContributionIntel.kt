@@ -7,16 +7,21 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.People
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.rulecmd.MPC_IAIICDKCMD
 import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD
 import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
 
 
@@ -43,15 +48,19 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
         RETURN_WITH_CORE,
         WAIT_FOR_MACARIO,
         RETURN_TO_MACARIO,
-        SEARCH_FOR_AGENT,
-        UPGRADE_FUEL_PROD,
+        GO_TO_AGENT,
+        GET_CACHE,
+        GOT_CACHE,
+        PLANT_EVIDENCE,
+        QM_DEPOSED,
         INFILTRATE_AND_UPGRADE_UMBRA,
-        WAIT,
-        GIVE_CORES,
+        RETURN_TO_MACARIO_CAUSE_DONE,
         DONE,
-        FAILED;
+        FAILED,
+        SEARCH_FOR_AGENT // UNUSED;
     }
     var state: State = State.FIND_CORE
+    val interval = IntervalUtil(1f, 1f)
 
     override fun getIcon(): String {
         return Global.getSector().getFaction(Factions.DIKTAT).crest
@@ -105,34 +114,81 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                         "Macario"
                     )
                 }
-                State.SEARCH_FOR_AGENT -> {
+                State.GO_TO_AGENT -> {
                     info.addPara(
-                        "Search for %s on %s",
+                        "Make contact with %s on %s",
                         initPad, getMacario().faction.color,
-                        getAgent().nameString, "Volturn"
+                        getAgent().nameString, "Umbra"
                     ).setHighlightColors(
                         getMacario().faction.color,
-                        Global.getSector().economy.getMarket("volturn")?.faction?.color
+                        Global.getSector().economy.getMarket("umbra")?.faction?.color
+                    )
+                }
+                State.GET_CACHE -> {
+                    info.addPara(
+                        "Go to %s and retrieve %s's %s",
+                        initPad,
+                        getAgent().faction.color,
+                        "Sindria", getAgent().nameString, "cache"
+                    ).setHighlightColors(
+                        Global.getSector().economy.getMarket("sindria").faction.color,
+                        getAgent().faction.color,
+                        Misc.getHighlightColor()
+                    )
+                }
+                State.GOT_CACHE -> {
+                    info.addPara(
+                        "Return to %s",
+                        initPad,
+                        getAgent().faction.color,
+                        getAgent().nameString
+                    )
+                }
+                State.PLANT_EVIDENCE -> {
+                    info.addPara(
+                        "Plant evidence on %s",
+                        initPad,
+                        getUmbra().faction.color,
+                        getUmbra().name
+                    )
+                }
+                State.QM_DEPOSED -> {
+                    info.addPara(
+                        "Return to %s",
+                        initPad,
+                        getAgent().faction.color,
+                        getAgent().nameString
                     )
                 }
                 State.INFILTRATE_AND_UPGRADE_UMBRA -> {
                     info.addPara(
-                        "Infiltrate %s",
-                        initPad, getUmbra().faction.color,
-                        "Umbra"
-                    )
-
-                    info.addPara(
                         "Ensure %s is exporting at least %s units of volatiles",
                         5f,
                         getUmbra().faction.color,
-                        "Umbra", "eight"
+                        "Umbra", MPC_IAIICDKCMD.getVolatileDemand().toInt().toString()
                     ).setHighlightColors(getUmbra().faction.color, Misc.getHighlightColor())
+                }
+                State.RETURN_TO_MACARIO_CAUSE_DONE -> {
+                    info.addPara(
+                        "Volatile production satisfied",
+                        5f
+                    )
+                    info.addPara(
+                        "Return to %s",
+                        0f,
+                        getMacario().faction.color,
+                        "Macario"
+                    )
                 }
                 State.FAILED -> {
                     info.addPara(
                         "Failed",
                         initPad
+                    )
+                }
+                State.DONE -> {
+                    info.addPara(
+                        "Success", initPad
                     )
                 }
             }
@@ -146,6 +202,17 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
 
     override fun getFactionForUIColors(): FactionAPI {
         return Global.getSector().getFaction(Factions.DIKTAT)
+    }
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+
+        if (state == State.INFILTRATE_AND_UPGRADE_UMBRA) {
+            interval.advance(amount)
+            if (interval.intervalElapsed()) {
+                MPC_IAIICDKCMD.checkDemandAndUpdate()
+            }
+        }
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
@@ -199,21 +266,95 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
                     "Macario"
                 )
             }
-            State.SEARCH_FOR_AGENT -> {
+            State.GO_TO_AGENT -> {
                 info.addPara(
-                    "A %s agent named %s has gone AWOL, and was last reported on %s. You are to find her and return her to %s for use in the infiltration of %s.",
+                    "You are to meet up with a %s agent named %s on %s, and begin a plot to depose %s's %s.",
                     5f,
                     Misc.getHighlightColor(),
-                    "Diktat", getAgent().nameString, "Volturn", getMacario().nameString, "Umbra"
+                    "Diktat", getAgent().nameString, "Umbra", "Umbra", "quartermaster"
                 ).setHighlightColors(
-                    factionForUIColors.color, factionForUIColors.color, Global.getSector().economy.getMarket("volturn").faction.color, factionForUIColors.color, Global.getSector().economy.getMarket("volturn").faction.color
+                    factionForUIColors.color, factionForUIColors.color, Global.getSector().economy.getMarket("umbra").faction.color, Global.getSector().economy.getMarket("umbra").faction.color, Misc.getHighlightColor()
+                )
+            }
+            State.GET_CACHE -> {
+                info.addPara(
+                    "Apparently, %s left a %s on %s that will help implicate %s's %s as being a %s of the %s.",
+                    5f,
+                    getAgent().faction.color,
+                    getAgent().nameString, "cache", "Sindria", "Umbra", "quartermaster", "agent", "diktat"
+                ).setHighlightColors(
+                    getAgent().faction.color,
+                    Misc.getHighlightColor(),
+                    Global.getSector().economy.getMarket("sindria").faction.color,
+                    Global.getSector().economy.getMarket("umbra").faction.color,
+                    Misc.getHighlightColor(),
+                    Misc.getHighlightColor(),
+                    factionForUIColors.color
+                )
+            }
+            State.GOT_CACHE -> {
+                info.addPara(
+                    "You've looted the cache on %s, and obtained a plethora of %s. Now you must return to %s on %s.",
+                    5f,
+                    getAgent().faction.color,
+                    "Sindria", "framing tools", getAgent().nameString, "Umbra"
+                ).setHighlightColors(
+                    Global.getSector().economy.getMarket("sindria").faction.color,
+                    Misc.getHighlightColor(),
+                    getAgent().faction.color,
+                    Global.getSector().economy.getMarket("umbra").faction.color,
+                )
+            }
+            State.PLANT_EVIDENCE -> {
+                info.addPara(
+                    "You've been instructed to %s on %s.",
+                    5f,
+                    getUmbra().faction.color,
+                    "plant evidence", "Umbra"
+                ).setHighlightColors(
+                    Misc.getHighlightColor(),
+                    getUmbra().faction.color
+                )
+            }
+            State.QM_DEPOSED -> {
+                info.addPara(
+                    "You've successfully \"dealt with\" the %s %s, leaving the way open for %s.",
+                    5f,
+                    getAgent().faction.color,
+                    "Umbra", "Quartermaster", getAgent().nameString
+                ).setHighlightColors(
+                    Global.getSector().economy.getMarket("umbra").faction.color,
+                    Misc.getHighlightColor(),
+                    getAgent().faction.color,
+                )
+            }
+            State.INFILTRATE_AND_UPGRADE_UMBRA -> {
+                info.addPara(
+                    "%s is now the %s of %s, and it's now up to you to ensure %s is exporting at least %s units of volatiles.",
+                    5f,
+                    getAgent().faction.color,
+                    getAgent().nameString, "quartermaster", "Umbra", "Umbra", MPC_IAIICDKCMD.getVolatileDemand().toInt().toString()
+                ).setHighlightColors(
+                    getAgent().faction.color,
+                    Misc.getHighlightColor(),
+                    getUmbra().faction.color,
+                    getUmbra().faction.color,
+                    Misc.getHighlightColor()
+                )
+            }
+            State.RETURN_TO_MACARIO_CAUSE_DONE -> {
+                info.addPara(
+                    "You've secured a internal volatiles source of the %s, and now must return to %s.",
+                    5f,
+                    getMacario().faction.color,
+                    "Diktat", "Macario"
                 )
             }
             State.DONE -> {
-                info.addPara("You have successfully armed the %s with heavy industry, and in doing so, drove a wedged between them and the %s.",
+                info.addPara("You have successfully secured the %s a internal volatiles source, and in doing so, drove a wedge between them and the %s.",
                 5f,
                 Misc.getHighlightColor(),
-                "path", "IAIIC"
+                "Diktat", "IAIIC"
                 ).setHighlightColors(
                     factionForUIColors.baseUIColor,
                     Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor
@@ -225,10 +366,18 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
         }
     }
 
+    fun getVolatileDemand(): Float {
+        return Global.getSector().economy.getMarket("sindria")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) }?.getDemand(Commodities.VOLATILES)?.quantity?.modifiedValue ?: 0f
+    }
+
     override fun notifyEnded() {
         super.notifyEnded()
 
         Global.getSector().memoryWithoutUpdate[KEY] = null
+        (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanet"] as? PlanetAPI)?.makeUnimportant("\$MPC_IAIICDKSyncroPlanet")
+        Global.getSector().importantPeople.getPerson(People.MACARIO).makeUnimportant("\$MPC_macarioDuringDKContribution")
+        Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).makeUnimportant("\$MPC_umbraInfiltrator")
+        Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).makeUnimportant("\$MPC_umbraInfiltrator")
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {

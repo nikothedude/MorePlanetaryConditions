@@ -13,6 +13,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD
 import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
 
 open class MPC_luddicContributionIntel: BaseIntelPlugin() {
@@ -211,6 +212,8 @@ open class MPC_luddicContributionIntel: BaseIntelPlugin() {
         super.notifyEnded()
 
         Global.getSector().memoryWithoutUpdate[KEY] = null
+
+        (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.makeUnimportant("\$MPC_IAIICPatherHideout")
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {

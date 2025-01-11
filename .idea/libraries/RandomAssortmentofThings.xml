@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="RandomAssortmentofThings">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Random-Assortment-of-Things/jars/RandomAssortmentofThings.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Random-Assortment-of-Things/src" />
+      <root url="file://$PROJECT_DIR$/../Random-Assortment-of-Things/src" />
+      <root url="file://$PROJECT_DIR$/../Random-Assortment-of-Things" />
+      <root url="file://$PROJECT_DIR$/../Random-Assortment-of-Things/src" />
+    </SOURCES>
+  </library>
+</component>

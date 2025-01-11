@@ -7,6 +7,8 @@ Outguard,niko_MPC_defenseSatelliteCore,Satellite Core,Explorarium,MPC_overclocke
 Ramjet,MPC_ramjet,Tug,Explorarium,burndrive,2,1000,400,1000,625,80,10,0,150,250,175,45,90,450,NONE,,0,0,0,,,0,0,0,5,6,0.9,8,16000,10,40,240,0.25,4,7,,,,,,,"CIVILIAN, UNBOARDABLE, HIDE_IN_CODEX","derelictMPC, auto_rec, MPC_boostDerelict",,0.25,2,2,,212
 Spearhead,MPC_spearHead,Battletug,Explorarium,interdictor,14,14000,1200,10000,5625,650,150,,50,25,20,12,10,2900,NONE,,0,0,0,,,0,0,125,90,5,15,8,130000,5,12,600,0.25,15,17,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelictMPC, auto_rec, MPC_boostDerelict",,0.5,2,3,,213.2
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Toyol,MPC_toyol,Battlecruiser,High Tech,MPC_deepDive,60,14000,1200,15000,30000,1100,240,0,70,90,70,30,40,1700,PHASE,phasecloak,0,0,0,0.018,0.018,0,0,0,5,6,0.9,8,1000000,3,20,600,0.25,60,40,,,,,,,,,,0.25,2,2,,501
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Pickhead,MPC_pickhead,,Explorarium,,,125,35,500,,100,0,,375,500,450,180,360,25,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,102
 Minecart,MPC_minecart,,Explorarium,,,1950,90,500,,300,0,,100,25,25,35,50,200,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,103
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

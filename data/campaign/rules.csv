@@ -1111,6 +1111,40 @@ EndConversation","$personName glares. """"Soverign territory?"""" $HeOrShe seeth
 $HeOrShe takes a deep breath, speaking carefully. ""If you have any complaints, bring them up with our commander, Jill Mirthson."" $heOrShe says. ""She commands us from Ark FOB, on the outskirts of-"" $heOrShe pauses. ""-OUR system, $PlayerSirOrMadam.""
 
 Without even another word, $heOrShe cuts comms. You are left with a feeling of patient anger. ",,
+,,,,,,
+# TOff Conversations,,,,,,
+MPC_IAIICtOffPatrolOpenComm,OpenCommLink,"!$entity.patrolAllowTOff
+$entity.transponderOffConv score:100
+$faction.id == MPC_IAIIC score:150","AddText ""\""Running with the transponder off in $faction space is against the law. You're hereby ordered to turn your transponder on, identify yourself immediately, and submit to a cargo scan for contraband.\""""
+AdjustRep $faction.id TRANSPONDER_OFF
+AdjustRepActivePerson TRANSPONDER_OFF
+SetStoryOption avoid_scan 1 avoidCargoScan ui_char_spent_story_point ""Talked your way out of a cargo scan""",,"0:MPC_IAIICInterrogateTOffMySpace:""IAIIC space?! This is MY space! You have no right to stop me here!""
+2:tOff_comply:Turn the transponder on and comply
+3:avoid_scan:Talk your way out of it
+4:tOff_refuse:Refuse and cut the comm link",
+MPC_IAIICtOffPatrolOpenCommUnknown,OpenCommLink,"!$entity.patrolAllowTOff
+$entity.transponderOffConv score:100
+!$entity.knowsWhoPlayerIs
+$faction.id == MPC_IAIIC score:150","AddText ""\""Unknown $shipOrFleet, identify yourself! Running with the transponder off in $faction space is against the law. You're hereby ordered to turn your transponder on and submit to a cargo scan.\""""
+AdjustRep $faction.id TRANSPONDER_OFF
+AdjustRepActivePerson TRANSPONDER_OFF
+SetStoryOption avoid_scan 1 avoidCargoScan ui_char_spent_story_point ""Talked your way out of a cargo scan""",,"0:MPC_IAIICInterrogateTOffMySpace:""IAIIC space?! This is MY space! You have no right to stop me here!""
+2:tOff_comply:Turn the transponder on and comply
+3:avoid_scan:Talk your way out of it
+4:tOff_refuse:Refuse and cut the comm link",
+MPC_IAIICtOffPatrolOpenCommTOn,OpenCommLink,"!$entity.patrolAllowTOff
+$entity.transponderOffConv score:100
+$player.transponderOn
+$faction.id == MPC_IAIIC score:150","AddText ""\""Running with the transponder off in $faction space is against the law. Don't think you can just turn it back on and avoid our attention - you're hereby ordered to submit to a cargo scan.\""""
+AdjustRep $faction.id TRANSPONDER_OFF
+AdjustRepActivePerson TRANSPONDER_OFF
+SetStoryOption avoid_scan 1 avoidCargoScan ui_char_spent_story_point ""Talked your way out of a cargo scan""",,"0:MPC_IAIICInterrogateTOffMySpace:""IAIIC space?! This is MY space! You have no right to stop me here!""
+2:tOff_comply:Turn the transponder on and comply
+3:avoid_scan:Talk your way out of it
+4:tOff_refuse:Refuse and cut the comm link",
+MPC_IAIICInterrogateTOffMySpace,DialogOptionSelected,"$option == MPC_IAIICInterrogateTOffMySpace","RemoveOption MPC_IAIICInterrogateTOffMySpace
+AdjustRepActivePerson HOSTILE -2","$HisOrHer neck stiffens as a glower slowly falls over $himOrHer. ""The Independant AI Investigatory Comission is operating under provisionary Domain Expansion Charter, Section 15:59 - 'any space owned by a rogue state is forfeited to the Domain'."" $HeOrShe sneers. ""We have every right to stop you, Captain. Now be a good citizen and turn your transponder on.""",,
+"#END TOff Conversations",,,,,,
 "#END IAIIC Fleet Comms",,,,,,
 ,,,,,,
 # RACAFractal,,,,,,
@@ -2378,7 +2412,7 @@ SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedica
 MPC_IAIICDKUnimportantPerson,PopulateOptions,"MPC_IAIICDKCMD canAskUnimportantAboutIAIIC
 Commission personCanGiveCommission",,,"MPC_IAIICDKUnimportantAskAboutIAIIC:""I'd like to submit an inquiry surrounding the Diktat's possible involvement with the IAIIC.""",
 MPC_IAIICDKUnimportantAskAboutIAIIC,DialogOptionSelected,"$option == MPC_IAIICDKUnimportantAskAboutIAIIC","SetEnabled MPC_IAIICDKUnimportantAskAboutIAIIC false
-AddTextSmall ""Requires a major player in Diktat politics"" bad","$HisOrHer face sours, and $heOrShe briefly gives you $hisOrHer full attention. ""Your inquiry is 'received', Starfarer."" And from $hisOrHer tone, you would assume $heOrShe is thinking ""And ignored"".",,
+AddTextSmall ""Requires a major player in Diktat internal politics"" bad","$HisOrHer face sours, and $heOrShe briefly gives you $hisOrHer full attention. ""Your inquiry is 'received', Starfarer."" And from $hisOrHer tone, you would assume $heOrShe is thinking ""And ignored"".",,
 "#END Pre-Usurpers Poking",,,,,,
 ,,,,,,
 # Hyder,,,,,,
@@ -2565,15 +2599,18 @@ RemoveOption MPC_IAIICDKMacarioSummonedKill
 SetTextHighlights ""Advantageous""","""Ah, captain, you're not being creative enough."" He taps his head. ""There's other ways to resolve problems such as these. Ways that are more..."" he smacks his lips. ""Advantageous.""
 
 ""Though, if needed..."" he shrugs weakly. ""Yes, Captain. A less... gentle approach would be effective."" He frowns, seemingly mildly upset by the thought. Not for the loss of life, you sense.",,
-MPC_IAIICDCMacarioSummonedFour,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFour","SetTextHighlights ""lost contact"" ""Volturn""","""Well..."" he winces, pulling the paper back. ""About three months ago, the internal security division lost contact with her."" He makes a poofing gesture with his hands. ""Poof! Gone. All attempts to make contact have failed, including standard emergency-comms... and worst of all, she's now at risk of losing her hard-earned position within the ARC."" He shivers, seemingly more afraid of the prospect of losing infiltration than losing an agent.
+MPC_IAIICDCMacarioSummonedFour,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFour","SetTextHighlights ""by us""","He gestures broadly. ""It's merely been inconvenient for us. Madam Calibiri's infiltration is as much luck as it is due to skill..."" he plays with a pen, balancing it by it's tip. He looks up to you, pausing. ""Any moves by us will prompt a swift security reaction.""
 
-""From field reports, it would appear our agent has vanished off the face of Umbra. Instead..."" he pushes forward another paper - a field report from Volturn. ""She's been sighted on Volturn. Even still, our attempts to contact her consistently end up failing, necessitating..."" He turns to you. ""...an outside factor.""","MPC_IAIICDCMacarioSummonedFive:Continue",
-MPC_IAIICDCMacarioSummonedFive,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFive","SetTextHighlights ""You know what this is""
-AddTextSmall ""Received encrypted Diktat info package"" highlight
+He folds his hands, letting the pen clatter on the onyx desk. ""That's where you come in, Captain.""","MPC_IAIICDCMacarioSummonedFive:Continue",
+MPC_IAIICDCMacarioSummonedFive,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedFive","SetTextHighlights ""It's a good day. The light of Sindria burns bright.""
+AddTextSmall ""Received personnel profile of Hera Calibri"" highlight
+AddTextSmall ""Received commskey for Hera Calibri"" highlight
 
-MPC_IAIICDKCMD startSearchForAgent","He neatly files all his papers into one stack and sorts it with a hit on the desk. ""Find her, Captain, and report back when you do. And in case she proves belligerent..."" he transmits a encrypted data-pak with a wink. ""Give her this, and tell her 'You know what this is.'"" ","MPC_IAIICDCMacarioSummonedWhat:""What's she doing on Volturn?""
-MPC_IAIICDCMacarioSummonedWhy:""Any idea why she's ignoring you?""
-MPC_IAIICDCMacarioSummonedEnd:""Where do I start?""",
+MPC_IAIICDKCMD startGoToAgent","He neatly files all his papers into one stack and sorts it with a hit on the desk. ""Make contact with her, Captain. Take over Umbra's supplychain for me - and bolster their industrial processes for the might of Sindria.""
+ 
+He taps a panel on his desk, and you promptly receive a personnel profile as well as the commskey for the agent. ""Upon meeting her, speak the phrase 'It's a good day. The light of Sindria burns bright.'"" He chuckles. ""That's how she'll know I sent you. If she provides any resistance, ask her to check her specs - I'll be sure to include your profile in my brief to her.""
+
+""Good luck, Captain."" He smiles coldly.","cutCommLink:Leave",
 MPC_IAIICDCMacarioSummonedWhat,DialogOptionSelected,"$option == MPC_IAIICDCMacarioSummonedWhat","RemoveOption MPC_IAIICDCMacarioSummonedWhat
 SetTextHighlights ""treason""","""Frankly, we don't *know*, Captain."" he frowns, inspecting the paperstack for defects. ""She seems to be avoiding us - for what reason, we can't gather.""
 
@@ -2600,7 +2637,65 @@ MPC_IAIICDKMacarioDidntFindAgent:""No."" (Leave)",
 MPC_IAIICDKMacarioFoundAgentModifyNoAgent,MPC_IAIICDKMacarioFoundAgentModify,"!$global.MPC_foundUmbraInfiltrator","SetEnabled MPC_IAIICDKMacarioFoundAgent false
 SetTooltip MPC_IAIICDKMacarioFoundAgent ""You have not, in fact, found the agent.""",,,
 MPC_IAIICDKMacarioDidntFindAgent,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDidntFindAgent","EndConversation","Macario glares, turning back to his fingernails. ""Then go back and search. Don't waste my time."" His foot hits the comms-disconnect before you have a chance to respond.",,
+MPC_IAIICDKReturnMacarioWhileDeposingQM,PickGreeting,"$id == macario
+MPC_IAIICDKCMD deposingQMOrUpgrading","BeginConversation macario
+
+FireAll MPC_IAIICDKDeposingOptions","Dolos Macario, the Spider of Sindria, appears before you, an expectant gaze across his eyes and directed towards you. 
+
+""Ah, Captain."" He smiles coldly, pulling up a TriPad and tapping away at it. ""Here to give me good news?""",,
+MPC_IAIICDKMacarioLeaveOption,MPC_IAIICDKUpgradeOptions,,,,"100:cutCommLink:""No."" (Leave)",
 "#END Fourth meeting",,,,,,
+,,,,,,
+# Give AI Core Options,,,,,,
+MPC_IAIICDKGiveCoreOptionsGamma,MPC_IAIICDKDeposingOptions,"!MPC_IAIICDKCMD fuelProdHasGoodCore
+PlayerHasCargo gamma_core",,,"10:MPC_IAIICDKGiveGammaCore:""Certainly a gamma core would assist in securing your volatiles supply.""",
+MPC_IAIICDKGiveCoreOptionsBeta,MPC_IAIICDKDeposingOptions,"!MPC_IAIICDKCMD fuelProdHasGoodCore
+PlayerHasCargo beta_core",,,"20:MPC_IAIICDKGiveBetaCore:""If it would please the lion, I would have a beta core delivered to your fuel production.""",
+MPC_IAIICDKGiveCoreOptionsAlpha,MPC_IAIICDKDeposingOptions,"!MPC_IAIICDKCMD fuelProdHasGoodCore
+PlayerHasCargo alpha_core",,,"30:MPC_IAIICDKGiveAlphaCore:""The lion would appreciate an alpha core for their fuelvats, would it not?""",
+MPC_IAIICDKGiveGammaCore,DialogOptionSelected,"$option == MPC_IAIICDKGiveGammaCore","RemoveOption MPC_IAIICDKGiveGammaCore
+RemoveOption MPC_IAIICDKGiveBetaCore
+RemoveOption MPC_IAIICDKGiveAlphaCore
+
+AddRemoveCommodity gamma_core -1
+AdjustRepActivePerson FRIENDLY 1
+MPC_IAIICDKCMD addCoreToFuelProd gamma_core","""Indeed it would."" Macario thinly smiles as you transfer the core to his command, which is promptly installed in the great lion's fuel production.
+
+""Is there anything else?""",,
+MPC_IAIICDKGiveBetaCore,DialogOptionSelected,"$option == MPC_IAIICDKGiveBetaCore","RemoveOption MPC_IAIICDKGiveGammaCore
+RemoveOption MPC_IAIICDKGiveBetaCore
+RemoveOption MPC_IAIICDKGiveAlphaCore
+
+AddRemoveCommodity beta_core -1
+AdjustRepActivePerson FRIENDLY 1
+MPC_IAIICDKCMD addCoreToFuelProd beta_core","""Ah, it *would* please the lion, most assuredly!"" His face lights up in a facsimile of gratitude, and you have the core transferred down to the lion's fuelvats.
+
+""Is there anything else?""",,
+MPC_IAIICDKGiveAlphaCore,DialogOptionSelected,"$option == MPC_IAIICDKGiveAlphaCore","RemoveOption MPC_IAIICDKGiveGammaCore
+RemoveOption MPC_IAIICDKGiveBetaCore
+RemoveOption MPC_IAIICDKGiveAlphaCore
+
+AddRemoveCommodity alpha_core -1
+AdjustRepActivePerson COOPERATIVE 20
+AdjustRep sindrian_diktat COOPERATIVE 5
+MPC_IAIICDKCMD addCoreToFuelProd alpha_core","A small yet most assuredly delighted gasp briefly escapes his lips, which is then covered up by a polite cordial smile. ""Yes... Captain. The lion *would*.""
+
+""Is there anything else?""",,
+"#END Give AI Core Options",,,,,,
+,,,,,,
+# Fifth meeting - FINAL,,,,,,
+MPC_IAIICDKReturnMacarioFinal,PickGreeting,"$id == macario
+MPC_IAIICDKCMD returningToMacarioFinalTime score:1250","BeginConversation macario","Dolos Macario, the Spider of Sindria, appears before you - and for once, he's smiling unprompted.
+
+""Well done, Commander."" He slowly claps. ""Not only have you given us a useful step into the Domain of the 'Antis'-"" he is careful with the word, like a poison. ""-but the glorious Lion is now free from the hemegenous imperialism of the -"" he stops, thinking. ""Well - the Hegemony.""
+
+Taking a breath, he resumes. ""The future of the Diktat is bright, indeed, with your assistance."" He lets out a satisfied sigh, and curls his fingers to let you speak.","MPC_IAIICDKReturnMacarioFinalTwo:""I think you're forgetting something.""",
+MPC_IAIICDKReturnMacarioFinalTwo,DialogOptionSelected,"$option == MPC_IAIICDKReturnMacarioFinalTwo","MPC_IAIICDKCMD pullOut","Macario pulls over the TriPad he was eyeing, and in only a few swift motions, you receive a sudden alert from your security chief: The IAIIC commnet just lit up like a supernova, and the cause is rather obvious.
+
+He pushes the TriPad forward, smiling. ""I hope this arrangement has been... *satisfactory* for you, Captain. I know it was for me.""
+
+Without another word, he hits the comm-disconnect, replacing his face with the rotating crest of the Diktat Internal Security. You can't help but feel like it's painted a more vivid color this time.","cutCommLink:Leave",
+"#END Fifth meeting - FINAL",,,,,,
 "#END Macario",,,,,,
 ,,,,,,
 # Cruor,,,,,,
@@ -2668,9 +2763,9 @@ MPC_IAIICDKVolturnAdminOption,PopulateOptions,"!$global.MPC_askedVolturnGovAbout
 $postId == administrator
 $market.id == volturn
 MPC_IAIICDKCMD isSearchingForAgent",,,"1:MPC_IAIICDKVolturnAdminAskAboutAgent:""Do you happen to know anything about a Diktat agent who's gone missing on your planet?""",
-MPC_IAIICDKVolturnAdminAskAboutAgent,DialogOptionSelected,"$option == MPC_IAIICDKVolturnAdminAskAboutAgent
-$global.MPC_askedVolturnGovAboutAgent = true","AdjustRepActivePerson SUSPICIOUS -1
-EndConversation","$HeOrShe glares. ""No! I keep telling you goons, I'm too busy with the damn rebels to spare even a single set of eyes for this 'search' of yours!"" He grumbles, before slamming the disconnect button.
+MPC_IAIICDKVolturnAdminAskAboutAgent,DialogOptionSelected,"$option == MPC_IAIICDKVolturnAdminAskAboutAgent","AdjustRepActivePerson SUSPICIOUS -1
+$global.MPC_askedVolturnGovAboutAgent = true
+EndConversation","$HeOrShe glares. ""No! I keep telling you goons, I'm too busy with the damn rebels to spare even a single set of eyes for this 'search' of yours!"" $HeOrShe grumbles, before slamming the disconnect button.
 
 It would seem this line of questioning is fruitless.",,
 "#END Searching for agentadmin",,,,,,
@@ -2679,10 +2774,304 @@ It would seem this line of questioning is fruitless.",,
 # BarIAIIC,,,,,,
 ,,,,,,
 # Searching for agent,,,,,,
-NEW RULE,AddBarEvents,,"AddBarEvent MPC_",,,
+MPC_IAIICDKVolturnBarEventAdder,AddBarEvents,"!$global.MPC_IAIICDKsearchedVolturnBar
+$market.id == volturn
+MPC_IAIICDKCMD isSearchingForAgent","AddBarEvent MPC_IAIICDKVolturnBarEvent ""Ask around about the lost agent"" ""In the seedy underbelly of Volturn, you could find some useful insight on the diktat's missing agent."" highlight",,,
 "#END Searching for agent",,,,,,
 "#END BarIAIIC",,,,,,
 "#END Volturn",,,,,,
+,,,,,,
+# Umbra,,,,,,
+,,,,,,
+# Agent,,,,,,
+,,,,,,
+# First meetingAgent,,,,,,
+MPC_IAIICDKUmbraAgentFirstMeetingOptions,PopulateOptions,"$id == MPC_umbraInfiltrator
+!$MPC_IAIICDKInitiatedAgent
+
+!$global.MPC_fuckedUpAgentInit",,,"0:MPC_IAIICDKUmbraAgentInitWrongOne:""Sindira burns bright today.""
+0:MPC_IAIICDKUmbraAgentInitWrongTwo:""Any plans on how we can bomb Sindria's fuel-vats? I hear they burn quite bright.""
+0:MPC_IAIICDKUmbraAgentInitRight:""It's a good day. The light of Sindria burns bright.""
+0:MPC_IAIICDKUmbraAgentInitWrongThree:""Macario sent me. We're to depose the quartermaster.""","""It's a good day. The light of Sindria burns bright."""
+MPC_IAIICDKUmbraAgentInitWrongOne,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWrongOne","AdjustRepActivePerson SUSPICIOUS -1
+EndConversation
+ShowDefaultVisual
+
+$global.MPC_fuckedUpAgentInit = true 0","She only hazards the slightest of brow-raises, before hitting the comms-disconnect. Looks like that was the wrong phrase.",,
+MPC_IAIICDKUmbraAgentInitWrongTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWrongTwo","AdjustRepActivePerson SUSPICIOUS -1
+EndConversation
+ShowDefaultVisual
+
+$global.MPC_fuckedUpAgentInit = true 0","She stares blankly. ""If you don't mind, comrade, I have a pallet of cargo I need to manifest."" Without any extra flair, she hits the comm-disconnect. Looks like that was the wrong phrase.",,
+MPC_IAIICDKUmbraAgentInitWrongThree,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWrongThree","AdjustRepActivePerson SUSPICIOUS -5
+AdjustRep pirates SUSPICIOUS -5
+AdjustRep sindrian_diktat SUSPICIOUS -5
+
+EndConversation
+ShowDefaultVisual
+
+$global.MPC_fuckedUpAgentInit = true 0","A look of panic comes over her, but she masterfully deflects it into confusion. ""If you really are from those treacherous fuel-scum-"" she makes a show of spitting right onto the camera. ""-go dive into the sun for all I care. Calibri out.""
+
+She smashes the comms-disconnect. You really don't know what you expected.",,
+MPC_IAIICDKUmbraAgentInitRight,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitRight","$MPC_IAIICDKInitiatedAgent = true","""That it is."" She nods, before quickly isolating the comm-feed into a secure channel, the tell-tale hexpattern of a privacy field humming to life.
+
+Her intense gaze hardens, looking you over, like a butcher on fresh meat. A few agonizing seconds later, she salutes, sitting an extra inch tall. ""Hera Calibri, Diktat deep-cover agent, second-in-line to the quartermaster position of the traitor-world Umbra."" She scowls.
+
+""My team leader informed me of an agent coming to assist me in my duties."" She looks you over, unimpressed. ""You don't look much like an officer. Who are you?""","MPC_IAIICDKUmbraAgentInitAOM:""Does it matter? Check my specs - Macario should've sent you them.""
+MPC_IAIICDKUmbraAgentInitPersonal:""$playerName, agent of Macario. I'm working for him, and he's working for me - tit for tat.""",
+MPC_IAIICDKUmbraAgentInitAOM,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitAOM",,"Her head descends upon a TriPad, and a moment later, it surfaces, nodding. ""Specs check out.""
+
+""Well."" She relaxes. ""You're not what I expected, but you'll have to do."" She clears her throat. ""Has anyone briefed you on the situation here?""","MPC_IAIICDKUmbraAgentInitYesBriefed:""Yes.""",
+MPC_IAIICDKUmbraAgentInitPersonal,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitPersonal","$option = MPC_IAIICDKUmbraAgentInitAOM
+FireBest DialogOptionSelected",,,
+MPC_IAIICDKUmbraAgentInitYesBriefed,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitYesBriefed",,"""Good."" She nods. ""So I'm sure you're aware of the difficulties I've had removing the quartermaster from power prior.""","MPC_IAIICDKUmbraAgentInitNotInformed:""No, I wasn't informed you had tried in the past.""",
+MPC_IAIICDKUmbraAgentInitNotInformed,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitNotInformed",,"Her expression pains, a look that tells you this type of miscommunication must not be uncommon - either in the ARS, or in the Diktat Internal Security division. A sigh escapes her lips, and she lowers her gaze.
+
+""I had made... arrangements. A delayed shuttle here, a tripwire there... a malfunctioning ECU there..."" she gestures to the sputtering environmental control vent in the background - muffled by the privacy field. She inhales. ""Unfortunately... the attempts... did not work. As subtle as they were, the quartermaster was able to avoid them - and determine someone wanted them... dead."" She grimaces, sighing, reflecting on her failure more assuredly.
+
+""This is why we require an outside touch, Agent. You will assist me in deposing this individual - and putting me in their place.""","MPC_IAIICDKUmbraAgentInitDoesSuspect:""Does anyone suspect you?""
+MPC_IAIICDKUmbraAgentInitHowDepose:""How do you suggest we remove them from power?""",
+MPC_IAIICDKUmbraAgentInitDoesSuspect,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitDoesSuspect","RemoveOption MPC_IAIICDKUmbraAgentInitDoesSuspect","She hmphs, a chuckle suppressed by professionalism alone. ""Extremely. But so are the rest of the line of succession... but I must admit, the suspicion makes it hard to act. Allthemore reason for you to assist me.""",,
+MPC_IAIICDKUmbraAgentInitHowDepose,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitHowDepose",,"She straightens. ""Simple.""
+
+""We implicate them as a member of the Diktat Internal Security."" You sense a small smile in the corner of her lips.","MPC_IAIICDKUmbraAgentInitHowDeposeTwo:Continue","MPC_IAIICDKUmbraAgentInitWhyNotKill:""Why can't we just kill them?""
+MPC_IAIICDKUmbraAgentInitWhyNotBribe:""Why can't we just bribe them?""
+MPC_IAIICDKUmbraAgentInitWhyNotTalk:""If you'd let me talk to them, I could probably convince them to cede control voluntarily.""
+MPC_IAIICDKUmbraAgentInitContinue:""Very well."""
+MPC_IAIICDKUmbraAgentInitHowDeposeTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitHowDeposeTwo",,"""The paranoia of the ARS is currently at a high - any accusations will be taken seriously, and throughly investigated. If we ensure our dear quartermaster is not aware of our..."" she chuckles. ""...modifications... they will take no measures to hide the 'truth'. Plus, it would erase the suspicion placed on me - allowing my direct entry into the position.""
+
+""Plus, it'd be deliciously ironic.""","MPC_IAIICDKUmbraAgentInitWhyConvince:""Surely they wouldn't believe the quartermaster tried to kill themselves.""
+MPC_IAIICDKUmbraAgentInitWhyNotKill:""Why can't we just kill them?""
+MPC_IAIICDKUmbraAgentInitWhyNotBribe:""Why can't we just bribe them?""
+MPC_IAIICDKUmbraAgentInitWhyNotTalk:""If you'd let me talk to them, I could probably convince them to cede control voluntarily.""
+MPC_IAIICDKUmbraAgentInitContinue:""Very well. Where do we start?"" (Continue)",
+MPC_IAIICDKUmbraAgentInitWhyConvince,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyConvince","RemoveOption MPC_IAIICDKUmbraAgentInitWhyConvince
+SetTextHighlights ""explicit""","""Ah-"" she wags her finger. ""My sabotage was not explicit. If it was proven the quartermaster was a agent, they may believe it was all an incident - perhaps an elaborate plot by themselves - or simply power-grabbing by another agent.""
+
+She spins a pen in her hands. ""Regardless, it will cast suspicion off me - which is what we want.""",,
+MPC_IAIICDKUmbraAgentInitWhyNotKill,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyNotKill","RemoveOption MPC_IAIICDKUmbraAgentInitWhyNotKill
+SetTextHighlights ""kill""","She frowns. ""Captain,"" she says, disappointment laden between words. ""Did you not hear what I said? If we kill him, they'll think it was due to a hostile diktat action! And they'd be right."" She grumbles.
+
+""Though, I suppose, if you could make it seem like some kind of random event..."" she rubs her chin. ""Then maybe.""",,
+MPC_IAIICDKUmbraAgentInitWhyNotBribe,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyNotBribe","RemoveOption MPC_IAIICDKUmbraAgentInitWhyNotBribe
+SetTextHighlights ""Idealism""","""Ah yes, the ever-lucrative credit..."" she rolls her eyes. ""The ARS is well-versed in our... 'donations', not to mention their..."" she makes a disgusted expression. ""Idealism...""
+
+""You could try, Agent."" She stares. ""But it won't work.""",,
+MPC_IAIICDKUmbraAgentInitWhyNotTalk,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyNotTalk","RemoveOption MPC_IAIICDKUmbraAgentInitWhyNotTalk","A laugh escapes your lips, only ceasing when she meets your rigid gaze. ""You're serious?"" She snorts. ""Captain - if we could *ask* for control, we would have already."" She cuts you off before you can get another word in with a closed hand.",,
+MPC_IAIICDKUmbraAgentInitContinue,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitContinue","AddTextSmall ""Received profile for Umbra quartermaster"" highlight
+AddTextSmall ""Received itemspecs"" highlight
+AddTextSmall ""Received set of coordinates for Sindria"" highlight
+MPC_IAIICDKCMD startGoToSindriaForCache
+EndConversation","She takes out her TriPad and transmits you a profile on the quartermaster, a set of itemspecs, and a pair of coordinates. ""Go to these coordinates on Sindria - you should find a small hatch hidden in the hillside. I've been preparing for this day, as you'll discover. Now -"" she glances behind, to a blackened mass forming behind the privacy field, and a muffled chuckle. She looks back. ""-I have to leave. You'll know what to do when you get there."" 
+
+Without another word, the commlink dies, replaced by the spotty manifesto of the ARC, proclaiming freedom of the ""antis"", the treacherous oppression of the Diktat, finished with a call-to-arms. You turn off the feed without paying it much mind. ",,
+"#END First meetingAgent",,,,,,
+,,,,,,
+# Got cache from sindria,,,,,,
+MPC_IAIICDKUmbraAgentSecondMeetingOptions,PopulateOptions,"$id == MPC_umbraInfiltrator
+MPC_IAIICDKCMD returningWithCache",,,"10:MPC_IAIICDKUmbraAgentGotCacheSignal:Signal her to activate secure comms",
+MPC_IAIICDKUmbraAgentGotCacheSignal,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentGotCacheSignal",,"With a quick finger-turn, Calibri isolates your commlink and enables a privacy field. Her gaze hardens.
+
+""I can only assume you're here with good news?""","MPC_IAIICDKUmbraAgentGotCacheTwo:""I found your cache - quite the treasure trove of framing materials.""",
+MPC_IAIICDKUmbraAgentGotCacheTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentGotCacheTwo","FireAll MPC_IAIICDKUmbraAgentGotCacheTwoOptions","""Ah, yes. You've the equipment, then?""",,
+MPC_IAIICDKUmbraAgentGotCacheThree,MPC_IAIICDKUmbraAgentGotCacheTwoOptions,,,,"10:MPC_IAIICDKUmbraAgentGotCacheThreeSel:""Yes.""",
+MPC_IAIICDKUmbraAgentGotCacheTwoSalvaged,MPC_IAIICDKUmbraAgentGotCacheTwoOptions,"$global.MPC_IAIICDKSalvagedCache",,,"20:MPC_IAIICDKUmbraAgentGotCacheTwoSalvagedSel:""I salvaged the walls of the Cache. I hope that's okay.""",
+MPC_IAIICDKUmbraAgentGotCacheTwoSalvagedSel,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentGotCacheTwoSalvagedSel","RemoveOption MPC_IAIICDKUmbraAgentGotCacheTwoSalvagedSel
+$player.ethosTruth++","""Hm?"" She raises a brow, then waves a hand. ""Oh - I don't care. You could've dropped a bomb on it and I wouldn't have blinked an eye - that is, if you took the equipment out first.""",,
+MPC_IAIICDKUmbraAgentGotCacheThreeSel,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentGotCacheThreeSel","MPC_IAIICDKCMD startPlantStage","""Very good, Agent."" She takes out a TriPad and transmits a small set of schematics - plans for a raid on one of the quartermaster's hideouts; stealth-ops. It calls for only a small fireteam of marines to breach, plant, and exfiltrate. Afterwards, Calibri will forge a reason for local MuniSec to investigate the room - something often not done due to the quartermaster's paranoia.
+
+A quite well-thought setup.
+
+""Follow this plan, and I'll do the rest.""","cutCommLink:""I'll try my best.""",
+"#END Got cache from sindria",,,,,,
+,,,,,,
+# Calibri newly installed,,,,,,
+MPC_IAIICDKCMDUmbraAgentInstalled,PickGreeting,"$id == MPC_umbraInfiltrator score:1000
+MPC_IAIICDKCMD qmIsDeposed score:200","BeginConversation MPC_umbraInfiltrator
+AddTextSmall ""Umbra volatiles supply secured for Sindria"" good
+SetTextHighlights ""Permanent""
+MPC_IAIICDKCMD beginUpgradeSequence
+AddPotentialContact MPC_umbraInfiltrator
+
+FireAll PopulateOptions
+","The familiar visage of Hera Calibri appears before you, now decorated in brighter colors than before. She offers a stiff salute, hiding a small smile. ""Greetings, Comrade. If you're trying to reach the quartermaster, after the..."" she rolls the words in her mouth. ""...regrettable, incident, I am the provisionary quartermaster - and possibly -"" she chuckles. ""Permanent.""
+
+""If you have any inquiries surrounding Umbra, or it's supply chain, look no further than myself."" She winks.",,
+"#END Calibri newly installed",,,,,,
+,,,,,,
+# Installed calibri as QM of umbra,,,,,,
+MPC_IAIICDKUmbraInfiltratorQM,PickGreeting,"$id == MPC_umbraInfiltrator score:1000
+MPC_IAIICDKCMD calibriIsQM","BeginConversation MPC_umbraInfiltrator
+FireAll PopulateOptions","The familiar visage of Hera Calibri, provisionary ARC quartermaster, appears before you, carrying a wry smile.
+
+""How can I help you, comrade?""",,
+MPC_IAIICDKUmbraInfiltratorQMOptionsImprove,PopulateOptions,"$id == MPC_umbraInfiltrator
+MPC_IAIICDKCMD calibriIsQM
+!MPC_IAIICDKCMD umbraMiningIsImproved
+","SetStoryOption MPC_IAIICDKUmbraInfiltratorQMImproveOption 2 MPC_getDownPayment ui_char_spent_story_point ""Improved Umbra's mining""",,"10:MPC_IAIICDKUmbraInfiltratorQMImproveOption:""Your mining operation is inefficient. I could show you some pointers...""",
+MPC_IAIICDKUmbraInfiltratorQMOptionsCore,PopulateOptions,"$id == MPC_umbraInfiltrator
+MPC_IAIICDKCMD calibriIsQM
+!MPC_IAIICDKCMD umbraMiningHasAlpha","FireAll MPC_IAIICDKUmbraInfiltratorQMCoreOptionModify",,"20:MPC_IAIICDKUmbraInfiltratorQMCoreOption:""I've found a rare piece of technology; an alpha core. Would you be interested?""",
+MPC_IAIICDKUmbraInfiltratorQMCoreOptionModifyNoCore,MPC_IAIICDKUmbraInfiltratorQMCoreOptionModify,"!PlayerHasCargo alpha_core","SetEnabled MPC_IAIICDKUmbraInfiltratorQMCoreOption false
+SetTooltip MPC_IAIICDKUmbraInfiltratorQMCoreOption ""You do not possess an alpha core.""",,,
+MPC_IAIICDKUmbraInfiltratorQMOptionsBore,PopulateOptions,"$id == MPC_umbraInfiltrator
+MPC_IAIICDKCMD calibriIsQM
+!MPC_IAIICDKCMD umbraMiningHasBore","FireAll MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify",,"30:MPC_IAIICDKUmbraInfiltratorQMBoreOption:""I've recently acquired a mantle bore, and would like to donate it to the cause.""",
+MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,"!PlayerHasCargo mantle_bore",,,,
+MPC_IAIICDKUmbraInfiltratorQMImproveOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMImproveOption",,"""Oh, really?"" She tilts her head, a thin smile crossing her lips. ""You understand we operate in emergency conditions, right? An inefficiency is a *part* of day-to-day wartime operations.""","MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo:""That's where you're wrong. You see, if you follow these specifications...""",
+MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo","MPC_IAIICDKCMD improveUmbraMining
+AddTextSmall ""Improved Umbra's mining; +1 production"" highlight
+
+AdjustRep pirates FRIENDLY 5
+
+FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","For the next hour, you and the ""quartermaster"" discuss wartime economic strategy, logistics, and pour over workshifts down to the exaxt microsecond. As it turns out, workers slack quite often, machinery is unkempt, and entire piles of volatiles are dismissed as ""low-quality"" - when, in fact, a quick on-site refining operation could up purity to acceptable standards. The changes are made with haste, and soon enough, Umbra's mining output is an additional factor of volume higher.
+
+Calibri offers her deepest thanks from the ARC - and, you suspect, the diktat.",,
+MPC_IAIICDKUmbraInfiltratorQMCoreOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMCoreOption","SetTextHighlights ""mining""
+AdjustRep pirates FRIENDLY 5
+AddRemoveCommodity alpha_core -1
+MPC_IAIICDKCMD addCoreToMining alpha_core
+
+FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","Calibri's status as a deep-cover infiltrator is betrayed by her milquetoast reaction to such a startling technology. ""Ah - captain, yes. We could use such an item most effectively...""
+
+She licks her lips. ""In our mining operations."" You transfer the core down and give brief instructionsn on how to install it - and merely an hour later, the ARC transmits their ""heart-felt thanks"" in your assistance in their war.",,
+MPC_IAIICDKUmbraInfiltratorQMBoreOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMBoreOption","SetTextHighlights ""mantle bore""
+AdjustRep pirates FRIENDLY 15
+AddRemoveAnyItem SPECIAL mantle_bore -1
+MPC_IAIICDKCMD addBoreToMining
+
+FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","She blinks twice. ""-really? A mantle bore?"" After a curt nod, she huffs, and nods. ""Well... there's a reservoir of volatiles deep under the surface we haven't been able to reach."" She grins. ""Maybe you could help us with it?""
+
+A short delivery and assisted installation later, you view the aggressively churning bore from the uncertain safety of an ARC hab-module a few kilometers away. You are thanked profusely by an ARC representative, and less-so by Calibri herself.",,
+MPC_IAIICDKUmbraInfiltratorQMOptionsLeave,MPC_IAIICDKUmbraInfiltratorQMOptions,,,,"100:cutCommLink:Leave",
+"#END Installed calibri as QM of umbra",,,,,,
+"#END Agent",,,,,,
+,,,,,,
+# Quartermaster,,,,,,
+,,,,,,
+# Bribe them to fuck off,,,,,,
+MPC_IAIICDKUmbraQMBribeOption,PopulateOptions,"$postId == supplyOfficer
+$market.id == umbra
+MPC_IAIICDKCMD deposingQM
+!$MPC_triedBribe",,,"5:MPC_IAIICDKUmbraQMBribeOptionSel:""Would a donation inspire you to leave Umbra, and the ARC, behind?""",
+MPC_IAIICDKUmbraQMBribeOptionSel,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMBribeOptionSel","RemoveOption MPC_IAIICDKUmbraQMBribeOptionSel
+$MPC_triedBribe = true
+AdjustRepActivePerson HOSTILE -1
+
+EndConversation
+ShowDefaultVisual","$HeOrShe glares. ""Money?! To leave the revolution?!"" $HeOrShe spits. ""The Antis were formed AGAINST the ever-push of billionaires!"" 
+
+$HeOrShe slams $hisOrHer first down. ""Don't ask me this again.""
+
+$HeOrShe cuts the commlink before you have a chance to respond. Given $hisOrHer rather ""patriotic"" status in the personnel file, you don't find this to be surprising.",,
+"#END Bribe them to fuck off",,,,,,
+,,,,,,
+# Use story points to convince them,,,,,,
+MPC_IAIICDKUmbraQMSPOption,PopulateOptions,"$postId == supplyOfficer
+$market.id == umbra
+MPC_IAIICDKCMD deposingQM","SetStoryOption MPC_IAIICDKUmbraQMSPOptionSel 2 MPC_getDownPayment ui_char_spent_story_point ""Convinced Umbra's quartermaster to leave""",,"6:MPC_IAIICDKUmbraQMSPOptionSel:""The fact Umbra as an operation is running, at all, is incredible. You must be exceedingly competent.""",
+MPC_IAIICDKUmbraQMSPOptionSel,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionSel","AdjustRepActivePerson FRIENDLY 1","$HeOrShe smiles faintly, and nods. ""Aye, Comrade..."" $heOrShe admits with a sigh. ""Do you realize how difficult it is tah coordinate a mining operation between a buncha pirates anda buncha revolutionaries?"" $HeOrShe snorts, picking at $hisOrHer nose. ""Half tha miners wanna just dump th' ore inna vat of acid, t' get rid of the 'capital'."" $HeOrShe snorts. ""The other half? I gotta fight 'em off from falsifying my manifests.""
+
+$HeOrShe notices your gaze and narrows $hisOrHer eyes. ""You got somethin' to say?""","MPC_IAIICDKUmbraQMSPOptionTwo:""Your talents are wasted in the ARC.""",
+MPC_IAIICDKUmbraQMSPOptionTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionTwo","SetTextHighlights ""Captain"" ""needs""
+AdjustRepActivePerson SUSPICIOUS -1","$HisOrHer eyes narrow. ""Wasted...?"" $HeOrShe snorts, the recoil launching $hisOrHer head back. ""Captain."" $heOrShe starts, dropping the comradery act. ""The ARC needs a spacer like me. Who else is gonna make sure them damn scallywags out there-"" $heOrShe taps $hisOrHer degraded TriPad, as if referring to it as a pirate. ""-don't steal our volatiles?""","MPC_IAIICDKUmbraQMSPOptionThree:""The ARC aren't the only Antis in the sector, Comrade.""",
+MPC_IAIICDKUmbraQMSPOptionThree,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionThree",,"Much to $hisOrHer surprise, you begin a speech denouncing the hyper-capitalist state of the sector - where the wealth live in fantastical orbital villas, and the poor subsist as wretched hive-scum. With your capital, you intend to launch a invasion - covert or overt - of the larger sector, and redistribute the wealth equally.
+
+A shine enters $hisOrHer eyes as you offer ""proof"" - carefully crafted (and fabricated) communication receipts between you and your internal security, declaring a state of proletariat communion within your empire and preparing it for conversion. The only thing stopping you is the installment of numerous Comrades in high-government positions, as you're sure the egregore is manifest and must be beaten down.
+
+And this is where your dear Comrade comes in. They must accept your position as head of supply in your capital planet, and help beat back the encroaching wealth inequality of the sector. The revolution is soon - but we need their help.","MPC_IAIICDKUmbraQMSPOptionFour:""So, Comrade. Will you join us?""",
+MPC_IAIICDKUmbraQMSPOptionFour,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionFour",,"An amazed breath escapes $hisOrHer lips, in lockstep with a stammering ""Y-yes! Yes! B-bloody genius!"" $HeOrShe excitedly stands up, trembling slightly. ""W-what must I do first?!""","MPC_IAIICDKUmbraQMSPOptionFive:""Come quickly, to the shuttle at your nearest spaceport. We don't have much time - it was a risk to come here.""",
+MPC_IAIICDKUmbraQMSPOptionFive,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionFive",,"$HeOrShe protests. ""B-but-"" $heOrShe licks her lips. ""-I have to tell everyone I'm leaving!"" You helpfully inform them you have a functioning comm module $heOrShe can use en-route to her new position.
+
+$HeOrShe nods and runs out the room, leaving the commlink open. You have the courtesy to disable it before you yourself leave.
+
+Within minutes, your crew report a frantic ARC officer demanding entry to your flagship. You instruct your guards to keep the ruse going before personally greeting them. 
+
+""I didn't know there were any of us out there..."" $HeOrShe grins. ""...much less one of the biggest factions in the sector!"" A delighted laugh escapes $hisOrHer lips, unaware of the fate that will befall them.","MPC_IAIICDKUmbraQMSPOptionSix:""We'll depart immediately. Go make your announcement - but don't include your destination. The egregore watches.""",
+MPC_IAIICDKUmbraQMSPOptionSix,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionSix","MPC_IAIICDKCMD QMdeposed","$HeOrShe eagerly nods and opens a comm channel to the Umbra ARC. You overhear frantic arguing, followed by a sharp sigh and the click-off of a commlink. With this, $hisOrHer fate is sealed - a voluntary resignation will cause no further investigation, and standard CoC will follow.
+
+It's only moments later you order your guards to imprison the quartermaster, which they do dutifully. You don't want $himOrHer calling home if their ""anarchist paradise"" turns out to be little more than another hiveworld.","MPC_IAIICDKUmbraQMSPOptionSeven:Leave",
+MPC_IAIICDKUmbraQMSPOptionSeven,DialogOptionSelected,"$option == MPC_IAIICDKUmbraQMSPOptionSeven","EndConversation","You return to orbit, ignoring the cries of the betrayed revolutionary - now dampened by the plastiglass of your ship's brig.",,
+"#END Use story points to convince them",,,,,,
+"#END Quartermaster",,,,,,
+,,,,,,
+# Raid to depose the QM,,,,,,
+MPC_IAIICDKRaidQMOption,PopulateOptions,"$hasMarket
+$menuState == main
+$id == umbra
+MPC_IAIICDKCMD deposingQM",,"With sufficient preparation and cunning, you could launch a military operation to eliminate Umbra's quartermaster while disguising it as something completely separate from the Diktat.","30:MPC_IAIICDKRaidQMOptionSel:Prepare an assassination of Umbra's quartermaster",
+MPC_IAIICDKRaidQMOptionSel,DialogOptionSelected,"$option == MPC_IAIICDKRaidQMOptionSel","$raidDifficulty = 400 0
+$raidGoBackTrigger = PopulateOptions 0
+$raidContinueTrigger = MPC_IAIICDKRaidQMFinishedB 0
+AddRaidObjective genericIcon ""Eliminate the ARC quartermaster"" EXTREME 5000 MPC_IAIICDKRaidQMFinishedA true
+$raidRestrictToTrigger = MPC_IAIICDKRaidQMFinishedA 0
+ShowImageVisual raid_prepare","Calibri's file is highly detailed, with traffic plans and schedules tightly knit, alongside endless annotation and comment. 
+
+Unfortunately, all comments are filled with irritation and discontent about the erratic and highly-protected schedule of the quartermaster, far more than any other ARC agent you've previously scouted. Seems they take the protection of command staff rather seriously.
+
+To complicate matters further, this operation must be done under false pretenses. Your tactical officer suggests your best bet is to assault bunkers and industrial hotspots across the planet in simultaneous fashion, taking care to sabotage and steal on your way. That way, while many would suspect a Diktat attack, the scale would be too extreme to be feasibly seen as an assassination attempt.
+
+There's no easy way to put this - the attack will be a meat grinder. But sometimes, that's all brute force can be.","mktRaidNonMarket:Continue",
+MPC_IAIICDKRaidQMFinishedA,MPC_IAIICDKRaidQMFinishedA,,,"You gather your closest and more seasnoned merc officers for the operation, and delegate squadops to each in a neatly divided manner, distributing command as much as possible.
+
+In all likelyhood, this operation won't be precise, nor fast. The entirety of the ARC militia will be on you seconds after you begin the op, and your marines know this well. Thankfully, you still have the element of surprise - something used to great advantage as the mission kicks off, with hundred of doors and hab-hatches being blown open by the spark-clouds of breaching charges, and their inhabitants incapacitated in record time.
+
+The meat grinder quickly kicks off, however. Casualty reports come flooding in as your marines push through the countless resistance bunkers, sabotaging installations on their way. Tacti-displays fail to report hidden weapons installations, fire-panels, and landmines. Still, though, your marines manage to push through, leaving hell and fire in their wake - if bloodied.",,
+MPC_IAIICDKRaidQMFinishedB,MPC_IAIICDKRaidQMFinishedB,,"$global.MPC_IAIICDKRaidedUmbraForQM = true
+MPC_IAIICDKCMD QMdeposed
+AddTextSmall ""Disrupted random industries on Umbra"" highlight","Battle and comm analysis start immediately, tracing the frantic emergency-comms of the ARC for any sign of the target's death. And then, finally, you hear it - proclamation of the deceased command member, the true target. This escapes the ARC's attention, seeming to think this was a random raid from a Diktat privateer. Close to the truth.
+
+By the time your marines withdraw, the ARC militia is in full-force, and shuttles are shot down as they make the pre-scheduled escape flight into a orbital debris field, where they hide with minimal power until the response force leaves proximal space. One of your ships discretely enters close proximity of the field and ushers your bloodied-yet-stalwart marines into itself, before returning to your fleet.
+
+All in all, an op well-done; the best it could have gone.
+","defaultLeave:Leave",
+"#END Raid to depose the QM",,,,,,
+"#END Umbra",,,,,,
+,,,,,,
+# Raid to implicate the QM,,,,,,
+MPC_IAIICDKPlantQMOption,PopulateOptions,"$hasMarket
+$menuState == main
+$id == umbra
+MPC_IAIICDKCMD plantingEvidence",,,"31:MPC_IAIICDKPlantQMOptionSel:Prepare to plant evidence on Umbra's quartermaster",
+MPC_IAIICDKPlantQMOptionSel,DialogOptionSelected,"$option == MPC_IAIICDKPlantQMOptionSel","$raidDifficulty = 10 0
+$raidGoBackTrigger = PopulateOptions 0
+$raidContinueTrigger = MPC_IAIICDKPlantQMFinishedB 0
+AddRaidObjective genericIcon ""Eliminate the ARC quartermaster"" MINIMAL 10 MPC_IAIICDKPlantQMFinishedA true
+$raidRestrictToTrigger = MPC_IAIICDKPlantQMFinishedA 0
+ShowImageVisual raid_prepare","Calibri has given you a small set of plans for a covert op. You will plant evidence in one of the quartermaster's hideouts, and after that, Calibri will lure MuniSec in, and get the quartermaster arrested for being a covert operative.","mktRaidNonMarket:Continue",
+MPC_IAIICDKPlantQMFinishedA,MPC_IAIICDKPlantQMFinishedA,,,"You hand-pick a small infiltration team and equip them with your best stealth gear. Before too long, a lineup of grizzled veterans, accented by the typical bolt-click of weapon clearing and checking, while the shimmering of their transparency gear hums quietly in the background.
+
+Your marines are covertly inserted five kilometers from target and make haste, knocking out a guard standing at the door. A quick hack later, full access is gained and security systems shutdown, giving them all the time they need to plant their dirt.",,
+MPC_IAIICDKPlantQMFinishedB,MPC_IAIICDKPlantQMFinishedB,,"MPC_IAIICDKCMD QMdeposed","Your tactical panel pings as team leader reports success - weapons planted in locked drawers, covert communicators placed just out of reach. As your marines recall back to their shuttle, you hear a quiet whisper on local MuniComms - a report of a murder within the quartermaster's quarters. 
+
+You watch through hacked camfeed as MuniSec floods in, discovering the corpse of their comrade - and in succession, the evidence planted by your operatives.
+
+Only minutes later, you receive reports of the quartermaster's arrest, and words spoken of how to handle Chain of Command now that the quartermaster is seen as a Diktat operative. You receive a summons from Calibri a moment later.","defaultLeave:Leave",
+"#END Raid to implicate the QM",,,,,,
+,,,,,,
+# Sindria,,,,,,
+,,,,,,
+# Go to sindria to find agent cache,,,,,,
+MPC_IAIICDKAddSindriaCacheOption,PopulateOptions,"MPC_IAIICDKCMD lookingForCache
+$hasMarket
+$menuState == main
+$id == sindria",,"Hera Calibri, the Diktat agent on Umbra, gave you a set of coordinates on Sindria. You could investigate them.","30:MPC_IAIICDKSindriaCacheOption:Investigate Calibri's coordinates",
+MPC_IAIICDKSindriaCacheOption,DialogOptionSelected,"$option == MPC_IAIICDKSindriaCacheOption",,"The authorities of Sindria and the Great Lion are initially hesitant to give you free reign to travel to an uninhabited portion of Sindria - but upon assurance of your secret mission (and possibly direct instruction from Macario himself), you are cleared for landing - assuming, of course, you stay within range of a monitoring tower - something harder to do than avoid in the police state of the Diktat.","MPC_IAIICDKSindriaCacheOptionTwo:Land",
+MPC_IAIICDKSindriaCacheOptionTwo,DialogOptionSelected,"$option == MPC_IAIICDKSindriaCacheOptionTwo",,"You and your crew quickly locate a loose metallic panel in the nominally hard rock of the target cliff-face, and a small vault is exposed without difficulty. A manifest quickly comes in, as your crew combs through the varied contents.
+
+Various covert communicators, classified paperwork (likely fabricated), weaponry only known to be used by Diktat internal security, and a plethora of trace-fabricators leave your tactical officer salivating, and your cargo crew with a pleasant time loading the relatively meager contents. ","MPC_IAIICDKSindriaCacheOptionThree:Continue",
+MPC_IAIICDKSindriaCacheOptionThree,DialogOptionSelected,"$option == MPC_IAIICDKSindriaCacheOptionThree","MPC_IAIICDKCMD lootedCache","Before long, all that's left of the vault is the plastitanium interior, now filled with useless Sindrian vacuum. All that's left now is to return to Umbra and prepare a plan with Calibri to overthrow the quartermaster.","10:MPC_IAIICDKSindriaCacheSalvage:Salvage the remains
+20:MPC_IAIICDKSindriaCacheLeave:Leave",
+MPC_IAIICDKSindriaCacheSalvage,DialogOptionSelected,"$option == MPC_IAIICDKSindriaCacheSalvage","RemoveOption MPC_IAIICDKSindriaCacheSalvage
+AddRemoveCommodity metals 37
+AddRemoveCommodity rare_metals 2
+
+$global.MPC_IAIICDKSalvagedCache = true","""Waste not want not"" - the motto of any serious salvager. Your crews make quirk work of the skeletal interior, and load the meager returns into your cargo.
+
+All that's left is a chasm in the rockface. You hope Calibri won't be too upset.",,
+MPC_IAIICDKSindriaCacheLeave,DialogOptionSelected,"$option == MPC_IAIICDKSindriaCacheLeave","FireAll PopulateOptions","Your salvors file into the shuttle, keenly aware of the watchtower judging their every move. Thankfully, it only takes internal security pulling rank on the Diktat STC once to provide you clearance to leave.",,
+"#END Go to sindria to find agent cache",,,,,,
+"#END Sindria",,,,,,
 "#END Diktat",,,,,,
 ,,,,,,
 # League,,,,,,
@@ -2699,5 +3088,148 @@ MPC_IAIICPLCMD canAskForSupport",,,"30:MPC_IAIICPLReynardSupportOpt:""My space i
 ,,,,,,
 # Hegemony,,,,,,
 "#END Hegemony",,,,,,
+,,,,,,
+# Ark FOB Comms directory,,,,,,
+,,,,,,
+# Jill Mirthson (Leader),,,,,,
+,,,,,,
+# Firrst meeting with jill,,,,,,
+MPC_IAIICJillFirstMeeting,PickGreeting,"$id == MPC_IAIIC_Leader score:1000
+!$MPC_introduced","$MPC_introduced = true","Upon contacting the head of the IAIIC, your call is redirected to a security relay, seemingly ran by some delta-level AI.
+
+The laurel-crest on your commspanel screeches to life through a discordant subsimalle of a human voice, monotone and shrill in nature. ""GREETINGS. JILL MIRTHSON IS NOT AVAILABLE AT THE MOMENT. PLEASE SUBMIT DIPLOMATIC OR SECURITY CREDENTIALS IF YOU WISH TO CONTINUE.""","MPC_IAIICJillFirstMeetingDiploCred:Input your credentials as leader of your faction","BeginConversation MPC_IAIIC_Leader"
+MPC_IAIICJillFirstMeetingDiploCred,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiploCred","SetTextHighlights ""target polity""","You input your credentials, making sure to emphasize your status as the leader of the IAIIC's target polity.
+
+You brace as the shrill voice resumes it's horrible speech. ""CREDENTIALS RECOGNIZED: $PlayerName, LEADER OF MAJOR SECTOR POLITY! PLEASE WAIT AS YOUR CALL I-"" The voice cuts off right there, with no fanfare - but you believe it deserves some.","MPC_IAIICJillFirstMeetingWaitForRoute:Wait",
+MPC_IAIICJillFirstMeetingSecCred,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingSecCred",,,,
+MPC_IAIICJillFirstMeetingFuckit,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingFuckit","RemoveOption MPC_IAIICJillFirstMeetingFuckit","You're not sure why, but you *really* want to mash your keyboard right now. Five broken keys later, the delta core responds: ""ERROR: DWOHIJBWDUIWDIOUWUYY%TTJkGIRJ*(J$JJUUIHWIYGDFJH*$^$^$H###"" IS NOT A VALID CREDENTIAL.""
+
+Worth a shot. You guess.",,
+MPC_IAIICJillFirstMeetingWaitForRoute,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingWaitForRoute","BeginConversation MPC_IAIIC_Leader
+
+SetTextHighlightColors MPC_IAIIC
+SetTextHighlights ""Jill Mirthson""","It takes a few minutes, but your connection is finally accepted. Before you sits Jill Mirthson, head bowed darkly over a hill of pinched fingers. She stares at you intensely, papers and piles on her cold-steel desk neatly piled to the side to give you an unobstructed view of her imposing form.
+
+""Captain."" She offers calmly.","0:MPC_IAIICJillFirstMeetingPolite:""Commander.""
+10:MPC_IAIICJillFirstMeetingDemandRude:""I demand to know what you're doing in my space!""
+20:MPC_IAIICJillFirstMeetingThreatRude:""I could destroy this station and everyone on it if you don't leave immediately!""",
+MPC_IAIICJillFirstMeetingPolite,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingPolite",,"She nods, acknowledging your cordality. 
+
+""I'm glad you took the time to visit. There's much I'd like to discuss with you. Let's start...""","MPC_IAIICJillFirstMeetingDiscussContinue:Continue",
+MPC_IAIICJillFirstMeetingDemandRude,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDemandRude","$option = MPC_IAIICJillFirstMeetingDiscussContinue
+FireBest DialogOptionSelected","Jill remains motionless, your words passing over her like a salamander chasing a sensor ghost.",,
+MPC_IAIICJillFirstMeetingThreatRude,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingThreatRude","SetTextHighlights ""beheaded"" ""terrorized""
+AdjustRepActivePerson VENGEFUL -1
+","You sense the slightest of irritation making itself manifest in the corner of her mouth. She holds up a palm, as if to stop you before you finish. ""I don't think that's quite true, *Captain.* Surely you're aware we're more than just a military?"" Her gaze remains untouched as she takes a TriPad from her messily-cleaned deskside.
+
+""With a word, I could have your government beheaded and civilians terrorized."" Her look darkens, and her hands plant onto the table as she pushes towards you. ""No amount of fleetpower can stop that, 'Captain'."" She scolds, a hint of disdain peeking out from her words.
+
+A threatening eternity later, the atmosphere snaps and she rests back into her chair. ""But we don't want that, Captain. Do we?""","MPC_IAIICJillFirstMeetingThreatRudeNo:""No.""
+MPC_IAIICJillFirstMeetingThreatRudeProvoke:""Just try it.""",
+MPC_IAIICJillFirstMeetingThreatRudeNo,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingThreatRudeNo",,"""Good."" She finishes, underlit by the lazy clatter of her TriPad being thrown to the side of her desk.
+
+""There's much I'd like to discuss with you. Let's start...""","MPC_IAIICJillFirstMeetingDiscussContinue:Continue",
+MPC_IAIICJillFirstMeetingThreatRudeProvoke,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingThreatRudeProvoke","MPC_IAIICJillCMD daredJillToRetaliate
+$player.ethosCocky++","What looks like a bemused smirk crosses her lips, as her finger strikes whatever it was hovering over. ""You'll see what I mean in a day or so."" She throws the TriPad away, it lazily sliding into the pile of valuable refuse to her side. 
+
+""There's much I'd like to discuss with you. Let's start...""","MPC_IAIICJillFirstMeetingDiscussContinue:Continue",
+MPC_IAIICJillFirstMeetingDiscussContinue,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinue","SetTextHighlights ""fractal core""","""First, let's state the obvious."" Your comms-panel glitches briefly as Jill sets the link to private. Her dagger-like gaze pierces through your eyes, delving deep into you and your faction. ""We're here for your fractal core. Give it to us, and we'll leave. We'll forget any of this ever happened.""","MPC_IAIICJillFirstMeetingDiscussContinueTwo:Continue
+MPC_IAIICJillFirstMeetingDiscussLikeHell:""Like hell.""",
+MPC_IAIICJillFirstMeetingDiscussLikeHell,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussLikeHell","RemoveOption MPC_IAIICJillFirstMeetingDiscussLikeHell","A brief pause is all the response you receive from the commander.",,
+MPC_IAIICJillFirstMeetingDiscussContinueTwo,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueTwo","SetTextHighlights ""transponer on"" ""laws""","She takes a breath, as well as a moment to adjust her suitlip. ""Secondly. As long as we are in this system, it will be treated as our space, pursuant to Domain Expansion Charter, Section 15:59. You would do best to keep your transponder on, and your civilians operant by our laws.""","MPC_IAIICJillFirstMeetingDiscussContinueThree:Continue
+MPC_IAIICJillFirstMeetingDiscussContinueComplain:""How dare you! The Domain is long dead, it's laws hold no credence!""
+MPC_IAIICJillFirstMeetingDiscussContinueLawsStupid:""YOUR laws?! Maybe I'll put my laws on YOUR citizenship!""
+",
+MPC_IAIICJillFirstMeetingDiscussContinueComplain,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueComplain","SetTextHighlights ""domain territory""
+RemoveOption MPC_IAIICJillFirstMeetingDiscussContinueComplain","""Captain, like it or not."" She stares. ""This is still Domain territory."" You sense a hissing irritation under her voice, but she keeps it at bay. ""You, and your citizens, are it's citizenship."" A hand briefly brushes her hair. 
+
+""You'd do well to remember that.""",,
+MPC_IAIICJillFirstMeetingDiscussContinueLawsStupid,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueLawsStupid","RemoveOption MPC_IAIICJillFirstMeetingDiscussContinueLawsStupid
+SetTextHighlights ""issues""
+AdjustRepActivePerson VENGEFUL -1","She takes a deep, sighing breath, and taps a few times on her recently-discarded PDA. ""Then I anticipate issues in the future."" She grumbles, narrowing her eyes.",,
+MPC_IAIICJillFirstMeetingDiscussContinueThree,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueThree","SetTextHighlights ""measures""","""Thirdly, and finally, captain, if you don't surrender your illegal intelligence,"" she takes a small mag-pistol from the side, checks the mag, and sets it back down. ""We will have to take measures.""","MPC_IAIICJillFirstMeetingDiscussContinueFour:Continue
+MPC_IAIICJillFirstMeetingDiscussContinueWhatKindOfMeasures:""What kind of measures, Commander?""",
+MPC_IAIICJillFirstMeetingDiscussContinueWhatKindOfMeasures,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueWhatKindOfMeasures","RemoveOption MPC_IAIICJillFirstMeetingDiscussContinueWhatKindOfMeasures
+SetTextHighlights ""raids""","She takes a deep breath. ""Inspections, skirmishes..."" she resets her hair, but not for a moment diverts her gaze. ""...raids.""
+
+""And, others, of course. But you'll just have to find those out yourself.""",,
+MPC_IAIICJillFirstMeetingDiscussContinueFour,DialogOptionSelected,"$option == MPC_IAIICJillFirstMeetingDiscussContinueFour","FireAll MPC_IAIICJillOptions
+AddTextSmall ""Received IAIIC diplomatic keys"" highlight","""That's all, Captain."" She relaxes, and begins to replace her items where they previously were. She stops only a moment to tap her PDA and transmit a set of diplomatic keys to you. ""Use them to contact me whenever you want, bypassing comms control."" She explains, muffled by the bang of a lockbox reset on her desk.
+
+""Now, if you've got any questions, ask them now. I can't be idle for long."" She stops her decluttering a moment to stare intensely at you. ""And if you keep me too long, I'll just kill the link. So don't try it.""
+
+She resumes her cleaning.",,
+"#END Firrst meeting with jill",,,,,,
+,,,,,,
+# Subsequent visits with jill,,,,,,
+MPC_IAIICJillPickGreeting,PickGreeting,"$id == MPC_IAIIC_Leader score:1000
+$MPC_introduced","BeginConversation MPC_IAIIC_Leader
+FireAll MPC_IAIICJillOptions","Jill Mirthson, the head of the IAIIC, appears before you, head buried in her PDA. ""If you don't MIND, I'm rather B-"" she scolds, before she glimpses you and adopts a more cold demeanour. ""Ah. $PlayerName.""
+OR
+The familiar visage of Jill Mirthson appears before you, angrily pre-occupied with another vidcall. ""Who the hell is this?! I told you I'm BUS-"" she takes a sharp breath as she notices your status, and sighs as she wordlessly terminates the vidcall with her protesting officer. ""What is it?""",,
+"#END Subsequent visits with jill",,,,,,
+,,,,,,
+# Jill options,,,,,,
+MPC_IAIICJillOptionAICoresInFOB,MPC_IAIICJillOptions,"!$MPC_commentedOnAICores",,,"5:MPC_IAIICJillOptionAICoresInFOBSel:""Quite hypocritical of you to use AI cores.""",
+MPC_IAIICJillOptionAICoresInFOBSel,DialogOptionSelected,"$option == MPC_IAIICJillOptionAICoresInFOBSel","$MPC_commentedOnAICores = true 0
+FireAll MPC_IAIICJillOptions","Your accusation gets her attention for a moment, but only for a moment. ""Yeah. Would be, wouldn't it?""
+
+The side of her mouth curls upwards. ""Good thing we don't.""",,
+MPC_IAIICJillOptionFlagSucks,MPC_IAIICJillOptions,"!$MPC_insultedFlag",,,"6:MPC_IAIICJillOptionFlagSucksSel:""Your flag is... surprisingly amateur.""",
+MPC_IAIICJillOptionFlagSucksSel,DialogOptionSelected,"$option == MPC_IAIICJillOptionFlagSucksSel","$MPC_insultedFlag = true 0
+FireAll MPC_IAIICJillOptions
+SetTextHighlights ""Captain""","""Yeah."" Her lips curl. ""We don't exactly have a graphic designer, Captain."" Her words have a certain point to them. You decide it's not wise nor productive to pursue this line of questioning.",,
+MPC_IAIICJillOptionLeave,MPC_IAIICJillOptions,,,,"100:cutCommLink:Leave",
+,,,,,,
+# Sue for peace options,,,,,,
+MPC_IAIICSueForPeaceOption,MPC_IAIICJillOptions,"!$MPC_cantSueForPeace","SetStoryColor MPC_IAIICSueForPeaceOptionSel
+FireAll MPC_IAIICSueForPeaceOptionSelModify",,"4:MPC_IAIICSueForPeaceOptionSel:""I'm here to sue for peace.""",
+MPC_IAIICSueForPeaceOptionSelModifyAtPeace,MPC_IAIICSueForPeaceOptionSelModify,"MPC_IAIICJillCMD peacePossibilityIs ALREADY_AT_PEACE","SetEnabled MPC_IAIICSueForPeaceOptionSel false
+SetTooltip MPC_IAIICSueForPeaceOptionSel ""You are already at an unsteady peace with the IAIIC.""",,,
+MPC_IAIICSueForPeaceOptionSelHostilitiesActive,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceOptionSel
+MPC_IAIICJillCMD peacePossibilityIs HOSTILITIES_ACTIVE","$MPC_cantSueForPeace = true 0
+FireAll MPC_IAIICJillOptions","Her gaze narrows. ""You can't be serious, Captain. We're in the middle of a military operation against you, and you want us to just abort it?""
+
+She snorts. ""Don't make me laugh.""",,
+MPC_IAIICSueForPeaceOptionSelYes,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceOptionSel
+MPC_IAIICJillCMD peacePossibilityIs YES","FireBest MPC_IAIICSueForPeaceOptionSelYesInit",,,
+MPC_IAIICSueForPeaceOptionSelYesInitFirst,MPC_IAIICSueForPeaceOptionSelYesInit,"!$MPC_triedSueingForPeaceBefore","$MPC_triedSueingForPeaceBefore = true
+FireAll MPC_IAIICSueForPeaceConcessionOptions
+
+SetTextHighlights ""war weary""","""Mh."" Jill mumbles. She gives you a hard look before nodding and pulling up her PDA. ""I hope you realize this won't be free. You have to offer something - the IAIIC isn't exactly war weary.""",,
+MPC_IAIICSueForPeaceOptionSelYesAgain,MPC_IAIICSueForPeaceOptionSelYesInit,"$MPC_triedSueingForPeaceBefore score:20","FireAll MPC_IAIICSueForPeaceConcessionOptions","""Mh."" Jill mumbles. She gives you a hard look before nodding and pulling up her PDA. ""And what concessions will you provide?""",,
+MPC_IAIICSueForPeaceConcessionOptionCredits,MPC_IAIICSueForPeaceConcessionOptions,,"MPC_IAIICJillCMD generateCreditConcessionAmount",,"0:MPC_IAIICSueForPeaceConcessionCredits:""Credits.""",
+MPC_IAIICSueForPeaceConcessionCredits,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCredits","SetTextHighlights $global.MPC_creditConcessionAmountDGS ""hurt""","Jill pulls something up on her PDA and slides it towards the camera at an oblique angle. You have to crane your head to read it, but...
+
+""$global.MPC_creditConcessionAmountDGS credits."" She narrates. ""Based off the highest income you've had in the past six months.""
+
+She taps her finger on her desk. ""I want this to hurt, Captain.""","MPC_IAIICSueForPeaceConcessionCreditsYes:""Fine."" (Pay $global.MPC_creditConcessionAmountDGS)
+MPC_IAIICSueForPeaceConcessionCreditsNo:""Let me reconsider my options.""",
+MPC_IAIICSueForPeaceConcessionCreditsYes,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCreditsYes","AddCredits -$global.MPC_creditConcessionAmount","You make the transfer, and with a rare smile, Jill does her part. IAIIC battlefleets disperse across the system, and your IntSec immediately contacts you, reporting a full withdrawl.
+
+""Good doing business with you, Captain."" She finishes, cutting the comm link before you have a chance to speak. The laurel of the IAIIC slowly rotates before you.","cutCommLink:Leave",
+MPC_IAIICSueForPeaceConcessionCreditsNo,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCreditsNo","FireAll MPC_IAIICSueForPeaceConcessionOptions","""Of course."" She seems mildly irritated, if her aggravated tone isn't any indication.",,
+MPC_IAIICSueForPeaceConcessionDisarmOption,MPC_IAIICSueForPeaceConcessionOptions,,,,"10:MPC_IAIICSueForPeaceConcessionDisarm:""Disarmament.""",
+MPC_IAIICSueForPeaceConcessionDisarm,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionDisarm","SetTextHighlights ""quartering"" ""faction-wide fleetsize"" ""two months""","Her eyes shoot open, and you swear you see a brief smile cross her lips. ""Disarmament? Great choice, Captain."" She says, an excitement laden underneath her words. ""It'll make things a lot easier for the both of us..."" She mutters, trailing off into her own thoughts of rarely-given free-time.
+
+She snaps back to you, hair covering an eye from the inertial hair-forces. ""Ah - yes, the... terms..."" She searches for a PDA, finds it, and taps it thrice. ""Captain. Standard Domain disarmament in this circumstance calls for a quartering of your faction-wide fleetsize for two months.""
+
+She pockets the PDA, more energetic than before. ""Give the order, and we'll call a ceasefire.""","MPC_IAIICSueForPeaceConcessionDisarmYes:""Fine."" (Cripple your faction's military)
+MPC_IAIICSueForPeaceConcessionDisarmWhat:""That's insane! That'll leave us open to attack from all angles!""
+MPC_IAIICSueForPeaceConcessionDisarmNo:""Let me reconsider my options.""",
+MPC_IAIICSueForPeaceConcessionDisarmYes,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionDisarmYes","MPC_IAIICJillCMD disarm
+MPC_IAIICJillCMD doPeace
+
+AddTextSmall ""Faction-wide fleetsize reduced by 0.25x"" bad","You make the order, and with a rare smile, Jill does her part. IAIIC battlefleets disperse across the system, and your IntSec immediately contacts you, reporting a full withdrawl.
+
+""Good doing business with you, Captain."" She finishes, cutting the comm link before you have a chance to speak. The laurel of the IAIIC slowly rotates before you.","cutCommLink:Leave",
+MPC_IAIICSueForPeaceConcessionDisarmWhat,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionDisarmWhat","RemoveOption MPC_IAIICSueForPeaceConcessionDisarmWhat","""How quite unfortunate."" She smirks, shaking her head slowly. ""But - that is Domain standard. And we wouldn't want to deviate from the Domain, citizens as we are.""",,
+MPC_IAIICSueForPeaceConcessionDisarmNo,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionDisarmNo","FireAll MPC_IAIICSueForPeaceConcessionOptions","Her vigor vanishes in an instant, and she lets out a short sigh. ""Of course, Captain..."" she mutters.",,
+MPC_IAIICSueForPeaceConcessionOptionsLeave,MPC_IAIICSueForPeaceConcessionOptions,,,,"20:MPC_IAIICSueForPeaceConcessionAbort:""Nevermind.""",
+MPC_IAIICSueForPeaceConcessionAbort,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionAbort","FireAll MPC_IAIICJillOptions","She frowns, but otherwise shows no signs of protest.",,
+"#END Sue for peace options",,,,,,
+"#END Jill options",,,,,,
+"#END Jill Mirthson (Leader)",,,,,,
+"#END Ark FOB Comms directory",,,,,,
 "#END Post-magnetar",,,,,,
 

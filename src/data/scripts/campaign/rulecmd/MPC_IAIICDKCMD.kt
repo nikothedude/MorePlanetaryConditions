@@ -4,14 +4,19 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
+import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.PerseanLeagueMembership
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
+import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
+import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.crisis.MPC_DKInfiltrationCondition
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICDKFuelHubFleetSpawner
 import data.scripts.campaign.magnetar.crisis.intel.MPC_DKContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import org.lazywizard.lazylib.MathUtils
@@ -69,6 +74,35 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
             Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanet"] = target
             Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDKSyncroPlanetName"] = target?.name
             return target
+        }
+
+        fun checkDemand(): Boolean {
+            Global.getSector().economy.getMarket("umbra")?.reapplyIndustries()
+            Global.getSector().economy.getMarket("umbra")?.reapplyConditions()
+            val output = MPC_DKInfiltrationCondition.getUmbraSupply()
+            val demand = getVolatileDemand()
+
+            return (output >= demand)
+        }
+
+        fun getVolatileDemand(): Float {
+            return Global.getSector().economy.getMarket("sindria")?.industries?.firstOrNull { it.spec.hasTag(Industries.FUELPROD) }?.getDemand(Commodities.VOLATILES)?.quantity?.modifiedValue ?: 0f
+        }
+
+        fun checkDemandAndUpdate(dialog: InteractionDialogAPI? = null) {
+            if (checkDemand()) {
+                returnToMacarioCauseDone(dialog)
+            }
+        }
+
+        fun returnToMacarioCauseDone(dialog: InteractionDialogAPI? = null) {
+            val ourIntel = MPC_DKContributionIntel.get() ?: return
+            ourIntel.state = MPC_DKContributionIntel.State.RETURN_TO_MACARIO_CAUSE_DONE
+            if (dialog != null) {
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.RETURN_TO_MACARIO_CAUSE_DONE, dialog.textPanel)
+            } else {
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.RETURN_TO_MACARIO_CAUSE_DONE, false, false)
+            }
         }
     }
 
@@ -135,6 +169,7 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
             "beginSearch" -> {
                 val intel = MPC_DKContributionIntel.get(true) ?: return false
                 intel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.FIND_CORE, dialog.textPanel)
+                Global.getSector().importantPeople.getPerson(People.MACARIO).makeImportant("\$MPC_macarioDuringDKContribution")
                 return true
             }
             "coreGot" -> {
@@ -195,18 +230,185 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 return MPC_DKContributionIntel.get()?.state == MPC_DKContributionIntel.State.RETURN_TO_MACARIO
             }
 
-            "startSearchForAgent" -> {
+            "startGoToAgent" -> {
                 val ourIntel = MPC_DKContributionIntel.get() ?: return false
-                ourIntel.state = MPC_DKContributionIntel.State.SEARCH_FOR_AGENT
-                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.SEARCH_FOR_AGENT, dialog.textPanel)
+                ourIntel.state = MPC_DKContributionIntel.State.GO_TO_AGENT
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.GO_TO_AGENT, dialog.textPanel)
+
+                Global.getSector().economy.getMarket("umbra").commDirectory.addPerson(
+                    Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR)
+                )
+                Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).makeImportant("\$MPC_umbraInfiltrator")
 
                 return true
             }
-            "isSearchingForAgent" -> {
+            /*"isSearchingForAgent" -> {
                 return MPC_DKContributionIntel.get()?.state == MPC_DKContributionIntel.State.SEARCH_FOR_AGENT
+            }*/
+            "startGoToSindriaForCache" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.GET_CACHE
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.GET_CACHE, dialog.textPanel)
+
+                return true
+            }
+            "lookingForCache" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state == MPC_DKContributionIntel.State.GET_CACHE
+            }
+            "deposingQM" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state.ordinal > MPC_DKContributionIntel.State.GO_TO_AGENT.ordinal && ourIntel.state.ordinal < MPC_DKContributionIntel.State.QM_DEPOSED.ordinal
+            }
+
+            "deposingQMOrUpgrading" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                if (ourIntel.state == MPC_DKContributionIntel.State.INFILTRATE_AND_UPGRADE_UMBRA) {
+                    return true
+                }
+                return ourIntel.state.ordinal > MPC_DKContributionIntel.State.GO_TO_AGENT.ordinal && ourIntel.state.ordinal < MPC_DKContributionIntel.State.QM_DEPOSED.ordinal
+            }
+
+            "startPlantStage" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.PLANT_EVIDENCE
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.PLANT_EVIDENCE, dialog.textPanel)
+
+                return true
+            }
+            "plantingEvidence" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state == MPC_DKContributionIntel.State.PLANT_EVIDENCE
+            }
+
+            "lootedCache" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.GOT_CACHE
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.GOT_CACHE, dialog.textPanel)
+
+                return true
+            }
+            "returningWithCache" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state == MPC_DKContributionIntel.State.GOT_CACHE
+            }
+
+            "fuelProdHasGoodCore" -> {
+                val fuelProd = Global.getSector().economy.getMarket("sindria")?.industries?.firstOrNull { it.spec.hasTag(Industries.FUELPROD) } ?: return false
+                return fuelProd.aiCoreId != null
+            }
+            "addCoreToFuelProd" -> {
+                val fuelProd = Global.getSector().economy.getMarket("sindria")?.industries?.firstOrNull { it.spec.hasTag(Industries.FUELPROD) } ?: return false
+
+                val coreId = params[1].getString(memoryMap)
+                fuelProd.aiCoreId = coreId
+                Global.getSoundPlayer().playUISound(Global.getSettings().getCommoditySpec(coreId)?.soundIdDrop, 1f, 1f)
+                checkDemandAndUpdate(dialog)
+                return true
+            }
+            "addCoreToMining" -> {
+                val fuelProd = Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) } ?: return false
+
+                val coreId = params[1].getString(memoryMap)
+                fuelProd.aiCoreId = coreId
+                Global.getSoundPlayer().playUISound(Global.getSettings().getCommoditySpec(coreId)?.soundIdDrop, 1f, 1f)
+                checkDemandAndUpdate(dialog)
+                return true
+            }
+            "addBoreToMining" -> {
+                val fuelProd = Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) } ?: return false
+
+                fuelProd.specialItem = SpecialItemData(Items.MANTLE_BORE, null)
+                Global.getSoundPlayer().playUISound(Global.getSettings().getCommoditySpec(Items.MANTLE_BORE)?.soundIdDrop, 1f, 1f)
+                checkDemandAndUpdate(dialog)
+                return true
+            }
+
+            "umbraMiningIsImproved" -> {
+                return Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) }?.isImproved == true
+            }
+            "umbraMiningHasAlpha" -> {
+                return Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) }?.aiCoreId == Commodities.ALPHA_CORE
+            }
+            "umbraMiningHasBore" -> {
+                return Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) }?.specialItem != null
+            }
+
+            "improveUmbraMining" -> {
+                Global.getSector().economy.getMarket("umbra")?.industries?.firstOrNull { it.spec.hasTag(Industries.MINING) }?.isImproved = true
+                checkDemandAndUpdate(dialog)
+            }
+
+            "QMdeposed" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.QM_DEPOSED
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.QM_DEPOSED, dialog.textPanel)
+
+                val umbra = Global.getSector().economy.getMarket("umbra") ?: return false
+                for (entry in umbra.commDirectory.entriesCopy) {
+                    if (entry.entryData !is PersonAPI) continue
+                    if ((entry.entryData as PersonAPI).postId == Ranks.POST_SUPPLY_OFFICER) {
+                        umbra.commDirectory.removePerson(
+                            entry.entryData as PersonAPI
+                        )
+                        break
+                    }
+                }
+
+                Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).postId = Ranks.POST_SUPPLY_OFFICER
+
+                return true
+            }
+            "qmIsDeposed" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state == MPC_DKContributionIntel.State.QM_DEPOSED
+            }
+
+            "beginUpgradeSequence" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.INFILTRATE_AND_UPGRADE_UMBRA
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.INFILTRATE_AND_UPGRADE_UMBRA, dialog.textPanel)
+                Global.getSector().economy.getMarket("umbra")?.addCondition("MPC_DKInfiltrationCondition")
+
+                return true
+            }
+            "calibriIsQM" -> {
+                return Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR)?.postId == Ranks.POST_SUPPLY_OFFICER
+            }
+
+            "disruptIndustriesOfUmbra" -> {
+                var toDisrupt = 2f
+                Global.getSector().economy.getMarket("umbra")?.industries?.shuffled()?.forEach {
+                    if (toDisrupt > 0f && it.canBeDisrupted()) {
+                        it.setDisrupted(90f)
+                        toDisrupt--
+                    }
+                }
+            }
+
+            "returningToMacarioFinalTime" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                return ourIntel.state == MPC_DKContributionIntel.State.RETURN_TO_MACARIO_CAUSE_DONE
+            }
+
+            "pullOut" -> {
+                val ourIntel = MPC_DKContributionIntel.get() ?: return false
+                ourIntel.state = MPC_DKContributionIntel.State.DONE
+                ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.DONE, dialog.textPanel)
+                ourIntel.endAfterDelay()
+
+                val intel = MPC_IAIICFobIntel.get() ?: return false
+                val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.DIKTAT } ?: return false
+                intel.removeContribution(toRemove, false, dialog)
+                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
+                    if (entry.factionId == Factions.DIKTAT) {
+                        MPC_benefactorDataStore.get().probableBenefactors -= entry
+                        break
+                    }
+                }
             }
         }
-
         return false
     }
+
 }

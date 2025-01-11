@@ -27,15 +27,24 @@ class MPC_DKInfiltrationCondition: niko_MPC_baseNikoCondition() {
         sindriaPop.supply(modId, Commodities.VOLATILES, intSupply, "Shipments from Umbra")
     }
 
-    private fun getUmbraSupply(): Int {
-        val mining = market.industries.firstOrNull { it.spec.hasTag(Industries.MINING) } ?: return 0
-        val supply = mining.getSupply(Commodities.VOLATILES)
+    companion object {
+        fun get(): MPC_DKInfiltrationCondition? {
+            val market = Global.getSector().economy.getMarket("umbra")
+            return market.getCondition("MPC_DKInfiltrationCondition")?.plugin as? MPC_DKInfiltrationCondition
+        }
 
-        supply.quantity.unmodify(modId)
-        val result = supply.quantity.modifiedInt
-        supply.quantity.modifyMult(modId, 0f)
+        fun getUmbraSupply(): Int {
+            val market = Global.getSector().economy.getMarket("umbra")
+            val mining = market.industries.firstOrNull { it.spec.hasTag(Industries.MINING) } ?: return 0
+            val supply = mining.getSupply(Commodities.VOLATILES)
 
-        return result
+            val modId = get()?.modId ?: return 0
+            supply.quantity.unmodify(modId)
+            val result = supply.quantity.modifiedInt
+            supply.quantity.modifyMult(modId, 0f)
+
+            return result
+        }
     }
 
     override fun unapply(id: String?) {

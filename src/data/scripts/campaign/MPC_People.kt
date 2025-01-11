@@ -36,6 +36,8 @@ object MPC_People {
 
     const val UMBRA_INFILTRATOR = "MPC_umbraInfiltrator"
 
+    const val KKL_REP = "MPC_KKLRep"
+
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -278,6 +280,24 @@ object MPC_People {
 
             importantPeople.addPerson(infiltrator)
             MPC_importantPeople[UMBRA_INFILTRATOR] = infiltrator
+        }
+
+        if (MPC_importantPeople[KKL_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(FullName.Gender.MALE)
+
+            rep.id = KKL_REP
+
+            rep.rankId = Ranks.SPECIAL_AGENT
+            rep.postId = Ranks.POST_SPECIAL_AGENT
+            rep.setFaction(Factions.DIKTAT)
+
+            rep.importance = PersonImportance.HIGH
+            rep.voice = Voices.SPACER
+
+            rep.name = FullName("Jeron", "Blast", FullName.Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[KKL_REP] = rep
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

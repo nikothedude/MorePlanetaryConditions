@@ -31,6 +31,8 @@ import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.makeImportant
+import org.magiclib.kotlin.makeNonStoryCritical
+import org.magiclib.kotlin.makeStoryCritical
 import java.awt.Color
 import java.util.*
 
@@ -87,6 +89,21 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
             getIndustry("logisitcbureau")?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.WAYSTATION)?.aiCoreId = Commodities.BETA_CORE
+        }
+
+        fun setImportantMarkets() {
+            Global.getSector().economy.getMarket("sindria")?.makeStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("umbra")?.makeStoryCritical("\$MPC_IAIICEvent")
+            //Global.getSector().economy.getMarket("culann")?.makeStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("eochu_bres")?.makeStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("new_maxios")?.makeStoryCritical("\$MPC_IAIICEvent")
+        }
+        fun unSetImportantMarkets() {
+            Global.getSector().economy.getMarket("sindria")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("umbra")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+            //Global.getSector().economy.getMarket("culann")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("eochu_bres")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("new_maxios")?.makeNonStoryCritical("\$MPC_IAIICEvent")
         }
     }
 
@@ -189,7 +206,9 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         val foundDist = MathUtils.getDistance(MPC_fractalCrisisHelpers.getStationPoint(fractalSystem), fractalSystem.center.location)
 
         stage!!.rollData = null
-        return spawnFOB(fractalColony, fractalSystem, foundDist)
+        val fobSpawned = spawnFOB(fractalColony, fractalSystem, foundDist) ?: return false
+        setImportantMarkets()
+        return true
     }
 
     override fun getStageTooltipImpl(intel: HostileActivityEventIntel?, stage: EventStageData): TooltipCreator? {
@@ -273,6 +292,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
         market.isUseStockpilesForShortages = true
         market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
+        MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]?.makeImportant("\$MPC_IAIICLeader")
         market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
         addMarketPeople(market)
         /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin

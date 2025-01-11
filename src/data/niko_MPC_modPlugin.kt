@@ -55,13 +55,17 @@ import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
 import data.utilities.niko_MPC_settings.SOTF_enabled
+import data.utilities.niko_MPC_settings.astralAscensionEnabled
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
+import data.utilities.niko_MPC_settings.graphicsLibEnabled
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.nexLoaded
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
+import org.dark.shaders.light.LightData
+import org.dark.shaders.util.ShaderLib
 import org.magiclib.kotlin.*
 import kotlin.collections.set
 
@@ -82,14 +86,22 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
         fun setupIAIICBlueprints() {
             val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID) ?: return
-            for (faction in facsIAIICKnowsShipsFrom) {
-                IAIIC.knownShips.addAll(Global.getSector().getFaction(faction).knownShips)
-                IAIIC.knownFighters.addAll(Global.getSector().getFaction(faction).knownFighters)
-                IAIIC.knownHullMods.addAll(Global.getSector().getFaction(faction).knownHullMods)
-                IAIIC.knownWeapons.addAll(Global.getSector().getFaction(faction).knownWeapons)
-                IAIIC.knownIndustries.addAll(Global.getSector().getFaction(faction).knownIndustries)
-            }
+            for (factionId in facsIAIICKnowsShipsFrom) {
+                val faction = Global.getSector().getFaction(factionId)
 
+                for (ship in faction.knownShips) {
+                    IAIIC.knownShips += ship
+                    val hullFreq = faction.hullFrequency[ship]
+                    if (hullFreq != null) {
+                        IAIIC.hullFrequency[ship] = hullFreq
+                    }
+                }
+
+                IAIIC.knownFighters.addAll(faction.knownFighters)
+                IAIIC.knownHullMods.addAll(faction.knownHullMods)
+                IAIIC.knownWeapons.addAll(faction.knownWeapons)
+                IAIIC.knownIndustries.addAll(faction.knownIndustries)
+            }
             IAIIC.clearShipRoleCache()
 
             val intel = MPC_IAIICFobIntel.get() ?: return
@@ -114,6 +126,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
         nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
         SOTF_enabled = Global.getSettings().modManager.isModEnabled("secretsofthefrontier")
+        graphicsLibEnabled = Global.getSettings().modManager.isModEnabled("shaderLib")
+        astralAscensionEnabled = Global.getSettings().modManager.isModEnabled("Planetace_AstralAscension")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")
         }
@@ -122,10 +136,16 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         } catch (ex: Exception) {
             throw RuntimeException(niko_MPC_ids.niko_MPC_masterConfig + " loading failed during application load! Exception: " + ex)
         }
+        if (graphicsLibEnabled) {
+            ShaderLib.init()
+            LightData.readLightDataCSV("data/lights/MPC_light_data.csv")
+        }
         addSpecialItemsToItemRepo()
         StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
 
         Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
+        Global.getSettings().getShipSystemSpec("MPC_deepDive").isCanUseWhileRightClickSystemOn = true
+        // afaik, theres no flag for this you can set via json, has to be done through code
 
         // TODO
        /*throw java.lang.RuntimeException(
@@ -203,6 +223,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().memoryWithoutUpdate["\$MPC_downPaymentAmount"] = DOWN_PAYMENT
         Global.getSector().memoryWithoutUpdate["\$MPC_downPaymentDGS"] = Misc.getDGSCredits(DOWN_PAYMENT.toFloat())
         Global.getSector().memoryWithoutUpdate["\$MPC_deliveryPirateName"] = MPC_People.getImportantPeople()[MPC_People.DONN_PIRATE]?.name?.fullName
+        Global.getSector().memoryWithoutUpdate["\$MPC_disarmamentFleetSizeMult"] = MPC_IAIICFobIntel.DISARMAMENT_FLEET_SIZE_MULT
 
         MPC_compatabilityUtils.run(currVersion)
 
