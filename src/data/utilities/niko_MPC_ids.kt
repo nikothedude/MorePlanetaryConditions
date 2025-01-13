@@ -2,7 +2,8 @@ package data.utilities
 
 object niko_MPC_ids {
 
-    val DISARMED_CONDITION_ID: String = "MPC_disarmedCondition"
+    const val IAIIC_COMMAND_DISRUPTED_CONDITION = "MPC_commandDisrupted"
+    const val DISARMED_CONDITION_ID: String = "MPC_disarmedCondition"
     const val specialSyncrotronItemId = "MPC_pristineSynchrotron"
     const val INCOME_TALLY_ID = "\$MPC_incomeTally"
     const val PATHER_SECT_NAME = "\$MPC_sectName"

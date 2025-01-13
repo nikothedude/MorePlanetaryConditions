@@ -184,7 +184,12 @@ The ""article"" they so enjoy citing is Section 15::52 of the 29th Domain Expans
 
 
 ",,,
-MPC_IAIICFOB,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure. Bristling with weapon emplacements, launchbays, and hull reinforcements, this hulking installation represents the combined efforts of the sector at large to put you down. It's up for you to determine if their efforts will be successful or not.",,,
+MPC_IAIICFOB,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure. Bristling with weapon emplacements, launchbays, and hull reinforcements, this hulking installation represents the combined efforts of the sector at large to put you down. It's up for you to determine if their efforts will be successful or not.",,"Patrols are everpresent around Ark FOB, with civilian traffic a rarity at best. It's hull is pockmarked with countless weapons and sensor installations, all keeping a close eye on anything that comes too close.",
+MPC_IAIICFOBDecivved,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure.
+
+Hastily abandoned in the wake of the IAIIC's crushing defeat, and the subsequent total collapse of their funding, this behemoth still retains it's habitability and military infrastructure - if one would just reach out and take it.",,"The cold and dead behemoth stands before you, weapons limp and docks left hanging half-open. It seems the IAIIC's evacuation was made with utmost haste - your sensors even pick up undetonated scuttling charges on key structual points.",
+MPC_IAIICFOBReclaimed,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure. Once an existential threat to your operations all by itself, Ark FOB now stands proudly as a testament to your achievements - to drive back the sector and take what they used. This reclaimed installation has obtained a legendary status within the sector as proof of a new age: Yours.
+",,,
 ,,,,,
 MPC_BMDataCache,CUSTOM,"A brightly painted cargo pod. Contrary to it's vibrant appearance, it's actually quite difficult to your sensors to see, implying some effort to hide it.",,,
 ,,,,,

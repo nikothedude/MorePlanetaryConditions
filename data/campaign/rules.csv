@@ -3178,7 +3178,13 @@ The side of her mouth curls upwards. ""Good thing we don't.""",,
 MPC_IAIICJillOptionFlagSucks,MPC_IAIICJillOptions,"!$MPC_insultedFlag",,,"6:MPC_IAIICJillOptionFlagSucksSel:""Your flag is... surprisingly amateur.""",
 MPC_IAIICJillOptionFlagSucksSel,DialogOptionSelected,"$option == MPC_IAIICJillOptionFlagSucksSel","$MPC_insultedFlag = true 0
 FireAll MPC_IAIICJillOptions
-SetTextHighlights ""Captain""","""Yeah."" Her lips curl. ""We don't exactly have a graphic designer, Captain."" Her words have a certain point to them. You decide it's not wise nor productive to pursue this line of questioning.",,
+SetTextHighlights ""Captain""","Her face sours. ""We don't exactly have a graphic designer, Captain."" Her words have a certain point to them. You decide it's not wise nor productive to pursue this line of questioning.",,
+MPC_IAIICJillOptionHowGotHere,MPC_IAIICJillOptions,"!$MPC_askedHowGotHere",,,"7:MPC_IAIICJillOptionHowGotHereSel:""How the hell did you get a station of this size in the heart of our space?""",
+MPC_IAIICJillOptionHowGotHereSel,DialogOptionSelected,"$option == MPC_IAIICJillOptionHowGotHereSel","$MPC_askedHowGotHere = true 0
+FireAll MPC_IAIICJillOptions
+SetTextHighlights ""built""","She picks at a finger. ""We built it, Captain."" She explains, glancing up to you. ""It was delivered, piece by piece, by privateers...""
+
+She folds her hands. ""Until it was all in place.""",,
 MPC_IAIICJillOptionLeave,MPC_IAIICJillOptions,,,,"100:cutCommLink:Leave",
 ,,,,,,
 # Sue for peace options,,,,,,
@@ -3198,7 +3204,10 @@ FireAll MPC_IAIICSueForPeaceConcessionOptions
 
 SetTextHighlights ""war weary""","""Mh."" Jill mumbles. She gives you a hard look before nodding and pulling up her PDA. ""I hope you realize this won't be free. You have to offer something - the IAIIC isn't exactly war weary.""",,
 MPC_IAIICSueForPeaceOptionSelYesAgain,MPC_IAIICSueForPeaceOptionSelYesInit,"$MPC_triedSueingForPeaceBefore score:20","FireAll MPC_IAIICSueForPeaceConcessionOptions","""Mh."" Jill mumbles. She gives you a hard look before nodding and pulling up her PDA. ""And what concessions will you provide?""",,
-MPC_IAIICSueForPeaceConcessionOptionCredits,MPC_IAIICSueForPeaceConcessionOptions,,"MPC_IAIICJillCMD generateCreditConcessionAmount",,"0:MPC_IAIICSueForPeaceConcessionCredits:""Credits.""",
+MPC_IAIICSueForPeaceConcessionOptionCredits,MPC_IAIICSueForPeaceConcessionOptions,,"MPC_IAIICJillCMD generateCreditConcessionAmount
+FireAll MPC_IAIICSueForPeaceConcessionCreditsModify",,"0:MPC_IAIICSueForPeaceConcessionCredits:""Credits.""",
+MPC_IAIICSueForPeaceConcessionCreditsModifyNoCreds,MPC_IAIICSueForPeaceConcessionCreditsModify,"$player.credits < $global.MPC_creditConcessionAmount","SetEnabled MPC_IAIICSueForPeaceConcessionCredits false
+SetTooltip MPC_IAIICSueForPeaceConcessionCredits ""You do not have enough credits.""",,,
 MPC_IAIICSueForPeaceConcessionCredits,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCredits","SetTextHighlights $global.MPC_creditConcessionAmountDGS ""hurt""","Jill pulls something up on her PDA and slides it towards the camera at an oblique angle. You have to crane your head to read it, but...
 
 ""$global.MPC_creditConcessionAmountDGS credits."" She narrates. ""Based off the highest income you've had in the past six months.""
@@ -3231,5 +3240,173 @@ MPC_IAIICSueForPeaceConcessionAbort,DialogOptionSelected,"$option == MPC_IAIICSu
 "#END Jill options",,,,,,
 "#END Jill Mirthson (Leader)",,,,,,
 "#END Ark FOB Comms directory",,,,,,
+,,,,,,
+# IAIIC Blockade,,,,,,
+,,,,,,
+# Hassled by blockade member,,,,,,
+MPC_IAIICBlockadeHassleInit,BeginFleetEncounter,"!$hassle_didAlready
+!$isHostile
+$pursuePlayer_hassle score:1500
+$hassleType == MPC_IAIICBlockader","$hassle_didAlready = true 0
+$hassleComplete = true
+MakeOtherFleetPreventDisengage hassle true
+unset $ignorePlayerCommRequests
+$MPC_blockadeScanConv = true 0
+HailPlayer",,,
+MPC_IAIICBlockadeHassleComms,OpenCommLink,"$entity.MPC_blockadeScanConv score:100
+$entity.relativeStrength >= 0","$entity.ignorePlayerCommRequests = true 7
+FireAll MPC_IAIICBlockadeHassleOptions","The link snaps to life. 
+
+$PersonName looks down upon you with contempt clear in $hisOrHer eyes. ""Attention $global.MPC_playerFacName fleet. Under IAIIC provisionary order 55BGH, all civilian and military traffic through this system must submit to intra-travel cargo inspection.""
+
+$HisOrHer chin drops, but not $hisOrHer intense gaze. ""Any illegal cargo - or technology -""  $heOrShe clicks $hisOrHer tongue. ""- will be siezed and summarily destroyed, and the infraction logged in your official Domain citizenry records.""
+
+With a grim sneer, $heOrShe finishes. ""Prepare to be boarded.""",,
+MPC_IAIICBlockadeHassleCommsWeaker,OpenCommLink,"$entity.MPC_blockadeScanConv score:100
+$entity.relativeStrength < 0","$entity.ignorePlayerCommRequests = true 7
+MakeOtherFleetPreventDisengage hassle false
+FireAll MPC_IAIICBlockadeHassleOptions","The link snaps to life. 
+
+$PersonName looks down upon you with contempt clear in $hisOrHer eyes. ""Attention $global.MPC_playerFacName fleet. Under IAIIC provisionary order 55BGH, all civilian and military traffic through this system must submit to intra-travel cargo inspection.""
+
+$HisOrHer chin drops, but not $hisOrHer intense gaze. ""Any illegal cargo - or technology -""  $heOrShe clicks $hisOrHer tongue. ""- will be siezed and summarily destroyed, and the infraction logged in your official Domain citizenry records.""",,
+MPC_IAIICBlockadeHassleComply,MPC_IAIICBlockadeHassleOptions,,,,"MPC_IAIICBlockadeHassleComplySel:Comply with the inspection",
+MPC_IAIICBlockadeHassleRefuse,MPC_IAIICBlockadeHassleOptions,"$entity.relativeStrength >= 0
+!$failedToRefuse",,,"MPC_IAIICBlockadeHassleRefuseSel:""The $global.MPC_playerFacName refuses to acknowledge your 'authority'.""",
+MPC_IAIICBlockadeHassleRefuseStronger,MPC_IAIICBlockadeHassleOptions,"$entity.relativeStrength < 0",,,"MPC_IAIICBlockadeHassleRefuseStrongerSel:""With that fleet? You're in no position to make demands.""",
+MPC_IAIICBlockadeHassleAlreadyInspected,MPC_IAIICBlockadeHassleOptions,"!$askedAboutRecentInspection
+$player.MPC_inspectedByIAIICBlockader",,,"MPC_IAIICBlockadeHassleAlreadyInspectedSel:""I was just subject to an 'inspection', don't you people talk to each other?""",
+MPC_IAIICBlockadeHassleWhyNow,MPC_IAIICBlockadeHassleOptions,"!$askedWhyOnlyInspectedNow",,,"MPC_IAIICBlockadeHassleWhyNowSel:""Your patrols have always ignored me until now. What's changed?""",
+MPC_IAIICBlockadeHassleCutComms,MPC_IAIICBlockadeHassleOptions,,,,"cutCommLinkNoText:Cut the comm link and power up weapons",
+MPC_IAIICBlockadeHassleComplySel,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleComplySel","ShowImageVisual quartermaster
+MakeOtherFleetPreventDisengage hassle false
+ApplyCRDamage $entity.fleetPoints 0.3 1 ""IAIIC inspection""
+
+SetTextHighlights ""downright sabotage""","The inspection teams are not gentle, tearing open hatches, rummaging through carefully organized stocks, and running active scans directly through sensitive equipment clusters. To make matters worse, your engineers swear up and down that some 'tactics' are just downright sabotage; it'll take weeks to restore the wiped drives and torn-out fuel-pikes, mangled with no good reason given.
+
+Complaints from your $shipOrFleet's officers are met by stony bureaucratic obfuscation. ""Claim forms may be submitted to seek recompense for 'regrettably unavoidable' damage incurred during inspection"", but ""one shouldn't expect a response from the investigatory body for at least a cycle"". Though, knowing the IAIIC's status as a sworn enemy of the $global.MPC_playerFacName, you opt to give your logistics crew a rest from writing compensation forms.","MPC_IAIICBlockadeHassleComplySel2:Continue",
+MPC_IAIICBlockadeHassleComplySel2,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleComplySel2","ShowPersonVisual
+$player.MPC_inspectedByIAIICBlockader = true 60","""$global.MPC_playerFacName fleet, our search is done and your exfiltration is clear."" $HeOrShe states. ""Don't come back.""","cutCommLinkNoText:Cut the comm link",
+MPC_IAIICBlockadeHassleRefuseSel,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleRefuseSel","RemoveOption MPC_IAIICBlockadeHassleRefuseSel
+$failedToRefuse = true 0","A wave of stunning surprise washes over $hisOrHer face at your words, only to harden into rock-solid resentment.
+
+""Captain."" $HeOrShe growls. ""The IAIIC has taken control of this space for the good of all the Persean Sector. You and your fellows have played far too fast and loose with HIGHLY restricted AI technology!"" $HeOrShe hisses, practically straining out of $hisOrHer chair.
+
+Regaining $hisOrHer composure, $heOrShe clears $hisOrHer throat. ""If you have nothing to hide... you have nothing to worry about."" Somehow, you doubt that.",,
+MPC_IAIICBlockadeHassleRefuseStrongerSel,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleRefuseStrongerSel","MakeOtherFleetPreventDisengage hassle false
+AdjustRepActivePerson VENGEFUL -5","The IAIIC $Post makes a face not unlike a weird fish-deer you saw in a HoloVid once. $HeOrShe sputters, straining for a response, but all that escapes is an embarrassed and hateful hiss.
+
+The only words $heOrShe manages to divulge are ones of vitriol. ""I'll make sure our Commander hears of this infraction, *captain*."" $HeOrShe spits.","cutCommLinkNoText:Cut the comm link",
+MPC_IAIICBlockadeHassleAlreadyInspectedSel,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleAlreadyInspectedSel","RemoveOption MPC_IAIICBlockadeHassleAlreadyInspectedSel
+$askedAboutRecentInspection = true 0","$HeOrShe stares coldly, a silent resentment making itself known under the surface. ""Trying to avoid an inspection with sympathy won't work, Captain. We keep *meticulous* records.""",,
+MPC_IAIICBlockadeHassleWhyNowSel,DialogOptionSelected,"$option == MPC_IAIICBlockadeHassleWhyNowSel","RemoveOption MPC_IAIICBlockadeHassleWhyNowSel
+$askedWhyOnlyInspectedNow = true 0
+
+SetTextHighlights ""blockade""","""IAIIC provisionary order 55BGH is under the enforcement jurisdiction of the 1st Morgan Fleet, not the patrols."" $HeOrShe makes a face like $heOrShe just bit something gross.
+
+Clearing $hisOrHer throat, $heOrShe continues, leaning in. ""We aren't under their orders. The 'diplomatic challenges' of enforcing Domain law on a faction leader are *far* less pressing in *our* line of work.""",,
+"#END Hassled by blockade member",,,,,,
+,,,,,,
+# IAIIC Blockade Comms,,,,,,
+MPC_IAIICBlockadeCommandFleetComms,OpenCommLink,"!$entity.pursuePlayer_hassle
+$entity.MPC_IAIICblockading score:1000
+$entity.MPC_IAIIC_blockadeCommand","$entity.ignorePlayerCommRequests = true 7
+ShowPersonVisual
+AddTextSmall ""Destroy the fleets or submit to the IAIIC to end the blockade"" bad","Your comms request hangs for a moment, but is quickly accepted. The hardened IAIIC $Post stares at you intensely.
+
+$HeOrShe begins to recite. ""Colony Leader. Your inquiry is noted and logged, but denied. Complaints will not be directed towards mission ops, but instead High Command.""
+
+$HeOrShe grips the sides of his desk and leans towards 'you'. ""In other words, Captain-"" $HeOrShe wields the title like a slur. ""If you have any questions, bring it up with my superiors.""
+
+The commslink is killed without $himOrHer even reaching for the killswitch.","cutCommLink:Cut the comm link",
+MPC_IAIICBlockadeFleetComms,OpenCommLink,"!$entity.pursuePlayer_hassle
+$entity.MPC_IAIICblockading score:1000
+!$entity.MPC_IAIIC_blockadeCommand","$entity.ignorePlayerCommRequests = true 7
+AddTextSmall ""Destroy the fleets or submit to the IAIIC to end the blockade"" bad
+ShowPersonVisual","The visage of the IAIIC $Post appears before you, looking tired. $HeOrShe wastes no time getting to business, ""Colony Leader. Continue on your way; this fleet and it's officers have not been cleared by MILTAC to perform negotiations.""
+
+Before you even have a chance to respond, $heOrShe jabs the comms-kill, sending you to the slowly rotating laurel of the IAIIC.","cutCommLink:Cut the comm link",
+"#END IAIIC Blockade Comms",,,,,,
+"#END IAIIC Blockade",,,,,,
+,,,,,,
+# IAIIC Spawned,,,,,,
+MPC_IAIICSpawnedInit,MPC_IAIICSpawned,,"SetTextHighlightColors highlight MPC_IAIIC
+SetTextHighlights $global.MPC_FOBSystemName ""IAIIC""
+
+niko_MPC_musicToggle """" true","An alarm rings from your periphery, signifying the rollover of your IntSec's ""hostile activity"" clock. Struck by a sudden pang of anxiety, you bring up your nearest monitor and hook into MilInt's intelfeed for anything that might tell you what this ""unknown action"" is.
+
+Almost immediately, civilian, military, and governmental channels light up at once - reports of a new colonial transponder in the outskirts of the $global.MPC_FOBSystemName system, designation...
+
+IAIIC.
+
+Your confusion is mirrored by your officers, who similarly do not recognize the acronym. Your debates on theory - a false flag, a new faction - are interrupted by a high-priority wide-spectrum comms request, directed to all $global.MPC_playerFacName citizenship. Your comms panel pings expectantly.","MPC_IAIICSpawnedContinue:Open a channel","called from code"
+MPC_IAIICSpawnedContinue,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinue","BeginConversation MPC_IAIIC_Leader
+
+niko_MPC_musicToggle ""music_default_market_hostile"" true","It takes a moment, but the commlink comes to life in due time. You are met with the intense gaze of an unfamiliar woman, hands balled on the desk before her. Behind her stands a trio of power-armored goons, each wielding a standard-issue KHGH-21 pulse rifle - and emblazened with a pea-green laurel on their shoulderpieces. A show of force, to be sure.
+
+The room itself is rather angular and grey-black, with the same pea-green laurel plastered on the backwall, framing the woman's form like a pair of gracious hands.","MPC_IAIICSpawnedContinueTwo:Continue",
+MPC_IAIICSpawnedContinueTwo,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueTwo",,"Her chest swells under a deep breath, seeming to take the air out of your lungs as well. ""Attention $global.MPC_playerFacName residents."" Your speakers boom with authority. ""Under Domain Law, we, the IAIIC, are invoking Section 15::52 of the 29th Expansion Charter.""
+
+Jill straightens, standing up out of her chair. Her marines close in on her, raising their weaponry to an at-ease shoulder position. ""As of now, the $global.MPC_FOBSystemName system is now under *our* jurisdiction."" Her brow lowers, and you almost feel as if she's staring at you, and you specifically. ""We officially accuse the governing polity of irresponsible and illegal use of AI technology, and with the blessing of the Domain, we will be taking matters into our *own* hands!"" She barks.","MPC_IAIICSpawnedContinueThree:Continue",
+MPC_IAIICSpawnedContinueThree,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueThree","SetTextHighlightColors MPC_IAIIC highlight highlight highlight highlight highlight
+SetTextHighlights ""Ark FOB"" ""mandatory"" ""planetary inspections"" ""expect"" ""full cooperation"" ""harshly""","She pushes off her desk into her marines, the force of which nearly knocks a PDA off the table. ""You may already be aware of a newly-constructed base within your space - the Ark FOB."" You quickly double-check your MilInt feed, and see confirmation - transponder code ""Ark FOB"". You quickly look back up to the feed, to watch Jill slowly pacing the room with eyes locked to her feet.
+
+She stops, shooting her gaze to you. You instinctually flinch. ""Using this base as a launchpoint, we will begin rigorous enforcement of Domain AI law throughout your -"" she contemplates her words, before landing on ""treacherous space."" She takes yet another deep breath, and you manage to hold onto yours this time. ""Searches are mandatory, as are..."" she makes sure to emphasize, ""...planetary inspections.""
+
+Finally, she sits back down, balling her hands once more. ""We ask, and expect, your full cooperation. Any attempts to stop, or otherwise inhibit our lawful operation in this space..."" One of her marines cocks their weapon threateningly. ""Will be met harshly."" She hisses.","MPC_IAIICSpawnedContinueFour:Continue",
+MPC_IAIICSpawnedContinueFour,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueFour","SetTextHighlights ""office"" ""Extremely robust"" ""frighteningly strong"" ""fleets pouring out""
+MPC_IAIICJillCMD startEvent
+HideFirstPerson
+
+niko_MPC_musicToggle """" false","Maintaining eye contact, she drags the nearly-lost PDA from the lip of her desk and begins working on it. ""And to you, $playerName."" Her gaze feels like a full-power tachyon lance. ""I'll see you in my office.""
+
+And with that, the feed cuts out, replaced by an ominous blackness. You don't have the time to discuss this with your officers, as nearly immediately, MilInt lights up like a christmas tree. Tactical reports of the ""FOB"", come in: Extremely robust ground defenses, frighteningly strong fleet-strength, and fleets pouring out of it like water out of a breached volturnian hydrodam - all aiming to take up harassment positions inside your borders. Tactical almost immediately takes over, bolstering intel-response and military ops, while you consider your next steps.","MPC_IAIICSpawnedWeTalk:""I should visit this 'Jill'.""
+MPC_IAIICSpawnedWeFight:""We will crush them underneath our might.""
+",
+MPC_IAIICSpawnedWeTalk,DialogOptionSelected,"$option == MPC_IAIICSpawnedWeTalk","DismissDialog
+",,,
+MPC_IAIICSpawnedWeFight,DialogOptionSelected,"$option == MPC_IAIICSpawnedWeFight","DismissDialog",,,
+"#END IAIIC Spawned",,,,,,
+,,,,,,
+# Ark FOB FLavor rules,,,,,,
+,,,,,,
+# Ark FOB docking rules,,,,,,
+MPC_IAIICArkFobIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET
+$faction.id == MPC_IAIIC
+$market.id == MPC_arkFOB","AddText ""Flightlines are congested by intense military throughput, and the rare civilian ingress is carefully tracked by infra-red targetting lasers, and enforced by wall-mounted auto-turrets. The few traders or tourists that make the journey are immediately accosted by a squad of grey-and-green marines, throughly searched, and sent to a heavily-guarded trading area - recreational facilities are nearly absent."" marketFlavorTextColor
+AddText ""The soundscape of the militarized dockyard consists of a cacophony of jargon and engine-flare, as skiffs fly overhead, in, and out, each on their own highly-controlled duty-patrol to defend against you and your incursions. When you're not deafened by the sound of takeoff and landing, you can make out the occasional bark from ceiling-mounted announcement speakers, declaring the next ration-period or shift rotation."" marketFlavorTextColor
+",,,
+MPC_IAIICArkFobNotIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET
+$faction.id != MPC_IAIIC score:20
+$market.id == MPC_arkFOB","AddText ""The port concourse is filled with trader starcraft of every size. Speculators crowd offloading ship captains with deals and peddlers call out to crew, holding wares and projecting personal ad-holos. Reclaimed auto-turrets track incoming shuttles with pinpoint accuracy, projecting a simultaneous feeling of security and oppression upon the deck-crew."" marketFlavorTextColor",,,
+"#END Ark FOB docking rules",,,,,,
+,,,,,,
+# Ark FOB Bar rules,,,,,,
+MPC_arkFobBarDescHeldByIAIIC,BarPrintDesc,"$faction.id == MPC_IAIIC
+$market.id == MPC_arkFOB","ShowImageVisual space_bar","You enter the bar, one of the few open to more than just the greencaps. Here, off-rotation marines and other sectorites reluctantly mingle under the dutiful eyes of tough-looking doorguards. The militaristic loudspeakers maintain a presence here as well, drawing grey-and-green uniforms out of their seats and back to duty, as well as reminding visitors of strict military policy. The atmosphere is rather dampened, and in no small part to the IAIIC's rationing of all foodstuffs (and alcohol).",,
+MPC_arkFobBarDescNotHeldByIAIIC,BarPrintDesc,"$faction.id != MPC_IAIIC
+$market.id == MPC_arkFOB","ShowImageVisual space_bar","As you enter the bar you are buffeted by the human white-noise of conversation and revelry. Evidence of the previous force's occupation is obvious in architecture and setup, but the horrid loudspeakers have fallen silent and the atmosphere is of enjoyment, not oppression. Ad-holos buzz softly from ceiling-mounted units, shining garish highlights through glasses and bottles as spacer crews mingle with merchants and locals trading drinks for rumor, jobs, and opportunities.",,
+"#END Ark FOB Bar rules",,,,,,
+"#END Ark FOB FLavor rules",,,,,,
+,,,,,,
+# Colonizing Ark FOB,,,,,,
+MPC_arkFOBDecivvedColonize,PopulateOptions,"$id == MPC_IAIICFob
+MPC_IAIICJillCMD canColonizeArk","SetOptionColor MPC_arkFOBDecivvedColonizeSel highlight",,"0:MPC_arkFOBDecivvedColonizeSel:Establish a colony",
+MPC_arkFOBDecivvedColonizeSel,DialogOptionSelected,"$option == MPC_arkFOBDecivvedColonizeSel","SetTextHighlightColors highlight highlight good bad bad
+SetTextHighlights ""1000 volunteers"" ""highly effective military structure"" ""far more fleets"" ""reduced accessibility"" ""colony size""
+
+MPC_IAIICJillCMD showColonizeCost
+FireAll MPC_arkFOBDecivvedColonizeConfirmModify","If you so choose, you could reclaim Ark FOB for the $global.MPC_playerFacName. It's relative integrity would allow you to populate it with a measly 1000 volunteers, with a plethora of supply and machinery being present on the dead hulk already.
+
+As you've learnt, Ark FOB is a highly effective military structure capable of fielding far more fleets than it's size would normally allow. This comes at the downside of reduced accessibility and colony size, but it pales in comparison to the fleet output of the structure - even without the IAIIC's benefactors.","0:MPC_arkFOBDecivvedColonizeConfirm:Dispatch a colonization team
+10:MPC_arkFOBDecivvedColonizeBack:Reconsider your options",
+MPC_arkFOBDecivvedColonizeConfirmModifyNoCrew,MPC_arkFOBDecivvedColonizeConfirmModify,"MPC_IAIICJillCMD notEnoughCrew","SetEnabled MPC_arkFOBDecivvedColonizeConfirm false
+SetTooltip MPC_arkFOBDecivvedColonizeConfirm ""You do not have enough crew.""",,,
+MPC_arkFOBDecivvedColonizeBack,DialogOptionSelected,"$option == MPC_arkFOBDecivvedColonizeBack","FireAll PopulateOptions",,,
+MPC_arkFOBDecivvedColonizeConfirm,DialogOptionSelected,"$option == MPC_arkFOBDecivvedColonizeConfirm","AddRemoveCommodity crew -1000
+MPC_IAIICJillCMD colonizeArk
+
+AddTextSmall ""Ark FOB colonized"" good","Shuttles are promptly dispatched and vanish into docking baywduiwduwdu","defaultLeave:Leave",
+"#END Colonizing Ark FOB",,,,,,
 "#END Post-magnetar",,,,,,
 

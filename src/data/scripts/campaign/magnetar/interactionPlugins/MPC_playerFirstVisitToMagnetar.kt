@@ -188,8 +188,8 @@ class MPC_delayedClearMusicScript(): niko_MPC_baseNikoScript() {
     override fun advance(amount: Float) {
         if (Global.getCurrentState() != GameState.CAMPAIGN) return
 
-        Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false)
         Global.getSoundPlayer().playCustomMusic(1, 1, null, false)
+        Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false)
         delete()
     }
 }

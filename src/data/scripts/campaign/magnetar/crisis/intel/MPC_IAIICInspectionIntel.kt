@@ -8,9 +8,13 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteLocationCalculator
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIAssembleStage
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIOrganizeStage
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIReturnStage
@@ -28,6 +32,7 @@ import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.input.Keyboard
 import org.lwjgl.util.vector.Vector2f
 import java.util.*
+import kotlin.math.roundToInt
 
 class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val inspectionFP: Float): RaidIntel(target.starSystem, from.faction, null), RaidDelegate {
 
@@ -387,7 +392,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             val days = getDaysString(eta)
             info.addPara(
                 "Estimated %s $days until arrival",
-                initPad, tc, h, "" + Math.round(eta)
+                initPad, tc, h, "" + eta.roundToInt()
             )
             initPad = 0f
             if (hostile || orders == MPC_IAIICInspectionOrders.RESIST) {

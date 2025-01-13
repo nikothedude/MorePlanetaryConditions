@@ -14,7 +14,7 @@ import data.utilities.niko_MPC_stringUtils
 
 class MPC_FOBCondition: niko_MPC_baseNikoCondition(), MarketImmigrationModifier {
     companion object {
-        const val ACCESSABILITY_MALUS = -10f
+        const val ACCESSABILITY_MALUS = -30f
         const val STABILITY_BONUS = 3f
 
         const val MAX_DISRUPTED_DURATION_DAYS = 30f
@@ -43,7 +43,7 @@ class MPC_FOBCondition: niko_MPC_baseNikoCondition(), MarketImmigrationModifier 
         market.accessibilityMod.modifyPercent(id, ACCESSABILITY_MALUS, name)
         market.stability.modifyFlat(id, STABILITY_BONUS, name)
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyFlat(id, getDefenseRatingBonus(), "$name (Extra market size)")
-        market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyPercent(id, getFleetSizeBonus(), "$name (Extra market size)")
+        market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, getFleetSizeBonus() / 100f, "$name (Extra market size)")
 
         market.stats.dynamic.getMod(Stats.PATROL_NUM_LIGHT_MOD).modifyFlat(id, PATROL_LIGHT_INCREMENT, name)
         market.stats.dynamic.getMod(Stats.PATROL_NUM_MEDIUM_MOD).modifyFlat(id, PATROL_MED_INCREMENT, name)

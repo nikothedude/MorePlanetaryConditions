@@ -46,9 +46,9 @@
     <orderEntry type="library" name="ED Shipyard" level="project" />
     <orderEntry type="library" name="Station-Augments" level="project" />
     <orderEntry type="library" name="CustomizableStarSystems-v2.1" level="project" />
-    <orderEntry type="library" name="Nexerelin-master" level="project" />
     <orderEntry type="library" name="ungp" level="project" />
     <orderEntry type="library" name="GraphicsLib" level="project" />
     <orderEntry type="library" name="RandomAssortmentofThings" level="project" />
+    <orderEntry type="library" name="ExerelinCore" level="project" />
   </component>
 </module>
