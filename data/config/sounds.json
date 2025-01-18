@@ -81,16 +81,16 @@
 	},
 	
 	# TACHYON PIKE
-	"MPC_tachyonPike_charge": {
-		"sounds":[
-			{"file":"sounds/weapons/MPC_tachyonPikeCharge.ogg", "pitch":1.0,"volume":1.0},
-		],
-	},
-	"MPC_tachyonPike_fire": {
-		"sounds":[
-			{"file":"sounds/weapons/MPC_tachyonPikeFire.ogg", "pitch":1.0,"volume":1.0},
-		],
-	},
+	#"MPC_tachyonPike_charge": {
+		#"sounds":[
+			#{"file":"sounds/weapons/MPC_tachyonPikeCharge.ogg", "pitch":1.0,"volume":1.0},
+		#],
+	#},
+	#"MPC_tachyonPike_fire": {
+		#"sounds":[
+			#{"file":"sounds/weapons/MPC_tachyonPikeFire.ogg", "pitch":1.0,"volume":1.0},
+		#],
+	#},
 
 
 }

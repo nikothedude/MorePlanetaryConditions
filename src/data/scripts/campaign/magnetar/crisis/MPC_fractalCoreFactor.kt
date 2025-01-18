@@ -1,9 +1,11 @@
 package data.scripts.campaign.magnetar.crisis
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.InteractionDialogImageVisual
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
@@ -13,8 +15,10 @@ import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel.HAERandomEventData
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission
+import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.MPC_delayedExecution
@@ -26,6 +30,7 @@ import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addMarketPeople
 import data.utilities.niko_MPC_settings
+import indevo.exploration.minefields.MineBeltTerrainPlugin
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
@@ -105,7 +110,93 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             Global.getSector().economy.getMarket("eochu_bres")?.makeNonStoryCritical("\$MPC_IAIICEvent")
             Global.getSector().economy.getMarket("new_maxios")?.makeNonStoryCritical("\$MPC_IAIICEvent")
         }
+
+        fun createMarket(FOBStation: SectorEntityToken, isReclaimed: Boolean = false): MarketAPI {
+            val market = Global.getFactory().createMarket(FOB_MARKET_ID, FOB_MARKET_NAME, 3)
+            if (isReclaimed) market.factionId = Factions.PLAYER else market.factionId = niko_MPC_ids.IAIIC_FAC_ID
+            market.primaryEntity = FOBStation
+            FOBStation.market = market
+            market.name = FOB_MARKET_NAME
+            if (!isReclaimed) {
+                FOBStation.setFaction(niko_MPC_ids.IAIIC_FAC_ID)
+            } else {
+                FOBStation.setFaction(Factions.PLAYER)
+            }
+
+            market.addIndustry(Industries.POPULATION)
+            market.addIndustry(Industries.MEGAPORT)
+            market.addIndustry(Industries.STARFORTRESS_HIGH)
+            market.addIndustry(Industries.HIGHCOMMAND)
+            val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
+            HC.isImproved = true
+            market.addIndustry(Industries.HEAVYBATTERIES)
+            market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
+            if (niko_MPC_settings.AOTD_vaultsEnabled) {
+                market.addIndustry("triheavy") // skunkworks
+                market.addIndustry("militarygarrison")
+                market.addIndustry("logisitcbureau") // terminus
+                market.getIndustry("militarygarrison")?.isImproved = true
+            } else {
+                market.addIndustry(Industries.ORBITALWORKS)
+                market.addIndustry(Industries.WAYSTATION)
+            }
+            if (niko_MPC_settings.indEvoEnabled) {
+                market.addIndustry("IndEvo_embassy")
+                market.addIndustry("IndEvo_ReqCenter")
+                market.addIndustry("IndEvo_IntArray")
+                market.addIndustry("IndEvo_Academy")
+            }
+            if (!isReclaimed) market.addIndustry("MPC_FOBIAIICPatherResist")
+
+            market.addSpecialItems()
+
+            market.addCondition("MPC_FOB")
+            if (!isReclaimed) {
+                market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
+                market.addCondition(Conditions.POPULATION_4)
+            } else market.addCondition(Conditions.POPULATION_3)
+            market.conditions.forEach { it.isSurveyed = true }
+            market.surveyLevel = MarketAPI.SurveyLevel.FULL
+            if (niko_MPC_settings.indEvoEnabled) {
+                market.memoryWithoutUpdate[MineFieldCondition.NO_ADD_BELT_VISUAL] = true
+                market.addCondition(Ids.COND_MINERING)
+                (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()
+            }
+
+            if (!isReclaimed) {
+                market.addSubmarket(Submarkets.SUBMARKET_OPEN)
+                market.addSubmarket(Submarkets.SUBMARKET_BLACK)
+            }
+            market.addSubmarket(Submarkets.SUBMARKET_STORAGE)
+            if (isReclaimed) (market.getSubmarket(Submarkets.SUBMARKET_STORAGE)?.plugin as? StoragePlugin)?.setPlayerPaidToUnlock(true)
+
+            if (!isReclaimed) market.isUseStockpilesForShortages = true
+            if (!isReclaimed) {
+                market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
+                MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]?.makeImportant("\$MPC_IAIICLeader")
+                market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
+                /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
+            for (com in market.commoditiesCopy) {
+                val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)
+                submarket.getStockpilingBonus(com.id).modifyFlat("MPC_reserveMaterials", bonus)
+                com.stockpile = bonus
+            }*/
+            } else {
+                market.admin = Global.getSector().playerPerson
+            }
+            addMarketPeople(market)
+            Global.getSector().economy.addMarket(market, true)
+
+            market.reapplyConditions()
+            market.reapplyIndustries()
+
+            if (isReclaimed) FOBStation.customDescriptionId = "MPC_IAIICFOBReclaimed"
+
+            return market
+        }
     }
+
+    val checkInterval = IntervalUtil(0.2f, 0.2f)
 
     override fun getDesc(intel: BaseEventIntel?): String {
         return "Hegemony"
@@ -176,6 +267,27 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         addBorder(info, Global.getSector().getFaction(Factions.NEUTRAL).baseUIColor)
     }
 
+    override fun advance(amount: Float) {
+        super.advance(amount)
+
+        checkInterval.advance(Misc.getDays(amount))
+        if (checkInterval.intervalElapsed()) {
+            abortIfNeeded()
+        }
+    }
+
+    private fun abortIfNeeded() {
+        val hostileActivity = HostileActivityEventIntel.get() ?: return
+        val ourStage = hostileActivity.stages.firstOrNull { (it.rollData as? HAERandomEventData)?.factor == this }
+
+        if (ourStage != null) {
+            val fractalColony = MPC_hegemonyFractalCoreCause.getFractalColony()
+            if (fractalColony == null) {
+                hostileActivity.resetRandomizedStage(ourStage)
+            }
+        }
+    }
+
     override fun getEventStageIcon(intel: HostileActivityEventIntel?, stage: EventStageData?): String? {
         return Global.getSector().getFaction(Factions.NEUTRAL).crest
     }
@@ -208,7 +320,16 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         stage!!.rollData = null
         val fobSpawned = spawnFOB(fractalColony, fractalSystem, foundDist) ?: return false
         setImportantMarkets()
+
+        doDialog(getFOB()?.starSystem)
+
         return true
+    }
+
+    private fun doDialog(system: StarSystemAPI?) {
+        Global.getSector().memoryWithoutUpdate["\$MPC_FOBSystemName"] = system?.name
+        Global.getSector().campaignUI.showInteractionDialog(RuleBasedInteractionDialogPluginImpl("MPC_IAIICSpawned"), Global.getSector().playerFleet)
+
     }
 
     override fun getStageTooltipImpl(intel: HostileActivityEventIntel?, stage: EventStageData): TooltipCreator? {
@@ -217,13 +338,13 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
     private fun spawnFOB(fractalColony: MarketAPI, fractalSystem: StarSystemAPI, foundDist: Float): Boolean {
         val station = fractalColony.starSystem.addCustomEntity(niko_MPC_ids.MPC_FOB_ID, FOB_MARKET_NAME, "MPC_IAIICFOB", niko_MPC_ids.IAIIC_FAC_ID)
+        station.customInteractionDialogImageVisual = InteractionDialogImageVisual("graphics/illustrations/industrial_megafacility.jpg", 480f, 300f)
         station.setCircularOrbitPointingDown(fractalSystem.center, MathUtils.getRandomNumberInRange(0f, 360f), foundDist, 420f)
         val market = createMarket(station)
         station.makeImportant(niko_MPC_ids.MPC_FOB_ID, Float.MAX_VALUE)
 
         initFOBFleets(station, market, fractalSystem)
 
-        MPC_IAIICFobIntel()
         MPC_delayedExecution(
             {
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("AAA", 500f)
@@ -240,74 +361,6 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         //Global.getSector().intelManager.addIntel(FOBIntel)
 
         return true
-    }
-
-    protected fun createMarket(FOBStation: SectorEntityToken): MarketAPI {
-        val market = Global.getFactory().createMarket(FOB_MARKET_ID, FOB_MARKET_NAME, 4)
-        market.factionId = niko_MPC_ids.IAIIC_FAC_ID
-        market.primaryEntity = FOBStation
-        FOBStation.market = market
-        market.name = FOB_MARKET_NAME
-
-        market.addIndustry(Industries.POPULATION)
-        market.addIndustry(Industries.MEGAPORT)
-        market.addIndustry(Industries.STARFORTRESS_HIGH)
-        market.addIndustry(Industries.HIGHCOMMAND)
-        val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
-        HC.isImproved = true
-        market.addIndustry(Industries.HEAVYBATTERIES)
-        market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
-        if (niko_MPC_settings.AOTD_vaultsEnabled) {
-            market.addIndustry("triheavy") // skunkworks
-            market.addIndustry("militarygarrison")
-            market.addIndustry("logisitcbureau") // terminus
-            market.getIndustry("militarygarrison")?.isImproved = true
-        } else {
-            market.addIndustry(Industries.ORBITALWORKS)
-            market.addIndustry(Industries.WAYSTATION)
-        }
-        if (niko_MPC_settings.indEvoEnabled) {
-            market.addIndustry("IndEvo_embassy")
-            market.addIndustry("IndEvo_ReqCenter")
-            market.addIndustry("IndEvo_IntArray")
-            market.addIndustry("IndEvo_Academy")
-        }
-        market.addIndustry("MPC_FOBIAIICPatherResist")
-
-        market.addSpecialItems()
-
-        market.addCondition("MPC_FOB")
-        market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
-        market.addCondition(Conditions.POPULATION_4)
-        market.conditions.forEach { it.isSurveyed = true }
-        market.surveyLevel = MarketAPI.SurveyLevel.FULL
-        if (niko_MPC_settings.indEvoEnabled) {
-            market.memoryWithoutUpdate[MineFieldCondition.NO_ADD_BELT_VISUAL] = true
-            market.addCondition(Ids.COND_MINERING)
-            (market.getCondition(Ids.COND_MINERING).plugin as MineFieldCondition).addMineField()
-        }
-
-        market.addSubmarket(Submarkets.SUBMARKET_OPEN)
-        market.addSubmarket(Submarkets.SUBMARKET_STORAGE)
-
-        market.isUseStockpilesForShortages = true
-        market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
-        MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]?.makeImportant("\$MPC_IAIICLeader")
-        market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
-        addMarketPeople(market)
-        /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
-        for (com in market.commoditiesCopy) {
-            val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)
-            submarket.getStockpilingBonus(com.id).modifyFlat("MPC_reserveMaterials", bonus)
-            com.stockpile = bonus
-        }*/
-
-        Global.getSector().economy.addMarket(market, true)
-
-        market.reapplyConditions()
-        market.reapplyIndustries()
-
-        return market
     }
 
     private fun initFOBFleets(station: CustomCampaignEntityAPI, market: MarketAPI, fractalSystem: StarSystemAPI) {

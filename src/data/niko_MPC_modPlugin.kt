@@ -37,6 +37,7 @@ import data.scripts.campaign.listeners.*
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobInvasionListener
 import data.scripts.campaign.magnetar.crisis.intel.MPC_luddicContributionIntel.Companion.SECT_NAME
+import data.scripts.campaign.magnetar.crisis.listeners.MPC_ArkFOBColonizedListener
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
@@ -138,7 +139,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         }
         if (graphicsLibEnabled) {
             ShaderLib.init()
-            LightData.readLightDataCSV("data/lights/MPC_light_data.csv")
+            //LightData.readLightDataCSV("data/lights/MPC_light_data.csv") //TODO: RENABLE THIS ONCE YOU GET THE FILE AGAI
         }
         addSpecialItemsToItemRepo()
         StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
@@ -225,6 +226,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().memoryWithoutUpdate["\$MPC_deliveryPirateName"] = MPC_People.getImportantPeople()[MPC_People.DONN_PIRATE]?.name?.fullName
         Global.getSector().memoryWithoutUpdate["\$MPC_disarmamentFleetSizeMult"] = MPC_IAIICFobIntel.DISARMAMENT_FLEET_SIZE_MULT
 
+        Global.getSector().memoryWithoutUpdate["\$MPC_playerFacName"] = Global.getSector().getFaction(Factions.PLAYER).displayName
+
         MPC_compatabilityUtils.run(currVersion)
 
         Global.getSector().addTransientListener(niko_MPC_pickFleetAIListener())
@@ -234,6 +237,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         Global.getSector().addTransientListener(niko_MPC_omegaWeaponPurger())
         Global.getSector().addTransientListener(MPC_incomeTallyListener())
+        Global.getSector().listenerManager.addListener(MPC_ArkFOBColonizedListener(), true)
         //Global.getSector().addTransientListener(niko_MPC_spyFleetBattleListener())
         MPC_hostileActivityHook().start()
         //MPC_omegaCoreAdminChecker().start()

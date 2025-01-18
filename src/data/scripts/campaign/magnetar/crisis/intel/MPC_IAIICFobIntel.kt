@@ -17,6 +17,8 @@ import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
+import com.fs.starfarer.api.impl.campaign.fleets.PatrolAssignmentAIV4
+import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
@@ -38,6 +40,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.ai.CampaignFleetAI
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
@@ -50,12 +53,15 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
+import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack
+import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttackFGI
 import data.scripts.campaign.magnetar.crisis.intel.blockade.MPC_IAIICBlockadeFGI
 import data.scripts.campaign.magnetar.crisis.intel.bombard.MPC_IAIICBombardFGI
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageType
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalSupportFleetAssignmentAI
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.MPC_FOB_ID
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_mathUtils.prob
 import data.utilities.niko_MPC_settings
@@ -71,7 +77,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupIntel.FGIEventListener,
+class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(), CampaignEventListener, FleetGroupIntel.FGIEventListener,
     ColonyPlayerHostileActListener {
 
     var daysLeftTilNextRetaliate: Float = 0f
@@ -126,6 +132,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             if (field == null) field = 0f
             return field
         }
+    /** How long the IAIIC is suffering disrupted command for. */
+    var disruptedCommandDaysLeft = 0f
 
     fun getFactionContributionsExternal(): ArrayList<MPC_factionContribution> {
         sanitizeFactionContributions(factionContributions)
@@ -195,8 +203,8 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         FIRST_ESCALATION("Escalation", "MPC_IAIIC_ESCALATION", false),
         SECOND_BOMBARDMENT("Targeted Bombardments", "MPC_IAIIC_BOMBARDMENT", canBeSubstituted = true),
         SECOND_SABOTAGE("Sabotage", "MPC_IAIIC_SABOTAGE"),
-        BLOCKADE("Blockade", "MPC_IAIIC_BLOCKADE"),
         SECOND_ESCALATION("Escalation", "MPC_IAIIC_ESCALATION", false),
+        BLOCKADE("Blockade", "MPC_IAIIC_BLOCKADE"),
         THIRD_BOMBARDMENT("Targeted Bombardments", "MPC_IAIIC_BOMBARDMENT", canBeSubstituted =  true),
         ALL_OR_NOTHING("All-out attack", "MPC_IAIIC_ALL_OR_NOTHING", false);
 
@@ -226,14 +234,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
     companion object {
         const val DEFAULT_DISARM_TIME = 60f
+        const val DEFAULT_COMMAND_DISRUPTION_DAYS = 90f
         const val DISARMAMENT_FLEET_SIZE_MULT = 0.25f
         const val DISARMAMENT_PREMATURE_DAYS = 10f
         const val KEY = "\$MPC_IAIICIntel"
         const val RETALIATE_COOLDOWN_DAYS = 60f
         const val PROGRESS_MAX = 1000
         const val FP_PER_POINT = 0.1f
-        const val HEGEMONY_CONTRIBUTION = 1.7f
-        const val CHURCH_CONTRIBUTION = 1.4f
+        const val HEGEMONY_CONTRIBUTION = 1.5f
+        const val CHURCH_CONTRIBUTION = 1.2f
         /** If overall contribution reaches or falls below this, the event ends. */
         const val MIN_FLEET_SIZE_TIL_GIVE_UP = (HEGEMONY_CONTRIBUTION + CHURCH_CONTRIBUTION) + 1f
         const val DAYS_EMBARGO_LINGERS_FOR = 20f
@@ -252,7 +261,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
         fun addFactorCreateIfNecessary(factor: EventFactor?, dialog: InteractionDialogAPI?) {
             if (get() == null) {
-                MPC_IAIICFobIntel()
+                MPC_IAIICFobIntel(dialog)
             }
             if (get() != null) {
                 get()!!.addFactor(factor, dialog)
@@ -343,7 +352,6 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             }
             return PeacePossibility.YES
         }
-
     }
 
     private fun generateContributions(): ArrayList<MPC_factionContribution> {
@@ -373,7 +381,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
-            0.7f,
+            0.6f,
             0.3f,
             removeContribution = null,
             removeNextAction = true,
@@ -385,7 +393,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.DIKTAT,
-            0.8f,
+            0.7f,
             0.3f,
             removeContribution = {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
@@ -396,7 +404,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.TRITACHYON,
-            0.9f,
+            0.8f,
             1f,
             removeContribution = null,
             removeNextAction = false,
@@ -405,7 +413,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         )
         list += MPC_factionContribution(
             Factions.LUDDIC_PATH,
-            0.4f,
+            0.3f,
             0.7f,
             removeContribution = null,
             removeNextAction = false,
@@ -452,7 +460,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
         val fractalColony = getFractalColony()!!
         AICoreAdmin.get(fractalColony)!!.daysActive = 500f // so it cant be removed anymore
-        Global.getSector().intelManager.addIntel(this, false, null)
+        Global.getSector().intelManager.addIntel(this, false, dialog?.textPanel)
         Global.getSector().addListener(this)
         MPC_IAIICInspectionPrepIntel(this)
         isImportant = true
@@ -471,17 +479,19 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
         addStage(Stage.START, 0)
 
-        addStage(Stage.FIRST_BOMBARDMENT, 100)
-        addStage(Stage.FIRST_SABOTAGE, 200)
-        addStage(Stage.FIRST_ESCALATION, 300)
-        addStage(Stage.SECOND_BOMBARDMENT, 400)
+        addStage(Stage.FIRST_BOMBARDMENT, 150)
+        addStage(Stage.FIRST_SABOTAGE, 250)
+        addStage(Stage.FIRST_ESCALATION, 375)
+        addStage(Stage.SECOND_BOMBARDMENT, 450)
 
-        addStage(Stage.SECOND_ESCALATION, 570)
-        addStage(Stage.THIRD_BOMBARDMENT, 600)
-        addStage(Stage.SECOND_SABOTAGE, 700)
-        addStage(Stage.BLOCKADE, 800)
+        addStage(Stage.SECOND_ESCALATION, 670)
+        addStage(Stage.BLOCKADE, 700)
+        addStage(Stage.THIRD_BOMBARDMENT, 800)
+        //addStage(Stage.FOURTH_SABOTAGE, 700)
 
         addStage(Stage.ALL_OR_NOTHING, 1000)
+
+        //stages.forEach { it.isOneOffEvent = true }
     }
 
     override fun getName(): String {
@@ -525,7 +535,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
             Stage.FIRST_BOMBARDMENT, Stage.SECOND_BOMBARDMENT, Stage.THIRD_BOMBARDMENT -> {
                 startBombardment()
             }
-            Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> escalate(2f)
+            Stage.FIRST_ESCALATION, Stage.SECOND_ESCALATION -> escalate(1f)
             Stage.BLOCKADE -> {
                 startBlockade()
             }
@@ -533,6 +543,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                 sabotage()
             }
             Stage.ALL_OR_NOTHING -> {
+                startAllOutAttack()
                 // HERE WE GO
             }
         }
@@ -632,6 +643,15 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
                 info.setIdForAddedRow(getFOB())
                 info.addTable("None", -1, 5f)
                 info.addSpacer(3f)
+                if (disruptedCommandDaysLeft > 0f) {
+                    info.addPara("The destruction of the recent blockade's command fleet has severely damaged the IAIIC command structure.", 5f)
+                    info.addPara(
+                        "The IAIIC military is currently %s, and %s are %s. This will last for %s more days.", 5f,
+                        Misc.getHighlightColor(),
+                        "crippled", "inspections", "postponed", "${disruptedCommandDaysLeft.roundToInt()}"
+                    )
+                    info.addSpacer(3f)
+                }
             }
             addStageDesc(info, stage, small, false)
         }
@@ -1010,6 +1030,9 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         super.advanceImpl(amount)
         var oldTime = disarmTimeLeft
         disarmTimeLeft = max(0f, (disarmTimeLeft - Misc.getDays(amount)))
+        var oldCommandTime = disruptedCommandDaysLeft
+        disruptedCommandDaysLeft = max(0f, disruptedCommandDaysLeft - Misc.getDays(amount))
+        checkCommandDisruption(oldCommandTime)
         checkIfStillDisarmed(oldTime)
         acceptingPeaceOneFrame = false
 
@@ -1161,9 +1184,11 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         }
         if (reason.consideredVictory) {
             beginCoreUpgrade()
-            beginHumanitarianAction()
+            //beginHumanitarianAction()
             if (fob != null) {
                 fob.removeCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
+                fob.primaryEntity.makeUnimportant(MPC_FOB_ID)
+                fob.primaryEntity.customDescriptionId = "MPC_IAIICFOBDecivved"
                 DecivTracker.decivilize(fob, false,  false)
             }
         } else {
@@ -1222,6 +1247,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         MPC_IAIICInspectionPrepIntel.get()?.end()
         currentAction?.endAfterDelay()
         endAfterDelay()
+        MPC_IAIICBlockadeFGI.get()?.finish(false)
 
         affectedMarkets.forEach { it.removeCondition(niko_MPC_ids.IAIIC_CONDITION_ID) }
         affectedMarkets.clear()
@@ -1373,7 +1399,7 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
 
         val params = GenericRaidParams(Random(random.nextLong()), true)
-        params.factionId = FOB.getFactionId()
+        params.factionId = FOB.factionId
         params.source = FOB
 
         params.prepDays = 7f + random.nextFloat() * 14f
@@ -1391,33 +1417,26 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
 
         val f: Float = HostileActivityEventIntel.get().getMarketPresenceFactor(colony.starSystem)
 
-        var totalDifficulty = ((fleetSizeMult * 50f * (1f * f)).coerceAtLeast(30f)).coerceAtMost(350f)
+        var totalDifficulty = ((fleetSizeMult * 80f * (1f)).coerceAtLeast(600f)).coerceAtMost(3800f)
 
+        params.fleetSizes.add(200) // Command Fleet
 
-        totalDifficulty -= 13f
-        totalDifficulty -= 8f
-        totalDifficulty -= 5f
-        totalDifficulty -= 2f
-        totalDifficulty -= 2f
-        totalDifficulty -= 2f
-        params.fleetSizes.add(13) // Command Fleet
+        params.fleetSizes.add(20)
+        params.fleetSizes.add(20)
 
-        params.fleetSizes.add(8)
-        params.fleetSizes.add(5)
-
-        params.fleetSizes.add(3) // supply fleets #1
-        params.fleetSizes.add(3) // supply fleets #2
-        params.fleetSizes.add(3) // supply fleets #3
+        params.fleetSizes.add(5) // supply fleets #1
+        params.fleetSizes.add(5) // supply fleets #2
+        params.fleetSizes.add(5) // supply fleets #3
 
 
         val r: Random = MathUtils.getRandom()
 
         while (totalDifficulty > 0) {
-            var max = 8f
-            var min = 5f
+            var max = 140f
+            var min = 170f
             if (r.nextFloat() > 0.3f) {
-                min = totalDifficulty.coerceAtMost(11f).toInt().toFloat()
-                max = totalDifficulty.coerceAtMost(11f).toInt().toFloat()
+                min = totalDifficulty.coerceAtMost(190f).toInt().toFloat()
+                max = totalDifficulty.coerceAtMost(190f).toInt().toFloat()
             }
             val diff = StarSystemGenerator.getNormalRandom(r, min, max).roundToInt()
             params.fleetSizes.add(diff)
@@ -1427,7 +1446,53 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         val blockade = MPC_IAIICBlockadeFGI(params, bParams)
         blockade.listener = this
         Global.getSector().intelManager.addIntel(blockade)
-        currentAction = blockade
+        //currentAction = blockade
+    }
+
+    fun startAllOutAttack() {
+        val FOB = getFOB() ?: return
+        val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
+        //if (validTargets.isEmpty()) validTargets = getGenericTargets()
+
+        val spawnFP = 1100f // multiplied against the fob's fleetsize
+        val raidIntel = MPC_IAIICAllOutAttack(FOB, colony, spawnFP)
+
+        /*
+        val params = GenericRaidParams(Random(random.nextLong()), true)
+        params.makeFleetsHostile = false
+        params.factionId = FOB.factionId
+        params.source = FOB
+
+        params.prepDays = if (Global.getSettings().isDevMode) 9f else 60f + (MathUtils.getRandomNumberInRange(5f, 9f)) // two whole months to prep
+        params.payloadDays = 365f // this fight is to the death
+
+        params.raidParams.where = colony.starSystem
+        params.raidParams.tryToCaptureObjectives = false
+        params.noun = "All-Out Attack"
+        params.raidParams.raidsPerColony = 1
+        params.raidParams.bombardment = MarketCMD.BombardType.TACTICAL
+        //params.raidParams.allowNonHostileTargets = true
+        params.raidParams.allowedTargets.add(colony)
+
+        params.style = FleetStyle.STANDARD
+        val fleetSizeMult: Float = FOB.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
+
+        var totalDifficulty = (fleetSizeMult * 1200f) * 2f
+
+        val initFleetsToSpawn = 30f
+        var fleetsToSpawn = initFleetsToSpawn
+        val difficultyPerFleet = (totalDifficulty / initFleetsToSpawn)
+        while (fleetsToSpawn-- > 0f) {
+            var diff = difficultyPerFleet * MathUtils.getRandomNumberInRange(0.9f, 1.1f)
+
+            params.fleetSizes.add(diff.toInt())
+            totalDifficulty -= diff
+        }
+
+        val attackFGI = MPC_IAIICAllOutAttackFGI(params)
+        attackFGI.listener = this
+        Global.getSector().intelManager.addIntel(attackFGI)
+        currentAction = attackFGI*/
     }
 
     // LISTENER CRAP
@@ -1515,10 +1580,25 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         if (source.faction.id != niko_MPC_ids.IAIIC_FAC_ID) return
         if (!fleet.isPatrol()) return
 
+        if (fleet.memoryWithoutUpdate.getBoolean("\$MPC_IAIICblockaderFleetFlag")) return
+
         fleet.addScript(NPCHassler(fleet, source.starSystem))
         fleet.memoryWithoutUpdate["\$nex_ignoreTransponderBlockCheck"] = true
 
-        return
+        MPC_delayedExecution(
+            {
+                if (!fleet.isExpired && !fleet.isEmpty) {
+                    val travel = fleet.assignmentsCopy.firstOrNull { it.assignment == FleetAssignment.GO_TO_LOCATION }
+                    if (travel != null) {
+                        val castedAssignmentData = (travel as CampaignFleetAI.FleetAssignmentData)
+                        castedAssignmentData.maxDurationInDays *= 2f
+                    }
+                }
+            },
+            0f,
+            false,
+            useDays = false
+        ).start()
     }
 
     override fun reportFleetReachedEntity(fleet: CampaignFleetAPI?, entity: SectorEntityToken?) {
@@ -1649,5 +1729,26 @@ class MPC_IAIICFobIntel: BaseEventIntel(), CampaignEventListener, FleetGroupInte
         checkMarketDeficits()
     }
 
+    fun disruptCommand(time: Float = DEFAULT_COMMAND_DISRUPTION_DAYS) {
+        var old = disruptedCommandDaysLeft
+        disruptedCommandDaysLeft += time
+        checkCommandDisruption(disruptedCommandDaysLeft)
+    }
+
+    private fun checkCommandDisruption(previousTimeLeft: Float = disruptedCommandDaysLeft) {
+        if (disruptedCommandDaysLeft <= 0f) {
+            unapplyCommandDisruption()
+        } else {
+            applyCommandDisruption()
+        }
+    }
+
+    private fun applyCommandDisruption() {
+        getFOB()?.addConditionIfNotPresent(niko_MPC_ids.IAIIC_COMMAND_DISRUPTED_CONDITION)
+    }
+
+    private fun unapplyCommandDisruption() {
+        getFOB()?.removeCondition(niko_MPC_ids.IAIIC_COMMAND_DISRUPTED_CONDITION)
+    }
 }
 

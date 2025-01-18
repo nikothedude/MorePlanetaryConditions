@@ -2,6 +2,7 @@ package data.scripts.campaign.magnetar.crisis.intel.inspectionStages
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI.ActionType
 import com.fs.starfarer.api.campaign.econ.Industry
@@ -21,6 +22,8 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseAssignmentAI.FleetA
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobEndReason
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionOrders
 import data.utilities.niko_MPC_ids
@@ -171,6 +174,9 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                 giveReturnOrdersToStragglers(routes)
             }
         }
+        if (coresRemoved?.contains(niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) == true) {
+            MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED)
+        }
     }
 
     var coresRemoved: MutableList<String>? = ArrayList()
@@ -190,7 +196,9 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
         for (id: String? in found) {
             val spec = Global.getSettings().getCommoditySpec(id)
             valFound += spec.basePrice.toInt()
-            if (id == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) continue // it just gets destroyed outright
+            if (id == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+                continue
+            } // it just gets destroyed outright
             fleet?.cargo?.addCommodity(id, 1f)
         }
         for (id: String? in expected) {
@@ -332,6 +340,9 @@ class MPC_IAIICActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStag
                 route.addSegment(RouteSegment(Math.min(5f, untilAutoresolve), target.starSystem.center))
             }
             route.addSegment(RouteSegment(1000f, target.primaryEntity))
+            if (route.activeFleet != null) {
+                route.activeFleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, target.primaryEntity, 30f, "raiding", null)
+            }
         }
     }
 

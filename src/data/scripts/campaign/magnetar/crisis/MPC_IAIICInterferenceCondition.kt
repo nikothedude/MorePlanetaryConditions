@@ -7,7 +7,9 @@ import com.fs.starfarer.api.impl.campaign.intel.events.HegemonyAICoresActivityCa
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_ids
+import kotlin.math.roundToInt
 
 class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
@@ -36,6 +38,8 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
 
         val market = getMarket() ?: return
         if (!marketIsSuspicious()) return
+        val intel = MPC_IAIICFobIntel.get() ?: return
+        if (intel.disruptedCommandDaysLeft > 0f) return
 
         market.stability.modifyFlat(id, BASE_STABILITY_MALUS, "IAIIC Interference")
         var accessibilityMod = BASE_ACCESSIBILITY_MALUS
@@ -61,6 +65,20 @@ class MPC_IAIICInterferenceCondition: niko_MPC_baseNikoCondition() {
         if (!marketIsSuspicious()) {
             tooltip.addPara(
                 "The IAIIC seems to be ignoring ${market.name}, likely due to the limited AI presence.", 10f
+            )
+            return
+        }
+        val intel = MPC_IAIICFobIntel.get() ?: return
+        if (intel.disruptedCommandDaysLeft > 0f) {
+            tooltip.addPara(
+                "The IAIIC's command structure has been disrupted, giving ${market.name} some much-needed breathing room.",
+                10f
+            )
+            tooltip.addPara(
+                "This will last another %s.",
+                0f,
+                Misc.getHighlightColor(),
+                "${intel.disruptedCommandDaysLeft.roundToInt()} days"
             )
             return
         }
