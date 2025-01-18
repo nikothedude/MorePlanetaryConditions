@@ -1,0 +1,2 @@
+id,type,size,intensity,fadeout,color,offset,hit size,hit intensity,hit fadeout,hit color,flash size,flash intensity,flash fadeout,flash color,flash offset,chance,fighter dim
+MPC_tachyonPike,beam,160,2.65,,"[170,140,235]",,410,1.35,,"[85,25,215]",185,1.2,,"[85,25,215]",,1,TRUE
