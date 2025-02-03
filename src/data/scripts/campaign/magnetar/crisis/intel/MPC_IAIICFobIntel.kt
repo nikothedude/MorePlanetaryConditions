@@ -161,7 +161,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     fun updateDoctrine() {
         val IAIIC = getFaction()
 
-        for (ship in IAIIC.knownShips) {
+        for (ship in IAIIC.knownShips.toList()) {
             var contributorHasShip = false
             for (contribution in factionContributions) {
                 val faction = Global.getSector().getFaction(contribution.factionId) ?: continue
@@ -277,7 +277,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (fleetPointsDestroyed <= 0) return 0
             var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
             if (points < 1) points = 1
-            return points
+            return points.coerceAtMost(100)
         }
 
         fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
@@ -976,6 +976,14 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         "IAIIC"
                     )
                 }
+                MPC_IAIICFobEndReason.FOB_LOST -> {
+                    info.addPara(
+                        "%s loses their grasp on the sector!",
+                        initPad,
+                        getFaction().color,
+                        "IAIIC"
+                    )
+                }
             }
         } else if (data is String) {
             info.addPara(data, initPad)
@@ -1066,6 +1074,10 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         else if (fractalColony.containingLocation != getFOB()?.containingLocation) {
             end(MPC_IAIICFobEndReason.FRACTAL_COLONY_MOVED)
         }
+        val FOB = getFOB()
+        if (FOB == null || FOB.factionId != niko_MPC_ids.IAIIC_FAC_ID) {
+            end(MPC_IAIICFobEndReason.FOB_LOST)
+        }
     }
 
     private fun checkIfStillDisarmed(oldTime: Float) {
@@ -1101,7 +1113,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     private fun checkMarketDeficits() {
-        for (market in affectedMarkets) {
+        for (market in affectedMarkets.toList()) {
             assignOrUnassignDeficit(market)
         }
         val fractalSystem = getFractalColony()?.starSystem ?: return

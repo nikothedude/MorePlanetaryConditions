@@ -14,7 +14,7 @@ class MPC_IAIICAttritionFactor: BaseEventFactor() {
     companion object {
         const val NON_HOSTILE_PROGRESS_MULT = 0.25f
 
-        const val BASE_PROGRESS = 30f
+        const val BASE_PROGRESS = 100f
         const val MIN_PROGRESS = 1f
     }
 

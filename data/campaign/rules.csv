@@ -904,18 +904,32 @@ MPC_singularityPlanetOneInteractBlurbText,MPC_singularityPlanetOneInteractBlurbT
 It would seem the asthenosphere, mantle, outer and inner core of $entityName possess extremely high concentrations of atnerithum, a highly exotic alloy of iron-platinum that natively lowers the p-resonance of nearby space. Your tactical officer would go even deeper into the specifics, but your withering stare is enough to prompt the well-respected ""executive summary"". Essentially, this material acts as a bridge into phase space, and is used most often in phase coils. This knowledge does nothing to soothe the already tense atmosphere of your bridge.",,
 ,,,,,,
 # Staging Habitat,,,,,,
-MPC_SHInitialInteraction,OpenInteractionDialog,"$tag:MPC_singularityStagingStation
-!$global.MPC_exploredSingularityStagingStation","ShowDefaultVisual
-SetShortcut defaultLeave ""ESCAPE""","Your $shipOrFleet approaches $entityName.
-
-The habitat is as cold and dead as the wreckage around it. ","0:MPC_SHInvestigate:Order a scan
-50:defaultLeave:Leave",
 MPC_SHWreckInteraction,OpenInteractionDialog,"$customType == wreck
 $tag:MPC_habitatWreck score:1000
 ","SetTextHighlights ""textbook scuttling""
 SalvageGenFromSeed
 FireBest ShowSalvageEntityDetails
 FireBest SalvageCheckHostile","Popcorn-craters span the hull, each centered at least loosely on key structural points. This is textbook scuttling.",,
+MPC_SHInitialInteraction,OpenInteractionDialog,"$tag:MPC_singularityStagingStation score:1000
+!$global.MPC_exploredSingularityStagingStation","ShowDefaultVisual
+SetShortcut defaultLeave ""ESCAPE""","Your $shipOrFleet approaches $entityName.
+
+The habitat is as cold and dead as the wreckage around it. ","0:MPC_SHInvestigate:Order a scan
+50:defaultLeave:Leave",
+MPC_SHInvestigate,DialogOptionSelected,"$option == MPC_SHInvestigate",,"The scan reveals very little a visual inspection couldn't. The reactors are frozen, power is cut, doors are sealed and activity is null. So far, the pontoon is nothing more than a husk - a surprise, given it's location.","MPC_SHInvestigateTwo:Send a boarding party",
+MPC_SHInvestigateTwo,DialogOptionSelected,"$option == MPC_SHInvestigateTwo",,"Crews are quickly dispatched, and the op goes off predictably - at least, that is, until a body is discovered. Then another. And another.
+
+Decompression-mummified corpses are not exactly uncommon in the post-collapse sector. This is anything but a common collection of mummies, however. Modern space stations are very effective at alerting their crew to the dangers of a breach - even a pontoon. Why, then, are all the crew in their casual uniforms? Some are even in the canteen, collapsed in their meals. Some are in bed. Some are collapsed in prone position, as if they just dropped.
+
+All mummified.","MPC_SHInvestigateThree:Reach for your rebreather - make sure it's still there",
+MPC_SHInvestigateThree,DialogOptionSelected,"$option == MPC_SHInvestigateThree","$global.MPC_exploredSingularityStagingStation = true","The sight before you provokes awe and terror. How can a station depressurize so fast, it doesn't even give it's occupants time to scream? How is nothing knocked over? The answer comes quickly from material analysis - the vents and airlocks are coated in a thin layer of N2O, a highly potent gaseous sedative. It's likely the sedative was pumped in right before atmos was siphoned - at least according to your tactical officer, who is very careful to avoid the word ""murder"" in the tactical assessment. 
+
+Your officer assures you; there is no danger to the crew - physically, at least. The station remains, and your salvors have mostly finished their survey, taking care to avoid the corpses with almost religious fervor. You relax your grip on your rebreather as you consider your next steps.","MPC_SHInvestigateFour:Continue
+MPC_SHInvestigateHarvest:Harvest the dead for organs",
+MPC_SHInvestigateHarvest,DialogOptionSelected,"$option == MPC_SHInvestigateHarvest","AddRemoveCommodity organs 126
+RemoveOption MPC_SHInvestigateHarvest
+$player.ethosRuthless++","Waste not want not. Your salvors grimly load up the cadavers into a shuttle for your doctors to disassemble, and you have to remind yourself you do this regularly.",,
+MPC_SHInvestigateFour,DialogOptionSelected,"$option == MPC_SHInvestigateFour","FireBest MarketPostOpen","Your salvors hesitate to begin the unloading, fearing a curse of some sort, but minor disciplinary words are all it takes to get them back on track. Unfortuantely, the computer-logs seem to be rather sparse - possibly even purged - but the cargo holds still contain valuable material and ships, which would've likely gone towards the construction of... whatever it was they were making here.",,
 "#END Staging Habitat",,,,,,
 ,,,,,,
 # Violence,,,,,,
