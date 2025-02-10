@@ -23,6 +23,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
 
     fun setupFleet(fleet: CampaignFleetAPI): CampaignFleetAPI {
         fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] = true
+        fleet.memoryWithoutUpdate["\$MPC_magnetarFleet"] = true
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE_WHILE_TOFF] = true
@@ -38,7 +39,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FORCE_TRANSPONDER_OFF] = true
 
-        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_IGNORE_PLAYER_COMMS] = true
+        //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_IGNORE_PLAYER_COMMS] = true
 
         fleet.removeAbility(Abilities.SUSTAINED_BURN)
         //fleet.removeAbility(Abilities.INTERDICTION_PULSE)

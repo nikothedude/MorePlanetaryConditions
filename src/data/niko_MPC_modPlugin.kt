@@ -226,6 +226,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().memoryWithoutUpdate["\$MPC_deliveryPirateName"] = MPC_People.getImportantPeople()[MPC_People.DONN_PIRATE]?.name?.fullName
         Global.getSector().memoryWithoutUpdate["\$MPC_disarmamentFleetSizeMult"] = MPC_IAIICFobIntel.DISARMAMENT_FLEET_SIZE_MULT
 
+        Global.getSector().memoryWithoutUpdate["\$MPC_playerFacNameWithArticle"] = Global.getSector().getFaction(Factions.PLAYER).displayNameWithArticle
         Global.getSector().memoryWithoutUpdate["\$MPC_playerFacName"] = Global.getSector().getFaction(Factions.PLAYER).displayName
 
         MPC_compatabilityUtils.run(currVersion)

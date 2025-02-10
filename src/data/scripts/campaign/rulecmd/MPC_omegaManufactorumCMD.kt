@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.rulecmd.AddRemoveAnyItem
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_addDelayedMusicScript
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_delayedClearMusicScript
 import data.utilities.niko_MPC_ids
@@ -61,6 +62,9 @@ class MPC_omegaManufactorumCMD: BaseCommandPlugin() {
                 } else {
                     interactionTarget.memoryWithoutUpdate[MemFlags.SALVAGE_SPEC_ID_OVERRIDE] = "MPC_omegaManufactorum_pristine"
                 }
+            }
+            "gotCore" -> {
+                MPC_fractalCoreReactionScript().start()
             }
         }
 

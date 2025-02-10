@@ -13,6 +13,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_marketUtils.isApplied
 import data.utilities.niko_MPC_marketUtils.isPrimaryHeavyIndustry
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import lunalib.lunaExtensions.getMarketsCopy
 
 class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncrease: Int) : BoostIndustryInstallableItemEffect(
@@ -141,7 +142,7 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
     }
 
     private fun getShipSizeMult(): Float {
-        return 3f
+        return 2f
     }
 
     val shipProductionBaseIncrement = 1000f
@@ -191,10 +192,10 @@ class overgrownNanoforgeItemEffect(id: String?, supplyIncrease: Int, demandIncre
                 "\n" +
                 "On habitable worlds, causes pollution which becomes permanent."
         val para = text.addPara(description, pad, Misc.getHighlightColor(),
-            "${getSupplyMult()}x", "${getDemandMult()}x", "${getUpkeepIncrement().toInt()} credits", "${(getHazardIncrement() * 100f).toInt()}%",
+            "${getSupplyMult().trimHangingZero()}x", "${getDemandMult().trimHangingZero()}x", "${getUpkeepIncrement().toInt()} credits", "${(getHazardIncrement() * 100f).toInt()}%",
 
-            "${getShipProductionMult()}x", "${shipProductionBaseIncrement.toInt()} * Market Size", "${getShipSizeMult()}x",
-            "${(1 - getProductionQualityMult()) * 100f}%")
+            "${getShipProductionMult().trimHangingZero()}x", "${shipProductionBaseIncrement.toInt()} * Market Size", "${getShipSizeMult().trimHangingZero()}x",
+            "${((1 - getProductionQualityMult()) * 100f).trimHangingZero()}%")
 
         para.setHighlightColors(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getNegativeHighlightColor(),
             Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())

@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager.RouteData
 import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin.BULLET
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
@@ -27,6 +28,7 @@ import data.utilities.niko_MPC_ids.derelictBoostFaction
 import data.utilities.niko_MPC_marketUtils.getEscortFleetList
 import data.utilities.niko_MPC_marketUtils.isDeserializing
 import data.utilities.niko_MPC_marketUtils.isInhabited
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_miscUtils.isStationFleet
 import data.utilities.niko_MPC_reflectionUtils.set
 import data.utilities.niko_MPC_settings
@@ -41,22 +43,30 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
     val interval = IntervalUtil(0.5f, 1f)
 
     companion object {
-        const val SELF_MARKET_ACCESSABILITY_INCREMENT = -0.30f
-        const val OTHER_MARKET_ACCESSIBILITY_INCREMENT = 0.15f
+        const val SELF_MARKET_ACCESSABILITY_INCREMENT = -0.40f
+        const val OTHER_MARKET_ACCESSIBILITY_INCREMENT = 0.10f
+        const val RAID_DEFEATED_ACCESSIBILITY_BONUS = 0.10f
 
         const val DAYS_BETWEEN_ESCORTS = 60f
         const val CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED = 0.75f
 
         const val UNINHABITED_TIMEOUT_MULT = 5f
 
-        // helps escorts keep up with their escortees even in hyperspace
-        const val ESCORT_FLEET_MAX_BURN_MULT = 5f
-
         const val INHABITED_BASE_FLEET_POINTS = 50f
         const val UNINHABITED_BASE_FLEET_POINTS = 50f
+
+        const val FLEET_SIZE_TO_BE_OPPRESSIVE = 2.5f
+        const val DAYS_NEEDED_FOR_PIRATE_EVENT = 30f
+
+        fun get(market: MarketAPI): niko_MPC_derelictEscort? = market.getCondition("niko_MPC_derelictEscort")?.plugin as? niko_MPC_derelictEscort
     }
 
     var cachedFaction: String? = null
+    var daysActive = 0f
+        get() {
+            if (field == null) field = 0f
+            return field
+        }
 
     override fun apply(id: String) {
         super.apply(id)
@@ -73,12 +83,22 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
 
     private fun applyConditionAttributes(id: String) {
         val market = getMarket() ?: return
-        market.accessibilityMod.modifyFlat(id, SELF_MARKET_ACCESSABILITY_INCREMENT, name)
-        val markets = Misc.getMarketsInLocation(market.containingLocation) - market
+        market.accessibilityMod.modifyFlat("${id}_self", SELF_MARKET_ACCESSABILITY_INCREMENT, name)
+        val markets = Misc.getMarketsInLocation(market.containingLocation)
         val ourFaction = market.faction
         for (iterMarket in markets) {
             val theirFaction = iterMarket.faction
             if (ourFaction.getRelationshipLevel(theirFaction) < RepLevel.FRIENDLY) continue
+            var total = 0f
+
+            if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DEFEATED_FRC_RAID)) {
+                total += RAID_DEFEATED_ACCESSIBILITY_BONUS
+            } else if (iterMarket == market) {
+                continue
+            }
+            if (iterMarket != market) {
+                total += OTHER_MARKET_ACCESSIBILITY_INCREMENT
+            }
             iterMarket.accessibilityMod.modifyFlat(id, OTHER_MARKET_ACCESSIBILITY_INCREMENT, "${market.name} $name")
             getAffectedMarketList() += iterMarket
         }
@@ -96,7 +116,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
 
     private fun unapplyConditionAttributes(id: String) {
         val market = getMarket() ?: return
-        market.accessibilityMod.unmodify(id)
+        market.accessibilityMod.unmodify("${id}_self")
         market.hazard.unmodify(id)
         val affectedMarkets = getAffectedMarketList()
         for (iterMarket in affectedMarkets) {
@@ -149,6 +169,14 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                 continue
             }
         }
+
+        daysActive += days
+        /*val fleetSize = market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
+        if (fleetSize >= FLEET_SIZE_TO_BE_OPPRESSIVE) {
+            daysSpentBeingOppressive += days
+        } else {
+            daysSpentBeingOppressive = 0f
+        }*/
     }
 
     private fun syncFaction() {
@@ -156,7 +184,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val market = getMarket() ?: return
 
         val fleetList = market.getEscortFleetList()
-        if (cachedFaction != Factions.NEUTRAL && !market.isInhabited()) { // we just changed to being uncolonized
+        if (cachedFaction != null && cachedFaction != Factions.NEUTRAL && !market.isInhabited()) { // we just changed to being uncolonized
             for (entry in fleetList.toMap()) {
                 val escortee = entry.key
                 val escorter = entry.value
@@ -215,7 +243,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         }
     }
 
-    private fun getListener(): MPC_derelictEscortListener? {
+    fun getListener(): MPC_derelictEscortListener? {
         val market = getMarket() ?: return null
         var listener = market.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_LISTENER_MEMID] as? MPC_derelictEscortListener
         if (listener !is MPC_derelictEscortListener) {
@@ -376,6 +404,8 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.name = "Derelict Escorts"
 
         fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_MEMID] = market
+        fleet.memoryWithoutUpdate["\$MPC_derelictEscortSourceMarketName"] = market.name.uppercase()
+        fleet.memoryWithoutUpdate["\$MPC_derelictEscortSourceMarketFacId"] = market.factionId
         fleet.memoryWithoutUpdate[MemFlags.FLEET_FIGHT_TO_THE_LAST] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_ALLOW_DISENGAGE] = false
@@ -440,6 +470,21 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
             Misc.getHighlightColor(),
             "+${niko_MPC_stringUtils.toPercent(OTHER_MARKET_ACCESSIBILITY_INCREMENT)}"
         )
+
+        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DEFEATED_FRC_RAID)) {
+            tooltip.addPara(
+                "You've recently %s against an FRC, granting the following permanent benefits:", 10f,
+                Misc.getPositiveHighlightColor(), "repelled a raid"
+            )
+            tooltip.setBulletedListMode(BULLET)
+            tooltip.addPara(
+                "Pirates sector-wide avoid trade routes with an FRC, increasing accessibility of all markets in-system (including this one) by %s",
+                0f,
+                Misc.getHighlightColor(),
+                "+${(niko_MPC_derelictEscort.RAID_DEFEATED_ACCESSIBILITY_BONUS * 100f).trimHangingZero()}%"
+            )
+            tooltip.setBulletedListMode(null)
+        }
     }
 
     // LISTENER CODE BELOW

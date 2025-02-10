@@ -1,6 +1,62 @@
 id,trigger,conditions,script,text,options,notes
 "#RULESET_NAME niko_MPC",,,,,,
 ,,,,,,
+# Overgrown nanoforge stuff,,,,,,
+,,,,,,
+# Expedition fleets,,,,,,
+MPC_OGNEComms,OpenCommLink,"$entity.MPC_overgrownExpeditionFleet score:1000","FireAll MPC_OGNECommsOptions
+FireBest MPC_OGNECommsInitText",,,
+MPC_OGNECommsOptionsLeave,MPC_OGNECommsOptions,,"SetShortcut cutCommLink ""ESCAPE""",,"100:cutCommLink:Leave",
+MPC_OGNECommsOptionsWhyBombard,MPC_OGNECommsOptions,"$entity.MPC_didOvergrownBombard
+$faction.id != independent
+!$MPC_ignoreWhyBombard",,,"90:MPC_OGNECommsWhyBombard:Question them on their recent bombardment","also requires the player saw them"
+MPC_OGNECommsInitTextHeg,MPC_OGNECommsInitText,"$faction.id == hegemony",,"The comm-link resolves from a hegemony emblem to a hegemony $rank in good time.
+
+""Attention, citizen!"" $HeOrShe barks. ""This fleet is engaged in top-sanctioned INTSEC activities. In the event of an obstruction, this fleet has been granted..."" $HisOrHer eye twitches. ""Discresion.""
+
+$HeOrShe stiffens. ""Maintain minimum 20su distance from this fleet or you will be considered a belligerent party, and subject to arrest and interrogation!""",,
+MPC_OGNECommsInitTextChurch,MPC_OGNECommsInitText,"$faction.id == luddic_church",,"The spotty comm-feed flickers a few times before resolving into the face of a stern-looking luddic knight.
+
+""Greetings, child."" $HeOrShe starts, but cuts you off before you can speak. ""This fleet is operating under the direct orders of knight-captain Callisto, and may not be interrupted in it's duties. If you have a question, please submit it to your local knights chapter.""
+
+$HeOrShe presses $hisOrHer hands together. ""Ludd guide you.""
+
+",,
+MPC_OGNECommsInitTextIndie,MPC_OGNECommsInitText,"$faction.id == independent",,"The visage of a black arrow $rank appears before you, making a annoyed face.
+
+""Yeah? Who're you?"" $HeOrShe sucks on a stim-stick, sighing. ""Can't you tell we're doing something here? Look - we're busy, we've got guns, and we don't like being held up.""
+
+$HeOrShe blows out some smoke. ""So don't even bother.""
+
+$HeOrShe cuts the comm link before you have a chance to counter.",,
+MPC_OGNECommsWhyBombard,,,,,,
+MPC_OGNECommsWhyBombardHege,DialogOptionSelected,"$option == MPC_OGNECommsWhyBombard
+$faction.id == hegemony","$MPC_ignoreWhyBombard = true 0
+FireAll MPC_OGNECommsOptions
+
+SetTextHighlights ""overgrown nanoforges""","You catch the $rank off-guard with your question, but they quickly regain their footing. ""Provisionary order 2932 - the hegemony is to seek out and destroy dangerous relics of the Domain of man.""
+
+$HeOrShe takes a sharp breath. ""You've seen the planet. The nanites. Do you have any idea what would happen if they would be allowed to grow uncontrollably?""
+
+$HeOrShe shakes her head. ""It is our responsibility to ensure these... 'overgrown nanoforges' do not spread any further. If we could, we'd eradicate them, but... we don't have the resources.""
+
+$HeOrShe seems to remember something and quickly pulls up a PDA, transmitting a hyperwave quick-link to you. ""If you ever find one - do not touch it, do not approach it - tell us. We'll add it to the list.""",,
+MPC_OGNECommsWhyBombardChurch,DialogOptionSelected,"$option == MPC_OGNECommsWhyBombard
+$faction.id == luddic_church","$MPC_ignoreWhyBombard = true 0
+FireAll MPC_OGNECommsOptions
+
+SetTextHighlights ""nanoforge growths""","The $rank's face stiffens, then drops, as $heOrShe sighs and shakes $hisOrHer head.
+
+""The planet... the soil itself..."" $heOrShe cringes. ""Is... corrupted by mammon. Moloch has his claws GRIPPED around the soil, as an all-consuming mass wraps around the world...""
+
+$HeOrShe sighs shakily. ""It is the least we can do to cull these nanoforge growths."" $HeOrShe looks up to you. ""To prevent the spread of the Domain's egregore. If we could eradicate them, we would, but... alas..."" $HeOrShe shrugs. ""We simply aren't strong enough.""
+
+$HeOrShe yet again prays for you. ""Ludd guide you. And - if you find one... see the tendrils, the nanites, corrupting virgin soil...""
+
+""Fire at it with everything you have. And then more.""",,
+"#END Expedition fleets",,,,,,
+"#END Overgrown nanoforge stuff",,,,,,
+,,,,,,
 # Satellite Interactions,,,,,,
 niko_MPC_marketSatellitesNoBlock,OpenInteractionDialog,"!niko_MPC_marketBlockedByArtyStation
 
@@ -301,14 +357,125 @@ FireBest Stable_BuildConfirmOptions",,,
 "#END Objectives",,,,,,
 ,,,,,,
 # Escort Fleets,,,,,,
-MPC_derelictEscortOpenCommsBack,DialogOptionSelected,"$option == MPC_derelictEscortOpenCommsBack",,,,
-MPC_derelictEscortOpenComms,OpenCommLink,"niko_MPC_escortFleet fleetIsEscort score:200","FireBest MPC_derelictEscortCommsText
-FireAll MPC_derelictEscortCommsOptions
-SetShortcut cutCommLink ""ESCAPE""","The screen flickers on to show a spotty domain flag, and a recording of a cheerful man begins playing over your speakers.
+MPC_derelictEscortOpenComms,OpenCommLink,"niko_MPC_escortFleet fleetIsEscort score:200","niko_MPC_escortFleet getTimeLeft
+FireBest MPC_derelictEscortCommsText
+FireAll MPC_derelictEscortCommsModifyOptions
 
-""Hello, [DOMAIN CITIZEN]! This fleet is currently engaged in [ESCORT DUTY]! If you are our protectorate, great! We will keep you safe for [ERR::ESCORT DURATION NOT FOUND]! If not, stay away from our protectorate or we will open fire!""
+SetShortcut cutCommLink ""ESCAPE""","The screen flickers on to show a spotty domain flag.","0:cutCommLink:Cut the comm link
+10:MPC_derelictEscortCommsOptionGoAway:Order the fleet to return to base",
+MPC_derelictEscortCommsModifyOptionsNotEscortee,MPC_derelictEscortCommsModifyOptions,"!niko_MPC_escortFleet isEscortingPlayer","SetEnabled MPC_derelictEscortCommsOptionGoAway false
+SetTooltip MPC_derelictEscortCommsOptionGoAway ""You are not the escortee, and thus, cannot issue commands.""",,,
+MPC_derelictEscortCommsModifyOptionsReturning,MPC_derelictEscortCommsModifyOptions,"niko_MPC_escortFleet isReturning","SetEnabled MPC_derelictEscortCommsOptionGoAway false
+SetTooltip MPC_derelictEscortCommsOptionGoAway ""The escort is returning to base already.""",,,
+MPC_derelictEscortCommsTextNotActive,MPC_derelictEscortCommsText,"niko_MPC_escortFleet isReturning score:20","SetTextHighlightColors $entity.MPC_derelictEscortSourceMarketFacId
+SetTextHighlights $entity.MPC_derelictEscortSourceMarketName
+","""THIS FLEET is RETURNING to $entity.MPC_derelictEscortSourceMarketName - DO NOT INTERFERE.""",,
+MPC_derelictEscortCommsTextActive,MPC_derelictEscortCommsText,"!niko_MPC_escortFleet isReturning score:10","SetTextHighlightColors $entity.MPC_derelictEscortSourceMarketFacId
+SetTextHighlights $entity.MPC_derelictEscortSourceMarketName
 
-Short, to the point, and uncharacteristically corpo-speak. Strange.","0:cutCommLink:Cut the comm link",
+FireBest MPC_derelictEscortCommsActiveText","""ATTENTION CITIZEN"" the AI begins. ""This fleet is ENGAGED in ESCORT DUTY under ORDER OF $entity.MPC_derelictEscortSourceMarketName COMM-AI.""",,
+MPC_derelictEscortCommsTextNotEscort,MPC_derelictEscortCommsActiveText,"!niko_MPC_escortFleet isEscortingPlayer score:10",,"""YOUR FLEET HAS BEEN SCANNED AND LOGGED. Maintain minimum 50SU DISTANCE FROM ESCORTEE or be FIRED UPON.""
+
+""Have a SAFE DAY, citizen.""",,
+MPC_derelictEscortCommsTextEscort,MPC_derelictEscortCommsActiveText,"niko_MPC_escortFleet isEscortingPlayer score:10","SetTextHighlights $global.MPC_escortTimeLeft ""DAYS""","""REGISTER IFF code::STATUS-ESCORTEE."" The flag glitches a moment, before it sputters: ""WELCOME designation::ESCORTEE. THIS FLEET will continue it's operation for: $global.MPC_escortTimeLeft DAYS.""
+
+""IF YOU ARE DISSATISFIED WITH THIS UNIT'S PERFORMANCE issue command 'LEAVE' through channel 553DDA to REMOVE this FLEET from your VICINITY.""",,
+MPC_derelictEscortCommsOptionGoAway,DialogOptionSelected,"$option == MPC_derelictEscortCommsOptionGoAway","niko_MPC_escortFleet dismissFleet
+
+SetShortcut cutCommLink ""ESCAPE""","Transmitting the dismiss-key, the flag glitches for a moment before turning to pitch black.
+
+""COMMAND ACKNOWLEDGED::RTB ENABLED."" 
+
+The fleet begins to maneuver away.","cutCommLink:Leave",
+,,,,,,
+# Raid a FRC for blueprints,,,,,,
+MPC_FRCRaidOption,PopulateOptions,"$menuState == main
+$hasMarket
+MPC_FRCRaidCMD canAddOption",,,"90:MPC_FRCRaidOptionSel:Prepare a raid on the reinforcement center for blueprints",
+MPC_FRCRaidOptionSel,DialogOptionSelected,"$option == MPC_FRCRaidOptionSel","$raidDifficulty = 225 0
+$raidGoBackTrigger = MPC_FRCRaidBack 0
+$raidContinueTrigger = MPC_FRCRaidFinishedB 0
+$raidRestrictToTrigger = MPC_FRCRaidFinishedA 0
+
+AddRaidObjective genericIcon ""Storm a dockyard and rip blueprints out of the autofac"" EXTREME 225 MPC_FRCRaidFinishedA true
+
+ShowImageVisual raid_prepare","Reinforcement centers are legendary for their resilience - however, the collapse has severely damaged their self-defense capabilities. Unable to call reinforcements and unable to contact the Domain, the FRC beneath your feet opts instead to sacrifice safety for functionality, keeping many of its doors unlocked and power distributed to it's dockyards.
+
+With the assistance of local munisec, a large force could storm a dockyard and tear valuable blueprints from an autofac. This operation could likely only be conducted once; after a successful intrusion, there's no telling how the delta AI will reallocate resources.","mktRaidNonMarket:Continue",
+MPC_FRCRaidBack,MPC_FRCRaidBack,,"$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+MPC_FRCRaidFinishedA,MPC_FRCRaidFinishedA,,,"Tactical quickly locates a relatively easy-to-access dockyard built into a small hill relatively closeby a nearby city, and with the assistance of munisec, your forces take up position around the fortress.
+
+A few EMPs and thermite-charges later, your marines breach, and begin storming the defenses. While the defenses are well-entrenched, the EMPs make short work of them, and soon your marines push deep into the center of the shipyard.",,
+MPC_FRCRaidFinishedB,MPC_FRCRaidFinishedB,,"AddRemoveAnyItem SPECIAL ship_bp MPC_spearHead 1
+AddRemoveAnyItem SPECIAL ship_bp MPC_ramjet 1
+
+$market.MPC_raidedFRC = true","The cam-feed gets spotty as marines and munisec delve deeper into the fortress, before sighting it - a conn-port. Quickly, your troops extract what blueprints they can and exfiltrate.
+
+On op review, it's revealed that the only blueprints they managed to extract were two: A battletug, and a normal tug. While disappointing, your chief engineer rationalizes. ""It's likely these two blueprints were isolated exclusively for FRC use -"" a finger taps a table. ""-In other words, the larger Domain database is likely stored elsewhere, and likely more heavily protected.""
+
+Turning your attention to the FRC itself: While it seems to be in lockdown, there's no signs of inhibited functionality, and so while a second operation is likely impossible, the FRC will still continue it's duties.
+
+A fine operation, all things considered.",,
+"#END Raid a FRC for blueprints",,,,,,
+,,,,,,
+# Pirates complaining about FRC,,,,,,
+MPC_FRCComplainersStart,DialogOptionSelected,"$option == marketVisitBar
+MPC_pirateComplaintBarCMD canDoEvent score:1000","FireBest BarShuttleDownPrintDesc
+BarCMD playAmbience
+$global.MPC_sawPiratesComplainingAboutFRC = true
+
+MPC_pirateComplaintBarCMD setupPeople
+BeginConversation $global.MPC_pirateComplainerOne
+ShowSecondPerson $global.MPC_pirateComplainerTwo
+
+FireBest MPC_FRCComplainersInit",,,
+MPC_FRCComplainersInit,MPC_FRCComplainersInit,,"SetTextHighlightColors player
+SetTextHighlights $global.MPC_playerFacNameWithArticle","You walk through the seedy bar, searching for leads. Before you can spot anyone who might be of use to you, however, you hear something that piques your interest: A grunt, a sigh, and a mention of $global.MPC_playerFacNameWithArticle.
+
+At your side, a pair of disgruntled (and rather poor-looking) pirates sit at a table. ""...some bullshat, that was..."" the first one continues, sucking on a cheap-looking narco-stick. He growls, suddenly slamming his fist on the table. ""That convoy was bleedin' ours!"" He grunts, rolling his head around in a pained manner. ""Had it dead to rights, locked in that damn storm, 10 kliks out...""
+
+His friend joins in, speaking shrilly. ""Them void-cursed drones..."" she spits out some of her narco-booze onto the pitted table. ""They don't even take bribes!""","MPC_FRCComplainersInitListen:Keep listening
+MPC_FRCComplainersInitAbort:Ignore them",
+MPC_FRCComplainersInitListen,DialogOptionSelected,"$option == MPC_FRCComplainersInitListen","SetTextHighlightColors player player
+SetTextHighlights ""derelict escorts"" $global.MPC_oppressiveMarketName","You take a nearby seat, unobtrusively eavesdropping, curious as to what they have to say.
+
+""Ludd-damned 'derelict escorts'..."" the woman grieves, sucking the bottle dry - and only getting more irate when she notices it's empty. ""Goody-two-shoes, 'xcept you can't even TAKE the shoes...""
+
+The man snickers, then sighs, sliding the empty bottle between his hands. ""Someone should take a bloody orbital lamp and just..."" he takes a small lighter to the spilled narco-liquor, and lights it into a thin blue fire. He makes a burning noise with his mouth. ""...burn out them docks on $global.MPC_oppressiveMarketName. Would make it so much easier...""
+
+They both let out a collective sigh and stare at the center of the table.","MPC_FRCComplainersSit:Saunter over to their table and sit
+MPC_FRCComplainersLeaveBeforeSitting:Get up and leave",
+MPC_FRCComplainersInitAbort,DialogOptionSelected,"$option == MPC_FRCComplainersInitAbort","EndConversation
+
+AdjustRep pirates HOSTILE -10
+AddTextSmall ""New hostile activity factor added"" bad
+
+FireBest BarPrintDesc
+BarCMD showOptions","You keep walking, not interested in hearing what they have to say about your faction.",,
+MPC_FRCComplainersLeaveBeforeSitting,DialogOptionSelected,"$option == MPC_FRCComplainersLeaveBeforeSitting","EndConversation
+
+AdjustRep pirates HOSTILE -10
+AddTextSmall ""New hostile activity factor added"" bad
+
+FireBest BarPrintDesc
+BarCMD showOptions","While this is terribly interesting, you decide this isn't worth your time and resume searching the bar.",,
+MPC_FRCComplainersSit,DialogOptionSelected,"$option == MPC_FRCComplainersSit",,"You smile and greet the two pirates as you sit with them, and they give you a highly suspicious look.
+
+""Yea'?"" The women leans over on the table, pulling up her uniform to reveal a mag-pistol. ""An' who's this?""","MPC_FRCComplainersAmPirate:""Just a sympathetic face.""",
+MPC_FRCComplainersAmPirate,DialogOptionSelected,"$option == MPC_FRCComplainersAmPirate","SetTextHighlightColors player
+SetTextHighlights $global.MPC_oppressiveMarketName
+AddTextSmall ""New hostile activity factor added"" bad","You quickly fabricate a heist of your own, thwarted by your own escort drones, and sigh, feigning defeat. The two give you a sympathetic nod and exchange grievances. Apparantly, $global.MPC_oppressiveMarketName has become a major thorn in the side of many small-time pirates, who are completely unable to touch that specific supply chain anymore.
+
+It has gotten to such a point that a number of pirates are putting together a raiding fleet to try and destroy the dockyards, to prevent the launching of any further fleets. ""Hope to see yah there, spacer."" One of them playfully punches your arm. ""Ain't noone like them damn drones!"" The woman cackles, before getting up and sighing, beginning to leave with her partner.","MPC_FRCComplainersEnd:Leave as well",
+MPC_FRCComplainersEnd,DialogOptionSelected,"$option == MPC_FRCComplainersEnd","EndConversation
+
+AdjustRep pirates HOSTILE -10
+
+FireBest BarPrintDesc
+BarCMD showOptions","Armed with this new knowledge, you get up and resume your search, keeping a note to tighten the security of your colonies.",,
+"#END Pirates complaining about FRC",,,,,,
 "#END Escort Fleets",,,,,,
 ,,,,,,
 # Sierra Thoughts,,,,,,
@@ -319,6 +486,28 @@ SetTextHighlights ""\""So that was a Magnetar...? I never thought I'd see one in
 $global.MPC_sierraMentionedMagnetar = true","Her avatar's ""eye"" shrinks. ""So that was a Magnetar...? I never thought I'd see one in the metal! And... it was kind of pretty!"" she says cheerfully. ""So POWERFUL! Did you feel the drive field? It was barely holding together! And those lines by the poles... I've never seen a visualized magnetic field on such a scale!""
 
 Her avatar then shivers. ""Still... the stories I've heard of magnetars aren't pretty. Let's agree to never get close to it, okay?""",,
+MPC_sierraWorriedAboutFC,SierrasThoughts,"MPC_magnetarGenericCMD sierraWorriedAboutFractalCore","$global.MPC_talkedToSierraAboutFractalCore = true
+
+SetTextHighlightColors sierraTextColor
+SetTextHighlights ""\""So...\""""  ""\""...about that 'fractal core' we installed on $global.MPC_fractalColonyName.\"""" ""\""Are we sure it's... a good idea? I mean, I could fight alongside one of those...\"""" ""\""Things, if I was really pushed to, but...\"""" ""\""Is it really right to have it lording over an entire planet of people? What about the risks? Something about those AIs just strikes me as... wrong.\""""","""So..."" Sierra's iris shrinks, and she speaks tersely. ""...about that 'fractal core' we installed on $global.MPC_fractalColonyName."" The upper polygons of her avatar bend down, mimicking worried eyebrows. ""Are we sure it's... a good idea? I mean, I could fight alongside one of those..."" Her avatar shivers. ""Things, if I was really pushed to, but...""
+
+""Is it really right to have it lording over an entire planet of people? What about the risks? Something about those AIs just strikes me as... wrong.""","MPC_sierraWorriedAboutFCAssure:""Don't worry. We've got more than enough failsafes if it ever goes rogue.""
+MPC_sierraWorriedAboutFCAppeal:""The benefits vastly outweigh the costs. Have you seen what it can do?""
+MPC_sierraWorriedAboutFCDismiss:""I trust it. There's something special about it.""","FireAll SierraConvOptions"
+MPC_sierraWorriedAboutFCAssure,DialogOptionSelected,"$option == MPC_sierraWorriedAboutFCAssure","SetTextHighlightColors sierraTextColor
+SetTextHighlights ""\""As long as you know what you're doing.\""""","A downwards tilt of Sierra's avatar informs you of her response. Then, there is a long pause before she says her final words.
+
+""As long as you know what you're doing.""","SierraBack:""That I do.""",
+MPC_sierraWorriedAboutFCAppeal,DialogOptionSelected,"$option == MPC_sierraWorriedAboutFCAppeal","SetTextHighlightColors sierraTextColor
+SetTextHighlights ""\""As long as you know what you're doing.\""""","The tilt in the upper polygons only intensifies as she hears what you says. A harsh, synthesized sigh escapes her 'lips', as she mumbles-
+
+""As long as you know what you're doing.""","SierraBack:""That I do.""",
+MPC_sierraWorriedAboutFCDismiss,DialogOptionSelected,"$option == MPC_sierraWorriedAboutFCDismiss","AdjustRepActivePerson VENGEFUL -1
+
+SetTextHighlightColors sierraTextColor
+SetTextHighlights ""\""As long as you know what you're doing.\""""","The tilt in the upper polygons only intensifies as she hears what you says. A harsh, synthesized sigh escapes her 'lips', as she mumbles-
+
+""As long as you know what you're doing.""","SierraBack:""That I do.""",
 "#END Sierra Thoughts",,,,,,
 ,,,,,,
 # Magnetar,,,,,,
@@ -701,7 +890,7 @@ ShowDefaultVisual","Your $shipOrFleet re-enters orbit around $name. The strange 
 MPC_OManEngageDefenders,DialogOptionSelected,"$option == MPC_OManEngageDefenders","
 SalvageDefenderInteraction","Your $shipOrFleet re-enters low orbit, and as predicted, a collection of fractaline defenders appear over the horizon.",,
 MPC_OManHostilePopulateOptionsMain,MPC_OManHostilePopulateOptions,"$id == MPC_magnetarSystemPlanetThree
-","SetShortcut defaultLeave ""ESCAPE""
+","SetShortcut MPC_OManActuallyLeave ""ESCAPE""
 FireAll MPC_OManHostileModifyOptions",,"10:MPC_OManEngageDefenders:Re-engage the defenders
 20:MPC_OManBombard:Orbitally bombard the complex to remove the defenses
 30:MPC_OManRaid:Prepare a raid on the fractaline complex
@@ -782,7 +971,8 @@ MPC_OManExploreNotBombardedTwo,DialogOptionSelected,"$option == MPC_OManExploreN
 Eventually, most of the interior has been charted, scanned, and logged to your databases, which you file for later examination. The groups pile up around what appears to be an entrance to the complex core, sealed hermetically by triple-reinforced blast doors. With a command from your ops chief, and input from sensors, your salvors decide to take the past of least resistance - the adjacent wall. Using a plasmatorch, the salvors slowly cut into the central chamber, the vidfeed artifacting from the intense arc of the tool.
 
 Finally, with a clunk, the wall falls open, and your salvors take cover right outside. Your ops chief nods at you, giving you the responsibility for the next order.","0:MPC_OManExploreNotBombardedThree:""Move in.""",
-MPC_OManExploreNotBombardedThree,DialogOptionSelected,"$option == MPC_OManExploreNotBombardedThree","AddRemoveAnyItem RESOURCES ""MPC_slavedOmegaCore"" 1","With a clatter of reinforced boots, your salvors flood into the central chamber, quickly securing vantage points and sealing any unexplored areas off, while you and your ops chief expertly coordinate the effort with years of experience. 
+MPC_OManExploreNotBombardedThree,DialogOptionSelected,"$option == MPC_OManExploreNotBombardedThree","AddRemoveAnyItem RESOURCES ""MPC_slavedOmegaCore"" 1
+MPC_omegaManufactorumCMD gotCore","With a clatter of reinforced boots, your salvors flood into the central chamber, quickly securing vantage points and sealing any unexplored areas off, while you and your ops chief expertly coordinate the effort with years of experience. 
 
 No contacts reported, no autonomous defenses. Looks like the interior scans were right - this place is completely undefended. With a foothold in the central chamber, your ops chief feels confidant enough to order a general exploration order, relaxing combat protocols. Your salvors collectively sigh with relief (under their breaths, of course) and begin vigorously cataloguing their finds.
 
@@ -881,6 +1071,63 @@ The message then repeats, likely forever - without any listeners. A shiver runs 
 
 You shake the thought away. The domain fell, and you rose from the ashes. This will be no different. You close the comm link, save a recording for posterity, and prepare to deactivate the beacon - you'd rather not be snuck up on while sheltering behind the star.","0:MPC_leaveMagnetarBeacon:Disconnect the beacon",
 "#END Hijacked solar shield",,,,,,
+,,,,,,
+# First time getting hit by magnetar pulse,,,,,,
+MPC_discoveredInterdictLeave,DialogOptionSelected,"$option == MPC_discoveredInterdictLeave","niko_MPC_musicToggle """" false true
+DismissDialog",,,
+,,,,,,
+# Hit by pulse,,,,,,
+MPC_hitByMagnetarPulseFirstTime,MPC_hitByMagnetarPulseFirstTime,,"ShowImageVisual illustrations niko_MPC_magnetar
+niko_MPC_musicToggle ""music_encounter_mysterious"" true true","Your ship lurches as the ionized cloud slams into it, temporarily darkening the bridge as power couplings are either knocked out or overloaded. Soon, a dim red then white fills the room as emergency and auxiliary power nodes come online.","MPC_hitByMagnetarPulseFirstTimeTwo:Rub your eyes and groan
+MPC_hitByMagnetarPulseFirstTimeDamageReport:""Damage... report?""",
+MPC_hitByMagnetarPulseFirstTimeTwo,DialogOptionSelected,"$option == MPC_hitByMagnetarPulseFirstTimeTwo","SetTextHighlightColors bad
+SetTextHighlights ""!!!DRIVE FIELD DISABLED!!!""","Trying to rub away your splitting migrane, you call out for a damage report - but your tactical officer is one step ahead of you. Before you, on your flickering desk, is a ever-growing list of damages. Surprisingly, most seem to be minor, except for the one at the top - bolded in red, surrounded by exclamation marks...
+
+    - !!!DRIVE FIELD DISABLED!!!
+
+Taking a look at your $shipOrFleet's status screen, you tense as you see that fleet-wide structural stress is now exceeding recommended values, and small amounts of strain-damage is already pouring in. The estimated repair time isn't that long, but in that time, you're hopelessly adrift, slowly falling towards the star...
+
+You shudder at the thought. Thankfully, your brooding is cut short by your tactical officer shoving a PDA between your arms. ""Engineering thinks they found something interesting during that last hit. Take a look.""","MPC_hitByMagnetarPulseFirstTimeThree:Inspect the report",
+MPC_hitByMagnetarPulseFirstTimeDamageReport,DialogOptionSelected,"$option == MPC_hitByMagnetarPulseFirstTimeDamageReport","$option = MPC_hitByMagnetarPulseFirstTimeTwo
+FireBest DialogOptionSelected",,,
+MPC_hitByMagnetarPulseFirstTimeThree,DialogOptionSelected,"$option == MPC_hitByMagnetarPulseFirstTimeThree","SetTextHighlights ""impact was locally mitigated"" ""deflect future pulses""
+
+$global.MPC_discoveredInterdictsCounterPulses = true
+MPC_magnetarGenericCMD learnedInterdiction","You hastily scroll through the PDA, hoping to find something that'll let the field come online faster. Disappointly, and yet excitingly, it contains something different entirely. Engineering ran a test during the impact and discovered that, while an interdiction array was active, the impact was locally mitigated alongst the interdiction field. Of course, on such a small scale, it had nearly no effect...
+
+But if you were to coordinate a fleet-wide interdiction, you may be able to deflect future pulses.
+
+You thank you tactical officer, who responds with a stiff salute, and returns to your duties. You think you should, too.","MPC_discoveredInterdictLeave:Return to your station",
+"#END Hit by pulse",,,,,,
+,,,,,,
+# Avoided pulse,,,,,,
+MPC_hidMagnetarPulseFirstTime,MPC_hidMagnetarPulseFirstTime,,"ShowImageVisual illustrations niko_MPC_magnetar
+niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true
+
+$global.MPC_discoveredInterdictsCounterPulses = true
+MPC_magnetarGenericCMD learnedInterdiction","The atmosphere amongst your crew is unusually tense as the clouds pass over your hiding spot, but a collective ease falls upon you when it begins to harmlessly travel away, leaving you and your crew unscathed.
+
+Just before you're able to return to nav and start plotting a course, tactical walks up and drops a PDA on your desk. ""Engineering thinks they found something interesting. Take a look.""","MPC_hidMagnetarPulseFirstTimeTwo:Inspect the report",
+MPC_hidMagnetarPulseFirstTimeTwo,DialogOptionSelected,"$option == MPC_hidMagnetarPulseFirstTimeTwo","SetTextHighlights ""deflect future pulses"" ""fleetwide interdiction matrix""
+
+$global.MPC_discoveredInterdictsCounterPulses = true
+MPC_magnetarGenericCMD learnedInterdiction","Apparantly, before you took shelter, engineering dispatched a small drone armed with an interdiction array to test a theory they had about the relationship between the pulse and an expanding drive field. It would seem their prediction was correct - while the drone's meager pulse was overwhelmed by the impact, telemetry engineering received implies that a more powerful array could deflect future pulses.
+
+Such as your fleetwide interdiction matrix.
+
+You thank you tactical officer, who responds with a stiff salute, and returns to your duties. You think you should, too.","MPC_discoveredInterdictLeave:Return to your station",
+"#END Avoided pulse",,,,,,
+"#END First time getting hit by magnetar pulse",,,,,,
+,,,,,,
+# Magnetar Comms,,,,,,
+MPC_magnetarFleetComms,OpenCommLink,"$entity.MPC_magnetarFleet score:200","$entity.ignorePlayerCommRequests = true 0","As you try to open a comm link with the strange fleet, your electronics panel lights up as it counters, one, four, seventeen intrusions, before finally the link connects.
+
+The display lights up with a kaleidoscope of colors, all twisting and melding with each another. Arcane sounds pour through the speakers, indecipherable and esoteric. 
+
+Eventually, a single word comes through, showered in distortion and what you think might be confusion.
+                  ""    no ""
+The console dies only a second afterwards. Your comms officer exchanges a panicked look, before manually rebooting it and confirming no intrusion occurred. You order your crew to continue their work - and stop staring at the now-functioning console.","0:cutCommLink:Cut the comm link",
+"#END Magnetar Comms",,,,,,
 "#END Magnetar",,,,,,
 ,,,,,,
 # Singularity,,,,,,
@@ -953,6 +1200,8 @@ SetTextHighlights ""didn't have""","""The domain didn't want anything to do with
 "#END Historian",,,,,,
 ,,,,,,
 # Post-magnetar,,,,,,
+,,,,,,
+# Everything about the IAIIC,,,,,,
 ,,,,,,
 # BarMagn,,,,,,
 MPC_hegemonySpyInit,DialogOptionSelected,"$option == marketVisitBar
@@ -3422,5 +3671,98 @@ MPC_IAIICJillCMD colonizeArk
 
 AddTextSmall ""Ark FOB colonized"" good","Shuttles are promptly dispatched and vanish into docking baywduiwduwdu","defaultLeave:Leave",
 "#END Colonizing Ark FOB",,,,,,
+"#END Everything about the IAIIC",,,,,,
+,,,,,,
+# Ionized Pulse,,,,,,
+,,,,,,
+# Person fleet approaches and asks aboiut it,,,,,,
+MPC_IPPLHail,MPC_ionizedPulseCommsHail,,"unset $entity.genericHail","The comm link flashes through the familiar flag of the persean league before the calm visage of a league $rank appears before you, hands folded.
+
+""Good day, Captain."" $HeOrShe smiles thinly. ""Firstly, I'd like to clear your mind."" $HeOrShe waves to a subordinate, who presumably gives the order for the fleet to move out of your $shipOrFleet's way. ""This is merely a visit - nothing more. I Just had a few... mh... questions, I'd like to ask. Nothing serious.""","MPC_IPPLHailClarify:""What kind of questions?""
+MPC_IPPLHailJustLeave:""I'm busy right now."" (Cut the comm link)",
+MPC_IPPLHailJustLeave,DialogOptionSelected,"$option == MPC_IPPLHailJustLeave","AdjustRepActivePerson VENGEFUL -1
+AdjustRep persean_league VENGEFUL -1
+
+$option = MPC_IPPLHailJustLeave
+FireBest DialogOptionSelected
+","$HisOrHer thin smile falters only for a moment, before $hisOrHer veil of contentment rises again. ""Very well, Captain. If you change your mind - I'd love to talk.""
+
+""Burn bright, as they say?""",,
+MPC_IPPLHailClarify,DialogOptionSelected,"$option == MPC_IPPLHailClarify","SetTextHighlights ""ionized pulse""","""Clarification."" The $rank stretches $hisOrHer fingers. ""Namely... where did you get this power from?""
+
+Confused, the $rank clarifies, smiling. ""Ah, captain. The pulse. You are aware of how much a feat it is to shatter drive fields, yes?"" Blinking, you realize the $rank must be talking about your newly-found ionized pulse ability. ""You've made quite the show using it...""
+
+$HeOrShe gently puts her hands up, making a mock surrender. ""I'm just terribly curious, that's all, $PlayerSirOrMadam."" Another disarming grin spreads across $hisOrHer lips. ""And as a citizen of the sector - and by extension, the league - don't you think it would be good to warn your authority figures of any dangers out in the expanse?""","MPC_IPPLHailVague:Tell $himOrHer enough to pretend you're helping
+MPC_IPPLHailTruth:Tell the $rank everything
+MPC_IPPLHailJustLeave:""No."" (Cut the comm link)",
+MPC_IPPLHailVague,DialogOptionSelected,"$option == MPC_IPPLHailVague","AdjustRepActivePerson COOPERATIVE 5
+AdjustRep persean_league COOPERATIVE 5","You tell the $rank small details - a ""strange star"", a ""domain research station"" - but not enough to ever implicate the strange fractaline defenders or even the fact it was under a magnetar's watch.
+
+The $rank only smiles a bit further as $heOrShe listens. ""Fascinating..."" $HeOrShe engages you in small talk for a while, attempting to pry any additional info out of you between compliments and inquiries, but your locks are tight.
+
+""Ah... that was a good chat, wasn't it, Captain? I feel we both learned something today..."" The $rank raises $hisOrHer chin only a few degrees. ""If you ever write a book about your experience... I'd like to know.""
+
+""Good day, Captain. And, ah, burn bright, as they say.""","cutCommLink:""Burn bright.""",
+MPC_IPPLHailTruth,DialogOptionSelected,"$option == MPC_IPPLHailTruth","AdjustRepActivePerson COOPERATIVE 15
+AdjustRep persean_league COOPERATIVE 15
+$player.ethosTruth++
+
+$global.MPC_playerToldPLAboutMagnetar","Confident that the league could not ever touch the magnetar, you opt to just tell the $rank everything, much to $hisOrHer delighted surprise. $HeOrShe hastily writes down everything you say - including your embellishments.
+
+""Fascinating...!"" $HeOrShe stammers, before clearing $hisOrHer throat and re-equipping $hisOrHer mask of bureaucracy. ""A magnetar... in the sector."" $HeOrShe chuffs. ""Of course... this also reeks of embellishment, Captain. But, for the sake of our friendship? I'll believe it.""
+
+""Ah... that was a good chat, wasn't it, Captain? I feel we both learned something today..."" The $rank raises $hisOrHer chin only a few degrees. ""If you ever write a book about your experience... I'd like to know.""
+
+""Good day, Captain. And, ah, burn bright, as they say.""","cutCommLink:""Burn bright.""",
+"#END Person fleet approaches and asks aboiut it",,,,,,
+"#END Ionized Pulse",,,,,,
+,,,,,,
+# Hegemony private investigators,,,,,,
+MPC_FCHIComms,OpenCommLink,"$entity.MPC_hegePrivateInspectors score:1000
+!$entity.MPC_hegePrivateInspectorsLeaving","FireAll MPC_FCHICommsOptions","The comm link spins to life, flashing through the blazing pheonix of the Hegemony before resolving to the hardened visage of a hegemony $rank.
+
+""Attention, citizen."" The $rank frowns. ""This fleet is undergoing routine military exercise in this local volume. Maintain distance."" You notice a bead of sweat forming on $hisOrHer forehead.",,
+MPC_FCHICommsOptionsRoutine,MPC_FCHICommsOptions,"!$MPC_pressing",,,"9:MPC_FCHIRoutine:""'Routine'? How is a military operation in foreign space 'routine'?""",
+MPC_FCHICommsOptionsInquire,MPC_FCHICommsOptions,"!$MPC_pressing
+$entity.MPC_privateInvestigatorCurrentlyInvestigating",,,"10:MPC_FCHIInquire:""I think you're doing a little more than that. Do you know who I am?""",
+MPC_FCHICommsOptionsYouLeave,MPC_FCHICommsOptions,"$MPC_exposed",,,"20:MPC_FCHICommsLeave:""You know, I don't enjoy having unchartered fleets in *my* local volume. I think you should leave, before this turns into a diplomatic incident.""",
+MPC_FCHICommsOptionsLeave,MPC_FCHICommsOptions,,,,"100:cutCommLink:Leave",
+MPC_FCHIRoutine,DialogOptionSelected,"$option == MPC_FCHIRoutine","RemoveOption MPC_FCHIRoutine","""This fleet is engaged in foreign-battle training."" $HeOrShe stiffens, biting $hisOrHer lip before continuing. ""We... we require the telemetry of an unfamiliar environment to perform our sims correctly!"" $HeOrShe seems satisfied with this answer.",,
+MPC_FCHIInquire,DialogOptionSelected,"$option == MPC_FCHIInquire","$MPC_pressing = true","A flash of recognition, in lockstep with worry, goes over the $rank's face as they double, then triple-check your fleet's registry. 
+
+Eventually, they snap to a salute. ""$PlayerName! Leader of $global.MPC_playerFacNameWithArticle! Authority over this proximal volume."" They pant, eyes darting between PDA and screen. Clearly they weren't expecting to come face-to-face with you.
+
+""There is... nothing we, and by extension, the Hegemony are doing, that is not permitted under our mutual treatese-""","MPC_FCHINervous:""You seem very nervous.""
+MPC_FCHIPress:""Give me a manifest of every action you have performed in my space. Right now.""",
+MPC_FCHINervous,DialogOptionSelected,"$option == MPC_FCHINervous","RemoveOption MPC_FCHINervous","The $rank nods, once, twice. ""I-I am... new, to this assignment, $PlayerSirOrMadam.""",,
+MPC_FCHIPress,DialogOptionSelected,"$option == MPC_FCHIPress","SetTextHighlights ""'exotic intelligence'"" ""colony administrator""","The seemingly junior $rank swallows, nods, and sends you a list of actions - you thank the Hegemony for their rigorous record-keeping, even if it seems this one was tampered with.
+
+Thankfully for you, it appears most is still intact. The fleet has been sending shuttles down to the surface for ""training"" - a quick inquiry amongst your administration confirms no ""training"" occured, instead rigorous investigation and interrogation against civilians and the rare officer, all surrounding a potential 'exotic intelligence' being used on the planet - doubltessly referring to your creative choice of colony administrator. After submitting a complaint for not being contacted about this clear threat, you turn back to the sweating officer.","MPC_FCHIPressTwo:""It seems you're doing more than just 'military exercises'.""",
+MPC_FCHIPressTwo,DialogOptionSelected,"$option == MPC_FCHIPressTwo","$MPC_exposed = true
+FireAll MPC_FCHICommsOptions","The $rank doesn't utter a word, only sheepishly nodding, avoiding eye contact.",,
+MPC_FCHICommsLeave,DialogOptionSelected,"$option == MPC_FCHICommsLeave","MPC_magnetarGenericCMD inspectorsGoAway","A wave of fear, followed by anger, then finally, defeat, washes over the $rank, and $heOrShe sighs, nodding.
+
+""Acknoledged, captain..."" $heOrShe mutters. ""...initiating RTB.""
+
+The $rank reluctantly issues the relevant orders to $hisOrHer subordinates, before turning and giving you a weary stare.","cutCommLink:Leave",
+,,,,,,
+# Follow up fleet,,,,,,
+MPC_privateInvestigatorFollowupHail,MPC_privateInvestigatorFollowupHail,,"MakeOtherFleetImportant MPC_privateInvestigatorFollowup false
+unset $entity.genericHail","The grizzled face of a Hegemony $rank appears before you, who wastes no time getting to business.
+
+""Attention citizen!"" You hear, mixed with the sound of a PDA-ping. Taking a quick peek, it appears the $rank has transmitted a... official apology from Hegemony command, surrounding a ""independent operator"" you ""recently encountered"". You connect the dots - this must be about the ""private investigators"" you shooed out of your space recently.
+
+The $rank straightens, nodding as you read. ""The 'investigators' were never cleared for their operation, and are being harshly disciplined. You can expect not to see any more unchartered 'inspectors' within your space.""","MPC_privateInvestigatorFollowupHailTwo:""Good.""",
+MPC_privateInvestigatorFollowupHailTwo,DialogOptionSelected,"$option == MPC_privateInvestigatorFollowupHailTwo","SetTextHighlights ""exotic intelligences""
+$entity.ignorePlayerCommRequests = true
+
+AdjustRepActivePerson VENGEFUL -5
+AdjustRep hegemony INHOSPITABLE -5","""However,"" $heOrShe starts, taking a darker tone. ""We want to make it clear, that any unauthorized use of artificial intelligence will not be tolerated.""
+
+$HisOrHer eyes narrow, dropping to a scowl. ""Including any 'exotic intelligences' you may harbor."" 
+
+$HeOrShe then hits the comms-disconnect, leaving you watching the slowly-rotating pheonix of the hegemony.","cutCommLink:Leave",
+"#END Follow up fleet",,,,,,
+"#END Hegemony private investigators",,,,,,
 "#END Post-magnetar",,,,,,
 

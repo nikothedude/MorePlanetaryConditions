@@ -30,6 +30,8 @@ class MPC_derelictEscortAssignmentAI(
         const val DERELICT_ESCORT_JOIN_COMBAT_DIST = 400f
 
         const val MAX_FOLLOW_PLAYER_DIST_LY = 5.0
+
+        fun get(fleet: CampaignFleetAPI): MPC_derelictEscortAssignmentAI? = fleet.scripts.firstOrNull { it is MPC_derelictEscortAssignmentAI } as? MPC_derelictEscortAssignmentAI
     }
 
     val interval = IntervalUtil(MIN_DAYS_ESCORTING_TIL_END, MAX_DAYS_ESCORTING_TIL_END)
@@ -135,7 +137,7 @@ class MPC_derelictEscortAssignmentAI(
         delete()
     }
 
-    private fun abortAndReturnToBase() {
+    fun abortAndReturnToBase() {
         derelictEscortStates.RETURNING_TO_BASE.overrideAssignment(fleet, this, homeMarket.primaryEntity)
         fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
         homeMarket.getEscortFleetList() -= target

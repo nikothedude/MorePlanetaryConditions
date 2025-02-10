@@ -1,20 +1,35 @@
-5.0.0BETAa
-NOT SAVE COMPATIBLE
+4.1.0
+MOSTLY SAVE COMPATIBLE
+(A few features are missing if youre updating from a previous save)
 
 Magnetar guardian now has rift torps
     You asked for this
-Magnetar guard fleets now ignore your comms
 
 Historian now has WWLB dialogue
 Certain dialog options now adjust your ethos
 
-The world now reacts to your exploration in the magnetar system
-    The hegemony will get angry if you use a fractal core in a colony
-        This triggers a end-game crisis, so be ready
+The world now reacts to various WWLB content
+    Overgrown nanoforges, magnetar, FRC, etc...
+Ionized pulse buffed to use a lot less fuel
 
 Spearhead health and speed buffed
+Spearhead/Ramjet maintenance cost increased
 
 Minecart/Pickhead buffed
+
+Magnetar intel rewritten
+You are no longer informed of how to parry pulses until you avoid/are hit by one
+Magnetar fleets now have comms dialogue
+
+Derelict escorts now have better dialog
+    You can also order them to leave, if they're messing with you
+You can now raid FRC for tug blueprints
+FRC nerfed to have +10% access to all nearby markets, -40% access for itself
+    Offset by a new colony crisis caused by the FRC
+
+Overgrown nanoforge item fleet size reduced to 2x
+
+Fixed various bugs
 
 4.0.0
 NOT SAVE COMPATIBLE

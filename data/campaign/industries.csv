@@ -5,7 +5,7 @@ niko_MPC_overgrownNanoforge,Overgrown Nanoforge,0,0,,0,,,no_saturation_bombardme
 
 Once this structure is destroyed, you will be given a special item that massively increases resource production (and fleet size + production budget, if on heavy industry) at the cost of increased hazard (and decreased ship quality, if on heavy industry). However, this structure can only be attacked once all growths are destroyed in tandem, making it a dedicated and expensive effort to do so.
 
-Press F1 to view lore.",90,
+Press F1 to view lore.",999,
 ,,,,,,,,,,,,,,
 niko_MPC_overgrownNanoforgeJunk_1,Nanoforge Growth,0,0,,,,,no_saturation_bombardment,,graphics/industry/nanoforge_placeholder.png,data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeJunk,"A ""growth"" sprouting from the nearby overgrown nanoforge. These ""growths"" will protect the core nanoforge from any incursions, requiring a dedicated culling effort to reach the inner sanctums.
 

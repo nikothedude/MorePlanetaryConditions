@@ -9,6 +9,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken.VisibilityLevel
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.Stats
@@ -16,6 +17,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
 import data.utilities.niko_MPC_debugUtils
@@ -154,7 +156,26 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                         break
                     }
                 }
-                if (skipBecauseOfBlocker) break
+                if (skipBecauseOfBlocker) {
+                    if (fleet.isPlayerFleet) {
+                        val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
+                        if (discoveredInterdictTech) break
+                        MPC_delayedExecution(
+                            {
+                                if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
+                                    Global.getSector().campaignUI.showInteractionDialog(
+                                        RuleBasedInteractionDialogPluginImpl("MPC_hidMagnetarPulseFirstTime"),
+                                        Global.getSector().playerFleet
+                                    )
+                                }
+                            },
+                            0.1f,
+                            false,
+                            useDays = true
+                        ).start()
+                    }
+                    break
+                }
 
                 var damageMult = 1f - dist / params.radius
                 if (damageMult > 1f) damageMult = 1f
@@ -328,6 +349,9 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             if (fleet.isPlayerFleet || vis == VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS || vis == VisibilityLevel.COMPOSITION_DETAILS) {
                 if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f) {
                     fleet.addFloatingText("Pulse avoided!", fleet.faction.baseUIColor, 1f, true)
+                    if (fleet.isPlayerFleet) {
+                        Global.getSector().memoryWithoutUpdate["\$MPC_discoveredInterdictsCounterPulses"] = true
+                    }
                 } else {
                     fleet.addFloatingText(
                         "Drive field destroyed! ($immobileDur days to repair)",
@@ -335,6 +359,23 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                         1f,
                         true
                     )
+                    if (fleet.isPlayerFleet) {
+                        val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
+                        if (discoveredInterdictTech) return
+                        MPC_delayedExecution(
+                            {
+                                if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
+                                    Global.getSector().campaignUI.showInteractionDialog(
+                                        RuleBasedInteractionDialogPluginImpl("MPC_hitByMagnetarPulseFirstTime"),
+                                        Global.getSector().playerFleet
+                                    )
+                                }
+                            },
+                            0.1f,
+                            false,
+                            useDays = true
+                        ).start()
+                    }
                 }
             }
         }

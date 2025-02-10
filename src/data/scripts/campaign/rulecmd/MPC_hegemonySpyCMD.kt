@@ -36,6 +36,10 @@ class MPC_hegemonySpyCMD: BaseCommandPlugin() {
 
         when (command) {
             "canExecute" -> {
+                return false
+                // iaiic is on hold
+                // way too much work for little return imo
+                // ill make something else that has the world reacting to the fractal core
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_debugHegemonySpy")) return true
                 if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false
                 if (Global.getSector().getFaction(Factions.HEGEMONY)?.getFactionMarkets()?.isNotEmpty() != true) return false

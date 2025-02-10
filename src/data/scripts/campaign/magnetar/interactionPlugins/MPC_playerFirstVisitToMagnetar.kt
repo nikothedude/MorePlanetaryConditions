@@ -105,11 +105,8 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
         }
 
-        textPanel!!.addParagraph(
-            "\n" +
-                "Received tactical report on magnetars",
-            Misc.getPositiveHighlightColor()
-        )
+        Global.getSector().intelManager.addIntel(niko_MPC_magnetarIntel(), false, dialog!!.textPanel)
+
         textPanel!!.highlightInLastPara(Misc.getHighlightColor(), "magnetars")
         options!!.addOption("Continue", "CONTINUE")
     }
@@ -123,7 +120,6 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
             // sanity
             if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PLAYER_VISITED_MAGNETAR] == true) return
 
-            Global.getSector().intelManager.addIntel(niko_MPC_magnetarIntel())
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PLAYER_VISITED_MAGNETAR] = true
             Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false)
             Global.getSoundPlayer().playCustomMusic(1, 1, null)

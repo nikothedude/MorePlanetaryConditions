@@ -9,13 +9,21 @@ import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.abilities.BaseDurationAbility
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.Pings
+import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.FleetSize
 import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse.Companion.BASE_SHOCKWAVE_DURATION
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 
 class MPC_magnetarPulseAbility: BaseDurationAbility() {
@@ -39,7 +47,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
 
         const val BASE_REP_LOSS = 0.04f // if a fleet is hit by the shockwave
 
-        const val FUEL_USE_MULT = 5f
+        const val FUEL_USE_MULT = 3f
 
         val BASE_COLOR = Color(202, 27, 233, 190)
 
@@ -191,6 +199,41 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
             primed = false
             elapsed = 0f
             numFired = 0
+
+            if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IPAnyoneSaw") && fleet.isPlayerFleet) {
+                for (iterFleet in fleet.containingLocation.fleets) {
+                    if (iterFleet == fleet) return
+                    if (fleet.memoryWithoutUpdate.getBoolean("\$MPC_magnetarFleet")) continue
+                    if (iterFleet.visibilityLevelToPlayerFleet >= VisibilityLevel.COMPOSITION_DETAILS){
+                        Global.getSector().memoryWithoutUpdate["\$MPC_IPAnyoneSaw"] = true
+
+                        val perseanEncounter = DelayedFleetEncounter(MathUtils.getRandom(), "MPC_ionizedPulsePLEncounter")
+                        if (Global.getSettings().isDevMode) {
+                            perseanEncounter.setDelayNone()
+                        } else {
+                            perseanEncounter.setDelayVeryShort()
+                        }
+                        perseanEncounter.setLocationCoreOnly(true, null)
+                        //perseanEncounter.setRequireFactionPresence(Factions.PERSEAN)
+                        perseanEncounter.setDoNotAbortWhenPlayerFleetTooStrong()
+                        perseanEncounter.beginCreate()
+                        perseanEncounter.triggerCreateFleet(
+                            FleetSize.SMALL, HubMissionWithTriggers.FleetQuality.DEFAULT,
+                            Factions.PERSEAN, FleetTypes.PATROL_SMALL, Vector2f()
+                        )
+                        perseanEncounter.triggerFleetSetName("Task Force")
+                        perseanEncounter.triggerMakeNonHostile()
+                        //perseanEncounter.triggerFleetMakeImportantPermanent(null)
+                        perseanEncounter.triggerFleetMakeFaster(true, 0, true)
+                        perseanEncounter.triggerOrderFleetInterceptPlayer()
+                        //perseanEncounter.triggerOrderFleetEBurn(1f)
+                        perseanEncounter.triggerSetFleetGenericHailPermanent("MPC_ionizedPulseCommsHail")
+                        perseanEncounter.endCreate()
+                        break
+                    }
+                }
+            }
+
         }
     }
 
@@ -296,7 +339,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
 
         tooltip.addPara(
             "Injects an impressive amount of power into the drive field, allowing your fleet to fire off a highly ionized pulse " +
-            "that is capable of %s* (excluding your fleet's own) and modestly damaging ships.",
+            "that is capable of %s** (excluding your fleet's own) and modestly damaging ships.",
             pad,
             highlight,
             "destroying nearby drive bubbles"
@@ -305,7 +348,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
             "Base range of %s* units, increased for every burn level above %s, " +
                     "for a total of %s units. While the pulse is charging, the range at which the fleet can be detected will " +
                     "gradually increase by up to %s.", pad, highlight,
-            "$BASE_RADIUS", "$MAX_BURN_ANCHOR", "${BASE_RADIUS * sizeMult}", "${DETECTABILITY_PERCENT.toInt()}%"
+            "${BASE_RADIUS.trimHangingZero()}", "$MAX_BURN_ANCHOR", "${(BASE_RADIUS * sizeMult).roundNumTo(1).trimHangingZero()}", "${DETECTABILITY_PERCENT.toInt()}%"
         )
         if (sizeMult <= 0) {
             tooltip.addPara(
@@ -332,8 +375,10 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
 
         tooltip.addPara("*2000 units = 1 map grid cell", gray, pad)
         tooltip.addPara(
-            "*Without a drive field, a fleet is unable to use their travel drives, nor any movement-based abilities",
+            "**Without a drive field, a fleet is unable to use their travel drives, nor any movement-based abilities",
             pad
+        ).setColor(
+            Misc.getGrayColor()
         )
         /*tooltip.addPara(
             "*A fleet is considered slow-moving at a burn level of half that of its slowest ship.",

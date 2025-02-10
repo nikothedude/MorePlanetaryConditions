@@ -2,10 +2,19 @@ package data.scripts.campaign.econ.conditions.overgrownNanoforge.handler
 
 import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.SpecialItemData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.scripts.campaign.econ.conditions.overgrownNanoforge.MPC_overgrownNanoforgeExpeditionAssignmentAI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.plugins.overgrownNanoforgeIndustryManipulationIntel
@@ -35,7 +44,11 @@ import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_INDUSTRY_NAME
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MAX_PREDEFINED_JUNK
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_MIN_PREDEFINED_JUNK
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_UNINHABITED_SPREAD_MULT
+import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
+import org.magiclib.kotlin.getSourceMarket
+import org.magiclib.kotlin.isMilitary
 import kotlin.math.abs
 
 // WHAT THIS CLASS SHOULD HOLD
@@ -85,6 +98,12 @@ class overgrownNanoforgeIndustryHandler(
         }
 
     val intelBrain: overgrownNanoforgeSpreadingBrain = createIntelBrain()
+    /** When this procs, spawns a expedition fleet to cull it. Purely flavor right now.*/
+    var expeditionInterval = IntervalUtil(120f, 330f) // days
+        get() {
+            if (field == null) field = IntervalUtil(120f, 330f)
+            return field
+        }
 
     init {
         if (Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] == null) Global.getSector().memoryWithoutUpdate["\$overgrownNanoforgeHandlerList"] = HashSet<overgrownNanoforgeIndustryHandler>()
@@ -144,7 +163,74 @@ class overgrownNanoforgeIndustryHandler(
     }
 
     override fun advance(amount: Float) {
+        if (!market.isInhabited()) {
+            val days = Misc.getDays(amount)
+            expeditionInterval.advance(days)
+            if (expeditionInterval.intervalElapsed()) {
+                spawnExpedition()
+            }
+        } else {
+            expeditionInterval.elapsed = 0f
+        }
         //junkSpreader.advance(adjustedAmount)
+    }
+
+    private fun spawnExpedition() {
+        val prepTime = MathUtils.getRandomNumberInRange(15f, 17f)
+        val fleet = spawnExpeditionFleet()
+        setupExpeditionFleet(fleet, prepTime)
+    }
+
+    private fun setupExpeditionFleet(fleet: CampaignFleetAPI, prepTime: Float) {
+        fleet.cargo.addFuel(fleet.cargo.maxFuel)
+        if (fleet.faction.id == Factions.INDEPENDENT) {
+            fleet.isNoFactionInName = true
+            fleet.name = "Black arrow expedition"
+        } else {
+            fleet.name = "Expedition"
+        }
+
+        fleet.memoryWithoutUpdate["\$MPC_overgrownExpeditionFleet"] = true
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_LOW_REP_IMPACT] = true
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_NON_AGGRESSIVE] = true
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
+
+        MPC_overgrownNanoforgeExpeditionAssignmentAI(fleet, target = market, homeMarket = fleet.getSourceMarket(), prepTime = prepTime).start()
+    }
+
+    private fun spawnExpeditionFleet(): CampaignFleetAPI {
+        val picker = WeightedRandomPicker<String>()
+        factionsToExpeditionChance.forEach {
+            if (it.key == Factions.INDEPENDENT || Global.getSector().getFaction(it.key).getMarketsCopy().isNotEmpty()) {
+                picker.add(it.key, it.value)
+            }
+        }
+        val faction = Global.getSector().getFaction(picker.pick()) // guaranteed to have indies
+        val sourceMarket = faction.getMarketsCopy().shuffled().firstOrNull { it.isMilitary() } ?: faction.getMarketsCopy().randomOrNull() ?: Global.getSector().economy.marketsCopy.random()
+
+        val params = FleetParamsV3(
+            sourceMarket,
+            FleetTypes.PATROL_SMALL,
+            BASE_EXPEDITION_FP,
+            10f,
+            40f,
+            10f,
+            0f,
+            10f,
+            0f
+        )
+        params.officerLevelLimit = 7
+        params.officerLevelBonus = 1
+        val fleet = FleetFactoryV3.createFleet(params)
+
+        sourceMarket.containingLocation.addEntity(fleet)
+        fleet.containingLocation = sourceMarket.containingLocation
+        val primaryEntityLoc = sourceMarket.primaryEntity.location
+        fleet.setLocation(primaryEntityLoc.x, primaryEntityLoc.y)
+        val facingToUse = MathUtils.getRandomNumberInRange(0f, 360f)
+        fleet.facing = facingToUse
+
+        return fleet
     }
 
     override fun shouldCreateNewStructure(): Boolean {
@@ -344,6 +430,13 @@ class overgrownNanoforgeIndustryHandler(
             }
             return unsyncedMarkets
         }
+
+        val factionsToExpeditionChance = mutableMapOf(
+            Pair(Factions.HEGEMONY, 20f),
+            Pair(Factions.LUDDIC_CHURCH, 5f),
+            Pair(Factions.INDEPENDENT, 1f),
+        )
+        const val BASE_EXPEDITION_FP = 80f
     }
 
     override fun isCorrupted(): Boolean {
