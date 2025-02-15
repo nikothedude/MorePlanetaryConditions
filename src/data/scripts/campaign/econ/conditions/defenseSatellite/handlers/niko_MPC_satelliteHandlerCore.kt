@@ -442,6 +442,11 @@ abstract class niko_MPC_satelliteHandlerCore(
         assignCommanderToSatelliteFleet(satelliteFleet)
         satelliteFleet.addTag(niko_MPC_ids.isSatelliteFleetId)
 
+        //satelliteFleet.isInflated = true
+        //satelliteFleet.inflater = null
+        //satelliteFleet.inflateIfNeeded()
+        //satelliteFleet.inflater = null
+
         return satelliteFleet
     }
 
@@ -467,7 +472,12 @@ abstract class niko_MPC_satelliteHandlerCore(
         location: LocationAPI? = getLocation()
     ): CampaignFleetAPI {
         if (location == null) return satelliteFleet
+        satelliteFleet.setFaction(defaultSatelliteFactionId)
         location.addEntity(satelliteFleet)
+        satelliteFleet.setFaction(
+            currentSatelliteFactionId,
+            true
+        )
         satelliteFleet.setLocation(coordinates.x, coordinates.y)
 
         return satelliteFleet

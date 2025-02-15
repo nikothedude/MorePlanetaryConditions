@@ -15,13 +15,11 @@ class niko_MPC_satellitePositionDebugger(var satellite: ShipAPI, var idealPositi
 
     override fun advance(amount: Float, events: List<InputEventAPI>) {
         super.advance(amount, events)
-        if (!preventTurn) {
-            timeToLive -= amount
-            if (amount <= 0) {
-                prepareForGarbageCollection()
-                return  // this script serves 2 purposes: fix incorrect facing on battle start and prevent turning
-                // due to the 1st this script needs to live for a bit even if preventTurn is false
-            }
+        timeToLive -= amount
+        if (amount <= 0 && !satellite.travelDrive.isActive) {
+            prepareForGarbageCollection()
+            return  // this script serves 2 purposes: fix incorrect facing on battle start and prevent turning
+            // due to the 1st this script needs to live for a bit even if preventTurn is false
         }
         if (!satellite.isAlive) {
             prepareForGarbageCollection()
@@ -32,6 +30,10 @@ class niko_MPC_satellitePositionDebugger(var satellite: ShipAPI, var idealPositi
             for (module in satellite.childModulesCopy) {
                 module.facing = facing
             }
+        }
+        satellite.location.set(Vector2f(satellite.fixedLocation))
+        if (satellite.travelDrive.isOn) {
+            satellite.travelDrive.deactivate()
         }
     }
 

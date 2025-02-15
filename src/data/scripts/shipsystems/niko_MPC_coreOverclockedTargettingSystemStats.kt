@@ -24,6 +24,8 @@ open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript()
         stats.energyWeaponRangeBonus.modifyMult(id, nonMissileRangeMult*effectLevel)
         stats.ballisticWeaponRangeBonus.modifyMult(id, nonMissileRangeMult*effectLevel)
         stats.missileWeaponRangeBonus.modifyMult(id, rangeMult*effectLevel)
+
+        stats.entity?.setCustomData("\$MPC_overclockedTargettingOccured", true)
     }
 
     override fun unapply(stats: MutableShipStatsAPI?, id: String?) {
@@ -37,7 +39,7 @@ open class niko_MPC_coreOverclockedTargettingSystemStats: BaseShipSystemScript()
 
         if (Global.getCurrentState() != GameState.COMBAT) return
 
-        if (overloadTime != 0f) {
+        if (stats.entity?.customData?.get("\$MPC_overclockedTargettingOccured") == true && overloadTime != 0f) {
             val ship = stats.entity
             if (ship is ShipAPI) {
                 Global.getCombatEngine().addPlugin(niko_MPC_overclockedTargettingSystemOverloadScript(ship, overloadTime))

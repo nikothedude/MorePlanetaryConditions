@@ -187,7 +187,7 @@ class niko_MPC_newSatelliteDeployerScript : BaseEveryFrameCombatPlugin() {
         side: FleetSide,
         satellite: ShipAPI?
     ) {
-        var satellite = satellite
+        var satellite: ShipAPI? = satellite
         if (satellite == null) {
             satellite = fleetManager.spawnFleetMember(satelliteFleetMember, vector2f, facing, 0f)
         }
@@ -220,6 +220,9 @@ class niko_MPC_newSatelliteDeployerScript : BaseEveryFrameCombatPlugin() {
             }
         }
         satellite.fixedLocation = vector2f //todo: how the fuck am i gonna handle the possibility that the satellites spawn in other ships
+        if (satellite.travelDrive.isOn) {
+            satellite.travelDrive.deactivate()
+        }
         Global.getCombatEngine().addPlugin(niko_MPC_satellitePositionDebugger(satellite, vector2f, facing))
         // ^ i found that satellites can spawn in really really wacky places and facings, this is to fix that
     }

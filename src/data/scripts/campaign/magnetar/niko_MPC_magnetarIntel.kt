@@ -20,19 +20,6 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
         fun get(): niko_MPC_magnetarIntel? = Global.getSector().intelManager.getFirstIntel(niko_MPC_magnetarIntel::class.java) as? niko_MPC_magnetarIntel
     }
 
-    override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?) {
-        super.addBulletPoints(info, mode)
-
-        info!!.addSpacer(3f)
-        info.addPara(
-            "An important travel advisory",
-            0f,
-            Misc.getTextColor(),
-            Misc.getHighlightColor(),
-            "travel advisory"
-        )
-    }
-
     override fun addBulletPoints(
         info: TooltipMakerAPI?,
         mode: IntelInfoPlugin.ListInfoMode?,
@@ -61,6 +48,15 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
                 }
             }
         }
+        info!!.addSpacer(3f)
+        info.addPara(
+            "An important travel advisory",
+            0f,
+            Misc.getTextColor(),
+            Misc.getHighlightColor(),
+            "travel advisory"
+        )
+
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI, width: Float, height: Float) {

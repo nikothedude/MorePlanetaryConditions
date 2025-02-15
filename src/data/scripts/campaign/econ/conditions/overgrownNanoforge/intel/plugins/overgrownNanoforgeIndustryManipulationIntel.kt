@@ -13,6 +13,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.intel.overgrownNanoforgeIntelFactorCountermeasures
 import data.scripts.campaign.intel.baseNikoEventStageInterface
 import data.utilities.niko_MPC_debugUtils
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_settings
 import lunalib.lunaExtensions.addLunaToggleButton
 import lunalib.lunaUI.elements.LunaProgressBar
@@ -72,15 +73,21 @@ class overgrownNanoforgeIndustryManipulationIntel(
     }
 
     fun addFocusButton(info: TooltipMakerAPI, overallSuppressionMeter: LunaProgressBar) {
+        val para = info.addPara(
+            "Focus on existing commodities:",
+            0f
+        )
+        para.position.rightOfMid(overallSuppressionMeter.elementPanel, 5f)
+
         val focusButton = info.addLunaToggleButton(ourHandler.focusingOnExistingCommodities, 100f, overallSuppressionMeter.height)
-        focusButton.position.rightOfMid(overallSuppressionMeter.elementPanel, 5f)
+        focusButton.position.rightOfMid(overallSuppressionMeter.elementPanel, 200f)
         focusButton.onInput { ourHandler.focusingOnExistingCommodities = focusButton.value }
         val extraWeight = niko_MPC_settings.OVERGROWN_NANOFORGE_ALREADY_PRODUCING_COMMODITY_WEIGHT_MULT
         val descTooltip = focusButton.addTooltip(
             "If enabled, commodities already being produced are %s more likely to be picked for new growths.",
             300f,
             TooltipMakerAPI.TooltipLocation.BELOW,
-            "${extraWeight}x"
+            "${extraWeight.trimHangingZero()}x"
         )
     }
 

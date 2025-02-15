@@ -1,3 +1,8 @@
+4.1.1
+SAVE COMPATIBLE
+
+Fixes a number of bugs with defense satellites
+
 4.1.0
 MOSTLY SAVE COMPATIBLE
 (A few features are missing if youre updating from a previous save)
