@@ -1,20 +1,23 @@
 package data.scripts.campaign.skills
 
-import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.LevelBasedEffect
 import com.fs.starfarer.api.characters.MarketSkillEffect
+import com.fs.starfarer.api.impl.campaign.econ.impl.GroundDefenses
+import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
+import com.fs.starfarer.api.impl.campaign.econ.impl.PlanetaryShield
+import com.fs.starfarer.api.impl.campaign.econ.impl.Spaceport
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
+import com.fs.starfarer.api.impl.campaign.ids.Stats
 import data.scripts.campaign.skills.MPC_routingOptimization.AICoreEffect.Companion.coreEffectMap
-import data.utilities.niko_MPC_marketUtils.getLargestMarketSize
-import lunalib.lunaExtensions.getMarketsCopy
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_routingOptimization {
 
     companion object {
-        const val GAMMA_INDUSTRY_DEMAND = -1f
-        const val BETA_INDUSTRY_UPKEEP_PERCENT = -0.25f
+        const val GAMMA_INDUSTRY_DEMAND = 1f
+        const val BETA_INDUSTRY_UPKEEP_MULT = 0.75f
         const val ALPHA_INDUSTRY_OUTPUT_INCREMENT = 1f
 
         const val AI_CORE_ADMIN_ACCESSIBILITY_BONUS = 0.1f
@@ -34,7 +37,7 @@ class MPC_routingOptimization {
         BETA(Commodities.BETA_CORE) {
             override fun apply(industry: Industry, id: String) {
                 GAMMA.apply(industry, id)
-                industry.upkeep.modifyPercent(id, BETA_INDUSTRY_UPKEEP_PERCENT, "Routing Optimization")
+                industry.upkeep.modifyMult(id, BETA_INDUSTRY_UPKEEP_MULT, "Routing Optimization")
             }
 
             override fun unapply(industry: Industry, id: String) {
@@ -45,11 +48,45 @@ class MPC_routingOptimization {
         ALPHA(Commodities.ALPHA_CORE) {
             override fun apply(industry: Industry, id: String) {
                 BETA.apply(industry, id)
-                industry.supplyBonusFromOther.modifyFlat(id, ALPHA_INDUSTRY_OUTPUT_INCREMENT, "Routing Optimization")
+
+                val market = industry.market
+
+                if (industry is MilitaryBase) {
+                    market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMult(
+                        id, 1f + MilitaryBase.ALPHA_CORE_BONUS, "Routing Optimization (${industry.nameForModifier})"
+                    )
+
+                } else if (industry is GroundDefenses) {
+                    market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(
+                        id, 1f + GroundDefenses.ALPHA_CORE_BONUS, "Routing Optimization (${industry.nameForModifier})"
+                    )
+                } else if (industry is PlanetaryShield) {
+                    market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(
+                        id, 1f + GroundDefenses.ALPHA_CORE_BONUS, "Routing Optimization (${industry.nameForModifier})"
+                    )
+                } else if (industry is Spaceport) {
+                    market.accessibilityMod.modifyFlat(
+                        id,
+                        Spaceport.ALPHA_CORE_ACCESSIBILITY,
+                        "Routing Optimization (${industry.nameForModifier})"
+                    )
+                }
+
+                else {
+                    industry.supplyBonusFromOther.modifyFlat(
+                        id,
+                        ALPHA_INDUSTRY_OUTPUT_INCREMENT,
+                        "Routing Optimization (${industry.nameForModifier})"
+                    )
+                }
             }
 
             override fun unapply(industry: Industry, id: String) {
                 BETA.unapply(industry, id)
+                val market = industry.market
+                market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
+                market.accessibilityMod.unmodify(id)
+
                 industry.supplyBonusFromOther.unmodify(id)
             }
         };
@@ -102,21 +139,15 @@ class MPC_routingOptimization {
 
     class Level2 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            for (otherMarket in market.faction.getMarketsCopy().filter { it != market && it.admin?.isAICore == true }) {
-                if (otherMarket.size > market.size) continue
-                otherMarket.accessibilityMod.modifyFlat(id, AI_CORE_ADMIN_ACCESSIBILITY_BONUS, "${market.name} administrator")
-            }
-
+            // MPC_fractalCoreReactionScript
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            for (otherMarket in Global.getSector().economy.marketsCopy) {
-                otherMarket.accessibilityMod.unmodify(id) // this is a nuclear option, a bit slow but really it shouldnt be that bad
-            }
+
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "Increases accessibility of all same-faction markets with AI administrators of equal or lower size to the governed market by %${(AI_CORE_ADMIN_ACCESSIBILITY_BONUS * 100f).toInt()}"
+            return "Increases accessibility of all same-faction markets with AI administrators of equal or lower size to the governed market by ${(AI_CORE_ADMIN_ACCESSIBILITY_BONUS * 100f).trimHangingZero()}%"
         }
 
         override fun getEffectPerLevelDescription(): String? {
@@ -124,8 +155,7 @@ class MPC_routingOptimization {
         }
 
         override fun getScopeDescription(): LevelBasedEffect.ScopeDescription {
-            return LevelBasedEffect.ScopeDescription.ALL_OUTPOSTS
+            return LevelBasedEffect.ScopeDescription.GOVERNED_OUTPOST
         }
     }
-
 }

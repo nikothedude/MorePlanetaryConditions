@@ -163,10 +163,13 @@ abstract class overgrownNanoforgeHandler(
         for (source in getAllSources()) source.apply()
     }
 
-    open fun unapply(): Boolean {
+    open fun unapply(removeStructure: Boolean = true): Boolean {
         if (unapplying) return false
         unapplying = true
-        removeStructure()
+
+        if (removeStructure) {
+            removeStructure()
+        }
 
         for (source in getAllSources()) source.unapply()
         unapplying = false

@@ -110,7 +110,7 @@ class MPC_overgrownNanoforgeExpeditionAssignmentAI(
         fleet.clearAssignments()
         fleet.addAssignmentAtStart(
             FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
-            fleet.getSourceMarket().primaryEntity ?: Global.getSector().economy.marketsCopy.random().primaryEntity,
+            fleet.getSourceMarket()?.primaryEntity ?: Global.getSector().economy.marketsCopy.random().primaryEntity,
             Float.MAX_VALUE,
             null
         )

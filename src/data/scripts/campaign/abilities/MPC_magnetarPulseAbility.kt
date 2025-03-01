@@ -36,7 +36,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         //public static final float RANGE = 1000f;
         const val BASE_RADIUS = 200f
         const val BASE_DURATION = BASE_SHOCKWAVE_DURATION * 0.056f
-        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 0.85f
+        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 1.1f
         const val BASE_PULSE_ACCEL = 20f
         const val BASE_SECONDS = 6f
         const val STRENGTH_PER_SECOND = 200f
@@ -47,7 +47,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
 
         const val BASE_REP_LOSS = 0.04f // if a fleet is hit by the shockwave
 
-        const val FUEL_USE_MULT = 3f
+        const val FUEL_USE_MULT = 2.5f
 
         val BASE_COLOR = Color(202, 27, 233, 190)
 

@@ -15,6 +15,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.MPC_overgrownNanoforgeExpeditionAssignmentAI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeIndustryHandler
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause
+import data.scripts.campaign.skills.MPC_routingOptimization
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import lunalib.lunaExtensions.getMarketsCopy
 import org.lazywizard.lazylib.MathUtils
@@ -88,12 +89,30 @@ class MPC_fractalCoreReactionScript: niko_MPC_baseNikoScript() {
         checkInterval.advance(days)
         if (checkInterval.intervalElapsed()) {
             checkReaction()
+
+            checkRouting()
+        }
+    }
+
+    // this shit doesnt work in the skill lmao. we do it manually
+    private fun checkRouting() {
+        val market = getFractalColony()
+
+        if (market != null) {
+            for (otherMarket in market.faction.getMarketsCopy().filter { it != market && it.admin?.isAICore == true }) {
+                if (otherMarket.size > market.size) continue
+                otherMarket.accessibilityMod.modifyFlat("MPC_routingOptAccess", MPC_routingOptimization.AI_CORE_ADMIN_ACCESSIBILITY_BONUS, "${market.name} administrator")
+            }
+        } else {
+            for (otherMarket in Global.getSector().economy.marketsCopy) {
+                otherMarket.accessibilityMod.unmodify("MPC_routingOptAccess") // this is a nuclear option, a bit slow but really it shouldnt be that bad
+            }
         }
     }
 
     private fun checkReaction() {
         if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_hegePrivateInspectorsSpawned")) {
-            delete()
+            //delete()
             return
         }
 

@@ -392,23 +392,30 @@ The fleet begins to maneuver away.","cutCommLink:Leave",
 MPC_FRCRaidOption,PopulateOptions,"$menuState == main
 $hasMarket
 MPC_FRCRaidCMD canAddOption",,,"90:MPC_FRCRaidOptionSel:Prepare a raid on the reinforcement center for blueprints",
-MPC_FRCRaidOptionSel,DialogOptionSelected,"$option == MPC_FRCRaidOptionSel","$raidDifficulty = 225 0
+MPC_FRCRaidOptionSel,DialogOptionSelected,"$option == MPC_FRCRaidOptionSel","MPC_FRCRaidCMD setTempFac
+
+$raidDifficulty = 225 0
 $raidGoBackTrigger = MPC_FRCRaidBack 0
 $raidContinueTrigger = MPC_FRCRaidFinishedB 0
 $raidRestrictToTrigger = MPC_FRCRaidFinishedA 0
 
 AddRaidObjective genericIcon ""Storm a dockyard and rip blueprints out of the autofac"" EXTREME 225 MPC_FRCRaidFinishedA true
 
-ShowImageVisual raid_prepare","Reinforcement centers are legendary for their resilience - however, the collapse has severely damaged their self-defense capabilities. Unable to call reinforcements and unable to contact the Domain, the FRC beneath your feet opts instead to sacrifice safety for functionality, keeping many of its doors unlocked and power distributed to it's dockyards.
+ShowImageVisual raid_prepare
+","Reinforcement centers are legendary for their resilience - however, the collapse has severely damaged their self-defense capabilities. Unable to call reinforcements and unable to contact the Domain, the FRC beneath your feet opts instead to sacrifice safety for functionality, keeping many of its doors unlocked and power distributed to it's dockyards.
 
 With the assistance of local munisec, a large force could storm a dockyard and tear valuable blueprints from an autofac. This operation could likely only be conducted once; after a successful intrusion, there's no telling how the delta AI will reallocate resources.","mktRaidNonMarket:Continue",
-MPC_FRCRaidBack,MPC_FRCRaidBack,,"$menuState = main 0
+MPC_FRCRaidBack,MPC_FRCRaidBack,,"MPC_FRCRaidCMD restoreFac
+
+$menuState = main 0
 FireAll PopulateOptions
 ShowDefaultVisual",,,
 MPC_FRCRaidFinishedA,MPC_FRCRaidFinishedA,,,"Tactical quickly locates a relatively easy-to-access dockyard built into a small hill relatively closeby a nearby city, and with the assistance of munisec, your forces take up position around the fortress.
 
 A few EMPs and thermite-charges later, your marines breach, and begin storming the defenses. While the defenses are well-entrenched, the EMPs make short work of them, and soon your marines push deep into the center of the shipyard.",,
-MPC_FRCRaidFinishedB,MPC_FRCRaidFinishedB,,"AddRemoveAnyItem SPECIAL ship_bp MPC_spearHead 1
+MPC_FRCRaidFinishedB,MPC_FRCRaidFinishedB,,"MPC_FRCRaidCMD restoreFac
+
+AddRemoveAnyItem SPECIAL ship_bp MPC_spearHead 1
 AddRemoveAnyItem SPECIAL ship_bp MPC_ramjet 1
 
 $market.MPC_raidedFRC = true","The cam-feed gets spotty as marines and munisec delve deeper into the fortress, before sighting it - a conn-port. Quickly, your troops extract what blueprints they can and exfiltrate.
@@ -3719,6 +3726,7 @@ $global.MPC_playerToldPLAboutMagnetar","Confident that the league could not ever
 ,,,,,,
 # Hegemony private investigators,,,,,,
 MPC_FCHIComms,OpenCommLink,"$entity.MPC_hegePrivateInspectors score:1000
+$entity.MPC_privateInvestigatorCurrentlyInvestigating
 !$entity.MPC_hegePrivateInspectorsLeaving","FireAll MPC_FCHICommsOptions","The comm link spins to life, flashing through the blazing pheonix of the Hegemony before resolving to the hardened visage of a hegemony $rank.
 
 ""Attention, citizen."" The $rank frowns. ""This fleet is undergoing routine military exercise in this local volume. Maintain distance."" You notice a bead of sweat forming on $hisOrHer forehead.",,
@@ -3735,9 +3743,11 @@ Eventually, they snap to a salute. ""$PlayerName! Leader of $global.MPC_playerFa
 ""There is... nothing we, and by extension, the Hegemony are doing, that is not permitted under our mutual treatese-""","MPC_FCHINervous:""You seem very nervous.""
 MPC_FCHIPress:""Give me a manifest of every action you have performed in my space. Right now.""",
 MPC_FCHINervous,DialogOptionSelected,"$option == MPC_FCHINervous","RemoveOption MPC_FCHINervous","The $rank nods, once, twice. ""I-I am... new, to this assignment, $PlayerSirOrMadam.""",,
-MPC_FCHIPress,DialogOptionSelected,"$option == MPC_FCHIPress","SetTextHighlights ""'exotic intelligence'"" ""colony administrator""","The seemingly junior $rank swallows, nods, and sends you a list of actions - you thank the Hegemony for their rigorous record-keeping, even if it seems this one was tampered with.
+MPC_FCHIPress,DialogOptionSelected,"$option == MPC_FCHIPress","SetTextHighlights ""colony administrator""","The seemingly junior $rank swallows, nods, and sends you a list of actions - you thank the Hegemony for their rigorous record-keeping, even if it seems this one was tampered with.
 
-Thankfully for you, it appears most is still intact. The fleet has been sending shuttles down to the surface for ""training"" - a quick inquiry amongst your administration confirms no ""training"" occured, instead rigorous investigation and interrogation against civilians and the rare officer, all surrounding a potential 'exotic intelligence' being used on the planet - doubltessly referring to your creative choice of colony administrator. After submitting a complaint for not being contacted about this clear threat, you turn back to the sweating officer.","MPC_FCHIPressTwo:""It seems you're doing more than just 'military exercises'.""",
+Thankfully for you, it appears most is still intact. The fleet has been sending shuttles down to the surface for ""training"" - though, curious gaps in time-tables and odd 'requisition' requests from local polities paint a more grim picture. This, coupled with a cargo manifest usually reserved for the most rigorous of hegemony inspectors lead you to believe their 'training' was nothing more than a thinly veiled attempt to investigate your planet for AI.
+
+Perhaps your creative choice of colony administrator.","MPC_FCHIPressTwo:""It seems you're doing more than just 'military exercises'.""",
 MPC_FCHIPressTwo,DialogOptionSelected,"$option == MPC_FCHIPressTwo","$MPC_exposed = true
 FireAll MPC_FCHICommsOptions","The $rank doesn't utter a word, only sheepishly nodding, avoiding eye contact.",,
 MPC_FCHICommsLeave,DialogOptionSelected,"$option == MPC_FCHICommsLeave","MPC_magnetarGenericCMD inspectorsGoAway","A wave of fear, followed by anger, then finally, defeat, washes over the $rank, and $heOrShe sighs, nodding.
@@ -3753,13 +3763,17 @@ unset $entity.genericHail","The grizzled face of a Hegemony $rank appears before
 ""Attention citizen!"" You hear, mixed with the sound of a PDA-ping. Taking a quick peek, it appears the $rank has transmitted a... official apology from Hegemony command, surrounding a ""independent operator"" you ""recently encountered"". You connect the dots - this must be about the ""private investigators"" you shooed out of your space recently.
 
 The $rank straightens, nodding as you read. ""The 'investigators' were never cleared for their operation, and are being harshly disciplined. You can expect not to see any more unchartered 'inspectors' within your space.""","MPC_privateInvestigatorFollowupHailTwo:""Good.""",
-MPC_privateInvestigatorFollowupHailTwo,DialogOptionSelected,"$option == MPC_privateInvestigatorFollowupHailTwo","SetTextHighlights ""exotic intelligences""
+MPC_privateInvestigatorFollowupHailTwo,DialogOptionSelected,"$option == MPC_privateInvestigatorFollowupHailTwo","SetTextHighlights ""We will come with every ship we have in our fleet""
 $entity.ignorePlayerCommRequests = true
 
 AdjustRepActivePerson VENGEFUL -5
 AdjustRep hegemony INHOSPITABLE -5","""However,"" $heOrShe starts, taking a darker tone. ""We want to make it clear, that any unauthorized use of artificial intelligence will not be tolerated.""
 
-$HisOrHer eyes narrow, dropping to a scowl. ""Including any 'exotic intelligences' you may harbor."" 
+$HisOrHer eyes narrow, dropping to a scowl, undercut by the buzz of a newly-formed privacy field. ""You're playing with fire, spacer."" $HeOrShe practically spits that out, $hisOrHer disdain completely clear. ""It's only our 'treaty' that stops us from storming in and stopping your..."" $heOrShe grimaces. ""'Experiment.'"" 
+
+""But if we catch even a *wink*. Even a *twitch*..."" $HeOrShe takes care not to mention what precisely $heOrShe is talking about. 
+
+""We will come with every ship we have in our fleet.""
 
 $HeOrShe then hits the comms-disconnect, leaving you watching the slowly-rotating pheonix of the hegemony.","cutCommLink:Leave",
 "#END Follow up fleet",,,,,,

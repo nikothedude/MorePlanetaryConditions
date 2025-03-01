@@ -25,6 +25,7 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.DRIVE_BUBBLE_DESTROYED
 import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
 import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_stringUtils.toPercent
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
@@ -303,7 +304,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
         val immobileDur = ((10f * shatterTimeMult * castedParams.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
-        val desc = "Drive field destroyed (${immobileDur} days to repair)"
+        val desc = "Drive field destroyed (${immobileDur.trimHangingZero()} days to repair)"
 
         for (ability in fleet.abilities.values) {
             if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") && ability.id != Abilities.TRANSVERSE_JUMP) continue
@@ -334,7 +335,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                 )
             } else {
                 Global.getSector().campaignUI.addMessage(
-                    "The ionized pulse shatters your drive bubble, disabling your travel drive for $immobileDur days${interdictionResultsString}",
+                    "The ionized pulse shatters your drive bubble, disabling your travel drive for ${immobileDur.trimHangingZero()} days${interdictionResultsString}",
                     Misc.getNegativeHighlightColor()
                 )
             }

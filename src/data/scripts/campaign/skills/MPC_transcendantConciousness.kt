@@ -4,7 +4,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.LevelBasedEffect.ScopeDescription
 import com.fs.starfarer.api.characters.MarketSkillEffect
 import com.fs.starfarer.api.impl.campaign.ids.Stats
-import com.fs.starfarer.api.impl.campaign.skills.Hypercognition
 import data.utilities.niko_MPC_stringUtils.toPercent
 
 class MPC_transcendantConciousness {
@@ -12,9 +11,9 @@ class MPC_transcendantConciousness {
 
     companion object {
         const val HAZARD_REDUCTION = -0.25f
-        const val UPKEEP_MULT = 0.5f
-        const val SHIP_PRODUCTION_QUALITY_MOD = 0.25f
-        const val ACCESSABILITY_BONUS = 0.20f
+        //const val UPKEEP_MULT = 0.25f
+        const val FLEET_SIZE_MOD = 0.20f
+        const val ACCESSIBILITY_BONUS = 0.10f
         const val NUM_INDUSTRIES_INCREASE = 1f
     }
 
@@ -40,7 +39,7 @@ class MPC_transcendantConciousness {
         }
     }
 
-    class Level2 : MarketSkillEffect {
+    /*class Level2 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
             market.upkeepMult.modifyMult(id, UPKEEP_MULT, "Transcendent Conciousness")
         }
@@ -61,19 +60,19 @@ class MPC_transcendantConciousness {
         override fun getScopeDescription(): ScopeDescription {
             return ScopeDescription.GOVERNED_OUTPOST
         }
-    }
+    }*/
 
     class Level3 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat(id, SHIP_PRODUCTION_QUALITY_MOD, "Transcendent Consciousness")
+            market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, FLEET_SIZE_MOD, "Transcendent Consciousness")
         }
 
         override fun unapply(market: MarketAPI, id: String) {
-            market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify(id)
+            market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodify(id)
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "+${toPercent(SHIP_PRODUCTION_QUALITY_MOD)} fleet quality"
+            return "+${toPercent(FLEET_SIZE_MOD)} fleet size"
         }
 
         override fun getEffectPerLevelDescription(): String? {
@@ -87,7 +86,7 @@ class MPC_transcendantConciousness {
 
     class Level4 : MarketSkillEffect {
         override fun apply(market: MarketAPI, id: String, level: Float) {
-            market.accessibilityMod.modifyFlat(id, ACCESSABILITY_BONUS, "Transcendent Consciousness")
+            market.accessibilityMod.modifyFlat(id, ACCESSIBILITY_BONUS, "Transcendent Consciousness")
         }
 
         override fun unapply(market: MarketAPI, id: String) {
@@ -95,7 +94,7 @@ class MPC_transcendantConciousness {
         }
 
         override fun getEffectDescription(level: Float): String {
-            return "+${(ACCESSABILITY_BONUS * 100).toInt()}% accessability"
+            return "+${(ACCESSIBILITY_BONUS * 100).toInt()}% accessibility"
         }
 
         override fun getEffectPerLevelDescription(): String? {

@@ -2,6 +2,21 @@
 SAVE COMPATIBLE
 
 Fixes a number of bugs with defense satellites
+Fixes a rare expedition crash
+Fixes a bug where raiding an FRC would make your own faction hostile to you
+    Truthfully, I knew about this bug, I just thought it wouldn't be as severe as it was lmao
+
+Fixed a bug where overgrown nanoforges would exponentially speed up their scripts (dear god niko why)
+    Probably fixes a lot of other hidden bugs with this! Fuck!
+
+A bit of dialog rewritten
+
+Fractal core colony admin significantly buffed
+    Now with a shiny new skill
+        At the cost of it's upkeep reduction
+    Please remove the core from your colony before you update
+
+Ionized pulse buffed
 
 4.1.0
 MOSTLY SAVE COMPATIBLE

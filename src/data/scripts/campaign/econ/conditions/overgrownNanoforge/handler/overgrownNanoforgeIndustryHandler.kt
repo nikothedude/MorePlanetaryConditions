@@ -14,6 +14,7 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.MPC_overgrownNanoforgeExpeditionAssignmentAI
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.data.overgrownNanoforgeIndustrySource
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.industries.overgrownNanoforgeIndustry
@@ -25,10 +26,9 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeEffectPrototypes.Companion.getWrappedInstantiationList
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.overgrownNanoforgeRandomizedSourceParams
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.overgrownNanoforgeEffectSource
+import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
-import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
-import data.utilities.niko_MPC_marketUtils
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforge
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeCondition
 import data.utilities.niko_MPC_marketUtils.getOvergrownNanoforgeIndustryHandler
@@ -36,7 +36,6 @@ import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_marketUtils.removeOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.setOvergrownNanoforgeIndustryHandler
 import data.utilities.niko_MPC_marketUtils.shouldHaveOvergrownNanoforgeIndustry
-import data.utilities.niko_MPC_mathUtils
 import data.utilities.niko_MPC_settings.MAX_STRUCTURES_ALLOWED
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MAX
 import data.utilities.niko_MPC_settings.OVERGROWN_NANOFORGE_BASE_SCORE_MIN
@@ -254,6 +253,12 @@ class overgrownNanoforgeIndustryHandler(
 
     override fun applyEffects() {
         super.applyEffects()
+
+        /*if (niko_MPC_modPlugin.currVersion == "4.1.1") {
+            if (Global.getSector().scripts.filter { it == this }.size > 1) {
+                Global.getSector().removeScript(this)
+            }
+        }*/
         Global.getSector().addScript(this)
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
@@ -261,6 +266,15 @@ class overgrownNanoforgeIndustryHandler(
         for (ourJunk in junkHandlers) {
             ourJunk.apply()
         }
+    }
+
+    override fun unapply(removeStructure: Boolean): Boolean {
+        if (super.unapply(removeStructure)) return false
+        Global.getSector().removeScript(this)
+        for (ourJunk in junkHandlers) {
+            ourJunk.unapply(removeStructure)
+        }
+        return true
     }
 
     override fun delete(): Boolean {
@@ -298,15 +312,6 @@ class overgrownNanoforgeIndustryHandler(
     }
     fun toggleExposed() {
         exposed = shouldExposeSelf()
-    }
-
-    override fun unapply(): Boolean {
-        if (super.unapply()) return false
-        Global.getSector().removeScript(this)
-        for (ourJunk in junkHandlers) {
-            ourJunk.unapply()
-        }
-        return true
     }
 
     override fun addSelfToMarket(market: MarketAPI) {

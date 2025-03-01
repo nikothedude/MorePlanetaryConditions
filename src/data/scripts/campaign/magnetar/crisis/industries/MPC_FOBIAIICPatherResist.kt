@@ -23,4 +23,8 @@ class MPC_FOBIAIICPatherResist: BaseIndustry() {
     override fun isAvailableToBuild(): Boolean {
         return false
     }
+
+    override fun showWhenUnavailable(): Boolean {
+        return false
+    }
 }

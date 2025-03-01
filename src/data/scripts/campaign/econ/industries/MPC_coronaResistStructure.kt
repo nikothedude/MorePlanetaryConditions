@@ -49,7 +49,7 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
             return false
         }
         if (interferenceDetected()) return false
-        return true
+        return super.isAvailableToBuild()
     }
 
     private fun interferenceDetected(): Boolean {
@@ -57,6 +57,10 @@ class MPC_coronaResistStructure: baseNikoIndustry() {
     }
 
     override fun getUnavailableReason(): String? {
+        if (!super.isAvailableToBuild()) {
+            return super.getUnavailableReason()
+        }
+
         if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
             return "Blueprint unknown"
         }
