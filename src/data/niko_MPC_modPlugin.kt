@@ -285,7 +285,9 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             listener.onGameLoad()
         }
 
-        MPC_IAIICFobInvasionListener.get(true)
+        if (niko_MPC_settings.nexLoaded) {
+            //MPC_IAIICFobInvasionListener.get(true)
+        }
         LunaSettings.addSettingsListener(settingsChangedListener())
     }
 
@@ -355,6 +357,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             IAIIC.setRelationship(faction.id, Global.getSector().getFaction(Factions.HEGEMONY).getRelationshipLevel(faction))
         }
         IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
+        IAIIC.isShowInIntelTab = false
 
         setupIAIICBlueprints()
 
