@@ -279,10 +279,13 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         if (!niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS && fleet.isPatrol()) return handleFailedEscortSpawn(fleet, route)
 
         var factionToUse = market.faction
-        if (!market.isInhabited() && fleet.isPlayerFleet) {
-            val nextFloat = MathUtils.getRandom().nextFloat()
-            if (CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED > nextFloat) return handleFailedEscortSpawn(fleet, route)
-            factionToUse = Global.getSector().playerFaction
+        if (!market.isInhabited())
+            if (fleet.isPlayerFleet) {
+                val nextFloat = MathUtils.getRandom().nextFloat()
+                if (CHANCE_TO_SKIP_SPAWNING_PLAYER_UNINHABITED > nextFloat) return handleFailedEscortSpawn(fleet, route)
+                factionToUse = Global.getSector().playerFaction
+            } else {
+                return handleFailedEscortSpawn(fleet, route)
         }
         val repLevelNeeded = fleet.getRepLevelForArrayBonus()
         if (factionToUse.getRelationshipLevel(fleet.faction) >= repLevelNeeded) {

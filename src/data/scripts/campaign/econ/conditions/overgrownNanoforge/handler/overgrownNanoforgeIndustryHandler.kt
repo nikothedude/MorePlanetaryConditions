@@ -98,9 +98,9 @@ class overgrownNanoforgeIndustryHandler(
 
     val intelBrain: overgrownNanoforgeSpreadingBrain = createIntelBrain()
     /** When this procs, spawns a expedition fleet to cull it. Purely flavor right now.*/
-    var expeditionInterval = IntervalUtil(120f, 330f) // days
+    var expeditionInterval = IntervalUtil(270f, 390f) // days
         get() {
-            if (field == null) field = IntervalUtil(120f, 330f)
+            if (field == null) field = IntervalUtil(270f, 390f)
             return field
         }
 

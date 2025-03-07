@@ -2,6 +2,9 @@
 SAVE COMPATIBLE
 
 Fixes a hard dependency on nex
+Fixes a rare bug where frontier reinforcement centers would spawn escorts on non-player fleets while uncolonized
+
+Made expedition fleets a lot rarer
 
 4.1.1
 SAVE COMPATIBLE
