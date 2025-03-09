@@ -10,7 +10,7 @@ Spearhead,MPC_spearHead,Battletug,Explorarium,interdictor,14,14000,1200,10000,56
 Toyol,MPC_toyol,Battlecruiser,High Tech,MPC_deepDive,60,14000,1200,15000,30000,1100,240,0,70,90,70,30,40,1700,PHASE,phasecloak,0,0,0,0.018,0.018,0,0,0,5,6,0.9,8,1000000,3,20,600,0.25,60,40,,,,,,,,,,0.25,2,2,,501
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Pickhead,MPC_pickhead,,Explorarium,,,125,35,500,,100,0,,375,500,450,180,360,25,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,102
-Minecart,MPC_minecart,,Explorarium,,,1950,90,500,,300,0,,100,25,25,35,50,200,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,103
+Minecart,MPC_minecart,,Explorarium,,,1600,90,500,,300,0,,100,25,25,35,50,200,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,103
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Onslaught (XIV) (Kanta),MPC_onslaught_xiv_kanta,Battleship,Kanta's Favored,MPC_acceleratedOrdnanceFeeder,50,20000,1750,17000,15000,600,360,,25,10,10,4,4,3500,PHASE,damper,180,0.4,1,,,750,1500,300,400,15,27,7,900000,3,12,720,0.25,40,40,,,,,,,,no_dealer,,0.4,2,4,,500
 Atlas Mk.II (Kanta),MPC_atlas2_kanta,Modified Superfreighter,Kanta's Favored,MPC_acceleratedOrdnanceFeeder,50,9000,750,8000,8750,350,220,,30,8,4,4,2,4000,OMNI,,60,0.5,1,,,250,300,200,400,10,40,7,150000,2,20,720,0.25,50,24,,,,,,,,no_dealer,,0.7,2,4,,502.5

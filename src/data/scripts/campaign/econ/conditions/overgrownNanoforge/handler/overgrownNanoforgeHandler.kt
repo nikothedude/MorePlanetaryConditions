@@ -222,7 +222,9 @@ abstract class overgrownNanoforgeHandler(
     }
 
     open fun removeStructure() {
+        getStructure()?.deleteStructureOnDelete = false
         getStructure()?.delete()
+        getStructure()?.deleteStructureOnDelete = true
     }
 
     fun getPositiveEffectDescData(): MutableList<overgrownNanoforgeEffectDescData> {

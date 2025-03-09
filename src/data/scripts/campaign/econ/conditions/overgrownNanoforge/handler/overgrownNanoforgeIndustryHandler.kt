@@ -259,7 +259,9 @@ class overgrownNanoforgeIndustryHandler(
                 Global.getSector().removeScript(this)
             }
         }*/
-        Global.getSector().addScript(this)
+        if (!Global.getSector().scripts.any { it == this }) { // FIXME: BANDAID FIX!! THOUGHT I FIXED THE ROOT CAUSE IN UNAPPLY(). I DIDNT. FUUUUCK
+            Global.getSector().addScript(this)
+        }
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
         }

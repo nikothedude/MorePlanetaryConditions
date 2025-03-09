@@ -18,6 +18,8 @@ import data.utilities.niko_MPC_miscUtils.formatStringsToLines
 abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionScript<overgrownStructureDeletionScript> {
 
     override var deletionScript: overgrownStructureDeletionScript? = null
+    @Transient
+    var deleteStructureOnDelete: Boolean = true
 
     override fun canShutDown(): Boolean = false // You must go through [getHandler]'s [manipulationIntel].
 
@@ -41,7 +43,7 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
 
     override fun delete() {
         super.delete()
-        getHandler()?.unapply(true)
+        getHandler()?.unapply(deleteStructureOnDelete)
         getHandler()?.currentStructureId = null
     }
 
