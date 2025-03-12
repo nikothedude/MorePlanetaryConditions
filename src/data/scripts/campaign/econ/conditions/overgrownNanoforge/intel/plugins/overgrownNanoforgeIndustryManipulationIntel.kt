@@ -33,16 +33,6 @@ class overgrownNanoforgeIndustryManipulationIntel(
         }
 
     var considerExposed: Boolean = false
-        get() {
-            if (niko_MPC_modPlugin.currVersion != "3.10.0") {
-                niko_MPC_debugUtils.log.warn("unneeded sanity check in considerExposed get, please remove")
-                return field
-            }
-            if (field == null) {
-                field = false
-            }
-            return field
-        }
 
     fun updateExposed() {
         updateFactors()

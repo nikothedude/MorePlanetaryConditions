@@ -1,3 +1,10 @@
+4.1.3
+SAVE COMPATIBLE
+
+Tries to fix a number of stupid bugs that I hate
+
+DEFINITELY fixes the bug where satellites wouldnt record a victory if you autoresolve
+
 4.1.2
 SAVE COMPATIBLE
 

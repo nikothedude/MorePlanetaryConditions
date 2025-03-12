@@ -3,14 +3,13 @@
   "hullId": "niko_MPC_defenseSatelliteLeftPlate",
   "displayName": "Support",
   "goalVariant": false,
-  "fluxCapacitors": 60,
+  "fluxCapacitors": 75,
   "fluxVents": 20,
   "quality": 1,
   "permaMods": [],
   "hullMods": [
     "heavyarmor",
     "missleracks",
-    "reinforcedhull",
     "autorepair",
     "armoredweapons",
     "eccm"

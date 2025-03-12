@@ -9,6 +9,8 @@ import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.BaseFIDDelegate
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.FIDConfig
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
+import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
+import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.hasSatellites
 
@@ -82,6 +84,13 @@ object niko_MPC_dialogUtils {
         }
         dialog.plugin = plugin
         plugin.init(dialog)
+
+        for (iterFleet in satelliteFleets) {
+            val handler: niko_MPC_satelliteHandlerCore = iterFleet.getSatelliteEntityHandler() ?: continue
+            val battle = iterFleet.battle
+            val tracker: niko_MPC_satelliteBattleTracker? = niko_MPC_satelliteUtils.getSatelliteBattleTracker()
+            tracker?.associateSatellitesWithBattle(satelliteFleet.battle, handler, battle.pickSide(satelliteFleet))
+        }
         return true
     }
 

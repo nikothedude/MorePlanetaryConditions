@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.BattleAPI.BattleSide
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
+import java.lang.ref.WeakReference
 
 /**
  * Save-specific global list that stores a hashmap of battleAPI->(satellitehandler->battleside).

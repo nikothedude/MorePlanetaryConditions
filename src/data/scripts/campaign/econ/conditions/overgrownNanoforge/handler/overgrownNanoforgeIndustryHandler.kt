@@ -259,8 +259,15 @@ class overgrownNanoforgeIndustryHandler(
                 Global.getSector().removeScript(this)
             }
         }*/
+
         if (!Global.getSector().scripts.any { it == this }) { // FIXME: BANDAID FIX!! THOUGHT I FIXED THE ROOT CAUSE IN UNAPPLY(). I DIDNT. FUUUUCK
             Global.getSector().addScript(this)
+        } else {
+            val currVersion = niko_MPC_modPlugin.currVersion
+            if (currVersion == "4.1.3") {
+                Global.getSector().removeScript(this) // TODO: this is proof i really need to refactor this, huh?
+                Global.getSector().addScript(this)
+            }
         }
         if (market.getOvergrownNanoforgeIndustryHandler() != this) {
             displayError("nanoforge handler created on market with pre-existing handler: ${market.name}")
