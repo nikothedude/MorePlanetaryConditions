@@ -8,6 +8,9 @@
 		"MPC_phaseDemonAmbience":[
 			{"file":"MPC_contactWithTheUnknownTwo.ogg","source":"sounds/music","volume":0.8},
 		],
+		"MPC_magnetarAmbience":[
+			{"file":"MPC_ambiencemagnetar.ogg","source":"sounds/music","volume":0.8},
+		],
 		
 	# collapseclose
 	},

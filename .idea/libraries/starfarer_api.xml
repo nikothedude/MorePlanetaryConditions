@@ -17,7 +17,6 @@
       <root url="jar://$PROJECT_DIR$/../../starsector-core/starfarer.api.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../starsector-core/xstream-1.4.10.jar!/" />
       <root url="file://$PROJECT_DIR$/../../starsector-core" />
-      <root url="file://$PROJECT_DIR$/../../starsector-core" />
     </CLASSES>
     <JAVADOC>
       <root url="https://starsectorcommunityapidocs.github.io/CommunityApiDocs" />
@@ -26,7 +25,6 @@
       <root url="file://$PROJECT_DIR$/../../../starsector modding/CommunityApiDocs/src" />
       <root url="file://$PROJECT_DIR$/../../starsector-core/data" />
     </SOURCES>
-    <jarDirectory url="file://$PROJECT_DIR$/../../starsector-core" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/../../starsector-core" recursive="false" />
   </library>
 </component>

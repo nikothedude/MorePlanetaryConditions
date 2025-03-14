@@ -59,7 +59,7 @@ object niko_MPC_specialProcGenHandler {
         val sysName = "Perseus NM 2231+9CB"
         val system = Global.getSector().createStarSystem(sysName)
         system.backgroundTextureFilename = "graphics/backgrounds/background_galatia.jpg"
-        //system.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "music_campaign_alpha_site"
+        system.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "MPC_magnetarAmbience"
         val magnetar = system.initStar("MPC_magnetar", "MPC_star_magnetar", 180f, 700f, 10f, 0.2f, 6f)
         system.lightColor = Color(255, 255, 255)
         val xVariation = MathUtils.getRandomNumberInRange(

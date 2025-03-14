@@ -2,5 +2,6 @@ graphics/icons/markets/niko_MPC_STC.png sourced from https://www.flaticon.com/fr
 
 sounds/music/MPC_contactWithTheUnknown.ogg sourced from https://www.fesliyanstudios.com/royalty-free-music/downloads-c/suspenseful-music/25
 sounds/music/MPC_contactWithTheUnknownTwo.ogg sourced from https://www.fesliyanstudios.com/royalty-free-music/downloads-c/suspenseful-music/25
+sounds/music/MPC_ambiencemagnetar.ogg sourced from https://cryochamber.bandcamp.com/album/beta-pictoris (Cryo Chamber)
 
 Fractal core oracle, optimiser, enlightenment skills from astral ascension
