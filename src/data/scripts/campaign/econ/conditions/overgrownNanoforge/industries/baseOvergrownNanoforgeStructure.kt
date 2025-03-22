@@ -37,12 +37,14 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
         super.unapply()
         startDeletionScript()
 
-        val handler = getHandlerWithUpdate()
+        val handler = getHandler()
         handler?.unapply(false)
     }
 
     override fun delete() {
-        super.delete()
+        if (deleteStructureOnDelete) {
+            super.delete()
+        }
         getHandler()?.unapply(deleteStructureOnDelete)
         getHandler()?.currentStructureId = null
     }

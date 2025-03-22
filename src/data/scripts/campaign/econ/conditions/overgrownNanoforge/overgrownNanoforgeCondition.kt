@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Conditions
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.thoughtworks.xstream.mapper.Mapper.Null
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.econ.conditions.hasDeletionScript
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeHandler
@@ -196,11 +197,22 @@ class overgrownNanoforgeCondition : niko_MPC_baseNikoCondition(), hasDeletionScr
 
     override fun delete() {
         super.delete()
-        val ourMarket = getMarket() ?: return
-        ourMarket.purgeOvergrownNanoforgeBuildings()
+        val market = getMarket()
+        market?.purgeOvergrownNanoforgeBuildings()
+        getHandler()?.delete()
+        /*MPC_delayedExecution(
+            {
+                market?.purgeOvergrownNanoforgeBuildings()
+                getHandler()?.delete()
+            },
+            0f,
+            true,
+            useDays = false
+        ).start()*/
+        //val ourMarket = getMarket() ?: return
+        //ourMarket.purgeOvergrownNanoforgeBuildings()
         // disabling experimentally to see if this will fix a commoddification error
 
-        getHandler()?.delete()
         //TODO()
     }
 

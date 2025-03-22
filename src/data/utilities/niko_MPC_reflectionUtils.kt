@@ -170,17 +170,16 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         return instance
     }
 
-    fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false): Any? {
+    fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false, classToGetFrom: Class<out Any> = instance.javaClass): Any? {
         var method: Any? = null
 
-        val clazz = instance.javaClass
         val args = arguments.map { it!!::class.javaPrimitiveType ?: it::class.java }
         val methodType = MethodType.methodType(Void.TYPE, args)
 
         if (!declared) {
-            method = clazz.getMethod(methodName, *methodType.parameterArray())
+            method = classToGetFrom.getMethod(methodName, *methodType.parameterArray())
         } else {
-            method = clazz.getDeclaredMethod(methodName, *methodType.parameterArray())
+            method = classToGetFrom.getDeclaredMethod(methodName, *methodType.parameterArray())
         }
 
         return invokeMethodHandle.invoke(method, instance, arguments)

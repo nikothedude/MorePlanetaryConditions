@@ -65,12 +65,7 @@ class overgrownNanoforgeIndustryHandler(
     var generateJunk: Boolean = true
 ): overgrownNanoforgeHandler(initMarket, growing), EveryFrameScript {
 
-    var focusingOnExistingCommodities: Boolean = true
-        get() {
-            if (field == null) field = true // TODO: remove after 3.3.4, here for compatability
-            return field
-        }
-
+    var focusingOnExistingCommodities: Boolean = false
     var exposed: Boolean = false
         set(value) {
             val oldField = field

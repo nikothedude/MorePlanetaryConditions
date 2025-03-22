@@ -290,7 +290,7 @@ class niko_MPC_magnetarStarScript(
     }
 
     private fun createManufactorumDefenders(): CampaignFleetAPI {
-        val fleetPoints = 270f
+        val fleetPoints = 300f
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
 
         val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
@@ -318,7 +318,7 @@ class niko_MPC_magnetarStarScript(
     }
 
     fun createOmegaMothershipDefenders(): CampaignFleetAPI {
-        val fleetPoints = 240f // the mothership is very powerful, so add like 50 dp to this mentally
+        val fleetPoints = 410f // the mothership is very powerful, so add like 50 dp to this mentally
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
         val mothership = defenderFleet.fleetData.addFleetMember("MPC_omega_derelict_mothership_Standard")
         mothership.repairTracker.cr = mothership.repairTracker.maxCR
