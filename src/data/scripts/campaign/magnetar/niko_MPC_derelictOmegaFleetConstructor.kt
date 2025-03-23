@@ -9,7 +9,6 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.procgen.themes.OmegaOfficerGeneratorPlugin
 import com.fs.starfarer.api.loading.VariantSource
-import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 
@@ -105,6 +104,14 @@ object niko_MPC_derelictOmegaFleetConstructor {
 
     fun createOmegaFleet(params: FleetParamsV3): CampaignFleetAPI {
         val fleet = FleetFactoryV3.createFleet(params)
+
+        for (member in fleet.membersWithFightersCopy) {
+            // to "perm" the variant so it gets saved and not recreated
+            member.setVariant(member.variant.clone(), false, false)
+            member.variant.source = VariantSource.REFIT
+            member.variant.addTag(Tags.SHIP_LIMITED_TOOLTIP)
+        }
+
         return fleet
     }
 

@@ -10,6 +10,7 @@ import com.fs.starfarer.api.plugins.AutofitPlugin.AutofitPluginDelegate
 import com.fs.starfarer.api.plugins.AutofitPlugin.AvailableWeapon
 import com.fs.starfarer.api.plugins.impl.CoreAutofitPlugin
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.utilities.niko_MPC_mathUtils.prob
 import org.lazywizard.lazylib.MathUtils
 import java.util.*
 
@@ -55,11 +56,23 @@ class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreA
 //		}
         var iter = 0
         for (w in possible) {
+
+            /*if (w.id == "rifttorpedo") {
+                if (prob(10)) {
+                    return w
+                }
+            }*/
+
             iter++
             val spec = w.spec
             // this might sound weird to not just check once before the loop since this looks like it inflates the chances of the omega pick
             // but it doesnt? somehow? and changing it fucks it up?
             if (w.spec.tags.contains("omega") && (MathUtils.getRandom().nextFloat() <= CHANCE_FOR_OMEGA_TO_BE_BOOSTED)) {
+                if (!catId!!.contains("missile") && slot != null && slot.isHardpoint && (slot.weaponType == WeaponType.MISSILE || slot.weaponType == WeaponType.COMPOSITE || slot.weaponType == WeaponType.SYNERGY)) {
+                    if (w.id == "realitydisruptor") {
+                        continue
+                    }
+                }
                 return w
             }
             val catTag = getCategoryTag(cat, spec.tags) ?: continue

@@ -8,7 +8,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrow
 object MPC_compatabilityUtils {
 
     fun run(version: String) {
-        if (version == "4.1.4") {
+        if (version == "4.2.0") {
             val system = Global.getSector()?.getStarSystem("Perseus NM 2231+9CB") ?: return
             system.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "MPC_magnetarAmbience"
         }

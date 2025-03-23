@@ -291,7 +291,7 @@ class niko_MPC_magnetarStarScript(
 
     private fun createManufactorumDefenders(): CampaignFleetAPI {
         val fleetPoints = 300f
-        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null))
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
 
         val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
         guardian.repairTracker.cr = guardian.repairTracker.maxCR
@@ -307,6 +307,7 @@ class niko_MPC_magnetarStarScript(
         variant.addPermaMod(HullMods.MAGAZINES, true)
         variant.addPermaMod(HullMods.UNSTABLE_INJECTOR, true)
         variant.addPermaMod(HullMods.REINFORCEDHULL, true)
+        variant.addPermaMod(HullMods.EXTENDED_SHIELDS, true)
 
         variant.source = VariantSource.REFIT
         guardian.setVariant(variant, false, true)
