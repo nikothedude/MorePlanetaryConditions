@@ -747,6 +747,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                     "dissolved on the spot", "send waves throughout the geo-political realm"
                 )
             }
+
+            else -> {}
         }
     }
 
@@ -984,6 +986,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         "IAIIC"
                     )
                 }
+
+                else -> {}
             }
         } else if (data is String) {
             info.addPara(data, initPad)

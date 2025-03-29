@@ -30,11 +30,14 @@ abstract class baseOvergrownNanoforgeStructure: baseNikoIndustry(), hasDeletionS
     override fun apply(withIncomeUpdate: Boolean) {
         super.apply(withIncomeUpdate)
 
-        val handler = getHandlerWithUpdate()
-        handler?.apply()
+        if (market.isValidTargetForOvergrownHandler()) {
+            val handler = getHandlerWithUpdate()
+            handler?.apply()
+        }
     }
     override fun unapply() {
         super.unapply()
+
         startDeletionScript()
 
         val handler = getHandler()

@@ -4,7 +4,6 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import com.sun.javafx.css.FontUnits.Weight
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageCondition.Companion.removeSabotage
 import niko.MCTE.utils.MCTE_mathUtils.roundTo
 import java.util.*

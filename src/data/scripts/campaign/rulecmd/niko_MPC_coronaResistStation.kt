@@ -228,7 +228,7 @@ class niko_MPC_coronaResistStation: BaseCommandPlugin() {
         salvage.sort()
 
         Global.getSector().playerFleet.cargo.addSpecial(SpecialItemData(Items.INDUSTRY_BP, niko_MPC_industryIds.coronaResistIndustry), 1f)
-        Global.getSector().playerFleet.cargo.addSpecial(SpecialItemData(Items.MODSPEC, "niko_MPC_fighterSolarShielding"), 1f)
+        Global.getSector().playerFleet.cargo.addSpecial(SpecialItemData(Items.TAG_MODSPEC, "niko_MPC_fighterSolarShielding"), 1f)
     }
 
     protected fun init(entity: SectorEntityToken) {

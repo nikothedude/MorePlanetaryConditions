@@ -1,5 +1,6 @@
 package data.utilities
 
+import niko_SA.SA_debugUtils
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -16,7 +17,7 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         MethodHandles.lookup().findVirtual(fieldClass, "get", MethodType.methodType(Any::class.java, Any::class.java))
     private val getFieldNameHandle =
         MethodHandles.lookup().findVirtual(fieldClass, "getName", MethodType.methodType(String::class.java))
-    val setFieldAccessibleHandle = MethodHandles.lookup()
+    val setFieldAccessibleHandle: MethodHandle = MethodHandles.lookup()
         .findVirtual(fieldClass, "setAccessible", MethodType.methodType(Void.TYPE, Boolean::class.javaPrimitiveType))
     private val getFieldTypeHandle = MethodHandles.lookup()
         .findVirtual(fieldClass, "getType", MethodType.methodType(Class::class.java))
@@ -87,13 +88,13 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
             .map { (fieldObj, fieldClass) -> ReflectedField(fieldObj) }
     }
 
-    fun set(fieldName: String, instanceToModify: Any, newValue: Any?) {
+    fun set(fieldName: String, instanceToModify: Any, newValue: Any?, clazz: Class<*> = instanceToModify::class.java) {
         var field: Any? = null
         try {
-            field = instanceToModify.javaClass.getField(fieldName)
+            field = clazz.getField(fieldName)
         } catch (e: Throwable) {
             try {
-                field = instanceToModify.javaClass.getDeclaredField(fieldName)
+                field = clazz.getDeclaredField(fieldName)
             } catch (e: Throwable) {
             }
         }
@@ -119,14 +120,15 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         }
     }
 
-    fun get(fieldName: String, instanceToGetFrom: Any): Any? {
+    fun get(fieldName: String, instanceToGetFrom: Any, classToGetFrom: Class<out Any> = instanceToGetFrom::class.java): Any? {
         var field: Any? = null
         try {
-            field = instanceToGetFrom.javaClass.getField(fieldName)
+            field = classToGetFrom.getField(fieldName)
         } catch (e: Throwable) {
             try {
-                field = instanceToGetFrom.javaClass.getDeclaredField(fieldName)
+                field = classToGetFrom.getDeclaredField(fieldName)
             } catch (e: Throwable) {
+                SA_debugUtils.log.error(e)
             }
         }
 
@@ -170,16 +172,18 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         return instance
     }
 
-    fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false, classToGetFrom: Class<out Any> = instance.javaClass): Any? {
-        var method: Any? = null
+    fun invoke(methodName: String, instance: Any, vararg arguments: Any?, declared: Boolean = false) : Any? {
+        var method: Any? = "null"
 
+        val clazz = instance.javaClass
         val args = arguments.map { it!!::class.javaPrimitiveType ?: it::class.java }
         val methodType = MethodType.methodType(Void.TYPE, args)
 
         if (!declared) {
-            method = classToGetFrom.getMethod(methodName, *methodType.parameterArray())
-        } else {
-            method = classToGetFrom.getDeclaredMethod(methodName, *methodType.parameterArray())
+            method = clazz.getMethod(methodName, *methodType.parameterArray()) as Any?
+        }
+        else  {
+            method = clazz.getDeclaredMethod(methodName, *methodType.parameterArray()) as Any?
         }
 
         return invokeMethodHandle.invoke(method, instance, arguments)
@@ -209,7 +213,7 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         val methodType = MethodType.methodType(Void.TYPE, args)
 
         try {
-            method = clazz.getMethod(methodName, *methodType.parameterArray())
+            method = clazz.getMethod(methodName, *methodType.parameterArray()) as Any?
         } catch (e: Throwable) {
             try {
                 method = clazz.getDeclaredMethod(methodName, *methodType.parameterArray())

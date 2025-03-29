@@ -1,3 +1,7 @@
+4.2.1
+Update to Starsector 0.98
+    Now compiled on Java 17 and Kotlin 2.1
+
 4.2.0
 SAVE COMPATIBLE
 

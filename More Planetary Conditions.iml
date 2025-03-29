@@ -48,6 +48,6 @@
     <orderEntry type="library" name="RandomAssortmentofThings" level="project" />
     <orderEntry type="library" name="ExerelinCore" level="project" />
     <orderEntry type="library" name="src" level="project" />
-    <orderEntry type="library" name="starfarer.api" level="project" />
+    <orderEntry type="library" name="starsector-core" level="project" />
   </component>
 </module>

@@ -289,6 +289,7 @@ class MPC_IAIICInspectionDialogPluginImpl(
 
             OptionId.CANCEL -> addChoiceOptions()
             OptionId.LEAVE -> leave()
+            else -> {}
         }
     }
 

@@ -363,6 +363,8 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
             State.FAILED -> {
                 info.addPara("You've failed to separate the diktat from the IAIIC.", 5f)
             }
+
+            else -> {}
         }
     }
 

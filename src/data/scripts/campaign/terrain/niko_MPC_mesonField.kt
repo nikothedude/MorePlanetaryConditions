@@ -174,8 +174,6 @@ class niko_MPC_mesonField: BaseRingTerrain(), AuroraRendererDelegate, FlareManag
         return this
     }
 
-    @Transient
-    private val layers = EnumSet.of(CampaignEngineLayers.TERRAIN_7)
     override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
         return layers
     }

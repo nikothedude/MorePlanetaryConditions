@@ -42,7 +42,7 @@ class overgrownNanoforgeAlterSupplySource(
 
 
     override fun getStructure(): baseOvergrownNanoforgeStructure? {
-        return handler?.getCoreHandler().getStructure()
+        return handler.getCoreHandler().getStructure()
     }
 
     override fun getChange(positive: Boolean): String {
