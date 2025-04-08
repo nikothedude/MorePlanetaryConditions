@@ -2,12 +2,15 @@
   <library name="LunaLib">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../LunaLib/jars" />
+      <root url="file://$PROJECT_DIR$/../LunaLib-2.0.2/jars" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/../LunaLib" />
       <root url="file://$PROJECT_DIR$/../LunaLib/src" />
+      <root url="file://$PROJECT_DIR$/../LunaLib-2.0.2/src/LunaLib-Core" />
     </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../LunaLib-2.0.2/jars" recursive="false" />
     <jarDirectory url="file://$PROJECT_DIR$/../LunaLib/jars" recursive="false" />
   </library>
 </component>

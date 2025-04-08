@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Industrial.Evolution3.3">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.3.e" />
-      <root url="jar://$PROJECT_DIR$/../Industrial.Evolution3.3.e/jars/IndEvo.jar!/" />
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution-4.0.b/jars" />
+      <root url="file://$PROJECT_DIR$/../Industrial.Evolution-4.0.c/jars" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="file://$PROJECT_DIR$/../Industrial.Evolution3.3.e/jars/src" />
-    </SOURCES>
+    <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/../Industrial.Evolution-4.0.b/jars" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../Industrial.Evolution-4.0.c/jars" recursive="false" />
   </library>
 </component>
