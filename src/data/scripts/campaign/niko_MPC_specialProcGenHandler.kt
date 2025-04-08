@@ -348,6 +348,7 @@ object niko_MPC_specialProcGenHandler {
         system.addTag(Tags.THEME_UNSAFE)
         system.addTag(Tags.THEME_HIDDEN)
         system.addTag(Tags.THEME_INTERESTING)
+        system.addTag("theme_magnetar")
         system.addTag(Tags.SYSTEM_ABYSSAL)
 
         system.type = StarSystemGenerator.StarSystemType.DEEP_SPACE
