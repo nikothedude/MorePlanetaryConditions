@@ -8,7 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
-    <orderEntry type="library" name="MagicLib" level="project" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="project" />
     <orderEntry type="module-library">
       <library>
@@ -23,7 +22,6 @@
     <orderEntry type="library" name="javadoc" level="project" />
     <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
-    <orderEntry type="library" name="CaptainsLog" level="project" />
     <orderEntry type="library" name="DynamicTariffs" level="project" />
     <orderEntry type="library" name="orders from thje boss" level="project" />
     <orderEntry type="library" name="seeker" level="project" />
@@ -33,7 +31,6 @@
     <orderEntry type="library" name="src1" level="project" />
     <orderEntry type="library" name="Interstellar Imperium" level="project" />
     <orderEntry type="library" name="jars" level="project" />
-    <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
     <orderEntry type="library" name="HMI" level="project" />
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
     <orderEntry type="library" name="Vok" level="project" />
@@ -47,7 +44,9 @@
     <orderEntry type="library" name="GraphicsLib" level="project" />
     <orderEntry type="library" name="RandomAssortmentofThings" level="project" />
     <orderEntry type="library" name="ExerelinCore" level="project" />
-    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="sotf" level="project" />
     <orderEntry type="library" name="starsector-core" level="project" />
+    <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
+    <orderEntry type="library" name="SS-armaa-3.1" level="project" />
   </component>
 </module>
