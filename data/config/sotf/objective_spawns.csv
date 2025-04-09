@@ -1,0 +1,3 @@
+id,obj_id,tag,hyperspace,escape,central_spawn,minFP,maxFP,weight
+WWLB_derelict_magnetar_reinf,sotf_objective_reinf,theme_magnetar,,false,true,,,2
+WWLB_omega_magnetar_reinf,sotf_objective_reinf_omega,theme_magnetar,,false,true,60,,1
