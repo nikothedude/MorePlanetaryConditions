@@ -19,6 +19,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.thoughtworks.xstream.XStream
+import data.codex.CodexData
 import data.compatability.MPC_compatabilityUtils
 import data.kaysaar.aotd.vok.Ids.AoTDTechIds
 import data.kaysaar.aotd.vok.scripts.research.AoTDMainResearchManager
@@ -327,6 +328,12 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         x.alias("niko_MPC_realspaceHyperspace", niko_MPC_realspaceHyperspace.javaClass)
 
         super.configureXStream(x)
+    }
+
+    override fun onAboutToLinkCodexEntries() {
+        super.onAboutToLinkCodexEntries()
+
+        CodexData.linkCodexEntries()
     }
 
     override fun onNewGameAfterEconomyLoad() {

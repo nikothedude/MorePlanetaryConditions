@@ -316,6 +316,13 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
         super.createTooltipAfterDescription(tooltip, expanded)
         if (tooltip == null) return
 
+        if (Global.CODEX_TOOLTIP_MODE) {
+            tooltip.addPara(
+                "Theorized to be caused by the p-resonance of a particular element deep within the planet's core (coupled with its gravitational field), the space around $market is sufficiently unstable enough to be used as a hyperspace jump point. Unfortunately, this jump point is always stuck open, causing a slow but steady outpour of hyperspace into realspace. While incredibly inconvenient for approach and takeoff, the constant sensor readings from hyperspace allow for very accurate tracking of slipstreams, even from a distance. Additionally, the volatile hyperclouds surrounding ${market.name} are a useful defensive option, as well as a great source of volatiles.",
+                10f
+            )
+        }
+
         tooltip.addPara(
             "%s slipstream detection radius",
             10f,

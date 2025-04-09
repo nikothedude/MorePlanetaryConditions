@@ -3,6 +3,7 @@ package data.scripts.campaign
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.industries.MPC_coronaResistStructure
 import data.scripts.campaign.objectives.MPC_baryonEmitterObjectiveScript
@@ -112,10 +113,11 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken): niko_MPC_baseN
 
     private fun unAffectFleetMember(member: FleetMemberAPI){
         member.stats.dynamic.getStat(Stats.CORONA_EFFECT_MULT).unmodify("${entity.id}_MPCspecialCoronaResistance")
+        member.fleetData?.fleet?.removeTag(Tags.FLEET_IGNORES_CORONA)
     }
 
     private fun affectFleet(fleet: CampaignFleetAPI, days: Float) {
-        fleet.counterTerrainMovement(days, terrainMovementDivisor) // this doesnt seem to work very well either, its inconsistant between fleets
+        fleet.addTag(Tags.FLEET_IGNORES_CORONA)
         fleet.memoryWithoutUpdate.set(CORONA_RESIST_MEMORY_FLAG, coronaResistance, 1f)
 
         for (fleetMember in fleet.fleetData.membersListCopy) {

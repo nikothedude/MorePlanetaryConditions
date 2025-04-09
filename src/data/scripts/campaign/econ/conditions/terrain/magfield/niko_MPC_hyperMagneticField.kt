@@ -68,19 +68,19 @@ class niko_MPC_hyperMagneticField:
 
         if (Global.getCurrentState() == GameState.TITLE) return false
 
-        val middleRadius = primaryEntity.radius + 400f
-        val innerRadius = 80f
-        val outerRadius = 1600f * MathUtils.getRandomNumberInRange(0.8f, 1.2f)
-        val bandwidth = outerRadius
-
-        val auroraProbability = 0.25f + 0.75f * StarSystemGenerator.random.nextFloat()
+        val widthToUse = 3000f
+        var visStartRadius = (primaryEntity.radius * 1.5f)
+        var visEndRadius = visStartRadius + widthToUse
+        var bandWidth = (visEndRadius) * 1f
+        var midRadius = 0f
+        var auroraProbability = 1f
 
         val auroraIndex = (MagFieldGenPlugin.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
 
         val ringParams = MagneticFieldTerrainPlugin.MagneticFieldParams(
-            bandwidth, middleRadius,
+            bandWidth, midRadius,
             primaryEntity,
-            innerRadius, outerRadius,
+            visStartRadius, visEndRadius,
             niko_MPC_settings.hyperMagFieldColors.random(),
             auroraProbability,
             *MagFieldGenPlugin.auroraColors[auroraIndex],

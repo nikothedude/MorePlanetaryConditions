@@ -36,7 +36,7 @@ class MPC_artyStationOfficerAdder(
     override fun stopImpl() {
         val artyStationObject = market.connectedEntities?.firstOrNull { it.customEntityType == "IndEvo_ArtilleryStation" } ?: return
         val fleet = artyStationObject.memoryWithoutUpdate.getFleet(MemFlags.STATION_FLEET) ?: return
-        if (fleet.flagship?.captain?.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+        if (fleet?.flagship?.captain?.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
             fleet.flagship.captain = null
         }
 

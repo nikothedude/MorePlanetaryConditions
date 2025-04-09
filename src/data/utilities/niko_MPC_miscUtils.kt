@@ -176,6 +176,7 @@ object niko_MPC_miscUtils {
                 flagship.captain?.setPersonality(Personalities.AGGRESSIVE)
             }
             // probably safe, i mean, when the hell will the corona resist fleet get another skuliodas prize
+            newVariant.originalVariant = null
             flagship.setVariant(newVariant, true, false)
 
             flagship.variant.addPermaMod(HullMods.SOLAR_SHIELDING, true)

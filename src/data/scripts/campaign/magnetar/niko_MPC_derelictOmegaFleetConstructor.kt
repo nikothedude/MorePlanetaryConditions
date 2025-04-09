@@ -95,6 +95,8 @@ object niko_MPC_derelictOmegaFleetConstructor {
         derelictFleet.fleetData.syncIfNeeded()
         derelictFleet.setFaction(niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, true)
 
+        derelictFleet.fleetData.membersListCopy.forEach { it.variant.originalVariant = null }
+
         if (addListener) { // NOT NEEDED, I FIGURED IT OUT
             //MPC_variantFixerListener(derelictFleet).begin() // the nuclear option
         }
@@ -157,6 +159,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
             clonedVariant.addMod("niko_MPC_subsumedIntelligence")
             clonedVariant.addTag(Tags.VARIANT_UNBOARDABLE) // they can drop with omega weapons
             clonedVariant.removeTag(Tags.AUTOMATED_RECOVERABLE)
+            clonedVariant.originalVariant = null
             member.setVariant(clonedVariant, false, true)
         }
 

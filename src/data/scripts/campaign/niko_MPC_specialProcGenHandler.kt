@@ -22,6 +22,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASC
 import com.fs.starfarer.api.util.Misc
 import data.coronaResistStationCoreFleetListener
 import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
+import data.scripts.campaign.magnetar.MPC_magnetarThreatFleetManager
 import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
@@ -350,12 +351,16 @@ object niko_MPC_specialProcGenHandler {
         system.addTag(Tags.THEME_INTERESTING)
         system.addTag("theme_magnetar")
         system.addTag(Tags.SYSTEM_ABYSSAL)
+        //system.addTag(Tags.SYSTEM_CAN_SPAWN_THREAT)
+        system.addTag("theme_magnetar")
 
         system.type = StarSystemGenerator.StarSystemType.DEEP_SPACE
 
         system.autogenerateHyperspaceJumpPoints(true, true)
 
         MPC_abyssUtils.setupSystemForAbyss(system)
+
+        system.addScript(MPC_magnetarThreatFleetManager())
 
         val anchor = system.hyperspaceAnchor
         val beacon = Global.getSector().hyperspace.addCustomEntity(

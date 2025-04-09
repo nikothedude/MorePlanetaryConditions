@@ -48,14 +48,14 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
                 }
             }
         }
-        info!!.addSpacer(3f)
+        /*info!!.addSpacer(3f)
         info.addPara(
             "An important travel advisory",
             0f,
             Misc.getTextColor(),
             Misc.getHighlightColor(),
             "travel advisory"
-        )
+        )*/
 
     }
 
@@ -128,4 +128,8 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
     override fun getIcon(): String = Global.getSettings().getSpriteName("intel", "niko_MPC_magnetarIcon");
 
     override fun canTurnImportantOff(): Boolean = true
+
+    override fun getName(): String {
+        return "An important travel advisory"
+    }
 }

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.TerrainAIFlags
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
+import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HTScanFactor
 import com.fs.starfarer.api.impl.campaign.intel.events.ht.HyperspaceTopographyEventIntel
@@ -379,11 +380,14 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
 
     override fun hasAIFlag(flag: Any?, fleet: CampaignFleetAPI?): Boolean {
 
+        if (fleet?.faction?.id == Factions.THREAT && flag == TerrainAIFlags.CR_DRAIN) return false
+
         return super.hasAIFlag(flag)
                 ||
-                (fleet != null &&
-                fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] != true &&
-                (flag === TerrainAIFlags.CR_DRAIN || flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE)
+                (
+                    fleet != null &&
+                    fleet.memoryWithoutUpdate[niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE] != true &&
+                    (flag === TerrainAIFlags.CR_DRAIN || flag === TerrainAIFlags.EFFECT_DIMINISHED_WITH_RANGE)
                 ) ||
                 flag === TerrainAIFlags.BREAK_OTHER_ORBITS ||
                 flag === TerrainAIFlags.MOVES_FLEETS

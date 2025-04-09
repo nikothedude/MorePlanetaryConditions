@@ -36,7 +36,7 @@ class MPC_fractalStationOfficerAdder(
         market.memoryWithoutUpdate["\$MPC_fractalOfficerAdder"] = null
 
         val fleet = market.getStationFleet()
-        if (fleet.flagship?.captain?.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
+        if (fleet?.flagship?.captain?.aiCoreId == niko_MPC_ids.SLAVED_OMEGA_CORE_COMMID) {
             fleet.flagship.captain = null
         }
     }

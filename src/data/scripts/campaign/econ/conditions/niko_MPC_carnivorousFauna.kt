@@ -1,5 +1,6 @@
 package data.scripts.campaign.econ.conditions
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Industries
@@ -178,6 +179,16 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
     override fun createTooltipAfterDescription(tooltip: TooltipMakerAPI?, expanded: Boolean) {
         super.createTooltipAfterDescription(tooltip, expanded)
         if (tooltip == null) return
+
+        if (Global.CODEX_TOOLTIP_MODE) {
+            tooltip.addPara(
+                "Toteliacs have a complex history. As far as the record goes, it's said Toteliacs were originally invented as an \"organic\" solution to clearing unwanted fauna/flora out of terraforming candidates. Unfortunately, while ecologically \"friendly\", they were outclassed by more traditional methods, and so the Toteliacs were sold off as to not waste credits. They served a variety of roles, from show animals, to guard beasts, to even exotic pets (much to the chargin of hospitals everywhere). Their most common role, however, was to be as livestock in highly controlled environments, as it was said that Toteliacs had the taste of perfectly seasoned steak, and their pelts made the best coats.\n" +
+                        "\n" +
+                "Unfortunately, the collapse brought an end to all this, and in the chaos, Toteliacs seem to have escaped the hundreds of safety nets the Domain had set in place to prevent ecological runaway from these creatures. They are now commonly considered to be highly dangerous pests - though their flesh and pelts are still highly desired.",
+
+                10f
+            )
+        }
 
         tooltip.addPara(
             "%s hazard rating (reduced by military bases, scaling with upgrade level, dependant on deficits, currently at %s)",

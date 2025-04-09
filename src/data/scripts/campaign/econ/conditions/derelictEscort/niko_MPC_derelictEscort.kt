@@ -446,6 +446,13 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         if (tooltip == null) return
         val market = getMarket() ?: return
 
+        if (Global.CODEX_TOOLTIP_MODE) {
+            tooltip.addPara(
+                "Setups like these - \"reinforcement centers\" as they were called - were deployed in particuarly piracy-rich sector frontiers to simultaniously reinforce trade fleets and act as a comms relay, which are often the first target of any pirate attack. While not capable of interstellar communications, the management core is able to route most intra-stellar comms through the planet it resides on - to the dismay of said planets IT workers, who constantly battle with the AI to achieve consistant intra-planetary communication. As a result, approaches to these planet often have large wait times, as the STC waits for an open channel. Disgruntled spacers have often tried to remove these cores from power - but fail, due to the Domains insistance on protecting them enough to survive a pirate invasion.\n",
+                10f
+            )
+        }
+
         val patrolString = if (niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS) "" else " non-patrol"
         tooltip.addPara(
             "%s for all friendly$patrolString/trade fleets in system that follow for %s (affected by fleet size)",

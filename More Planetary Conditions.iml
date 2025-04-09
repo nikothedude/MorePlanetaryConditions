@@ -9,26 +9,14 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="Console Commands" level="project" />
     <orderEntry type="library" name="javadoc" level="project" />
-    <orderEntry type="library" name="LunaLib" level="project" />
     <orderEntry type="library" name="More Combat Terrain Effects" level="project" />
     <orderEntry type="library" name="DynamicTariffs" level="project" />
     <orderEntry type="library" name="orders from thje boss" level="project" />
     <orderEntry type="library" name="seeker" level="project" />
-    <orderEntry type="library" name="unknown skies" level="project" />
     <orderEntry type="library" name="Knights of Ludd" level="project" />
     <orderEntry type="library" name="Illustrated.Entities1.1" level="project" />
-    <orderEntry type="library" name="src1" level="project" />
     <orderEntry type="library" name="Interstellar Imperium" level="project" />
     <orderEntry type="library" name="jars" level="project" />
     <orderEntry type="library" name="HMI" level="project" />
@@ -48,5 +36,6 @@
     <orderEntry type="library" name="starsector-core" level="project" />
     <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
     <orderEntry type="library" name="SS-armaa-3.1" level="project" />
+    <orderEntry type="library" name="luna" level="project" />
   </component>
 </module>

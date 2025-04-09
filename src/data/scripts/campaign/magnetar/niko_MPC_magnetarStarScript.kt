@@ -34,6 +34,11 @@ class niko_MPC_magnetarStarScript(
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
 
     var generatedDefenders = false
+    var TEMP_REGENERATED_TWICE = false
+        get() {
+            if (field == null) field = false
+            return field
+        }
 
     companion object {
         fun doBlindJump(fleet: CampaignFleetAPI) {
@@ -98,7 +103,7 @@ class niko_MPC_magnetarStarScript(
 
         val containingLocation = magnetar.containingLocation ?: return
         val playerFleet = Global.getSector().playerFleet
-        if (!generatedDefenders && playerFleet?.containingLocation == containingLocation) {
+        if ((!generatedDefenders || (niko_MPC_modPlugin.currVersion == "4.3.0" && !TEMP_REGENERATED_TWICE)) && playerFleet?.containingLocation == containingLocation) {
             val mothership = containingLocation.getEntitiesWithTag("MPC_omegaDerelict_mothership").firstOrNull()
             if (mothership != null) {
                 mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
@@ -140,7 +145,13 @@ class niko_MPC_magnetarStarScript(
             planetThree?.memoryWithoutUpdate?.set("\$hasDefenders", true)
             planetThree?.memoryWithoutUpdate?.set("\$hasStation", true)
             planetThree?.memoryWithoutUpdate?.set("\$hasNonStation", true)
+
+            if (magnetar.starSystem.scripts.none { it is MPC_magnetarThreatFleetManager }) {
+                magnetar.starSystem.addScript(MPC_magnetarThreatFleetManager())
+            }
+
             generatedDefenders = true
+            TEMP_REGENERATED_TWICE = true
         }
 
         val days = Misc.getDays(amount)
