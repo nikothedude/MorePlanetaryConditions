@@ -7,7 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
     <orderEntry type="library" name="LazyLib-Kotlin" level="project" />
     <orderEntry type="library" name="Console Commands" level="project" />
     <orderEntry type="library" name="javadoc" level="project" />

@@ -364,7 +364,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                         val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
                         if (discoveredInterdictTech) return
                         MPC_delayedExecution(
-                            {
+                            @JvmSerializableLambda {
                                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
                                     Global.getSector().campaignUI.showInteractionDialog(
                                         RuleBasedInteractionDialogPluginImpl("MPC_hitByMagnetarPulseFirstTime"),

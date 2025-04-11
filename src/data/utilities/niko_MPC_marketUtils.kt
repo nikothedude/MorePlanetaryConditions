@@ -246,7 +246,9 @@ object niko_MPC_marketUtils {
         val iterator = this.getOvergrownNanoforgeBuildings().iterator()
         while (iterator.hasNext()) {
             val building = iterator.next()
+            building.deleteStructureOnDelete = true
             building.delete()
+            building.deleteStructureOnDelete = false
         }
     }
     fun MarketAPI.getOvergrownNanoforgeBuildings(): MutableSet<baseOvergrownNanoforgeStructure> {

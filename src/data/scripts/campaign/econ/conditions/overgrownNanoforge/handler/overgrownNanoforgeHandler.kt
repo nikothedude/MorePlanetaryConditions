@@ -142,7 +142,9 @@ abstract class overgrownNanoforgeHandler(
     }
 
     open fun culled() {
+        ImGoingToRefactorThisSohard = true
         delete()
+        ImGoingToRefactorThisSohard = false
     }
 
     open fun apply(): Boolean {
@@ -221,8 +223,13 @@ abstract class overgrownNanoforgeHandler(
         currentStructureId = newStructureId
     }
 
+    var ImGoingToRefactorThisSohard = false
+        get() {
+            if (field == null) field = false
+            return field
+        }
     open fun removeStructure() {
-        getStructure()?.deleteStructureOnDelete = false
+        getStructure()?.deleteStructureOnDelete = ImGoingToRefactorThisSohard
         getStructure()?.delete()
         getStructure()?.deleteStructureOnDelete = true
     }

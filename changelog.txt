@@ -1,3 +1,10 @@
+4.3.1
+
+Fixes the tachyon pike
+    You still can't get it in campaign.
+Fixes overgrown nanoforges AGAIN (AAAHH)
+Fixes a few lambda crashes
+
 4.3.0
 PROBABLY SAVE COMPATIBLE - MAGNETAR WILL REGENERATE ITS SHIPS
 

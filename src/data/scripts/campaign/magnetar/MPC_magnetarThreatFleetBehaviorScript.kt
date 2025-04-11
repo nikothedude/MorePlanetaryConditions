@@ -23,7 +23,7 @@ class MPC_magnetarThreatFleetBehaviorScript(fleet: CampaignFleetAPI?, system: St
     var currBehavior: Behaviors = Behaviors.OUTSKIRT
 
     enum class Behaviors(val weight: Float) {
-        OUTSKIRT(10f),
+        OUTSKIRT(20f),
         DIVE(1f);
     }
 
