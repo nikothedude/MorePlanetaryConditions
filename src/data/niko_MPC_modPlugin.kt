@@ -154,6 +154,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             "black dwarf: very rare and very very decrepit star, phase after white dwarf" +
             "\nplanetary nebulae, hostile environment with white dwarf/neutron star/blackhole that slowly overheats your fleet (is this fun?)" +
         )*/
+        LunaSettings.addSettingsListener(settingsChangedListener())
     }
 
     val overgrownNanoforgeItemInstance = overgrownNanoforgeItemEffect(overgrownNanoforgeItemId, 0, 0)
@@ -289,7 +290,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         if (niko_MPC_settings.nexLoaded) {
             //MPC_IAIICFobInvasionListener.get(true)
         }
-        LunaSettings.addSettingsListener(settingsChangedListener())
     }
 
     override fun beforeGameSave() {

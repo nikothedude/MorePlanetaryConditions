@@ -38,6 +38,8 @@ object niko_MPC_derelictOmegaFleetConstructor {
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FORCE_TRANSPONDER_OFF] = true
 
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_SHIP_RECOVERY] = true
+
         //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_IGNORE_PLAYER_COMMS] = true
 
         fleet.removeAbility(Abilities.SUSTAINED_BURN)
