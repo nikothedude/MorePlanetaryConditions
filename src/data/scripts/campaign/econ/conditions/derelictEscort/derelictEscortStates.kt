@@ -89,6 +89,26 @@ enum class derelictEscortStates {
             return FleetAssignment.DELIVER_CREW
         }
     },
+    MEETING_ESCORT {
+        override fun getAssignmentType(
+            fleet: CampaignFleetAPI,
+            assignmentAI: MPC_derelictEscortAssignmentAI,
+            target: SectorEntityToken?
+        ): FleetAssignment {
+            return FleetAssignment.INTERCEPT
+        }
+
+        override fun addAssignment(
+            fleet: CampaignFleetAPI,
+            assignmentAI: MPC_derelictEscortAssignmentAI,
+            target: SectorEntityToken?
+        ) {
+            if (target == null) return
+            val targetText = if (target.isPlayerFleet) "your fleet" else "escortee"
+            fleet.addAssignmentAtStart(getAssignmentType(fleet, assignmentAI, target), target, 1000f, "meeting $targetText", null)
+        }
+
+    },
     RETURNING_TO_BASE {
         override fun addAssignment(
             fleet: CampaignFleetAPI,

@@ -82,6 +82,7 @@ class MPC_TTBMCacheDefenderSpawnScript(
 
                 fleet.fleetData.membersListCopy.forEach {
                     val copyVariant = it.variant.clone()
+                    copyVariant.originalVariant = null
                     if (copyVariant.hullSpec.shieldType == ShieldAPI.ShieldType.NONE) {
                         copyVariant.addPermaMod(HullMods.MAKESHIFT_GENERATOR, true)
                     }

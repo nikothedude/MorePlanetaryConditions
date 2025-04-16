@@ -193,7 +193,7 @@ open class MPC_luddicContributionIntel: BaseIntelPlugin() {
                 )
             }
             State.FAILED -> {
-                info.addPara("You have failed to drive a wegde between the IAIIC and the pathers.", 5f)
+                info.addPara("You have failed to drive a wedge between the IAIIC and the pathers.", 5f)
             }
             State.DONE -> {
                 info.addPara("You have successfully armed the %s with heavy industry, and in doing so, drove a wedged between them and the %s.",

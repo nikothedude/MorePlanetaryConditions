@@ -56,9 +56,6 @@ class MPC_derelictEscortAssignmentAI(
     override fun runWhilePaused(): Boolean = false
 
     override fun advance(amount: Float) {
-        // TODO: remove after 3.3.4
-        if (despawnSetting == null) despawnSetting = target.isNoAutoDespawn
-
         val days = Misc.getDays(amount)
         interval.advance(days)
         if (interval.intervalElapsed()) {
@@ -73,7 +70,7 @@ class MPC_derelictEscortAssignmentAI(
         if (shouldDoScaryMessages && homeMarket.isInhabited()) shouldDoScaryMessages = false
     }
 
-    private fun refreshAssignments() {
+    fun refreshAssignments() {
 
         if (homeMarket.primaryEntity == null || !homeMarket.primaryEntity.isAlive) {
             selfDestruct()
@@ -109,6 +106,16 @@ class MPC_derelictEscortAssignmentAI(
             }
         }
         val dist = MathUtils.getDistance(fleet, target)
+
+        if (target.currentAssignment?.target == fleet || target.interactionTarget == fleet) {
+            derelictEscortStates.MEETING_ESCORT.overrideAssignment(
+                fleet,
+                this,
+                target
+            )
+            return
+        }
+
         if (dist > DERELICT_ESCORT_CATCH_UP_DIST) {
             derelictEscortStates.CATCHING_UP_TO.overrideAssignment(fleet, this, target)
         } else {

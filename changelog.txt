@@ -1,3 +1,8 @@
+4.3.3
+
+Derelict escorts now meet your fleet if you try to intercept them
+Derelict escort description has better grammar
+
 4.3.2
 
 Fixes magnetar ships being recoverable

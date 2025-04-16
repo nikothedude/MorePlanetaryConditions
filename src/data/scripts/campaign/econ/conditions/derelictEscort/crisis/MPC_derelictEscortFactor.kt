@@ -113,7 +113,7 @@ class MPC_derelictEscortFactor(intel: HostileActivityEventIntel?): BaseHostileAc
     }
 
     override fun shouldShow(intel: BaseEventIntel?): Boolean {
-        return getProgress(intel) > 0 || KantaCMD.playerHasProtection()
+        return getProgress(intel) > 0
     }
 
     override fun getMaxNumFleets(system: StarSystemAPI?): Int {

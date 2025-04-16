@@ -875,7 +875,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             when (data.reason) {
                 MPC_changeReason.PULLED_OUT -> {
                     val label = info.addPara(
-                        "%s pulled out of %s",
+                        "%s pulls out of %s",
                         0f,
                         faction.color,
                         faction.displayName, "IAIIC"
@@ -1024,7 +1024,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         FOB.addSpecialItems()
         FOB.reapplyConditions()
         MPC_delayedExecution(
-            {
+            @JvmSerializableLambda {
                 FOB.respawnAllFleets()
             },
             0.2f,
@@ -1717,7 +1717,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             sendUpdateIfPlayerHasIntel(reason, false)
         }
 
-        MPC_delayedExecution({ if (!isEnded) { sabotage() } },0.3f, runWhilePaused = false, useDays = true).start()
+        MPC_delayedExecution(@JvmSerializableLambda { if (!isEnded) { sabotage() } },0.3f, runWhilePaused = false, useDays = true).start()
         daysLeftTilNextRetaliate = RETALIATE_COOLDOWN_DAYS
     }
 
