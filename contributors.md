@@ -75,6 +75,8 @@ There are many ways to make a faction questline make sense, but you need to know
 If going for "a favor" approach, it is suggested that whatever plot you design has **lasting consequences** for the parties involved.
     This is to enrich the world, and hammer home the fact that some people are opportunistic.
 
+**No faction will ever directly state that they are involved with the IAIIC unless they are sure the public will never hear it.**
+
 #### TODO List
 
 1. Hegemony (UNCLAIMED, NOT STARTED)
