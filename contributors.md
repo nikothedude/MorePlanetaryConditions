@@ -109,6 +109,9 @@ data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
 
     Potentially exclusive with the Lion's Guard(?)
 
+### Requirements
+Rules.csv knowledge is **NECESSARY**. Code capability is preferred.
+
 ## Misc
 Any pull requests submitted will be reviewed. Feel free to suggest changes or fixes for other things.
 
