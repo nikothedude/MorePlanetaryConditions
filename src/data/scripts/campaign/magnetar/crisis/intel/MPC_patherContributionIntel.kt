@@ -16,18 +16,18 @@ import data.utilities.niko_MPC_ids
 import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
 
-open class MPC_luddicContributionIntel: BaseIntelPlugin() {
+open class MPC_patherContributionIntel: BaseIntelPlugin() {
 
     companion object {
-        fun get(withUpdate: Boolean = false): MPC_luddicContributionIntel? {
+        fun get(withUpdate: Boolean = false): MPC_patherContributionIntel? {
             if (withUpdate) {
                 if (Global.getSector().memoryWithoutUpdate[KEY] == null) {
-                    val intel = MPC_luddicContributionIntel()
+                    val intel = MPC_patherContributionIntel()
                     Global.getSector().intelManager.addIntel(intel)
                     Global.getSector().memoryWithoutUpdate[KEY] = intel
                 }
             }
-            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_luddicContributionIntel
+            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_patherContributionIntel
         }
 
         const val KEY = "\$MPC_patherContributionIntel"

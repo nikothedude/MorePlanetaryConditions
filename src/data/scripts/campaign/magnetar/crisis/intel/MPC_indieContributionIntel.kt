@@ -2,7 +2,6 @@ package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
-import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Factions
@@ -11,23 +10,21 @@ import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD
 import data.utilities.niko_MPC_ids
 import org.magiclib.kotlin.makeNonStoryCritical
-import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
 
 class MPC_indieContributionIntel: BaseIntelPlugin() {
         companion object {
-        fun get(withUpdate: Boolean = false): MPC_luddicContributionIntel? {
+        fun get(withUpdate: Boolean = false): MPC_patherContributionIntel? {
             if (withUpdate) {
                 if (Global.getSector().memoryWithoutUpdate[KEY] == null) {
-                    val intel = MPC_luddicContributionIntel()
+                    val intel = MPC_patherContributionIntel()
                     Global.getSector().intelManager.addIntel(intel)
                     Global.getSector().memoryWithoutUpdate[KEY] = intel
                 }
             }
-            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_luddicContributionIntel
+            return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_patherContributionIntel
         }
 
         const val KEY = "\$MPC_indieContributionIntel"

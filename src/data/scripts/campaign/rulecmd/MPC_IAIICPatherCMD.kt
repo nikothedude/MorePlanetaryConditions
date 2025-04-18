@@ -15,11 +15,10 @@ import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
-import data.scripts.campaign.magnetar.crisis.intel.MPC_luddicContributionIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel
 import data.utilities.niko_MPC_marketUtils.isFractalMarket
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_settings
-import org.magiclib.kotlin.getCurrentlyBeingConstructed
 import org.magiclib.kotlin.getStationIndustry
 import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.makeUnimportant
@@ -138,22 +137,22 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 return true
             }
             "createIntel" -> {
-                val intel = MPC_luddicContributionIntel.get(true)
+                val intel = MPC_patherContributionIntel.get(true)
                 intel?.sendUpdateIfPlayerHasIntel("Rumors of involvement", dialog.textPanel)
             }
 
             "startGoToIthaca" -> {
-                val intel = MPC_luddicContributionIntel.get(true)
+                val intel = MPC_patherContributionIntel.get(true)
                 generateHideout()
-                intel?.state = MPC_luddicContributionIntel.State.GO_TO_HIDEOUT
-                intel?.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.GO_TO_HIDEOUT, dialog.textPanel)
+                intel?.state = MPC_patherContributionIntel.State.GO_TO_HIDEOUT
+                intel?.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.GO_TO_HIDEOUT, dialog.textPanel)
             }
 
             "initialHideoutLanding" -> {
                 val planet = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI ?: return false
                 if (interactionTarget != planet) return false
-                val intel = MPC_luddicContributionIntel.get() ?: return false
-                if (intel.state != MPC_luddicContributionIntel.State.GO_TO_HIDEOUT) return false
+                val intel = MPC_patherContributionIntel.get() ?: return false
+                if (intel.state != MPC_patherContributionIntel.State.GO_TO_HIDEOUT) return false
                 return true
             }
             "ambush" -> {
@@ -167,9 +166,9 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             }
 
             "beginBuildObj" -> {
-                val intel = MPC_luddicContributionIntel.get() ?: return false
-                intel.state = MPC_luddicContributionIntel.State.HAND_OVER_MARKET
-                intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.HAND_OVER_MARKET, dialog.textPanel)
+                val intel = MPC_patherContributionIntel.get() ?: return false
+                intel.state = MPC_patherContributionIntel.State.HAND_OVER_MARKET
+                intel.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.HAND_OVER_MARKET, dialog.textPanel)
                 interactionTarget.market?.addCondition("MPC_arrowPatherCondition")
 
                 Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketName"] = interactionTarget.market.name
@@ -187,14 +186,14 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             "canVisitHideoutAgain" -> {
                 val planet = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI ?: return false
                 if (interactionTarget != planet) return false
-                val intel = MPC_luddicContributionIntel.get() ?: return false
-                return intel.state == MPC_luddicContributionIntel.State.HAND_OVER_MARKET
+                val intel = MPC_patherContributionIntel.get() ?: return false
+                return intel.state == MPC_patherContributionIntel.State.HAND_OVER_MARKET
             }
 
             "raidFinished" -> {
-                val intel = MPC_luddicContributionIntel.get() ?: return false
-                intel.state = MPC_luddicContributionIntel.State.FAILED
-                intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.FAILED, dialog.textPanel)
+                val intel = MPC_patherContributionIntel.get() ?: return false
+                intel.state = MPC_patherContributionIntel.State.FAILED
+                intel.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.FAILED, dialog.textPanel)
                 intel.endAfterDelay()
                 interactionTarget.market?.removeCondition("MPC_arrowPatherCondition")
             }
@@ -202,8 +201,8 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 return interactionTarget.starSystem?.hasTag(Tags.THEME_UNSAFE) == true || (interactionTarget.starSystem.hasPulsar() || interactionTarget.starSystem.hasBlackHole())
             }
             "canAddDedicateOption" -> {
-                val intel = MPC_luddicContributionIntel.get() ?: return false
-                if (intel.state != MPC_luddicContributionIntel.State.HAND_OVER_MARKET) return false
+                val intel = MPC_patherContributionIntel.get() ?: return false
+                if (intel.state != MPC_patherContributionIntel.State.HAND_OVER_MARKET) return false
                 return interactionTarget.market?.factionId == Factions.PLAYER
             }
 
@@ -274,9 +273,9 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
 
                 (targetMarket.primaryEntity as? PlanetAPI?)?.descriptionIdOverride = "MPC_arrowPatherPlanet"
 
-                val intel = MPC_luddicContributionIntel.get(true) ?: return false
-                intel.state = MPC_luddicContributionIntel.State.DONE
-                intel.sendUpdateIfPlayerHasIntel(MPC_luddicContributionIntel.State.DONE, dialog.textPanel)
+                val intel = MPC_patherContributionIntel.get(true) ?: return false
+                intel.state = MPC_patherContributionIntel.State.DONE
+                intel.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.DONE, dialog.textPanel)
                 intel.endAfterDelay()
 
                 Global.getSoundPlayer().restartCurrentMusic()

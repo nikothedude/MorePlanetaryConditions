@@ -36,8 +36,7 @@ import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspa
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobInvasionListener
-import data.scripts.campaign.magnetar.crisis.intel.MPC_luddicContributionIntel.Companion.SECT_NAME
+import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel.Companion.SECT_NAME
 import data.scripts.campaign.magnetar.crisis.listeners.MPC_ArkFOBColonizedListener
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
@@ -66,7 +65,6 @@ import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
-import org.dark.shaders.light.LightData
 import org.dark.shaders.util.ShaderLib
 import org.magiclib.kotlin.*
 import kotlin.collections.set

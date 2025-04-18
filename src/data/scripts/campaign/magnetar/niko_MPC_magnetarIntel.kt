@@ -102,7 +102,7 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
         )
         info.addPara("Pulses can be avoided by...", 5f)
         info.setBulletedListMode(BULLET)
-        info.addPara("Sheltering %s or %s", 0f, Misc.getHighlightColor(), "utop planets", "behing large stellar bodies")
+        info.addPara("Sheltering %s or %s", 0f, Misc.getHighlightColor(), "on top of planets", "behind large stellar bodies")
         info.addPara("Fleeing - getting away from the magnetar %s of the pulse", 0f, Misc.getHighlightColor(), "inhibits the effect")
         if (discoveredInterdictTech) {
             info.addPara("Timing an interdiction well", 0f).setColor(Misc.getHighlightColor())
@@ -115,6 +115,7 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
                 Misc.getNegativeHighlightColor(),
                 Misc.getHighlightColor()
             )
+            info.addPara("THE INTERDICTION MUST BE CHARGING FOR IT TO DEFLECT. FIRING THE INTERDICTION OFF DOES NOTHING.", 0f).color = Misc.getNegativeHighlightColor()
             info.setBulletedListMode(BULLET)
         }
         info.addPara("%s - but public research on magnetars is %s", 0f, Misc.getHighlightColor(), "Likely more", "heavily limited").setHighlightColors(

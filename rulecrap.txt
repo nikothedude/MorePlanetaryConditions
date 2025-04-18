@@ -1,7 +1,0 @@
-No contacts reported, no autonomous defenses. Looks like the interior scans were right - this place is completely undefended. With a foothold in the central chamber, your ops chief feels confidant enough to order a general exploration order, relaxing combat protocols. Your salvors collectively sigh with relief (under their breaths, of course) and begin vigorously cataloguing their finds.
-
-The chamber itself appears to be some kind of... manufactorum? At least, thats what your tactical officer says - with a shrug. Specialized chambers of unknown make dot the walls, with slots for some kind of device behind a chromeglass shield. Conveyor belts shoot out from a central platform, the same kind of slot placed in equidistant 5 foot intervals atop them, and on the platform...
-
-"$PlayerSirOrMadam..." a salvor's voice rings out, "...it's some kind of AI core."
-
-AddRemoveAnyItem RESOURCES "MPC_slavedOmegaCore" 1
