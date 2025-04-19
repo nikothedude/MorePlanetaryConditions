@@ -79,7 +79,7 @@ If going for "a favor" approach, it is suggested that whatever plot you design h
 
 #### TODO List
 
-1. Hegemony (UNCLAIMED, NOT STARTED)
+1. Hegemony (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS)
 2. Luddic Church (UNCLAIMED, NOT STARTED)
 3. Independent (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS)
 4. Tri-Tachyon (FINISHED - NEEDS TOUCHUPS AND FURTHER RESOURCE INVESTMENT)
