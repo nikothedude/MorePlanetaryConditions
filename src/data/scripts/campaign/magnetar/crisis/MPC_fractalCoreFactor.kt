@@ -21,6 +21,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.niko_MPC_modPlugin
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
@@ -40,6 +41,8 @@ import org.magiclib.kotlin.makeNonStoryCritical
 import org.magiclib.kotlin.makeStoryCritical
 import java.awt.Color
 import java.util.*
+import niko_SA.MarketUtils.addStationAugment
+import niko_SA.augments.core.BuiltInMode
 
 class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActivityFactor(intel) {
 
@@ -147,6 +150,17 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                 market.addIndustry("IndEvo_Academy")
             }
             if (!isReclaimed) market.addIndustry("MPC_FOBIAIICPatherResist")
+
+            if (niko_MPC_settings.stationAugmentsLoaded) {
+                market.getIndustry(Industries.STARFORTRESS_HIGH).isImproved = true
+
+                market.addStationAugment("SA_tacticalLink")?.builtInMode = BuiltInMode.NORMAL
+                market.addStationAugment("SA_bubbleShield")?.builtInMode = BuiltInMode.NORMAL
+
+                market.addStationAugment("SA_commsCenter")
+                market.addStationAugment("SA_ecmPackage")
+                market.addStationAugment("SA_navRelay")
+            }
 
             market.addSpecialItems()
 
@@ -346,7 +360,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         initFOBFleets(station, market, fractalSystem)
 
         MPC_delayedExecution(
-            {
+            @JvmSerializableLambda {
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("AAA", 500f)
                 market.respawnAllFleets()
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify("AAA") // i dont know why

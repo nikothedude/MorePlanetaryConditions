@@ -84,10 +84,6 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     var removeBlueprintFunctions: HashSet<() -> Unit> = HashSet()
     val affectedMarkets = HashSet<MarketAPI>()
     var disarmedMarkets = HashSet<MarketAPI>()
-        get() {
-            if (field == null) field = HashSet<MarketAPI>()
-            return field
-        }
     val checkInterval = IntervalUtil(1f, 1.1f)
     var escalationLevel: Float = 0f
     /** If true, [sanitizeFactionContributions] will be ran on the next advance tick. */
@@ -96,15 +92,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     val factionContributions = generateContributions()
     var embargoState = EmbargoState.INACTIVE
     var sabotageRandom = Random()
-        get() {
-            if (field == null) field = Random()
-            return field
-        }
     var disarmTimeLeft = 0f
-        get() {
-            if (field == null) field = 0f
-            return field
-        }
 
     val support: MutableSet<MPC_fractalCrisisSupport> = HashSet()
     var currentAction: BaseIntelPlugin? = null
@@ -127,11 +115,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         }
     /** If true, reputation can go above hostile for this frame. */
     var acceptingPeaceOneFrame: Boolean = false
-    var pulledOut: Float = 0f
-        get() {
-            if (field == null) field = 0f
-            return field
-        }
+    var pulledOut: Int = 0
     /** How long the IAIIC is suffering disrupted command for. */
     var disruptedCommandDaysLeft = 0f
 
@@ -361,7 +345,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             Factions.HEGEMONY,
             HEGEMONY_CONTRIBUTION,
             0.3f,
-            removeContribution = {
+            removeContribution = @JvmSerializableLambda {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
             removeNextAction = true,
@@ -372,7 +356,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             Factions.LUDDIC_CHURCH,
             CHURCH_CONTRIBUTION,
             0f,
-            removeContribution = {
+            removeContribution = @JvmSerializableLambda {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
             removeNextAction = true,
@@ -386,7 +370,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             removeContribution = null,
             removeNextAction = true,
             requireMilitary = false,
-            contributorExists = {
+            contributorExists = @JvmSerializableLambda {
                     Global.getSector().economy.getMarket("new_maxios")?.hasCondition(Conditions.DECIVILIZED) != true
             },
             repOnRemove = -15f
@@ -395,7 +379,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             Factions.DIKTAT,
             0.7f,
             0.3f,
-            removeContribution = {
+            removeContribution = @JvmSerializableLambda {
                     IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
             },
             removeNextAction = true,
@@ -1281,7 +1265,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
     private fun beginCoreUpgrade() {
         MPC_delayedExecution(
-            { MPC_fractalUpgradeIntel() },
+            @JvmSerializableLambda { MPC_fractalUpgradeIntel() },
             30f,
             false,
             useDays = true
@@ -1602,7 +1586,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         fleet.memoryWithoutUpdate["\$nex_ignoreTransponderBlockCheck"] = true
 
         MPC_delayedExecution(
-            {
+            @JvmSerializableLambda {
                 if (!fleet.isExpired && !fleet.isEmpty) {
                     val travel = fleet.assignmentsCopy.firstOrNull { it.assignment == FleetAssignment.GO_TO_LOCATION }
                     if (travel != null) {

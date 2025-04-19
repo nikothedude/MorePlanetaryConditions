@@ -5,7 +5,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_disarmedCondition: niko_MPC_baseNikoCondition() {
     override fun apply(id: String) {
@@ -32,19 +33,19 @@ class MPC_disarmedCondition: niko_MPC_baseNikoCondition() {
             "Fleet size reduced by %s",
             10f,
             Misc.getNegativeHighlightColor(),
-            "${MPC_IAIICFobIntel.DISARMAMENT_FLEET_SIZE_MULT}x"
+            "${MPC_IAIICFobIntel.DISARMAMENT_FLEET_SIZE_MULT.roundNumTo(1).trimHangingZero()}x"
         )
         tooltip.addPara(
             "%s days left",
             10f,
             Misc.getHighlightColor(),
-            "${MPC_IAIICFobIntel.get()?.disarmTimeLeft?.roundTo(1)}"
+            "${MPC_IAIICFobIntel.get()?.disarmTimeLeft?.roundNumTo(1)?.trimHangingZero()}"
         )
         tooltip.addPara(
             "Days remaining reduced to at most %s if the %s is %s",
             10f,
             Misc.getHighlightColor(),
-            "${MPC_IAIICFobIntel.DISARMAMENT_PREMATURE_DAYS}", "IAIIC", "provoked"
+            "${MPC_IAIICFobIntel.DISARMAMENT_PREMATURE_DAYS.roundNumTo(1).trimHangingZero()}", "IAIIC", "provoked"
         )
     }
 

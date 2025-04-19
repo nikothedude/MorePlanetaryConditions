@@ -14,27 +14,20 @@
     <orderEntry type="library" name="DynamicTariffs" level="project" />
     <orderEntry type="library" name="orders from thje boss" level="project" />
     <orderEntry type="library" name="seeker" level="project" />
-    <orderEntry type="library" name="Knights of Ludd" level="project" />
     <orderEntry type="library" name="Illustrated.Entities1.1" level="project" />
     <orderEntry type="library" name="Interstellar Imperium" level="project" />
-    <orderEntry type="library" name="jars" level="project" />
     <orderEntry type="library" name="HMI" level="project" />
-    <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
     <orderEntry type="library" name="Vok" level="project" />
-    <orderEntry type="library" name="ExoticaTechnologies-dev" level="project" />
     <orderEntry type="library" name="vic" level="project" />
-    <orderEntry type="library" name="CombatChatter" level="project" />
-    <orderEntry type="library" name="ED Shipyard" level="project" />
     <orderEntry type="library" name="Station-Augments" level="project" />
-    <orderEntry type="library" name="CustomizableStarSystems-v2.1" level="project" />
     <orderEntry type="library" name="ungp" level="project" />
     <orderEntry type="library" name="GraphicsLib" level="project" />
-    <orderEntry type="library" name="RandomAssortmentofThings" level="project" />
-    <orderEntry type="library" name="ExerelinCore" level="project" />
-    <orderEntry type="library" name="sotf" level="project" />
     <orderEntry type="library" name="starsector-core" level="project" />
     <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
     <orderEntry type="library" name="SS-armaa-3.1" level="project" />
     <orderEntry type="library" name="luna" level="project" />
+    <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
+    <orderEntry type="library" name="ExerelinCore" level="project" />
+    <orderEntry type="library" name="sotf" level="project" />
   </component>
 </module>

@@ -1,5 +1,6 @@
 id,trigger,conditions,script,text,options,notes
 "#RULESET_NAME niko_MPC",,,,,,
+MPC_sal_printDefaultDefenders_objectives,TriggerAutomatedDefenses,"$MPC_hasSalvageObjectives score:40","MPC_SalvageDefenderInteractionWithObjectives","As your $shipOrFleet moves in closer, new energy signatures are detected near the $shortName.",,
 ,,,,,,
 # Overgrown nanoforge stuff,,,,,,
 ,,,,,,
@@ -894,8 +895,7 @@ MPC_OManHostile,OpenInteractionDialog,"$id == MPC_magnetarSystemPlanetThree
 $global.MPC_playerDiscoveredOmegaManufactorum score:500
 !$global.MPC_playerFinishedOmegaManufactorum","FireAll MPC_OManHostilePopulateOptions
 ShowDefaultVisual","Your $shipOrFleet re-enters orbit around $name. The strange complex still looms below you, bristling with mystery. ",,
-MPC_OManEngageDefenders,DialogOptionSelected,"$option == MPC_OManEngageDefenders","
-SalvageDefenderInteraction","Your $shipOrFleet re-enters low orbit, and as predicted, a collection of fractaline defenders appear over the horizon.",,
+MPC_OManEngageDefenders,DialogOptionSelected,"$option == MPC_OManEngageDefenders","MPC_SalvageDefenderInteractionWithObjectives","Your $shipOrFleet re-enters low orbit, and as predicted, a collection of fractaline defenders appear over the horizon.",,
 MPC_OManHostilePopulateOptionsMain,MPC_OManHostilePopulateOptions,"$id == MPC_magnetarSystemPlanetThree
 ","SetShortcut MPC_OManActuallyLeave ""ESCAPE""
 FireAll MPC_OManHostileModifyOptions",,"10:MPC_OManEngageDefenders:Re-engage the defenders
@@ -3345,18 +3345,157 @@ MPC_IAIICDKSindriaCacheLeave,DialogOptionSelected,"$option == MPC_IAIICDKSindria
 "#END Diktat",,,,,,
 ,,,,,,
 # League,,,,,,
-MPC_IAIICPLReynardAccuse,PopulateOptions,"MPC_IAIICPLCMD canAccuse",,,"20:MPC_IAIICPLReynardAccuseOpt:""I demand you end your assistance in the IAIIC's illegal war against my properties!""",
 MPC_IAIICPLReynardSupport,PopulateOptions,"$id == ""reynard_hannan""
 MPC_IAIICPLCMD canAskForSupport",,,"30:MPC_IAIICPLReynardSupportOpt:""My space is under attack by a foreign power. Where's my defense fleets, Reynard? What about our agreement?""",
+MPC_IAIICPLReynardAccuse,PopulateOptions,"MPC_IAIICPLCMD canAccuse",,,"20:MPC_IAIICPLReynardAccuseOpt:""I demand you end your assistance in the IAIIC's illegal war against my properties!""",
 "#END League",,,,,,
 ,,,,,,
 # KKL,,,,,,
+AHHH WHAT AM I DOING HERE,,,,,,
 "#END KKL",,,,,,
 ,,,,,,
 # Church,,,,,,
 "#END Church",,,,,,
 ,,,,,,
 # Hegemony,,,,,,
+,,,,,,
+# Initial meeting with daud and aristocrat defector,,,,,,
+MPC_IAIICHGAddDaudTalkOpt,PopulateOptions,"$id == daud
+MPC_IAIICHegeCMD canAddMeetDaudInitialOption
+!$global.MPC_didInitialIAIICDaudTalk",,,"MPC_IAIICHGMeetDaudInitialStart:""I need to talk to Daud about the IAIIC. Leader to leader.""",
+MPC_IAIICHGMeetDaudInitialStart,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialStart","$global.MPC_didInitialIAIICDaudTalk = true","The cadet freezes as they process your response - melting a moment later, quickly scanning their fingers and eyes over something off screen. ""Affirmative, $PlayerSirOrMadam. Request received and thank you, $PlayerSirOrMadam. Maintain commlink for imminent transfer. Breaking comms now."" 
+
+The display flickers back to the spinning crest of the hegemony.","MPC_IAIICHGMeetDaudInitialMeet:Wait",
+MPC_IAIICHGMeetDaudInitialMeet,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialMeet","BeginConversation daud false true
+
+FireAll MPC_IAIICHGMeetDaudInitialOpts","The visage of the high hegemon quickly replaces the spinning phoenix, staring stiffly at you.
+
+""$PlayerName."" He remarks. ""This is about those IAIIC folk, isn't it."" He doesn't look happy to see you, nor be talking about this.",,
+MPC_IAIICHGMeetDaudInitialAsk,MPC_IAIICHGMeetDaudInitialOpts,,,,"MPC_IAIICHGMeetDaudInitialAsk:""Yes. Are you involved?""",
+MPC_IAIICHGMeetDaudInitialAccuse,MPC_IAIICHGMeetDaudInitialOpts,,,,"MPC_IAIICHGMeetDaudInitialAccuse:""The hegemony is involved with their incursions into my space, aren't you?"" (UNFINISHED)",
+MPC_IAIICHGMeetDaudInitialWarn,MPC_IAIICHGMeetDaudInitialOpts,"$player.discussedHegemonyDefeat",,,"MPC_IAIICHGMeetDaudInitialWarn:""Didn't we come to an agreement? Why are you sending material to the IAIIC?"" (UNFINISHED)",
+MPC_IAIICHGMeetDaudInitialAskSel,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialAsk",,"He remains still. Perhaps considering a response, perhaps thinking of a way to say ""no"" while meaning ""yes"" - or perhaps thinking of a way to dispel your mistrust.
+
+Finally, he speaks, taking a breath to steady himself.
+
+""Our *fleets* are busy building border-guards and patrolling our space for commerce raiders, outlaws, and other criminals. Our *citizenship* is exhausted from war and just wants peace. And *you*...""
+
+His eyelids fall, exhausted.
+
+""You're too much work for an open war.""","MPC_IAIICHGMeetDaudInitialAskNo:""So that's a no?""
+MPC_IAIICHGMeetDaudInitialAskYes:""So that's a yes?""",
+MPC_IAIICHGMeetDaudInitialAskNo,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialAskNo","SetTextHighlights ""politics"" ""foreign matter""","His stare deepens. ""You beat us, $PlayerName. We don't want to get involved in your..."" he rubs his forehead, like he has a splitting headache. ""...politics.""
+
+Recovering, he brings up a small PDA and starts tapping away - some officer manifest, by the looks of it. Just another document of the pile - more interested in it than you. ""This is a foreign matter. The hegemony does *not* perform interventionism.""
+
+He slides the PDA onto the table, and locks eyes in the brief moment of moved attention. ""Settle it yourself.""","MPC_IAIICHGMeetDaudInitialBS:""So the ancient XIV ships appearing in the IAIIC's fleets are just coincidence, then?""",
+MPC_IAIICHGMeetDaudInitialAskYes,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialAskYes","$option = MPC_IAIICHGMeetDaudInitialAskNo
+FireBest DialogOptionSelected",,,
+MPC_IAIICHGMeetDaudInitialBS,DialogOptionSelected,"$option == MPC_IAIICHGMeetDaudInitialBS","HideFirstPerson","Halfway through your protest, you find yourself facing the spinning phoenix of the hegemony - the obstinance of hegemony bureaucracy. 
+
+Irritation spreads through your spine and finds it's home in your grinding teeth. Looks like you'll have to solve this problem some other way.","MPC_IAIICHGAristoContactInitial:Cut the comm link","todo more optionsn"
+MPC_IAIICHGAristoContactInitial,DialogOptionSelected,"$option == MPC_IAIICHGAristoContactInitial",,"Just before you begrudgingly give the comms-disconnect order, you hear a familiar ping - an incoming comms-request. Subsequent analysis reveals little more than a high-quality encryption algorithm and a approximate location from somewhere in Chicozmostoc orbit.
+
+""Orders, $PlayerSirOrMadam?"" Your comms officer looks over.","MPC_IAIICHGAristoContactPickUp:Open a channel",
+MPC_IAIICHGAristoContactPickUp,DialogOptionSelected,"$option == MPC_IAIICHGAristoContactPickUp","MPC_IAIICHegeCMD aristoComms
+BeginConversation MPC_hegeAristoDefector
+
+SetTextHighlights ""Eventide""","The comms-link sputters to life, fighting through four layers of low-grade encryption to survive.
+
+""Comm-#der."" A womanly voice utters, though you have to fight to hear it through the static. ""You've--heard of t^# IAI*C?"" The mention of that acronym, as broken as it is, turns heads in your bridge. ""-%roof that the Hegem%%--invol%ed. House Youn has l%%*%%--help us tear it d*%. Meet at the f%%@ coordin@%s...""
+
+Soon after, your comms officer alarms - a set of coordinates, marked with a data-rotten location:
+
+Eventide.","MPC_IAIICHGAristoContactTwo:""You have proof the hegemony is involved with the IAIIC?""",
+MPC_IAIICHGAristoContactTwo,DialogOptionSelected,"$option == MPC_IAIICHGAristoContactTwo","SetTextHighlights ""eventide""
+HideFirstPerson
+MPC_IAIICHegeCMD aristoNormal
+
+MPC_IAIICHegeCMD createIntel","The blurry picture shifts. You can only tell her irritation from the tone of her voice. ""Y*s! Listen, I-"" the form looks off to something. ""-intS%% be here any second. Have to g^-""
+
+And just like that, the commlink abruptly cuts out. Your comms officer quickly estimates no threat to you, but plenty of threat to her: ""The commlink was being deflected across twenty different points. Impossible to find it's destination without hours of analysis and some microsats. She's probably headed back to eventide - getting away from INTSEC before they find that unauthorized transmission source.""
+
+Indeed, your sensor officer reports a number of picket-ships emerging from the planet's surface, converging on the signal source. You silently hope for her safety - if she really is a member of an eventide house and wants to dismantle the IAIIC, she will be invaluable to your efforts.
+
+All that's left is to see if she got away. To eventide.
+
+","MPC_IAIICHGAristoContactEnd:Return to normal duties",
+MPC_IAIICHGAristoContactEnd,DialogOptionSelected,"$option == MPC_IAIICHGAristoContactEnd","EndConversation",,,
+"#END Initial meeting with daud and aristocrat defector",,,,,,
+,,,,,,
+# Go to eventide and make contact with the aristocrat,,,,,,
+MPC_IAIICHGAristoEventideMeetingOpt,PopulateOptions,"$market.id == eventide
+MPC_IAIICHegeCMD canDoEventideMeeting","SetOptionColor MPC_IAIICHGAristoEventideMeetingStart highlight",,"40:MPC_IAIICHGAristoEventideMeetingStart:Visit the aristocrat's coordinates",
+MPC_IAIICHGAristoEventideMeetingInit,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingStart",,"You and your officers pour over the provided coordinates. They appear to be placed in the middle of a rather populous city - a flower shop, to be precise. IntSec checks twice then thrice then confirms a total absence of any comms chatter or anything that would imply a threat.
+
+All things considered, for someone going against the wishes of INTSEC, they sure seem to be in little trouble.","MPC_IAIICHGAristoEventideMeetingTwo:Take a shuttle down",
+MPC_IAIICHGAristoEventideMeetingTwo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingTwo",,"The trip down is as uneventful and as beautiful as one would expect for eventide. The artificially seeded clouds gently caress your windscreen as you pass them, leaving a thin film of moisture as you near the surface.
+
+Docking permission is routinely granted, and your shuttle quickly finds a landing pad not much distance away from the target. The city beneath sprawls - tens of thousands of souls living a life of luxury in arcology after arcology. This is clearly one of the more ""civilized"" areas of eventide, where the rich drink and speculate over the future of the hegemony.","MPC_IAIICHGAristoEventideMeetingThree:Find your way to the ""flower shop""",
+MPC_IAIICHGAristoEventideMeetingThree,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingThree",,"You stroll down the extravagantly decorated streets, passing well-dressed aristocrats that gawk at your ""unrefined"" attire. The artisan streetlight fill the dim streets with playful colors and shapes, curving and warping as you tread through them. You catch members of your guard eying the art around them, daring your safety out of minor awe.
+
+Eventually, you find your way through the rather unintuitively designed street layout to a small brick-and-mortar flower store - likely an art statement in of itself. Pushing the door open, you're greeted by a cheerful looking attendant. A man. You make a show of looking for flowers while looking for the woman that approached you.","MPC_IAIICHGAristoEventideMeetingFour:Continue",
+MPC_IAIICHGAristoEventideMeetingFour,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingFour","BeginConversation MPC_hegeAristoDefector","It quickly becomes clear this building only holds three things: You, the shopkeep, and a collection of excessively stuffy flowers. Not a single soul - aside from your guards - is waiting here.
+
+But just before you move to open the door and drop this dead lead, it thrusts open, nearly knocking over one of your guards in it's way. In the doorframe is a young woman, electrum earrings hanging from her earlobes - and a mortified expression on her face.","MPC_IAIICHGAristoEventideMeetingFive:Continue",
+MPC_IAIICHGAristoEventideMeetingFive,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingFive","SetTextHighlightColors MPC_IAIIC
+SetTextHighlights ""IAIIC""","""Oh-"" she quickly comes to the guard's rescue, catching them before they fall - much to your guard's chagrin, whom merely shoves them off. ""I'm so sorry, I didn't see you there-"" but her words are cut off by a sudden attention directed your way. 
+
+There's no doubt about it. It's her.
+
+""Ah! Captain!"" She claps her hands together and bows politely. ""Aleratus Youn, of, well - house Youn."" She cracks a small smile. ""I'm so glad you've come here. The IAIIC is *such* a pain - what a waste of resources, right?""
+
+Before you can stop her from breaching OpSec even further, she launches into a rant. ""It's obvious to *anyone* who looks closely. You know - I gather, that if we don't stop this..."" She shivers. ""*Hemmoraging* of capital soon, that hivescum Daud might get a few ideas...""","MPC_IAIICHGAristoEventideMeetingSHUTUP:Shut her up before INTSEC gets wind
+MPC_IAIICHGAristoEventideMeetingLetHerTalk:Let her talk (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingSHUTUP,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSHUTUP","AdjustRepActivePerson VENGEFUL -1","""-anyway, I'm sure you would like nothing more than to hear *exactly* what my evidence i-MPHH-"" she cries out, eyes bulging out of her sockets as your hand slaps over her mouth. You kindly remind her that she *just* escaped from INTSEC, and there's already an information breach in this very room.
+
+Turning to the shopkeeper, you raise your voice above a whisper and comment playfully on the ""things kids see on the extranet these days."", and quickly whisk away the woman away into the store's private bathroom - dropping a few millicreds on a nice-looking lotus to secure entry.
+
+You can't say she looks happy - but it's better than her flagrant disregard for OpSec.","MPC_IAIICHGAristoEventideMeetingSHUTUPTwo:Encourage her to continue - quietly",
+MPC_IAIICHGAristoEventideMeetingSHUTUPTwo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSHUTUPTwo",,"She hmphs, crosses her arms, and indignantly glares a hole into the nearby wall. ""What I was *going* to say, before you so *rudely* interrupted me-"" she shoots you a glare. ""-was that..."" she drops to a whisper, leaning in. ""I'm sure you'd like to see the evidence.""","MPC_IAIICHGAristoEventideMeetingSix:Nod",
+MPC_IAIICHGAristoEventideMeetingSix,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSix","FireAll MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts","You are quickly handed a tacky-looking TriPad, complete with gilded framing. Her fingers pull up a neatly organized file system; documents, pictures, sound-bytes fill nearly three kilobytes of content, ripe for the picking.
+
+It might take a moment to peruse the contents fully - in that time, you could ask a few questions.",,
+MPC_IAIICHGAristoEventideMeetingPeruseHowGet,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,"!$MPC_askedHow",,,"0:MPC_IAIICHGAristoEventideMeetingPeruseHowGetSel:""How did you get all this?""",
+MPC_IAIICHGAristoEventideMeetingPeruseHowGetSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPeruseHowGetSel","$MPC_askedHow = true 0
+
+FireAll MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts
+FireBest MPC_IAIICHGAristoEventideMeetingPeruseFlavor","""The Youn took interest pretty early on the hegemony's... *waste* on you..."" She grimaces, shivering. ""...and it's not too hard to get your hands on 'confidential' material if you know where to look.""
+
+And have the right connections, you imagine.",,
+MPC_IAIICHGAristoEventideMeetingPeruseVeryCasual,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,"!$MPC_askedCasual",,,"20:MPC_IAIICHGAristoEventideMeetingPeruseVeryCasualSel:""You seem very casual about what is essentially treason.""",
+MPC_IAIICHGAristoEventideMeetingPeruseVeryCasualSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPeruseVeryCasualSel","$MPC_askedCasual = true 0
+
+FireAll MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts
+FireBest MPC_IAIICHGAristoEventideMeetingPeruseFlavor","""Treason?!"" She scoffs, rolling her eyes. ""It's that hivescum *Daud* who's committing treason, Commander."" she spits, with noticeable part disdain in her words. ""Spending ten percent of our yearly capital on some senseless war we won't even benefit from?!""
+
+""At least the AI wars were *defensive*. This is just a black hole.""",,
+MPC_IAIICHGAristoEventideMeetingPeruseWhyMe,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,"!$MPC_askedWhyContactMe",,,"30:MPC_IAIICHGAristoEventideMeetingPeruseWhyMeSel:""You're a member of the hegemony ruling class. Why do you need my help?""",
+MPC_IAIICHGAristoEventideMeetingPeruseWhyMeSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPeruseWhyMeSel","$MPC_askedWhyContactMe = true 0
+
+FireAll MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts
+FireBest MPC_IAIICHGAristoEventideMeetingPeruseFlavor","She double-takes, digesting your question. ""Hmph. Well, Captain, the truth is that there's quite a strong separation of powers between us and the military. Sufficient... political pressure..."" she nods to herself. ""...could arrange for an early exit to this problem we both share. Unfortunately, many of the other houses are either ignorant or apathetic to this.""
+
+She hisses, scowling and stomping her foot. ""How can they be so blind?! Do they not know how much they are capable of losing?!""",,
+MPC_IAIICHGAristoEventideMeetingPeruseWhyInterested,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,"$MPC_askedWhyContactMe
+!$MPC_askedWhyInterested",,,"30:MPC_IAIICHGAristoEventideMeetingPeruseWhyInterestedSel:""And why is *your* house not apathetic?""",
+MPC_IAIICHGAristoEventideMeetingPeruseWhyInterestedSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPeruseWhyInterestedSel","$MPC_askedWhyInterested = true 0
+
+FireAll MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts
+FireBest MPC_IAIICHGAristoEventideMeetingPeruseFlavor","Noticing the path this question is going, Aleratus shifts uncomfortably, and attempts to sidestep it altogether with unrelated small talk. When it becomes clear you're not having it, she relents.
+
+""...the Youns hold a... significant... bond, with the hegemony military. If *it*, falters... well...""
+
+She sighs. ""There. You got your answer. Happy?""",,
+MPC_IAIICHGAristoEventideMeetingPeruseFlavor,MPC_IAIICHGAristoEventideMeetingPeruseFlavor,,,"...a document detailing a ""defense pact"" the hegemony has recently made with various other factions...
+OR
+...a video clip of the High Hegemon shaking hands with Jill Mirthson...
+OR
+...a image of a Jill Mirthson in the Chicozmostoc fleetyard, inspecting an XIV falcon...
+OR
+...a seeming black hole in the hegemony's military fund, named ""special tactics""...",,
+MPC_IAIICHGAristoEventideMeetingPeruseEndOpt,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,,,,"100:MPC_IAIICHGAristoEventideMeetingPeruseEndOptSel:Finish reading",
+"#END Go to eventide and make contact with the aristocrat",,,,,,
 "#END Hegemony",,,,,,
 ,,,,,,
 # Ark FOB Comms directory,,,,,,
@@ -3458,8 +3597,7 @@ She folds her hands. ""Until it was all in place.""",,
 MPC_IAIICJillOptionLeave,MPC_IAIICJillOptions,,,,"100:cutCommLink:Leave",
 ,,,,,,
 # Sue for peace options,,,,,,
-MPC_IAIICSueForPeaceOption,MPC_IAIICJillOptions,"!$MPC_cantSueForPeace","SetStoryColor MPC_IAIICSueForPeaceOptionSel
-FireAll MPC_IAIICSueForPeaceOptionSelModify",,"4:MPC_IAIICSueForPeaceOptionSel:""I'm here to sue for peace.""",
+MPC_IAIICSueForPeaceOption,MPC_IAIICJillOptions,"!$MPC_cantSueForPeace","SetStoryColor MPC_IAIICSueForPeaceOptionSel",,"4:MPC_IAIICSueForPeaceOptionSel:""I'm here to sue for peace.""",
 MPC_IAIICSueForPeaceOptionSelModifyAtPeace,MPC_IAIICSueForPeaceOptionSelModify,"MPC_IAIICJillCMD peacePossibilityIs ALREADY_AT_PEACE","SetEnabled MPC_IAIICSueForPeaceOptionSel false
 SetTooltip MPC_IAIICSueForPeaceOptionSel ""You are already at an unsteady peace with the IAIIC.""",,,
 MPC_IAIICSueForPeaceOptionSelHostilitiesActive,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceOptionSel
@@ -3476,15 +3614,18 @@ SetTextHighlights ""war weary""","""Mh."" Jill mumbles. She gives you a hard loo
 MPC_IAIICSueForPeaceOptionSelYesAgain,MPC_IAIICSueForPeaceOptionSelYesInit,"$MPC_triedSueingForPeaceBefore score:20","FireAll MPC_IAIICSueForPeaceConcessionOptions","""Mh."" Jill mumbles. She gives you a hard look before nodding and pulling up her PDA. ""And what concessions will you provide?""",,
 MPC_IAIICSueForPeaceConcessionOptionCredits,MPC_IAIICSueForPeaceConcessionOptions,,"MPC_IAIICJillCMD generateCreditConcessionAmount
 FireAll MPC_IAIICSueForPeaceConcessionCreditsModify",,"0:MPC_IAIICSueForPeaceConcessionCredits:""Credits.""",
-MPC_IAIICSueForPeaceConcessionCreditsModifyNoCreds,MPC_IAIICSueForPeaceConcessionCreditsModify,"$player.credits < $global.MPC_creditConcessionAmount","SetEnabled MPC_IAIICSueForPeaceConcessionCredits false
-SetTooltip MPC_IAIICSueForPeaceConcessionCredits ""You do not have enough credits.""",,,
-MPC_IAIICSueForPeaceConcessionCredits,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCredits","SetTextHighlights $global.MPC_creditConcessionAmountDGS ""hurt""","Jill pulls something up on her PDA and slides it towards the camera at an oblique angle. You have to crane your head to read it, but...
+MPC_IAIICSueForPeaceConcessionCreditsModifyNoCreds,MPC_IAIICSueForPeaceConcessionCreditsModify,"$player.credits < $global.MPC_creditConcessionAmount","SetEnabled MPC_IAIICSueForPeaceConcessionCreditsYes false
+SetTooltip MPC_IAIICSueForPeaceConcessionCreditsYes ""You do not have enough credits.""",,,
+MPC_IAIICSueForPeaceConcessionCredits,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCredits","SetTextHighlights $global.MPC_creditConcessionAmountDGS ""hurt""
+
+FireAll MPC_IAIICSueForPeaceConcessionCreditsModify","Jill pulls something up on her PDA and slides it towards the camera at an oblique angle. You have to crane your head to read it, but...
 
 ""$global.MPC_creditConcessionAmountDGS credits."" She narrates. ""Based off the highest income you've had in the past six months.""
 
 She taps her finger on her desk. ""I want this to hurt, Captain.""","MPC_IAIICSueForPeaceConcessionCreditsYes:""Fine."" (Pay $global.MPC_creditConcessionAmountDGS)
 MPC_IAIICSueForPeaceConcessionCreditsNo:""Let me reconsider my options.""",
-MPC_IAIICSueForPeaceConcessionCreditsYes,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCreditsYes","AddCredits -$global.MPC_creditConcessionAmount","You make the transfer, and with a rare smile, Jill does her part. IAIIC battlefleets disperse across the system, and your IntSec immediately contacts you, reporting a full withdrawl.
+MPC_IAIICSueForPeaceConcessionCreditsYes,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCreditsYes","AddCredits -$global.MPC_creditConcessionAmount
+MPC_IAIICJillCMD doPeace","You make the transfer, and with a rare smile, Jill does her part. IAIIC battlefleets disperse across the system, and your IntSec immediately contacts you, reporting a full withdrawal.
 
 ""Good doing business with you, Captain."" She finishes, cutting the comm link before you have a chance to speak. The laurel of the IAIIC slowly rotates before you.","cutCommLink:Leave",
 MPC_IAIICSueForPeaceConcessionCreditsNo,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceConcessionCreditsNo","FireAll MPC_IAIICSueForPeaceConcessionOptions","""Of course."" She seems mildly irritated, if her aggravated tone isn't any indication.",,
@@ -3643,12 +3784,12 @@ MPC_IAIICSpawnedWeFight,DialogOptionSelected,"$option == MPC_IAIICSpawnedWeFight
 # Ark FOB docking rules,,,,,,
 MPC_IAIICArkFobIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET
 $faction.id == MPC_IAIIC
-$market.id == MPC_arkFOB","AddText ""Flightlines are congested by intense military throughput, and the rare civilian ingress is carefully tracked by infra-red targetting lasers, and enforced by wall-mounted auto-turrets. The few traders or tourists that make the journey are immediately accosted by a squad of grey-and-green marines, throughly searched, and sent to a heavily-guarded trading area - recreational facilities are nearly absent."" marketFlavorTextColor
+$market.id == MPC_arkFOB score:1000","AddText ""Flightlines are congested by intense military throughput, and the rare civilian ingress is carefully tracked by infra-red targetting lasers, and enforced by wall-mounted auto-turrets. The few traders or tourists that make the journey are immediately accosted by a squad of grey-and-green marines, throughly searched, and sent to a heavily-guarded trading area - recreational facilities are nearly absent."" marketFlavorTextColor
 AddText ""The soundscape of the militarized dockyard consists of a cacophony of jargon and engine-flare, as skiffs fly overhead, in, and out, each on their own highly-controlled duty-patrol to defend against you and your incursions. When you're not deafened by the sound of takeoff and landing, you can make out the occasional bark from ceiling-mounted announcement speakers, declaring the next ration-period or shift rotation."" marketFlavorTextColor
 ",,,
 MPC_IAIICArkFobNotIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET
 $faction.id != MPC_IAIIC score:20
-$market.id == MPC_arkFOB","AddText ""The port concourse is filled with trader starcraft of every size. Speculators crowd offloading ship captains with deals and peddlers call out to crew, holding wares and projecting personal ad-holos. Reclaimed auto-turrets track incoming shuttles with pinpoint accuracy, projecting a simultaneous feeling of security and oppression upon the deck-crew."" marketFlavorTextColor",,,
+$market.id == MPC_arkFOB score:1000","AddText ""The port concourse is filled with trader starcraft of every size. Speculators crowd offloading ship captains with deals and peddlers call out to crew, holding wares and projecting personal ad-holos. Reclaimed auto-turrets track incoming shuttles with pinpoint accuracy, projecting a simultaneous feeling of security and oppression upon the deck-crew."" marketFlavorTextColor",,,
 "#END Ark FOB docking rules",,,,,,
 ,,,,,,
 # Ark FOB Bar rules,,,,,,

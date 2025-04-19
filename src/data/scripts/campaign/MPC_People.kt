@@ -3,6 +3,7 @@ package data.scripts.campaign
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.PersonImportance
 import com.fs.starfarer.api.characters.FullName
+import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
@@ -37,6 +38,8 @@ object MPC_People {
     const val UMBRA_INFILTRATOR = "MPC_umbraInfiltrator"
 
     const val KKL_REP = "MPC_KKLRep"
+
+    const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
@@ -298,6 +301,25 @@ object MPC_People {
 
             importantPeople.addPerson(rep)
             MPC_importantPeople[KKL_REP] = rep
+        }
+
+        if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(FullName.Gender.FEMALE)
+
+            aristo.id = HEGE_ARISTO_DEFECTOR
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = Ranks.POST_CITIZEN
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Aleratus", "Youn", Gender.FEMALE)
+
+            aristo.portraitSprite = "graphics/portraits/portrait_hegemony10.png"
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_ARISTO_DEFECTOR] = aristo
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

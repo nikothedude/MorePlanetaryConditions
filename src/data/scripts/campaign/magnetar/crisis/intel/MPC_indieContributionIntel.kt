@@ -15,7 +15,7 @@ import org.magiclib.kotlin.makeNonStoryCritical
 import java.awt.Color
 
 class MPC_indieContributionIntel: BaseIntelPlugin() {
-        companion object {
+    companion object {
         fun get(withUpdate: Boolean = false): MPC_patherContributionIntel? {
             if (withUpdate) {
                 if (Global.getSector().memoryWithoutUpdate[KEY] == null) {

@@ -36,7 +36,7 @@ class MPC_hegemonySpyCMD: BaseCommandPlugin() {
 
         when (command) {
             "canExecute" -> {
-                return false
+                //return false
                 // iaiic is on hold
                 // way too much work for little return imo
                 // ill make something else that has the world reacting to the fractal core

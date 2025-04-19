@@ -6,7 +6,9 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.skills.MPC_spaceOperations
+import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_stringUtils
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
 
@@ -48,7 +50,7 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
             "Fleet size contribution and market upkeep multiplied by %s due to escalation",
             5f,
             Misc.getHighlightColor(),
-            "x${escalationLevel}"
+            "x${escalationLevel.roundNumTo(1).trimHangingZero()}"
         )
     }
 }

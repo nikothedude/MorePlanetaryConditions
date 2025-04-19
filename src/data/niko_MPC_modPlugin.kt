@@ -61,6 +61,7 @@ import data.utilities.niko_MPC_settings.generatePredefinedSatellites
 import data.utilities.niko_MPC_settings.graphicsLibEnabled
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.nexLoaded
+import data.utilities.niko_MPC_settings.stationAugmentsLoaded
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
@@ -90,6 +91,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
                 val faction = Global.getSector().getFaction(factionId)
 
                 for (ship in faction.knownShips) {
+                    val spec = Global.getSettings().getHullSpec(ship) ?: continue
+                    if (spec.hasTag(Tags.AUTOMATED)) continue
                     IAIIC.knownShips += ship
                     val hullFreq = faction.hullFrequency[ship]
                     if (hullFreq != null) {
@@ -127,6 +130,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
         SOTF_enabled = Global.getSettings().modManager.isModEnabled("secretsofthefrontier")
         graphicsLibEnabled = Global.getSettings().modManager.isModEnabled("shaderLib")
+        stationAugmentsLoaded = Global.getSettings().modManager.isModEnabled("niko_stationAugments")
         astralAscensionEnabled = Global.getSettings().modManager.isModEnabled("Planetace_AstralAscension")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")

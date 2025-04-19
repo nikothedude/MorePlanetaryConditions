@@ -39,6 +39,7 @@ object niko_MPC_settings {
     var SOTF_enabled = false
     var graphicsLibEnabled = false
     var astralAscensionEnabled = false
+    var stationAugmentsLoaded = false
 
     var CONDENSE_OVERGROWN_NANOFORGE_INTEL = false
 

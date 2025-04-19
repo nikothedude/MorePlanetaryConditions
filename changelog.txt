@@ -1,5 +1,7 @@
 4.3.3
 
+Magnetar fights now always use objectives (TEST THIS NIKO)
+
 Derelict escorts now meet your fleet if you try to intercept them
 Derelict escort description has better grammar
 

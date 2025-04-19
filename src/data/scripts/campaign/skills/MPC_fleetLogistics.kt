@@ -18,11 +18,15 @@ class MPC_fleetLogistics {
             market.accessibilityMod.modifyFlat(id, ACCESS_1, "Fleet logistics")
             market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT)
                 .modifyFlat(id, FLEET_SIZE / 100f, "Fleet logistics")
+
+            market.stats.dynamic.getMod(Stats.MAX_INDUSTRIES).modifyFlat(id, 1f)
         }
 
         override fun unapply(market: MarketAPI, id: String) {
             market.accessibilityMod.unmodifyFlat(id)
             market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).unmodifyFlat(id)
+
+            market.stats.dynamic.getMod(Stats.MAX_INDUSTRIES).unmodify(id)
         }
 
         override fun getEffectDescription(level: Float): String {

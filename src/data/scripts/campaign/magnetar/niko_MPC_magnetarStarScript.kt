@@ -34,11 +34,6 @@ class niko_MPC_magnetarStarScript(
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
 
     var generatedDefenders = false
-    var TEMP_REGENERATED_TWICE = false
-        get() {
-            if (field == null) field = false
-            return field
-        }
 
     companion object {
         fun doBlindJump(fleet: CampaignFleetAPI) {
@@ -103,7 +98,7 @@ class niko_MPC_magnetarStarScript(
 
         val containingLocation = magnetar.containingLocation ?: return
         val playerFleet = Global.getSector().playerFleet
-        if ((!generatedDefenders || (niko_MPC_modPlugin.currVersion == "4.3.0" && !TEMP_REGENERATED_TWICE)) && playerFleet?.containingLocation == containingLocation) {
+        if (!generatedDefenders && playerFleet?.containingLocation == containingLocation) {
             val mothership = containingLocation.getEntitiesWithTag("MPC_omegaDerelict_mothership").firstOrNull()
             if (mothership != null) {
                 mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
@@ -117,6 +112,7 @@ class niko_MPC_magnetarStarScript(
                 researchStation.memoryWithoutUpdate["\$hasDefenders"] = true
                 researchStation.memoryWithoutUpdate["\$hasStation"] = false
                 researchStation.memoryWithoutUpdate["\$hasNonStation"] = true
+                researchStation.memoryWithoutUpdate["\$MPC_hasSalvageObjectives"] = true
             }
 
             for (probe in containingLocation.getEntitiesWithTag("MPC_omegaDerelict_probe")) {
@@ -124,12 +120,14 @@ class niko_MPC_magnetarStarScript(
                 probe.memoryWithoutUpdate["\$hasDefenders"] = true
                 probe.memoryWithoutUpdate["\$hasStation"] = false
                 probe.memoryWithoutUpdate["\$hasNonStation"] = true
+                probe.memoryWithoutUpdate["\$MPC_hasSalvageObjectives"] = true
             }
             for (surveyShip in containingLocation.getEntitiesWithTag("MPC_omegaDerelict_survey_ship")) {
                 surveyShip.memoryWithoutUpdate["\$defenderFleet"] = createOmegaSurveyShipDefenders(surveyShip)
                 surveyShip.memoryWithoutUpdate["\$hasDefenders"] = true
                 surveyShip.memoryWithoutUpdate["\$hasStation"] = false
                 surveyShip.memoryWithoutUpdate["\$hasNonStation"] = true
+                surveyShip.memoryWithoutUpdate["\$MPC_hasSalvageObjectives"] = true
             }
 
             val omegaCaches = containingLocation.getEntitiesWithTag("MPC_omegaCache")
@@ -138,6 +136,7 @@ class niko_MPC_magnetarStarScript(
                 cache.memoryWithoutUpdate["\$hasDefenders"] = true
                 cache.memoryWithoutUpdate["\$hasStation"] = false
                 cache.memoryWithoutUpdate["\$hasNonStation"] = true
+                cache.memoryWithoutUpdate["\$MPC_hasSalvageObjectives"] = true
             }
 
             val planetThree = containingLocation.getEntityById("MPC_magnetarSystemPlanetThree")
@@ -145,13 +144,13 @@ class niko_MPC_magnetarStarScript(
             planetThree?.memoryWithoutUpdate?.set("\$hasDefenders", true)
             planetThree?.memoryWithoutUpdate?.set("\$hasStation", true)
             planetThree?.memoryWithoutUpdate?.set("\$hasNonStation", true)
+            planetThree?.memoryWithoutUpdate?.set("\$MPC_hasSalvageObjectives", true)
 
             if (magnetar.starSystem.scripts.none { it is MPC_magnetarThreatFleetManager }) {
                 magnetar.starSystem.addScript(MPC_magnetarThreatFleetManager())
             }
 
             generatedDefenders = true
-            TEMP_REGENERATED_TWICE = true
         }
 
         val days = Misc.getDays(amount)

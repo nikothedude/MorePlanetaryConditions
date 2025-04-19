@@ -128,7 +128,7 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
             try {
                 field = classToGetFrom.getDeclaredField(fieldName)
             } catch (e: Throwable) {
-                SA_debugUtils.log.error(e)
+                niko_MPC_debugUtils.log.error(e)
             }
         }
 

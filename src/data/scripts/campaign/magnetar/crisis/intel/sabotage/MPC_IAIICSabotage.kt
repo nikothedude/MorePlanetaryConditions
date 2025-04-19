@@ -5,7 +5,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageCondition.Companion.removeSabotage
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import java.util.*
 
 abstract class MPC_IAIICSabotage(val market: MarketAPI, val params: MPC_IAIICSabotageParams) {
@@ -45,7 +46,7 @@ abstract class MPC_IAIICSabotage(val market: MarketAPI, val params: MPC_IAIICSab
     }
 
     fun getTimeLeftString(): String {
-        return "${params.timeLeft.roundTo(1)} days remaining"
+        return "${params.timeLeft.roundNumTo(1).trimHangingZero()} days remaining"
     }
 
     abstract fun getPossibleNames(): MutableMap<String, Float>

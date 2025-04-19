@@ -5,7 +5,8 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_commandDisruptedCondition: niko_MPC_baseNikoCondition() {
 
@@ -43,7 +44,7 @@ class MPC_commandDisruptedCondition: niko_MPC_baseNikoCondition() {
             "%s days left",
             10f,
             Misc.getHighlightColor(),
-            "${MPC_IAIICFobIntel.get()?.disruptedCommandDaysLeft?.roundTo(1)}"
+            "${MPC_IAIICFobIntel.get()?.disruptedCommandDaysLeft?.roundNumTo(1)?.trimHangingZero()}"
         )
         tooltip.addPara(
             "%s postponed",

@@ -15,7 +15,7 @@ data class MPC_factionContribution(
     val removeContribution: ((IAIIC: FactionAPI) -> Unit)?,
     val removeNextAction: Boolean = false,
     val requireMilitary: Boolean = false,
-    val contributorExists: (() -> Boolean) = ({ BaseHostileActivityFactor.checkFactionExists(factionId, requireMilitary) }),
+    val contributorExists: (() -> Boolean) = (@JvmSerializableLambda { BaseHostileActivityFactor.checkFactionExists(factionId, requireMilitary) }),
     val repOnRemove: Float? = null,
     val baseMarketEmbargoValue: Float = 1f
 ) {

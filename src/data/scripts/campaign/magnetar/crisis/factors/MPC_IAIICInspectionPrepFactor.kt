@@ -8,7 +8,8 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICInterferenceCondition
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionPrepIntel
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_IAIICInspectionPrepFactor: BaseEventFactor() {
     companion object {
@@ -45,7 +46,7 @@ class MPC_IAIICInspectionPrepFactor: BaseEventFactor() {
                         "Due to the recent blow to the IAIIC's command structure, inspections are %s for %s days.",
                         5f,
                         Misc.getHighlightColor(),
-                        "postponed", "${MPC_IAIICFobIntel.get()?.disruptedCommandDaysLeft?.roundTo(1)}"
+                        "postponed", "${MPC_IAIICFobIntel.get()?.disruptedCommandDaysLeft?.roundNumTo(1)?.trimHangingZero()}"
                     )
                     return
                 }

@@ -4,7 +4,8 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 
 class MPC_IAIICFleetSizeSabotage(market: MarketAPI, params: MPC_IAIICSabotageParams): MPC_IAIICSabotage(market, params) {
 
@@ -31,7 +32,7 @@ class MPC_IAIICFleetSizeSabotage(market: MarketAPI, params: MPC_IAIICSabotagePar
             "%s: Fleet size reduced by %s (%s)",
             5f,
             Misc.getHighlightColor(),
-            name, "${(-getMalus() * 100f).roundTo(1)}%", getTimeLeftString()
+            name, "${(-getMalus() * 100f).roundNumTo(1).trimHangingZero()}%", getTimeLeftString()
         )
         label.setHighlightColors(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
     }
