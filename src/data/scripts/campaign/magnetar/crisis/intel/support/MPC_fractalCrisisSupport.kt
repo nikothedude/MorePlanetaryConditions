@@ -11,8 +11,10 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -21,6 +23,12 @@ import data.utilities.niko_MPC_ids
 import java.awt.Color
 
 abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, CampaignEventListener {
+
+    init {
+        Global.getSector().addScript(this)
+        Global.getSector().addListener(this)
+        Global.getSector().listenerManager.addListener(this)
+    }
 
     enum class State {
         ACTIVE {
@@ -56,8 +64,8 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         newState.apply(this)
     }
 
-    override fun advance(amount: Float) {
-        super.advance(amount)
+    override fun advanceImpl(amount: Float) {
+        super.advanceImpl(amount)
 
         val days = Misc.getDays(amount)
         if (state == State.ACTIVE) {
@@ -84,6 +92,7 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         fleet.addEventListener(this)
         addAssignmentAI(fleet)
         //fleet.facing = Math.random().toFloat() * 360f
+        fleets += fleet
         return fleet
     }
     abstract fun createFleet(): CampaignFleetAPI?
@@ -106,17 +115,19 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         return count
     }
 
-    override fun createIntelInfo(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?) {
+    override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
         if (info == null) return
 
-        val c = getTitleColor(mode)
+        //val c = getTitleColor(mode)
         info.setParaFontDefault()
 
-        info.addPara(name, c, 0f)
+        info.addPara(name, factionForUIColors.baseUIColor, 0f)
         info.setParaFontDefault()
         addDesc(info)
 
-        addBulletPoints(info, mode)
+        addFleetSection(info)
+
+        //addBulletPoints(info, mode)
     }
 
     override fun addBulletPoints(
@@ -129,9 +140,6 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         if (info == null) return
 
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
-        if (mode == IntelInfoPlugin.ListInfoMode.INTEL) {
-            addFleetSection(info)
-        }
         if (isUpdate) {
             addUpdateBullets(info)
         }
@@ -154,6 +162,10 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
                 }
             }
         }
+    }
+
+    override fun getName(): String? {
+        return "Transient Alliance - "
     }
 
     abstract fun addDesc(info: TooltipMakerAPI)
@@ -190,7 +202,7 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
             "$INDENT...%s of which are currently engaged in battle",
             0f,
             Misc.getHighlightColor(),
-            "${getPatrollingFleets().filter { it.battle != null }}"
+            "${getPatrollingFleets().filter { it.battle != null }.size}"
         )
         if (travellingFleets.isNotEmpty()) {
             info.addPara(
@@ -269,6 +281,24 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
             returningPatrolValue += fraction
         }
         fleet.memoryWithoutUpdate[niko_MPC_ids.OFF_DUTY] = true
+    }
+
+    override fun notifyEnded() {
+        super.notifyEnded()
+
+        Global.getSector().removeScript(this)
+        Global.getSector().removeListener(this)
+        Global.getSector().listenerManager.removeListener(this)
+    }
+
+    override fun getIntelTags(map: SectorMapAPI?): Set<String>? {
+        val tags = super.getIntelTags(map)
+
+        tags += Tags.INTEL_COLONIES
+        tags += factionForUIColors.id
+        tags += niko_MPC_ids.IAIIC_FAC_ID
+
+        return tags
     }
 
     fun getColony(): MarketAPI? = getFractalColony()

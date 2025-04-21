@@ -42,7 +42,7 @@ class MPC_fractalSupportFleetAssignmentAI(
         const val DAMAGE_THRESH_FOR_STANDDOWN = 0.34f
     }
 
-    lateinit var state: MPC_fractalSupportState
+    var state: MPC_fractalSupportState = MPC_fractalSupportState.TRAVELLING_FROM_BASE
     var returnReason: ReturnReason = ReturnReason.OFF_DUTY
     var assignmentsDone = 0f
     var assignmentsGiven = false
@@ -88,7 +88,7 @@ class MPC_fractalSupportFleetAssignmentAI(
         val system = getSystem() ?: return
         val target = system.jumpPoints.randomOrNull() ?: getColony()?.primaryEntity
         if (fleet.containingLocation != system) { // we have to travel
-            fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, target, Float.MAX_VALUE, "Travelling to ${system.name}") { }
+            fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, target, Float.MAX_VALUE, "travelling to ${system.name}") { startPatrol() }
         } else {
             startPatrol()
         }

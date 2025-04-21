@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignEventListener
 import com.fs.starfarer.api.campaign.CampaignEventListener.FleetDespawnReason
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.FactionAPI.ShipPickMode
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
@@ -28,10 +29,6 @@ import kotlin.math.roundToInt
 
 class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
     override val tracker: IntervalUtil = IntervalUtil(2f, 3f)
-
-    override fun advance(amount: Float) {
-        super.advance(amount)
-    }
 
     fun getMarket(): MarketAPI? {
         val sindria = Global.getSector().economy.getMarket("sindria")
@@ -135,7 +132,7 @@ class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
         return fleet
     }
 
-    override fun getName(): String = "Lion's Guard"
+    override fun getName(): String = super.name + "Lion's Guard"
     override fun getTitleColor(mode: ListInfoMode?): Color {
         val isUpdate = getListInfoParam() != null
         return if (isEnding && !isUpdate && mode != ListInfoMode.IN_DESC) {
@@ -145,6 +142,10 @@ class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
 
     override fun getIcon(): String {
         return Global.getSector().getFaction(Factions.LIONS_GUARD).crest
+    }
+
+    override fun getFactionForUIColors(): FactionAPI? {
+        return Global.getSector().getFaction(Factions.LIONS_GUARD)
     }
 
     override fun addDesc(info: TooltipMakerAPI) {

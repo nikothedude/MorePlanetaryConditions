@@ -1,36 +1,17 @@
 package data.scripts.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CommDirectoryEntryAPI
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
-import com.fs.starfarer.api.campaign.PlanetAPI
-import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
-import com.fs.starfarer.api.characters.PersonAPI
-import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
-import com.fs.starfarer.api.impl.campaign.ids.Conditions
-import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.Industries
-import com.fs.starfarer.api.impl.campaign.ids.Ranks
-import com.fs.starfarer.api.impl.campaign.ids.Skills
-import com.fs.starfarer.api.impl.campaign.ids.Submarkets
-import com.fs.starfarer.api.impl.campaign.ids.Tags
-import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
-import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
-import data.scripts.campaign.magnetar.crisis.intel.MPC_hegemonyContributionIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel
-import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD.Companion.POSTS_TO_CHANGE_ON_CAPTURE
-import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD.Companion.generateHideout
-import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD.Companion.marketSuitableForTransfer
-import data.utilities.niko_MPC_marketUtils.isFractalMarket
-import data.utilities.niko_MPC_settings
-import org.magiclib.kotlin.makeUnimportant
+import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
+import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
+import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
     override fun execute(
@@ -81,9 +62,48 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 return MPC_hegemonyContributionIntel.get(false)?.state == MPC_hegemonyContributionIntel.State.GO_TO_EVENTIDE_INIT
             }
 
+            "startQuest" -> {
+                MPC_hegemonyContributionIntel.get()?.state = MPC_hegemonyContributionIntel.State.CONVINCE_HOUSES
+                MPC_hegemonyContributionIntel.get()?.sendUpdateIfPlayerHasIntel(
+                    MPC_hegemonyContributionIntel.State.CONVINCE_HOUSES,
+                    dialog.textPanel
+                )
+
+                val eventide = Global.getSector().economy.getMarket("eventide") ?: throw RuntimeException("EVENTIDE DOESNT EXIST HOW THE FUCK DID THIS HAPPEN")
+                eventide.commDirectory.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HEGE_ARISTO_DEFECTOR))
+                eventide.commDirectory.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HEGE_MORALIST_ARISTO_REP))
+                eventide.commDirectory.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HEGE_MILITARIST_ARISTO_REP))
+                eventide.commDirectory.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HEGE_OPPORTUNISTIC_ARISTO_REP))
+            }
+
+            "dealingWithAHouse" -> {
+                return MPC_hegemonyContributionIntel.get(false)?.currentHouse != TargetHouse.NONE
+            }
+            "cooldownActive" -> {
+                return MPC_hegemonyContributionIntel.get(false)?.cooldownActive == true
+            }
+
+            "newHouse" -> {
+                val house = params[1].getString(memoryMap)
+                val newHouse = TargetHouse.valueOf(house) ?: return false
+
+                MPC_hegemonyContributionIntel.get()?.setNewHouse(newHouse, dialog.textPanel)
+                MPC_hegemonyContributionIntel.get()
+            }
+
             "createIntel" -> {
                 val intel = MPC_hegemonyContributionIntel.get(true)
                 intel?.sendUpdateIfPlayerHasIntel("Rumors of involvement", dialog.textPanel)
+            }
+
+            "houseTurned" -> {
+                MPC_hegemonyContributionIntel.get()?.turnedHouse(dialog.textPanel)
+                Global.getSector().memoryWithoutUpdate.set("\$MPC_hegeIAIICHouseCooldown", true, 30f)
+            }
+
+            "readyToConfrontMil" -> {
+                val intel = MPC_hegemonyMilitaristicHouseEventIntel.get(false) ?: return false
+                return intel.progress >= intel.maxProgress
             }
         }
 

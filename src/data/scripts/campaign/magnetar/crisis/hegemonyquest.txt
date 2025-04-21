@@ -1,0 +1,144 @@
+REVISION ONE
+
+    START
+
+    Go to Daud - ask about IAIIC
+        Rebuffed
+        Daud doesnt want to talk to you about it
+
+        Daud doesnt say yes, and doesnt say no
+
+    Contacted by a concerned aristocrat once you leave
+
+    Find the aristocrat somewhere
+        (Eventide)
+        Introduced as aloof, out of touch
+            Sterotypical aristocrat
+
+        Opposes the hegemony's involvement with the IAIIC
+        Gives you some limited evidence
+
+    PHASE TWO - WORK
+
+    You need to turn houses against the hegemony and strongarm it into pulling out
+
+    Problem: Some aristocratic houses don't seem to care
+        The Youns care since they hold a lot of investment in the military and might lose a lot of money
+
+        INTSEC is putting in a lot of work to hide the military spending from the aristocratic houses
+            The Youns got lucky and have a member directly involved with INTSEC and is acting as a mole
+            The XIV ships are explained away as salvage, or ships bought off the open market
+
+        Four houses you have to convince
+            Ok, but why?
+
+            These houses are powerful and susceptable - theyre selfish or concerned
+                But why only these four?
+            Because Youn is stupid
+                Really?
+            Because... these are the only four houses Youn knows anything about, and INTSEC is already breathing down their neck
+                This one sounds good
+
+        HOUSE ONE is powerful but naive
+            IDEA: This can be the youns? THe defector wants you to help convince the rest of their house...
+                Under this paradigm the leak was suppressed quickly
+
+            Vaguely knows about the hegemony supporting the IAIIC but assumes it's just giving trade concessions
+
+            Hedonist, artistic, aloof
+
+            Have to prove to them the hegemony is involved
+                Doesnt trust your word, or the word of the Youn (Youns have a lot to gain from people thinking along these lines)
+
+                Get intel from...
+                Raiding comm relays?
+                    Get defense fleets to orbit the relays
+                Raiding a planet?
+                    Pick a military one so it's hard
+                Ambush a intel-transfer fleet?
+                Find a datacache out in the outskirts of the sector?
+                    Some scavengers, duh
+
+                After ~4 deliveries, they get convinced(?) and are shaken
+
+        HOUSE TWO are entirely opportunistic
+            Introduced as powerful, but turn out to be cunning, speculators, backstabbers
+
+            They already knew about the IAIIC. They just want to profit off it
+
+            They will already profit off the proxy war. But, you can bribe them...
+                Omega weapons?
+                AI cores?
+                Credits? (Probably not lol)
+                A favor?
+                    Take out some competition in the core worlds...?
+
+        HOUSE THREE is militaristic - comprised of officers
+            Loyal to the hegemony, divided over Daud
+            Still backs him, but have their doubts
+
+            You need to prove to them that the war is bad for the hegemony
+                Event intel
+
+                Destroy fleets, raid planets, or raise IAIIC attrition
+
+            They dont like you. But they serve the hegemony's best interest (their best interest)
+
+        HOUSE FOUR are hardcore luddites, grieving?
+            A child of the house went pather and despite knowing what they did was wrong the adults want to break them out,
+            bring them in, and will consider backing you if the son is returned
+                Maybe needs a little proof first?
+
+                This feels weak. Why do they want the son back so much? Enough to pressure the hegemony?
+                    Maybe they're just extremely greedy and petty?
+                    Something to do with their specific luddic sect?
+
+            Vanished to a pather sect off in the fringe of the sector, doing *things*
+                When you get there, the cell has been wiped out
+
+                Find traces that suggest a nearby independent fleet was involved?
+                    Find datacores that suggest the son was taken to a hegemony penitentiary
+
+                Go there, ask around, discover he IS there, break or bribe him out (SP needed probably)
+
+                OPTNIOAL
+                    He immediately flees to a nearby luddic planet?
+                    Have to poke around comm relays, contacts...
+
+                COMPLICATIONS
+                    Knights of ludd will accost you at some point
+                    So will hegemony
+
+                Finally, you haev him
+
+                Bring him back
+                Win!
+
+    CAN ONLY DO ONE AT A TIME!!!!
+    Time gate - Month or so delay between houses
+
+    COMPLICATIONS
+        After you convince the first house, INTSEC starts getting involved
+
+        It starts minimal
+            A fleet sent to harass you, or something
+        But it escalates
+            After the third house, you get sabotaged
+            Powerful kill fleets are sent
+            Other things
+
+    END
+
+    Once all the houses are on your side, wait a month or so(?)
+    Then, return to eventide for a meeting
+
+    All houses agree to pressure the hegemony into leaving the IAIIC
+
+    A month or so later, daud summons you
+        "You fucking asshole"
+
+        Daud is so fucking done with you. SO fucking done
+        But he has no choice. He pulls out, trying to save face
+
+        Unrest rises on all hegemony planets, especially eventide
+

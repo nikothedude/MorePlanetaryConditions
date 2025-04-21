@@ -10,6 +10,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.makeImportant
 
 object MPC_People {
     const val KANTA_GOON_ONE = "MPC_kanta_goon_one"
@@ -41,6 +42,10 @@ object MPC_People {
 
     const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
+    const val HEGE_MILITARIST_ARISTO_REP = "MPC_hegeAristoMilitaryRep"
+    const val HEGE_OPPORTUNISTIC_ARISTO_REP = "MPC_hegeAristoOpportunistRep"
+    const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
+
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -60,8 +65,8 @@ object MPC_People {
             goonOne.postId = Ranks.SPECIAL_AGENT
             goonOne.importance = PersonImportance.HIGH
             goonOne.portraitSprite = "graphics/portraits/portrait_mercenary01.png"
-            goonOne.name = FullName("Jamwell", "Pourus", FullName.Gender.MALE)
-            goonOne.gender = FullName.Gender.MALE
+            goonOne.name = FullName("Jamwell", "Pourus", Gender.MALE)
+            goonOne.gender = Gender.MALE
             goonOne.voice = Voices.VILLAIN
             importantPeople.addPerson(goonOne)
             MPC_importantPeople[KANTA_GOON_ONE] = goonOne
@@ -74,8 +79,8 @@ object MPC_People {
             goonTwo.postId = Ranks.SPECIAL_AGENT
             goonTwo.importance = PersonImportance.HIGH
             goonTwo.portraitSprite = "graphics/portraits/portrait_pirate14.png"
-            goonTwo.name = FullName("Bob", "Joe", FullName.Gender.MALE)
-            goonTwo.gender = FullName.Gender.MALE
+            goonTwo.name = FullName("Bob", "Joe", Gender.MALE)
+            goonTwo.gender = Gender.MALE
             goonTwo.voice = Voices.VILLAIN
             importantPeople.addPerson(goonTwo)
             MPC_importantPeople[KANTA_GOON_TWO] = goonTwo
@@ -88,8 +93,8 @@ object MPC_People {
             violenceGuard.postId = Ranks.AGENT
             violenceGuard.importance = PersonImportance.HIGH
             violenceGuard.portraitSprite = "graphics/portraits/MPC_violenceGuard.png"
-            violenceGuard.name = FullName("Pontus", "Excalatus", FullName.Gender.MALE)
-            violenceGuard.gender = FullName.Gender.MALE
+            violenceGuard.name = FullName("Pontus", "Excalatus", Gender.MALE)
+            violenceGuard.gender = Gender.MALE
             violenceGuard.voice = Voices.VILLAIN
             importantPeople.addPerson(violenceGuard)
             MPC_importantPeople[VIOLENCE_GUARD] = violenceGuard
@@ -102,8 +107,8 @@ object MPC_People {
             intelligenceGuard.postId = Ranks.AGENT
             intelligenceGuard.importance = PersonImportance.HIGH
             intelligenceGuard.portraitSprite = "graphics/portraits/MPC_intelligenceGuard.png"
-            intelligenceGuard.name = FullName("Erasmus", "XII", FullName.Gender.MALE)
-            intelligenceGuard.gender = FullName.Gender.MALE
+            intelligenceGuard.name = FullName("Erasmus", "XII", Gender.MALE)
+            intelligenceGuard.gender = Gender.MALE
             intelligenceGuard.voice = Voices.ARISTO
             importantPeople.addPerson(intelligenceGuard)
             MPC_importantPeople[INTELLIGENCE_GUARD] = intelligenceGuard
@@ -116,8 +121,8 @@ object MPC_People {
             moralityGuard.postId = Ranks.AGENT
             moralityGuard.importance = PersonImportance.HIGH
             moralityGuard.portraitSprite = "graphics/portraits/MPC_moralityGuard.png"
-            moralityGuard.name = FullName("Simon", "Geria", FullName.Gender.MALE)
-            moralityGuard.gender = FullName.Gender.MALE
+            moralityGuard.name = FullName("Simon", "Geria", Gender.MALE)
+            moralityGuard.gender = Gender.MALE
             moralityGuard.voice = Voices.FAITHFUL
             importantPeople.addPerson(moralityGuard)
             MPC_importantPeople[MORALITY_GUARD] = moralityGuard
@@ -144,8 +149,8 @@ object MPC_People {
             hegemonySpy.postId = Ranks.CITIZEN
             hegemonySpy.importance = PersonImportance.MEDIUM
             hegemonySpy.portraitSprite = "graphics/portraits/portrait23.png"
-            hegemonySpy.name = FullName("Bodewell", "Calus", FullName.Gender.MALE)
-            hegemonySpy.gender = FullName.Gender.MALE
+            hegemonySpy.name = FullName("Bodewell", "Calus", Gender.MALE)
+            hegemonySpy.gender = Gender.MALE
             //moralityGuard.voice = Voices.FAITHFUL
             importantPeople.addPerson(hegemonySpy)
             MPC_importantPeople[HEGEMONY_SPY] = hegemonySpy
@@ -158,8 +163,8 @@ object MPC_People {
             IAIICLeader.postId = Ranks.POST_FACTION_LEADER
             IAIICLeader.importance = PersonImportance.VERY_HIGH
             IAIICLeader.portraitSprite = "graphics/portraits/characters/imoinu_kato.png" // TODO: this will likely be used in a later SS update
-            IAIICLeader.name = FullName("Jill", "Mirthson", FullName.Gender.MALE)
-            IAIICLeader.gender = FullName.Gender.FEMALE
+            IAIICLeader.name = FullName("Jill", "Mirthson", Gender.MALE)
+            IAIICLeader.gender = Gender.FEMALE
             IAIICLeader.voice = Voices.SOLDIER
 
             IAIICLeader.stats.level = 10
@@ -178,8 +183,8 @@ object MPC_People {
             IAIICMercCommander.postId = Ranks.POST_SPACER
             IAIICMercCommander.importance = PersonImportance.HIGH
             IAIICMercCommander.portraitSprite = "graphics/portraits/characters/fenius.png" // TODO: this will likely be used in a later SS update
-            IAIICMercCommander.name = FullName("Jishino", "Mentsu", FullName.Gender.MALE)
-            IAIICMercCommander.gender = FullName.Gender.MALE
+            IAIICMercCommander.name = FullName("Jishino", "Mentsu", Gender.MALE)
+            IAIICMercCommander.gender = Gender.MALE
             IAIICMercCommander.voice = Voices.SPACER
 
             importantPeople.addPerson(IAIICMercCommander)
@@ -187,7 +192,7 @@ object MPC_People {
         }
 
         if (MPC_importantPeople[ARROW_PATHER] == null) {
-            val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson(FullName.Gender.MALE)
+            val arrowPather = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson(Gender.MALE)
 
             arrowPather.id = ARROW_PATHER
             arrowPather.rankId = Ranks.CITIZEN
@@ -226,22 +231,22 @@ object MPC_People {
         }
 
         if (MPC_importantPeople[ARRESTING_KNIGHT_OFFICER] == null) {
-            val knight = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(FullName.Gender.MALE)
+            val knight = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.MALE)
 
             knight.id = ARRESTING_KNIGHT_OFFICER
             knight.rankId = Ranks.KNIGHT_CAPTAIN
             knight.postId = Ranks.POST_BASE_COMMANDER
             knight.importance = PersonImportance.HIGH
             knight.voice = Voices.SOLDIER
-            knight.name = FullName("Jefferson", "Kelk", FullName.Gender.MALE)
-            knight.gender = FullName.Gender.MALE
+            knight.name = FullName("Jefferson", "Kelk", Gender.MALE)
+            knight.gender = Gender.MALE
 
             importantPeople.addPerson(knight)
             MPC_importantPeople[ARRESTING_KNIGHT_OFFICER] = knight
         }
 
         if (MPC_importantPeople[TRITACH_BRUISER_ONE] == null) {
-            val bruiserOne = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(FullName.Gender.MALE)
+            val bruiserOne = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(Gender.MALE)
 
             bruiserOne.id = TRITACH_BRUISER_ONE
             bruiserOne.rankId = Ranks.AGENT
@@ -255,7 +260,7 @@ object MPC_People {
         }
 
         if (MPC_importantPeople[TRITACH_BRUISER_TWO] == null) {
-            val bruiserTwo = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(FullName.Gender.MALE)
+            val bruiserTwo = Global.getSector().getFaction(Factions.TRITACHYON).createRandomPerson(Gender.MALE)
 
             bruiserTwo.id = TRITACH_BRUISER_TWO
             bruiserTwo.rankId = Ranks.AGENT
@@ -269,7 +274,7 @@ object MPC_People {
         }
 
         if (MPC_importantPeople[UMBRA_INFILTRATOR] == null) {
-            val infiltrator = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(FullName.Gender.FEMALE)
+            val infiltrator = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.FEMALE)
 
             infiltrator.id = UMBRA_INFILTRATOR
             infiltrator.rankId = Ranks.SPECIAL_AGENT
@@ -279,14 +284,14 @@ object MPC_People {
             infiltrator.importance = PersonImportance.MEDIUM
             infiltrator.voice = Voices.SOLDIER
 
-            infiltrator.name = FullName("Hera", "Calibri", FullName.Gender.FEMALE)
+            infiltrator.name = FullName("Hera", "Calibri", Gender.FEMALE)
 
             importantPeople.addPerson(infiltrator)
             MPC_importantPeople[UMBRA_INFILTRATOR] = infiltrator
         }
 
         if (MPC_importantPeople[KKL_REP] == null) {
-            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(FullName.Gender.MALE)
+            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.MALE)
 
             rep.id = KKL_REP
 
@@ -297,21 +302,21 @@ object MPC_People {
             rep.importance = PersonImportance.HIGH
             rep.voice = Voices.SPACER
 
-            rep.name = FullName("Jeron", "Blast", FullName.Gender.MALE)
+            rep.name = FullName("Jeron", "Blast", Gender.MALE)
 
             importantPeople.addPerson(rep)
             MPC_importantPeople[KKL_REP] = rep
         }
 
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {
-            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(FullName.Gender.FEMALE)
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
             aristo.id = HEGE_ARISTO_DEFECTOR
 
             aristo.rankId = Ranks.ARISTOCRAT
-            aristo.postId = Ranks.POST_CITIZEN
+            aristo.postId = "MPC_aloofAristo"
 
-            aristo.importance = PersonImportance.HIGH
+            aristo.importance = PersonImportance.MEDIUM
             aristo.voice = Voices.ARISTO
 
             aristo.name = FullName("Aleratus", "Youn", Gender.FEMALE)
@@ -320,6 +325,63 @@ object MPC_People {
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_ARISTO_DEFECTOR] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
+
+            aristo.id = HEGE_OPPORTUNISTIC_ARISTO_REP
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = "MPC_pacifistAristo"
+
+            aristo.importance = PersonImportance.VERY_HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Mikael", "Lindunberg", Gender.MALE)
+
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+
+            aristo.id = HEGE_MORALIST_ARISTO_REP
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = "MPC_honorableAristo"
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Jerus", "Alotera", Gender.FEMALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+
+            aristo.id = HEGE_MILITARIST_ARISTO_REP
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = "MPC_militaristicAristo"
+
+            aristo.importance = PersonImportance.VERY_HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Allison", "Mellour", Gender.FEMALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

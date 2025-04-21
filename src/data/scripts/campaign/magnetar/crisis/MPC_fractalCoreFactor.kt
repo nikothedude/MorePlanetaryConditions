@@ -31,6 +31,7 @@ import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addMarketPeople
 import data.utilities.niko_MPC_settings
+import exerelin.ExerelinConstants
 import indevo.exploration.minefields.MineBeltTerrainPlugin
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
@@ -189,6 +190,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                 market.commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER])
                 MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]?.makeImportant("\$MPC_IAIICLeader")
                 market.admin = MPC_People.getImportantPeople()[MPC_People.IAIIC_LEADER]
+
+                market.memoryWithoutUpdate[ExerelinConstants.MEMORY_KEY_UNINVADABLE] = true
                 /*val submarket = market.getLocalResources() as LocalResourcesSubmarketPlugin
             for (com in market.commoditiesCopy) {
                 val bonus = market.getStockpileNumConsumedOverTime(com, 365f, 0)

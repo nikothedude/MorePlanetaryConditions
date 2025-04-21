@@ -3493,9 +3493,232 @@ OR
 OR
 ...a image of a Jill Mirthson in the Chicozmostoc fleetyard, inspecting an XIV falcon...
 OR
-...a seeming black hole in the hegemony's military fund, named ""special tactics""...",,
+...a seeming black hole in the hegemony's military fund, named ""special tactics""...
+OR
+...a stolen transcript of hegemony generals discussing the IAIIC in flowery terms...",,
 MPC_IAIICHGAristoEventideMeetingPeruseEndOpt,MPC_IAIICHGAristoEventideMeetingPeruseQuestionOpts,,,,"100:MPC_IAIICHGAristoEventideMeetingPeruseEndOptSel:Finish reading",
+MPC_IAIICHGAristoEventideMeetingPeruseEndOptSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPeruseEndOptSel",,"You hand Aleratus back her gaudy TriPad, which she whisks away behind her arms, running her manicured fingers over the embroidered surface to search for imperfections caused by your impure touch.
+
+The evidence presented in her TriPad is circumstantial at best, nothing concrete. A reasonable doubt still exists for sure, but this is fortunately not a hegemony court - action only requires a solid suspicion.
+
+Eventually satisfied with your handling of her item, she turns back to you. ""Satisfied?"" She nods in return to yours. ""Good. ""","MPC_IAIICHGAristoEventideMeetingSeven:Continue",
+MPC_IAIICHGAristoEventideMeetingSeven,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSeven","SetTextHighlightColors MPC_IAIIC
+SetTextHighlights ""IAIIC""","Pacing, tapping away at her PDA, she speaks. ""As you've already heard,"" she mutters, referencing her short outburst. ""I consider the investment of the hegemony into this 'IAIIC' project to be a *waste*."" she grumbles. ""Countless ships, countless *irreplaceable* ships, sent off to fight a war we won't even see returns on!"" She scoffs, jamming her heels into the floor with such intensity you worry for the tiling.
+
+Taking a breath, she continues. ""So, *Captain*."" She turns to you. ""It would seem we have a mutual enemy. Or, at least, a mutual..."" she rolls her hand around, waiting for a response.","MPC_IAIICHGAristoEventideMeetingSevenCause: ""Cause.""
+MPC_IAIICHGAristoEventideMeetingSevenConfused:Give her a confused look (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingSevenCause,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSevenCause","FireBest MPC_IAIICHGAristoEventideMeetingEight","She smiles, tilting her head. ""Great, Captain!"" she muses, speaking as if you were a child. ""Glad to see you dogs of war know a few tricks."" You restrain the irritation caused by her sheer callousness in the interest of learning what she has to say.
+
+",,
+MPC_IAIICHGAristoEventideMeetingEight,MPC_IAIICHGAristoEventideMeetingEight,,"SetTextHighlights ""both""","""Now, unfortunately, this stance isn't shared by many of the other eventide houses. Stuck up in their... own little worlds..."" she grimaces, tightening her grip on the PDA. ""...I need you to help me convince them to put pressure on the hegemon. Stop this hemorrhaging before we both lose everything.""
+
+Her motives are as clear as diamondglass - selfish, yet perfectly aligned with your own.","MPC_IAIICHGAristoEventideMeetingNine:""Let's say I help you. How do you know we can actually pull this off?""",
+MPC_IAIICHGAristoEventideMeetingNine,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingNine",,"Her gaze hardens, glazing over, like she can't understand what you just said. ""I... because..."" her words slow as she struggles to make sense of your incomprehensible request.
+
+Remembering you're not a member of the aristocracy, she adds ""-ah. I nearly forgot your... er... 'status'."" she mutters, clearly referring to your detestable occupation of ""not nobility"". ""You see - the hegemony has a history of caving to the demands of our kind - as it should - and I've already got a few ideas for how to turn the aristocracy against that hivescum Daud.""
+
+She spins around her PDA, the screen one finger-tap away from opening a password protected folder. ""Interested?""","MPC_IAIICHGAristoEventideMeetingTen:Continue",
+MPC_IAIICHGAristoEventideMeetingTen,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingTen",,"She waits not for a response, spinning it back and beginning to read from whatever just appeared on it's face - the presentation clearly just for flashy posture.
+
+""House Youn is familiar with a number of houses - but only a few are powerful enough to make a difference-"" she bites her lip. ""...and even less are smart enough to stand with us.""","MPC_IAIICHGAristoEventideMeetingEleven:Continue",
+MPC_IAIICHGAristoEventideMeetingEleven,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingEleven","SetTextHighlightColors highlight MPC_IAIIC
+SetTextHighlights ""Lindunberg"" ""IAIIC""","""The first is house Lindunberg."" Her tapping ceases, presumably founding whatever data-block she was looking for. ""They've never really liked Daud, nor the military..."" she waves her hand, dismissing a thought. ""...all stuffy like that. What *do* they like? How do they even *live* like that? Isn't the point of life to love? To hum, sing, and-""
+
+You politely remind her what you're both here for. She responds with nothing more than an irritated nod and a cough. ""R-regardless, Captain. Um... house Youn is fairly close, and I can fairly confidently say that they're not quite happy with the IAIIC themselves - much like *us*."" She gives you a suggestive look - a potential common enemy between you all. ""Something about... uh, I wrote here a 'moral obligation to avoid war?'"" She snorts, and shakes her head in disbelief. ""...the naivety...""","MPC_IAIICHGAristoEventideMeetingHouseOneNaive:""Pacifists? Admirable."" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseOneNaiveBad:""Pacifists? Foolish."" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseOneNoFun:""They don't enjoy much?"" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseTwoInfo:""Very interesting. The next?""",
+MPC_IAIICHGAristoEventideMeetingHouseTwoInfo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingHouseTwoInfo","SetTextHighlightColors highlight hegemony hegemony highlight MPC_IAIIC
+SetTextHighlights ""Mellour"" ""military"" ""military"" ""Politicians"" ""IAIIC""","""Ah, yes, the next..."" she swipes her PDA-screen to the side, summoning the next set of data. ""Ah-yes. The Mellour."" She nods, clearly familiar with the name. ""A long-lived house of military-men..."" she smacks her lips, holding up a finger. ""All backers of, and members of, the military.""
+
+""They don't actively participate, no no!"" She waves away your unasked question. ""No. They *finance* it. Suggest policy! Donate shipworks. Demand missions! Politicians maybe, for your unrefined tongue.""
+
+""Rumor is..."" She inhales. ""...they're not the biggest fan of Daud's involvement with the IAIIC. They back him, yes - but they have doubts."" She frowns, seemingly unsatisfied by whatever she's reading. ""...that's all we - I have written, here."" A sigh escapes her lips.","MPC_IAIICHGAristoEventideMeetingHouseTwoPoliticians:""Oh great. *Politicians.*"" (Cringe) (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseThreeInfo:""I'll have to investigate them. The next?""","MPC_IAIICHGAristoEventideMeetingHouseTwoDoubleDown:""What if it doesn't work, and they just double down?"" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseTwoAttackWhat:""...are you telling me to attack the hegemony, to *prove* them right?"" (UNFINISHED)
+
+""Rumor is..."" She inhales. ""...they're not the biggest fan of Daud's involvement with the IAIIC. They back him, yes - but they have doubts. Concerns of retribution from a rogue element, danger to the hegemony's industrial and commercial base...""
+
+She lowers the TriPad, giving you a curtive grin. ""All you have to do is confirm their beliefs."""
+MPC_IAIICHGAristoEventideMeetingHouseThreeInfo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingHouseThreeInfo","SetTextHighlightColors highlight MPC_IAIIC
+SetTextHighlights ""Alotera"" ""IAIIC""","""Let's see here..."" she swipes yet again, her face flashing white-blue-white as the TriPad rapidly changes display imagery. ""-the next candidate we have is the Alotera. Oh, this is a good one, Captain..."" she grins, flashing you a playful look - which you try your best not to return. ""-a house obsessed with honor, righteousness, morality..."" she smacks her lips, growing disinterested with the ethical synonyms presumably written. ""-point is, they're highly principled. Sure, they back the military - most houses do - but a key point is that there's been signs of growing discontent within their ranks... right around the time the first rumors of the IAIIC hit the aristocracy.""
+
+She flashes you a look. ""-Alotera has never been a big fan for interventionism, declaring it not 'morally sound'."" she scoffs. ""You'll have to visit and see for yourself if they'll help - INTSEC has been breathing down my neck as of late."" She tugs at her collar uncomfortably, double-checking the bathroom for cameras in a moment of sudden paranoia.","MPC_IAIICHGAristoEventideMeetingHouseThreeAI:""They have any strong opinions on AI use? AI rights?"" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseThreeMoral:""Tell me a little more about their 'morality'."" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingHouseFourInfo:""I can do that. Any more?""",
+MPC_IAIICHGAristoEventideMeetingHouseFourInfo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingHouseFourInfo","SetTextHighlights ""my"" ""Youns""","""Uh, let's see here, ah-"" her expression suddenly freezes as the TriPad once again shifts to show another piece of writing ""A-ah... right, yes, er-"" she stumbles over her words, faltering under your gaze. ""I... I also...""
+
+She sighs, thumping the TriPad against the table in a moment of defeat. ""...need help convincing my house. The Youns.""","MPC_IAIICHGAristoEventideMeetingHouseFourInfoTwo:""You mean to tell me this entire time, you didn't even have the support of YOUR house?""",
+MPC_IAIICHGAristoEventideMeetingHouseFourInfoTwo,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingHouseFourInfoTwo","SetTextHighlights ""perfectly willing""","She winces, and nods meekly. ""I... listen...""
+
+She takes a weary breath. ""-I keep telling them, we're about to see a massive deficit in military power surpassing even the AI wars! Even if your fleets DON'T get destroyed, the sheer manpower we're losing-"" she notices your impatient look and swallows, turning a brighter shade of white.
+
+""W-what... what really matters here, Captain."" She tries to maintain her resolve. ""Is that my house is perfectly willing to join the effort... but they're just terrified of how much they might lose - so they pretend nothing is happening."" Her breath shakes. ""P-Please, Captain. If not for me, for you.""
+
+She stares intensely, worry clear in her eyes. ""I might be the only chance you have at an in to hegemony internal politics right now, Captain. Maybe ever.""","MPC_IAIICHGAristoEventideMeetingAgreeToScheme:""You're right. I can't lose this chance.""
+MPC_IAIICHGAristoEventideMeetingDeny:""No. You don't even have a foundation. If this is my only chance, it's not worth my time."" (Allow the hegemony to work with the IAIIC) (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingAgreeToScheme,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingAgreeToScheme","SetTextHighlights ""breathing down my neck"" ""Consequences""
+AddTextSmall ""Only one house can be engaged at a time - and with a lengthy pause between them"" highlight
+MPC_IAIICHegeCMD startQuest
+
+FireAll MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts","The ghost of anxiety leaves her body as she straightens and smiles. ""Yes! Great! Good! Great choice, Captain! Together we can stop this waste, and - ah - I suppose free your space from 'tyranny'."" she playfully muses, her tone now completely different.
+
+""Now - before you get ahead of yourself, there's a few things you should know. Firstly - well, I think I told you already, but INTSEC is breathing down my neck."" You nod. ""We can't go fast. We have to take this slowly, cover our tracks - otherwise, INTSEC might realize who we're after."" A pained look comes over her as she turns back to her TriPad. ""...I doubt we'll be able to fully hide our activities, though... while we can hide our targets, the things you might have to do will make INTSEC highly suspicious and..."" she waves a hand, but the message is clear: Consequences.
+
+She sets down her TriPad yet again, clearing her throat. ""I suspect you have questions?""",,
+MPC_IAIICHGAristoEventideMeetingPostConsequences,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,,,,"MPC_IAIICHGAristoEventideMeetingPostConsequencesSel:""What kind of 'consequences' are we looking at here?"" (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingPostStartWho,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,,,,"MPC_IAIICHGAristoEventideMeetingPostStartWho:""What house should I start with?"" (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingPostWhatHappens,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,,,,"MPC_IAIICHGAristoEventideMeetingPostWhatHappens:""What exactly happens once we get all the houses on our side?"" (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingPostHow,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,"!$MPC_askedHow",,,"MPC_IAIICHGAristoEventideMeetingPostHowSel:""You never mentioned how to get into contact with these houses.""",
+MPC_IAIICHGAristoEventideMeetingPostHowSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPostHowSel","AddTextSmall ""Received comm-keys for multiple Eventide aristocrats"" highlight
+AddTextSmall ""Received diplomatic keys of one 'Orthus Youn'"" highlight
+
+$MPC_askedHow = true 0
+FireAll MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts","""Oh, simple! Just call them - I've transmitted some commkeys that should grant diplomatic access to high-ranking individuals of each house.""
+
+She clicks her tongue, cocking a smirk.
+
+""Me included.""
+
+By the way she said that, you can only conclude she is *not* a high-ranking member of Youn, and is just trying to appear more important than she is.",,
+MPC_IAIICHGAristoEventideMeetingPostWhoOrthus,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,"$MPC_askedHow
+!$MPC_askedWhoOrthus",,,"MPC_IAIICHGAristoEventideMeetingPostWhoOrthusSel:""Who is this 'Orthus Youn'?""",
+MPC_IAIICHGAristoEventideMeetingPostWhoOrthusSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPostWhoOrthusSel","$MPC_askedWhoOrthus = true 0
+FireAll MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts","""Oh, him?"" She snorts. ""Well, I can't give you *my* keys. Flagged by INTSEC, remember? Orthus is just a friend - he won't mind his keys being used.""",,
+MPC_IAIICHGAristoEventideMeetingPostEnd,MPC_IAIICHGAristoEventideMeetingAgreeToSchemeOpts,,,,"MPC_IAIICHGAristoEventideMeetingPostEndSel:""I've heard all I need to know.""",
+MPC_IAIICHGAristoEventideMeetingPostEndSel,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingPostEndSel","HideFirstPerson","She smiles, and goes to put her PDA away. Before it's stowed, however, it clatters to the ground from the shock of the banging on the door.
+
+""HEY!"" A familiar voice shouts. ""By Stars and High burns, what are you two doing in there?! I've heard nothing but chatting and not a single flushing! You know this isn't a love-den, right?!""
+
+Turning back to Aleratus, you note her ghostly-pale skin and embarrassed posture. She walks out in front of you, throwing the door open with a hung head, ignoring the gawking storeowner.
+
+He turns to you.","MPC_IAIICHGAristoEventideMeetingSKSorry:""So sorry. I'll get out of your hair.""
+MPC_IAIICHGAristoEventideMeetingSKConspiracy:""Oh, don't worry. We were just plotting treason against the hegemony."" (UNFINISHED)
+MPC_IAIICHGAristoEventideMeetingSKFlirt:""She's really good with her clothes off, you know.""
+MPC_IAIICHGAristoEventideMeetingSKLeave:Just leave (UNFINISHED)",
+MPC_IAIICHGAristoEventideMeetingSKFlirt,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSKFlirt","FireBest MPC_IAIICHGAristoEventideMeetingLeaveTwo","Your verbal assault slams into the shopkeep, overloading his shields and causing a massive cascade-failure in his flux grid. You walk past, his limbs frozen in place as he fails to comprehend what you just said.",,
+MPC_IAIICHGAristoEventideMeetingSKSorry,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSKSorry","FireBest MPC_IAIICHGAristoEventideMeetingLeaveTwo","The shopkeep sighs, shaking his head. ""-just have a nice day, okay? There's better places for this.""",,
+MPC_IAIICHGAristoEventideMeetingLeaveTwo,MPC_IAIICHGAristoEventideMeetingLeaveTwo,,"SetTextHighlightColors highlight MPC_IAIIC highlight highlight
+SetTextHighlights ""Aleratus Youn"" ""IAIIC"" ""noble houses"" ""only way""","You grab the fine lotus you purchased and make your way back to your shuttle, accompanied by your waiting guards.
+
+You quickly take a moment to review what you've learnt; Aleratus Youn, of the house Youn, has much to lose from the IAIIC's presence in your space, and has asked you to help her turn a number of noble houses against the military to ""pressure"" Daud into pulling out. While the woman is aloof (and a bit dull), you cannot deny her plan has merit; hegemony aristocracy is not known for loyalty nor weakness. It's quite possible this is a good way - if not the only way - to strongarm the hegemony out of the IAIIC if Daud remains belligerent.","MPC_IAIICHGAristoEventideMeetingLeaveSmell:Smell the fine lotus you bought
+MPC_IAIICHGAristoEventideMeetingLeaveFinal:Return to your $shipOrFleet",
+MPC_IAIICHGAristoEventideMeetingLeaveSmell,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingLeaveSmell","RemoveOption MPC_IAIICHGAristoEventideMeetingLeaveSmell","You bring the blackened pedals to your nose and inhale. A flowery aroma fills your nostrils, filling your mind with visions of a life spent on grassy meadow and not in harsh void. But that wouldn't have gotten you here, would it? You shake the thought off, setting the bouquet aside.",,
+MPC_IAIICHGAristoEventideMeetingLeaveFinal,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingLeaveFinal","EndConversation
+ShowDefaultVisual","The shuttle doors hiss shut, and before long you find yourself back in the familiar company of your $shipOrFleet.
+
+Back to work.",,
 "#END Go to eventide and make contact with the aristocrat",,,,,,
+,,,,,,
+# The four houses you have to convince,,,,,,
+,,,,,,
+# Militaristic house - sabotage hegemony,,,,,,
+,,,,,,
+# Initial contact with militaristic house,,,,,,
+MPC_milAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoMilitaryRep score:1000
+!$global.MPC_metHegeMilitaryAristo
+!$temporarilyIgnoreYou","SetShortcut cutCommLink ESCAPE true
+MPC_addOptionConfirmation MPC_milAristoInitialMeetTwo ""Submitting these credentials will tip off INTSEC to your activities and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
+
+FireAll MPC_milAristoInitialMeetModifyOptions","As the commlink springs to life, a robotic auto-greeter cheerfully announces the denial of your connection. ""Hello and thank you for contacting [ALLISON MELLOUR]. Our house is not taking external calls right now, under INTSEC order 2552:ERETH. Please try again later...""","MPC_milAristoInitialMeetTwo:Input your aristocratic credentials
+cutCommLink:Cut the comm link",
+MPC_milAristoInitialMeetModifyOptionsHouseActive,MPC_milAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD dealingWithAHouse","SetEnabled MPC_milAristoInitialMeetTwo false
+SetTooltip MPC_milAristoInitialMeetTwo ""Using your credentials while already dealing with a house could compromise this entire operation. It's best to finish your dealings first.""",,,
+MPC_milAristoInitialMeetModifyOptionsCooldown,MPC_milAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD cooldownActive","SetEnabled MPC_milAristoInitialMeetTwo false
+SetTooltip MPC_milAristoInitialMeetTwo ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
+MPC_milAristoInitialMeetTwo,DialogOptionSelected,"$option == MPC_milAristoInitialMeetTwo","BeginConversation MPC_hegeAristoMilitaryRep
+$global.MPC_metHegeMilitaryAristo = true","With but a flick of the wrist, the autogreeter's tone changes to a far more harsh, likely auto-generated one. ""NEW CREDENTIALS RECEIVED AND RECOGNIZED, INDIVIDUAL: ""Orthus Youn"". PLEASE HOLD. PLEASE HOLD. PL-"" the voice abruptly cuts out as blackness is replaced by the slowly spinning crest of the hegemony, and eventually, the face of an annoyed-looking aristocrat only giving half a glance's worth of attention to the screen.
+
+""We weren't expecting a call, Youn. What ar-"" $heOrShe blinks rapidly, snapping $hisOrHer head over to appraise your appearance. ""...I see the Youns have... decayed more than I expected."" $HeOrShe grimaces. ""You look like a grunt straight of Chico.""","MPC_milAristoInitialMeetAmLeader:""My name is $playerName, leader of $global.MPC_playerFacNameWithArticle. I was given these credentials to arrange a meeting.""
+MPC_milAristoInitialMeetNotOrthus:""Take a closer look. I'm no Orthus."" (UNFINISHED)
+MPC_milAristoInitialMeetAmOrthus:""That's quite rude. I thought someone such as myself would garner more respect, Mellour."" (UNFINISHED)
+",
+MPC_milAristoInitialMeetAmLeader,DialogOptionSelected,"$option == MPC_milAristoInitialMeetAmLeader",,"$HeOrShe triple, quadruple, then pentuple takes. A blur of skin flies up and down onto an unseen object, triggering a thin field of blur and dampening to encircle the background of the Mellour, who finally turns to you with an intense gaze. ""$playerName! Leader of $global.MPC_playerFacNameWithArticle..."" $heOrShe murmurs thoughtfully, rubbing $hisOrHer chin. Almost as if an afterthought, a finger configures your commlink to private (with only a minor glitch-effect).","MPC_milAristoInitialMeetWaitForThought:Wait
+MPC_milAristoInitialMeetYesThatsMe:""Yes. I just said that."" (UNFINISHED)",
+MPC_milAristoInitialMeetWaitForThought,DialogOptionSelected,"$option == MPC_milAristoInitialMeetWaitForThought",,"$HisOrHer trance breaks through a sudden inhale of the nose, and $hisOrHer head shoots up to meet yours. ""Why have you called me?"" $HeOrShe interrogates, $hisOrHer tone noticeably more intense than before. ""We both know the situation in your space. How are the Youn involved? Why us?""
+
+$HisOrHer back straightens. ""What's your agenda here, $playerLastName?""","MPC_milAristoInitialMeetDontLikeIAIIC:""I've been told you suspect the hegemony is involved with the IAIIC.""",
+MPC_milAristoInitialMeetDontLikeIAIIC,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIIC",,"$HisOrHer gaze remains steady, $hisOrHer uneasiness only evident in $hisOrHer momentary silence.","MPC_milAristoInitialMeetDontLikeIAIICTwo:""I've also been told you don't exactly support this.""",
+MPC_milAristoInitialMeetDontLikeIAIICTwo,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIICTwo",,"$HisOrHer gaze is locked on yours, silence permeating the commlink like vaccum in a blasted-open wardeck.","MPC_milAristoInitialMeetDontLikeIAIICThree:""Care to tell me why?""",
+MPC_milAristoInitialMeetDontLikeIAIICThree,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIICThree",,"$HeOrShe is slow to respond, the first communication a slow grind of a pen into hard desk-steel to give you acknowledgement and claim momentary ownership over $hisOrHer speech.
+
+The silence reaches a breaking point - as does the pen - and the aristocrat winces, staring at $hisOrHer now-stained armcuff. ""-we believe you're a rogue element, $playerLastName."" Taking a nearby nanosilk cloth to $hisOrHer arm, $heOrShe continues. ""The fact you're here confirms that. You're willing to take extra-ordinary steps to secure your space, including...""
+
+$HeOrShe rolls her cloth-hand around, careful to avoid inertial splattering. ""...stealing a aristocrat's commskey to try and force $playerHisOrHer way into hegemony politics."" $HeOrShe sighs, shaking $hisOrHer head as $heOrShe continues $hisOrHer cleaning.","MPC_milAristoInitialMeetDontLikeIAIICFour:""I heard your house can pull a lot of weight in the military. If I'm such a rogue agent, why not minimize the damage?""
+MPC_milAristoInitialMeetDidNotSteal:""I did NOT steal these comm-keys. They were given to me!"" (UNFINISHED)",
+MPC_milAristoInitialMeetDontLikeIAIICFour,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIICFour",,"$HeOrShe turns to you, inspecting you deeply. ""When I said *confirmed our beliefs*, I did not mean *existential threat*."" $HisOrHer nanocloth slowly drips ink back onto $hisOrHer wrist. ""Coming here and parlaying with Mellour is hardly a threat, Captain..."" $HeOrShe shakes her head, turning back to the dripping nanocloth and hissing as $heOrShe notices.","MPC_milAristoInitialMeetDontLikeIAIICFive:""So what you're saying is... you don't see me as a threat.""
+MPC_milAristoInitialMeetDontLikeIAIICFiveThreat:""So what you're saying is... I need to be more threatening."" (UNFINISHED - NEGATIVE OPTION)",
+MPC_milAristoInitialMeetDontLikeIAIICFive,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIICFive",,"""Precisely, Captain."" $HeOrShe lifts up $hisOrHer cuff to a desk-light, inspecting the darkened fabric closely. ""The bright future of the Hegemony will not bend to your *request*... even if this current pact is..."" $heOrShe grimaces. ""...dubious, at best...""
+
+Satisfied with $hisOrHer efforts - or at least, confident $hisOrHer cuff cannot be cleaned further - $heOrShe folds her hands atop one another and stares directly at you. ""As it stands, the risk to the Hegemony base from our involvement with your 'war' is minimal. We may lose ships, yes - we may lose men, sure - but but as long as the war remains outside our borders...""
+
+$HeOrShe gives a stiff shrug. ""It's our duty to respect protocol and command.""
+
+","MPC_milAristoInitialMeetDontLikeIAIICSix:""And what if it found it's way *inside*?""",
+MPC_milAristoInitialMeetDontLikeIAIICSix,DialogOptionSelected,"$option == MPC_milAristoInitialMeetDontLikeIAIICSix","MPC_IAIICHegeCMD newHouse MILITARISTIC","$HisOrHer gaze hardens, defenses rising to the suggested assault you provided. ""...I don't think we should continue this conversation, $PlayerSirOrMadam."" Despite $hisOrHer callousness, you sense the faintest of hopeful curiosities in $hisOrHer voice; a chance to free the military from the chaos of a proxy war, perhaps.","cutCommLink:""Indeed."" (Cut the comm link)",
+"#END Initial contact with militaristic house",,,,,,
+,,,,,,
+# Militaristic - Meet while active,,,,,,
+MPC_milAristoActiveMeetInit,PickGreeting,"$id == MPC_hegeAristoMilitaryRep score:1000
+$global.MPC_metHegeMilitaryAristo
+!$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoMilitaryRep
+FireBest MPC_milAristoActiveMeet",,,
+MPC_milAristoActiveMeet,MPC_milAristoActiveMeet,,"SetShortcut cutCommLink ESCAPE true","Your commlink establishes, hangs, and is finally accepted, resolving into the familiar and hardened visage of $personName.
+
+""You're back."" $heOrShe grumbles.","cutCommLink:Cut the comm link",
+"#END Militaristic - Meet while active",,,,,,
+,,,,,,
+# Militaristic - resolve,,,,,,
+MPC_milAristoDoneMeetInit,PickGreeting,"$id == MPC_hegeAristoMilitaryRep score:1000
+MPC_IAIICHegeCMD readyToConfrontMil score:50
+!$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoMilitaryRep
+$global.MPC_milAristoDone = true","Your comms request is accepted immediately. You see $personName, hands balled, a privacy field already smudging out $hisOrHer background. A quick check confirms the commlink is private, too.
+
+""$PlayerLastName."" $HeOrShe starts, a grimace spread across $hisOrHer face.","MPC_milAristoDoneMeetTwo:""$PersonLastName.""",
+MPC_milAristoDoneMeetTwo,DialogOptionSelected,"$option == MPC_milAristoDoneMeetTwo",,"""Tell me."" $HisOrHer gaze burns deep, a high intensity laser attempting to penetrate your layered armor. ""Why are you calling me, $playerLastName?""","MPC_milAristoDoneMeetThree:""You tell me.""
+MPC_milAristoDoneMeetThreeYouKnow:""I think you know, $personLastName.""(UNFINISHED)
+MPC_milAristoDoneMeetThreeSilence:Remain silent (UNFINISHED)",
+MPC_milAristoDoneMeetThree,DialogOptionSelected,"$option == MPC_milAristoDoneMeetThree","FireBest MPC_milAristoDoneMeetThreeReaction
+FireBest MPC_milAristoDoneMeetThreePostReaction","$HeOrShe sighs, raising $hisOrHer brows in dramatic exhaustion and reaching to a stack of TriPads, beginning to performativity peruse their contents. ""Recently, there's been a surge of... disruptions, to our industrial, commercial, and military bases... "" $HeOrShe sounds exhausted as $heOrShe reads this out.",,
+MPC_milAristoDoneMeetThreeReactionHostile,MPC_milAristoDoneMeetThreeReaction,"$faction.isHostile","AdjustRepActivePerson VENGEFUL -5","""You know what MILINT thinks, Captain?"" $HeOrShe slaps down $hisOrHer PDA. ""It was *you*. Doesn't help you sure didn't seem to care to keep your transponder off while *destroying* our empire."" $HisOrHer lip twitches, curling from the weight of $hisOrHer detestment. ""But..."" $HeOrShe sighs, sliding the PDA off screen.",,
+MPC_milAristoDoneMeetThreeReactionNonHostile,MPC_milAristoDoneMeetThreeReaction,"!$faction.isHostile",,"""Says here it was all done by one fleet, one single fleet - transponder off, in the dark, never once revealing their identity..."" $hisOrHer lip twitches, curling downwards. ""...I wonder who that was, Captain...?"" $HeOrShe bothers to give you a tired look.",,
+MPC_milAristoDoneMeetThreePostReaction,MPC_milAristoDoneMeetThreePostReaction,,"SetTextHighlights ""our own safety""
+MPC_IAIICHegeCMD houseTurned","""I suppose this proves your point, 'Captain'."" $HeOrShe says, grumbling. ""...you may not have our support. You may not expect anything from us. You may, however, count on us to try and separate the Hegemony from the IAIIC - if only for our own safety.""
+
+$HeOrShe delivers a low stare, awaiting your next words.","MPC_milAristoDoneMeetFourApologize:""It wasn't anything personal. I'm just defending my territory.""
+MPC_milAristoDoneMeetFourThreat:""If you know what's best for you, you'll keep the hegemony away from us altogether.""",
+MPC_milAristoDoneMeetFourApologize,DialogOptionSelected,"$option == MPC_milAristoDoneMeetFourApologize","HideFirstPerson
+
+$temporarilyIgnoreYou = true","""...I suppose you're right, $playerLastName."" $HeOrShe sighs, glancing off to something outside the privacy bubble. ""...brass has been overconfident lately. Maybe this is for the best.""
+
+$HeOrShe reaches for the camera. ""...and captain?""
+
+""Thank you for giving us an excuse.""
+
+The comm link cuts.","cutCommLink:Cut the comm link",
+MPC_milAristoDoneMeetFourThreat,DialogOptionSelected,"$option == MPC_milAristoDoneMeetFourThreat","AdjustRepActivePerson VENGEFUL -10
+HideFirstPerson
+
+$temporarilyIgnoreYou = true","$HeOrShe looks completely unamused. A moment later, the comm link abruptly cuts.
+
+A success, you think.","cutCommLink:Cut the comm link",
+"#END Militaristic - resolve",,,,,,
+,,,,,,
+# Militaristic - bounty hunter comms,,,,,,
+MPC_IAIICHMilBountyHunterDiktat,MPC_IAIICHMilBountyHunterHail,,"$entity.ignorePlayerCommRequests = true","The comm-signal crackles into a stable link.
+
+""Attention $playerName!"" The individual before you barks, making you wince. ""Your fleet has been cleared and contracted to eliminate yours, for your... ah... 'anti-social behavior."" $HeOrShe snorts, turning back.
+
+""Prepare to die."" $HeOrShe cuts the comm link before you haev a chance to respond.
+
+(TODO: Make special dialogue for each fleet, like vanilla)","cutCommLink:Cut the comm link",
+"#END Militaristic - bounty hunter comms",,,,,,
+"#END Militaristic house - sabotage hegemony",,,,,,
+,,,,,,
+# Aloof house - obtain unassailable proof,,,,,,
+MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000","FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves ",,
+"#END Aloof house - obtain unassailable proof",,,,,,
+"#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,
 ,,,,,,
 # Ark FOB Comms directory,,,,,,
@@ -3755,14 +3978,14 @@ MPC_IAIICSpawnedContinue,DialogOptionSelected,"$option == MPC_IAIICSpawnedContin
 
 niko_MPC_musicToggle ""music_default_market_hostile"" true","It takes a moment, but the commlink comes to life in due time. You are met with the intense gaze of an unfamiliar woman, hands balled on the desk before her. Behind her stands a trio of power-armored goons, each wielding a standard-issue KHGH-21 pulse rifle - and emblazened with a pea-green laurel on their shoulderpieces. A show of force, to be sure.
 
-The room itself is rather angular and grey-black, with the same pea-green laurel plastered on the backwall, framing the woman's form like a pair of gracious hands.","MPC_IAIICSpawnedContinueTwo:Continue",
+The room itself is rather angular and grey-black, with the same pea-green laurel plastered on the backwall, framing the woman's form like a pair of uplifting hands.","MPC_IAIICSpawnedContinueTwo:Continue",
 MPC_IAIICSpawnedContinueTwo,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueTwo",,"Her chest swells under a deep breath, seeming to take the air out of your lungs as well. ""Attention $global.MPC_playerFacName residents."" Your speakers boom with authority. ""Under Domain Law, we, the IAIIC, are invoking Section 15::52 of the 29th Expansion Charter.""
 
 Jill straightens, standing up out of her chair. Her marines close in on her, raising their weaponry to an at-ease shoulder position. ""As of now, the $global.MPC_FOBSystemName system is now under *our* jurisdiction."" Her brow lowers, and you almost feel as if she's staring at you, and you specifically. ""We officially accuse the governing polity of irresponsible and illegal use of AI technology, and with the blessing of the Domain, we will be taking matters into our *own* hands!"" She barks.","MPC_IAIICSpawnedContinueThree:Continue",
 MPC_IAIICSpawnedContinueThree,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueThree","SetTextHighlightColors MPC_IAIIC highlight highlight highlight highlight highlight
 SetTextHighlights ""Ark FOB"" ""mandatory"" ""planetary inspections"" ""expect"" ""full cooperation"" ""harshly""","She pushes off her desk into her marines, the force of which nearly knocks a PDA off the table. ""You may already be aware of a newly-constructed base within your space - the Ark FOB."" You quickly double-check your MilInt feed, and see confirmation - transponder code ""Ark FOB"". You quickly look back up to the feed, to watch Jill slowly pacing the room with eyes locked to her feet.
 
-She stops, shooting her gaze to you. You instinctually flinch. ""Using this base as a launchpoint, we will begin rigorous enforcement of Domain AI law throughout your -"" she contemplates her words, before landing on ""treacherous space."" She takes yet another deep breath, and you manage to hold onto yours this time. ""Searches are mandatory, as are..."" she makes sure to emphasize, ""...planetary inspections.""
+She stops, shooting her gaze to you. You instinctually flinch. ""Using this base as a launchpoint, we will begin rigorous enforcement of Domain AI law throughout your -"" she contemplates her words, before landing on ""unregulated space."" She takes yet another deep breath, and you manage to hold onto yours this time. ""Searches are mandatory, as are..."" she makes sure to emphasize, ""...planetary inspections.""
 
 Finally, she sits back down, balling her hands once more. ""We ask, and expect, your full cooperation. Any attempts to stop, or otherwise inhibit our lawful operation in this space..."" One of her marines cocks their weapon threateningly. ""Will be met harshly."" She hisses.","MPC_IAIICSpawnedContinueFour:Continue",
 MPC_IAIICSpawnedContinueFour,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueFour","SetTextHighlights ""office"" ""Extremely robust"" ""frighteningly strong"" ""fleets pouring out""

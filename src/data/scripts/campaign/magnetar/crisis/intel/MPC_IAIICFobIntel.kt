@@ -768,7 +768,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         }
     }
 
-    private fun getSabotagePowerString(): Pair<String, Color> {
+    fun getSabotagePowerString(): Pair<String, Color> {
         val strength = getSabotageMultFromContributingFactions(factionContributions)
 
         if (strength >= 2.5f) {
@@ -844,7 +844,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                     )
                 }
 
-                RetaliateReason.KEPT_SYNCROTRON, RetaliateReason.PISSED_OFF_JILL -> {
+                else -> {
                     info.addPara(
                         "Covert action imminent!",
                         0f
@@ -1689,7 +1689,9 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     enum class RetaliateReason {
         ATTACKED_FOB,
         PISSED_OFF_JILL,
-        KEPT_SYNCROTRON;
+        KEPT_SYNCROTRON,
+        MILITARY_HOUSE_PROGRESS,
+        TURNING_HOUSES_AGAINST_HEGEMONY;
     }
     /** Called if the player attacks the FOB. Triggers sabotage. */
     fun retaliate(reason: RetaliateReason, dialog: TextPanelAPI? = null) {
@@ -1701,7 +1703,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             sendUpdateIfPlayerHasIntel(reason, false)
         }
 
-        MPC_delayedExecution(@JvmSerializableLambda { if (!isEnded) { sabotage() } },0.3f, runWhilePaused = false, useDays = true).start()
+        MPC_delayedExecution(@JvmSerializableLambda { if (!isEnded) { sabotage() } }, 0.3f, runWhilePaused = false, useDays = true).start()
         daysLeftTilNextRetaliate = RETALIATE_COOLDOWN_DAYS
     }
 
