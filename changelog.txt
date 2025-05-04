@@ -1,6 +1,12 @@
 4.3.3
 
-Magnetar fights now always use objectives (TEST THIS NIKO)
+Magnetar is now unlockable in codex
+In future starsector releases, the magnetar will no longer show on the planet list
+
+Interdictions that fire off now protect you from the magnetar
+    Only for about 0.1 days, so its still tight
+Magnetar fights now always use objectives
+    Additionally, SOTF objectives can spawn in the magnetar system
 
 Derelict escorts now meet your fleet if you try to intercept them
 Derelict escort description has better grammar

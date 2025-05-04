@@ -2,8 +2,10 @@ package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.Alignment
+import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_mathUtils.roundNumTo
@@ -102,20 +104,21 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
         )
         info.addPara("Pulses can be avoided by...", 5f)
         info.setBulletedListMode(BULLET)
-        info.addPara("Sheltering %s or %s", 0f, Misc.getHighlightColor(), "on top of planets", "behind large stellar bodies")
+        info.addPara("Sheltering %s", 0f, Misc.getHighlightColor(), "on top of planets")
         info.addPara("Fleeing - getting away from the magnetar %s of the pulse", 0f, Misc.getHighlightColor(), "inhibits the effect")
         if (discoveredInterdictTech) {
-            info.addPara("Timing an interdiction well", 0f).setColor(Misc.getHighlightColor())
+            info.addPara("Timing an interdiction well", 0f).color = Misc.getHighlightColor()
             info.setBulletedListMode(INDENT + BULLET)
             val percentNeeded = "${(niko_MPC_magnetarPulse.MAX_INTERDICT_PROGRESS_NEEDED * 100f).roundNumTo(1).trimHangingZero()}%"
-            info.addPara("If interdict is charged %s or more when the pulse impacts, it will result in %s", 0f, Misc.getHighlightColor(), percentNeeded, "total protection")
+            info.addPara("Firing an interdiction off right before the pulse impacts will result in %s", 0f, Misc.getHighlightColor(), "total protection")
+            info.addPara("If interdict is charged %s or more when the pulse impacts, it will also provide %s", 0f, Misc.getHighlightColor(), percentNeeded, "total protection")
             info.addPara("Lower levels will result in %s", 0f, Misc.getHighlightColor(), "partial protection")
             info.addPara("A %s will put interdict on a %s", 0f, Misc.getHighlightColor(), "successful deflection", "long cooldown")
-            info.addPara("Firing off the interdiction before impact results in a %s - %s", 0f, Misc.getHighlightColor(), "failed deflection", "timing is key").setHighlightColors(
+            /*info.addPara("Firing off the interdiction before impact results in a %s - %s", 0f, Misc.getHighlightColor(), "failed deflection", "timing is key").setHighlightColors(
                 Misc.getNegativeHighlightColor(),
                 Misc.getHighlightColor()
-            )
-            info.addPara("THE INTERDICTION MUST BE CHARGING FOR IT TO DEFLECT. FIRING THE INTERDICTION OFF DOES NOTHING.", 0f).color = Misc.getNegativeHighlightColor()
+            )*/
+            //info.addPara("THE INTERDICTION MUST BE CHARGING FOR IT TO DEFLECT. FIRING THE INTERDICTION OFF DOES NOTHING.", 0f).color = Misc.getNegativeHighlightColor()
             info.setBulletedListMode(BULLET)
         }
         info.addPara("%s - but public research on magnetars is %s", 0f, Misc.getHighlightColor(), "Likely more", "heavily limited").setHighlightColors(
@@ -126,11 +129,19 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
 
     }
 
-    override fun getIcon(): String = Global.getSettings().getSpriteName("intel", "niko_MPC_magnetarIcon");
+    override fun getIcon(): String = Global.getSettings().getSpriteName("intel", "niko_MPC_magnetarIcon")
 
     override fun canTurnImportantOff(): Boolean = true
 
     override fun getName(): String {
         return "An important travel advisory"
+    }
+
+    override fun getIntelTags(map: SectorMapAPI?): Set<String?>? {
+        val tags = super.getIntelTags(map)
+
+        tags.add(Tags.INTEL_EXPLORATION)
+
+        return tags
     }
 }

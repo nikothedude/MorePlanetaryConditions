@@ -359,12 +359,18 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             bubbleStatus
         )
 
+        tooltip.addPara(
+            "For more information, go to your %s section of your intel and select the %s.",
+            nextPad,
+            Misc.getHighlightColor(),
+            "exploration",
+            "travel advisory"
+        )
+
         if (expanded) {
             tooltip.addSectionHeading("Combat", Alignment.MID, pad)
             tooltip.addPara("Combines the effect of a star corona and a magnetic field.", nextPad)
         }
-
-
     }
 
     override fun getRenderRange(): Float {

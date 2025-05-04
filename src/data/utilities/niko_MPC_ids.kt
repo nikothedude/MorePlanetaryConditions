@@ -4,6 +4,7 @@ object niko_MPC_ids {
 
     const val DEFEATED_FRC_RAID = "\$MPC_defeatedFRCRaid"
 
+    const val IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION = "\$MPC_immuneToPulseDueToRecentInterdiction"
     const val IAIIC_COMMAND_DISRUPTED_CONDITION = "MPC_commandDisrupted"
     const val DISARMED_CONDITION_ID: String = "MPC_disarmedCondition"
     const val specialSyncrotronItemId = "MPC_pristineSynchrotron"

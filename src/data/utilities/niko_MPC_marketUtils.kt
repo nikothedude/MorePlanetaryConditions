@@ -337,7 +337,7 @@ object niko_MPC_marketUtils {
     }
 
     fun convertToMemKey(id: String): String {
-        return "\$" + id
+        return "$$id"
     }
 
     fun MarketAPI.getMaxIndustries(): Int {

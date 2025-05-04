@@ -353,6 +353,7 @@ object niko_MPC_specialProcGenHandler {
         system.addTag(Tags.SYSTEM_ABYSSAL)
         //system.addTag(Tags.SYSTEM_CAN_SPAWN_THREAT)
         system.addTag("theme_magnetar")
+        //system.addTag(Tags.NOT_RANDOM_MISSION_TARGET)
 
         system.type = StarSystemGenerator.StarSystemType.DEEP_SPACE
 

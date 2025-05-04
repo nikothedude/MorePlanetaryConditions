@@ -1,6 +1,6 @@
 id,trigger,conditions,script,text,options,notes
 "#RULESET_NAME niko_MPC",,,,,,
-MPC_sal_printDefaultDefenders_objectives,TriggerAutomatedDefenses,"$MPC_hasSalvageObjectives score:40","MPC_SalvageDefenderInteractionWithObjectives","As your $shipOrFleet moves in closer, new energy signatures are detected near the $shortName.",,
+MPC_sal_printDefaultDefenders_objectives,TriggerAutomatedDefenses,"$MPC_hasSalvageObjectives score:200","MPC_SalvageDefenderInteractionWithObjectives","As your $shipOrFleet moves in closer, new energy signatures are detected near the $shortName.",,
 ,,,,,,
 # Overgrown nanoforge stuff,,,,,,
 ,,,,,,
@@ -2392,11 +2392,11 @@ AdjustRepActivePerson SUSPICIOUS -1","""You can't."" He grins.
 # Pather,,,,,,
 MPC_patherFleetPopOptions,LPTitheOptions,"MPC_factionInvolvedInIAIIC luddic_path",,,"1:MPC_askPatherFleetAboutInvolvement:""Would you happen to know anything about the IAIIC?""",
 MPC_askPatherFleetAboutInvolvement,DialogOptionSelected,"$option == MPC_askPatherFleetAboutInvolvement","RemoveOption MPC_askPatherFleetAboutInvolvement
-AddText ""It would seem this isn't the right place to ask, if the pathers really are involved.""","$HeOrShe sneers. ""Yes..."" $heOrShe starts, words drawling in counter-action to your suspicion. ""only that they are useful tools of Moloch! I detest their obsession with technology, but I can't deny-"" $heorShe spits. ""-they're useful for dealing with heretics such as you.""
+AddText ""It would seem this isn't the right place to ask, if the pathers really are involved.""","$HeOrShe sneers. ""Yes..."" $heOrShe starts, words drawling in counter-action to your suspicion. ""only that they are useful tools of Moloch! I detest their obsession with technology, but I mustn't deny-"" $heorShe spits. ""-they're useful for dealing with heretics such as you.""
 OR
 ""No."" $HeOrShe growls forcefully.
 OR
-""A holy warrior such as me does not need to concern $himOrHerself with such matters - all I must do is-"" $heOrShe slams $hisOrHer well-worn desk for effect. ""Bring the hammer of Ludd on servants of Moloch such as yourself!"" $HeOrShe sneers.",,
+""A holy warrior such as me does not need to concern $himOrHerself with such matters."" $heOrShe slams $hisOrHer well-worn desk for effect. ""All *I* must do is bring the hammer of Ludd on servants of Moloch such as yourself!"" $HeOrShe sneers.",,
 ,,,,,,
 # Pather Initial bar Event,,,,,,
 MPC_IAIICLPBarIntro,AddBarEvents,"MPC_IAIICPatherCMD canCreateFirstBarEvent","AddBarEvent MPC_IAIICLPBarIntroEvent ""Meet the IntSec officer in their booth"" ""In the corner of the eye, you notice someone you recognize: The IntSec officer you witnessed arrest that \""drunkard\"" a while ago."" highlight",,,
@@ -2408,7 +2408,7 @@ SetTextHighlightColors luddic_path highlight highlight luddic_path luddic_path
 MPC_IAIICPatherCMD createIntel
 $global.MPC_didInitialIAIICLPBarEvent = true","$HeOrShe activates the privacy emitter that had been lying on the tabletop, and soon the debaucherous roar of the bar is replaced by a low hum and then, finally, nothing, as the two of you enter your own little world of secrets, hidden only by the blurred hex-field oh-so-common in these establishments.
 
-""We've got solid intel that the path is, at minimum, helping the IAIIC with it's subterfuge. No surprise there, but what's got me here today is this..."" $HeOrShe produces a small datachip and hands it to you. $HeOrShe narrates as you read. ""We've managed to locate a pather sect that is simultaniously supplying support to the IAIIC, but is, as we say, 'progressive'. That is to say - we might have an in."" $HeOrShe pulls up $hisOrHer own TriPad.
+""We've got solid intel that the path is, at minimum, helping the IAIIC with it's subterfuge. No surprise there, but what's got me here today is this..."" $HeOrShe produces a small datachip and hands it to you. $HeOrShe narrates as you read. ""We've managed to locate a pather sect that is simultaneously supplying support to the IAIIC, but is, as we say, 'progressive'. That is to say - we might have an in."" $HeOrShe pulls up $hisOrHer own TriPad.
 
 ""They call themselves the Arrow of Ludd. They tend to dress in more... 'luxurious' clothing - most notable by their gold jewelry. They tend to hide out in Luddic Path bars, drinking-"" $heOrShe makes a gesture. ""'Narco-Tea'.""","MPC_IAIICLPBarIntroEventHypocrit:""That seems rather hypocritical. Doesn't the path swear off luxuries such as that?""
 MPC_IAIICLPBarIntroEventThree:Thank the officer, and be on your way",
@@ -2487,7 +2487,7 @@ MPC_IAIICLPInitialHideoutCheckMag,DialogOptionSelected,"$option == MPC_IAIICLPIn
 A hum fills the room as your pistol readies itself for battle, and a sigh of discharge as it finds itself pocketed in your holster.",,
 MPC_IAIICLPInitialHideoutWait,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutWait","FireBest MPC_IAIICLPInitialHideoutReachOrbit",,,
 MPC_IAIICLPInitialHideoutReachOrbit,MPC_IAIICLPInitialHideoutReachOrbit,"!$MPC_bombarded",,"After a short delay, your shuttle approaches visual distance to the compound. You all hold your breath as the shuttle continues it's approach, but despite seemingly have a lock, the ASBs refuse to fire, opting instead to let your shuttle land in a small valley.","MPC_IAIICLPInitialHideoutLanded:Continue",
-MPC_IAIICLPInitialHideoutReachOrbitBombarded,MPC_IAIICLPInitialHideoutReachOrbit,"$MPC_bombarded score:20",,"After a short delay, your shuttle approaches visual distance to the compound. The smoldering ASBs below remain pointing in vigil - searching for an enemy it can never see again. Your shuttle descends upon a small valley, and touches down.","MPC_IAIICLPInitialHideoutLanded:Continue",
+MPC_IAIICLPInitialHideoutReachOrbitBombarded,MPC_IAIICLPInitialHideoutReachOrbit,"$MPC_bombarded score:20",,"After a short delay, your shuttle approaches visual distance to the compound. The smoldering ASBs below remain pointing in vigil - searching for an enemy they can never see again. Your shuttle descends upon a small valley, and touches down.","MPC_IAIICLPInitialHideoutLanded:Continue",
 MPC_IAIICLPInitialHideoutLanded,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutLanded","FireBest MPC_IAIICLPInitialHideoutLandedLeaveText
 FireBest MPC_IAIICLPInitialHideoutLandedLeaveTextTwo",,,
 MPC_IAIICLPInitialHideoutLandedLeaveText,MPC_IAIICLPInitialHideoutLandedLeaveText,"!$MPC_takingMarines",,,,
@@ -2525,7 +2525,7 @@ MPC_IAIICLPInitialHideoutAmbushRepentence:""To repent.""
 MPC_IAIICLPInitialHideoutAmbushMoloch:""To assist in the fight against the demons of Moloch.""",
 MPC_IAIICLPInitialHideoutAmbushHelpWithIAIIC,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutAmbushHelpWithIAIIC","FireBest MPC_IAIICLPAmbushNegotiate",,,
 MPC_IAIICLPInitialHideoutAmbushRepentence,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutAmbushRepentence","FireAll MPC_IAIICLPAmbushRepentOptions
-SetTextHighlights ""demon of Moloch"" ""fractal core""","""To repent?"" $HeOrShe pushes $hisOrHer underlip forward. ""You can start by destroying your demon of Moloch - your fractal core!""",,
+SetTextHighlights ""demon of Moloch"" ""fractal core""","""To repent?"" $HeOrShe pushes $hisOrHer underlip forward. ""You can start by destroying your demon of Moloch, of which you have so thoughtfully locked behind ten layers plasteel and four sin!"" $HeOrShe snarls.",,
 MPC_IAIICLPAmbushRepentOptionsNo,MPC_IAIICLPAmbushRepentOptions,,,,"0:MPC_IAIICLPAmbushRepentNo:""I can't do that.""",
 MPC_IAIICLPAmbushRepentOptionsYes,MPC_IAIICLPAmbushRepentOptions,"!$global.MPC_RACAFCGotExposition",,,"10:MPC_IAIICLPAmbushRepentYes:""Maybe I will, $brotherOrSister.""",
 MPC_IAIICLPAmbushRepentOptionsCant,MPC_IAIICLPAmbushRepentOptions,"$global.MPC_RACAFCGotExposition",,,"10:MPC_IAIICLPAmbushRepentCant:""The 'demon' is refusing to release control of my colony.""",
@@ -2551,7 +2551,7 @@ FireBest MPC_IAIICLPAmbushNegotiate","""Save your voracious lying!"" $HeOrShe sp
 MPC_IAIICLPAmbushNegotiate,MPC_IAIICLPAmbushNegotiate,,,"$HeOrShe inhales. ""Thou are an... 'enterprising' individual, with a vested interest in removing the IAIIC from your space, yes?""","MPC_IAIICLPAmbushNegotiateTwo:""Yes.""",
 MPC_IAIICLPAmbushNegotiateTwo,DialogOptionSelected,"$option == MPC_IAIICLPAmbushNegotiateTwo","SetTextHighlights ""mere distraction"" ""Heretical"" ""colonies"" ""writhes"" ""ungulates"" ""corrupts"" ""part of our soul for yours""","$HeOrShe nods, and turns $hisOrHer Head down back to $hisOrHer now-open Book of Ludd. ""Shall the righteous fall for the misdirection and misappropriation of the evil, they shall be doomed to an eternity of fruitless war."" $HeOrShe snaps up, staring intensely into you through the hexshield. ""In secular terms, spacer - the fight against you, the alliance with the IAIIC - it is a mere distraction."" $HeOrShe hisses, spittle flying onto $hisOrHer visor. 
 
-""While we pour material and personnel into your..."" $heOrShe growls. ""Heretical... colonies... we take our gaze off the rest of Mammon's body, which writhes, ungulates, and *corrupts.*"" $HeOrShe shivers momentarily, seeming to utter a protective prayer. ""That is why, demon, I suggest we come to an agreement."" $HeOrShe stares darkly into you, judging your very essence. ""We offer a part of our soul for yours.""","MPC_IAIICLPAmbushNegotiateContinue:""And what would such an agreement entail?""
+""While we pour mortar and flesh into your..."" $heOrShe growls. ""Malkvanian... colonies... we take our gaze off the rest of Mammon's body, which writhes, ungulates, and *corrupts.*"" $HeOrShe shivers momentarily, seeming to utter a protective prayer. ""That is why, demon, I suggest we come to an agreement."" $HeOrShe stares darkly into you, judging your very essence. ""We offer a part of our soul for yours.""","MPC_IAIICLPAmbushNegotiateContinue:""And what would such an agreement entail?""
 MPC_IAIICLPAmbushNegotiateDevil:""A deal with the devil? Isn't that heresy?""",
 MPC_IAIICLPAmbushNegotiateContinue,DialogOptionSelected,"$option == MPC_IAIICLPAmbushNegotiateContinue","SetTextHighlightColors luddic_path highlight luddic_path highlight highlight highlight highlight
 SetTextHighlights ""path"" ""holy war"" ""Ludd's shadow"" ""orbital works"" ""military base"" ""heavy batteries"" ""honor our agreement""
@@ -2648,7 +2648,7 @@ MPC_IAIICLPHideoutDonateTwoJustStare:Just stare",
 MPC_IAIICLPHideoutDonateTwoUhHuh,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonateTwoUhHuh","FireBest MPC_IAIICLPHideoutDonateThree","$HeOrShe ignores your words.",,
 MPC_IAIICLPHideoutDonateTwoJustStare,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonateTwoJustStare","FireBest MPC_IAIICLPHideoutDonateThree",,,
 MPC_IAIICLPHideoutDonateThree,MPC_IAIICLPHideoutDonateThree,"$MPC_IAIICLPTargetMarket != $market","SetTextHighlights ""means of production""
-AddTextSmall ""$global.MPC_IAIICLPTargetMarketName size increased to 4"" good","With a shout from $personName, pathers begin spilling out hidden terrain-hatches and piling into hidden shuttles. Before you know it, shuttles enroute to $global.MPC_IAIICLPTargetMarketName dot the sky, getting smaller by every moment. $personFirstName looks to you just before boarding the last shuttle and grins maliciously. ""See you soon."" $heOrShe growls, before joining the rest on their ascent.
+AddTextSmall ""$global.MPC_IAIICLPTargetMarketName size increased to 4"" good","With a shout from $personName, pathers begin spilling out of hidden terrain-hatches and piling into secret shuttles. Before you know it, spacecraft  enroute to $global.MPC_IAIICLPTargetMarketName dot the sky, getting smaller by every moment. $PersonFirstName looks to you just before boarding the last shuttle and grins maliciously. ""See you soon."" $heOrShe growls, before joining the rest on their ascent.
 
 You wonder if what you just did was worth it - this is way more damning than just smuggling armaments. You gave them the means of production. ","MPC_IAIICLPHideoutDonateWorthIt:It was worth it. You had to weaken the IAIIC to defeat it.
 MPC_IAIICLPHideoutDonatePather:Anything to prop up your brothers and sisters in Ludd.
@@ -3007,7 +3007,7 @@ FireAll MPC_IAIICDKExpFleetCommsOptions","A tired-looking Diktat officer appears
 Almost as an afterthought, $heOrShe adds ""Glory to the Lion!""",,
 MPC_IAIICDKExpFleetCommsOptionsToldNooneComing,MPC_IAIICDKExpFleetCommsOptions,,,,"10:MPC_IAIICDKExpFleetNooneComingOpt:""Hold on. I was told the Diktat held no interest in this planet.""",
 MPC_IAIICDKExpFleetCommsOptionsWhoSentYou,MPC_IAIICDKExpFleetCommsOptions,,,,"20:MPC_IAIICDKExpFleetWhoSentYou:""Who's command are you under?""",
-MPC_IAIICDKExpFleetCommsOptionsSweetTalk,MPC_IAIICDKExpFleetCommsOptions,,"SetStoryOption MPC_IAIICDKExpFleetSweetTalkOpt 1 MPC_getDownPayment ui_char_spent_story_point ""Convinced a Diktat fleet to return to Sindria""",,"30:MPC_IAIICDKExpFleetSweetTalkOpt:""I'm here to take over your operation, in the name of the Lion.""",
+MPC_IAIICDKExpFleetCommsOptionsSweetTalk,MPC_IAIICDKExpFleetCommsOptions,,"SetStoryOption MPC_IAIICDKExpFleetSweetTalkOpt 2 MPC_getDownPayment ui_char_spent_story_point ""Convinced a Diktat fleet to return to Sindria""",,"30:MPC_IAIICDKExpFleetSweetTalkOpt:""I'm here to take over your operation, in the name of the Lion.""",
 MPC_IAIICDKExpFleetCommsOptionsCutComms,MPC_IAIICDKExpFleetCommsOptions,,,,"100:cutCommLink:Cut the comm link",
 MPC_IAIICDKExpFleetNooneComingOpt,DialogOptionSelected,"$option == MPC_IAIICDKExpFleetNooneComingOpt","RemoveOption MPC_IAIICDKExpFleetNooneComingOpt","$HeOrShe snorts. ""The Diktat's desires are beyond the comprehension of simple spacers!""
 
@@ -3108,7 +3108,7 @@ MPC_IAIICDKUmbraAgentInitHowDepose,DialogOptionSelected,"$option == MPC_IAIICDKU
 MPC_IAIICDKUmbraAgentInitWhyNotBribe:""Why can't we just bribe them?""
 MPC_IAIICDKUmbraAgentInitWhyNotTalk:""If you'd let me talk to them, I could probably convince them to cede control voluntarily.""
 MPC_IAIICDKUmbraAgentInitContinue:""Very well."""
-MPC_IAIICDKUmbraAgentInitHowDeposeTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitHowDeposeTwo",,"""The paranoia of the ARS is currently at a high - any accusations will be taken seriously, and throughly investigated. If we ensure our dear quartermaster is not aware of our..."" she chuckles. ""...modifications... they will take no measures to hide the 'truth'. Plus, it would erase the suspicion placed on me - allowing my direct entry into the position.""
+MPC_IAIICDKUmbraAgentInitHowDeposeTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitHowDeposeTwo",,"""The paranoia of the ARS is currently at a all-time high - any accusations will be taken seriously, and throughly investigated. If we ensure our dear quartermaster is not aware of our..."" she chuckles. ""...modifications... they will take no measures to hide the 'truth'. Plus, it would erase the suspicion placed on me - allowing my direct entry into the position.""
 
 ""Plus, it'd be deliciously ironic.""","MPC_IAIICDKUmbraAgentInitWhyConvince:""Surely they wouldn't believe the quartermaster tried to kill themselves.""
 MPC_IAIICDKUmbraAgentInitWhyNotKill:""Why can't we just kill them?""
@@ -3127,7 +3127,7 @@ MPC_IAIICDKUmbraAgentInitWhyNotBribe,DialogOptionSelected,"$option == MPC_IAIICD
 SetTextHighlights ""Idealism""","""Ah yes, the ever-lucrative credit..."" she rolls her eyes. ""The ARS is well-versed in our... 'donations', not to mention their..."" she makes a disgusted expression. ""Idealism...""
 
 ""You could try, Agent."" She stares. ""But it won't work.""",,
-MPC_IAIICDKUmbraAgentInitWhyNotTalk,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyNotTalk","RemoveOption MPC_IAIICDKUmbraAgentInitWhyNotTalk","A laugh escapes your lips, only ceasing when she meets your rigid gaze. ""You're serious?"" She snorts. ""Captain - if we could *ask* for control, we would have already."" She cuts you off before you can get another word in with a closed hand.",,
+MPC_IAIICDKUmbraAgentInitWhyNotTalk,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitWhyNotTalk","RemoveOption MPC_IAIICDKUmbraAgentInitWhyNotTalk","A laugh escapes her  lips, only ceasing when she meets your rigid gaze. ""You're serious?"" She snorts. ""Captain - if we could *ask* for control, we would have already."" She cuts you off before you can get another word in with a closed hand.",,
 MPC_IAIICDKUmbraAgentInitContinue,DialogOptionSelected,"$option == MPC_IAIICDKUmbraAgentInitContinue","AddTextSmall ""Received profile for Umbra quartermaster"" highlight
 AddTextSmall ""Received itemspecs"" highlight
 AddTextSmall ""Received set of coordinates for Sindria"" highlight
@@ -3187,14 +3187,15 @@ SetTooltip MPC_IAIICDKUmbraInfiltratorQMCoreOption ""You do not possess an alpha
 MPC_IAIICDKUmbraInfiltratorQMOptionsBore,PopulateOptions,"$id == MPC_umbraInfiltrator
 MPC_IAIICDKCMD calibriIsQM
 !MPC_IAIICDKCMD umbraMiningHasBore","FireAll MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify",,"30:MPC_IAIICDKUmbraInfiltratorQMBoreOption:""I've recently acquired a mantle bore, and would like to donate it to the cause.""",
-MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,"!PlayerHasCargo mantle_bore",,,,
+MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,MPC_IAIICDKUmbraInfiltratorQMOptionsBoreModify,"!PlayerHasCargo mantle_bore","SetEnabled MPC_IAIICDKUmbraInfiltratorQMBoreOption false
+SetTooltip MPC_IAIICDKUmbraInfiltratorQMBoreOption ""You do not possess a mantle bore.""",,,
 MPC_IAIICDKUmbraInfiltratorQMImproveOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMImproveOption",,"""Oh, really?"" She tilts her head, a thin smile crossing her lips. ""You understand we operate in emergency conditions, right? An inefficiency is a *part* of day-to-day wartime operations.""","MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo:""That's where you're wrong. You see, if you follow these specifications...""",
 MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMImproveOptionTwo","MPC_IAIICDKCMD improveUmbraMining
 AddTextSmall ""Improved Umbra's mining; +1 production"" highlight
 
 AdjustRep pirates FRIENDLY 5
 
-FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","For the next hour, you and the ""quartermaster"" discuss wartime economic strategy, logistics, and pour over workshifts down to the exaxt microsecond. As it turns out, workers slack quite often, machinery is unkempt, and entire piles of volatiles are dismissed as ""low-quality"" - when, in fact, a quick on-site refining operation could up purity to acceptable standards. The changes are made with haste, and soon enough, Umbra's mining output is an additional factor of volume higher.
+FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","For the next hour, you and the ""quartermaster"" discuss wartime economic strategy, logistics, and pour over workshifts down to the exact microsecond. As it turns out, workers slack quite often, machinery is unkempt, and entire piles of volatiles are dismissed as ""low-quality"" - when, in fact, a quick on-site refining operation could up purity to acceptable standards. The changes are made with haste, and soon enough, Umbra's mining output is an additional factor of volume higher.
 
 Calibri offers her deepest thanks from the ARC - and, you suspect, the diktat.",,
 MPC_IAIICDKUmbraInfiltratorQMCoreOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMCoreOption","SetTextHighlights ""mining""
@@ -3204,7 +3205,7 @@ MPC_IAIICDKCMD addCoreToMining alpha_core
 
 FireAll MPC_IAIICDKUmbraInfiltratorQMOptions","Calibri's status as a deep-cover infiltrator is betrayed by her milquetoast reaction to such a startling technology. ""Ah - captain, yes. We could use such an item most effectively...""
 
-She licks her lips. ""In our mining operations."" You transfer the core down and give brief instructionsn on how to install it - and merely an hour later, the ARC transmits their ""heart-felt thanks"" in your assistance in their war.",,
+She licks her lips. ""In our mining operations."" You transfer the core down and give brief instructions on how to install it - and merely an hour later, the ARC transmits their ""heart-felt thanks"" in your assistance in their war.",,
 MPC_IAIICDKUmbraInfiltratorQMBoreOption,DialogOptionSelected,"$option == MPC_IAIICDKUmbraInfiltratorQMBoreOption","SetTextHighlights ""mantle bore""
 AdjustRep pirates FRIENDLY 15
 AddRemoveAnyItem SPECIAL mantle_bore -1
@@ -3231,7 +3232,7 @@ AdjustRepActivePerson HOSTILE -1
 EndConversation
 ShowDefaultVisual","$HeOrShe glares. ""Money?! To leave the revolution?!"" $HeOrShe spits. ""The Antis were formed AGAINST the ever-push of billionaires!"" 
 
-$HeOrShe slams $hisOrHer first down. ""Don't ask me this again.""
+$HeOrShe slams $hisOrHer foot down. ""Don't ask me this again.""
 
 $HeOrShe cuts the commlink before you have a chance to respond. Given $hisOrHer rather ""patriotic"" status in the personnel file, you don't find this to be surprising.",,
 "#END Bribe them to fuck off",,,,,,
@@ -3282,7 +3283,7 @@ Unfortunately, all comments are filled with irritation and discontent about the 
 To complicate matters further, this operation must be done under false pretenses. Your tactical officer suggests your best bet is to assault bunkers and industrial hotspots across the planet in simultaneous fashion, taking care to sabotage and steal on your way. That way, while many would suspect a Diktat attack, the scale would be too extreme to be feasibly seen as an assassination attempt.
 
 There's no easy way to put this - the attack will be a meat grinder. But sometimes, that's all brute force can be.","mktRaidNonMarket:Continue",
-MPC_IAIICDKRaidQMFinishedA,MPC_IAIICDKRaidQMFinishedA,,,"You gather your closest and more seasnoned merc officers for the operation, and delegate squadops to each in a neatly divided manner, distributing command as much as possible.
+MPC_IAIICDKRaidQMFinishedA,MPC_IAIICDKRaidQMFinishedA,,,"You gather your closest and more seasoned merc officers for the operation, and delegate squadops to each in a neatly divided manner, distributing command as much as possible.
 
 In all likelyhood, this operation won't be precise, nor fast. The entirety of the ARC militia will be on you seconds after you begin the op, and your marines know this well. Thankfully, you still have the element of surprise - something used to great advantage as the mission kicks off, with hundred of doors and hab-hatches being blown open by the spark-clouds of breaching charges, and their inhabitants incapacitated in record time.
 
@@ -3716,7 +3717,9 @@ MPC_IAIICHMilBountyHunterDiktat,MPC_IAIICHMilBountyHunterHail,,"$entity.ignorePl
 "#END Militaristic house - sabotage hegemony",,,,,,
 ,,,,,,
 # Aloof house - obtain unassailable proof,,,,,,
-MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000","FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves ",,
+MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
+!$global.MPC_didAloofAristoSecondMeet score:100","$global.MPC_didAloofAristoSecondMeet = true
+FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves ",,"FireAll MPC_aloofAristoMeetOpts"
 "#END Aloof house - obtain unassailable proof",,,,,,
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,
@@ -4007,7 +4010,7 @@ MPC_IAIICSpawnedWeFight,DialogOptionSelected,"$option == MPC_IAIICSpawnedWeFight
 # Ark FOB docking rules,,,,,,
 MPC_IAIICArkFobIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET
 $faction.id == MPC_IAIIC
-$market.id == MPC_arkFOB score:1000","AddText ""Flightlines are congested by intense military throughput, and the rare civilian ingress is carefully tracked by infra-red targetting lasers, and enforced by wall-mounted auto-turrets. The few traders or tourists that make the journey are immediately accosted by a squad of grey-and-green marines, throughly searched, and sent to a heavily-guarded trading area - recreational facilities are nearly absent."" marketFlavorTextColor
+$market.id == MPC_arkFOB score:1000","AddText ""Flightlines are congested by intense military throughput. The rare civilian ingress is carefully tracked by infra-red targetting lasers, enforced by wall-mounted auto-turrets, and guaranteed by subsurface gravimetric tractors. The few traders or tourists that make the journey are immediately accosted by a squad of grey-and-green marines, throughly searched, and sent to a heavily-guarded trading area - recreational facilities are nearly absent."" marketFlavorTextColor
 AddText ""The soundscape of the militarized dockyard consists of a cacophony of jargon and engine-flare, as skiffs fly overhead, in, and out, each on their own highly-controlled duty-patrol to defend against you and your incursions. When you're not deafened by the sound of takeoff and landing, you can make out the occasional bark from ceiling-mounted announcement speakers, declaring the next ration-period or shift rotation."" marketFlavorTextColor
 ",,,
 MPC_IAIICArkFobNotIAIICTradeFlavor,TradePanelFlavorText,"$global.tradePanelMode == MARKET

@@ -36,6 +36,10 @@
 			"MPC_IAIIC_PREP_END":"graphics/icons/campaign/increased_defenses.png",
 			"MPC_IAIIC_BOMBARDMENT":"graphics/icons/missions/tactical_bombardment.png",
 		},
+		"fx":{
+		 "MPC_omegurat_highlight":"graphics/ships/MPC_omegurat_glow1.png",
+		 "MPC_omegurat_diffuse":"graphics/ships/MPC_omegurat_glow2.png",
+		},
 	},
 	"stations":{
 		"MPC_hightech3":"graphics/stations/station_hightech3.png",
@@ -60,6 +64,5 @@
 	 "designTypeColors":{
 		 "Kanta's Favored":[200,0,0,255],
 		 "Domain Forbidden":[155,155,155,255],
-
-	 }
+	 },
  }

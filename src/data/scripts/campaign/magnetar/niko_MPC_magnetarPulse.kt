@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
@@ -46,6 +47,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         const val DIST_NEEDED_TO_HIT = 500f
 
         const val BASE_SHOCKWAVE_SPEED = 250f
+        const val INTERDICT_COMPLETE_GRACE_DAYS = 0.1f
     }
 
     class MPC_magnetarPulseParams(where: LocationAPI,
@@ -135,6 +137,9 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             if (fleet.memoryWithoutUpdate[IMMUNE_TO_MAGNETAR_PULSE] == true && getCastedParams().respectIgnore) continue
             val id = fleet.id
             if (damagedAlready.contains(id)) continue
+            if (fleet.memoryWithoutUpdate.getBoolean(MemFlags.JUST_DID_INTERDICTION_PULSE) && !fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION)) {
+                fleet.memoryWithoutUpdate.set(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION, true, INTERDICT_COMPLETE_GRACE_DAYS)
+            }
 
             val dist = Misc.getDistance(fleet, entity)
             if (dist < shockwaveDist) {
@@ -288,14 +293,24 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         val interdictAbility = fleet.getAbility(Abilities.INTERDICTION_PULSE) as? InterdictionPulseAbility
         /** Non-null if an interdiction was attempted. */
         var interdictionEffectiveness: Float? = null
-        if (interdictAbility != null && interdictAbility.isInProgress) {
+        if (interdictAbility != null) {
             val progressFraction: Float = interdictAbility.progressFraction
-            interdictionEffectiveness = (progressFraction/MAX_INTERDICT_PROGRESS_NEEDED).coerceAtMost(MAX_INTERDICT_REINFORCEMENT)
 
-            shatterTimeMult *= (1 - interdictionEffectiveness)
-            interdictAbility.activeDaysLeft = 0.0000001f
-            interdictAbility.advance(1f) // just to get it to naturally deactivate
-            interdictAbility.cooldownLeft += INTERDICT_EXTRA_COOLDOWN
+            if (fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION)) {
+                interdictionEffectiveness = MAX_INTERDICT_REINFORCEMENT
+            } else if (interdictAbility.isInProgress) {
+                interdictionEffectiveness =
+                    (progressFraction / MAX_INTERDICT_PROGRESS_NEEDED).coerceAtMost(MAX_INTERDICT_REINFORCEMENT)
+            }
+
+            if (interdictionEffectiveness != null) {
+                shatterTimeMult *= (1 - interdictionEffectiveness)
+                if (interdictAbility.isInProgress) {
+                    interdictAbility.activeDaysLeft = 0.0000001f
+                    interdictAbility.advance(1f) // just to get it to naturally deactivate
+                }
+                interdictAbility.cooldownLeft += INTERDICT_EXTRA_COOLDOWN
+            }
         }
         var interdictionResultsString = ""
         if (interdictionEffectiveness != null) {

@@ -1,0 +1,59 @@
+{
+    "displayName": "Abomination",
+    "fluxCapacitors": 50,
+    "fluxVents": 44,
+    "goalVariant": true,
+    "hullId": "MPC_omegurat",
+    "hullMods": [
+        "advancedshieldemitter",
+		"fluxbreakers",
+    ],
+    "quality": 0.3,
+    "variantId": "MPC_omegurat_abomination",
+    "weaponGroups": [
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 000": "vpdriver",
+                "WS 001": "vpdriver"
+            }
+        },
+        {
+            "autofire": false,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 004": "riftcascade"
+            }
+        },
+        {
+            "autofire": false,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 005": "realitydisruptor"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 006": "cryoblaster",
+                "WS 009": "cryoblaster",
+                "WS 007": "cryoblaster",
+                "WS 008": "cryoblaster"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 002": "shockrepeater",
+                "WS 003": "shockrepeater",
+                "WS 010": "shockrepeater",
+                "WS 011": "shockrepeater",
+                "WS 012": "shockrepeater",
+                "WS 013": "shockrepeater"
+            }
+        }
+    ]
+}
