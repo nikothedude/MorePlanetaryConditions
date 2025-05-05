@@ -3597,7 +3597,8 @@ He turns to you.","MPC_IAIICHGAristoEventideMeetingSKSorry:""So sorry. I'll get 
 MPC_IAIICHGAristoEventideMeetingSKConspiracy:""Oh, don't worry. We were just plotting treason against the hegemony."" (UNFINISHED)
 MPC_IAIICHGAristoEventideMeetingSKFlirt:""She's really good with her clothes off, you know.""
 MPC_IAIICHGAristoEventideMeetingSKLeave:Just leave (UNFINISHED)",
-MPC_IAIICHGAristoEventideMeetingSKFlirt,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSKFlirt","FireBest MPC_IAIICHGAristoEventideMeetingLeaveTwo","Your verbal assault slams into the shopkeep, overloading his shields and causing a massive cascade-failure in his flux grid. You walk past, his limbs frozen in place as he fails to comprehend what you just said.",,
+MPC_IAIICHGAristoEventideMeetingSKFlirt,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSKFlirt","FireBest MPC_IAIICHGAristoEventideMeetingLeaveTwo
+$player.ethosCocky++","Your verbal assault slams into the shopkeep, overloading his shields and causing a massive cascade-failure in his flux grid. You walk past, his limbs frozen in place as he fails to comprehend what you just said.",,
 MPC_IAIICHGAristoEventideMeetingSKSorry,DialogOptionSelected,"$option == MPC_IAIICHGAristoEventideMeetingSKSorry","FireBest MPC_IAIICHGAristoEventideMeetingLeaveTwo","The shopkeep sighs, shaking his head. ""-just have a nice day, okay? There's better places for this.""",,
 MPC_IAIICHGAristoEventideMeetingLeaveTwo,MPC_IAIICHGAristoEventideMeetingLeaveTwo,,"SetTextHighlightColors highlight MPC_IAIIC highlight highlight
 SetTextHighlights ""Aleratus Youn"" ""IAIIC"" ""noble houses"" ""only way""","You grab the fine lotus you purchased and make your way back to your shuttle, accompanied by your waiting guards.
