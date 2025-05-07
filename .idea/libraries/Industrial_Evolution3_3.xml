@@ -2,6 +2,7 @@
   <library name="Industrial.Evolution3.3">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../Industrial.Evolution-4.0.c/jars/IndEvo.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Industrial.Evolution4.0.e/jars/IndEvo.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

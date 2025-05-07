@@ -21,17 +21,17 @@ class MPC_benefactorDataStore {
         val factionId: String,
         val name: String = Global.getSector().getFaction(factionId).displayName,
         val color: Color = Global.getSector().getFaction(factionId).baseUIColor,
-        val addBullet: (info: TooltipMakerAPI) -> Unit = { info -> info.addPara(name, color, 0f) }
+        val addBullet: (info: TooltipMakerAPI) -> Unit = @JvmSerializableLambda { info -> info.addPara(name, color, 0f) }
     )
 
     val probableBenefactors = mutableSetOf(
         benefactorData(Factions.HEGEMONY),
         benefactorData(Factions.LUDDIC_CHURCH),
-        benefactorData(Factions.INDEPENDENT, "KKL", addBullet = { info -> info.addPara("%s (Stationed in %s)", 0f,  Global.getSector().getFaction(Factions.INDEPENDENT).baseUIColor, "KKL", "Nova Maxios") }),
-        benefactorData(Factions.LUDDIC_PATH, addBullet = { info -> info.addPara("%s (Possible)", 0f,  Global.getSector().getFaction(Factions.LUDDIC_PATH).baseUIColor, "Luddic Path") }),
+        benefactorData(Factions.INDEPENDENT, "KKL", addBullet = @JvmSerializableLambda { info -> info.addPara("%s (Stationed in %s)", 0f,  Global.getSector().getFaction(Factions.INDEPENDENT).baseUIColor, "KKL", "Nova Maxios") }),
+        benefactorData(Factions.LUDDIC_PATH, addBullet = @JvmSerializableLambda { info -> info.addPara("%s (Possible)", 0f,  Global.getSector().getFaction(Factions.LUDDIC_PATH).baseUIColor, "Luddic Path") }),
         benefactorData(Factions.TRITACHYON),
         benefactorData(Factions.DIKTAT),
         // the league is actually not involved but you'll get silly dialogue if you investigate them
-        benefactorData(Factions.PERSEAN, addBullet = { info -> info.addPara("%s (Possible)", 0f, Global.getSector().getFaction(Factions.PERSEAN).baseUIColor, "Persean League") })
+        benefactorData(Factions.PERSEAN, addBullet = @JvmSerializableLambda { info -> info.addPara("%s (Possible)", 0f, Global.getSector().getFaction(Factions.PERSEAN).baseUIColor, "Persean League") })
     )
 }

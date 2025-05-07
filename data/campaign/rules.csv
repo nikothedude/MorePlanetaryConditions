@@ -1705,7 +1705,7 @@ $HeOrShe takes a breath. ""Over the past... ten cycles or so, someone has been a
 20:MPC_IAIICTTBMHow:""How am I supposed to find this 'intel'?""",
 MPC_IAIICTTBMWhoArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMWho
 $id == arroyo score:50","SetTextHighlights ""important""
-RemoveOption MPC_IAIICTTBMWho","""Honestly? I don't know!"" $HeOrShe shrugs. All I - and my contacts - know is that whoever it is took great strides to cover their tracks."" 
+RemoveOption MPC_IAIICTTBMWho","""Honestly? I don't know!"" $HeOrShe shrugs. ""All I - and my contacts - know is that whoever it is took great strides to cover their tracks."" 
 
 ""Someone rather competent, I'd guess."" $HeOrShe nods.",,
 MPC_IAIICTTBMWhatArroyo,DialogOptionSelected,"$option == MPC_IAIICTTBMWhat
@@ -2571,7 +2571,7 @@ SetTextHighlights ""no sect""
 AdjustRepActivePerson HOSTILE -1
 ","$HisOrHer smile fades a bit, resolving into a curved scowl. ""You misunderstand, demon. Without power - no sect will be able to pull weight like we could.""
 
-""Basically - because only the strong can rule.""",,
+""Because only the strong can rule.""",,
 MPC_IAIICLPAmbushEnd,DialogOptionSelected,"$option == MPC_IAIICLPAmbushEnd","AddTextSmall ""Added \""Arrow Pather\"" condition to $entity.name"" highlight
 MPC_IAIICPatherCMD endAmbush","""When you're ready to grant us the gracious gift of fleetpower,"" $heOrShe waves off $hisOrHer soldiers, whom simultaneously drop aim. ""Return here. We will be waiting... and if you choose this holy grounds for your agreement?"" $HeOrShe grins brightly. ""We will be waiting - waiting to help.""","MPC_IAIICLPAmbushLeave:Hurridly board your shuttle and leave
 MPC_IAIICLPAmbushPray:Offer a quiet prayer of protection to $personFirstName",
@@ -2583,8 +2583,9 @@ FireBest OpenInteractionDialog","You and your party hurriedly board the shuttle 
 "#END Land on hideout",,,,,,
 ,,,,,,
 # Return to hideout after initial contact,,,,,,
-MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain",,"Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.","10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout
-11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
+MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain","FireAll MPC_IAIICLPSecondHideoutVisitOptions","Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.","11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
+MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,"MPC_IAIICLPSecondHideoutVisitOptionsVisit",,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
+MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player","MPC_IAIICLPSecondHideoutVisitOptionsRaid",,"11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
 ,,,,,,
 # Raid,,,,,,
 MPC_IAIICLPHideoutRaid,DialogOptionSelected,"$option == MPC_IAIICLPHideoutRaid","FireBest MPC_IAIICLPHideoutRaidImpl",,,
@@ -2617,7 +2618,7 @@ Carrying through with this action will certainly mean the end of your campaign t
 MPC_IAIICLPHideoutRaidFinishedA,MPC_IAIICLPHideoutRaidFinishedA,"!$MPC_bombarded",,"With the orbital ASBs still active, this operation is bound to be bloody. And bloody it is; nearly a quarter of the dispatched shuttles are reduced to nothing other than scrap, bones and dust by the bolts of Ludd ascending upon them. The remainder make touch down only through advanced evasive maneuvers, and come under heavy ground fire by the fanatical pathers poking their heads out of the ground. After a long and hard battle, your marines eventually push into the mountain compound and begin methodically clearing it out.",,
 MPC_IAIICLPHideoutRaidFinishedABombarded,MPC_IAIICLPHideoutRaidFinishedA,"$MPC_bombarded score:50",,"Due to the inactive status of the ASBs, your shuttles approach the surface with zero losses, countermeasures proving effective against the primitive MANPADs wielded by the pathers. The flotilla makes touch down, and immediately comes under heavy ground fire by the fanatical pathers poking their heads out of the ground. After a long and hard battle, your marines eventually push into the mountain compound and begin methodically clearing it out.",,
 MPC_IAIICLPHideoutRaidFinishedB,MPC_IAIICLPHideoutRaidFinishedB,,"MPC_IAIICPatherCMD raidFinished
-AddTextSmall ""Removed \""Arrow Pather\"" condition"" good","The organized resistance of the residents are no match to the overwhelming force and skill of your marines. One by one, hiding spot is found and methodically cleared out with the thump of pulsefire. Eventually, all that's left is the core of the compound, which is eliminated through tactical deployment of explosives.
+AddTextSmall ""Removed \""Arrow Pather\"" condition"" good","The organized resistance of the residents are no match to the overwhelming force and skill of your marines. One by one, each hiding spot is found and methodically cleared out with the thump of pulsefire. Eventually, all that's left is the core of the compound, which is eliminated through tactical deployment of explosives.
 
 A few hours after the initial deployment of the op, you receive the call: The arrow pathers are no more.",,
 MPC_IAIICLPHideoutRaidAbort,MPC_IAIICLPHideoutRaidAbort,,"FireAll PopulateOptions",,,
@@ -3722,6 +3723,22 @@ MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
 !$global.MPC_didAloofAristoSecondMeet score:100","$global.MPC_didAloofAristoSecondMeet = true
 FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves ",,"FireAll MPC_aloofAristoMeetOpts"
 "#END Aloof house - obtain unassailable proof",,,,,,
+,,,,,,
+# Opportunistic House - Bribe them with something,,,,,,
+MPC_oppAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoOpportunistRep score:1000
+!$global.MPC_metHegeOpportunistAristo
+!$temporarilyIgnoreYou","SetShortcut cutCommLink ESCAPE true
+MPC_addOptionConfirmation MPC_oppAristoInitialMeetTwo ""Submitting these credentials will tip off INTSEC to your activities and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
+
+FireAll MPC_oppAristoInitialMeetModifyOptions","As the commlink springs to life, a robotic auto-greeter cheerfully announces the denial of your connection. ""Hello and thank you for contacting [MIKAEL LINDUNBERG]. Our house is not taking external calls right now, under INTSEC order 2552:ERETH. Please try again later...""
+
+TODO differentiate greeting text from other houses","MPC_milAristoInitialMeetTwo:Input your aristocratic credentials
+cutCommLink:Cut the comm link",
+MPC_oppAristoInitialMeetModifyOptionsHouseActive,MPC_oppAristoInitialMeetModifyOptions,,"SetEnabled MPC_oppAristoInitialMeetTwo false
+SetTooltip MPC_oppAristoInitialMeetTwo ""Using your credentials while already dealing with a house could compromise this entire operation. It's best to finish your dealings first.""",,,
+MPC_oppAristoInitialMeetModifyOptionsCooldown,MPC_oppAristoInitialMeetModifyOptions,,"SetEnabled MPC_oppAristoInitialMeetTwo false
+SetTooltip MPC_oppAristoInitialMeetTwo ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
+"#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,
 ,,,,,,
@@ -3824,7 +3841,8 @@ She folds her hands. ""Until it was all in place.""",,
 MPC_IAIICJillOptionLeave,MPC_IAIICJillOptions,,,,"100:cutCommLink:Leave",
 ,,,,,,
 # Sue for peace options,,,,,,
-MPC_IAIICSueForPeaceOption,MPC_IAIICJillOptions,"!$MPC_cantSueForPeace","SetStoryColor MPC_IAIICSueForPeaceOptionSel",,"4:MPC_IAIICSueForPeaceOptionSel:""I'm here to sue for peace.""",
+MPC_IAIICSueForPeaceOption,MPC_IAIICJillOptions,"!$MPC_cantSueForPeace","SetStoryColor MPC_IAIICSueForPeaceOptionSel
+FireAll MPC_IAIICSueForPeaceOptionSelModify",,"4:MPC_IAIICSueForPeaceOptionSel:""I'm here to sue for peace.""",
 MPC_IAIICSueForPeaceOptionSelModifyAtPeace,MPC_IAIICSueForPeaceOptionSelModify,"MPC_IAIICJillCMD peacePossibilityIs ALREADY_AT_PEACE","SetEnabled MPC_IAIICSueForPeaceOptionSel false
 SetTooltip MPC_IAIICSueForPeaceOptionSel ""You are already at an unsteady peace with the IAIIC.""",,,
 MPC_IAIICSueForPeaceOptionSelHostilitiesActive,DialogOptionSelected,"$option == MPC_IAIICSueForPeaceOptionSel
