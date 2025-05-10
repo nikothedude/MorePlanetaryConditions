@@ -12,6 +12,8 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.Faction
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isFractalMarket
+import data.utilities.niko_MPC_settings
+import data.utilities.niko_MPC_settings.ENABLE_IAIIC_CRISIS
 import org.lazywizard.console.BaseCommand
 import org.magiclib.kotlin.getFactionMarkets
 
@@ -41,6 +43,7 @@ class MPC_hegemonySpyCMD: BaseCommandPlugin() {
                 // way too much work for little return imo
                 // ill make something else that has the world reacting to the fractal core
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_debugHegemonySpy")) return true
+                if (!ENABLE_IAIIC_CRISIS) return false
                 if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false
                 if (Global.getSector().getFaction(Factions.HEGEMONY)?.getFactionMarkets()?.isNotEmpty() != true) return false
                 if (!market.isPlayerOwned) return false

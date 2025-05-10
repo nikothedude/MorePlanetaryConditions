@@ -32,6 +32,8 @@ object niko_MPC_settings {
 
     var DERELICT_ESCORT_SPAWN_ON_PATROLS = true
 
+    var ENABLE_IAIIC_CRISIS = false
+
     var nexLoaded: Boolean = false
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
@@ -129,6 +131,8 @@ object niko_MPC_settings {
 
         MAGNETAR_DROP_OMEGA_WEAPONS = LunaSettings.getBoolean(modId, "MPC_magnetarDropOmegaWeapons")!!
         MAGNETAR_DISABLED = LunaSettings.getBoolean(modId, "MPC_disableMagnetar")!!
+
+        ENABLE_IAIIC_CRISIS = LunaSettings.getBoolean(modId, "MPC_enableIAIICCrisis")!!
 
         overgrownNanoforgeCommodityDataStore.reload()
     }
