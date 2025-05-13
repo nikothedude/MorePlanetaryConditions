@@ -10,6 +10,8 @@ import com.fs.starfarer.api.campaign.listeners.ColonyPlayerHostileActListener
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActionEnvelope
 import com.fs.starfarer.api.impl.campaign.NPCHassler
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
@@ -17,8 +19,6 @@ import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
-import com.fs.starfarer.api.impl.campaign.fleets.PatrolAssignmentAIV4
-import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
@@ -54,7 +54,6 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedF
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
 import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack
-import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttackFGI
 import data.scripts.campaign.magnetar.crisis.intel.blockade.MPC_IAIICBlockadeFGI
 import data.scripts.campaign.magnetar.crisis.intel.bombard.MPC_IAIICBombardFGI
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageType
@@ -384,7 +383,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             },
             removeNextAction = true,
             requireMilitary = true,
-            repOnRemove = -40f
+            repOnRemove = -50f
         )
         list += MPC_factionContribution(
             Factions.TRITACHYON,
@@ -1717,7 +1716,11 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             sendUpdateIfPlayerHasIntel("Ceasefire established", false, false)
         }
 
-        getFaction().setRelationship(Factions.PLAYER, RepLevel.SUSPICIOUS)
+        val delta = RepLevel.SUSPICIOUS.min - Global.getSector().playerFaction.getRelationship(niko_MPC_ids.IAIIC_FAC_ID)
+        val impact = CoreReputationPlugin.CustomRepImpact()
+        impact.delta = delta
+        Global.getSector().adjustPlayerReputation(RepActionEnvelope(CoreReputationPlugin.RepActions.CUSTOM, impact, null, dialog?.textPanel, false, true, "Ceasefire Established"),  niko_MPC_ids.IAIIC_FAC_ID)
+        Global.getSector().playerFaction.setRelationship(niko_MPC_ids.IAIIC_FAC_ID, RepLevel.SUSPICIOUS)
     }
 
     /** Applies a crippling malus to all of the player's worlds' fleetsize. Part of peace concessions. */

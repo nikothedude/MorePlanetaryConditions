@@ -29,6 +29,10 @@ import kotlin.math.roundToInt
 
 class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
     override val tracker: IntervalUtil = IntervalUtil(2f, 3f)
+    val listener = MPC_fractalSupportRepLinker(Factions.DIKTAT, this)
+    init {
+        Global.getSector().addListener(listener)
+    }
 
     fun getMarket(): MarketAPI? {
         val sindria = Global.getSector().economy.getMarket("sindria")
@@ -48,9 +52,9 @@ class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
         val medium: Int = getCount(PatrolType.COMBAT)
         val heavy: Int = getCount(PatrolType.HEAVY)
 
-        val maxLight: Int = 3
-        val maxMedium: Int = 2
-        val maxHeavy: Int = 2
+        val maxLight: Int = 5
+        val maxMedium: Int = 4
+        val maxHeavy: Int = 3
 
         val picker = WeightedRandomPicker<PatrolType>()
         picker.add(PatrolType.HEAVY, (maxHeavy - heavy).toFloat())
@@ -183,6 +187,11 @@ class MPC_lionsGuardFractalSupport: MPC_fractalCrisisSupport() {
                 sendUpdateIfPlayerHasIntel(State.ACTIVE, null)
             }
         }
+    }
 
+    override fun notifyEnding() {
+        super.notifyEnding()
+
+        Global.getSector().listenerManager.removeListener(listener)
     }
 }

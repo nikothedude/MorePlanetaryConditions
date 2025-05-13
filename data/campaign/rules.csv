@@ -2584,8 +2584,8 @@ FireBest OpenInteractionDialog","You and your party hurriedly board the shuttle 
 ,,,,,,
 # Return to hideout after initial contact,,,,,,
 MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain","FireAll MPC_IAIICLPSecondHideoutVisitOptions","Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.","11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
-MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,"MPC_IAIICLPSecondHideoutVisitOptionsVisit",,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
-MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player","MPC_IAIICLPSecondHideoutVisitOptionsRaid",,"11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
+MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player",,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
+MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player",,,"11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
 ,,,,,,
 # Raid,,,,,,
 MPC_IAIICLPHideoutRaid,DialogOptionSelected,"$option == MPC_IAIICLPHideoutRaid","FireBest MPC_IAIICLPHideoutRaidImpl",,,
@@ -2683,13 +2683,41 @@ SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedica
 MPC_IAIICDKUnimportantPerson,PopulateOptions,"MPC_IAIICDKCMD canAskUnimportantAboutIAIIC
 Commission personCanGiveCommission",,,"MPC_IAIICDKUnimportantAskAboutIAIIC:""I'd like to submit an inquiry surrounding the Diktat's possible involvement with the IAIIC.""",
 MPC_IAIICDKUnimportantAskAboutIAIIC,DialogOptionSelected,"$option == MPC_IAIICDKUnimportantAskAboutIAIIC","SetEnabled MPC_IAIICDKUnimportantAskAboutIAIIC false
-AddTextSmall ""Requires a major player in Diktat internal politics"" bad","$HisOrHer face sours, and $heOrShe briefly gives you $hisOrHer full attention. ""Your inquiry is 'received', Starfarer."" And from $hisOrHer tone, you would assume $heOrShe is thinking ""And ignored"".",,
+AddTextSmall ""Requires a major player in Diktat internal politics - and likely a few favors"" bad","$HisOrHer face sours, and $heOrShe briefly gives you $hisOrHer full attention. ""Your inquiry is 'received', Starfarer."" And from $hisOrHer tone, you would assume $heOrShe is thinking ""And ignored"".",,
 "#END Pre-Usurpers Poking",,,,,,
 ,,,,,,
 # Hyder,,,,,,
 "#END Hyder",,,,,,
 ,,,,,,
 # Caden,,,,,,
+MPC_IAIICCadenSupportInit,OpenCommLink,"$id == caden score:1000
+!$faction.isHostile
+MPC_IAIICDKCMD canAskCadenAboutSupport score:20
+!$global.MPC_IAIICInNegotiationsWithCaden","$global.MPC_IAIICInNegotiationsWithCaden = true","The visage of Guard High Deputy Executor Caden appears before you, grim-faced. ""$PlayerName. You've been busy, haven't you? Working with that spider..."" He snorts, growling. ""Thankfully, your actions appear to be in the best interest of the Great Lion! Therfore, I will not sieze your pitiful fleet and interrogate you.""
+
+""I have another offer, Spacer.""","MPC_IAIICCadenSupportTwo:""And that is?""",
+MPC_IAIICCadenSupportInitTwo,OpenCommLink,"$id == caden score:1000
+!$faction.isHostile
+MPC_IAIICDKCMD canAskCadenAboutSupport score:20
+$global.MPC_IAIICInNegotiationsWithCaden score:2","FireAll MPC_IAIICCadenSupportOptions","The vidlink blinks to life, the visage of Guard High Deputy Executor Caden before you. ""Here to take us up on our offer, Spacer?""",,
+MPC_IAIICCadenSupportTwo,DialogOptionSelected,"$option == MPC_IAIICCadenSupportTwo","AddTextSmall ""Donating omega weaponry to the lion's guard will provide you with a steady stream of defending LG ships"" highlight
+FireAll MPC_IAIICCadenSupportOptions","""You have seen the great Lion's arsenal! Our Glorious executor-class battleships, the so-called kinetic blaster, our overpowering gigacannon!"" His voice booms. ""But... the great lion finds it wanting.""
+
+He slams his fist in to his desk. ""You, Spacer, have travelled the sector, found hidden places and technology many factions fight you over. Give our RND your weaponry - we will fight beside you in your war. For the lion!"" He shouts.
+
+""Now - fulfill this offer or leave me. My time is valuable, and is best not wasted talking to spacer-scum like you."" He cringes.
+
+TODO this whole tree sucks but i hate wiritng diktat lol",,
+MPC_IAIICCadenSupportOptionsGiveOmega,MPC_IAIICCadenSupportOptions,,,,"MPC_IAIICCadenSupportOptionsGiveOmegaSel:Donate some omega weaponry",
+MPC_IAIICCadenSupportOptionsCutComms,MPC_IAIICCadenSupportOptions,,,,"100:cutCommLink:Cut the comm link",
+MPC_IAIICCadenSupportOptionsGiveOmegaSel,DialogOptionSelected,"$option == MPC_IAIICCadenSupportOptionsGiveOmegaSel","MPC_IAIICDKCMD openLGOmegaWpnMenu","He stiffens in his chair. ""Very good.""",,
+MPC_IAIICCadenItemsTurnedIn,MPC_IAIICCadenItemsTurnedIn,,"AddTextSmall ""Now at $global.MPC_sindrianOmegaPoints/30 points"" good
+FireBest MPC_IAIICCadenItemsTurnedInTwo",,,
+MPC_IAIICCadenItemsTurnedInTwo,MPC_IAIICCadenItemsTurnedInTwo,"$global.MPC_sindrianOmegaPoints >= 30","MPC_IAIICDKCMD addLGSupport","Caden looks over your donations - one, twice, then thrice, then finally turns to you, grunting and saluting. ""For the Lion!"" And without another word, the commlink cuts. Soon enough you get a priority notification from your IntSec - the Lion's Guard has declared hostilities on the IAIIC and an intent to defend your space.
+
+You just hope it was a good deal.
+
+TODO this is REALLY bland, lol","100:cutCommLink:Cut the comm link",
 "#END Caden",,,,,,
 ,,,,,,
 # Macario,,,,,,
@@ -2909,12 +2937,12 @@ MPC_IAIICDKMacarioFoundAgentModifyNoAgent,MPC_IAIICDKMacarioFoundAgentModify,"!$
 SetTooltip MPC_IAIICDKMacarioFoundAgent ""You have not, in fact, found the agent.""",,,
 MPC_IAIICDKMacarioDidntFindAgent,DialogOptionSelected,"$option == MPC_IAIICDKMacarioDidntFindAgent","EndConversation","Macario glares, turning back to his fingernails. ""Then go back and search. Don't waste my time."" His foot hits the comms-disconnect before you have a chance to respond.",,
 MPC_IAIICDKReturnMacarioWhileDeposingQM,PickGreeting,"$id == macario
-MPC_IAIICDKCMD deposingQMOrUpgrading","BeginConversation macario
+MPC_IAIICDKCMD deposingQMOrUpgrading score:1010","BeginConversation macario
 
 FireAll MPC_IAIICDKDeposingOptions","Dolos Macario, the Spider of Sindria, appears before you, an expectant gaze across his eyes and directed towards you. 
 
 ""Ah, Captain."" He smiles coldly, pulling up a TriPad and tapping away at it. ""Here to give me good news?""",,
-MPC_IAIICDKMacarioLeaveOption,MPC_IAIICDKUpgradeOptions,,,,"100:cutCommLink:""No."" (Leave)",
+MPC_IAIICDKMacarioLeaveOption,MPC_IAIICDKDeposingOptions,,,,"100:cutCommLink:""No."" (Leave)",
 "#END Fourth meeting",,,,,,
 ,,,,,,
 # Give AI Core Options,,,,,,
@@ -3160,6 +3188,7 @@ A quite well-thought setup.
 MPC_IAIICDKCMDUmbraAgentInstalled,PickGreeting,"$id == MPC_umbraInfiltrator score:1000
 MPC_IAIICDKCMD qmIsDeposed score:200","BeginConversation MPC_umbraInfiltrator
 AddTextSmall ""Umbra volatiles supply secured for Sindria"" good
+AddTextSmall ""Previously undiscovered volatile deposits unearthed"" good
 SetTextHighlights ""Permanent""
 MPC_IAIICDKCMD beginUpgradeSequence
 AddPotentialContact MPC_umbraInfiltrator
@@ -3350,6 +3379,10 @@ MPC_IAIICDKSindriaCacheLeave,DialogOptionSelected,"$option == MPC_IAIICDKSindria
 MPC_IAIICPLReynardSupport,PopulateOptions,"$id == ""reynard_hannan""
 MPC_IAIICPLCMD canAskForSupport",,,"30:MPC_IAIICPLReynardSupportOpt:""My space is under attack by a foreign power. Where's my defense fleets, Reynard? What about our agreement?""",
 MPC_IAIICPLReynardAccuse,PopulateOptions,"MPC_IAIICPLCMD canAccuse",,,"20:MPC_IAIICPLReynardAccuseOpt:""I demand you end your assistance in the IAIIC's illegal war against my properties!""",
+MPC_IAIICPLReynardSupportOpt,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOpt","SetStoryOption MPC_IAIICPLReynardSupportOptPush 2 MPC_getDownPayment ui_char_spent_story_point ""Strongarmed the League into providing defense fleets""","im actually not sure how to write reynard lol","MPC_IAIICPLReynardSupportOptPush:""Do you have any idea how this would look in the next assembly?""
+MPC_IAIICPLReynardSupportOptLeave:Grumble and shake your head",
+MPC_IAIICPLReynardSupportOptPush,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOptPush","MPC_IAIICPLCMD giveSupport",,"cutCommLink:Cut the comm link",
+MPC_IAIICPLReynardSupportOptLeave,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOptLeave","FireAll PopulateOptions",,,
 "#END League",,,,,,
 ,,,,,,
 # KKL,,,,,,
@@ -3732,12 +3765,74 @@ MPC_addOptionConfirmation MPC_oppAristoInitialMeetTwo ""Submitting these credent
 
 FireAll MPC_oppAristoInitialMeetModifyOptions","As the commlink springs to life, a robotic auto-greeter cheerfully announces the denial of your connection. ""Hello and thank you for contacting [MIKAEL LINDUNBERG]. Our house is not taking external calls right now, under INTSEC order 2552:ERETH. Please try again later...""
 
-TODO differentiate greeting text from other houses","MPC_milAristoInitialMeetTwo:Input your aristocratic credentials
+TODO differentiate greeting text from other houses","MPC_oppAristoInitialMeetTwo:Input your aristocratic credentials
 cutCommLink:Cut the comm link",
-MPC_oppAristoInitialMeetModifyOptionsHouseActive,MPC_oppAristoInitialMeetModifyOptions,,"SetEnabled MPC_oppAristoInitialMeetTwo false
+MPC_oppAristoInitialMeetModifyOptionsHouseActive,MPC_oppAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD dealingWithAHouse","SetEnabled MPC_oppAristoInitialMeetTwo false
 SetTooltip MPC_oppAristoInitialMeetTwo ""Using your credentials while already dealing with a house could compromise this entire operation. It's best to finish your dealings first.""",,,
-MPC_oppAristoInitialMeetModifyOptionsCooldown,MPC_oppAristoInitialMeetModifyOptions,,"SetEnabled MPC_oppAristoInitialMeetTwo false
+MPC_oppAristoInitialMeetModifyOptionsCooldown,MPC_oppAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD cooldownActive","SetEnabled MPC_oppAristoInitialMeetTwo false
 SetTooltip MPC_oppAristoInitialMeetTwo ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
+MPC_oppAristoInitialMeetTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetTwo","$global.MPC_metHegeOpportunistAristo = true
+
+SetTextHighlights ""Lindunberg aristocratic credentials""","With a flick of the wrist, the autogreeter buzz-pings as it recognizes the credentials of an authenticated eventide aristocrat. ""NEW CREDENTIALS RECEIVED AND RECOGNIZED, INDIVIDUAL: 'Orthus Youn'."" An unpleasant dual-tone buzz spreads throughout your bridge as the autogreeter scolds your attempt in a less rigid (and likely pre-recorded) voice. ""House Lindunberg is not taking calls from the contemptuous Youn as of now. Ple-""
+
+The voice suddenly cuts out as your vidlink jitters, the hegemon's crest frozen in place as your comms officer reports an alternate commlink request coming deep from an opulant eventide metroplex. Forced private, one-way, source obfuscated...
+
+And with Lindunberg aristocratic credentials attached.","MPC_oppAristoInitialMeetThree:Accept the comms request",
+MPC_oppAristoInitialMeetThree,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetThree","BeginConversation MPC_hegeAristoOpportunistRep","The commlink blinks to life, the glitched emblem replaced by a softly smiling man, lounging in a comfortable-looking chair. A fanciful chandelier made of what must be highly exotic crystal refracts light into a elaborate dance around the well-furnished room - but seeming to focus on the man before you, casting him in an almost godly light.
+
+""$PlayerName!"" He exclaims, throwing out his arms as if seeing a good friend for the first time in cycles. ""So good to see you. When we saw that fleet in orbit we had a suspicion, but-!"" He lets out a low chuckle, shaking his head and playfully tap-pointing, coming to a upright position.
+
+""Orthus would never call us directly.""","MPC_oppAristoInitialMeetFour:Continue",
+MPC_oppAristoInitialMeetFour,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetFour","SetTextHighlights ""stupid questions""","""So, I'm sure you have many questions. 'Why the privacy?' 'Why is this one-way?' 'How can I get you to work with us...?'"" A smirk momentarily crosses his lips, accompanied by a soft chuckle. 
+
+""Well, firstly... we've made this one-way so we don't have to answer your stupid questions."" His smile falls, giving way to a dimly lit glower. ""We want you to help us, $PlayerSirOrMadam $PlayerName. And if you want our help, you'll do just that.""","MPC_oppAristoInitialMeetFive:Continue",
+MPC_oppAristoInitialMeetFive,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetFive","SetTextHighlightColors tritachyon
+SetTextHighlights ""Tri-Tachyon""","""Assuming you haven't cut the comm link by now - let me lay out what we can use you for."" He stands from his chair, pushing it to the side - stepping in front of the god-ray, it now casting a dark human-shaped shadow over the camera. ""Us in house Lindunberg, war-weary as we are-"" you catch a slight roll of the eyes. ""-have a certain agenda of peace and prosperity to follow... unfortunately, the simple-minded fools at Tri-Tachyon have neither a mind for civility or restraint."" His gaze hardens. ""We need something of theirs, to... hm..."" he walks to a side-table, procuring and sipping a sparkling drink from off-screen, thinking intensely. ""-prevent further bloodshed, yes?"" he finally releases. ""Yes. Yes, that's it."" He nods, glancing off to your right as he silently sips his firewater.","MPC_oppAristoInitialMeetFiveTwo:Continue",
+MPC_oppAristoInitialMeetFiveTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetFiveTwo",,"""We seek research data, Captain. Horrible, horrible secrets that in the wrong hands would be used for endless death, destruction..."" a shuddering sigh escapes his lips as he contemplates the potential death toll - fading into a contemplative appraisal of the overhanging chandelier. ""And-of course, ah, intensely valuable to the right collectors.""
+
+A pause.
+
+He looks at the camera, shaking his head solemnly with a small smirk. ""But, mhm... that's irrelevant, isn't it captain? After all - altruism is it's own reward...""","MPC_oppAristoInitialMeetSix:Continue",
+MPC_oppAristoInitialMeetSix,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSix",,"Once the glass is half-empty, he trades it for a TriPad sitting on a nearby shelf - careful to not knock over any of the gaudy antiques lining the mantle. ""While we've contemplated hiring any other mercenary, Captain, we just can't be sure they wouldn't take it for themselves. Such selfish desires..."" He approaches the camera, TriPad obscuring his shrouded face below the eyes. ""-surely you don't possess as such, Captain? After all, your war is such a tragedy, so many lives lost, so much capital destroyed..."" he sighs - seemingly, or forcefully, dismayed. ""It would be traitorous to your own to use our offer as an excuse to amass power.""
+
+He blinks. ""And, ah! Traitorous, to us, too - but that likely isn't relevant."" He laughs dimly - darkly, even, tapping his TriPad and beginning a data transfer to your $shipOrFleet.","MPC_oppAristoInitialMeetSeven:Inspect the transferred datapaks",
+MPC_oppAristoInitialMeetSeven,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSeven","SetTextHighlights ""Hybrasil""
+
+FireAll MPC_oppAristoInitialMeetSevenInfo
+MPC_IAIICHegeCMD newHouse OPPORTUNISTIC","A number of things were sent over - the first, a set of hyperspace coordinates, seemingly somewhere near Hybrasil, but not corresponding to any known systems. The second is a very spotty and clearly stolen set of ground coordinates, marked with countless Tri-Tachyon anti-tamper daemons - seemingly deactivated, but left in (likely out of laziness, or lack of OpSec). The third is the profile of the object - or, more accurately, the data. It seems this Lindunberg individual wants you to retrieve a dataset surrounding some sort of Tri-Tachyon black project. Details are sparse, but the data structure is distinctive enough to where your electronics officer is confidant that you'll know it when you see it.","MPC_oppAristoInitialMeetSevenTwo:Continue",
+MPC_oppAristoInitialMeetSevenInfoAlphaSite,MPC_oppAristoInitialMeetSevenInfo,"$global.MPC_playerWentToAlphaSite","SetTextHighlights ""Alpha Site"" ""Project Ziggurat""","""$PlayerSirOrMadam,"" your tactical officer reports, drawing your attention. ""Those coordinates we were given - they match the coordinates of the system we've dubbed 'Alpha Site'. Seems whatever we need, it's based off that 'Project Ziggurat'."" You nod, and thank your officer before returning your attention to the screen.",,
+MPC_oppAristoInitialMeetSevenTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSevenTwo","$temporarilyIgnoreYou = true","""We received a... let's just call it a tip-off from a 'good samaritan' about Tri-Tachyon's machinations recently. Something about... forbidden AI research, exotic ship designs? Bah,"" he throws a hand dismissively, scoffing. ""-that's for you to figure out. For the good of the sector, Captain, we implore you to take us up on this...""
+
+""And, ah, well."" He snickers, lowering his TriPad and revealing a bemused smile. ""...for the good of *us*."" 
+
+The comm link terminates abruptly.","cutCommLink:Cut the comm link",
+,,,,,,
+# Go to alpha site and find omega traces,,,,,,
+MPC_IAIICAlphaSiteInvestigationBeenThere,OpenInteractionDialog,"$id == site_alpha
+$ttBlackSite score:1000
+$siteExplored
+$global.MPC_investigatingAlphaSiteAgain score:10","ShowDefaultVisual","Your $shipOrFleet goes into orbit around the radiation-ravaged rock known as ""Alpha Site"".
+
+The navigation satellite which once identified this celestial body is now gone; a few taps to your display shows you the small impact crater it left when it hit the surface, a bright smudge in a plain of rad-decayed regolith. In the absence of an atmosphere, it's likely the crater will last longer than the satellite ever did, by many millions of cycles.
+
+Your nav-panel pings a cheerful green as it highlights a small area but a few kliks out from the previously explored research complex; that must be where the requested research is stored.","0:MPC_IAIICAlphaSiteInvestigateDataCache:Order an investigation into the coordinates
+100:defaultLeave:Leave",
+MPC_IAIICAlphaSiteInvestigateDataCache,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCache",,"Preliminary ground-and-visual scans report nothing out of the ordinary, but a targetted sensor burst reveals the tell-tale signs of a heavily shielded structure buried a few meters into the ravaged earth. Without knowing exactly where this cache was, there was no way you'd ever find it, especially with the scattering effect of the radiation.","MPC_IAIICAlphaSiteInvestigateDataCacheTwo:Send down a team of salvors to retrieve the cache",
+MPC_IAIICAlphaSiteInvestigateDataCacheTwo,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheTwo",,"Your salvors are just as hesitant as they were before, but nothing that can't be solved by generous hazard pay and a well-shielded cargo shuttle. The shuttle lands and the salvors fan out, reporting no contacts and no visible structures. Excavation work immediately begins, and with the encouraging tick of radiation counters, takes no more than ten minutes; and soon a large boxy cache, caked in purple-brown dust, is heaved up and onto the rad-addled sand.","MPC_IAIICAlphaSiteInvestigateDataCacheThree:Order the cache opened",
+MPC_IAIICAlphaSiteInvestigateDataCacheThree,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheThree",,"A small hole is drilled in the purple-caked front, a camera inserted and retracted once no threat was determined. A plasma torch brightly flashes, artifacting your vidfeed, and then...
+
+Your salvors walk through, the orange-red lock casting a clarifying light on the complete lack of substance within this cache. Ridges alongst the ground outline what could be prior contents, removed by an unnervingly steady hand and a primo plasma cutter - or something else entirely.
+
+Samples are taken and quickly analyzed, raising more questions than answers. For one, there's no torch-residue on the remaining foundation, nor is there any sign of prior entry - or even an external locking mechanism. It's like whatever these objects were just vanished.
+
+""$PlayerSirOrMadam."" your ops chief grunts, catching your attention.","MPC_IAIICAlphaSiteInvestigateDataCacheFour:""Report.""",
+MPC_IAIICAlphaSiteInvestigateDataCacheFour,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheFour","SetTextHighlights ""Magnetar""","""Atmo scan just finished. We found some sort of exotic particle - some sort of stable antimatter, just free-floating inside the canister. Doors sealed them in, and they don't seem too prone to annihilation, explaining how they're still here. But that's not all..."" your ops chief then hands you a TriPad, and narrates as you read.
+
+""Remember the Magnetar? That weird factory we raided a while ago?"" The chief's gaze hardens. ""We took an atmos sample there too, and..."" a nod to the PDA you now hold. It's the same type of particle; the same stability, the same composition, the same amount, even.","MPC_IAIICAlphaSiteInvestigateDataCacheFive:Continue",
+MPC_IAIICAlphaSiteInvestigateDataCacheFive,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheFive","SetTextHighlights ""hundred cycles""","""What's more, we detected a trace of this antimatter on our approach to this damned rock. High concentration in orbit - but a small trail leading off. And when we followed that trace with our sensors...""
+
+Your chief nods, prompting sensors to approach and speak up. ""Some sort of highly polarized meson emission, from the outskirts of this system. Barely any to speak of, but just enough for an active sensor burst to detect."" You catch your ops chief shivering in the corner of your eye. ""No way to tell how old it is, but if I had to guess? At least a hundred cycles, $playerSirOrMadam.""",,
+"#END Go to alpha site and find omega traces",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,

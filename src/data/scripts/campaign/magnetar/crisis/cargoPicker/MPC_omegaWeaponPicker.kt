@@ -68,7 +68,7 @@ abstract class MPC_omegaWeaponPicker(
         var points = 0
         for (stack in cargo.stacksCopy) {
             val spec = stack.weaponSpecIfWeapon ?: continue
-            points += getPointsForWeapon(spec)
+            points += getPointsForWeapon(spec) * stack.size.toInt()
         }
         return points
     }
@@ -76,7 +76,7 @@ abstract class MPC_omegaWeaponPicker(
     override fun removeItem(stack: CargoStackAPI, cargo: CargoAPI) {
         super.removeItem(stack, cargo)
         val spec = stack.weaponSpecIfWeapon ?: return
-        satisfyPoints(getPointsForWeapon(spec))
+        satisfyPoints(getPointsForWeapon(spec) * stack.size.toInt())
     }
 
     abstract fun satisfyPoints(pointsForWeapon: Int)

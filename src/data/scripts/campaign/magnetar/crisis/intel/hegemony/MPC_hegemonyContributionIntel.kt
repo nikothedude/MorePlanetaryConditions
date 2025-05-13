@@ -3,11 +3,12 @@ package data.scripts.campaign.magnetar.crisis.intel.hegemony
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.TextPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.Tags
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
+import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.SectorMapAPI
@@ -18,12 +19,19 @@ import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel.Companion.addStartLabel
 import data.utilities.niko_MPC_ids
+import exerelin.utilities.NexUtilsFleet
+import exerelin.utilities.StringHelper
+import org.lazywizard.lazylib.MathUtils
+import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.makeNonStoryCritical
+import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
 
 class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
     companion object {
+        fun getAlphaSite(): StarSystemAPI = Global.getSector().getStarSystem("Unknown Location")
+
         fun get(withUpdate: Boolean = false): MPC_hegemonyContributionIntel? {
             if (withUpdate) {
                 if (Global.getSector().memoryWithoutUpdate[KEY] == null) {
@@ -65,7 +73,16 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     enum class TargetHouse(val stringName: String) {
         NONE("None"),
         ALOOF("ONE"),
-        OPPORTUNISTIC("TWO"),
+        OPPORTUNISTIC("Lindunberg") {
+            override fun apply(text: TextPanelAPI?) {
+                //val intel = MPC_hegemonyMilitaristicHouseEventIntel.get(true)!!
+                if (text != null) {
+                    get(true)!!.opportunisticState = OpportunisticState.GO_TO_ALPHA_SITE
+                    get(true)!!.sendUpdateIfPlayerHasIntel(OpportunisticState.GO_TO_ALPHA_SITE, text)
+                }
+                Global.getSector().memoryWithoutUpdate["\$MPC_investigatingAlphaSiteAgain"] = true
+            }
+        },
         MILITARISTIC("Mellour") {
             override fun apply(text: TextPanelAPI?) {
                 val intel = MPC_hegemonyMilitaristicHouseEventIntel.get(true)!!
@@ -84,12 +101,90 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         open fun unapply(text: TextPanelAPI? = null) {}
     }
 
+    enum class OpportunisticState {
+        GO_TO_ALPHA_SITE {
+            override fun apply() {
+                super.apply()
+
+                getAlphaSite().planets.firstOrNull { it.id == "site_alpha" }?.makeImportant("\$MPC_IAIICImportant")
+            }
+
+            override fun unapply() {
+                super.unapply()
+
+                getAlphaSite().planets.firstOrNull { it.id == "site_alpha" }?.makeUnimportant("\$MPC_IAIICImportant")
+            }
+        },
+        GO_TO_MESON_READINGS {
+            override fun apply() {
+                super.apply()
+
+                val loc = getAlphaSite()
+
+                val readings = loc.addCustomEntity(
+                    "MPC_mesonReadings",
+                    "Meson Readings",
+                    Entities.MISSION_LOCATION,
+                    Factions.NEUTRAL,
+                )
+                readings.setLocation(-8000f, 1000f)
+            }
+        };
+
+        open fun apply() {}
+        open fun unapply() {}
+    }
+    var opportunisticState: OpportunisticState? = null
+        set(value) {
+            field?.unapply()
+            value?.apply()
+
+            field = value
+        }
+
+    fun spawnWormholeOmega() {
+        val loc = getAlphaSite()
+        loc.getCustomEntitiesWithTag("MPC_mesonReadings").firstOrNull() ?: return
+
+        val combat = (Global.getSector().playerFleet.fleetPoints * 0.4f).coerceAtLeast(50f)
+
+        val params = FleetParamsV3(
+            Global.getSector().playerFleet.locationInHyperspace,
+            Factions.OMEGA,
+            null,
+            FleetTypes.PATROL_SMALL,
+            combat.toFloat(),  // combatPts
+            0f,  // freighterPts
+            0f,  // tankerPts
+            0f,  // transportPts
+            0f,  // linerPts
+            0f,  // utilityPts
+            0f
+        )
+        params.ignoreMarketFleetSizeMult = true
+        params.qualityOverride = 1.2f
+        params.maxShipSize = 2
+
+        val fleet = Global.getSector().getFaction(Factions.OMEGA)
+
+        fleet.memoryWithoutUpdate.set("\$genericHail", true)
+        fleet.memoryWithoutUpdate.set("\$genericHail_openComms", "MPC_IAIICwormholeDefenseFleet")
+
+        //fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_ALLOW_LONG_PURSUIT, true);
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_ALWAYS_PURSUE, true)
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_PURSUE_PLAYER, true)
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, true)
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_HOSTILE, true)
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE_ONE_BATTLE_ONLY, true)
+        fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_LOW_REP_IMPACT, true)
+    }
+
     fun setNewHouse(house: TargetHouse, text: TextPanelAPI) {
         currentHouse.unapply()
         currentHouse = house
         house.apply(text)
 
-        if (house != TargetHouse.MILITARISTIC) {
+        if (house != TargetHouse.MILITARISTIC && house != TargetHouse.OPPORTUNISTIC) {
             sendUpdateIfPlayerHasIntel(house, text)
         }
     }
@@ -154,6 +249,16 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     10f,
                     factionForUIColors.baseUIColor,
                     "hegemony industries", "hegemony fleets"
+                )
+            }
+            TargetHouse.OPPORTUNISTIC -> {
+            }
+            OpportunisticState.GO_TO_ALPHA_SITE -> {
+                info.addPara(
+                    "Go to the %s",
+                    10f,
+                    Misc.getHighlightColor(),
+                    "provided hyperspace coordinates"
                 )
             }
             "HOUSES_TURNED" -> {
@@ -228,7 +333,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 )
 
                 info.addPara("She listed the following targets: ", 5f)
-                info.setBulletedListMode(BaseIntelPlugin.BULLET)
+                info.setBulletedListMode(BULLET)
                 info.addPara("Youn", 0f).color = Misc.getHighlightColor()
                 info.addPara("Lindunberg", 0f).color = Misc.getHighlightColor()
                 info.addPara("Mellour", 0f).color = Misc.getHighlightColor()
@@ -282,7 +387,50 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                         }
                     }
                     TargetHouse.ALOOF -> TODO()
-                    TargetHouse.OPPORTUNISTIC -> TODO()
+                    TargetHouse.OPPORTUNISTIC -> {
+                        val faction = Global.getSector().getFaction(Factions.HEGEMONY)
+                        val hege = faction.baseUIColor
+                        val tritach = Global.getSector().getFaction(Factions.TRITACHYON).baseUIColor
+
+                        val IAIICfac = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+                        val IAIIC = IAIICfac.baseUIColor
+
+                        info.addPara(
+                            "The noble house %s of Eventide has expressed \"dismay\" at the involvement the %s has with the %s, " +
+                                    "but requires you to obtain data on a \"confidential %s\". More than likely, their pacifism is just a ruse; " +
+                                    "but obtaining this data might be the only way to get them on your side.",
+                            10f,
+                            Misc.getHighlightColor(),
+                            "Lindunberg", "hegemony", "IAIIC", "Tri-Tachyon project"
+                        ).setHighlightColors(
+                            hege, hege, IAIIC, tritach
+                        )
+
+                        when (opportunisticState) {
+                            OpportunisticState.GO_TO_ALPHA_SITE -> {
+                                val hasBeenToAlphaSite = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_playerWentToAlphaSite")
+                                if (hasBeenToAlphaSite) {
+                                    info.addPara(
+                                            "You have been provided a set of hyperspace and ground coordinates, pointing you to a " +
+                                                    "specific location on %s likely harboring unharvested data.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "alpha site",
+                                    )
+                                } else {
+                                    info.addPara(
+                                        "You have been provided a set of hyperspace and ground coordinates, pointing you to a " +
+                                                "strange hyperspace location nearby %s.",
+                                        5f,
+                                        Misc.getHighlightColor(),
+                                        "Hybrasil",
+                                    )
+                                }
+                            }
+                            OpportunisticState.GO_TO_MESON_READINGS -> TODO()
+                            null -> {}
+                        }
+                    }
                     TargetHouse.MILITARISTIC -> {
                         addStartLabel(info)
                     }
@@ -311,7 +459,6 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         Global.getSector().memoryWithoutUpdate[KEY] = null
 
         Global.getSector().economy.getMarket("eventide")?.makeNonStoryCritical("\$MPC_IAIICEvent")
-
     }
 
     override fun advanceImpl(amount: Float) {
@@ -336,7 +483,14 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 when (currentHouse) {
                     TargetHouse.NONE -> null
                     TargetHouse.ALOOF -> null
-                    TargetHouse.OPPORTUNISTIC -> null
+                    TargetHouse.OPPORTUNISTIC -> {
+
+                        when (opportunisticState) {
+                            OpportunisticState.GO_TO_ALPHA_SITE -> getAlphaSite().hyperspaceAnchor
+                            OpportunisticState.GO_TO_MESON_READINGS -> TODO()
+                            null -> null
+                        }
+                    }
                     TargetHouse.MILITARISTIC -> null
                     TargetHouse.HONORABLE -> null
                 }

@@ -341,7 +341,6 @@ object MPC_People {
 
             aristo.name = FullName("Mikael", "Lindunberg", Gender.MALE)
 
-
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] = aristo
 

@@ -108,7 +108,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             IAIIC.clearShipRoleCache()
 
             val intel = MPC_IAIICFobIntel.get() ?: return
-            intel.removeBlueprintFunctions.forEach { it() }
+            intel.removeBlueprintFunctions.forEach { if (it != null) {it()} }
         }
     }
 
@@ -242,6 +242,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         Global.getSector().listenerManager.addListener(overgrownNanoforgeDiscoveryListener(), true)
         Global.getSector().addTransientListener(niko_MPC_omegaWeaponPurger())
         Global.getSector().addTransientListener(MPC_incomeTallyListener())
+        Global.getSector().addTransientListener(MPC_alphaSiteTransitListener())
         Global.getSector().listenerManager.addListener(MPC_ArkFOBColonizedListener(), true)
         //Global.getSector().addTransientListener(niko_MPC_spyFleetBattleListener())
         MPC_hostileActivityHook().start()

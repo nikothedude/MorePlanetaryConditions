@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.intel.events.PerseanLeagueHostileActiv
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.support.MPC_perseanLeagueFractalSupport
 
 class MPC_IAIICPLCMD: BaseCommandPlugin() {
     override fun execute(
@@ -37,6 +38,13 @@ class MPC_IAIICPLCMD: BaseCommandPlugin() {
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_gotPLSupportFleets")) return false
 
                 return true
+            }
+            "giveSupport" -> {
+                Global.getSector().intelManager.addIntel(
+                    MPC_perseanLeagueFractalSupport(),
+                    false,
+                    dialog.textPanel
+                )
             }
         }
 

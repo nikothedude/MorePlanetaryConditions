@@ -27,7 +27,7 @@ data class MPC_factionContribution(
         val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
         if (IAIIC != null) {
             removeContribution?.let { it(IAIIC) }
-            intel.removeBlueprintFunctions.add { removeContribution }
+            intel.removeBlueprintFunctions.add @JvmSerializableLambda { @JvmSerializableLambda removeContribution }
         }
 
         val reason = if (becauseFactionDead) MPC_changeReason.FACTION_DIED else MPC_changeReason.PULLED_OUT

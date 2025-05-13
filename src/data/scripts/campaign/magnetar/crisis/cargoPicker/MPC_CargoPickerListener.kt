@@ -72,7 +72,11 @@ abstract class MPC_CargoPickerListener(
             if (stack == null) continue
             removeItem(stack, playerCargo)
         }
+
+        postPick()
     }
+
+    protected open fun postPick() {}
 
     open fun removeItem(stack: CargoStackAPI, cargo: CargoAPI) {
         addItemLossText(cargo, stack, stack.size.toInt(), dialog.textPanel)
@@ -93,7 +97,7 @@ abstract class MPC_CargoPickerListener(
         panel.addPara(Misc.ucFirst(faction.displayName), faction.baseUIColor, 1f)
         panel.setParaFontDefault()
 
-        panel.addImage(faction.logo, width * 1f, 3f)
+        panel.addImage(faction.crest, width * 1f, 3f)
 
         addMiddleDesc(panel, cargo, pickedUp, pickedUpFromSource, combined)
     }

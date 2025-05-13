@@ -105,6 +105,12 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_hegemonyMilitaristicHouseEventIntel.get(false) ?: return false
                 return intel.progress >= intel.maxProgress
             }
+
+            "OPPgoToReadings" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.GO_TO_MESON_READINGS
+                intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
         }
 
         return false

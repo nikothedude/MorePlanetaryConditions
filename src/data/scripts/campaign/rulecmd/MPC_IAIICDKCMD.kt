@@ -5,25 +5,28 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
+import com.fs.starfarer.api.impl.campaign.fleets.PersonalFleetHoracioCaden
 import com.fs.starfarer.api.impl.campaign.ids.*
-import com.fs.starfarer.api.impl.campaign.intel.PerseanLeagueMembership
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
-import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_DKInfiltrationCondition
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICDKFuelHubFleetSpawner
+import data.scripts.campaign.magnetar.crisis.cargoPicker.MPC_sindrianOmegaPicker
 import data.scripts.campaign.magnetar.crisis.intel.MPC_DKContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
+import data.scripts.campaign.magnetar.crisis.intel.support.MPC_lionsGuardFractalSupport
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.hasUnexploredRuins
 import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.makeUnimportant
-import kotlin.math.abs
 
 class MPC_IAIICDKCMD: BaseCommandPlugin() {
 
@@ -133,6 +136,31 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 if (!intel.factionContributions.any { it.factionId == Factions.DIKTAT }) return false
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICDKInvestigationStarted")) return false
                 return true
+            }
+            "canAskCadenAboutSupport" -> {
+                val intel = MPC_IAIICFobIntel.get() ?: return false
+                //if (MPC_DKContributionIntel.get() != null) return false
+                if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$sdtu_missionCompleted")) return false
+                if (intel.factionContributions.any { it.factionId == Factions.DIKTAT }) return false
+                if (Global.getSector().intelManager.hasIntelOfClass(MPC_lionsGuardFractalSupport::class.java)) return false
+                //if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICDKInvestigationStarted")) return false
+                return true
+            }
+            "openLGOmegaWpnMenu" -> {
+                val picker = MPC_sindrianOmegaPicker(dialog, memoryMap = memoryMap)
+                val sourceCargo = picker.getAvailableCargo(Global.getSector().playerFleet.cargo)
+                dialog.showCargoPickerDialog(
+                    picker.title,
+                    picker.confirmText,
+                    picker.cancelText,
+                    true,
+                    310f,
+                    sourceCargo,
+                    picker
+                )
+            }
+            "addLGSupport" -> {
+                Global.getSector().intelManager.addIntel(MPC_lionsGuardFractalSupport(), false, dialog.textPanel)
             }
             "deliveringCoreToMacario" -> {
                 val intel = MPC_DKContributionIntel.get() ?: return false
@@ -369,6 +397,9 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 ourIntel.state = MPC_DKContributionIntel.State.INFILTRATE_AND_UPGRADE_UMBRA
                 ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.INFILTRATE_AND_UPGRADE_UMBRA, dialog.textPanel)
                 Global.getSector().economy.getMarket("umbra")?.addCondition("MPC_DKInfiltrationCondition")
+                Global.getSector().economy.getMarket("umbra")?.removeCondition(Conditions.VOLATILES_DIFFUSE)
+                (Global.getSector().economy.getMarket("umbra")?.getIndustry(Industries.MINING) as? BaseIndustry)?.getSupply(Commodities.VOLATILES)?.quantity?.unmodify()
+                Global.getSector().economy.getMarket("umbra")?.addCondition(Conditions.VOLATILES_PLENTIFUL)
 
                 return true
             }
@@ -406,9 +437,42 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                         break
                     }
                 }
+
+
             }
         }
         return false
+    }
+
+    class MPC_IAIICHadenFleetScript(): niko_MPC_baseNikoScript() {
+        val interval = IntervalUtil(1f, 2f) // days
+
+        override fun startImpl() {
+            Global.getSector().addScript(this)
+        }
+
+        override fun stopImpl() {
+            Global.getSector().addScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            val days = Misc.getDays(amount)
+            interval.advance(days)
+            if (interval.intervalElapsed()) {
+                val script = Global.getSector().scripts.firstOrNull { it is PersonalFleetHoracioCaden } as? PersonalFleetHoracioCaden ?: return stop()
+                val fleet = script.fleet ?: return
+
+                if (MPC_IAIICFobIntel.get() == null || Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICInNegotiationsWithCaden")) {
+                    fleet.makeUnimportant("\$MPC_IAIICCadenMeet")
+                    stop()
+                    return
+                } else {
+                    fleet.makeImportant("\$MPC_IAIICCadenMeet")
+                }
+            }
+        }
     }
 
 }

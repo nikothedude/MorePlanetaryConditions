@@ -43,6 +43,10 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
         const val SECT_NAME = "Arrow of Ludd"
     }
 
+    init {
+        Global.getSector().addScript(this)
+    }
+
     enum class State {
         FIND_CORE,
         RETURN_WITH_CORE,
@@ -380,6 +384,7 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
         Global.getSector().importantPeople.getPerson(People.MACARIO).makeUnimportant("\$MPC_macarioDuringDKContribution")
         Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).makeUnimportant("\$MPC_umbraInfiltrator")
         Global.getSector().importantPeople.getPerson(MPC_People.UMBRA_INFILTRATOR).makeUnimportant("\$MPC_umbraInfiltrator")
+        Global.getSector().removeScript(this)
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {
