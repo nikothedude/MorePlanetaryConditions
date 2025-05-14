@@ -35,4 +35,5 @@ MPC_satelliteBarrageDisruptTime,Satellite barrage base disruption time (Days),In
 ,,,,,,,,
 MPC_disableMagnetar,Disable magnetar,Boolean,false,,"If enabled, the magnetar system will not generate. Only affects generation.",,,Exploration
 MPC_magnetarDropOmegaWeapons,Drop omega weapons from battle in magnetar system,Boolean,false,,Reccommended to be set to false - omega weapon availability is intentionally limited.,,,Exploration
+MPC_disableMagnetarCoreDrops,Stop AI cores from dropping due to battle in magnetar system,Boolean,true,,"If you have a mod that enables omega core drops, this setting will prevent their cores from dropping due to this system.",,,Exploration
 MPC_enableIAIICCrisis,Enable IAIIC Crisis,Boolean,false,,"If false, disables the IAIIC endgame crisis. Default value will be changed to true later.",,,Exploration

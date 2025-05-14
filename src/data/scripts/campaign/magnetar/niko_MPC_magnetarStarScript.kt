@@ -63,8 +63,8 @@ class niko_MPC_magnetarStarScript(
         const val MIN_DAYS_PER_PULSE = 3f
         const val MAX_DAYS_PER_PULSE = 3.7f
 
-        const val BASE_X_COORD_FOR_SYSTEM = -45800f
-        const val BASE_Y_COORD_FOR_SYSTEM = -55320f
+        const val BASE_X_COORD_FOR_SYSTEM = -30800f
+        const val BASE_Y_COORD_FOR_SYSTEM = -57320f
 
         const val X_COORD_VARIATION_LOWER_BOUND = -3600f
         const val X_COORD_VARIATION_UPPER_BOUND = 3900f
@@ -142,13 +142,18 @@ class niko_MPC_magnetarStarScript(
             val planetThree = containingLocation.getEntityById("MPC_magnetarSystemPlanetThree")
             planetThree?.memoryWithoutUpdate?.set("\$defenderFleet", createManufactorumDefenders())
             planetThree?.memoryWithoutUpdate?.set("\$hasDefenders", true)
-            planetThree?.memoryWithoutUpdate?.set("\$hasStation", true)
+            planetThree?.memoryWithoutUpdate?.set("\$hasStation", false)
             planetThree?.memoryWithoutUpdate?.set("\$hasNonStation", true)
             planetThree?.memoryWithoutUpdate?.set("\$MPC_hasSalvageObjectives", true)
 
-            if (magnetar.starSystem.scripts.none { it is MPC_magnetarThreatFleetManager }) {
-                magnetar.starSystem.addScript(MPC_magnetarThreatFleetManager())
-            }
+            val planetTwo = containingLocation.getEntityById("MPC_magnetarSystemPlanetTwo")
+            planetTwo?.memoryWithoutUpdate?.set("\$defenderFleet", createOmegaZigDefenders())
+            planetTwo?.memoryWithoutUpdate?.set("\$hasDefenders", true)
+            planetTwo?.memoryWithoutUpdate?.set("\$hasStation", false)
+            planetTwo?.memoryWithoutUpdate?.set("\$hasNonStation", true)
+            planetTwo?.memoryWithoutUpdate?.set("\$MPC_hasSalvageObjectives", true)
+
+            magnetar.starSystem.addScript(MPC_magnetarThreatFleetManager())
 
             generatedDefenders = true
         }
@@ -300,7 +305,7 @@ class niko_MPC_magnetarStarScript(
     }
 
     private fun createManufactorumDefenders(): CampaignFleetAPI {
-        val fleetPoints = 300f
+        val fleetPoints = 240f
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
 
         val guardian = defenderFleet.fleetData.addFleetMember("MPC_omega_guardian_Standard")
@@ -321,6 +326,26 @@ class niko_MPC_magnetarStarScript(
 
         variant.source = VariantSource.REFIT
         guardian.setVariant(variant, false, true)
+
+        //defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
+        defenderFleet.fleetData.sort()
+
+        return defenderFleet
+    }
+
+    private fun createOmegaZigDefenders(): CampaignFleetAPI {
+        val fleetPoints = 120f
+        val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
+
+        val zigg = defenderFleet.fleetData.addFleetMember("MPC_omegurat_abomination")
+        zigg.repairTracker.cr = zigg.repairTracker.maxCR
+        zigg.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
+        integrateAndAdaptCoreForAIFleet(zigg)
+
+        val variant = zigg.variant.clone()
+
+        variant.source = VariantSource.REFIT
+        zigg.setVariant(variant, false, true)
 
         //defenderFleet.addTag(niko_MPC_ids.IMMUNE_TO_OMEGA_CLEARING)
         defenderFleet.fleetData.sort()

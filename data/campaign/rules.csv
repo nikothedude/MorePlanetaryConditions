@@ -883,7 +883,6 @@ SetTextHighlights ""Rift torpedo rack""","Results come in rather quickly. The co
 Looks like a direct approach isn't an option.","0:MPC_OManInitialExploreThree:Consider your options",
 MPC_OManInitialExploreThree,DialogOptionSelected,"$option == MPC_OManInitialExploreThree","SetTextHighlights ""squad of marines""
 
-
 MPC_SalvageDefenderInteractionWithObjectives
 $global.MPC_playerDiscoveredOmegaManufactorum = true","""Well-"" your ops chief turns to you, arms crossed. ""I don' see no anti-personnel weaponry down there. Could just send a squad of marines t' disable th' weapons."" Your sensors officer raises a finger and counters: ""The material is pretty insulating, the defenses could just be hidden.""
 
@@ -3883,10 +3882,6 @@ MPC_IAIICAlphaSiteMesonReadingsScanLeave,DialogOptionSelected,"$option == MPC_IA
 niko_MPC_musicToggle """" false true
 MPC_IAIICHegeCMD OPPspawnOmega
 $MPC_exploredReadings = true",,,
-MPC_IAIICAlphaSiteMesonReadingsRevisit,OpenInteractionDialog,"$id == MPC_mesonReadings
-$MPC_exploredReadings score:10","ShowDefaultVisual","The spatial rift stands before you, and even without a sensor burst you can detect the everpresent magnetic pull of the magnetar beyond. Until you find a way to close it, this rift poses a threat to the larger sector - and not just due to the hijacked drones and angular ships. But for now, it is thankfully out of use. Or so you hope.
-
-TODO: There should DEFINITELY be dialog about this rift with the sector leaders. maybe that one tritach special aqusitions guy?","defaultLeave:Leave",
 ,,,,,,
 # Wormhole omega fleet dialogue,,,,,,
 MPC_IAIICAlphaSiteWormholeFleetHail,MPC_IAIICwormholeDefenseFleetHail,,"unset $entity.genericHail","Your comms display shows a mess of fractal shapes with no noticeable cohesion, marked with the crackle of an incompatible - or incomprehensible - audio interface. Strangely, however, you can't help but feel the room is a bit quieter than usual... has the ship's audio been playing a quiet music? No... no. You must be imagining things.

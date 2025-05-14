@@ -22,6 +22,7 @@ object niko_MPC_settings {
     val SPECIAL_SYNCROTRON_FUEL_BOOST = ItemEffectsRepo.SYNCHROTRON_FUEL_BONUS + 4
     const val ARRAY_SCAN_TIME = 4f
     var MAGNETAR_DISABLED = false
+    var DISABLE_MAGNETAR_CORE_DROPS = true
     const val MAX_IAIIC_REP = -0.24f
     const val OMAN_BOMBARD_COST = 200
     const val DELAYED_REPAIR_TIME = 1f
@@ -131,6 +132,8 @@ object niko_MPC_settings {
 
         MAGNETAR_DROP_OMEGA_WEAPONS = LunaSettings.getBoolean(modId, "MPC_magnetarDropOmegaWeapons")!!
         MAGNETAR_DISABLED = LunaSettings.getBoolean(modId, "MPC_disableMagnetar")!!
+
+        DISABLE_MAGNETAR_CORE_DROPS = LunaSettings.getBoolean(modId, "MPC_disableMagnetarCoreDrops")!!
 
         ENABLE_IAIIC_CRISIS = LunaSettings.getBoolean(modId, "MPC_enableIAIICCrisis")!!
 

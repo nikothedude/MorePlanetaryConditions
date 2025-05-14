@@ -1,3 +1,16 @@
+4.3.4
+
+Fixes a few misc bugs
+
+Magnetar ships no longer drop omega cores if you're using AA
+    Added a lunasetting to restore the original behavior
+
+Magnetar moved FURTHER away
+
+Fixed modinfo
+
+Update licence to CC BY-NC
+
 4.3.3
 SHOULD BE SAVE COMPATIBLE? PROBABLY? I DONT REALLY KNOW
 

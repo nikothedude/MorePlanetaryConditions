@@ -11,6 +11,7 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.OmegaOfficerGeneratorPl
 import com.fs.starfarer.api.loading.VariantSource
 import data.scripts.MPC_delayedExecution
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
 object niko_MPC_derelictOmegaFleetConstructor {
@@ -113,8 +114,12 @@ object niko_MPC_derelictOmegaFleetConstructor {
         for (member in fleet.membersWithFightersCopy) {
             // to "perm" the variant so it gets saved and not recreated
             member.setVariant(member.variant.clone(), false, false)
+            member.variant.originalVariant = null
             member.variant.source = VariantSource.REFIT
             member.variant.addTag(Tags.SHIP_LIMITED_TOOLTIP)
+            if (niko_MPC_settings.DISABLE_MAGNETAR_CORE_DROPS) {
+                member.variant.addTag(Tags.VARIANT_DO_NOT_DROP_AI_CORE_FROM_CAPTAIN)
+            }
         }
 
         return fleet
@@ -165,6 +170,9 @@ object niko_MPC_derelictOmegaFleetConstructor {
             clonedVariant.addMod("niko_MPC_subsumedIntelligence")
             clonedVariant.addTag(Tags.VARIANT_UNBOARDABLE) // they can drop with omega weapons
             clonedVariant.removeTag(Tags.AUTOMATED_RECOVERABLE)
+            if (niko_MPC_settings.DISABLE_MAGNETAR_CORE_DROPS) {
+                member.variant.addTag(Tags.VARIANT_DO_NOT_DROP_AI_CORE_FROM_CAPTAIN)
+            }
             clonedVariant.originalVariant = null
             member.setVariant(clonedVariant, false, true)
         }
