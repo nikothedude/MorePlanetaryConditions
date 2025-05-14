@@ -23,7 +23,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
         if (dialog == null || params == null) return false
 
         val interactionTarget = dialog.interactionTarget
-        val market = interactionTarget.market ?: return false
+        //val market = interactionTarget.market ?: return false
 
         val command = params[0].getString(memoryMap)
 
@@ -109,6 +109,22 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             "OPPgoToReadings" -> {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.GO_TO_MESON_READINGS
+                intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
+            "OPPsetCourse" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                val readings = MPC_hegemonyContributionIntel.getAlphaSite().getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return false
+
+                Global.getSector().layInCourseFor(readings)
+            }
+            "OPPspawnOmega" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.spawnWormholeOmega()
+            }
+
+            "OPPgoToMesonPlanet" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.GO_TO_MESON_PLANET
                 intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
             }
         }

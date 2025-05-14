@@ -107,6 +107,7 @@ class MPC_IAIICJillCMD: BaseCommandPlugin() {
             }
             "startEvent" -> {
                 val intel = MPC_IAIICFobIntel(dialog)
+                Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).isShowInIntelTab = true
             }
             "canColonizeArk" -> {
                 return dialog.interactionTarget.market?.isInhabited() != true

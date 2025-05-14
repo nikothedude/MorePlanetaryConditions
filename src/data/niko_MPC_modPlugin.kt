@@ -364,10 +364,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.PLAYER, -0.2f)
 
         for (faction in Global.getSector().allFactions.filter { Global.getSector().getFaction(Factions.HEGEMONY).isHostileTo(it) }) {
-            IAIIC.setRelationship(faction.id, Global.getSector().getFaction(Factions.HEGEMONY).getRelationshipLevel(faction))
+            IAIIC.setRelationship(faction.id, -0.4f) // not quite hostile, but...
         }
         IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
-        IAIIC.isShowInIntelTab = false
+        //IAIIC.isShowInIntelTab = false
 
         setupIAIICBlueprints()
 

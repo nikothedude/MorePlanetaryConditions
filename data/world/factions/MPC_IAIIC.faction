@@ -366,6 +366,7 @@
 			"canBombard":false,
 			"territorial":false,
 		},
+		"showInIntelTab":false,
 	},
 	"fleetTypeNames":{
 		"trade":"Logistics Convoy",

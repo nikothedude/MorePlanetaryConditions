@@ -2,19 +2,26 @@ package data.scripts.campaign.magnetar.crisis.intel.hegemony
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
+import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.TextPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
+import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.OfficerQuality
+import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.StarSystem
+import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel.Companion.addStartLabel
@@ -127,8 +134,21 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     Entities.MISSION_LOCATION,
                     Factions.NEUTRAL,
                 )
-                readings.setLocation(-8000f, 1000f)
+                readings.customDescriptionId = "MPC_riftRemnant"
+                readings.addTag("MPC_riftRemnant")
+                readings.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "music_campaign_alpha_site"
+                readings.makeImportant("MPC_IAIICquest")
+                readings.setLocation(-12000f, 1000f)
             }
+
+            override fun unapply() {
+                val loc = getAlphaSite()
+                val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
+                readings.makeUnimportant("MPC_IAIICquest")
+            }
+        },
+        GO_TO_MESON_PLANET {
+
         };
 
         open fun apply() {}
@@ -144,9 +164,9 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
     fun spawnWormholeOmega() {
         val loc = getAlphaSite()
-        loc.getCustomEntitiesWithTag("MPC_mesonReadings").firstOrNull() ?: return
+        val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
 
-        val combat = (Global.getSector().playerFleet.fleetPoints * 0.4f).coerceAtLeast(50f)
+        val combat = (Global.getSector().playerFleet.fleetPoints * 0.8f).coerceAtLeast(50f).coerceAtMost(600f)
 
         val params = FleetParamsV3(
             Global.getSector().playerFleet.locationInHyperspace,
@@ -164,19 +184,43 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         params.ignoreMarketFleetSizeMult = true
         params.qualityOverride = 1.2f
         params.maxShipSize = 2
+        params.aiCores = OfficerQuality.AI_OMEGA
 
-        val fleet = Global.getSector().getFaction(Factions.OMEGA)
+        val omega = Global.getSector().getFaction(Factions.OMEGA)
+        val fleet = FleetFactoryV3.createFleet(params)
 
         fleet.memoryWithoutUpdate.set("\$genericHail", true)
-        fleet.memoryWithoutUpdate.set("\$genericHail_openComms", "MPC_IAIICwormholeDefenseFleet")
+        fleet.memoryWithoutUpdate.set("\$genericHail_openComms", "MPC_IAIICwormholeDefenseFleetHail")
 
-        //fleet.getMemoryWithoutUpdate().set(MemFlags.MEMORY_KEY_ALLOW_LONG_PURSUIT, true);
+        //fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_ALLOW_LONG_PURSUIT, true);
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_ALWAYS_PURSUE, true)
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_PURSUE_PLAYER, true)
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE, true)
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_HOSTILE, true)
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_MAKE_AGGRESSIVE_ONE_BATTLE_ONLY, true)
         fleet.memoryWithoutUpdate.set(MemFlags.MEMORY_KEY_LOW_REP_IMPACT, true)
+
+        for (member in fleet.membersWithFightersCopy) {
+            // to "perm" the variant so it gets saved and not recreated
+            member.setVariant(member.variant.clone(), false, false)
+            member.variant.source = VariantSource.REFIT
+            member.variant.addTag(Tags.SHIP_LIMITED_TOOLTIP)
+        }
+
+        loc.addEntity(fleet)
+        fleet.setLocation(9999f, -9999f)
+        val dest = JumpDestination(readings, null)
+        Global.getSector().doHyperspaceTransition(fleet, null, dest)
+        fleet.stats.fleetwideMaxBurnMod.modifyFlat("MPC_MAXSPEED", 20f)
+
+        MPC_delayedExecution(
+            @JvmSerializableLambda {
+                if (fleet.isAlive) fleet.despawn()
+            },
+            14f,
+            useDays = true,
+            runWhilePaused = false
+        ).start()
     }
 
     fun setNewHouse(house: TargetHouse, text: TextPanelAPI) {
@@ -259,6 +303,28 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     10f,
                     Misc.getHighlightColor(),
                     "provided hyperspace coordinates"
+                )
+            }
+            OpportunisticState.GO_TO_MESON_READINGS -> {
+                info.addPara(
+                    "Investigate the %s",
+                    10f,
+                    Misc.getHighlightColor(),
+                    "meson readings"
+                )
+            }
+            OpportunisticState.GO_TO_MESON_PLANET -> {
+                info.addPara(
+                    "Go to the %s system",
+                    10f,
+                    Misc.getHighlightColor(),
+                    "magnetar"
+                )
+                info.addPara(
+                    "Find and scan a planet with a %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "meson field"
                 )
             }
             "HOUSES_TURNED" -> {
@@ -427,7 +493,40 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                     )
                                 }
                             }
-                            OpportunisticState.GO_TO_MESON_READINGS -> TODO()
+                            OpportunisticState.GO_TO_MESON_READINGS -> {
+                                info.addPara(
+                                    "You've detected a trail of stable antimatter leading to a source of mesons. If you want to find whoever - or whatever - " +
+                                    "took the data, you'll need to follow this trail.",
+                                    5f
+                                )
+                            }
+                            OpportunisticState.GO_TO_MESON_PLANET -> {
+                                info.addPara(
+                                    "The meson emissions came from a %s near %s, which seems to connect directly to the %s system. " +
+                                    "In order to find the data, it seems you must return to that hellish place and search for a planet meeting two " +
+                                    "%s:",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "spatial rift",
+                                    "Alpha Site",
+                                    "magnetar",
+                                    "criteria"
+                                )
+                                info.setBulletedListMode(BULLET)
+                                info.addPara("Has a small gravitational profile", 0f).color = Misc.getHighlightColor()
+                                info.addPara("Is surrounded by a meson field", 0f).color = Misc.getHighlightColor()
+                                info.setBulletedListMode(null)
+                                info.addSpacer(5f)
+
+                                info.addPara(
+                                    "Once you're there, you should position your fleet in such a way that it is within a %s, " +
+                                    "and begin a %s. Hopefully, if everything goes well, you should find what you're looking for.",
+                                    0f,
+                                    Misc.getHighlightColor(),
+                                    "meson storm",
+                                    "depth scan",
+                                )
+                            }
                             null -> {}
                         }
                     }
@@ -487,7 +586,11 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
                         when (opportunisticState) {
                             OpportunisticState.GO_TO_ALPHA_SITE -> getAlphaSite().hyperspaceAnchor
-                            OpportunisticState.GO_TO_MESON_READINGS -> TODO()
+                            OpportunisticState.GO_TO_MESON_READINGS -> getAlphaSite().getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull()
+                            OpportunisticState.GO_TO_MESON_PLANET -> {
+                                val system = Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] as? StarSystemAPI ?: return null
+                                return system.hyperspaceAnchor
+                            }
                             null -> null
                         }
                     }

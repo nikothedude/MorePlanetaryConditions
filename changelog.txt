@@ -1,15 +1,26 @@
 4.3.3
+SHOULD BE SAVE COMPATIBLE? PROBABLY? I DONT REALLY KNOW
 
 Magnetar is now unlockable in codex
 In future starsector releases, the magnetar will no longer show on the planet list
+
+Magnetar intel now has intel tags
+Magnetar now drains less CR
 
 Interdictions that fire off now protect you from the magnetar
     Only for about 0.1 days, so its still tight
 Magnetar fights now always use objectives
     Additionally, SOTF objectives can spawn in the magnetar system
+        Fractal beacons spawn quite a lot
 
 Derelict escorts now meet your fleet if you try to intercept them
 Derelict escort description has better grammar
+
+Fixed a bug where magnetar fleets wouldnt have subsumed intelligence
+
+Luddic options now properly increment luddic ethos
+Indev IAIIC crisis can now be enabled via lunasettings
+    It is very much unfinished
 
 4.3.2
 

@@ -9,6 +9,7 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.procgen.themes.OmegaOfficerGeneratorPlugin
 import com.fs.starfarer.api.loading.VariantSource
+import data.scripts.MPC_delayedExecution
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 
@@ -151,6 +152,9 @@ object niko_MPC_derelictOmegaFleetConstructor {
         params.maxShipSize = 3 // prevents gaurdian from spawning in this fleet
         val fleet = FleetFactoryV3.createFleet(params)
 
+        fleet.inflateIfNeeded()
+        fleet.inflater = null
+
         //fleet.inflater = MPC_derelictOmegaDerelictInflater()
         for (member in fleet.fleetData.membersListCopy) {
             //val omegaCore = plugin.createPerson(Commodities.OMEGA_CORE, omegaFaction.id, MathUtils.getRandom())
@@ -164,9 +168,6 @@ object niko_MPC_derelictOmegaFleetConstructor {
             clonedVariant.originalVariant = null
             member.setVariant(clonedVariant, false, true)
         }
-
-        fleet.inflateIfNeeded()
-        fleet.inflater = null
 
         fleet.fleetData.sort()
         fleet.forceSync()

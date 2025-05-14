@@ -884,7 +884,7 @@ Looks like a direct approach isn't an option.","0:MPC_OManInitialExploreThree:Co
 MPC_OManInitialExploreThree,DialogOptionSelected,"$option == MPC_OManInitialExploreThree","SetTextHighlights ""squad of marines""
 
 
-SalvageDefenderInteraction
+MPC_SalvageDefenderInteractionWithObjectives
 $global.MPC_playerDiscoveredOmegaManufactorum = true","""Well-"" your ops chief turns to you, arms crossed. ""I don' see no anti-personnel weaponry down there. Could just send a squad of marines t' disable th' weapons."" Your sensors officer raises a finger and counters: ""The material is pretty insulating, the defenses could just be hidden.""
 
 You inquire as to why you can't just bombard them like is standard for ground defenses. ""They're on th' complex itself."", your ops-chief grunts. ""Don't know what we'd los-"" Your sensor officer interrupts with a frantic cry, prompting you to whip around and your ops chief to begin routine battle-prep, barking orders over comms. ""$PlayerSirOrMadam! New contacts, just took off from the complex! Burning fast! ETA in-"" 
@@ -2449,7 +2449,7 @@ BarCMD leaveBar",,,
 MPC_IAIICLPBarEventTwoLeaveLuddic,DialogOptionSelected,"$option == MPC_IAIICLPBarEventTwoLeaveLuddic","EndConversation
 BarCMD leaveBar
 
-$player.ethosFaithful++",,,
+$player.luddicAttitudeFaithful++",,,
 "#END Meet pather at pather bar, discuss terms",,,,,,
 ,,,,,,
 # Land on hideout,,,,,,
@@ -2533,8 +2533,8 @@ MPC_IAIICLPAmbushRepentNo,DialogOptionSelected,"$option == MPC_IAIICLPAmbushRepe
 AdjustRep luddic_path INHOSPITABLE -1
 
 FireBest MPC_IAIICLPAmbushNegotiate","$HisOrHer face contorts angrily. ""Then you will be lost to Mammon, starfarer."" $HisOrHer words hiss like a breached vacsuit. A few pathers raise their weapons, but $heOrShe quickly defuses them.",,
-MPC_IAIICLPAmbushRepentYes,DialogOptionSelected,"$option == MPC_IAIICLPAmbushRepentYes","$player.ethosPather++
-$player.ethosFaithful++
+MPC_IAIICLPAmbushRepentYes,DialogOptionSelected,"$option == MPC_IAIICLPAmbushRepentYes","$player.luddicAttitudePather++
+$player.luddicAttitudeFaithful++
 
 AdjustRepActivePerson FRIENDLY 1
 
@@ -2545,7 +2545,7 @@ MPC_IAIICLPAmbushRepentCant,DialogOptionSelected,"$option == MPC_IAIICLPAmbushRe
 MPC_IAIICLPInitialHideoutAmbushMoloch,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutAmbushMoloch","AdjustRepActivePerson HOSTILE -2
 AdjustRep luddic_path HOSTILE -2
 
-$player.ethosPather++
+$player.luddicAttitudePather++
 
 FireBest MPC_IAIICLPAmbushNegotiate","""Save your voracious lying!"" $HeOrShe spits, raising $hisOrHer firearm - prompting $hisOrHer followers to follow suit. ""If you truely walked the path, you would have not invited a demon of Moloch into your VERY home!"" $HeOrShe fumes, fingers crawling along the sidearm, searching for purpose. Eventually, with a sharp breath, $heOrShe motions for $hisOrHer compatriots to stand down, and does the same $himOrHerself.",,
 MPC_IAIICLPAmbushNegotiate,MPC_IAIICLPAmbushNegotiate,,,"$HeOrShe inhales. ""Thou are an... 'enterprising' individual, with a vested interest in removing the IAIIC from your space, yes?""","MPC_IAIICLPAmbushNegotiateTwo:""Yes.""",
@@ -2576,7 +2576,7 @@ MPC_IAIICLPAmbushEnd,DialogOptionSelected,"$option == MPC_IAIICLPAmbushEnd","Add
 MPC_IAIICPatherCMD endAmbush","""When you're ready to grant us the gracious gift of fleetpower,"" $heOrShe waves off $hisOrHer soldiers, whom simultaneously drop aim. ""Return here. We will be waiting... and if you choose this holy grounds for your agreement?"" $HeOrShe grins brightly. ""We will be waiting - waiting to help.""","MPC_IAIICLPAmbushLeave:Hurridly board your shuttle and leave
 MPC_IAIICLPAmbushPray:Offer a quiet prayer of protection to $personFirstName",
 MPC_IAIICLPAmbushPray,DialogOptionSelected,"$option == MPC_IAIICLPAmbushPray","AdjustRepActivePerson FRIENDLY 1
-$player.ethosFaithful++
+$player.luddicAttitudeFaithful++
 RemoveOption MPC_IAIICLPAmbushPray","""Spare me your false prayers, wretch - you are not of the path."" Despite this scathing remark, you note a ever-so-faint smile across $hisOrHer lips.",,
 MPC_IAIICLPAmbushLeave,DialogOptionSelected,"$option == MPC_IAIICLPAmbushLeave","EndConversation
 FireBest OpenInteractionDialog","You and your party hurriedly board the shuttle and take off post-haste, taking care to reach atmosphere as soon as possible. You sigh in relief - prompting a chain reaction of relieved vocalizations from your crew. ",,
@@ -2661,7 +2661,7 @@ You wonder if what you just did was worth it - this is way more damning than jus
 MPC_IAIICLPHideoutDonatePather:Anything to prop up your brothers and sisters in Ludd.
 MPC_IAIICLPHideoutDonateWasntWorthIt:It might have been a bad idea.",
 MPC_IAIICLPHideoutDonateWorthIt,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonateWorthIt","$player.ethosRuthless++","Regardless of morality, you have no more reason to be here. Your $shipOrFleet is waiting, and this planet will soon be crawling with religious fanatics.","MPC_IAIICLPHideoutSecondVisitLeave:Leave",
-MPC_IAIICLPHideoutDonatePather,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonatePather","$player.ethosPather++","Regardless of morality, you have no more reason to be here. Your $shipOrFleet is waiting, and this planet will soon be crawling with religious fanatics.","MPC_IAIICLPHideoutSecondVisitLeave:Leave",
+MPC_IAIICLPHideoutDonatePather,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonatePather","$player.luddicAttitudePather++","Regardless of morality, you have no more reason to be here. Your $shipOrFleet is waiting, and this planet will soon be crawling with religious fanatics.","MPC_IAIICLPHideoutSecondVisitLeave:Leave",
 MPC_IAIICLPHideoutDonateWasntWorthIt,DialogOptionSelected,"$option == MPC_IAIICLPHideoutDonateWasntWorthIt",,"Regardless of morality, you have no more reason to be here. Your $shipOrFleet is waiting.","MPC_IAIICLPHideoutSecondVisitLeave:Leave",
 "#END Subsequent Visits",,,,,,
 "#END Return to hideout after initial contact",,,,,,
@@ -3831,7 +3831,69 @@ MPC_IAIICAlphaSiteInvestigateDataCacheFour,DialogOptionSelected,"$option == MPC_
 ""Remember the Magnetar? That weird factory we raided a while ago?"" The chief's gaze hardens. ""We took an atmos sample there too, and..."" a nod to the PDA you now hold. It's the same type of particle; the same stability, the same composition, the same amount, even.","MPC_IAIICAlphaSiteInvestigateDataCacheFive:Continue",
 MPC_IAIICAlphaSiteInvestigateDataCacheFive,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheFive","SetTextHighlights ""hundred cycles""","""What's more, we detected a trace of this antimatter on our approach to this damned rock. High concentration in orbit - but a small trail leading off. And when we followed that trace with our sensors...""
 
-Your chief nods, prompting sensors to approach and speak up. ""Some sort of highly polarized meson emission, from the outskirts of this system. Barely any to speak of, but just enough for an active sensor burst to detect."" You catch your ops chief shivering in the corner of your eye. ""No way to tell how old it is, but if I had to guess? At least a hundred cycles, $playerSirOrMadam.""",,
+Your chief nods, prompting sensors to approach and speak up. ""Some sort of highly polarized meson emission, from the outskirts of this system. Barely any to speak of, but just enough for an active sensor burst to detect."" You catch your ops chief shivering in the corner of your eye. ""No way to tell how old it is, but if I had to guess? At least a hundred cycles, $playerSirOrMadam.""
+
+""I suggest we investigate it, $playerSirOrMadam."" your sensor officer suggests, much to this displeasure of your bridge crew. ""Could be an engine trail. If whoever did this is still here...""","MPC_IAIICAlphaSiteInvestigateDataCacheSix:""We should catch them before they leave.""",
+MPC_IAIICAlphaSiteInvestigateDataCacheSix,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheSix","MPC_IAIICHegeCMD OPPgoToReadings","You nod in approval, knowing that despite the thin chance of catching a *five hundred year old scavenger*, this is your only real lead on the disappearance of your operation target. You give the signal, and with a grim nod, you and your officers return to your stations, intent on discovering the nature of this mystery.
+
+As the salvors return, you swear that just for a moment you can hear a quiet hum, a song behind your ears. But just when you turn to look for it, it vanishes, leaving only the spooked face of a junior sensors officer caught in your gaze.
+
+Back to work.","MPC_IAIICAlphaSiteInvestigateDataCacheLeave:Plot a course",
+MPC_IAIICAlphaSiteInvestigateDataCacheLeave,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteInvestigateDataCacheLeave","MPC_IAIICHegeCMD OPPsetCourse
+DismissDialog",,,
+,,,,,,
+# Travel to the strange meson readings and find links to magnetar,,,,,,
+MPC_IAIICAlphaSiteMesonReadingsInit,OpenInteractionDialog,"$id == MPC_mesonReadings
+!$MPC_exploredReadings","ShowDefaultVisual","Your $shipOrFleet gives the emission site a wide berth, standard UnCon protocol for unexplained phenomena. Preliminary sensor readings and visual reports both show nothing out of the ordinary - it's as if these trace exotic particles are simply emanating from nothing. Additionally, the antimatter trace seems to end here - if there's a fleet nearby, it's hiding.
+
+You exchange an uneasy glance with tactical, who in turn exchanges an uneasy glance with sensors.","MPC_IAIICAlphaSiteMesonReadingsTwo:Investigate
+defaultLeave:Leave",
+MPC_IAIICAlphaSiteMesonReadingsTwo,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsTwo","SetTextHighlights ""damaged""","A trio of rad-hardened surveyor drones are deployed and fan out across the anomaly. Close-up sensor readings suggest an omni-directional particle output and some sort of...
+
+""Rift, Captain."" science explains. ""We um... it's not easy to explain... but-it seems space here is, somehow..."" your officer stammers, but is kept on-balance (and on pace) by your expectant stare. ""Somehow... damaged? Like a, like a wall. And... something is leaking through."" Your officer nods, satisfied.","MPC_IAIICAlphaSiteMesonReadingsThree:Continue",
+MPC_IAIICAlphaSiteMesonReadingsThree,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsThree","$MPC_needsScan = true","""$PlayerSirOrMadam,"" sensors adds, prompting your attention. In front of your officer is a skeletonized display - wisps of color flying and forming abstract shapes before vanishing entirely. ""-with, ah, that explanation - a crack in the wall - we can er... see through, almost."" your officer gestures to the abstract display. ""But with our current sensor power-""
+
+""-we need a sensor burst, Captain."" You detect a hint of anxiety in sensor's voice. ""But... there's no-"" your officer takes a deep breath. ""No guarantee whatever's on the other side won't spot us, $playerSirOrMadam."" You catch tactical wiping sweat from their brow.
+
+Your officers look at you expectantly.","MPC_IAIICAlphaSiteMesonReadingsScan:Initiate an active sensor burst
+defaultLeave:Leave for now",
+MPC_IAIICAlphaSiteMesonReadingsScan,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScan","PlaySound ui_sensor_burst_on
+niko_MPC_musicToggle """" true","In a flash, every sensor pylon in your $shipOrFleet lights up and fires into the ""rift"". Your bridge crew falls silent as they watch the void in front of them. Your sensor panel shimmers, shudders, and starts to give shape...","MPC_IAIICAlphaSiteMesonReadingsScanTwo:Look closely",
+MPC_IAIICAlphaSiteMesonReadingsScanTwo,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanTwo","SetTextHighlights ""magnetar""
+
+ShowImageVisual niko_MPC_magnetar
+niko_MPC_musicToggle ""MPC_magnetarAmbience"" true","Your sensor grid shrieks as anything granular is overcome by the sheer magnetic force beyond the breach. Any approximation you might have once had is now gone, replaced by meson-amplified magnetism and it's source: A terrifying magnetar. Even through the intense sensor noise you can see it's spectacular mag-loops, begging for you to come closer so it may release you from this coil.
+
+You shut off the alarms and stare into the now all-blue sensor profile, taking in the implications of a direct rift to this horrible place right in the middle of the core worlds. Those unidentified craft; have they truely used this hole as a means of passage? What else are they doing? How long have they been here for? These questions rattle in your mind - answers refusing to surface, no matter how hard you think about it.","MPC_IAIICAlphaSiteMesonReadingsScanThree:Continue",
+MPC_IAIICAlphaSiteMesonReadingsScanThree,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanThree",,"You are broken out of your thought by a report from your tactical officer, visibly shaken. ""$PlayerSirOrMadam,"" your officer begins. ""sensors are really struggling to see through the magfield. Either this rift is caught in the middle of a storm, or we're in the middle of a meson field. And judging from the meson readings..."" a finger taps a highlighted section on the TriPad. ""-that's right where it is. And while it's impossible to determine where our bogey went from here, our best guess is this gravimetric distortion-"" a swipe on the touchscreen moves the display to an abstract wireframe of 3D space - with a large well in the center. ""seems to be some astronomical body."" Your officer gives you a look. ""A planet, most likely.""
+
+""If our target exfiltrated directly on top of a planet, it stands to reason they should have landed on that planet."" your officer continues. ""Should.""","MPC_IAIICAlphaSiteMesonReadingsScanFour:""Meaning... we have to return to the Magnetar, and find this planet.""",
+MPC_IAIICAlphaSiteMesonReadingsScanFour,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFour","SetTextHighlights ""small gravitational profile"" ""thick meson field"" ""position ourselves"" ""meson storm""
+MPC_IAIICHegeCMD OPPgoToMesonPlanet","Your officer freezes, lets out a shuddering sigh, and swallows, nodding. ""...yes. Yes, $PlayerSirOrMadam. Yes."" You catch some crewmembers shivering at these words - practicing safety rituals or whispering prayer under their breath. Nothing they think you'd notice.
+
+""Our target should be a planetoid with a small gravitational profile and a thick meson field surrounding it. Once we get there, we should position ourselves within the meson storm - to boost our sensors - and run a detailed depth scan to find any artificial structures."" they pause. ""Any artificial structures not made by humans, that is.""","MPC_IAIICAlphaSiteMesonReadingsScanFive:""Understood.""
+MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd:""Ludd guide us...""",
+MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd","$player.luddicAttitudeFaithful++","$option = MPC_IAIICAlphaSiteMesonReadingsScanFive
+FireBest DialogOptionSelected",,
+MPC_IAIICAlphaSiteMesonReadingsScanFive,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFive",,"You nod, and give one last look to your sensor panel. That familiar tingling in the back of your head returns, bringing your thoughts to the sense of a beautiful orchestra, plucking the strings of your heart... wait... what's... is that something moving? Is-is that...","MPC_IAIICAlphaSiteMesonReadingsScanSix:Look closer",
+MPC_IAIICAlphaSiteMesonReadingsScanSix,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanSix",,"Before you stands a mass of asymmetrical ships, burning fast. You guesstimate an ETA of less then a day, and your sensors officer agrees with a quick nod. At any moment they could transition through this rift the same way they did before - and you don't have much time to get away. Even a transverse jump would take too long.
+
+There's only one option.","MPC_IAIICAlphaSiteMesonReadingsScanLeave:""Battle stations!""",
+MPC_IAIICAlphaSiteMesonReadingsScanLeave,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanLeave","DismissDialog
+niko_MPC_musicToggle """" false true
+MPC_IAIICHegeCMD OPPspawnOmega
+$MPC_exploredReadings = true",,,
+MPC_IAIICAlphaSiteMesonReadingsRevisit,OpenInteractionDialog,"$id == MPC_mesonReadings
+$MPC_exploredReadings score:10","ShowDefaultVisual","The spatial rift stands before you, and even without a sensor burst you can detect the everpresent magnetic pull of the magnetar beyond. Until you find a way to close it, this rift poses a threat to the larger sector - and not just due to the hijacked drones and angular ships. But for now, it is thankfully out of use. Or so you hope.
+
+TODO: There should DEFINITELY be dialog about this rift with the sector leaders. maybe that one tritach special aqusitions guy?","defaultLeave:Leave",
+,,,,,,
+# Wormhole omega fleet dialogue,,,,,,
+MPC_IAIICAlphaSiteWormholeFleetHail,MPC_IAIICwormholeDefenseFleetHail,,"unset $entity.genericHail","Your comms display shows a mess of fractal shapes with no noticeable cohesion, marked with the crackle of an incompatible - or incomprehensible - audio interface. Strangely, however, you can't help but feel the room is a bit quieter than usual... has the ship's audio been playing a quiet music? No... no. You must be imagining things.
+
+When it becomes clear these... things, do not wish - or are not able - to speak, your comms officer shuts the interface down - and you prepare for battle.","cutCommLink:Cut the comm link",
+"#END Wormhole omega fleet dialogue",,,,,,
+"#END Travel to the strange meson readings and find links to magnetar",,,,,,
 "#END Go to alpha site and find omega traces",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
@@ -4108,6 +4170,7 @@ Finally, she sits back down, balling her hands once more. ""We ask, and expect, 
 MPC_IAIICSpawnedContinueFour,DialogOptionSelected,"$option == MPC_IAIICSpawnedContinueFour","SetTextHighlights ""office"" ""Extremely robust"" ""frighteningly strong"" ""fleets pouring out""
 MPC_IAIICJillCMD startEvent
 HideFirstPerson
+AddTextSmall ""New faction entry: IAIIC"" highlight
 
 niko_MPC_musicToggle """" false","Maintaining eye contact, she drags the nearly-lost PDA from the lip of her desk and begins working on it. ""And to you, $playerName."" Her gaze feels like a full-power tachyon lance. ""I'll see you in my office.""
 

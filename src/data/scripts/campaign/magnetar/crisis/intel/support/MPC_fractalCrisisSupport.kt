@@ -121,7 +121,7 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         //val c = getTitleColor(mode)
         info.setParaFontDefault()
 
-        info.addPara(name, factionForUIColors.baseUIColor, 0f)
+        //info.addPara(name, factionForUIColors.baseUIColor, 0f)
         info.setParaFontDefault()
         addDesc(info)
 

@@ -254,6 +254,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             strikeSupplies *= castedParams.explosionDamageMult
             //strikeSupplies = suppliesPerDep * 0.5f * damageFraction;
             var strikeDamage = strikeSupplies / suppliesPer100CR * (0.75f + Math.random().toFloat() * 0.5f)
+            strikeDamage *= 0.6f
 
             //float strikeDamage = damageFraction * (0.75f + (float) Math.random() * 0.5f);
             val resistance = member.stats.dynamic.getValue(Stats.CORONA_EFFECT_MULT)

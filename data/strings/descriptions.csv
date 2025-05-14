@@ -143,9 +143,11 @@ Your sensors are already struggling to keep a lock on them - getting too far mig
 MPC_spySupplyCacheTwo,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of sensor-blocking material.
 
 Your sensors are already struggling to keep a lock on them - getting too far might cause you to lose sight of them forever.",,,
-MPC_spySupplyCacheThree,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of sensor-blocking material.
+MPC_spySupplyCacheThree,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of emission-blocking material.
 
 Your sensors are already struggling to keep a lock on them - getting too far might cause you to lose sight of them forever.",,,
+,,,,,
+MPC_riftRemnant,CUSTOM,"The emission point for the strange meson readings your sensors officer has been tracking. It would appear it's giving off more than just mesons - sensors also detect antibaryons, neutrinos, and some sort of stable antimatter. Tactical advises caution on approach.",,,
 ,,,,,
 MPC_station_researchMagnetarOne,CUSTOM,"A strange research station of domain make, your ship's computer automatically designates it as ""2HHBID"", sending your bridge crew into a confused frenzy, searching for whatever database it drew from.
 
