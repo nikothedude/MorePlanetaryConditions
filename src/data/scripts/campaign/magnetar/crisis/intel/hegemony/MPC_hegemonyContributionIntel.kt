@@ -3,6 +3,7 @@ package data.scripts.campaign.magnetar.crisis.intel.hegemony
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
+import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.TextPanelAPI
@@ -56,6 +57,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 MPC_IAIICFobIntel.RetaliateReason.TURNING_HOUSES_AGAINST_HEGEMONY,
                 panel
             )
+        }
+
+        fun getZiggComplexPlanet(): PlanetAPI {
+            return (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] as StarSystemAPI).planets.first { it.id == "MPC_magnetarSystemPlanetTwo" }
         }
 
         const val KEY = "\$MPC_hegeContributionIntel"
@@ -137,19 +142,28 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 readings.customDescriptionId = "MPC_riftRemnant"
                 readings.addTag("MPC_riftRemnant")
                 readings.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "music_campaign_alpha_site"
-                readings.makeImportant("MPC_IAIICquest")
+                readings.makeImportant("\$MPC_IAIICquest")
                 readings.setLocation(-12000f, 1000f)
             }
 
             override fun unapply() {
                 val loc = getAlphaSite()
                 val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
-                readings.makeUnimportant("MPC_IAIICquest")
+                readings.makeUnimportant("\$MPC_IAIICquest")
             }
         },
-        GO_TO_MESON_PLANET {
-
-        };
+        GO_TO_MESON_PLANET,
+        APPROACH_ZIGG_COMPLEX {
+            override fun apply() {
+                getZiggComplexPlanet().makeImportant("\$MPC_IAIICquest")
+            }
+        },
+        CLEAR_ZIGG_COMPLEX {
+            override fun unapply() {
+                getZiggComplexPlanet().makeUnimportant("\$MPC_IAIICquest")
+            }
+        },
+        RETURN_WITH_DATA;
 
         open fun apply() {}
         open fun unapply() {}
@@ -325,6 +339,14 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                     Misc.getHighlightColor(),
                     "meson field"
+                )
+            }
+            OpportunisticState.APPROACH_ZIGG_COMPLEX -> {
+                info.addPara(
+                    "Approach the %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "orbital complex"
                 )
             }
             "HOUSES_TURNED" -> {
@@ -519,15 +541,28 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                 info.addSpacer(5f)
 
                                 info.addPara(
-                                    "Once you're there, you should position your fleet in such a way that it is within a %s, " +
-                                    "and begin a %s. Hopefully, if everything goes well, you should find what you're looking for.",
+                                    "Once you're there, you should begin a %s on the planet's surface. Hopefully, if everything goes well, you should find what you're looking for.",
                                     0f,
                                     Misc.getHighlightColor(),
-                                    "meson storm",
                                     "depth scan",
                                 )
                             }
                             null -> {}
+                            OpportunisticState.APPROACH_ZIGG_COMPLEX -> {
+                                info.addPara(
+                                    "You've located a small structure in orbit of %s. You need to get closer and investigate.",
+                                    0f,
+                                    Misc.getHighlightColor(),
+                                    "${getZiggComplexPlanet().name}"
+                                )
+                            }
+                            OpportunisticState.CLEAR_ZIGG_COMPLEX -> {
+                                info.addPara(
+                                    "hiyah",
+                                    0f
+                                )
+                            }
+                            OpportunisticState.RETURN_WITH_DATA -> TODO()
                         }
                     }
                     TargetHouse.MILITARISTIC -> {
@@ -591,6 +626,9 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                 val system = Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] as? StarSystemAPI ?: return null
                                 return system.hyperspaceAnchor
                             }
+                            OpportunisticState.APPROACH_ZIGG_COMPLEX -> return getZiggComplexPlanet()
+                            OpportunisticState.CLEAR_ZIGG_COMPLEX -> return getZiggComplexPlanet()
+                            OpportunisticState.RETURN_WITH_DATA -> Global.getSector().economy.getMarket("eventide").primaryEntity
                             null -> null
                         }
                     }

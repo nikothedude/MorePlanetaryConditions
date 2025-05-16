@@ -1,3 +1,9 @@
+4.3.5
+
+Magnetar pulses are now blocked if you're behind a planet
+    No visual effect for this as it's honestly torture lol
+The magnetar terrain now tells you if you're shielded or not
+
 4.3.4
 
 Fixes a few misc bugs

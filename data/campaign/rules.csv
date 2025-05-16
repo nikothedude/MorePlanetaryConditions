@@ -35,13 +35,13 @@ MPC_OGNECommsWhyBombardHege,DialogOptionSelected,"$option == MPC_OGNECommsWhyBom
 $faction.id == hegemony","$MPC_ignoreWhyBombard = true 0
 FireAll MPC_OGNECommsOptions
 
-SetTextHighlights ""overgrown nanoforges""","You catch the $rank off-guard with your question, but they quickly regain their footing. ""Provisionary order 2932 - the hegemony is to seek out and destroy dangerous relics of the Domain of man.""
+SetTextHighlights ""overgrown nanoforges""","You catch the $rank off-guard with your question, but $heOrShe quickly regains $hisOrHer footing. ""Provisionary order 2932 - the hegemony is to seek out and destroy dangerous relics of the Domain of man.""
 
 $HeOrShe takes a sharp breath. ""You've seen the planet. The nanites. Do you have any idea what would happen if they would be allowed to grow uncontrollably?""
 
-$HeOrShe shakes her head. ""It is our responsibility to ensure these... 'overgrown nanoforges' do not spread any further. If we could, we'd eradicate them, but... we don't have the resources.""
+$HeOrShe shakes $hisOrHer head. ""It is our responsibility to ensure these... 'overgrown nanoforges' do not spread any further. If we could, we'd eradicate them, but... we don't have the resources.""
 
-$HeOrShe seems to remember something and quickly pulls up a PDA, transmitting a hyperwave quick-link to you. ""If you ever find one - do not touch it, do not approach it - tell us. We'll add it to the list.""",,
+$HeOrShe seems to remember something and quickly pulls up a PDA, transmitting a hyperwave quick-link to you. ""If you ever find one - do not touch it, do not approach it - tell us. We'll add it to the list.""",,"TODO needs a rewrite"
 MPC_OGNECommsWhyBombardChurch,DialogOptionSelected,"$option == MPC_OGNECommsWhyBombard
 $faction.id == luddic_church","$MPC_ignoreWhyBombard = true 0
 FireAll MPC_OGNECommsOptions
@@ -3867,10 +3867,11 @@ You shut off the alarms and stare into the now all-blue sensor profile, taking i
 MPC_IAIICAlphaSiteMesonReadingsScanThree,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanThree",,"You are broken out of your thought by a report from your tactical officer, visibly shaken. ""$PlayerSirOrMadam,"" your officer begins. ""sensors are really struggling to see through the magfield. Either this rift is caught in the middle of a storm, or we're in the middle of a meson field. And judging from the meson readings..."" a finger taps a highlighted section on the TriPad. ""-that's right where it is. And while it's impossible to determine where our bogey went from here, our best guess is this gravimetric distortion-"" a swipe on the touchscreen moves the display to an abstract wireframe of 3D space - with a large well in the center. ""seems to be some astronomical body."" Your officer gives you a look. ""A planet, most likely.""
 
 ""If our target exfiltrated directly on top of a planet, it stands to reason they should have landed on that planet."" your officer continues. ""Should.""","MPC_IAIICAlphaSiteMesonReadingsScanFour:""Meaning... we have to return to the Magnetar, and find this planet.""",
-MPC_IAIICAlphaSiteMesonReadingsScanFour,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFour","SetTextHighlights ""small gravitational profile"" ""thick meson field"" ""position ourselves"" ""meson storm""
-MPC_IAIICHegeCMD OPPgoToMesonPlanet","Your officer freezes, lets out a shuddering sigh, and swallows, nodding. ""...yes. Yes, $PlayerSirOrMadam. Yes."" You catch some crewmembers shivering at these words - practicing safety rituals or whispering prayer under their breath. Nothing they think you'd notice.
+MPC_IAIICAlphaSiteMesonReadingsScanFour,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFour","SetTextHighlights ""small gravitational profile"" ""thick meson field""
+MPC_IAIICHegeCMD OPPgoToMesonPlanet
+$global.MPC_goingToZiggPlanet = true","Your officer freezes, lets out a shuddering sigh, and swallows, nodding. ""...yes. Yes, $PlayerSirOrMadam. Yes."" You catch some crewmembers shivering at these words - practicing safety rituals or whispering prayer under their breath. Nothing they think you'd notice.
 
-""Our target should be a planetoid with a small gravitational profile and a thick meson field surrounding it. Once we get there, we should position ourselves within the meson storm - to boost our sensors - and run a detailed depth scan to find any artificial structures."" they pause. ""Any artificial structures not made by humans, that is.""","MPC_IAIICAlphaSiteMesonReadingsScanFive:""Understood.""
+""Our target should be a planetoid with a small gravitational profile and a thick meson field surrounding it. Once we get there, we should run a detailed depth scan to find any artificial structures."" they pause. ""Any artificial structures not matching Domain architecture, that is.""","MPC_IAIICAlphaSiteMesonReadingsScanFive:""Understood.""
 MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd:""Ludd guide us...""",
 MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd","$player.luddicAttitudeFaithful++","$option = MPC_IAIICAlphaSiteMesonReadingsScanFive
 FireBest DialogOptionSelected",,
@@ -3890,6 +3891,61 @@ When it becomes clear these... things, do not wish - or are not able - to speak,
 "#END Wormhole omega fleet dialogue",,,,,,
 "#END Travel to the strange meson readings and find links to magnetar",,,,,,
 "#END Go to alpha site and find omega traces",,,,,,
+,,,,,,
+# Return to magnetar and find the weird planet,,,,,,
+MPC_IAIICmagnetarZiggPlanetOps,PopulateOptions,"$id == MPC_magnetarSystemPlanetTwo
+$global.MPC_goingToZiggPlanet
+!$MPC_foundComplex
+!$MPC_approachedComplex
+!$MPC_raidedComplex",,"Meson field: Check. Minimal gravimetric profile: Check. You exchange a series of nods with your officers who seem to have reached the same conclusion as you - this is the source of the rift, and the likely destination of your ghost fleet. You hear the hum of a warming sensor-grid as your bridge crew prepares for your command.
+
+TODO: should have it only be available if youre not being tracked?","2:MPC_IAIICmagnetarZiggPlanetScanInit:Initiate a depth scan of the planet's crust",
+MPC_IAIICmagnetarZiggPlanetScanInit,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanInit","niko_MPC_musicToggle ""music_encounter_neutral"" true false","The order is given, heads nod, and the underthrum of your sensor grid turns to a low growl. From your perspective, the molten landscape beneath you seems to shimmer - a mere illusion from the soundless torrent of ionized particles now escaping your fleet.","MPC_IAIICmagnetarZiggPlanetScanTwo:Wait",
+MPC_IAIICmagnetarZiggPlanetScanTwo,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanTwo",,"Time passes. The scan progresses, the growl of the sensor array soon fading into nothingness as your mind instinctually tunes it out.
+
+You find yourself in an eerie quiet, one you've forgotten exists. Under the uncaring protection of this molten planet, the magnetism alarms have fallen quiet - the contact alarms silenced -  and the comm-pings of civilized space absent. Even tactical, sensors, and ops are without complaint or new report - a rarity in this war with the sector. In the eye of the storm, all is calm. For now.","MPC_IAIICmagnetarZiggPlanetScanThree:Wait",
+MPC_IAIICmagnetarZiggPlanetScanThree,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanThree",,"You wait. The scan should only take an hour or so, nothing you're not accustomed to. To pass the time, you begin perusing personnel transfers - a routine job you've done countless times. You read - you judge. Denied. Approved. Pending. But over time, your judgements slow, then halt, the relative serenity of the moment taking hold of your ethic.","MPC_IAIICmagnetarZiggPlanetScanTakeItIn:Take it in
+MPC_IAIICmagnetarZiggPlanetScanShakeItOff:Shake it off - you have work to do (UNFINISHED)",
+MPC_IAIICmagnetarZiggPlanetScanTakeItIn,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanTakeItIn","ShowLargePlanet","You set down your TriPad and stare ahead, into the deep, smoldering depths of the insurmountable body ahead of you. From the molten sea spews countless mass ejections - points where the star's magnetism is strong enough to rip alloy away from the planet's meagre gravity. A tributary, you muse.
+
+In the shimmering orbit you spy motes of glinting light - ejections that never quite made it as far as the greedy star, waiting for the next magnetic pinprick to find it and finish its journey. You wonder just how long it'll take for the distant star to deconstitute and summarily absorb the remnants of the Domain on this planet - likely a few millennia. You shiver for a moment as you imagine yourself on one of the many raised laboratories - looking through three layers of diamond-matrix glass towards that deathly star, wondering when the Domain will call for your return.","MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo:Take a deep breath",
+MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo","MPC_IAIICHegeCMD getFractalCoreColonyName","You follow that imaginary gaze, turning towards the magnetar through the dying body in front of you. A corona of blue and white traces the edge of its perception, burning your eyes when you look for too long. Reminds you of an old earth phenomena - a lunar eclipse? Millions of eyes cast towards their blue sky, turned a striking black with a ring of burning red. Said to be one of the most beautiful natural phenomena of humanity's cradle; and you can see why. ","MPC_IAIICmagnetarZiggPlanetScanTakeItInThree:Exhale",
+MPC_IAIICmagnetarZiggPlanetScanTakeItInThree,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInThree",,"You turn your gaze from the fulsome aura and to the inky void, filtered by the clouds of cyan dust blown off by intense solar winds. Somewhere alongst this planet's orbit is a crack - a gateway directly from this Ludd-damned place into the last bastion of humanity for the next ten thousand light years. Science suggests it's inert and will not grow - in fact, it may collapse in the near future. But the idea of these recondite monsters, mere days away from the core worlds... ","MPC_IAIICmagnetarZiggPlanetScanTakeItInFour:Breathe",
+MPC_IAIICmagnetarZiggPlanetScanTakeItInFour,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInFour",,"You have to wonder what their purpose is. They don't attack human settlements. They never seem to leave - save for an instance of data theft, they're seemingly static to the magnetar, to hypershunts...
+
+And then there's the matter of your ""fractal core"", officially dubbed a mute prodigy in charge of $global.MPC_fractalColonyName. So fiercely guarded, so esoteric... so intelligent. What *is* it? What does it want? You've never been able to properly communicate with it, save for it's obligated duties as a colony administrator... are you sure it was a good idea to give it so much power? Maybe they're right... maybe-","MPC_IAIICmagnetarZiggPlanetScanInterrupt:...",
+MPC_IAIICmagnetarZiggPlanetScanInterrupt,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanInterrupt","ShowDefaultVisual
+niko_MPC_musicToggle """" false false","Your thought is interrupted by the polite coughing of your tactical officer. Now aware of your surroundings, you notice an even deeper quieter than before, a notable absence of growling scanners. ""$PlayerSirOrMadam."" your officer begins. ""Sensors just gave green. Scan's finished - and, well..."" your officer gestures to a pinprick of blue on the displayed red, which quickly zooms into a floating display of curved architecture. Spiralling, pushing into itself, the mass of alloy is clearly of no human design - which your scanners seemed to think, too.","MPC_IAIICmagnetarZiggPlanetScanCmplxTac:""What am I looking at, tactical?""
+MPC_IAIICmagnetarZiggPlanetScanCmplxSensors:""What am I looking at, sensors?"" (UNFINISHED)",
+MPC_IAIICmagnetarZiggPlanetScanCmplxTac,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanCmplxTac",,"""Don't know, $playerSirOrMadam."" your officer continues. ""But it's the only manmade-"" your officer corrects themselves. ""-er... artificial structure we could find, save for the broken magma-labs.""
+
+Your officer pinches the display, prompting it to zoom out. Far. The structure is now a mere mote in high orbit of the red planet, a small speck in the dustcloud surrounding the body. ""Depth scan found strange readings on the planet's surface. We followed it up, and then..."" your officer stops, the meaning clear.","MPC_IAIICmagnetarZiggPlanetScanCmplxHowNotSee:""How didn't we see this on the preliminary scan?""",
+MPC_IAIICmagnetarZiggPlanetScanCmplxHowNotSee,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanCmplxHowNotSee",,"Your officer's mouth opens, but hangs. Swallowing their jaw shut, your officer uncomfortably nods to sensors - who confidently strides forwards and takes their place.
+
+""$PlayerSirOrMadam!"" sensors professionally nods. ""As you may be aware, thick meson fields have the effect of enhancing the sensor profile of anything that enters them - that *is*, unless the concentration of mesons surpasses the Burivil threshold!"" sensors articulates. ""However, it would seem that whatever this structure *is* has somehow..."" your officer rolls their hands as they contemplate their delivery. ""...er, to simplify, *reduced* this threshold. Locally."" your officer struggles to deliver.
+
+ ""It's an absolutely fascinating technique..."" your chief engineer adds from the background. ""...never seen anything like it. Don't understand it, either.""","MPC_IAIICmagnetarZiggPlanetScanCmplxUhOh:""But if the local concentration is past the threshold...""",
+MPC_IAIICmagnetarZiggPlanetScanCmplxUhOh,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetScanCmplxUhOh","MPC_IAIICHegeCMD OPPfoundZiggComplex
+$MPC_foundComplex = true
+FireAll MPC_IAIICmagnetarZiggPlanetNotExploredOptions","Sensors grimly nods, turning back to the frontal display. ""They know we're coming.""
+
+You cautiously watch the dancing specks of light in orbit, not knowing who - or what - is watching in turn.","99:MPC_IAIICmagnetarZiggPlanetApproachCmplx:Approach the orbital complex
+100:defaultLeave:Leave",
+,,,,,,
+# Approach the orbital omega complex,,,,,,
+MPC_IAIICmagnetarZiggPlanetFound,PopulateOptions,"$id == MPC_magnetarSystemPlanetTwo
+$global.MPC_goingToZiggPlanet
+$MPC_foundComplex
+!$MPC_approachedComplex
+!$MPC_raidedComplex",,"Your sensors automatically lock onto the strangely shaped orbital object. Your officers glance at you uneasily.","3:MPC_IAIICmagnetarZiggPlanetApproachCmplx:Approach the orbital complex",
+MPC_IAIICmagnetarZiggPlanetApproachCmplx,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplx",,"You order a cautious approach. With the Burivil threshold reduced, there's nothing you can do to hide your approach, so you opt for normal emissions and heightened awareness as your procedures.
+
+Your $shipOrFleet creeps towards the object, and for the first time, you see it with your own eyes.","MPC_IAIICmagnetarZiggPlanetApproachCmplxTwo:Take a close look",
+"#END Approach the orbital omega complex",,,,,,
+,,,,,,
+# Return to the orbital omega complex,,,,,,
+"#END Return to the orbital omega complex",,,,,,
+"#END Return to magnetar and find the weird planet",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,

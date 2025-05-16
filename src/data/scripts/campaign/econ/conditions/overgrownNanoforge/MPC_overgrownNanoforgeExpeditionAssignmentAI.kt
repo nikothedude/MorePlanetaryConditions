@@ -44,7 +44,7 @@ class MPC_overgrownNanoforgeExpeditionAssignmentAI(
         ) {
             fleet.clearAssignments()
             fleet.addAssignmentAtStart(
-                FleetAssignment.DELIVER_CREW, target.primaryEntity, MAX_DAYS,"performing covert operations"
+                FleetAssignment.DELIVER_CREW, target.primaryEntity, MAX_DAYS, "performing covert operations"
             ) {
                 bombard()
                 abortAndReturnToBase()

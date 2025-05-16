@@ -1,12 +1,11 @@
 package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignFleetAPI
-import com.fs.starfarer.api.campaign.LocationAPI
-import com.fs.starfarer.api.campaign.RepLevel
-import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.SectorEntityToken.VisibilityLevel
+import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
@@ -28,7 +27,10 @@ import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_stringUtils.toPercent
+import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.kotlin.rotateAroundOrigin
 import java.awt.Color
 
 class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
@@ -70,6 +72,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     var noEffectShockwaveDurationThreshold: Float = 0f // once we have this much duration left we dont have any effects
     var initialShockwaveDuration: Float = 0f
+    @Transient
+    var blockerUtil: MPC_rangeBlockerWithEnds? = null
 
     override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
         super.init(entity, pluginParams)
@@ -86,9 +90,12 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         initialShockwaveDuration = castedParams.shockwaveDuration
         shockwaveDuration = castedParams.shockwaveDuration
         noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.15f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
 
         for (particle in particles) {
             particle.maxDur = shockwaveDuration
+            particle.i = 0
+            particle.j = 0
             if (castedParams.makeParticlesMaxVelocityImmediately) {
                 val accel = Misc.getUnitVectorAtDegreeAngle(Misc.getAngleInDegrees(particle.offset))
                 accel.scale(shockwaveSpeed)
@@ -96,6 +103,8 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                 particle.vel.y += accel.y
             }
         }
+
+        sprite = getSprite()
 
         if (params.where.isCurrentLocation) {
             Global.getSoundPlayer().playSound("mote_attractor_targeted_ship", 1f, 1f, params.loc, Misc.ZERO)
@@ -122,7 +131,65 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         return params as MPC_magnetarPulseParams
     }
 
+    override fun advance(amount: Float) {
+        blockerUtil?.updateLimits(entity, entity.starSystem?.star, 0.5f)
+        blockerUtil?.advance(amount, 100f, 0.5f)
+
+        super.advance(amount)
+    }
+
+    override fun render(layer: CampaignEngineLayers?, viewport: ViewportAPI?) {
+        if (blockerUtil != null && !blockerUtil!!.wasEverUpdated()) {
+            blockerUtil!!.updateAndSync(entity, entity.starSystem?.star, 0.1f)
+        }
+
+        var alphaMult = viewport!!.alphaMult
+        alphaMult *= entity.sensorFaderBrightness
+        alphaMult *= entity.sensorContactFaderBrightness
+        if (alphaMult <= 0) return
+
+        val x = entity.location.x
+        val y = entity.location.y
+
+
+        //Color color = params.color;
+        //color = Misc.setAlpha(color, 30);
+        val b = alphaMult
+
+        sprite.texWidth = 0.25f
+        sprite.texHeight = 0.25f
+        sprite.setAdditiveBlend()
+
+        for (p in particles) {
+            var size = p.size
+            size *= p.scale
+
+            val loc = Vector2f(x + p.offset.x, y + p.offset.y)
+
+            //val rotated = Vector2f(loc).rotateAroundOrigin(-p.angle, loc)
+
+            val checkLocOne = Vector2f(loc).translate((p.scale + p.size) * 2f, 0f).rotateAroundOrigin(p.angle, loc)
+            val checkLocTwo = Vector2f(loc).translate(-(p.scale + p.size) * 2f, 0f).rotateAroundOrigin(p.angle, loc)
+
+            var a = 1f
+            a = 0.33f
+
+            sprite.texX = p.i * 0.25f
+            sprite.texY = p.j * 0.25f
+
+            sprite.angle = p.angle
+            sprite.setSize(size, size)
+            sprite.alphaMult = b * a * p.getBrightness()
+            /*if (isProtected(loc) || isProtected(checkLocOne) || isProtected(checkLocTwo)) {
+                sprite.alphaMult *= 0.1f
+            }*/
+            sprite.color = p.color
+            sprite.renderAtCenter(loc.x, loc.y)
+        }
+    }
+
     override fun applyDamageToFleets() {
+
         if (shockwaveDuration <= noEffectShockwaveDurationThreshold) {
             return
         }
@@ -132,7 +199,21 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         var shockwaveDist = 0f
         for (p in particles) {
             shockwaveDist = shockwaveDist.coerceAtLeast(p.offset.length())
+
+            /*val location = Vector2f(entity.location).translate(p.offset.x, p.offset.y)
+            val protectionRating: Float = getProtectionRating(location)
+            if (protectionRating > 0f) {
+                p.brightness /= 2f * protectionRating
+            } else {
+                p.brightness *= 2f * protectionRating
+            }*/
         }
+        /*var maxScale = 0f
+        for (particle in particles) {
+            if (particle.scale > maxScale) {
+                maxScale = particle.scale
+            }
+        }*/
         for (fleet in entity.containingLocation.fleets) {
             if (fleet.memoryWithoutUpdate[IMMUNE_TO_MAGNETAR_PULSE] == true && getCastedParams().respectIgnore) continue
             val id = fleet.id
@@ -146,7 +227,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                 damagedAlready.add(id)
                 if (getCastedParams().sourceFleet == fleet) return
                 if (fleet.isStationMode) return
-                val distNeededToHit = (shockwaveDist - DIST_NEEDED_TO_HIT).coerceAtLeast(0f)
+                val distNeededToHit = ((shockwaveDist - DIST_NEEDED_TO_HIT)).coerceAtLeast(0f)
 
                 if (dist <= distNeededToHit) {
                     continue
@@ -154,20 +235,12 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
                 var skipBecauseOfBlocker = false
                 val point = fleet.location
-                for (entity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
-                    if (entity.isStar) continue
-                    val distFromBlocker = Misc.getDistance(entity.location, point)
-                    if (distFromBlocker <= entity.radius) {
-                        skipBecauseOfBlocker = true
-                        break
-                    }
-                }
-                if (skipBecauseOfBlocker) {
+                if (isProtected(point)) {
                     if (fleet.isPlayerFleet) {
                         val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
                         if (discoveredInterdictTech) break
                         MPC_delayedExecution(
-                            {
+                            @JvmSerializableLambda {
                                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
                                     Global.getSector().campaignUI.showInteractionDialog(
                                         RuleBasedInteractionDialogPluginImpl("MPC_hidMagnetarPulseFirstTime"),
@@ -190,6 +263,25 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                 applyDamageToFleet(fleet, damageMult)
             }
         }
+    }
+
+    fun isProtected(location: Vector2f): Boolean {
+        //val actualLoc = Vector2f(entity.location).translate(location.x, location.y)
+        val angle = VectorUtils.getAngle(entity.location, location)
+        val range = blockerUtil!!.getBlockedRangeAt(angle)
+        val dist = MathUtils.getDistance(entity.location, location)
+
+        return dist > range.first && dist < range.second
+
+        /*for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
+            if (iterEntity.isStar) continue
+            val distFromBlocker = Misc.getDistance(iterEntity.location, location)
+            if (distFromBlocker <= iterEntity.radius) {
+                return true
+                break
+            }
+        }
+        return false*/
     }
 
     override fun applyDamageToFleet(fleet: CampaignFleetAPI?, damageMult: Float) {
@@ -448,8 +540,11 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
     }
 
     override fun onGameLoad() {
-        sprite = Global.getSettings().getSprite("misc", "nebula_particles")
+        sprite = getSprite()
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
     }
+
+    fun getSprite(): SpriteAPI = Global.getSettings().getSprite("misc", "nebula_particles")
 
     override fun afterGameSave() {
         return

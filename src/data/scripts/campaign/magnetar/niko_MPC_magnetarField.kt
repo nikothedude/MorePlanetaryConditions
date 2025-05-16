@@ -15,16 +15,19 @@ import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerExposedToMagnetarCore
 import data.scripts.campaign.terrain.niko_MPC_scannableTerrain
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.BLIND_JUMPING
+import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import kotlin.math.abs
 
-class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTerrain {
+class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTerrain, niko_MPC_saveListener {
     companion object {
         const val HYPERSPACE_TOPOGRAPHY_POINTS = 20
 
@@ -46,6 +49,18 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         if (name == "Magnetic Field" || name == null) {
             name = "Magnetar Field"
         }
+        Global.getSector().listenerManager.addListener(this)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+    }
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+        if (blockerUtil != null && !blockerUtil!!.wasEverUpdated()) {
+            blockerUtil!!.updateAndSync(entity, entity.starSystem?.star, 0.1f)
+        }
+
+        blockerUtil?.updateLimits(entity, entity.starSystem?.star, 0.5f)
+        blockerUtil?.advance(amount, 100f, 0.5f)
     }
 
     override fun applyEffect(entity: SectorEntityToken?, days: Float) {
@@ -288,7 +303,34 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             super.getTerrainName()
         }
 
-        return "${baseName} (${getStarScript().getSecsTilNextPulseString()})"
+        var protectedString = if (isProtected(Global.getSector().playerFleet.location)) "(Shielded)" else ""
+
+        return "${baseName} (${getStarScript().getSecsTilNextPulseString()}) ${protectedString}"
+    }
+
+    @Transient
+    var blockerUtil: MPC_rangeBlockerWithEnds? = null
+        get() {
+            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f)
+            return field
+        }
+    fun isProtected(location: Vector2f): Boolean {
+        //val actualLoc = Vector2f(entity.location).translate(location.x, location.y)
+        val angle = VectorUtils.getAngle(entity.location, location)
+        val range = blockerUtil!!.getBlockedRangeAt(angle)
+        val dist = MathUtils.getDistance(entity.location, location)
+
+        return dist > range.first && dist < range.second
+
+        /*for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
+            if (iterEntity.isStar) continue
+            val distFromBlocker = Misc.getDistance(iterEntity.location, location)
+            if (distFromBlocker <= iterEntity.radius) {
+                return true
+                break
+            }
+        }
+        return false*/
     }
 
     private fun getStarScript(): niko_MPC_magnetarStarScript {
@@ -337,10 +379,6 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         )
 
         tooltip.addPara(
-            "Reduces the combat readiness of all ships inside the field at a rather slow pace.",
-            nextPad
-        )
-        tooltip.addPara(
             "The sheer magnetic force draws ferric objects, such as ships, closer to the magnetar.",
             nextPad
         )
@@ -352,12 +390,20 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         val bubbleStatusColor = if (bubbleGone) bad else Misc.getPositiveHighlightColor()
         val bubbleStatus = if (bubbleGone) "non-functional" else "intact"
         val protectionStatus = if (bubbleGone) "significantly worsening the field's effects" else "protecting you from the field"
+        tooltip.addSectionHeading("Supplemental", Alignment.MID, 5f)
         tooltip.addPara(
             "Your drive field is %s, $protectionStatus.",
             nextPad,
             bubbleStatusColor,
             bubbleStatus
         )
+
+        if (isProtected(Global.getSector().playerFleet.location)) {
+            tooltip.addPara(
+                "A nearby astrological mass provides good cover from the pulses, allowing them to pass over safely.",
+                nextPad
+            )
+        }
 
         tooltip.addPara(
             "For more information, go to your %s section of your intel and select the %s.",
@@ -416,5 +462,21 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             )
             factorTracker.scanned.add(id)
         }
+    }
+
+    override fun beforeGameSave() {
+        return
+    }
+
+    override fun onGameLoad() {
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+    }
+
+    override fun afterGameSave() {
+        return
+    }
+
+    override fun onGameSaveFailed() {
+        return
     }
 }

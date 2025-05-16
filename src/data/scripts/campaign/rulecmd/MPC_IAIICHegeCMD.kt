@@ -7,6 +7,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
@@ -126,6 +127,18 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.GO_TO_MESON_PLANET
                 intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
+
+            "OPPfoundZiggComplex" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.APPROACH_ZIGG_COMPLEX
+                intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
+
+            "getFractalCoreColonyName" -> {
+                val colony = getFractalColony() ?: return false
+                Global.getSector().memoryWithoutUpdate["\$MPC_fractalColonyName"] = colony.name
+                return true
             }
         }
 
