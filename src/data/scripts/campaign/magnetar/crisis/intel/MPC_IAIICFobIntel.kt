@@ -843,6 +843,13 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                     )
                 }
 
+                RetaliateReason.BETRAYED_LINDUNBERG -> {
+                    info.addPara(
+                        "Retaliation imminent due to an enraged aristocrat!",
+                        0f
+                    )
+                }
+
                 else -> {
                     info.addPara(
                         "Covert action imminent!",
@@ -1690,6 +1697,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         PISSED_OFF_JILL,
         KEPT_SYNCROTRON,
         MILITARY_HOUSE_PROGRESS,
+        BETRAYED_LINDUNBERG,
         TURNING_HOUSES_AGAINST_HEGEMONY;
     }
     /** Called if the player attacks the FOB. Triggers sabotage. */

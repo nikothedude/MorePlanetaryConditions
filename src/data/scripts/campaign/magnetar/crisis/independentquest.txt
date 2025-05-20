@@ -19,6 +19,7 @@ The Hammer
     Luddic
 
     Some luddic indie world
+        Baetis? Like, the church implanted them to maintain a tighter presence? Subsidized them? Mostly left alone now?
 
     Will outright refuse to divest
     Chose to work with the IAIIC
@@ -43,4 +44,58 @@ Blackknife
         Kanta's Den?
     IMMEDIATELY cancels their contract on completion
 
-Want at least four more
+MMMC
+    Mikhael Magec Manufacturing Company
+    Nova Maxios, Duh
+
+    Selling ships to the IAIIC
+
+    Stern, roughly corporate, like a mom-and-pop but for ships
+    "Hey bud. Here for a contract? We've got some damn good rates - here's a sample." (+2 metals)
+    "Sorry bud. Says here we can't violate our contract. Bad for business, and not fair."
+
+        Not actually supplying directly to the IAIIC but IntSec suggests it's being funneled through something?
+        Or...?
+
+    You have to do a raid, or kill a fleet, and they really end up hating you for it, and they only pull out
+    because you've forced them to
+        Small rep hit with indies
+
+    Very much not comfortable being in the middle of this war
+
+    Contracted by the IAIIC to produce ships
+    Cares about contract integrity
+
+Voidsun
+    Based on one of your planets
+    Specializes in ground-based merc duties
+    Provides covert power
+
+    "We offer hardened target mission-op, success rate 95%."
+    "Recognizing you as $PLAYERFAC command. Good to see you. Here for battle support? Thousand arms in reserve, just waiting for duty."
+
+    Very conveinent location for the IAIIC who have secretly bought them
+
+    Find proof, turn them into MuniSec
+        Or, you can just evict them, suffering a major accessibility or stability penalty on that world for a while
+
+    IntSec suggests them as a POSSIBLE vector based off some battlecam footage, but has nothing concrete, so just waiting on your word to act
+
+Ibrahim Interstellar Transport and Salvage
+    Agreus
+
+    Supplies the IAIIC with lots of ship material
+    Some ibrahim writing as like, duh, thats who youre talking to
+
+    Ibrahim refuses to talk if you pissed them off or if you havent given her the hamatsu yet
+    If you have, she'll need proof
+        Proof is pretty simple, go to a comm relay and talk to someone in the bar
+
+    Then she'll cancel the contract with whatever shadow company you find
+
+Alimar
+    The planetary government, actually
+
+    Selling the IAIIC a lot of food, luxury goods, etc. in exchange for covert support against the PL
+
+    Either raid them, or promise to support them (temporary stability malus on all your worlds?)

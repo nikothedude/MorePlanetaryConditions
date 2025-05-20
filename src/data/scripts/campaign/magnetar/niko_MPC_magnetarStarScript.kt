@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
 import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet
 import com.fs.starfarer.api.loading.VariantSource
@@ -338,6 +339,13 @@ class niko_MPC_magnetarStarScript(
         val defenderFleet = niko_MPC_derelictOmegaFleetConstructor.setupFleet(niko_MPC_derelictOmegaFleetConstructor.createFleet(fleetPoints, null, 100f))
 
         val zigg = defenderFleet.fleetData.addFleetMember("MPC_omegurat_abomination")
+        zigg.setVariant(zigg.variant.clone(), false, false)
+        zigg.variant.originalVariant = null
+        zigg.variant.source = VariantSource.REFIT
+        zigg.variant.addTag(Tags.SHIP_LIMITED_TOOLTIP)
+        if (niko_MPC_settings.DISABLE_MAGNETAR_CORE_DROPS) {
+            zigg.variant.addTag(Tags.VARIANT_DO_NOT_DROP_AI_CORE_FROM_CAPTAIN)
+        }
         zigg.repairTracker.cr = zigg.repairTracker.maxCR
         zigg.captain = AICoreOfficerPluginImpl().createPerson(Commodities.OMEGA_CORE, niko_MPC_ids.OMEGA_DERELICT_FACTION_ID, MathUtils.getRandom())
         integrateAndAdaptCoreForAIFleet(zigg)

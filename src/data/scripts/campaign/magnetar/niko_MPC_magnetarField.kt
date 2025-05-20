@@ -320,7 +320,16 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         val range = blockerUtil!!.getBlockedRangeAt(angle)
         val dist = MathUtils.getDistance(entity.location, location)
 
-        return dist > range.first && dist < range.second
+        if (dist > range.first && dist < range.second) return true
+
+        for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
+            if (iterEntity.isStar) continue
+            val distFromBlocker = Misc.getDistance(iterEntity.location, location)
+            if (distFromBlocker <= iterEntity.radius) {
+                return true
+            }
+        }
+        return false
 
         /*for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
             if (iterEntity.isStar) continue

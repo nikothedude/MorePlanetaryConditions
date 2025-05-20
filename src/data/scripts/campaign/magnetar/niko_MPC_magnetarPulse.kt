@@ -271,17 +271,16 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         val range = blockerUtil!!.getBlockedRangeAt(angle)
         val dist = MathUtils.getDistance(entity.location, location)
 
-        return dist > range.first && dist < range.second
+        if (dist > range.first && dist < range.second) return true
 
-        /*for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
+        for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
             if (iterEntity.isStar) continue
             val distFromBlocker = Misc.getDistance(iterEntity.location, location)
             if (distFromBlocker <= iterEntity.radius) {
                 return true
-                break
             }
         }
-        return false*/
+        return false
     }
 
     override fun applyDamageToFleet(fleet: CampaignFleetAPI?, damageMult: Float) {

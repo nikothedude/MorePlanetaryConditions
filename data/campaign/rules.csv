@@ -1108,10 +1108,7 @@ You thank you tactical officer, who responds with a stiff salute, and returns to
 ,,,,,,
 # Avoided pulse,,,,,,
 MPC_hidMagnetarPulseFirstTime,MPC_hidMagnetarPulseFirstTime,,"ShowImageVisual illustrations niko_MPC_magnetar
-niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true
-
-$global.MPC_discoveredInterdictsCounterPulses = true
-MPC_magnetarGenericCMD learnedInterdiction","The atmosphere amongst your crew is unusually tense as the clouds pass over your hiding spot, but a collective ease falls upon you when it begins to harmlessly travel away, leaving you and your crew unscathed.
+niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","The atmosphere amongst your crew is unusually tense as the clouds pass over your hiding spot, but a collective ease falls upon you when it begins to harmlessly travel away, leaving you and your crew unscathed.
 
 Just before you're able to return to nav and start plotting a course, tactical walks up and drops a PDA on your desk. ""Engineering thinks they found something interesting. Take a look.""","MPC_hidMagnetarPulseFirstTimeTwo:Inspect the report",
 MPC_hidMagnetarPulseFirstTimeTwo,DialogOptionSelected,"$option == MPC_hidMagnetarPulseFirstTimeTwo","SetTextHighlights ""deflect future pulses"" ""fleetwide interdiction matrix""
@@ -3786,7 +3783,9 @@ MPC_oppAristoInitialMeetFour,DialogOptionSelected,"$option == MPC_oppAristoIniti
 
 ""Well, firstly... we've made this one-way so we don't have to answer your stupid questions."" His smile falls, giving way to a dimly lit glower. ""We want you to help us, $PlayerSirOrMadam $PlayerName. And if you want our help, you'll do just that.""","MPC_oppAristoInitialMeetFive:Continue",
 MPC_oppAristoInitialMeetFive,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetFive","SetTextHighlightColors tritachyon
-SetTextHighlights ""Tri-Tachyon""","""Assuming you haven't cut the comm link by now - let me lay out what we can use you for."" He stands from his chair, pushing it to the side - stepping in front of the god-ray, it now casting a dark human-shaped shadow over the camera. ""Us in house Lindunberg, war-weary as we are-"" you catch a slight roll of the eyes. ""-have a certain agenda of peace and prosperity to follow... unfortunately, the simple-minded fools at Tri-Tachyon have neither a mind for civility or restraint."" His gaze hardens. ""We need something of theirs, to... hm..."" he walks to a side-table, procuring and sipping a sparkling drink from off-screen, thinking intensely. ""-prevent further bloodshed, yes?"" he finally releases. ""Yes. Yes, that's it."" He nods, glancing off to your right as he silently sips his firewater.","MPC_oppAristoInitialMeetFiveTwo:Continue",
+SetTextHighlights ""Tri-Tachyon""","""Assuming you haven't cut the comm link by now - let me lay out what we can use you for."" He stands from his chair, pushing it to the side - stepping in front of the god-ray, it now casting a dark human-shaped shadow over the camera. ""Us in house Lindunberg, war-weary as we are-"" you catch a slight roll of the eyes. ""-have a certain agenda of peace and prosperity to follow... unfortunately, the simple-minded fools at Tri-Tachyon have neither a mind for civility or restraint.""
+
+His gaze hardens. ""We need something of theirs, to... hm..."" he walks to a side-table, procuring and sipping a sparkling drink from off-screen, thinking intensely. ""-prevent further bloodshed, yes?"" he finally releases. ""Yes. Yes, that's it."" He nods, glancing off to your right as he silently sips his firewater.","MPC_oppAristoInitialMeetFiveTwo:Continue",
 MPC_oppAristoInitialMeetFiveTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetFiveTwo",,"""We seek research data, Captain. Horrible, horrible secrets that in the wrong hands would be used for endless death, destruction..."" a shuddering sigh escapes his lips as he contemplates the potential death toll - fading into a contemplative appraisal of the overhanging chandelier. ""And-of course, ah, intensely valuable to the right collectors.""
 
 A pause.
@@ -3798,9 +3797,11 @@ He blinks. ""And, ah! Traitorous, to us, too - but that likely isn't relevant.""
 MPC_oppAristoInitialMeetSeven,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSeven","SetTextHighlights ""Hybrasil""
 
 FireAll MPC_oppAristoInitialMeetSevenInfo
-MPC_IAIICHegeCMD newHouse OPPORTUNISTIC","A number of things were sent over - the first, a set of hyperspace coordinates, seemingly somewhere near Hybrasil, but not corresponding to any known systems. The second is a very spotty and clearly stolen set of ground coordinates, marked with countless Tri-Tachyon anti-tamper daemons - seemingly deactivated, but left in (likely out of laziness, or lack of OpSec). The third is the profile of the object - or, more accurately, the data. It seems this Lindunberg individual wants you to retrieve a dataset surrounding some sort of Tri-Tachyon black project. Details are sparse, but the data structure is distinctive enough to where your electronics officer is confidant that you'll know it when you see it.","MPC_oppAristoInitialMeetSevenTwo:Continue",
+MPC_IAIICHegeCMD newHouse OPPORTUNISTIC","A number of things were sent over - the first, a set of hyperspace coordinates, seemingly somewhere near Hybrasil, but not corresponding to any known systems. 
+The second is a very spotty and clearly stolen set of ground coordinates, marked with countless Tri-Tachyon anti-tamper daemons - seemingly deactivated, but left in (likely out of laziness, or lack of OpSec). 
+The third is the profile of the object - or, more accurately, the data. It seems this Lindunberg individual wants you to retrieve a dataset surrounding some sort of Tri-Tachyon black project. Details are sparse, but the data structure is distinctive enough to where your electronics officer is confidant that you'll know it when you see it.","MPC_oppAristoInitialMeetSevenTwo:Continue",
 MPC_oppAristoInitialMeetSevenInfoAlphaSite,MPC_oppAristoInitialMeetSevenInfo,"$global.MPC_playerWentToAlphaSite","SetTextHighlights ""Alpha Site"" ""Project Ziggurat""","""$PlayerSirOrMadam,"" your tactical officer reports, drawing your attention. ""Those coordinates we were given - they match the coordinates of the system we've dubbed 'Alpha Site'. Seems whatever we need, it's based off that 'Project Ziggurat'."" You nod, and thank your officer before returning your attention to the screen.",,
-MPC_oppAristoInitialMeetSevenTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSevenTwo","$temporarilyIgnoreYou = true","""We received a... let's just call it a tip-off from a 'good samaritan' about Tri-Tachyon's machinations recently. Something about... forbidden AI research, exotic ship designs? Bah,"" he throws a hand dismissively, scoffing. ""-that's for you to figure out. For the good of the sector, Captain, we implore you to take us up on this...""
+MPC_oppAristoInitialMeetSevenTwo,DialogOptionSelected,"$option == MPC_oppAristoInitialMeetSevenTwo",,"""We received a... let's just call it a tip-off from a 'good samaritan' about Tri-Tachyon's machinations recently. Something about... forbidden AI research, exotic ship designs? Bah,"" he throws a hand dismissively, scoffing. ""-that's for you to figure out. For the good of the sector, Captain, we implore you to take us up on this...""
 
 ""And, ah, well."" He snickers, lowering his TriPad and revealing a bemused smile. ""...for the good of *us*."" 
 
@@ -3938,19 +3939,123 @@ $global.MPC_goingToZiggPlanet
 $MPC_foundComplex
 !$MPC_approachedComplex
 !$MPC_raidedComplex",,"Your sensors automatically lock onto the strangely shaped orbital object. Your officers glance at you uneasily.","3:MPC_IAIICmagnetarZiggPlanetApproachCmplx:Approach the orbital complex",
-MPC_IAIICmagnetarZiggPlanetApproachCmplx,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplx","niko_MPC_musicToggle ""music_encounter_mysterious"" true false","You order a cautious approach. With the Burivil threshold reduced, there's nothing you can do to hide your approach, so you opt for normal emissions and heightened awareness as your procedures.
+MPC_IAIICmagnetarZiggPlanetApproachCmplx,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplx","niko_MPC_musicToggle ""music_encounter_mysterious"" true false
+$MPC_approachedComplex = true","You order a cautious approach. With the Burivil threshold reduced, there's nothing you can do to hide your approach, so you opt for normal emissions and heightened awareness as your procedures.
 
 Your $shipOrFleet creeps towards the object, and for the first time, you see it with your own eyes. Unlike the polygonal shard-like ships of this enemy, this structure is curved - bulbous, approximately fourteen meters tall and fifty meters wide. Cylindicral abberations emerge from the surface to crash back into itself, about the size of a harpoon-class missile each. The surface itself is textured, small grooves and patterns forming in the white alloy - seemingly unmarked by the glimmering dust around it. In fact, you note it somehow repels the dust - magnetic rejection, or something more, you wonder.","MPC_IAIICmagnetarZiggPlanetApproachCmplxTwo:Order a close-up scan",
 MPC_IAIICmagnetarZiggPlanetApproachCmplxTwo,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxTwo",,"With a hum and a clunk, sensors runs a quick sweep over the object. The sensors display shows you what you've already seen - and nothing more. ""Seems like it's insulated, whatever it is..."" your sensor officer comments, examining the 3D model of the object. ""...no idea what's inside, $playerSirOrMadam. I don't even see an entry point. Whatever it is, I don't trust it - we should take a closer look before moving in."" your officer nods to the ops chief, who grunts in response.","MPC_IAIICmagnetarZiggPlanetApproachCmplxThree:""Understood. Remote explo protocol, uncon 5. Two drones, shielded, sensor suite - execute.""",
-MPC_IAIICmagnetarZiggPlanetApproachCmplxThree,DIalogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxThree",,"You watch through a spotty cam-feed as the drones whizz towards the object. The structure grows in size, getting closer and closer - until suddenly the drones stop, retro-thrusters firing a cold blue and obscuring your view. ""Radiation levels spiking! 10 milliseverts and rising - wait - what's-"" your sensor officer stammers, drawing your eyes to their screen. Half-obscured by their body, you witness... something. No, many things... seeming to phase through the hull of the object. Ships. Or at least, things that look like ships. ""-contact! Mass contact! Burning fast!""
+MPC_IAIICmagnetarZiggPlanetApproachCmplxThree,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxThree",,"You watch through a spotty cam-feed as the drones whizz towards the object. The structure grows in size, getting closer and closer - until suddenly the drones stop, retro-thrusters firing a cold blue and obscuring your view. ""Radiation levels spiking! 10 milliseverts and rising - wait - what's-"" your sensor officer stammers, drawing your eyes to their screen. Half-obscured by their body, you witness... something. No, many things... seeming to phase through the hull of the object. Ships. Or at least, things that look like ships. ""-contact! Mass contact! Burning fast!""
 
-Snapping your eyes back to the drone display, you are only able to catch a glimpse of an attacker - angular, large, spiked protusions - before the drone is reduced to scrap, frozen in an instant by some arcane weapon.","MPC_IAIICmagnetarZiggPlanetApproachCmplxFour:Move your attention back to the primary display",
-MPC_IAIICmagnetarZiggPlanetApproachCmplxFour,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxFour",,"You begin barking orders",,
+With a snap and a crack, the drone's camfeeds cut out, struck by some sort of arc-lightning - then blasted to frozen fragments by a blast of sub-zero substance from a swirling short-barrel weapon.","MPC_IAIICmagnetarZiggPlanetApproachCmplxFour:Move your attention back to the primary display",
+MPC_IAIICmagnetarZiggPlanetApproachCmplxFour,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxFour",,"A thin garrison of old-or-angular defenders speeds towards your $shipOrFleet, far too fast to disengage easily. The civilian fleet moves away as your combat ships move to meet the attackers, combat klaxons blaring, emergency lights online...
+
+But then they stop. Merely a few kilometers from your $shipOrFleet, they grind to a halt and enter a wall formation. ""Defensive posture..."" tactical murmurs. ""Seems they're not going to chase us down. Makes sense, given the relative size of their force. We should-"" tactical's battleplanning is interrupted by a sharp cry from your sensors officer and sensors console. ""Another radiation spike! Massive gamma emissions from the structure!""","MPC_IAIICmagnetarZiggPlanetApproachCmplxFive:Monitor the radiation",
+MPC_IAIICmagnetarZiggPlanetApproachCmplxFive,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxFive",,"One mSv. Two. Five. Ten. A hundred. Two hundred...
+
+""$PlayerSirOrMadam... $playerSirOrMadam... look."" a hushed voice mumbles, a periphery hand pointing beyond the defenders. And as you follow it, you feel your heart sink. 
+
+An abomination. The hull of the structure curls and warps, making way for a terrifyingly large ship, painted white like all the others. But this one... it's size is unmatched. Shaped like a spade, humming beautifully, the singing music fills your ears and lifts you out of your seat - a haunting melody, like a tormented prodigy, the terrifying swish of churning space-time, the howling of Moloch's demons, the glow of it's phase coils, th-
+","MPC_IAIICmagnetarZiggPlanetApproachCmplxSix:...",
+MPC_IAIICmagnetarZiggPlanetApproachCmplxSix,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxSix","SetTextHighlights ""same ship"" ""Ziggurat""
+MPC_IAIICHegeCMD OPPshowZiggComplexFleet","""...rders! Captain!"" your tactical officer shouts. You blink back into reality, your entire bridge crew watching you with expectant and somewhat terrified expressions. You wave off an incoming aid armed with a wet towel and painkillers and focus on the terrifying sight in front of you.
+
+It's the same ship. It's the exact same model. The Ziggurat, or so your fleet calls it - now in the dead-center of the opposing fleet, energetic motes blinking in and out of existence in it's proximity. And whenever you stare at it - the humming, the chorus, the *ensemble*, running through the back of your mind...
+
+""I-it would seem, uh,"" science stammers. ""It would seem the AIs have... utilized the project Ziggurat research."" your officer states with a shiver.","MPC_IAIICmagnetarZiggPlanetApproachCmplxSeven:Continue",
+MPC_IAIICmagnetarZiggPlanetApproachCmplxSeven,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxSeven",,"Trying your best to keep your head level, you meet your approaching tactical officer and peruse the tactical report on this new enemy. ""Phase field, $PlayerSirOrMadam."" your officer annotates. ""Simultanious with shield readings. Supposed to be impossible, but with these things, nothing's off the table.""
+
+You swipe to the next screen, a report on it's weapons capabilities. ""Heavy weapons loadout. Significantly more powerful than the 'standard' Ziggurat-class we've previously encountered."" 
+
+Then, the next. A report on it's 'motes'. ""High brane potential in the proximal volume around the ship. Likely high potential for 'mote' production."" your officer turns to the ship, surrounded by a few anomalous ""motes"". ""On top of all this, we're seeing signs of high shield, armor, and hull integrity. As for it's behavior..."" the officer gestures to the ship. ""Passive. Likely defensive. Won't attack unless we provoke it. Hopefully.""","MPC_IAIICmagnetarZiggPlanetApproachCmplxEight:Continue",
+MPC_IAIICmagnetarZiggPlanetApproachCmplxEight,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetApproachCmplxEight","MPC_IAIICHegeCMD OPPapproachedZiggComplex
+niko_MPC_musicToggle """" false false
+MPC_SalvageDefenderInteractionWithObjectives","""Estimated threat is high, $playerSirOrMadam. We should only engage this if we're sure of our victory.""
+
+You nod, nod again, and grit your teeth. The scent of anti-rad fills your nostrils, and the haunting music returns, like a siren's song to draw you closer.",,
 "#END Approach the orbital omega complex",,,,,,
 ,,,,,,
 # Return to the orbital omega complex,,,,,,
+MPC_IAIICmagnetarZiggPlanetExplored,PopulateOptions,"$id == MPC_magnetarSystemPlanetTwo
+$global.MPC_goingToZiggPlanet
+$MPC_foundComplex
+$MPC_approachedComplex
+!$MPC_raidedComplex",,"Your sensors automatically lock onto the strangely shaped orbital object. Your officers glance at you uneasily, and your bridge crew makes battle preparations.","3:MPC_IAIICmagnetarZiggPlanetEngageCmplx:Approach the orbital complex",
+MPC_IAIICmagnetarZiggPlanetEngageCmplx,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetEngageCmplx","MPC_SalvageDefenderInteractionWithObjectives","You approach the object, prompting it's garrison to emerge from it's malleable walls. You hear a faint humming from the back of your head.",,
 "#END Return to the orbital omega complex",,,,,,
+,,,,,,
+# Defeat the defenders and explore the complex,,,,,,
+MPC_IAIICmagnetarZiggPlanetDefendersDefeated,BeatDefendersContinue,"$id == MPC_magnetarSystemPlanetTwo",,"Once you're certain you've fully eradicated your angular opponents - and that none more will appear - you order weapons hold, standby alert, and (panting) ask for a SitRep. ","MPC_IAIICmagnetarZiggPlanetComplexExplore:Continue",
+MPC_IAIICmagnetarZiggPlanetComplexExplore,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExplore",,"A quick scan reveals no further hostiles, at least none that have left the confines of the structure beyond the newly-created debris field. The complex itself seems insert, with ambient radiation levels well below dangerous levels. The melody has fallen silent, too, leaving you in an comfortable silence as you contemplate your next move.","MPC_IAIICmagnetarZiggPlanetComplexExploreTwo:Send a detachment of exploration drones",
+MPC_IAIICmagnetarZiggPlanetComplexExploreTwo,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreTwo","niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","Not wanting to risk the lives of your salvor crew in the face of this unknown object, you opt for an unmanned exploration until it can be confirmed the structure poses no threat to human life. With a nod and a hand signal, your ops chief grunts and begins barking order to your salvage corps. Within minutes, a group of exploration drones are in vacuum and burning hard.","MPC_IAIICmagnetarZiggPlanetComplexExploreThree:Continue",
+MPC_IAIICmagnetarZiggPlanetComplexExploreThree,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreThree",,"The drones circle the entity, hugging it's exterior as they run detailed scan on it's bulbous surface for any sign of entrance. Nothing. No scan penetrates, no data is gathered. ""Team Bravo, adjust three degrees rotation, burn minimal, forward thrust, prox-check off, abort con impact."" your ops chief growls, prompting collective affirmative from the salvor group. ""Execute.""
+
+On that command, a group of drones go minimal engines, slow burn forward, directly on a course for the hull of the object. You intuit what your chief is thinking - if those objects can pass through the solid walls of the object, so should we. And they're right.
+
+You watch as the drones simply travel through the wall like it's some sort of liquid... standard call-and-response growing more and more awe-struck as the camera is overcome by a mass of soft white-and-black... and then stops, the mosaic of shifting colors locked on a single set. ""Report."" your ops chief grumbles, seeming to get more and more frustrated.","MPC_IAIICmagnetarZiggPlanetComplexExploreFour:""Sitrep?""",
+MPC_IAIICmagnetarZiggPlanetComplexExploreFour,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreFour",,"Your ops chief grumbles. You sense a hint of shame - not from your chief's voice, but from their insistence on facing away from you and the rap-tap of fingers on the desk. ""Engines are flooded. Hull's acting like a liquid - wrapping around the drone. Can't move."" your chief grunts, cutting the conversation short by beginning another rapid sequence of barks and orders.
+
+The drones are quickly written off as unrecoverable following a failed pully attempt, and an alternate method is suggested - plasma-torch, which seems to work fine. Quickly, an entryway is made into the depressurized interior, and the small drones quickly make their way inside the darkened ""hallways"", if they can be called that.","MPC_IAIICmagnetarZiggPlanetComplexExploreFive:Continue",
+MPC_IAIICmagnetarZiggPlanetComplexExploreFive,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreFive","AddTextSmall ""Received sample of non-newtonian alloy"" highlight","Much like the strange factory you raided prior, this installation is similarly arcane. The hallways are more like service ducts than anything (for what, you can't tell), with spindly protrusions filling the passable interior like nanoforge scaffolding. The walls lack noticeable plating, and what's under is some form of crystalline wiring - for power transfer? You're not sure, judging how some areas seem to have no power delivery and yet are lit by unseen forces.
+
+The contents of the structure are similarly mysterious to it's infrastructure. While the occasional ""armory"" and resource cache is found here and there, the vast majority of this structure is simply empty space, alloy, and conduits. Doubly interesting is the lack of hangar-space by the exterior walls, which are notably the only section of the complex with the non-newtonian physics seen by the exiting defenders. So where did they come from? None of your officers seem able to give an answer - save for engineering, who spouts all sorts of excited psuedo-concepts. You order a piece of the exterior hull retrieved and stored for further analysis.
+
+TODO alloy stuff is not implemented. probably will give a special hullmod?","MPC_IAIICmagnetarZiggPlanetComplexExploreSix:Continue",
+MPC_IAIICmagnetarZiggPlanetComplexExploreSix,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreSix",,"Eventually, your salvage groups come across a heavily shielded chamber, triple-reinforced with unknown alloy and some sort of shielding. Through careful cutting and a small EMP charge, the obstacles fall and the drones enter through a hole in the wall. Inside is a spherical chamber, walls colored metallic grey instead of white, the ambience of a blue fusion reactor lighting the room up with a subtle glow. Inbetween the two reaction pylons is a small connection port - foreign in design, yet your electronics officer quickly has the connection ports of a drone jury-rigged to interface with it. And just like that, a connection to some sort of database is established.
+
+TODO this dialog is a bit stilted - feels like its rushed? not sure why it reads badly...","MPC_IAIICmagnetarZiggPlanetComplexExploreSeven:Order it downloaded",
+MPC_IAIICmagnetarZiggPlanetComplexExploreSeven,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreSeven","SetTextHighlights ""Project Ziggurat""
+$player.MPC_hasZigguratDataset = true","The database is summarily transferred, scanned, scanned again, and finally deposited in a level 3 security heuristic as a final precaution. You walk over to electronics, nod to your officer, and order it opened for analysis.
+
+But where you expected a mass of arcane file structures with unreadable headers contains only one archive, titled ""Project Ziggurat"" in perfectly readable english. With a shaking hand, you press the key to have the files extracted... only for a password prompt to appear, much to your dismay. ""Encrypted, likely with a few hidden Daemons. Even if we cracked the encryption, there's no telling what TriTach, or what these *things*, have added as security measures."" electronics huffs. ""We already found one trying to copy it - wouldn't let us. Had to cut and paste instead of copy and paste. Still, though - this looks like the target. Structure's similar, as is it's source.""","MPC_IAIICmagnetarZiggPlanetComplexExploreEight:Continue
+MPC_IAIICmagnetarZiggPlanetComplexDBHowLong:""What would it take to decrypt this database?""",
+MPC_IAIICmagnetarZiggPlanetComplexDBHowLong,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexDBHowLong","RemoveOption MPC_IAIICmagnetarZiggPlanetComplexDBHowLong","Electronics seems intimidated by the question, looking around for a way out of answering. Sighing, your officer eventually relents under your expectant stare. ""-I... don't... exactly know. Maybe if we had some... crack-tier hacker? We'd need the Tri-Tach expo-notes on this DB, that's for sure - and a really, really good anti-virus."" your officer pauses. ""-and a lot of time. This grade of encryption takes ages to brute-force, even with all the proper material."" 
+A sigh. ""I just don't know if it's possible, Captain. There's a reason Tri-Tach has never had it's trade secrets exposed.""",,
+MPC_IAIICmagnetarZiggPlanetComplexExploreEight,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreEight","MPC_IAIICHegeCMD OPPgotData","Regardless of whatever contents this data might hold, you still have to return it to the Lindunbergs if you want them to help you with the IAIIC. Though, with data this valuable, and with this much potential... maybe Tri-Tachyon would like it instead?
+
+You eject that thought from your mind for a later date. You still have a entire station to salvage, and your salvors are already getting ancy from prolonged exploration duty.","MPC_IAIICmagnetarZiggPlanetComplexExploreNine:Initiate a salvage operation",
+MPC_IAIICmagnetarZiggPlanetComplexExploreNine,DialogOptionSelected,"$option == MPC_IAIICmagnetarZiggPlanetComplexExploreNine","$MPC_raidedComplex = true
+MPC_IAIICHegeCMD OPPgenZigLoot
+$salvageLeaveText = Leave 0
+FireBest CheckSalvageSpecial",,,
+"#END Defeat the defenders and explore the complex",,,,,,
 "#END Return to magnetar and find the weird planet",,,,,,
+,,,,,,
+# Return to opp arristo at any time,,,,,,
+MPC_oppAristoMeetDuringQuest,PickGreeting,"$id == MPC_hegeAristoOpportunistRep score:1000
+!$temporarilyIgnoreYou
+$global.MPC_metHegeOpportunistAristo
+","BeginConversation MPC_hegeAristoOpportunistRep
+FireAll MPC_oppAristoMeetDuringQuestOptions","Yet again, you submit your credentials as one ""Orthus Youn"" and receive a comms request from an obfuscated source on Eventide, which you routinely accept.
+
+""Ah, $PlayerName!"" the grinning visage of $PersonName appears before you, arms outstretched in a welcoming gesuture. $HeOrShe clasps them together, leaning in enthusiastically. ""Any news? And - before you speak - if your statement is not to my liking... hmm... I'll drop the call.""
+
+$HisOrHer smile lengthens. ""Just business here. No time for chatter.""",,
+MPC_oppAristoMeetDuringQuestOptionsTurnIn,MPC_oppAristoMeetDuringQuestOptions,"$player.MPC_hasZigguratDataset",,,"10:MPC_oppAristoMeetHasZigg:""I have the data. It's yours once this is over."" (Transmit a small snippet as proof)",
+MPC_oppAristoMeetDuringQuestOptionsCutComms,MPC_oppAristoMeetDuringQuestOptions,,,,"cutCommLink:Cut the comm link",
+MPC_oppAristoMeetHasZigg,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZigg",,"His expression contorts negatively, brightening only faintly upon seeing the useless snippet of encrypted data - just enough to confirm it's structure and header. ""This was not the deal, $playerSirOrMadam..."" his voice shakes, gently enough to still be called ""elegant"". ""You give us a whole copy of our data, or the deal is *off*.""
+
+He huffs. ""-the sooner can take action, the better. Isn't that right, Captain?"" he forces a smile, malice laden on his lower lip. ","0:MPC_oppAristoMeetHasZiggTransfer:""Okay, okay. Here you go."" (Transfer the dataset)
+10:MPC_oppAristoMeetHasZiggDeny:""No. The deal's off."" (Keep it for yourself) (TODO HAS NO BENEFITS AS OF NOW)
+20:MPC_oppAristoMeetHasZiggCantCopy:""We can't copy it. Some daemon embedded in the file structure forbids it.""",
+MPC_oppAristoMeetHasZiggTransfer,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggTransfer","AddTextSmall ""Lost \""Project Ziggurat\"" dataset"" bad
+$player.MPC_hasZigguratDataset = false
+SetTextHighlights ""together""
+MPC_IAIICHegeCMD houseTurned
+$temporarilyIgnoreYou = true","You make the transfer, taking care to encrypt it and deflect it off multiple carriers to avoid tracking. A delighted expression comes over the aristocrat's face, who turns to you. ""Ah - yes, yes, thank you, heh, you - 'kind' samaritan."" He takes a credit chit out of his pocket - examines it - grins - and puts it aside. ""-you have our full support. Let's make the sector a better place, together.""
+
+""Now, shoo! Shoo! I have much to do now! Namely, ah-hah-well, you know how INTSEC is about this sort of thing. Toodles!"" he makes a playful gesture with his hand and terminates the commlink.
+
+You're getting really tired of interacting with aristocrats.","cutCommLink:Cut the comm link",
+MPC_oppAristoMeetHasZiggDeny,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggDeny",,"He freezes, a cold hatred falling over him. All pretenses of friendliness vanish, replaced by a clear-as-day malicious glare. ""If you do this, Captain. We will make your life hell. Or, more accurately -"" he hisses, jabbing a finger into his chest. ""*I* will make your life hell.""
+
+""Don't be a *traitor*, Captain. Don't be an *idiot*.""","MPC_oppAristoMeetHasZiggTransfer:""Okay. Fine."" (Transfer the dataset)
+MPC_oppAristoMeetHasZiggDenyConfirm:Cut the comm link (confirm)",
+MPC_oppAristoMeetHasZiggDenyConfirm,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggDenyConfirm","$temporarilyIgnoreYou = true
+HideFirstPerson
+MPC_IAIICHegeCMD OPPtraitor","The enraged face of the aristocrat vanishes, replaced by the blackness of a vacant commlink. You're certain this will have consequences. But you don't care. This dataset is infinitely more valuable than some assistance in a foreign war.","cutCommLink:Cut the comm link",
+MPC_oppAristoMeetHasZiggCantCopy,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggCantCopy","RemoveOption MPC_oppAristoMeetHasZiggCantCopy
+$temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing larger. ""Good. Not sure I trust you bloody *s-spacers* with this kind of data anyway."" he eloquently hisses. ""You'd probably just give it back to those genocidal Tri-Tach fellows... or worse."" he cringes. ""The *luddites*...""",,
+"#END Return to opp arristo at any time",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,

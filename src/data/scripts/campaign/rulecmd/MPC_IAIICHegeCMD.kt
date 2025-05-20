@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
@@ -135,10 +136,55 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
             }
 
+            "OPPshowZiggComplexFleet" -> {
+                val planet = MPC_hegemonyContributionIntel.getZiggComplexPlanet()
+                val fleet = planet.memoryWithoutUpdate.getFleet("\$defenderFleet") ?: return false
+                dialog.visualPanel.showFleetInfo(
+                    "Your Fleet",
+                    Global.getSector().playerFleet,
+                    "Hostile Contact",
+                    fleet
+                )
+            }
+            "OPPapproachedZiggComplex" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.CLEAR_ZIGG_COMPLEX
+                intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
+
+            "OPPgotData" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.opportunisticState = MPC_hegemonyContributionIntel.OpportunisticState.RETURN_WITH_DATA
+                intel.sendUpdateIfPlayerHasIntel(intel.opportunisticState, dialog.textPanel)
+            }
+
+            "OPPgenZigLoot" -> {
+                val planet = MPC_hegemonyContributionIntel.getZiggComplexPlanet()
+                planet.memoryWithoutUpdate[MemFlags.SALVAGE_SPEC_ID_OVERRIDE] = "MPC_omega_zigg_complex"
+            }
+
             "getFractalCoreColonyName" -> {
                 val colony = getFractalColony() ?: return false
                 Global.getSector().memoryWithoutUpdate["\$MPC_fractalColonyName"] = colony.name
                 return true
+            }
+
+            "OPPisReadyToTurnIn" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                return intel.opportunisticState == MPC_hegemonyContributionIntel.OpportunisticState.RETURN_WITH_DATA
+            }
+
+            "OPPtraitor" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.state = MPC_hegemonyContributionIntel.State.FAILED
+                intel.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
+                intel.endAfterDelay()
+
+                val fobIntel = MPC_IAIICFobIntel.get() ?: return false
+                fobIntel.retaliate(
+                    MPC_IAIICFobIntel.RetaliateReason.BETRAYED_LINDUNBERG,
+                    dialog.textPanel
+                )
             }
         }
 

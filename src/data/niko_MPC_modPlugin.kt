@@ -354,6 +354,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         clearInappropiateOvergrownFleetSpawners()
 
         val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+
+        for (faction in Global.getSector().allFactions.filter { Global.getSector().getFaction(Factions.HEGEMONY).isHostileTo(it) }) {
+            IAIIC.setRelationship(faction.id, -0.4f) // not quite hostile, but...
+        }
         IAIIC.setRelationship(Factions.HEGEMONY, RepLevel.FAVORABLE)
         IAIIC.setRelationship(Factions.LUDDIC_CHURCH, RepLevel.WELCOMING)
         IAIIC.setRelationship(Factions.INDEPENDENT, RepLevel.FAVORABLE)
@@ -362,10 +366,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.REMNANTS, -0.5f)
         IAIIC.setRelationship(Factions.LUDDIC_PATH, -0.5f) // only officially
         IAIIC.setRelationship(Factions.PLAYER, -0.2f)
-
-        for (faction in Global.getSector().allFactions.filter { Global.getSector().getFaction(Factions.HEGEMONY).isHostileTo(it) }) {
-            IAIIC.setRelationship(faction.id, -0.4f) // not quite hostile, but...
-        }
         IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
         //IAIIC.isShowInIntelTab = false
 

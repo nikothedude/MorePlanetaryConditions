@@ -4,6 +4,7 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.impl.campaign.terrain.RangeBlockerUtil
 import com.fs.starfarer.api.util.Misc
 import data.utilities.niko_MPC_ids
+import org.lazywizard.lazylib.MathUtils
 import kotlin.arrayOf
 import kotlin.math.*
 import kotlin.math.roundToInt
@@ -80,11 +81,6 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
             val newFirst = Misc.approach(curr[i].first, limits[i], minApproachSpeed, diffMult, amount)
             val newEnd = Misc.approach(curr[i].second, ends[i], minApproachSpeed, diffMult, amount)
             curr[i] = Pair(newFirst, newEnd)
-            //			if (curr[i] > limits[i] + 100f) {
-//				alphas[i] = Misc.approach(alphas[i], 0f, 1f, 1f, amount);
-//			} else {
-//				alphas[i] = Misc.approach(alphas[i], 1f, 1f, 1f, amount);
-//			}
         }
     }
 
@@ -93,6 +89,7 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
 
         for (i in 0..<resolution) {
             limits[i] = maxRange
+            ends[i] = 0f
         }
 
         isAnythingShortened = false
@@ -105,14 +102,23 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
             var graceRadius = 100f
             graceRadius = 0f
             graceRadius = iterEntity.radius + 100f
-            val span = Misc.computeAngleSpan(iterEntity.radius + graceRadius, dist)
+            var span = Misc.computeAngleSpan(iterEntity.radius + graceRadius, dist)
+            if (iterEntity.hasTag("MPC_magnetarShield")) {
+                span = span.coerceAtLeast(8f)
+            }
 
-            val angle = Misc.getAngleInDegrees(entity.location, iterEntity.location)
+            var angle = Misc.getAngleInDegrees(entity.location, iterEntity.location)
 
             val offsetSize = maxRange * 0.2f
 
-            var spanOffset = span * 0.4f * 1f / diffMult
+            var spanOffset = span * 0.4f / diffMult
             spanOffset = 0f
+
+            val orbit = iterEntity.orbit
+            /*if (orbit != null) {
+                angle += ((span * 0.4f) * sign(orbit.orbitalPeriod)) * diffMult
+            }*/
+
             var f = angle - span / 2f - spanOffset
             while (f <= angle + span / 2f - spanOffset) {
                 var offset: Float = abs((f - angle).toFloat()) / (span / 2f)
@@ -128,9 +134,9 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
 
 
                 val index = getIndexForAngle(f)
-                val limit = min((dist - (iterEntity.radius) * 0.5f + offset).toDouble(), limits[index].toDouble()).toFloat()
+                val limit = min((dist - (iterEntity.radius) + offset).toDouble(), limits[index].toDouble()).toFloat()
                 limits[index] = limit
-                ends[index] = max(limit + (iterEntity.radius * 1.1f), ends[index])
+                ends[index] = max(limit + (iterEntity.radius * 5f), ends[index])
 
                 isAnythingShortened = true
                 f += degreesPerUnit

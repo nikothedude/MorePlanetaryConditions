@@ -349,6 +349,22 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     "orbital complex"
                 )
             }
+            OpportunisticState.CLEAR_ZIGG_COMPLEX -> {
+                info.addPara(
+                    "Defeat the %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "garrison"
+                )
+            }
+            OpportunisticState.RETURN_WITH_DATA -> {
+                info.addPara(
+                    "Return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Eventide"
+                )
+            }
             "HOUSES_TURNED" -> {
                 info.addPara(
                     "%s turned against the %s",
@@ -558,11 +574,23 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                             }
                             OpportunisticState.CLEAR_ZIGG_COMPLEX -> {
                                 info.addPara(
-                                    "hiyah",
-                                    0f
+                                    "The structure in orbit of %s is guarded by a strange fleet. You must defeat them to continue.",
+                                    0f,
+                                    Misc.getHighlightColor(),
+                                    "${getZiggComplexPlanet().name}"
                                 )
                             }
-                            OpportunisticState.RETURN_WITH_DATA -> TODO()
+                            OpportunisticState.RETURN_WITH_DATA -> {
+                                info.addPara(
+                                    "You've salvaged a database with a header of \"%s\", and electronics has confirmed it as the target data. " +
+                                    "You must now return it to your %s contact on %s - or keep it for yourself, if you wish.",
+                                    0f,
+                                    Misc.getHighlightColor(),
+                                    "Project Ziggurat",
+                                    "Lindunberg",
+                                    "Eventide"
+                                )
+                            }
                         }
                     }
                     TargetHouse.MILITARISTIC -> {
@@ -662,6 +690,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         }
 
         currentHouse = TargetHouse.NONE
+        cooldownActive = true
     }
 
 }
