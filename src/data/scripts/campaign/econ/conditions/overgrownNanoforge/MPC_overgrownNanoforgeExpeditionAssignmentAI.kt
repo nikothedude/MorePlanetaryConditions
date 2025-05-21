@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ.conditions.overgrownNanoforge
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.SectorEntityToken
@@ -11,6 +12,8 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.conditions.derelictEscort.MPC_derelictEscortAssignmentAI
 import data.scripts.campaign.econ.conditions.derelictEscort.derelictEscortStates
+import data.scripts.campaign.magnetar.MPC_privateInvestigatorAssignmentAI
+import data.scripts.campaign.magnetar.MPC_privateInvestigatorAssignmentAI.ASSIGNMENT_COMPLETE_TWO
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.getEscortFleetList
@@ -39,16 +42,20 @@ class MPC_overgrownNanoforgeExpeditionAssignmentAI(
     }
 
     protected fun giveInitialAssignments() {
-        fleet.addAssignment(
-            FleetAssignment.ORBIT_PASSIVE, homeMarket.primaryEntity, prepTime, "preparing for departure"
-        ) {
+        fleet.addAssignment(FleetAssignment.ORBIT_PASSIVE, homeMarket.primaryEntity, prepTime, "preparing for departure", ASSIGNMENT_COMPLETE_ONE(fleet, target, this))
+    }
+
+    class ASSIGNMENT_COMPLETE_ONE(val fleet: CampaignFleetAPI, val target: MarketAPI, val script: MPC_overgrownNanoforgeExpeditionAssignmentAI): Script {
+        override fun run() {
             fleet.clearAssignments()
-            fleet.addAssignmentAtStart(
-                FleetAssignment.DELIVER_CREW, target.primaryEntity, MAX_DAYS, "performing covert operations"
-            ) {
-                bombard()
-                abortAndReturnToBase()
-            }
+            fleet.addAssignmentAtStart(FleetAssignment.DELIVER_CREW, target.primaryEntity, MAX_DAYS, "performing covert operations", ASSIGNMENT_COMPLETE_TWO(fleet, target, script))
+        }
+    }
+
+    class ASSIGNMENT_COMPLETE_TWO(val fleet: CampaignFleetAPI, val target: MarketAPI, val script: MPC_overgrownNanoforgeExpeditionAssignmentAI): Script {
+        override fun run() {
+            script.bombard()
+            script.abortAndReturnToBase()
         }
     }
 

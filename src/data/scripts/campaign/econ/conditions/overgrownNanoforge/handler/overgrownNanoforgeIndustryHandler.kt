@@ -157,6 +157,11 @@ class overgrownNanoforgeIndustryHandler(
     }
 
     override fun advance(amount: Float) {
+        if (!market.hasCondition("niko_MPC_overgrownNanoforgeCondition")) {
+            delete()
+            return
+        }
+
         if (!market.isInhabited()) {
             val days = Misc.getDays(amount)
             expeditionInterval.advance(days)

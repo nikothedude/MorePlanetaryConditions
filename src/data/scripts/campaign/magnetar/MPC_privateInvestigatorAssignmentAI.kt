@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.SectorEntityToken
@@ -20,21 +21,25 @@ class MPC_privateInvestigatorAssignmentAI(val fleet: CampaignFleetAPI, val targe
     }
 
     protected fun giveInitialAssignments() {
-        fleet.addAssignment(
-            FleetAssignment.ORBIT_PASSIVE, source.primaryEntity, 15f, "preparing for departure"
-        ) {
+        fleet.addAssignment(FleetAssignment.ORBIT_PASSIVE, source.primaryEntity, 15f, "preparing for departure", ASSIGNMENT_COMPLETE_ONE(fleet, target, this))
+    }
+
+    class ASSIGNMENT_COMPLETE_ONE(val fleet: CampaignFleetAPI, val target: MarketAPI, val script: MPC_privateInvestigatorAssignmentAI): Script {
+        override fun run() {
             fleet.clearAssignments()
-            fleet.addAssignmentAtStart(
-                FleetAssignment.GO_TO_LOCATION, target.primaryEntity, Float.MAX_VALUE
-            ) {
-                fleet.memoryWithoutUpdate["\$MPC_privateInvestigatorCurrentlyInvestigating"] = true
-                fleet.clearAssignments()
-                fleet.addAssignmentAtStart(
-                    FleetAssignment.ORBIT_PASSIVE, target.primaryEntity, Float.MAX_VALUE,"investigating ${target.name}"
-                ) {
-                    abortAndReturnToBase()
-                }
-            }
+            fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, target.primaryEntity, Float.MAX_VALUE, ASSIGNMENT_COMPLETE_TWO(fleet, target, script))
+        }
+    }
+    class ASSIGNMENT_COMPLETE_TWO(val fleet: CampaignFleetAPI, val target: MarketAPI, val script: MPC_privateInvestigatorAssignmentAI): Script {
+        override fun run() {
+            fleet.memoryWithoutUpdate["\$MPC_privateInvestigatorCurrentlyInvestigating"] = true
+            fleet.clearAssignments()
+            fleet.addAssignmentAtStart(FleetAssignment.ORBIT_PASSIVE, target.primaryEntity, Float.MAX_VALUE, "investigating ${target.name}",  ASSIGNMENT_COMPLETE_THREE(fleet, target, script))
+        }
+    }
+    class ASSIGNMENT_COMPLETE_THREE(val fleet: CampaignFleetAPI, val target: MarketAPI, val script: MPC_privateInvestigatorAssignmentAI): Script {
+        override fun run() {
+            script.abortAndReturnToBase()
         }
     }
 
