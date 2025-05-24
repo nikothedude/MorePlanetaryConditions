@@ -10,7 +10,6 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
@@ -40,14 +39,8 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
             "pullOut" -> {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
-                val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.HEGEMONY } ?: return false
+                val toRemove = intel.getContributionById(Factions.HEGEMONY) ?: return false
                 intel.removeContribution(toRemove, false, dialog)
-                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
-                    if (entry.factionId == Factions.HEGEMONY) {
-                        MPC_benefactorDataStore.get().probableBenefactors -= entry
-                        break
-                    }
-                }
             }
 
             "aristoComms" -> {

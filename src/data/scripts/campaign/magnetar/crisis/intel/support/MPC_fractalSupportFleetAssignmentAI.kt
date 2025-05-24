@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar.crisis.intel.support
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.AbilityPlugin
@@ -110,10 +111,16 @@ class MPC_fractalSupportFleetAssignmentAI(
         fleet.clearAssignments()
         if (target == null) {
             val dur = MathUtils.getRandomNumberInRange(20f, 30f)
-            fleet.addAssignmentAtStart(FleetAssignment.PATROL_SYSTEM, null, dur, "patrolling") { refreshAssignments() }
+            fleet.addAssignmentAtStart(FleetAssignment.PATROL_SYSTEM, null, dur, "patrolling", REFRESH_ASSIGNMENT_ASSIGNMENT_END(this))
         }
         val dur = MathUtils.getRandomNumberInRange(20f, 30f)
-        fleet.addAssignmentAtStart(FleetAssignment.DEFEND_LOCATION, target, dur) { refreshAssignments() }
+        fleet.addAssignmentAtStart(FleetAssignment.DEFEND_LOCATION, target, dur, REFRESH_ASSIGNMENT_ASSIGNMENT_END(this))
+    }
+
+    class REFRESH_ASSIGNMENT_ASSIGNMENT_END(val ai: MPC_fractalSupportFleetAssignmentAI): Script {
+        override fun run() {
+            ai.refreshAssignments()
+        }
     }
 
     fun returnFromPatrol(reason: ReturnReason) {
@@ -122,15 +129,22 @@ class MPC_fractalSupportFleetAssignmentAI(
 
         fleet.clearAssignments()
         val source = fleet.getSourceMarket() ?: getColony() ?: Global.getSector().economy.marketsCopy.random()
-        fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, source.primaryEntity, Float.MAX_VALUE, "returning to ${source.name}") {
-            fleet.clearAssignments()
-            fleet.addAssignmentAtStart(
-                FleetAssignment.ORBIT_PASSIVE, source.primaryEntity, MathUtils.getRandomNumberInRange(3f, 4f), "standing down from war duty") {
-                    fleet.clearAssignments()
-                    fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, source.primaryEntity, Float.MAX_VALUE, "standing down from war duty", null)
-            }
-        }
+        fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION, source.primaryEntity, Float.MAX_VALUE, "returning to ${source.name}", RFP_ASSIGNMENT_END_ONE(fleet, this, source))
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_FLEET_DO_NOT_GET_SIDETRACKED] = true
+    }
+
+    class RFP_ASSIGNMENT_END_ONE(val fleet: CampaignFleetAPI, val ai: MPC_fractalSupportFleetAssignmentAI, val source: MarketAPI): Script {
+        override fun run() {
+            fleet.clearAssignments()
+            fleet.addAssignmentAtStart(FleetAssignment.ORBIT_PASSIVE, source.primaryEntity, MathUtils.getRandomNumberInRange(3f, 4f), "standing down from war duty", RFP_ASSIGNMENT_END_TWO(fleet, ai, source))
+        }
+    }
+
+    class RFP_ASSIGNMENT_END_TWO(val fleet: CampaignFleetAPI, val ai: MPC_fractalSupportFleetAssignmentAI, val source: MarketAPI): Script {
+        override fun run() {
+            fleet.clearAssignments()
+            fleet.addAssignmentAtStart(FleetAssignment.GO_TO_LOCATION_AND_DESPAWN, source.primaryEntity, Float.MAX_VALUE, "standing down from war duty", null)
+        }
     }
 
     private fun pickEntityToGuard(): SectorEntityToken? {

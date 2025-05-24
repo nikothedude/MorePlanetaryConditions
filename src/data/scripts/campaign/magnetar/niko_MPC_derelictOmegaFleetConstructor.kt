@@ -50,7 +50,7 @@ object niko_MPC_derelictOmegaFleetConstructor {
         fleet.removeAbility(Abilities.EMERGENCY_BURN)
 
         fleet.stats.sensorRangeMod.modifyMult("MPC_magnetarFleetSensorMalus", 0.45f, "you shouldnt see this")
-        fleet.stats.sensorProfileMod.modifyMult("MPC_magnetarFleetProfileMalus", 4f, "you shouldnt see this")
+        fleet.stats.sensorProfileMod.modifyMult("MPC_magnetarFleetProfileMalus", 10f, "you shouldnt see this")
 
         return fleet
     }

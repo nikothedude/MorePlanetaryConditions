@@ -213,6 +213,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
     }
 
     private fun tryToSpawnEscortsOnAllFleets() {
+        if (Global.getSector().isInSectorGen) return
         val market = getMarket() ?: return
 
         val containingLocation = market.containingLocation ?: return

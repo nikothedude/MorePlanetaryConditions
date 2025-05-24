@@ -108,7 +108,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             IAIIC.clearShipRoleCache()
 
             val intel = MPC_IAIICFobIntel.get() ?: return
-            intel.removeBlueprintFunctions.forEach { if (it != null) {it()} }
+            intel.removeBlueprintFunctions.forEach { it.run() }
         }
     }
 

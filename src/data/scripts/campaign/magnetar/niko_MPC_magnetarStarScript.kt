@@ -61,8 +61,8 @@ class niko_MPC_magnetarStarScript(
             fleet.cargo.removeCrew(crewToLose)
         }
 
-        const val MIN_DAYS_PER_PULSE = 3f
-        const val MAX_DAYS_PER_PULSE = 3.7f
+        const val MIN_DAYS_PER_PULSE = 3.4f
+        const val MAX_DAYS_PER_PULSE = 4f
 
         const val BASE_X_COORD_FOR_SYSTEM = -30800f
         const val BASE_Y_COORD_FOR_SYSTEM = -57320f

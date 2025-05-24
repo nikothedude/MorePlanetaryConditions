@@ -17,7 +17,6 @@ import data.scripts.campaign.magnetar.crisis.MPC_TTBMCacheDefenderSpawnScript
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.fadeAndExpire
 import org.magiclib.kotlin.makeImportant
@@ -276,17 +275,11 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
             }
             "RESOLVED" -> {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
-                val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.TRITACHYON } ?: return false
+                val toRemove = intel.getContributionById(Factions.TRITACHYON) ?: return false
                 MPC_IAIICFobIntel.get()?.removeContribution(toRemove, false, dialog)
                 val intel2 = MPC_TTContributionIntel.get(true) ?: return false
                 intel2.state = MPC_TTContributionIntel.State.OVER
                 intel2.endAfterDelay()
-                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
-                    if (entry.factionId == Factions.TRITACHYON) {
-                        MPC_benefactorDataStore.get().probableBenefactors -= entry
-                        break
-                    }
-                }
                 interactionTarget.market.makeNonStoryCritical("\$MPC_TTSearch")
             }
         }

@@ -13,8 +13,8 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.ui.intnew
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel
 import data.utilities.niko_MPC_marketUtils.isFractalMarket
 import data.utilities.niko_MPC_marketUtils.isInhabited
@@ -282,14 +282,8 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
             }
             "pullOut" -> {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
-                val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.LUDDIC_PATH } ?: return false
+                val toRemove = intel.getContributionById(Factions.LUDDIC_PATH) ?: return false
                 intel.removeContribution(toRemove, false, dialog)
-                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
-                    if (entry.factionId == Factions.LUDDIC_PATH) {
-                        MPC_benefactorDataStore.get().probableBenefactors -= entry
-                        break
-                    }
-                }
             }
         }
 

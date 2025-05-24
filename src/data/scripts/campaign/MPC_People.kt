@@ -38,7 +38,7 @@ object MPC_People {
 
     const val UMBRA_INFILTRATOR = "MPC_umbraInfiltrator"
 
-    const val KKL_REP = "MPC_KKLRep"
+    const val HAMMER_REP = "MPC_hammerRep"
 
     const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
@@ -290,22 +290,21 @@ object MPC_People {
             MPC_importantPeople[UMBRA_INFILTRATOR] = infiltrator
         }
 
-        if (MPC_importantPeople[KKL_REP] == null) {
-            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.MALE)
+        if (MPC_importantPeople[HAMMER_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.MALE)
+            rep.id = HAMMER_REP
 
-            rep.id = KKL_REP
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+            rep.setFaction(Factions.LUDDIC_CHURCH)
 
-            rep.rankId = Ranks.SPECIAL_AGENT
-            rep.postId = Ranks.POST_SPECIAL_AGENT
-            rep.setFaction(Factions.DIKTAT)
-
-            rep.importance = PersonImportance.HIGH
-            rep.voice = Voices.SPACER
+            rep.importance = PersonImportance.MEDIUM
+            rep.voice = Voices.FAITHFUL
 
             rep.name = FullName("Jeron", "Blast", Gender.MALE)
 
             importantPeople.addPerson(rep)
-            MPC_importantPeople[KKL_REP] = rep
+            MPC_importantPeople[HAMMER_REP] = rep
         }
 
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {

@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
@@ -42,12 +43,14 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.ai.CampaignFleetAI
 import data.scripts.MPC_delayedExecution
+import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution
+import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution.benefactorData
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICAttritionFactor
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedFactor
@@ -62,6 +65,7 @@ import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalSupportFle
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.MPC_FOB_ID
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
+import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_mathUtils.prob
 import data.utilities.niko_MPC_settings
 import indevo.exploration.minefields.MineBeltTerrainPlugin
@@ -80,7 +84,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     ColonyPlayerHostileActListener {
 
     var daysLeftTilNextRetaliate: Float = 0f
-    var removeBlueprintFunctions: HashSet<() -> Unit> = HashSet()
+    var removeBlueprintFunctions: HashSet<Script> = HashSet()
     val affectedMarkets = HashSet<MarketAPI>()
     var disarmedMarkets = HashSet<MarketAPI>()
     val checkInterval = IntervalUtil(1f, 1.1f)
@@ -89,6 +93,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     var sanitizeContributions: Boolean = false
     var abandonedStage: Stage? = null
     val factionContributions = generateContributions()
+    val benefactorData = generateBenefactorData()
     var embargoState = EmbargoState.INACTIVE
     var sabotageRandom = Random()
     var disarmTimeLeft = 0f
@@ -131,6 +136,9 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         contribution.onRemoved(this, becauseFactionDead, dialog)
         updateDoctrine()
         checkContributionValues()
+
+        val benefactorInfo = benefactorData.firstOrNull { it.id == contribution.contributionId } ?: return
+        benefactorData -= benefactorInfo
     }
 
     private fun checkContributionValues() {
@@ -162,7 +170,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val iterator = contributions.iterator()
         while (iterator.hasNext()) {
             val contribution = iterator.next()
-            if (!contribution.contributorExists()) {
+            if (contribution.contributorExists?.run() == false) {
                 contribution.onRemoved(this, true)
                 iterator.remove()
             }
@@ -331,60 +339,193 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (intel != null) {
                 if (intel.currentAction != null) return PeacePossibility.HOSTILITIES_ACTIVE
                 if (!intel.isHostile()) return PeacePossibility.ALREADY_AT_PEACE
-
             }
             return PeacePossibility.YES
         }
     }
 
+    private fun generateBenefactorData(): ArrayList<benefactorData> {
+        val list = ArrayList<benefactorData>()
+
+        for (contribution in factionContributions.filter { it.addBenefactorInfo }) {
+            list += benefactorData(
+                contribution.contributionId,
+                contribution.factionName,
+                contribution.bulletColor,
+                contribution.benefactorSuffix
+            )
+        }
+
+        list += benefactorData(
+            Factions.PERSEAN,
+            "Persean League",
+            Global.getSector().getFaction(Factions.PERSEAN).baseUIColor,
+            "Possible"
+        )
+
+        return list
+    }
+
     private fun generateContributions(): ArrayList<MPC_factionContribution> {
         val list = ArrayList<MPC_factionContribution>()
 
+        class HegeRemovalScript: RemoveContributionScript() {
+            override fun run() {
+                val IAIIC = getIAIIC()
+                IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            }
+        }
         list += MPC_factionContribution(
             Factions.HEGEMONY,
             HEGEMONY_CONTRIBUTION,
             0.3f,
-            removeContribution = @JvmSerializableLambda {
-                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("XIV_bp") || it.hasTag("heg_aux_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
-            },
+            removeContribution = HegeRemovalScript(),
             removeNextAction = true,
             requireMilitary = true,
             repOnRemove = -40f
         )
+        Global.getSector().importantPeople.getPerson(People.DAUD).makeImportant("\$MPC_IAIICquest")
+
+        class ChurchRemovalScript: RemoveContributionScript() {
+            override fun run() {
+                val IAIIC = getIAIIC()
+                IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            }
+        }
         list += MPC_factionContribution(
             Factions.LUDDIC_CHURCH,
             CHURCH_CONTRIBUTION,
             0f,
-            removeContribution = @JvmSerializableLambda {
-                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("luddic_church") || it.hasTag("LC_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
-            },
+            removeContribution = ChurchRemovalScript(),
             removeNextAction = true,
             requireMilitary = true,
             repOnRemove = -40f
         )
+
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
-            0.6f,
-            0.3f,
-            removeContribution = null,
-            removeNextAction = true,
-            requireMilitary = false,
-            contributorExists = @JvmSerializableLambda {
-                    Global.getSector().economy.getMarket("new_maxios")?.hasCondition(Conditions.DECIVILIZED) != true
-            },
-            repOnRemove = -15f
+            0.7f,
+            0.05f,
+            null,
+            contributionId = "tactistar",
+            benefactorSuffix = "Branch on Culann",
+            factionName = "Tactistar"
         )
+
+
+        class BaetisExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
+            override fun run(): Boolean {
+                return Global.getSector().economy.getMarket("baetis").isInhabited()
+            }
+        }
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.4f,
+            0f,
+            null,
+            contributorExists = BaetisExistsScript(Factions.INDEPENDENT, false),
+            contributionId = "thehammer",
+            benefactorSuffix = "Baetis",
+            factionName = "The Hammer"
+        )
+        Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP).makeImportant("\$MPC_IAIICquest")
+        Global.getSector().economy.getMarket("baetis")?.commDirectory?.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP))
+
+        class BlackKnifeExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
+            override fun run(): Boolean {
+                return Global.getSector().economy.getMarket("qaras").isInhabited()
+            }
+        }
+        list += MPC_factionContribution(
+            Factions.PIRATES,
+            0.1f,
+            0.4f,
+            null,
+            contributorExists = BlackKnifeExistsScript(Factions.PIRATES, false),
+            contributionId = "blackknife",
+            benefactorSuffix = "Qaras",
+            factionName = "Blackknife"
+        )
+        class MMMCExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
+            override fun run(): Boolean {
+                return Global.getSector().economy.getMarket("new_maxios").isInhabited()
+            }
+        }
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.5f,
+            0f,
+            null,
+            contributorExists = MMMCExistsScript(Factions.INDEPENDENT, false),
+            benefactorSuffix = "Nova Maxios",
+            contributionId = "mmmc",
+            factionName = "MMMC"
+        )
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.1f,
+            0.4f,
+            null,
+            contributorExists = null, // exists on one of your planets
+            addBenefactorInfo = false,
+            contributionId = "voidsun",
+            factionName = "Voidsun"
+        )
+        class AgreusExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
+            override fun run(): Boolean {
+                return Global.getSector().economy.getMarket("agreus").isInhabited()
+            }
+        }
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.4f,
+            0f,
+            null,
+            benefactorSuffix = "Agreus",
+            contributorExists = AgreusExistsScript(Factions.INDEPENDENT, false),
+            contributionId = "agreus",
+            factionName = "IIT&S"
+        )
+        class AlimarExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
+            override fun run(): Boolean {
+                return Global.getSector().economy.getMarket("ailmar").isInhabited()
+            }
+        }
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.3f,
+            0.1f,
+            null,
+            contributorExists = AlimarExistsScript(Factions.INDEPENDENT, false),
+            contributionId = "ailmar",
+            factionName = "Ailmar"
+        )
+        list += MPC_factionContribution(
+            Factions.INDEPENDENT,
+            0.2f,
+            0.1f,
+            null,
+            addBenefactorInfo = false,
+            contributionId = "miscIndependent",
+            factionName = "Misc. Independent"
+        )
+
+        class DiktatRemovalScript: RemoveContributionScript() {
+            override fun run() {
+                val IAIIC = getIAIIC()
+                IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
+            }
+        }
         list += MPC_factionContribution(
             Factions.DIKTAT,
             0.7f,
             0.3f,
-            removeContribution = @JvmSerializableLambda {
-                    IAIIC -> IAIIC.getKnownShipSpecs().filter { it.hasTag("sindrian_diktat") || it.hasTag("lions_guard") || it.hasTag("LG_bp") }.forEach { spec -> IAIIC.removeKnownShip(spec.hullId) }
-            },
+            removeContribution = DiktatRemovalScript(),
             removeNextAction = true,
             requireMilitary = true,
             repOnRemove = -50f
         )
+
         list += MPC_factionContribution(
             Factions.TRITACHYON,
             0.8f,
@@ -407,6 +548,10 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         sanitizeContributions = true
         //sanitizeFactionContributions(list) // no - we should check the next tick
         return list
+    }
+
+    fun getContributionById(id: String): MPC_factionContribution? {
+        return factionContributions.firstOrNull { it.contributionId == id }
     }
 
     fun getFleetMultFromContributingFactions(): Float {
@@ -643,9 +788,12 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     private fun addBenefactorSection(info: TooltipMakerAPI) {
         info.addPara("Probable benefactors:", 10f)
         info.setBulletedListMode(BaseIntelPlugin.BULLET)
-        for (entry in MPC_benefactorDataStore.get().probableBenefactors) {
+        for (entry in benefactorData) {
             entry.addBullet(info)
         }
+        /*for (entry in MPC_benefactorDataStore.get().probableBenefactors) {
+            entry.addBullet(info)
+        }*/
         info.setBulletedListMode(null)
     }
 
@@ -861,6 +1009,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         else if (data is MPC_factionContributionChangeData) {
             val contribution = data.contribution
             val faction = Global.getSector().getFaction(contribution.factionId)
+            val name = contribution.factionName
 
             when (data.reason) {
                 MPC_changeReason.PULLED_OUT -> {
@@ -868,7 +1017,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         "%s pulls out of %s",
                         0f,
                         faction.color,
-                        faction.displayName, "IAIIC"
+                        name, "IAIIC"
                     )
                     label.setHighlightColors(
                         faction.color,
@@ -1762,6 +1911,10 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
     private fun unapplyCommandDisruption() {
         getFOB()?.removeCondition(niko_MPC_ids.IAIIC_COMMAND_DISRUPTED_CONDITION)
+    }
+
+    abstract class RemoveContributionScript: Script {
+        fun getIAIIC(): FactionAPI = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
     }
 }
 

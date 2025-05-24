@@ -3381,10 +3381,6 @@ MPC_IAIICPLReynardSupportOptPush,DialogOptionSelected,"$option == MPC_IAIICPLRey
 MPC_IAIICPLReynardSupportOptLeave,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOptLeave","FireAll PopulateOptions",,,
 "#END League",,,,,,
 ,,,,,,
-# KKL,,,,,,
-AHHH WHAT AM I DOING HERE,,,,,,
-"#END KKL",,,,,,
-,,,,,,
 # Church,,,,,,
 "#END Church",,,,,,
 ,,,,,,
@@ -4383,6 +4379,19 @@ MPC_IAIICJillCMD colonizeArk
 
 AddTextSmall ""Ark FOB colonized"" good","Shuttles are promptly dispatched and vanish into docking baywduiwduwdu","defaultLeave:Leave",
 "#END Colonizing Ark FOB",,,,,,
+,,,,,,
+# Indie,,,,,,
+MPC_IAIICHammerMercInit,,"MPC_IAIICHammerMercInit",,,,
+,,,,,,
+# The hammer - Baetis,,,,,,
+MPC_IAIICBaetisInteract,PopulateOptions,"$hasMarket
+$menuState == main
+$market.id == ""baetis""
+MPC_IAIICJillCMD contribExists thehammer",,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+"#END The hammer - Baetis",,,,,,
+"#END Indie",,,,,,
 "#END Everything about the IAIIC",,,,,,
 ,,,,,,
 # Ionized Pulse,,,,,,

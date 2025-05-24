@@ -330,7 +330,7 @@ object niko_MPC_specialProcGenHandler {
         // THE MOTHERSHIP - THE SOURCE
         val mothership = system.addSalvageEntity(MathUtils.getRandom(), "MPC_omegaDerelict_mothership", Factions.NEUTRAL)
         mothership.setCircularOrbitWithSpin(magnetar, 20f, 700f, 50f, -10f, 10f)
-        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 14, 14, 20f, 90, 110)) // VERY THREATENING
+        mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 11, 11, 20f, 80, 100)) // VERY THREATENING
 
         /*mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
         mothership.memoryWithoutUpdate["\$hasDefenders"] = true
@@ -352,7 +352,6 @@ object niko_MPC_specialProcGenHandler {
         system.addTag("theme_magnetar")
         system.addTag(Tags.SYSTEM_ABYSSAL)
         //system.addTag(Tags.SYSTEM_CAN_SPAWN_THREAT)
-        system.addTag("theme_magnetar")
         //system.addTag(Tags.NOT_RANDOM_MISSION_TARGET)
 
         system.type = StarSystemGenerator.StarSystemType.DEEP_SPACE

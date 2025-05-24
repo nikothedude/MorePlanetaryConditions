@@ -127,6 +127,11 @@ class MPC_IAIICJillCMD: BaseCommandPlugin() {
 
                 reclaimFOB(FOBmarket, FOB)
             }
+
+            "contribExists" -> {
+                val intel = MPC_IAIICFobIntel.get() ?: return false
+                return intel.getContributionById(params[1].getString(memoryMap)) != null
+            }
         }
         return false
     }

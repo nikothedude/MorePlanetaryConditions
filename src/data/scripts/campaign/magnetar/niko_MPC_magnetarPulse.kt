@@ -15,8 +15,10 @@ import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
+import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import com.fs.starfarer.campaign.PingScript
 import data.scripts.MPC_delayedExecution
 import data.scripts.campaign.listeners.niko_MPC_saveListener
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
@@ -26,7 +28,9 @@ import data.utilities.niko_MPC_ids.DRIVE_BUBBLE_DESTROYED
 import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import data.utilities.niko_MPC_reflectionUtils
 import data.utilities.niko_MPC_stringUtils.toPercent
+import org.json.JSONObject
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f

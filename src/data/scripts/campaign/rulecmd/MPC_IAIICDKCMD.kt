@@ -18,7 +18,6 @@ import data.scripts.campaign.magnetar.crisis.MPC_IAIICDKFuelHubFleetSpawner
 import data.scripts.campaign.magnetar.crisis.cargoPicker.MPC_sindrianOmegaPicker
 import data.scripts.campaign.magnetar.crisis.intel.MPC_DKContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_benefactorDataStore
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_lionsGuardFractalSupport
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
@@ -431,13 +430,6 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
                 val toRemove = intel.factionContributions.firstOrNull { it.factionId == Factions.DIKTAT } ?: return false
                 intel.removeContribution(toRemove, false, dialog)
-                for (entry in MPC_benefactorDataStore.get().probableBenefactors.toList()) {
-                    if (entry.factionId == Factions.DIKTAT) {
-                        MPC_benefactorDataStore.get().probableBenefactors -= entry
-                        break
-                    }
-                }
-
 
             }
         }
