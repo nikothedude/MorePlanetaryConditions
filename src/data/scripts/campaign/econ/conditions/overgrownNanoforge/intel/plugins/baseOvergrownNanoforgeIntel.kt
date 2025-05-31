@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.TableRowClickData
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.ids.Tags.INTEL_MAJOR_EVENT
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
 import com.fs.starfarer.api.ui.*
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
@@ -466,7 +467,7 @@ abstract class baseOvergrownNanoforgeIntel(
     }
 
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        val tags = super.getIntelTags(map)
+        val tags = (super.getIntelTags(map) - INTEL_MAJOR_EVENT).toMutableSet()
         if (niko_MPC_settings.CONDENSE_OVERGROWN_NANOFORGE_INTEL) {
             tags += INTEL_OVERGROWN_NANOFORGES
         } else {
