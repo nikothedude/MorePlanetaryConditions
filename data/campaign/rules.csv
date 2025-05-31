@@ -4056,6 +4056,19 @@ $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing la
 "#END The four houses you have to convince",,,,,,
 "#END Hegemony",,,,,,
 ,,,,,,
+# Indie,,,,,,
+,,,,,,
+# The hammer - Baetis,,,,,,
+MPC_IAIICHammerMercInit,,,,,,
+MPC_IAIICBaetisInteract,PopulateOptions,"$hasMarket
+$menuState == main
+$market.id == ""baetis""
+MPC_IAIICJillCMD contribExists thehammer","SetOptionColor MPC_IAIICHammerMercShuttle highlight","Your sensors panel automatically highlights a small city on the far side of the planet - the headquarters of ""The Hammer"", a somewhat blasphemously named mercenary group of devout Luddites.","3:MPC_IAIICHammerMercShuttle:Take a shuttle to meet the mercenaries",
+MPC_IAIICHammerMercShuttle,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttle",,"You and your bodyguards load onto a small shuttle and blah blah",,
+MPC_IAIICHammerMercShuttleTwo,,,,,,
+"#END The hammer - Baetis",,,,,,
+"#END Indie",,,,,,
+,,,,,,
 # Ark FOB Comms directory,,,,,,
 ,,,,,,
 # Jill Mirthson (Leader),,,,,,
@@ -4379,19 +4392,6 @@ MPC_IAIICJillCMD colonizeArk
 
 AddTextSmall ""Ark FOB colonized"" good","Shuttles are promptly dispatched and vanish into docking baywduiwduwdu","defaultLeave:Leave",
 "#END Colonizing Ark FOB",,,,,,
-,,,,,,
-# Indie,,,,,,
-MPC_IAIICHammerMercInit,,"MPC_IAIICHammerMercInit",,,,
-,,,,,,
-# The hammer - Baetis,,,,,,
-MPC_IAIICBaetisInteract,PopulateOptions,"$hasMarket
-$menuState == main
-$market.id == ""baetis""
-MPC_IAIICJillCMD contribExists thehammer",,,,
-NEW RULE,,,,,,
-NEW RULE,,,,,,
-"#END The hammer - Baetis",,,,,,
-"#END Indie",,,,,,
 "#END Everything about the IAIIC",,,,,,
 ,,,,,,
 # Ionized Pulse,,,,,,

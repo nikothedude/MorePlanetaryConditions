@@ -1,5 +1,6 @@
 package data.scripts.campaign.magnetar.crisis.intel
 
+import com.fs.starfarer.api.EveryFrameScript
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
@@ -412,7 +413,6 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             factionName = "Tactistar"
         )
 
-
         class BaetisExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
                 return Global.getSector().economy.getMarket("baetis").isInhabited()
@@ -421,7 +421,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
             0.4f,
-            0f,
+            0.05f,
             null,
             contributorExists = BaetisExistsScript(Factions.INDEPENDENT, false),
             contributionId = "thehammer",
@@ -463,8 +463,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
-            0.1f,
-            0.4f,
+            0.3f,
+            0.6f,
             null,
             contributorExists = null, // exists on one of your planets
             addBenefactorInfo = false,
@@ -592,6 +592,22 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         Global.getSector().addListener(this)
         MPC_IAIICInspectionPrepIntel(this)
         isImportant = true
+
+        class IndieContribAdderScript(): EveryFrameScript {
+            val interval = IntervalUtil(0.1f, 0.1f)
+
+            override fun isDone(): Boolean = false
+
+            override fun runWhilePaused(): Boolean = false
+
+            override fun advance(amount: Float) {
+                interval.advance(amount)
+                if (interval.intervalElapsed()) {
+                    MPC_indieContributionIntel.get(true)
+                }
+            }
+        }
+        Global.getSector().addScript(IndieContribAdderScript())
     }
 
     private fun setup() {

@@ -19,7 +19,7 @@ class MPC_incomeTallyListener: BaseCampaignEventListener(false) {
             }
             const val MAX_STORE_SIZE = 7 // only store the last x reports
         }
-        private var tally = ArrayList<Float>()
+        private val tally = ArrayList<Float>()
 
         fun addTally(report: MonthlyReport) {
             tally += calculateTotalIncome(report)

@@ -27,6 +27,7 @@ data class MPC_factionContribution(
     var addBenefactorInfo: Boolean = true,
     var bulletColor: Color = Global.getSector().getFaction(factionId).baseUIColor,
     var benefactorSuffix: String? = null,
+    var custom: Any? = null
 ) {
     open class ContributorExistsScript(val factionId: String, val requireMilitary: Boolean) {
         open fun run(): Boolean {
