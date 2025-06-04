@@ -1,3 +1,10 @@
+0.0.2
+
+IAIIC
+    Started aloof aristocrat
+
+    COMSEC now intervenes if you turn 2 houses
+
 0.0.1
 
 Beginning beta changelog

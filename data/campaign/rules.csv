@@ -3692,6 +3692,11 @@ Back to work.",,
 "#END Go to eventide and make contact with the aristocrat",,,,,,
 ,,,,,,
 # The four houses you have to convince,,,,,,
+MPC_cutCommLinkIntcrt,DialogOptionSelected,"$option == MPC_cutCommLinkIntcrt","FireBest MPC_cutCommLinkIntcrtTwo",,,
+MPC_cutCommLinkIntcrtTwoNormal,MPC_cutCommLinkIntcrtTwo,"!$global.MPC_IAIICHegeCOMSECIntercepting","$option = cutCommLink
+FireBest DialogOptionSelected",,,
+MPC_cutCommLinkIntcrtTwoIntercepted,MPC_cutCommLinkIntcrtTwo,"$global.MPC_IAIICHegeCOMSECIntercepting score:10",,"Before you can cut the commlink, you receive a ping from your comms panel. An incoming comms transfer from somewhere on eventide, abnormally obfuscated and tagged hegemony. Someone wants to speak with you.","MPC_IAIICHegeCOMSECInterc:Accept the comms request
+cutCommLink:Ignore the request",
 ,,,,,,
 # Militaristic house - sabotage hegemony,,,,,,
 ,,,,,,
@@ -3776,13 +3781,13 @@ $HeOrShe reaches for the camera. ""...and captain?""
 
 ""Thank you for giving us an excuse.""
 
-The comm link cuts.","cutCommLink:Cut the comm link",
+The comm link cuts.","MPC_cutCommLinkIntcrt:Cut the comm link",
 MPC_milAristoDoneMeetFourThreat,DialogOptionSelected,"$option == MPC_milAristoDoneMeetFourThreat","AdjustRepActivePerson VENGEFUL -10
 HideFirstPerson
 
 $temporarilyIgnoreYou = true","$HeOrShe looks completely unamused. A moment later, the comm link abruptly cuts.
 
-A success, you think.","cutCommLink:Cut the comm link",
+A success, you think.","MPC_cutCommLinkIntcrt:Cut the comm link",
 "#END Militaristic - resolve",,,,,,
 ,,,,,,
 # Militaristic - bounty hunter comms,,,,,,
@@ -3790,16 +3795,35 @@ MPC_IAIICHMilBountyHunterDiktat,MPC_IAIICHMilBountyHunterHail,,"$entity.ignorePl
 
 ""Attention $playerName!"" The individual before you barks, making you wince. ""Your fleet has been cleared and contracted to eliminate yours, for your... ah... 'anti-social behavior."" $HeOrShe snorts, turning back.
 
-""Prepare to die."" $HeOrShe cuts the comm link before you haev a chance to respond.
+""Prepare to die."" $HeOrShe cuts the comm link before you have a chance to respond.
 
 (TODO: Make special dialogue for each fleet, like vanilla)","cutCommLink:Cut the comm link",
 "#END Militaristic - bounty hunter comms",,,,,,
 "#END Militaristic house - sabotage hegemony",,,,,,
 ,,,,,,
 # Aloof house - obtain unassailable proof,,,,,,
-MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
-!$global.MPC_didAloofAristoSecondMeet score:100","$global.MPC_didAloofAristoSecondMeet = true
-FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves ",,"FireAll MPC_aloofAristoMeetOpts"
+MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000","BeginConversation MPC_hegeAristoDefector
+$global.MPC_didAloofAristoSecondMeet = true
+FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves into the familiar visage of Aleratus Youn, smiling softly.
+""Hello Captain!"" she hums, clearing off her desk. ""What brings you here?""",,"!$global.MPC_didAloofAristoSecondMeet score:100"
+MPC_aloofAristoMeetOptsCutComms,MPC_aloofAristoMeetOpts,,,,"100:cutCommLink:Cut the comm link",
+MPC_aloofAristoMeetOptsStartQuest,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo","MPC_addOptionConfirmation MPC_aloofAristoStartQuest ""Youn is known to COMSEC, and this link is likely being monitored by INTSEC at all times. Setting it to private will tip them off and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
+FireAll MPC_aloofAristoStartQuestModify",,"1:MPC_aloofAristoStartQuest:Switch the commlink to private and get to work",
+MPC_aloofAristoStartQuestModifyHouseActive,MPC_aloofAristoStartQuestModify,"MPC_IAIICHegeCMD dealingWithAHouse","SetEnabled MPC_aloofAristoStartQuest false
+SetTooltip MPC_aloofAristoStartQuest ""Setting your commlink to private while COMSEC is already breathing down your neck could compromise this entire operation. It's best to finish your current dealings first.""",,,
+MPC_aloofAristoStartQuestModifyCooldown,MPC_aloofAristoStartQuestModify,"MPC_IAIICHegeCMD cooldownActive","SetEnabled MPC_aloofAristoStartQuest false
+SetTooltip MPC_aloofAristoStartQuest ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
+,,,,,,
+# The actual questline,,,,,,
+MPC_aloofAristoStartQuest,DialogOptionSelected,"$option == MPC_aloofAristoStartQuest",,"Your camfeed glitches momentarily as you set the camfeed to private. No doubt COMSEC will be angered by this, but leaving it public could have disastrous consequences.
+
+""Hm? Am I missing something?"" Aleratus questions, raising her brow.
+
+","MPC_aloofAristoStartQuestTwo:""OpSec. I want to talk to you about how best we can 'convince' your house.""",
+MPC_aloofAristoStartQuestTwo,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestTwo",,"She gasps - and lets out a coo, nodding slowly as she slowly comprehends you. ""Ah... smart, Captain!"" she grins, mimicking your motions and setting the already-private link to private. ""Now that we have this 'OpSec', let's get to business.""
+
+",,
+"#END The actual questline",,,,,,
 "#END Aloof house - obtain unassailable proof",,,,,,
 ,,,,,,
 # Opportunistic House - Bribe them with something,,,,,,
@@ -4094,19 +4118,45 @@ $temporarilyIgnoreYou = true","You make the transfer, taking care to encrypt it 
 
 ""Now, shoo! Shoo! I have much to do now! Namely, ah-hah-well, you know how INTSEC is about this sort of thing. Toodles!"" he makes a playful gesture with his hand and terminates the commlink.
 
-You're getting really tired of interacting with aristocrats.","cutCommLink:Cut the comm link",
+You're getting really tired of interacting with aristocrats.","MPC_cutCommLinkIntcrt:Cut the comm link",
 MPC_oppAristoMeetHasZiggDeny,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggDeny",,"He freezes, a cold hatred falling over him. All pretenses of friendliness vanish, replaced by a clear-as-day malicious glare. ""If you do this, Captain. We will make your life hell. Or, more accurately -"" he hisses, jabbing a finger into his chest. ""*I* will make your life hell.""
 
 ""Don't be a *traitor*, Captain. Don't be an *idiot*.""","MPC_oppAristoMeetHasZiggTransfer:""Okay. Fine."" (Transfer the dataset)
 MPC_oppAristoMeetHasZiggDenyConfirm:Cut the comm link (confirm)",
 MPC_oppAristoMeetHasZiggDenyConfirm,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggDenyConfirm","$temporarilyIgnoreYou = true
 HideFirstPerson
-MPC_IAIICHegeCMD OPPtraitor","The enraged face of the aristocrat vanishes, replaced by the blackness of a vacant commlink. You're certain this will have consequences. But you don't care. This dataset is infinitely more valuable than some assistance in a foreign war.","cutCommLink:Cut the comm link",
+MPC_IAIICHegeCMD OPPtraitor","The enraged face of the aristocrat vanishes, replaced by the blackness of a vacant commlink. You're certain this will have consequences. But you don't care. This dataset is infinitely more valuable than some assistance in a foreign war.","MPC_cutCommLinkIntcrt:Cut the comm link",
 MPC_oppAristoMeetHasZiggCantCopy,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggCantCopy","RemoveOption MPC_oppAristoMeetHasZiggCantCopy
 $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing larger. ""Good. Not sure I trust you bloody *s-spacers* with this kind of data anyway."" he eloquently hisses. ""You'd probably just give it back to those genocidal Tri-Tach fellows... or worse."" he cringes. ""The *luddites*...""",,
 "#END Return to opp arristo at any time",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 "#END The four houses you have to convince",,,,,,
+,,,,,,
+# COMSEC intervention,,,,,,
+,,,,,,
+# COMSEC interception after the second house,,,,,,
+MPC_IAIICHegeCOMSECInterc,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECInterc","BeginConversation MPC_hegeIntsecGoon","Your communication panel disparately tries to cling to the now-obfuscated commlink, fighting through layers of encryption and proxy-stations to locate it's source. And, finally, after what feels like an eternity, it does so.
+
+An unfamiliar man sits across from you, likely on the other side of the planet. ""Hello, $PlayerFirstName. Think we should have a little *chat*.""","MPC_IAIICHegeCOMSECIntercTwo:Continue",
+MPC_IAIICHegeCOMSECIntercTwo,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECIntercTwo",,"""It has come to our *attention* that something... strange, is happening on eventide. Spontanious civil unrest amongst the aristocracy, strangely shifting 'opinions'..."" he takes a mirthful appearance and shrugs. ""Things a faction should, frankly, never say... they're *saying it*. And all-the-while, you run about the sector, back and forth from eventide, either in our space or without, but always returning here...""
+
+He leans in, eyes like fire. ""Care to explain how you're involved?""","MPC_IAIICHegeCOMSECIntercDenyInv:""Not at all, Sir. I have business here, and elsewhere. The responsibilities of being in a war..."" (Lie)
+MPC_IAIICHegeCOMSECIntercRefuseToAnswer:""I refuse to answer."" (UNFINISHED)
+MPC_IAIICHegeCOMSECIntercCocky:""Oh, nothing. Just helping some aristocrats with treason against the hegemony."" (UNFINISHED)
+MPC_IAIICHegeCOMSECIntercYoureCOMSEC:""You're COMSEC, aren't you?"" (UNFINISHED)",
+MPC_IAIICHegeCOMSECIntercDenyInv,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECIntercDenyInv","$player.ethosLiar++
+SetTextHighlights ""Youn""
+
+FireBest MPC_IAIICHegeCOMSECIntercThree","His face darkens, but makes a show of lightening. ""Ah, yes, Captain."" he dully states, balling his hands. ""The obligations, such as... accepting private commlinks of aristocracy, making contact with the well-known Youn house... for unknown reason, of course."" he stiffly muses, as an afterthought.",,
+MPC_IAIICHegeCOMSECIntercThree,MPC_IAIICHegeCOMSECIntercThree,,"HideFirstPerson","""-well. In any case, we'd just like you to know one thing.""
+
+He breathes deeply, pulling out a small peace of paper. It is a photograph - an analog photograph, taken from outside the flower shop you had meet Aleratus. A depiction of you, looking around, bodyguards flanking... and the aloof woman entering through the front door. Just before she slammed into your bodyguard.
+
+He flattens the photo against the steel desk he sits at. ""We are watching. And while your... status..."" he cringes. ""Makes direct intervention difficult?"" He stiffens, and grimaces. ""Just give us an excuse.""
+
+""That is all. Dismissed."" he grumbles, cutting the comm link with one swift motion.","cutCommLink:Cut the comm link",
+"#END COMSEC interception after the second house",,,,,,
+"#END COMSEC intervention",,,,,,
 "#END Hegemony",,,,,,
 ,,,,,,
 # Indie,,,,,,
@@ -4391,9 +4441,9 @@ He rolls his eyes. ""This is just business. I sell my ships, people buy them. I 
 MPC_IAIICMMMCRepInitGreetFour,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetFour","AdjustRepActivePerson SUSPICIOUS -1","He lets out an exaggerated sigh. ""Well what do you want me to do, vet whoever comes in here?! Noone does that! The more questions you ask the less buyers you have - and it just ain't fair!"" he glares, slapping his PDA on the table. ""You've got some manufacturing dontcha?! You should know what it takes to keep a business like this running!""","MPC_IAIICMMMCRepInitGreetFive:""Well I'm not giving you a choice. Vet your customers.""
 cutCommLink:Apologize, and cut the comm link",
 MPC_IAIICMMMCRepInitGreetFive,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetFive","$temporarilyIgnoreYou = true
-HideActivePerson
+HideFirstPerson
 
-SetTextHiglights ""disruption"" ""orbital works""
+SetTextHighlights ""disruption"" ""orbital works""
 MPC_IAIICIndieCMD MMMCtoldOff
 ","He stares at you for a while, weighing his options and sizing you up. He growls, then hits the comms-disconnect, returning your screen to black. Seems they won't listen to reason. Looks like you'll have to hit them a little harder.
 

@@ -685,7 +685,9 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             )
         }
 
-        if (housesTurned == 3) {
+        if (housesTurned == 2) {
+            Global.getSector().memoryWithoutUpdate.set("\$MPC_IAIICHegeCOMSECIntercepting", true, 0f)
+        } else if (housesTurned == 3) {
             text?.addPara("Suddenly, MilSec lights up with alarming reports of IAIIC activity - it seems INTSEC is not happy about your attempts to sabotage their efforts.")
             retaliate(text)
         }

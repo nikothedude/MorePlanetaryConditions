@@ -52,6 +52,8 @@ object MPC_People {
     const val HEGE_OPPORTUNISTIC_ARISTO_REP = "MPC_hegeAristoOpportunistRep"
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
 
+    const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
+
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
             Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] = HashMap<String, PersonAPI>()
@@ -466,23 +468,23 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
-        if (MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] == null) {
-            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+        if (MPC_importantPeople[HEGE_INTSEC_GOON] == null) {
+            val goon = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 
-            aristo.id = HEGE_MILITARIST_ARISTO_REP
+            goon.id = HEGE_INTSEC_GOON
 
-            aristo.rankId = Ranks.ARISTOCRAT
-            aristo.postId = "MPC_militaristicAristo"
+            goon.rankId = Ranks.SPECIAL_AGENT
+            goon.postId = Ranks.POST_SPECIAL_AGENT
 
-            aristo.importance = PersonImportance.VERY_HIGH
-            aristo.voice = Voices.ARISTO
+            goon.importance = PersonImportance.MEDIUM
+            goon.voice = Voices.SOLDIER
 
-            aristo.name = FullName("Allison", "Mellour", Gender.FEMALE)
+            goon.name = FullName("Simon", "Fellspar", Gender.FEMALE)
 
-            importantPeople.addPerson(aristo)
-            MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] = aristo
+            importantPeople.addPerson(goon)
+            MPC_importantPeople[HEGE_INTSEC_GOON] = goon
 
-            aristo.makeImportant("MPC_hegeAristo")
+            goon.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

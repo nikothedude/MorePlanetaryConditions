@@ -1,3 +1,8 @@
+4.3.5a
+SAVE COMPATIBLE
+
+Game doesnt crash now (lol)
+
 4.3.5
 NOT SAVE COMPATIBLE
 
