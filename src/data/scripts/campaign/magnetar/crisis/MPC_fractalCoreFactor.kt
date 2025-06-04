@@ -23,10 +23,12 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.niko_MPC_modPlugin
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addMarketPeople
@@ -181,6 +183,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             if (!isReclaimed) {
                 market.addSubmarket(Submarkets.SUBMARKET_OPEN)
                 market.addSubmarket(Submarkets.SUBMARKET_BLACK)
+            } else {
+                market.addSubmarket(Submarkets.LOCAL_RESOURCES)
             }
             market.addSubmarket(Submarkets.SUBMARKET_STORAGE)
             if (isReclaimed) (market.getSubmarket(Submarkets.SUBMARKET_STORAGE)?.plugin as? StoragePlugin)?.setPlayerPaidToUnlock(true)
@@ -362,18 +366,15 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
         initFOBFleets(station, market, fractalSystem)
 
-        MPC_delayedExecution(
-            @JvmSerializableLambda {
+        class MPC_respawnFleets(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+            override fun executeImpl() {
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).modifyFlat("AAA", 500f)
                 market.respawnAllFleets()
                 market.stats.dynamic.getMod(Stats.FLEET_QUALITY_MOD).unmodify("AAA") // i dont know why
                 // but the fleets spawn with a fuckload of dmods here for some reason. this is just to counter it
-
-            },
-            0.2f,
-            false,
-            useDays = true
-        ).start()
+            }
+        }
+        MPC_respawnFleets(IntervalUtil(0.2f, 0.2f)).start()
         //FOBIntel.setListener(this)
         //Global.getSector().intelManager.addIntel(FOBIntel)
 

@@ -15,6 +15,7 @@ import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActionEnvelope
 import com.fs.starfarer.api.impl.campaign.NPCHassler
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript.getRelativeFactionStrength
 import com.fs.starfarer.api.impl.campaign.econ.AICoreAdmin
 import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
@@ -24,7 +25,10 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.intel.deciv.DecivTracker
-import com.fs.starfarer.api.impl.campaign.intel.events.*
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
+import com.fs.starfarer.api.impl.campaign.intel.events.BaseFactorTooltip
+import com.fs.starfarer.api.impl.campaign.intel.events.EventFactor
+import com.fs.starfarer.api.impl.campaign.intel.events.HostileActivityEventIntel
 import com.fs.starfarer.api.impl.campaign.intel.group.FGBlockadeAction.FGBlockadeParams
 import com.fs.starfarer.api.impl.campaign.intel.group.FGRaidAction.FGRaidType
 import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel
@@ -33,21 +37,24 @@ import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI.GenericRaid
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission.FleetStyle
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.rulecmd.SetStoryOption.BaseOptionStoryPointActionDelegate
+import com.fs.starfarer.api.impl.campaign.rulecmd.SetStoryOption.StoryOptionParams
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.IntelUIAPI
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.ai.CampaignFleetAI
-import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
-import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_changeReason
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContribution
@@ -64,6 +71,7 @@ import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageTyp
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalSupportFleetAssignmentAI
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.IAIIC_QUEST
 import data.utilities.niko_MPC_ids.MPC_FOB_ID
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.isInhabited
@@ -146,8 +154,18 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val fleetSize = getFleetMultFromContributingFactions()
 
         if (fleetSize <= MIN_FLEET_SIZE_TIL_GIVE_UP) {
+            //forceAllOutAttack()
             end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
         }
+    }
+
+    fun forceAllOutAttack() {
+        for (stage in stages.toList()) {
+            if (stage.id != Stage.ALL_OR_NOTHING) {
+                stages.remove(stage)
+            }
+        }
+        setProgress(999999999)
     }
 
     fun updateDoctrine() {
@@ -385,7 +403,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             requireMilitary = true,
             repOnRemove = -40f
         )
-        Global.getSector().importantPeople.getPerson(People.DAUD).makeImportant("\$MPC_IAIICquest")
+        Global.getSector().importantPeople.getPerson(People.DAUD).makeImportant(IAIIC_QUEST)
 
         class ChurchRemovalScript: RemoveContributionScript() {
             override fun run() {
@@ -412,10 +430,13 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             benefactorSuffix = "Branch on Culann",
             factionName = "Tactistar"
         )
+        val culann = Global.getSector().economy.getMarket("culann")
+        culann.makeStoryCritical(IAIIC_QUEST)
+        culann.commDirectory.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.TACTISTAR_REP))
 
         class BaetisExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
-                return Global.getSector().economy.getMarket("baetis").isInhabited()
+                return Global.getSector().economy.getMarket("baetis")?.isInhabited() ?: return false
             }
         }
         list += MPC_factionContribution(
@@ -428,12 +449,14 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             benefactorSuffix = "Baetis",
             factionName = "The Hammer"
         )
-        Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP).makeImportant("\$MPC_IAIICquest")
-        Global.getSector().economy.getMarket("baetis")?.commDirectory?.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP))
+        //Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP).makeImportant("\$MPC_IAIICquest")
+        //Global.getSector().economy.getMarket("baetis")?.commDirectory?.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP))
+        Global.getSector().economy.getMarket("baetis").makeStoryCritical(IAIIC_QUEST)
+        Global.getSector().economy.getMarket("baetis").primaryEntity.makeImportant(IAIIC_QUEST)
 
         class BlackKnifeExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
-                return Global.getSector().economy.getMarket("qaras").isInhabited()
+                return Global.getSector().economy.getMarket("qaras")?.isInhabited() ?: return false
             }
         }
         list += MPC_factionContribution(
@@ -448,7 +471,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         class MMMCExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
-                return Global.getSector().economy.getMarket("new_maxios").isInhabited()
+                return Global.getSector().economy.getMarket("new_maxios")?.isInhabited() ?: return false
             }
         }
         list += MPC_factionContribution(
@@ -473,7 +496,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         class AgreusExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
-                return Global.getSector().economy.getMarket("agreus").isInhabited()
+                return Global.getSector().economy.getMarket("agreus")?.isInhabited() ?: return false
             }
         }
         list += MPC_factionContribution(
@@ -488,9 +511,11 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         class AlimarExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
-                return Global.getSector().economy.getMarket("ailmar").isInhabited()
+                return Global.getSector().economy.getMarket("ailmar")?.isInhabited() ?: return false
             }
         }
+        val ailmar = Global.getSector().economy.getMarket("ailmar")
+        ailmar?.admin?.makeImportant(IAIIC_QUEST)
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
             0.3f,
@@ -684,6 +709,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 startBlockade()
             }
             Stage.FIRST_SABOTAGE, Stage.SECOND_SABOTAGE -> {
+                Global.getSector().memoryWithoutUpdate["\$MPC_voidsunCanSpawnNow"] = true
                 sabotage()
             }
             Stage.ALL_OR_NOTHING -> {
@@ -799,6 +825,78 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             }
             addStageDesc(info, stage, small, false)
         }
+    }
+
+    override fun afterStageDescriptions(main: TooltipMakerAPI?) {
+        super.afterStageDescriptions(main)
+
+        val width = barWidth
+        val color = Misc.getStoryOptionColor()
+        val dark = Misc.getStoryDarkColor()
+        val bw = 100f
+        val button = addGenericButton(main, bw, color, dark, "Escalate", HostileActivityEventIntel.BUTTON_ESCALATE)
+        val inset = width - bw
+
+        //inset = 0f;
+        button.getPosition().setXAlignOffset(inset)
+        main!!.addSpacer(0f).getPosition().setXAlignOffset(-inset)
+        if (currentAction != null) {
+            button.isEnabled = false
+
+            main!!.addTooltipTo(object : TooltipCreator {
+                override fun isTooltipExpandable(tooltipParam: Any?): Boolean {
+                    return false
+                }
+
+                override fun getTooltipWidth(tooltipParam: Any?): Float {
+                    return 450f
+                }
+
+                override fun createTooltip(tooltip: TooltipMakerAPI, expanded: Boolean, tooltipParam: Any?) {
+                    tooltip.addPara(
+                        "Only available when a hostile action is not ongoing.", 0f
+                    )
+                }
+            }, button, TooltipLocation.BELOW)
+        }
+    }
+
+    override fun storyActionConfirmed(buttonId: Any?, ui: IntelUIAPI) {
+        if (buttonId === HostileActivityEventIntel.BUTTON_ESCALATE) {
+            ui.recreateIntelUI()
+        }
+    }
+
+    override fun getButtonStoryPointActionDelegate(buttonId: Any?): StoryPointActionDelegate? {
+        if (buttonId === HostileActivityEventIntel.BUTTON_ESCALATE) {
+            val params = StoryOptionParams(
+                null, 1, "escalateCrisis",
+                Sounds.STORY_POINT_SPEND_INDUSTRY,
+                "Escalated IAIIC crisis"
+            )
+            return object : BaseOptionStoryPointActionDelegate(null, params) {
+                override fun confirm() {
+                    setProgress(999999999)
+                }
+
+                override fun getTitle(): String? {
+                    return null
+                }
+
+                override fun createDescription(info: TooltipMakerAPI) {
+                    info.setParaInsigniaLarge()
+                    info.addPara(
+                        "Take certain actions to provoke the IAIIC further. Forces attrition to escalate to the %s.",
+                        -10f,
+                        Misc.getHighlightColor(),
+                        "next stage"
+                    )
+                    info.addSpacer(20f)
+                    super.createDescription(info)
+                }
+            }
+        }
+        return null
     }
 
     private fun addBenefactorSection(info: TooltipMakerAPI) {
@@ -1046,7 +1144,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         "%s unable to provide support to %s",
                         0f,
                         Misc.getHighlightColor(),
-                        faction.displayName, "IAIIC"
+                        contribution.factionName, "IAIIC"
                     )
                     label.setHighlightColors(
                         faction.color,
@@ -1059,7 +1157,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         "%s joins the IAIIC project",
                         0f,
                         Misc.getHighlightColor(),
-                        faction.displayName
+                        contribution.factionName
                     )
                 }
             }
@@ -1127,7 +1225,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 }
                 MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS -> {
                     info.addPara(
-                        "%s crumbles as the sector abandons it!",
+                        "%s crumbles as the sector abandons it! (NOTE-this will be replaced later by forcing the all out attack)",
                         initPad,
                         getFaction().color,
                         "IAIIC"
@@ -1178,14 +1276,14 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         escalationLevel += amount
         FOB.addSpecialItems()
         FOB.reapplyConditions()
-        MPC_delayedExecution(
-            @JvmSerializableLambda {
-                FOB.respawnAllFleets()
-            },
-            0.2f,
-            runWhilePaused = false,
-            useDays = true
-        ).start() // respawn all the fleets
+        class MPC_respawnFleets(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+            override fun executeImpl() {
+                val intel = MPC_TTContributionIntel.get()
+                intel?.state = MPC_TTContributionIntel.State.RESOLVE
+                intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.RESOLVE, false, false)
+            }
+        }
+        MPC_respawnFleets(IntervalUtil(0.2f, 0.2f)).start()
         val recentUnrest: RecentUnrest = RecentUnrest.get(FOB) ?: return
         if (recentUnrest.penalty > 1) {
             val toStabilize = (recentUnrest.penalty - 1)
@@ -1354,6 +1452,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             evacuateFob(fob)
         }
         if (reason.consideredVictory) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_IAIICDefeated"] = true
             beginCoreUpgrade()
             //beginHumanitarianAction()
             if (fob != null) {
@@ -1435,12 +1534,20 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     private fun beginCoreUpgrade() {
-        MPC_delayedExecution(
-            @JvmSerializableLambda { MPC_fractalUpgradeIntel() },
-            30f,
-            false,
-            useDays = true
-        ).start()
+        class MPC_upgrade(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+            override fun executeImpl() {
+                val colony = MPC_fractalCoreReactionScript.Companion.getFractalColony() ?: return
+                Global.getSector().memoryWithoutUpdate["\$MPC_fractalColonyName"] = colony.name
+                Global.getSector().memoryWithoutUpdate["\$MPC_fractalSystemName"] = colony.containingLocation.name
+
+                Global.getSector().campaignUI.showInteractionDialog(
+                    RuleBasedInteractionDialogPluginImpl(
+                        "MPC_coreUpgradedInit"
+                    ), Global.getSector().playerFleet
+                )
+            }
+        }
+        MPC_upgrade(IntervalUtil(30f, 30f)).start()
     }
 
     private fun dismissCombatFleets() {
@@ -1545,7 +1652,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
         val fleetSizeMult: Float = FOB.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).computeEffective(0f)
 
-        val f: Float = HostileActivityEventIntel.get()?.getMarketPresenceFactor(colony.starSystem) ?: 6f
+        val f: Float = HostileActivityEventIntel.get()?.getMarketPresenceFactor(colony.starSystem)?.coerceAtLeast(1f) ?: 1f
 
         var totalDifficulty = (fleetSizeMult * 22f * (1f * f))
 
@@ -1756,8 +1863,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         fleet.addScript(NPCHassler(fleet, source.starSystem))
         fleet.memoryWithoutUpdate["\$nex_ignoreTransponderBlockCheck"] = true
 
-        MPC_delayedExecution(
-            @JvmSerializableLambda {
+        class LocalScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval, useDays = false) {
+            override fun executeImpl() {
                 if (!fleet.isExpired && !fleet.isEmpty) {
                     val travel = fleet.assignmentsCopy.firstOrNull { it.assignment == FleetAssignment.GO_TO_LOCATION }
                     if (travel != null) {
@@ -1765,11 +1872,9 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                         castedAssignmentData.maxDurationInDays *= 2f
                     }
                 }
-            },
-            0f,
-            false,
-            useDays = false
-        ).start()
+            }
+        }
+        LocalScript(IntervalUtil(0f, 0f)).start()
     }
 
     override fun reportFleetReachedEntity(fleet: CampaignFleetAPI?, entity: SectorEntityToken?) {
@@ -1874,8 +1979,12 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         } else {
             sendUpdateIfPlayerHasIntel(reason, false)
         }
-
-        MPC_delayedExecution(@JvmSerializableLambda { if (!isEnded) { sabotage() } }, 0.3f, runWhilePaused = false, useDays = true).start()
+        class MPC_sabotageScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+            override fun executeImpl() {
+                if (!isEnded) sabotage()
+            }
+        }
+        MPC_sabotageScript(IntervalUtil(0.3f, 0.3f)).start()
         daysLeftTilNextRetaliate = RETALIATE_COOLDOWN_DAYS
     }
 

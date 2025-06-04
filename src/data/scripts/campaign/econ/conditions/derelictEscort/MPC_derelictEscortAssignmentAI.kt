@@ -15,7 +15,7 @@ import data.utilities.niko_MPC_settings
 import org.lazywizard.lazylib.MathUtils
 
 // lots of this was inspired by tiandong patrol ai
-class MPC_derelictEscortAssignmentAI(
+open class MPC_derelictEscortAssignmentAI(
     val fleet: CampaignFleetAPI,
     var target: CampaignFleetAPI,
     var homeMarket: MarketAPI,
@@ -144,7 +144,7 @@ class MPC_derelictEscortAssignmentAI(
         delete()
     }
 
-    fun abortAndReturnToBase() {
+    open fun abortAndReturnToBase() {
         derelictEscortStates.RETURNING_TO_BASE.overrideAssignment(fleet, this, homeMarket.primaryEntity)
         fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
         homeMarket.getEscortFleetList() -= target

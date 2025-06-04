@@ -1,0 +1,30 @@
+0.0.1
+
+Beginning beta changelog
+
+IAIIC
+    NOT SAVE COMPATIBLE WITH EXISTING CRISISES
+
+    Hegemony 2nd part finished; 2/6 main components
+        This one is VERY funny
+
+    Independent quest progress
+        Ailmar
+        Baetus
+        Tactistar
+        Qaras
+        MMMC
+
+    Ark FOB colonziation no longer crashes without indevo
+    Ark FOB colonziation now has the building screen accessable
+
+    The primary reward for the crisis is now implemented
+        +1 skill point
+        +10 story points
+        VERY powerful skills for the fractal core
+
+    No longer shows in the faction menu until the crisis begins
+
+    Lambdas refactored into stable classes
+
+    Escalate button added to IAIIC intel

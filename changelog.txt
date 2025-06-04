@@ -1,5 +1,5 @@
 4.3.5
-SOMETIMES SAVE COMPATIBLE, IT DEPENDS ON YOUR GAMESTATE
+NOT SAVE COMPATIBLE
 
 Magnetar pulses are now blocked if you're behind a planet
     No visual effect for this as it's honestly torture lol
@@ -8,7 +8,11 @@ Magnetar fleets made far more visible, less spawn, and they have slightly less F
 Magnetar pulses have longer delays
 
 Fixed the rare crash or AI failure on nanoforge expedition fleets
+    Active expedition fleets will cause your game to crash on updating - sorry
 Nanoforges on planets without the condition now remove themselves. Hopefully
+Delayed execution scripts replaced by safer, class-based alternatives
+
+Serialized lambdas refactored into stable classes
 
 4.3.4
 

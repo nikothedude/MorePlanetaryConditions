@@ -12,12 +12,14 @@ import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_DKInfiltrationCondition
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICDKFuelHubFleetSpawner
 import data.scripts.campaign.magnetar.crisis.cargoPicker.MPC_sindrianOmegaPicker
 import data.scripts.campaign.magnetar.crisis.intel.MPC_DKContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.support.MPC_lionsGuardFractalSupport
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
@@ -235,18 +237,16 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 ourIntel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.WAIT_FOR_MACARIO, dialog.textPanel)
 
                 val delay = if (Global.getSettings().isDevMode) 1f else 7f
-                MPC_delayedExecution(
-                    {
+                class macarioReturnScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                    override fun executeImpl() {
                         val intel = MPC_DKContributionIntel.get()
                         if (intel != null) {
                             intel.state = MPC_DKContributionIntel.State.RETURN_TO_MACARIO
                             intel.sendUpdateIfPlayerHasIntel(MPC_DKContributionIntel.State.RETURN_TO_MACARIO, false, false)
                         }
-                    },
-                    delay,
-                    useDays = true,
-                    runWhilePaused = false
-                ).start()
+                    }
+                }
+                macarioReturnScript(IntervalUtil(delay, delay)).start()
             }
 
             "isWaiting" -> {

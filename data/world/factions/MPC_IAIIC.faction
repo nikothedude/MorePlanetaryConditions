@@ -366,8 +366,8 @@
 			"canBombard":false,
 			"territorial":false,
 		},
-		"showInIntelTab":false,
 	},
+	"showInIntelTab":false,
 	"fleetTypeNames":{
 		"trade":"Logistics Convoy",
 		"smallTrader":"Trader",

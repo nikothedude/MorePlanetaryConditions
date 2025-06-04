@@ -13,8 +13,11 @@ I will probably go around and do some quality passes on any writing you submit.
 ## Spriting
 Just make the ships look good and I'll tell you what I think.
 
-### Lore
+## Lore
 Any writing must have a good grasp of the vanilla setting, or at least make sense within the world of starsector and WWLB.
+
+## Methodology
+Please make your contributions via pull requests.
 
 # CURRENT FOCUSES
 Current projects I am open for help on.
@@ -52,7 +55,7 @@ The main modules that I need help on are the **faction questlines.**
 Due to design philosophy **3**, faction questlines are intended to be a resource investment. Because of this, a few approaches are suggested.
 1. Time-gates: At certain points within the questline, it is suggested to force the player to wait a month or so.
 2. Mutual exclusivity: This is likely to be implemented by me. Some way to prevent you from progressing multiple questlines at once.
-3. Resource intensivity: Story points, colony items, special items, etc. Credits are not suggested as a primary drain - a end-game colony can easily get credits.
+3. Resource intensivity: Story points, colony items, special items, etc. If using credits, a clamped percent of the player's money / income (using MPC_incomeTally) is suggested.
 4. Challenge: Hard fights, puzzles to solve, etc.
 5. Intrigue: Reputation loss for factions, or other related "soft" losses.
 
@@ -79,13 +82,21 @@ If going for "a favor" approach, it is suggested that whatever plot you design h
 
 #### TODO List
 
-1. Hegemony (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS)
-2. Luddic Church (UNCLAIMED, NOT STARTED)
-3. Independent (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS)
+1. Hegemony (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS) - see hegemonyquest.txt
+2. Luddic Church (UNCLAIMED, NOT STARTED) - see churchquest.txt
+3. Independent (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS) - SEE independentquest.txt
+   1. Tactistar - Finished, touchups are desired
+   2. Baetis - Finished, proofreading is desired
+   3. Ailmar - Finished, could possibly use extra dialog
+   4. Qaras - Prototyped - Should be longer, have more fluff
+   5. MMMC - Prototyped - conclusion is too short
+   6. Voidsun - Started
+   7. Agreus - Not started
+   8. More independent quests are always welcome
 4. Tri-Tachyon (FINISHED - NEEDS TOUCHUPS AND FURTHER RESOURCE INVESTMENT)
-5. Diktat (FINISHED - NEEDS TOUCHUPS)
-    Possible lore conflicts with deposing Umbra's quartermaster
-   Needs to be longer
+5. Diktat (FINISHED - NEEDS A REWRITE, POSSIBLY REDESIGN)
+   * Possible lore conflicts with deposing Umbra's quartermaster
+   * Needs to be longer
 6. Luddic Path (FINISHED - NO CHANGES NEEDED)
 
 ### Alliances
@@ -95,21 +106,29 @@ data.scripts.campaign.magnetar.crisis.intel.support.MPC_fractalCrisisSupport
 
 #### TODO List
 
-1. Persean League (UNCLAIMED, NOT STARTED)
-    Only obtainable if you are in the PL!
-    Have to strongarm heynard (or whoever leads the league) and he gets all shifty about it
-    Sends a moderate amount of defense fleets
-2. Lion's Guard (UNCLAIMED, NOT STARTED)
-   Talk to horacio
-    Donate omega weapons, or threat weapons, or something really high tech and flashy, you knnow the LG
-    Sends a number of lion's guard (SPECIFICALLY LG) fleets
+1. Persean League (IMPLEMENTED, NOT WRITTEN)
+    * Only obtainable if you are in the PL!
+    * Have to strongarm heynard (or whoever leads the league) and he gets all shifty about it
+    * Sends a moderate amount of defense fleets
+2. Lion's Guard (PROTOTYPED, NEEDS EXTRA CONTENT)
+    * Talk to horacio
+    * Donate omega weapons, or threat weapons, or something really high tech and flashy, you knnow the LG
+    * Sends a number of lion's guard (SPECIFICALLY LG) fleets
 3. Diktat (UNCLAIMED, NOT STARTED, **OPTIONAL**)
-    Talk to Hyder
-    Do something more substantial(?)
-    
-    Sends a number of diktat fleets (NOT LIONS GUARD)
+    * Talk to Hyder
+    * Do something more substantial(?)
+    * Sends a number of diktat fleets (NOT LIONS GUARD)
+    * Potentially exclusive with the Lion's Guard(?)
+4. Tactistar (FINISHED, COULD USE SOME EXTRA DIALOG)
+    * Part of the independent quests
+    * Pay extra for high tier mercenaries
+<hr>
+### Misc
 
-    Potentially exclusive with the Lion's Guard(?)
+#### NON-BLOCKING
+Remnant integration - talk to a nexus, give proof of the fractal core...
+    They... do... something?
+    Maybe they send fleets?
 
 ### Requirements
 Rules.csv knowledge is **NECESSARY**. Code capability is preferred.
@@ -123,4 +142,8 @@ Any pull requests submitted will be reviewed. Feel free to suggest changes or fi
 The magnetar is in the abyss, bottom left. Disable sensors to find a collection of jump points in the abyss.
 
 ## IAIIC Crisis
-Run niko_MPC_prepareIAIICEvent
+Go to lunasettings, enable the IAIIC event
+
+Run niko_MPC_prepareIAIICEvent with the fractal core you get from the irradiated planet in magnetar
+
+Dialog options marked with (UNFINISHED) are expected to be broken

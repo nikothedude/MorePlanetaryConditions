@@ -16,11 +16,14 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
 import com.fs.starfarer.api.loading.CampaignPingSpec
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import com.fs.starfarer.campaign.PingScript
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
@@ -243,19 +246,17 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                     if (fleet.isPlayerFleet) {
                         val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
                         if (discoveredInterdictTech) break
-                        MPC_delayedExecution(
-                            @JvmSerializableLambda {
+                        class parryDiscoverScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                            override fun executeImpl() {
                                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
                                     Global.getSector().campaignUI.showInteractionDialog(
                                         RuleBasedInteractionDialogPluginImpl("MPC_hidMagnetarPulseFirstTime"),
                                         Global.getSector().playerFleet
                                     )
                                 }
-                            },
-                            0.1f,
-                            false,
-                            useDays = true
-                        ).start()
+                            }
+                        }
+                        parryDiscoverScript(IntervalUtil(0.1f, 0.1f)).start()
                     }
                     break
                 }
@@ -474,19 +475,17 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                     if (fleet.isPlayerFleet) {
                         val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
                         if (discoveredInterdictTech) return
-                        MPC_delayedExecution(
-                            @JvmSerializableLambda {
+                        class MPC_hitByPulseScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                            override fun executeImpl() {
                                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
                                     Global.getSector().campaignUI.showInteractionDialog(
                                         RuleBasedInteractionDialogPluginImpl("MPC_hitByMagnetarPulseFirstTime"),
                                         Global.getSector().playerFleet
                                     )
                                 }
-                            },
-                            0.1f,
-                            false,
-                            useDays = true
-                        ).start()
+                            }
+                        }
+                        MPC_hitByPulseScript(IntervalUtil(0.1f, 0.1f)).start()
                     }
                 }
             }

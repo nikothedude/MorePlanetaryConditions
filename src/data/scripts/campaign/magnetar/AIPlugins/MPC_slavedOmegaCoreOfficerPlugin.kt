@@ -8,6 +8,7 @@ import com.fs.starfarer.api.impl.campaign.BaseAICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ids.Personalities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Skills
+import com.fs.starfarer.api.impl.campaign.missions.hub.BaseHubMission.isDevMode
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import data.utilities.niko_MPC_ids
@@ -60,8 +61,12 @@ class MPC_slavedOmegaCoreOfficerPlugin: BaseAICoreOfficerPluginImpl() {
         person.stats.setSkillLevel(Skills.SYSTEMS_EXPERTISE, 2f)
         person.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 2f)
         person.stats.setSkillLevel(Skills.POINT_DEFENSE, 2f)
-        person.stats.setSkillLevel(Skills.ENERGY_WEAPON_MASTERY, 2f)
         person.stats.setSkillLevel(niko_MPC_ids.FRACTAL_OPTIMIZATIONS_SKILL_ID, 2f)
+        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.FRACTAL_CORE_UPGRADED) || Global.getSettings().isDevMode) {
+            person.stats.setSkillLevel(niko_MPC_ids.BATTLEMIND_SKILL_ID, 2f)
+        } else {
+            person.stats.setSkillLevel(Skills.ENERGY_WEAPON_MASTERY, 2f)
+        }
 
         /*if (points != 0) {
             person.memoryWithoutUpdate[AICoreOfficerPlugin.AUTOMATED_POINTS_VALUE] = points

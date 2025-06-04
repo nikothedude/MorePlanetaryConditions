@@ -11,8 +11,10 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.rulecmd.missions.BarCMD
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.magnetar.crisis.MPC_TTBMCacheDefenderSpawnScript
 import data.scripts.campaign.magnetar.crisis.contribution.MPC_factionContributionChangeData
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
@@ -236,16 +238,14 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
                 return (MPC_IAIICFobIntel.getIAIICStrengthInSystem() * 100f) < 60f
             }
             "startWaitForExecs" -> {
-                MPC_delayedExecution(
-                    {
+                class MPC_waitForExecsScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                    override fun executeImpl() {
                         val intel = MPC_TTContributionIntel.get()
                         intel?.state = MPC_TTContributionIntel.State.RESOLVE
                         intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.RESOLVE, false, false)
-                    },
-                    30f,
-                    runWhilePaused = false,
-                    useDays = true
-                ).start()
+                    }
+                }
+                MPC_waitForExecsScript(IntervalUtil(30f, 30f)).start()
                 val intel = MPC_TTContributionIntel.get()
                 intel?.state = MPC_TTContributionIntel.State.WAIT
                 intel?.sendUpdateIfPlayerHasIntel(MPC_TTContributionIntel.State.WAIT, dialog.textPanel)

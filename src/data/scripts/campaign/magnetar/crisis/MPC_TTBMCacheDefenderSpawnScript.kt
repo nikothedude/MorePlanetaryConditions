@@ -11,8 +11,11 @@ import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGeneratorPlugin
 import com.fs.starfarer.api.loading.VariantSource
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.rpg.Person
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_mathUtils.prob
 import org.lazywizard.lazylib.MathUtils
@@ -71,52 +74,49 @@ class MPC_TTBMCacheDefenderSpawnScript(
         )
         params.averageSMods = 1
         params.maxShipSize = 3
+
         //params.officerNumberMult = 1.5f
 
         val fleet = FleetFactoryV3.createFleet(params)
-        //fleet.containingLocation = system
-        MPC_delayedExecution(
-            {
-                fleet.inflateIfNeeded()
-                fleet.inflater = null
 
-                fleet.fleetData.membersListCopy.forEach {
-                    val copyVariant = it.variant.clone()
-                    copyVariant.originalVariant = null
-                    if (copyVariant.hullSpec.shieldType == ShieldAPI.ShieldType.NONE) {
-                        copyVariant.addPermaMod(HullMods.MAKESHIFT_GENERATOR, true)
-                    }
-                    if (copyVariant.hullSpec.shieldType != ShieldAPI.ShieldType.PHASE) {
-                        copyVariant.addPermaMod(HullMods.HARDENED_SHIELDS, true)
-                        copyVariant.addPermaMod(HullMods.STABILIZEDSHIELDEMITTER, true)
-                        if (prob(50)) {
-                            copyVariant.addPermaMod(HullMods.OMNI_SHIELD_CONVERSION, true)
-                        } else {
-                            copyVariant.addPermaMod(HullMods.EXTENDED_SHIELDS, true)
-                        }
-                    } else if (!copyVariant.hasHullMod(HullMods.PHASE_ANCHOR)){
-                        copyVariant.addPermaMod(HullMods.ADAPTIVE_COILS, true)
-                    }
-                    copyVariant.source = VariantSource.REFIT
-                    it.setVariant(copyVariant, false, true)
-                    if (prob(70)) {
-                        it.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
-                    } else {
-                        it.captain = null
-                    }
-                    RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet(it)
-                    it.repairTracker.cr = it.repairTracker.maxCR
+        fleet.inflateIfNeeded()
+        fleet.inflater = null
+
+        fleet.fleetData.membersListCopy.forEach {
+            val copyVariant = it.variant.clone()
+            copyVariant.originalVariant = null
+            if (copyVariant.hullSpec.shieldType == ShieldAPI.ShieldType.NONE) {
+                copyVariant.addPermaMod(HullMods.MAKESHIFT_GENERATOR, true)
+            }
+            if (copyVariant.hullSpec.shieldType != ShieldAPI.ShieldType.PHASE) {
+                copyVariant.addPermaMod(HullMods.HARDENED_SHIELDS, true)
+                copyVariant.addPermaMod(HullMods.STABILIZEDSHIELDEMITTER, true)
+                if (prob(50)) {
+                    copyVariant.addPermaMod(HullMods.OMNI_SHIELD_CONVERSION, true)
+                } else {
+                    copyVariant.addPermaMod(HullMods.EXTENDED_SHIELDS, true)
                 }
-                fleet.flagship.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
-                RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet(fleet.flagship)
-                fleet.flagship.repairTracker.cr = fleet.flagship.repairTracker.maxCR
-                fleet.setFaction(Factions.TRITACHYON, true)
-                fleet.commander = fleet.flagship.captain
-            },
-            0f,
-            false,
-            useDays = false
-        ).start()
+            } else if (!copyVariant.hasHullMod(HullMods.PHASE_ANCHOR)){
+                copyVariant.addPermaMod(HullMods.ADAPTIVE_COILS, true)
+            }
+            copyVariant.source = VariantSource.REFIT
+            it.setVariant(copyVariant, false, true)
+            if (prob(70)) {
+                it.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
+                it.variant.addTag(Tags.VARIANT_DO_NOT_DROP_AI_CORE_FROM_CAPTAIN)
+            } else if (prob(90)) {
+                it.captain = AICoreOfficerPluginImpl().createPerson(Commodities.BETA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
+            } else {
+                it.captain = AICoreOfficerPluginImpl().createPerson(Commodities.GAMMA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
+            }
+            RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet(it)
+            it.repairTracker.cr = it.repairTracker.maxCR
+        }
+        fleet.flagship.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.TRITACHYON, MathUtils.getRandom())
+        RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet(fleet.flagship)
+        fleet.flagship.repairTracker.cr = fleet.flagship.repairTracker.maxCR
+        fleet.setFaction(Factions.TRITACHYON, true)
+        fleet.commander = fleet.flagship.captain
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOSTILE] = true

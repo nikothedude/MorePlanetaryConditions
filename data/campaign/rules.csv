@@ -1268,14 +1268,15 @@ MPC_hegemonySpyRepatriateTextNo,MPC_hegemonySpyReportWhatWillBeDoneWithSpyImpl,"
 MPC_hegemonySpyReportAskToSpeakWithSpy,DialogOptionSelected,"$option == MPC_hegemonySpyReportAskToSpeakWithSpy","RemoveOption MPC_hegemonySpyReportAskToSpeakWithSpy false","$HeOrShe chuffs, rolling $hisOrHer shoulders. ""Suit yourself, but I don't think you'll get much out of it."" $HeOrShe moves to the side, offering you unrestricted access to the cell's voicebox.
 
 It becomes quickly apparent that either this man is legitimately blackout-drunk, or a incredible actor. Either way, the chief's assertion is right - this man is impenetrable to you.",,
-MPC_hegemonySpyLeaveOffice,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOffice","SetTextHighlightColors luddic_church hegemony independent tritachyon luddic_path
-SetTextHighlights ""church"" ""hegemony"" ""KKL"" ""tri-tach"" ""pather""
+MPC_hegemonySpyLeaveOffice,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOffice","SetTextHighlightColors hegemony
+SetTextHighlights ""hege""
 AdjustRep hegemony SUSPICIOUS -5
 AdjustRep luddic_church SUSPICIOUS -5
 AdjustRep independent SUSPICIOUS -5
 AdjustRep luddic_path SUSPICIOUS -5","You give $personFirstName a salute, and spin around to take your leave. 
 
-$HeOrShe hesitates. ""$PlayerSirOrMadam-"" $heOrShe blurts out, tone suddenly having dropped. ""-there's something I forgot to tell you."" Turning back, you make sure to give her $himOrHer your best impatient stare. $HeOrShe responds immediately. ""-we've been picking up some chatter in the external comm-nets. As soon as he sent his signal, we picked up a significant increase in church, hegemony, KKL, tri-tach and even some pather comms. Coupled with an increase of scouting fleets by those factions..."" $heOrShe takes a breath. ""I think we're looking at a coordinated operation, $playerSirOrMadam.""","MPC_hegemonySpyLeaveOfficeTwo:Continue",
+$HeOrShe hesitates. ""$PlayerSirOrMadam-"" $heOrShe blurts out, tone suddenly having dropped. ""-there's something I forgot to tell you."" Turning back, you make sure to give her $himOrHer your best impatient stare. $HeOrShe responds immediately. ""-we've been picking up some chatter on the hege commnet. Real intense chatter too...
+$HeOrShe hesitates. ""-seems... whatever this man was here to do, he pulled it off."" $HeOrShe sighs, a look of self-disappointment falling over $hisOrHer now limited visage.","MPC_hegemonySpyLeaveOfficeTwo:Continue",
 MPC_hegemonySpyLeaveOfficeTwo,DialogOptionSelected,"$option == MPC_hegemonySpyLeaveOfficeTwo","EndConversation
 FireBest BarPrintDesc
 BarCMD showOptions
@@ -1443,11 +1444,15 @@ RACA_ignore:Leave the AI core in control and let things be",
 MPC_RACAFC_answer,DialogOptionSelected,"$option == MPC_RACAFC_answer","ShowPersonVisual
 $global.MPC_RACAFCGotExposition = true
 
-FireAll MPC_RACAFC_populateOptions","oh whatever get back to this later, TLDR 1. it cant be contained 2. it wants to see how you fight the IAIIC and 3. giving it tot he IAIIC is a valid action it wont protest
+FireAll MPC_RACAFC_populateOptions","Your PDA swirls between playful colors, a joyful green then a sad blue-purple. Between the crystalizing fractals you can make out crude images, imitations of old terran art - a plaster general studying a clay war - a student sitting in a classroom - a wireframe man walking through a wood of oak - the shattered bars of a steel jail cell.
+At the end of the sequence you receive some sort of flightplan - a stealth shuttle towards the Ark FOB. Behind is the earth you stand on - the planet - with it's lack of administrator highlighted, alongst with it's notably reduced efficiency. But its safety ensured.
 
-","10:MPC_RACAFC_whyObserve:Ask the $personName why it wants to observe the conflict",
-MPC_RACAFC_whyObserve,DialogOptionSelected,"$option == MPC_RACAFC_whyObserve",,"Your question elicits no response from the $personName.",,
-MPC_RACAFC_addSurrenderOption,MPC_RACAFC_populateOptions,,,,"50:MPC_RACAFC_surrenderOption:Consider handing the core over to the IAIIC
+It seeks to observe the conflict. It cannot be contained - and it wishes to leave? No - no... it will leave if it becomes too much an issue. You think.
+
+TODO this is kinda barebones and a little rushed maybe?",,
+MPC_RACAFC_addWhyObserveOption,MPC_RACAFC_populateOptions,"!$player.MPC_askedFractalWhyObserve",,,"10:MPC_RACAFC_whyObserve:Ask the $personName why it wants to observe the conflict",
+MPC_RACAFC_whyObserve,DialogOptionSelected,"$option == MPC_RACAFC_whyObserve","$player.MPC_askedFractalWhyObserve = true","Your question elicits no response from the $personName.",,
+MPC_RACAFC_addSurrenderOption,MPC_RACAFC_populateOptions,,,,"15:MPC_RACAFC_surrenderOption:Consider handing the core over to the IAIIC
 20:MPC_RACAFC_cutComm:Cut the comm link",
 MPC_RACAFC_surrenderOption,DialogOptionSelected,"$option == MPC_RACAFC_surrenderOption",,"The $personName has guaranteed it's cooperation if you choose to hand it over to the IAIIC, as it considers it a valid course of action for you to take. Sacrificing the core will end the IAIIC's reign of terror, but you'll gain nothing from it.","0:MPC_RACAFC_confirmSurrender:Confirm the surrender
 10:MPC_RACAFC_denySurrender:Reconsider",
@@ -1456,6 +1461,52 @@ MPC_RACAFC_confirmSurrender,DialogOptionSelected,"$option == MPC_RACAFC_confirmS
 Sighing, you close the door behind you and resolve yourself never to let yourself get caught off guard like this again.","0:defaultLeave:Continue",
 MPC_RACAFC_denySurrender,DialogOptionSelected,"$option == MPC_RACAFC_denySurrender","FireAll MPC_RACAFC_populateOptions","You reconsider your options.",,
 MPC_RACAFC_cutComm,DialogOptionSelected,"$option == MPC_RACAFC_cutComm","DismissDialog",,,
+,,,,,,
+# IAIIC Defeated - the core goes missing and doesnt answer,,,,,,
+MPC_RACAFCIAIICDefeatedInit,MPC_RACAFractalCoreTwo,"$global.MPC_IAIICDefeated score:200
+!$global.MPC_fractalCoreUpgraded",,"You give the order to try - yet again - to disconnect the AI core, and it unfortunately fails. Frustrated, you attempt to contact your 'administrator' again, but find no response. Wherever it is, it doesn't want to talk right now.","RACA_ignore:Leave",
+"#END IAIIC Defeated - the core goes missing and doesnt answer",,,,,,
+,,,,,,
+# Core upgrade dialog,,,,,,
+MPC_coreUpgradedInit,MPC_coreUpgradedInit,,"SetTextHighlightColors player player
+SetTextHighlights $global.MPC_fractalSystemName $global.MPC_fractalColonyName
+niko_MPC_musicToggle music_diktat_encounter_friendly true true","You abruptly get a comms request from $global.MPC_fractalSystemName space - marked high priority. It seems to be encoded with the colonial transponder of $global.MPC_fractalColonyName - the planet you recently fought a sector-spanning war over.","MPC_coreUpgradedTwo:Open a channel",
+MPC_coreUpgradedTwo,DialogOptionSelected,"$option == MPC_coreUpgradedTwo","MPC_IAIICJillCMD showFractalCorePerson
+
+SetTextHighlightColors highlight player
+SetTextHighlights ""fractal core"" $global.MPC_fractalColonyName","To your astonishment, the swirling and curving orange-white display of your fractal core in charge of $global.MPC_fractalColonyName appears before you. Electronics gets right to work countering system intrusions - but much to both of your reliefs, the only inflow of data being of a much more plain - but none less interesting - nature.
+
+Contained within the massive data packets being sent are gigabytes upon gigabytes of intense data-analysis of your fight the IAIIC. Despite being esoteric in nature, the broad swaths are enough to be, if not readable, intuitive. The intelligence seems to be greatly impressed with your handling of the conflict, with the chance of ""POSITIVE DISSOLUTION"" annotated to be only ""THREE PERCENT"".
+
+TODO; this should include some details of *how* you handled it - did you massacre baetis? etc","MPC_coreUpgradedThree:""So all this time you were just... watching? That's why you didn't let us uninstall you?""",
+MPC_coreUpgradedThree,DialogOptionSelected,"$option == MPC_coreUpgradedThree",,"It's response comes in the form of garbled, intricately aligned bytes of machine code your systems, either by mistake or accuracy, call malware. You decide not to run it.
+Nonetheless, a second package quickly comes in. While equally arcane as the last, it seems to be some sort of... efficiency report? At least, tactical suggests with a half-shrug. Places fleets could be better positioned, ways to further optimize ground defenses... and some sort of... discovered... uplink? Your science officer suggests, ""It-seems to be... writing about some sort of feature it's discovered in itself."" your officer's finger taps the PDA, highlighting a small section of eloquent ""writing"".
+""In summary... it... some sort of fold in space? I--it... believes... see - here when it discusses 'trabimestered fiddling space' - uh, it..."" your officer stops. ""....I... I really don't know. We'll just have to see what it does...""","MPC_coreUpgradedFour:Continue",
+MPC_coreUpgradedFour,DialogOptionSelected,"$option == MPC_coreUpgradedFour","HideFirstPerson","The final message before the commlink is abruptly terminated - on your end, you note - is what could be the most straightforward communication this intelligence has ever used.
+
+A note, reading:
+
+     It's okay to remove me now.
+
+And then the link dies - the panel falls dark, the messages stop. You are just left in your bridge, stunned into silence.","MPC_coreUpgradedFive:Continue",
+MPC_coreUpgradedFive,DialogOptionSelected,"$option == MPC_coreUpgradedFive",,"Slowly, though, heads turn away from the now blank display to their workstations, and the steady hum of clacking and report-cycles resumes. Your officers return to their stations, save for tactical - who stays at your side.
+
+""What a cycle, right?"" your officer muses, staring out into the space beyond your viewscreen.
+
+TODO: a moment for reflection on the entire IAIIC crisis, here?","MPC_coreUpgradedEnd:Get back to work",
+MPC_coreUpgradedEnd,DialogOptionSelected,"$option == MPC_coreUpgradedEnd","SetTextHighlights ""Nothing can stop you.""
+AddStoryPoints 10
+AddTextSmall ""Gained 1 skill point"" highlight
+AddTextSmall ""Fractal core upgraded"" good
+MPC_IAIICJillCMD giveEndSkillPoint
+MPC_IAIICJillCMD upgradeCore","You sit back down on your chair, as does Tactical. Resuming your duties, you feel a satisfied and triumphant smile crawl across your lips. They've thrown all they have, but it wasn't enough. You beat them back - took what was yours. And now?
+
+Nothing can stop you.
+
+","MPC_coreUpgradedLeave:Grasp the stars - and leave",
+MPC_coreUpgradedLeave,DialogOptionSelected,"$option == MPC_coreUpgradedLeave","DismissDialog
+niko_MPC_musicToggle """" false",,,
+"#END Core upgrade dialog",,,,,,
 "#END RACAFractal",,,,,,
 ,,,,,,
 # IAIIC Rep,,,,,,
@@ -2724,7 +2775,9 @@ MPC_IAIICDKCMD canAskMacarioAboutIAIIC score:1250","BeginConversation macario","
 
 ""Captain, o captain,"" he greets you, his tone bored. ""Not yet."" He winks and goes to hit the shut-off - but pauses, his eyes slowly trawling back up to meet yours.
 
-""Unless... you have something to discuss?"" A knowing smile creeps upon his lips.","0:MPC_IAIICDKAskMacarioAboutIAIICOpt:""Yes. The IAIIC.""
+""Unless... you have something to discuss?"" A knowing smile creeps upon his lips.
+
+!!THIS QUESTLINE IS VERY LACKING AND MAY RECEIVE A TOTAL REDESIGN IN THE FUTURE!!","0:MPC_IAIICDKAskMacarioAboutIAIICOpt:""Yes. The IAIIC.""
 10:cutCommLink:""No."" (Leave)",
 MPC_IAIICDKAskMacarioAboutIAIICOpt,DialogOptionSelected,"$option == MPC_IAIICDKAskMacarioAboutIAIICOpt","SetTextHighlights ""Use them""","""Ah, yes."" He softly smiles. ""The Independant AI core Investigatory commission..."" he waxes, pulling up a small stack of papers, daring only to keep them partially in your view. ""Such idealism. Useful tools, if one were to..."" his grasp on the papers tightens, bending the corners. ""Use them.""
 
@@ -3374,8 +3427,8 @@ MPC_IAIICDKSindriaCacheLeave,DialogOptionSelected,"$option == MPC_IAIICDKSindria
 # League,,,,,,
 MPC_IAIICPLReynardSupport,PopulateOptions,"$id == ""reynard_hannan""
 MPC_IAIICPLCMD canAskForSupport",,,"30:MPC_IAIICPLReynardSupportOpt:""My space is under attack by a foreign power. Where's my defense fleets, Reynard? What about our agreement?""",
-MPC_IAIICPLReynardAccuse,PopulateOptions,"MPC_IAIICPLCMD canAccuse",,,"20:MPC_IAIICPLReynardAccuseOpt:""I demand you end your assistance in the IAIIC's illegal war against my properties!""",
-MPC_IAIICPLReynardSupportOpt,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOpt","SetStoryOption MPC_IAIICPLReynardSupportOptPush 2 MPC_getDownPayment ui_char_spent_story_point ""Strongarmed the League into providing defense fleets""","im actually not sure how to write reynard lol","MPC_IAIICPLReynardSupportOptPush:""Do you have any idea how this would look in the next assembly?""
+MPC_IAIICPLReynardAccuse,PopulateOptions,"MPC_IAIICPLCMD canAccuse",,,"20:MPC_IAIICPLReynardAccuseOpt:""I demand you end your assistance in the IAIIC's illegal war against my properties!"" (UNFINISHED)",
+MPC_IAIICPLReynardSupportOpt,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOpt","SetStoryOption MPC_IAIICPLReynardSupportOptPush 2 MPC_getDownPayment ui_char_spent_story_point ""Strongarmed the League into providing defense fleets""","im actually not sure how to write reynard lol. ill revisit this later","MPC_IAIICPLReynardSupportOptPush:""Do you have any idea how this would look in the next assembly?""
 MPC_IAIICPLReynardSupportOptLeave:Grumble and shake your head",
 MPC_IAIICPLReynardSupportOptPush,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOptPush","MPC_IAIICPLCMD giveSupport",,"cutCommLink:Cut the comm link",
 MPC_IAIICPLReynardSupportOptLeave,DialogOptionSelected,"$option == MPC_IAIICPLReynardSupportOptLeave","FireAll PopulateOptions",,,
@@ -4059,14 +4112,309 @@ $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing la
 # Indie,,,,,,
 ,,,,,,
 # The hammer - Baetis,,,,,,
-MPC_IAIICHammerMercInit,,,,,,
 MPC_IAIICBaetisInteract,PopulateOptions,"$hasMarket
 $menuState == main
 $market.id == ""baetis""
-MPC_IAIICJillCMD contribExists thehammer","SetOptionColor MPC_IAIICHammerMercShuttle highlight","Your sensors panel automatically highlights a small city on the far side of the planet - the headquarters of ""The Hammer"", a somewhat blasphemously named mercenary group of devout Luddites.","3:MPC_IAIICHammerMercShuttle:Take a shuttle to meet the mercenaries",
-MPC_IAIICHammerMercShuttle,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttle",,"You and your bodyguards load onto a small shuttle and blah blah",,
-MPC_IAIICHammerMercShuttleTwo,,,,,,
+MPC_IAIICJillCMD contribCustomIs thehammer","SetOptionColor MPC_IAIICHammerMercShuttle highlight","Your sensors panel automatically highlights a small city on the far side of the planet - the headquarters of ""The Hammer"", a somewhat blasphemously named mercenary group of devout Luddites.","3:MPC_IAIICHammerMercShuttle:Take a shuttle to meet the mercenaries",
+MPC_IAIICHammerMercShuttle,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttle","ShowImageVisual illustrations vacuum_colony","You and your bodyguards load onto a small shuttle and quickly find a landing pad in the small arcology on the dark side of the planet. Navigation is made difficult by the flickering nav-lamps, but nothing your pilot hasn't seen before. A laborious air-cycle later, you find yourself in the middle of a rusty yet well maintained docking area, surrounded by debaucherous holo-ads promising relinquishment from the grasp of Ludd - which the obligate on-guard knights seem to revile as mammon's temptation.","MPC_IAIICHammerMercShuttleTwo:Continue",
+MPC_IAIICHammerMercShuttleTwo,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttleTwo",,"The small city is easy enough to navigate, despite the grime and disrepair. Your entourage finds it way through its dirty streets, passing by muted foot traffic either smoking on a narcostick or judgmentally glaring at the former. The presence of the knights only somewhat thins as you distance from the spaceport, becoming a mix of faithful insignias and gritty militias in an uneasy peace.
+
+Despite the gloomy atmosphere, hiss of cracked arco-glass, and everpresent scent of rancid chemicals, a glimmer of light occasionally shines through. Your group comes across groups of pilgrims praying at a green-and-white pyre, children kicking balls in the streets, couples arguing over their next job; a smile beaming across their face. This is by far not representative of the seedy populace at large, but it shows that even in a place like this, the human spirit persists.","MPC_IAIICHammerMercShuttleThree:Continue",
+MPC_IAIICHammerMercShuttleThree,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttleThree","SetTextHighlights ""*  THE HAMMER - Mercenary Company"" ""*  8724 Khelno Street"" highlight","You and your guards eventually locate what might must be a town hall - a somewhat maintained granite structure with significant space between it and the nearby residential scrapheaps. You enter, and a brief conversation with a bored secretary later, you're handed a directory for this city and quickly find the location of your target.
+
+    *  THE HAMMER - Mercenary Company
+    *  8724 Khelno Street
+
+You exchange a glance with your bodyguards and nod, respectfully returning the directory to the secretary who accepts it without any acknowledgement. You make your way out of the hall, and towards your destination.
+","MPC_IAIICHammerMercShuttleFour:Delve deeper into the city",
+MPC_IAIICHammerMercShuttleFour,DialogOptionSelected,"$option == MPC_IAIICHammerMercShuttleFour",,"As you make the short trek deeper into the city, you notice a stark increase in both Knights of Ludd and that gritty militia. Armed with standard CP rifles, you are appraised and passed without much consideration. Soon, you find the source; a hybrid mercenary camp and knights base, converted from large industrial warehouses into a fortified encampment. Freelancer mercenaries mix with former and current knights, something typically seen as blasphemous in the church - but perhaps the Baetis minority has more pragmatic ways of doing things.
+
+You carefully approach the gate and quickly come face-to-face with a grizzled-looking guard - one eye missing, a narcostick between what few teeth are left in his mouth. ""Yea'? You lost or somethin', spaceboy?"" He laughs, as does his comrades, yellow spit narrowly avoiding your face.","MPC_IAIICHammerMercGateStraightForward:""I'm here to see your leader. It's about... current events.""",
+MPC_IAIICHammerMercGateStraightForward,DialogOptionSelected,"$option == MPC_IAIICHammerMercGateStraightForward",,"He laughs. ""Hey! Boys! This hotshot thinks he's got something special!"" another chorus of laughter. He turns back - but upon appraising you for a second time, the laughter falls to horrified silence. ""Ah... ah shit it's-"" you notice a hand subconsciously reaching for his sidearm - but before you can raise your own you feel a set of cold gauntlets on yours, and see a similar set on his. Knights of Ludd, deadset on keeping the peace, giving you both judgmental stares. ""-fall not to wrath, Bismar."" a stone-faced knightwoman scolds, much to the gatekeeper's dismay. She turns to you; ""We were told this might happen. Come. We will take you to your quarry - but we will escort you, protecting you from them, and them from you."" She releases her grasp on your hand, and you release your firearm in turn (as do your guards).
+
+She inhales. ""I pray for your calm - we will not hesitate to enforce it.""","MPC_IAIICHammerMercGateEnter:Enter the complex, with the escort",
+MPC_IAIICHammerMercGateEnter,DialogOptionSelected,"$option == MPC_IAIICHammerMercGateEnter","BeginConversation MPC_hammerRep","You are led into the converted warehouse, past a pair of spooked-looking MG-handlers, past the many off-duty mercenaries either praying or playing cards, past the rare knight keeping the peace amongst these mercenaries. Soon enough you find yourself in a rather utilitarian office, with merely a desk, desktop computer, and a man sitting behind it. He scowls as he examines you, and growls, spitting to the side - but not before a quick and quiet prayer.
+
+""So you've come."" he grunts. ""The servant of Mammon $playerHimOrHerself! Why, Ludd tell, do you visit this place of sweat and steel?"" he grunts, leaning in with gritted teeth. ""Here to wipe us out like you have so many others who dare oppose you?""","MPC_IAIICHammerMercConfirmed:""So you ARE involved with the IAIIC?""
+MPC_IAIICHammerMercWhyLudd:""I thought Baetis was predominantly agnostic - and here you are, praying and with a knight escort."" (UNFINISHED)
+MPC_IAIICHammerMercWhyMil:""Isn't the word of Ludd peaceful? Why is a 'hammer' needed?"" (UNFINISHED)",
+MPC_IAIICHammerMercConfirmed,DialogOptionSelected,"$option == MPC_IAIICHammerMercConfirmed","SetOptionColor MPC_IAIICHammerMercLuddic luddic_church
+FireAll MPC_IAIICHammerMercLuddicModify","""Is it not the duty of *all* warriors of Ludd to answer the crusade?"" he hisses, slamming his desk loudly. He rises to his feet; ""To fight against you servants of Moloch?!"" he pants, sitting back down when he catches the exhausted glimpse of an escorting knight.
+
+""Yes, 'Captain'."" he snarls. ""We are 'involved'. No contract. No money. Us soldiers - hammer and sword in hands - will meet you in the battlefield."" he utters a silent prayer. ""May Ludd guide us, and burn your path.""","MPC_IAIICHammerMercLuddic:""Brother. You misunderstand. I am no servant of Mammon.""
+MPC_IAIICHammerMercAnythingICanDo:""Is there anything I can do to convince you to cease your operations?""",
+MPC_IAIICHammerMercLuddicModify,MPC_IAIICHammerMercLuddicModify,"!MPC_IAIICIndieCMD hammerIsFaithful","SetEnabled MPC_IAIICHammerMercLuddic false
+SetTooltip MPC_IAIICHammerMercLuddic ""You do not walk Ludd's path, or practice any of his tenets. To say this would not just be a lie - it would be immediately and noticeably false.""",,,
+MPC_IAIICHammerMercLuddic,DialogOptionSelected,"$option == MPC_IAIICHammerMercLuddic",,"He doubletakes. ""...what?"" he stammers, trying to come to grips with your assertation. ""...you lie. You and your... *demons*, writhing around in your endless debauchery..."" you catch the whiff of a narco-stick from a nearby mercenary. ""...your lies are as sinister as your soul, slave to mammon."" he growls.","MPC_IAIICHammerMercLuddicTwo:""What better way to defeat a demon than to learn from it? To contain it?""",
+MPC_IAIICHammerMercLuddicTwo,DialogOptionSelected,"$option == MPC_IAIICHammerMercLuddicTwo",,"""DESTRUCTION!"" he practically spits, shooting back up again. The exhausted knights quickly jump to force him back down - and his hand off his underdesk rifle. ""'Mammon and Moloch find their ways into the minds of the faithful through lies, deceit, and improper faith!' Have you not read the book of Ludd, if you really are a $playerBrotherOrSister of Ludd?!""","MPC_IAIICHammerMercLuddicThree:""Mammon and Moloch cannot be killed - not until the next great war. And this is not that.""",
+MPC_IAIICHammerMercLuddicThree,DIalogOptionSelected,"$option == MPC_IAIICHammerMercLuddicThree",,"The man blinks twice, confusion falling over his face. You detect a hint of intrigue from a knight as well, who makes sure not to direct it towards you and instead towards just how tight he can make his grip on the man's arm.","MPC_IAIICHammerMercLuddicFour:""What may appear to the unenlightened as my slavery is but my study - any control these demons may have is facsimile.""",
+MPC_IAIICHammerMercLuddicFour,DialogOptionSelected,"$option == MPC_IAIICHammerMercLuddicFour",,"""...how... can I trust you? You... you and your debaucherous nature, you-"" he stumbles over himself, realizing the potential error of his ways.","MPC_IAIICHammerMercLuddicFive:""Think. Have I not proven myself? Have I not walked the Pilgrim's Path? Have I not provided aid to the needy?""",
+MPC_IAIICHammerMercLuddicFive,DialogOptionSelected,"$option == MPC_IAIICHammerMercLuddicFive",,"A slow... recognition seems to come over him. His eyes widen and he takes a deep, wheezing breath. The knights release him - standing by just in case he tenses up again - but instead he relaxes, shaking his head at the table he rests on.
+
+He turns up to you, a stern scowl on his face. ""What you are doing is dangerous, $playerBrotherOrSister. If these demons are to break free...""","MPC_IAIICHammerMercLuddicSix:""I am not Tri-Tachyon. I do what I do because there is no choice.""",
+MPC_IAIICHammerMercLuddicSix,DialogOptionSelected,"$option == MPC_IAIICHammerMercLuddicSix","MPC_IAIICIndieCMD hammerEnd false
+AdjustRepActivePerson FRIENDLY 50
+HideFirstPerson","He nods. And sighs, grimacing as he considers his next steps. ""...if what you say is true. And you truely are walking the path as we are...""
+
+He sighs. ""-Ludd watch over you."" he dismissively waves. The knights escort you out, back outside the complex, much to the astonishment of the mercenaries that overheard your discussion.
+
+A quick comms-ping confirms that a small number of hostile ships in your system have frozen and are beginning their journey back to core space - likely, to nearby dockyards. You silently thank Ludd for this bloodless conclusion - and thank yourself for your quick thinking.","MPC_IAIICHammerMercEnd:Return to your $shipOrFleet",
+MPC_IAIICHammerMercEnd,DialogOptionSelected,"$option == MPC_IAIICHammerMercEnd","EndConversation
+",,,
+MPC_IAIICHammerMercAnythingICanDo,DialogOptionSelected,"$option == MPC_IAIICHammerMercAnythingICanDo","AdjustRepActivePerson VENGEFUL -1","""Anything-"" he spits and sputters, straining against the arms of the knights. A flash of serenity comes over him as he calms, sits, and breathes out. ""What you can do, *spacer*."" he grumbles, eyes lidded shut. ""Is lay down and let our lightened spears cut your form. And maybe, just maybe, your soul may be redeemed...""
+
+You exchange an exhausted glance with the knight to his left. She shakes her head. But not at him - at you.","MPC_IAIICHammerMercKnight:""How do the Knights of Ludd allow such treachery under their nose?""
+MPC_IAIICHammerMercCredits:""Credits? Name your price."" (UNFINISHED)
+MPC_IAIICHammerMercLie:""I'm not using AI. You've been misled!"" (Lie) (UNFINISHED)",
+MPC_IAIICHammerMercKnight,DialogOptionSelected,"$option == MPC_IAIICHammerMercKnight",,"The more senior-looking knight wrinkles her nose and loosens her grip on the man. ""We are here to peacekeep. While we may be... sympathetic, to this man's plight..."" she takes a breath, wincing as she recalls some line from the Book of Ludd. ""...we may not interfere in the affairs of this city and it's inhabitants, unless a municipal crime has been committed."" Contract warfare, you presume, does not count as a crime.","MPC_IAIICHammerMercKnightThreat:""And so you will allow this to continue?""",
+MPC_IAIICHammerMercKnightThreat,DialogOptionSelected,"$option == MPC_IAIICHammerMercKnightThreat",,"The woman scowls. ""...yes. We knights do not have the authority to... interfere, as I've previously stated.""","MPC_IAIICHammerMercKnightThreatTwo:""And... this operation is not illegal? Is it... popular, within this city?""",
+MPC_IAIICHammerMercKnightThreatTwo,DialogOptionSelected,"$option == MPC_IAIICHammerMercKnightThreatTwo",,"""I-"" the young knight begins, only to be shushed by the mercenary who is slowly released - placing his hands on the table. ""-this city? Is our *home*. What credits we make, we pour back into the welfare of faithful and faithless alike..."" he takes a deep breath of the chemical air. ""Whenever a ball is lost? A soldier retrieves it... an injured person will be escorted to a med-center. Children are engaged with, taught the rules of Ludd and Life...""
+
+He looks up to the woman and snorts, much to her disgust. ""Unlike these warmonger knights? We follow the book of Ludd. In one hand, a sword - but in the other... a child's soft hand."" he grins - a toothy, rotten grin, filled with pits and cavities. But one loved.","MPC_IAIICHammerMercKnightThreatThree:""...so there's nothing I can do to stop you, save for 'meeting you in the battlefield'."" (UNFINISHED)
+MPC_IAIICHammerMercKnightThreatMercenary:""...expensive."" (UNFINISHED)
+MPC_IAIICHammerMercKnightThreatCharitable:""...admirable."" (UNFINISHED)",
+MPC_IAIICHammerMercKnightThreatThree,DialogOptionSelected,"$option == MPC_IAIICHammerMercKnightThreatThree","HideFirstPerson
+ShowImageVisual illustrations vacuum_colony","He nods, slowly. ""Now you understand, demon... the hammer of Ludd will not be tempted by earthly desires. We will fight - and fight to the death!"" he hisses, punching his desk - the knights move to prepare to grapple him again. ""And at the edge of apocalypse... we will meet and make our final stand."" he shakes, growling. ""Ludd guide us.""
+
+He turns away, walking to the Book of Ludd behind him. ""-I'm done here. Take him out."" the knights regard you for a moment - far more exhausted than they were before - and take positions behind you, ushering you out. You are glared at - knives pointed, carbines reloaded - on your way out, and you feel a much thicker atmosphere of hostility envelop you. You quickly leave the complex and thank the knights, who regard you as much as one would regard a naive child.","MPC_IAIICHammerMercMakeWayBack:Make your way back to the shuttle",
+MPC_IAIICHammerMercMakeWayBack,DialogOptionSelected,"$option == MPC_IAIICHammerMercMakeWayBack",,"The hostile atmosphere remains thick as fog on your way back. Doors close, children are ushered away by militia, and you note far more hands on weaponry. Seems the city is aware of what you've gotten yourself into, and that the leader told the truth; they really do have significant cultural presence.
+
+So. Bribery won't work. Nor will legalese. Social engineering is unlikely as well. Brute force may be your only option... but a marine invasion would likely be a meatgrinder - both the citizenship and militia would fight against you, and there's no guarantee the Knights wouldn't send a ""peacekeeping"" force to assist as well... to say nothing of the diplomatic consequences.
+
+But it's then you notice something. Something that wells dread in your chest, like a reaper just about to strike.","MPC_IAIICHammerMercMakeWayBackTwo:Inspect the arcology dome",
+MPC_IAIICHammerMercMakeWayBackTwo,DialogOptionSelected,"$option == MPC_IAIICHammerMercMakeWayBackTwo","FireAll MPC_IAIICHammerMercMakeWayBackTwoExtraText","The arcology glass is not dura-diamond matrix. No - this must be an old city. The cracks in the glass - the labored repair efforts, the relatively thin barrier... a single tank of AM fuel could do it, and leave no survivors. You haven't even seen emergency vac-bunkers - you seriously doubt residential areas are vac-sealed. And if your adversary takes this opportunity to relocate in anticipation of a raid, making a precision strike unviable...
+
+You shiver at the thought, but it creeps back in. You stare out into the void, and wonder; are you willing to doom an entire civilization - men, women, children - to death, just to secure your place in the stars?","MPC_IAIICHammerMercMakeWayBackWillBeBad:Yes
+MPC_IAIICHammerMercMakeWayBackWontBeBad:No (UNFINISHED)",
+MPC_IAIICHammerMercMakeWayBackTwoExtraText,MPC_IAIICHammerMercMakeWayBackTwoExtraText,"MPC_IAIICIndieCMD hammerIsRuthless","SetTextHighlights ""It wouldn't be the first time you've committed such atrocities."" bad","It wouldn't be the first time you've committed such atrocities.",,
+MPC_IAIICHammerMercMakeWayBackWillBeBad,DialogOptionSelected,"$option == MPC_IAIICHammerMercMakeWayBackWillBeBad","MPC_IAIICIndieCMD hammerGoAway","You are snapped out of your thought by the overwhelming sound of ad-holos advertising debauchery and freedom from the oppression of Ludd. Around you are numerous travelers, knights, ships, and your entourage - standing right outside the open doors of your shuttle.
+
+You take one last look around you - possibly the last - and board your shuttle, trying to keep your mind off what you might have to do.","MPC_IAIICHammerMercEnd:Return to your $shipOrFleet",
+,,,,,,
+# Bombard baetis - GENOCIDE,,,,,,
+MPC_IAIICBaetisInteractBombard,PopulateOptions,"$hasMarket
+$menuState == main
+$market.id == ""baetis""
+MPC_IAIICJillCMD contribCustomIs thehammer TOLD_TO_GO_AWAY","SetOptionColor MPC_IAIICHammerMercBombard highlight","Your sensors panel automatically highlights a small city on the far side of the planet - the headquarters of ""The Hammer"", a somewhat blasphemously named mercenary group of devout Luddites. You have discovered that they are not interested in diplomacy, and subversion is impractical - leaving only one, drastic option.","2:MPC_IAIICHammerMercBombard:Contemplate a bombardment to wipe out the mercenaries",
+MPC_IAIICHammerMercBombard,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombard","MPC_IAIICIndieCMD hammerBombardMenu",,,
+MPC_IAIICHammerMercBombardExecute,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombardExecute","$player.ethosRuthless++","Your officers give you a look as you give the order. You have to confirm, double-confirm, then triple confirm before your crew reluctantly prepares a AM-can. Artificial scratches, a few hours in a cryo chamber, and just like that you have a fake piece of debris - that is, one loaded with dangerous infernium. A coat of stealth paint to avoid detection by sensors and transit by a small shuttle deploys the payload a mere twenty kilometers above the target, ETA in three minutes...","MPC_IAIICHammerMercBombardExecuteTwo:Wait",
+MPC_IAIICHammerMercBombardExecuteTwo,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombardExecuteTwo","ShowImageVisual illustrations bombard_tactical_result
+PlaySound mine_explosion","You watch through upscaled sensor readings as the expertly disguised infernium canister flies through the air, falling, falling further, descending past the killbox-zones of the ignorant ground defenses, before finding it's mark. And with a fiery explosion, the glass shatters, the air escapes, and hundreds of people die in one of the most horrific ways one can. Artificial gravity immediately fails, sending figures - flailing, scratching at their bloated eyes - into the uninhabitable space beyond the thin layer of glass that is now space-borne shards of deadly sharpness.","MPC_IAIICHammerMercBombardExecuteThree:Try to find the mercenary camp",
+MPC_IAIICHammerMercBombardExecuteThree,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombardExecuteThree",,"It takes a few tries to get your sensor officer's attention. The camera whirrs away from the scene of death at the tip of the arcology to scower the city for any signs of the mercenary group - but no signs of life anywhere are seen. The camp is deserted, the spaceport is empty, and ships have ceased their endless transit, opting instead to desperately scower the breach-point for any survivors.
+
+Eventually, however, the fulcrum focuses on a small point of light. A cam-helmet - a vacsuitted knight holding the bloated corpse of the man you spoke before, charging towards a spaced med-center in the vain hope of saving his life. On the knight's back are two more cadavers - eyes popped of their sockets, wearing matching casual clothes, one man and one woman... both with rings on their index fingers.
+
+Your tactical offer finally reports to you with your expected tactual report. You choose not to tell them off for their tardiness, opting to stare at the terrors of your labor.","MPC_IAIICHammerMercBombardExecuteFour:Read the report",
+MPC_IAIICHammerMercBombardExecuteFour,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombardExecuteFour","AdjustRep luddic_church INHOSPITABLE -10
+AdjustRep luddic_path INHOSPITABLE -10
+AdjustRep independent INHOSPITABLE -20","According to the report, the mission was a complete success. Casualty rate is nearing 95%, with only the occasional survivor in a low-grade vacsuit being spotted. Portions of the mercenary force in your space have already begun to emergency burn back to Baetis, with the remainder stumbling around without proper command.
+
+Local comms chatter is frantic - panicked, terrified, mournful - and church comms report a massive peacekeeping response is already on it's way; not to search, but to rescue. Unfortunately, it seems you haven't avoided all the heat - MuniSec is doubting the possibility of a chance impact, and is continuously bringing up your conflict with The Hammer as a possible motive. This is to say nothing of the tearful survivors already wishing death upon you, curses and all sorts of horrible sayings...","MPC_IAIICHammerMercBombardExecuteFive:Continue",
+MPC_IAIICHammerMercBombardExecuteFive,DialogOptionSelected,"$option == MPC_IAIICHammerMercBombardExecuteFive","MPC_IAIICIndieCMD hammerEnd true","Diplomatic relations will undoubtably be strained. It's hard to deny your part in this, but as long as you keep denying it, tensions will likely remain at a simmer - noone would dare make an accusation without solid evidence. And it's for this reason nav recommends a fast and hard burn away from this planet, to avoid generating any.
+
+You take one last look at the broken arcology - at the church ships hunting for survivors - and turn back. They made their choice, you think. They deserved this.
+
+Right?","defaultLeave:Leave",
+"#END Bombard baetis - GENOCIDE",,,,,,
 "#END The hammer - Baetis",,,,,,
+,,,,,,
+# Tactistar - Culann,,,,,,
+MPC_IAIICTactistarRepInitialGreeting,PickGreeting,"$id == MPC_tactistarRep score:1000
+MPC_IAIICJillCMD contribCustomIs tactistar","BeginConversation MPC_tactistarRep","Your commlink cheerfully springs to life, replacing blackness with a well-dressed man smiling grotesquely. ""Welcome, welcome! You've reached Tactistar operations division - how may I help you? Are you in need of a defense contract? An escort? We offer top rates for optimal protection - would you like to hear from some satisfied customers?""
+
+You raise and shake a hand no, much to the man's disappointment - but his unnatural smile still remains.","MPC_IAIICTactistarRepTalkIAIIC:""I need to talk to you about the IAIIC. Run my name, $playerName, through your database. I'm sure you'll find a hit.""
+cutCommLink:Cut the comm link",
+MPC_IAIICTactistarRepTalkIAIIC,DialogOptionSelected,"$option == MPC_IAIICTactistarRepTalkIAIIC","MPC_IAIICIndieCMD tactistarGenPrice","The man's Customer Appeasement :tm: smile twitches as he processes your words, face frozen in that grotesque smile. Eventually, something snaps and he nods, turning to something off-screen. ""Yes $playerSirOrMadam, let me see here - *ah*..."" his smile only grows wider as his face flashes white - and then red.
+He turns back, furrowed brows betraying his kind expression. ""...apologies, $playerSirOrMadam. We understand why you may take issue with our operation - but a contract is a contract."" he gestures broadly. ""We are under an obligation to maintain our operations - however, if you believe this contract is in error..."" his palms come together in an almost gracious pose. You realize he's waiting for something.","MPC_IAIICTactistarRepBribeLow:""Half a million credits.""",
+MPC_IAIICTactistarRepBribeLow,DialogOptionSelected,"$option == MPC_IAIICTactistarRepBribeLow","SetTextHighlights $global.MPC_IAIICTactistarExitAmntDGS
+","A delighted guffaw escapes his lips as he shakes his head. ""Ah, Captain. You don't seem to understand - this contract is worth *far* more than a measly five hundred thousand.""
+
+He interlocks his fingers, burying his eyes just above his clasped hands. ""$global.MPC_IAIICTactistarExitAmntDGS."" he recites with no flourish or flair. ""$global.MPC_IAIICTactistarExitAmntDGS, and we'll find some flaw in our contract. Quite easy, you see - you should read the fine print sometime."" he chuckles, a grin spreading from behind his hands.","MPC_IAIICTactistarRepBribeJoinHowMuch:""And how much to buy the contract for myself?""","FireAll MPC_IAIICTactistarRepBribeOptions"
+MPC_IAIICTactistarRepBribeJoinHowMuch,DialogOptionSelected,"$option == MPC_IAIICTactistarRepBribeJoinHowMuch","SetTextHighlights $MPC_IAIICTactistarSupportAmntDGS
+MPC_IAIICIndieCMD tactistarOfferGiven
+
+DoCanAffordCheck $global.MPC_IAIICTactistarExitAmnt MPC_IAIICTactistarRepExitBuy
+DoCanAffordCheck $global.MPC_IAIICTactistarSupportAmnt MPC_IAIICTactistarRepSupportBuy","Realizing what you're asking, the representative obtains a delighted expression and double-checks the off-screen object once more. ""A prospective customer! Hm - let's see here - aha! For our esteemed Total System Defense program, it will charge you a measly $MPC_IAIICTactistarSupportAmntDGS!"" he smiles, as if that wasn't an outrageous sum.
+The representative runs you through the ins and outs of the Tactistar defense package - fleets coming and going, acting under your perview, loyalty, et. cetera. The schpeal ends abruptly when it becomes clear you're not exactly listening to the likely fluffed-up claims, and you two get right back to business.","MPC_IAIICTactistarRepExitBuy:Invalidate the contract ($global.MPC_IAIICTactistarExitAmntDGS)
+MPC_IAIICTactistarRepSupportBuy:Purchase the contract ($global.MPC_IAIICTactistarSupportAmntDGS)
+cutCommLink:Cut the comm link",
+MPC_IAIICTactistarRepExitBuy,DialogOptionSelected,"$option == MPC_IAIICTactistarRepExitBuy","AddCredits -$global.MPC_IAIICTactistarExitAmnt
+MPC_IAIICIndieCMD tactistarOver false
+AdjustRepActivePerson FRIENDLY 1
+HideFirstPerson","The credits are transferred, thanks are given, and before you know it you're exchanging pleasantries and cutting the comm link. The fruits of your labor come quickly - reports of mercenary ships leaving IAIIC fleets and moving back to their home base outside your territory.
+
+A good deal, all in all.","cutCommLink:Cut the comm link",
+MPC_IAIICTactistarRepSupportBuy,DialogOptionSelected,"$option == MPC_IAIICTactistarRepSupportBuy","AddCredits -$global.MPC_IAIICTactistarSupportAmnt
+MPC_IAIICIndieCMD tactistarOver true
+AdjustRepActivePerson FRIENDLY 1
+HideFirstPerson","A look of predatory delightment comes over the man as he watches the credit transfer. With a shrill gasp he clasps his hands together and congratulates you. ""Of course,"" he adds. ""There's the matter of the fine print.""
+
+He reveals that, as you expected, the contract is not perpetual - only until the IAIIC is diminished. Additionally, the total quantity of ships sent will not in any way be a match to the IAIIC, and will only be a good supplement. Many other things are discussed - food will have to be provided, and no insurance is guaranteed - but nothing too major.
+
+""We look forward to fighting with you, Captain."" he salutes, smiles, and cuts the comm link.","cutCommLink:Cut the comm link",
+MPC_IAIICTactistarRepSecondGreeting,PickGreeting,"$id == MPC_tactistarRep score:1000
+MPC_IAIICJillCMD contribCustomIs tactistar GIVEN_DEAL","BeginConversation MPC_tactistarRep
+
+DoCanAffordCheck $global.MPC_IAIICTactistarExitAmnt MPC_IAIICTactistarRepExitBuy
+DoCanAffordCheck $global.MPC_IAIICTactistarSupportAmnt MPC_IAIICTactistarRepSupportBuy","The familiar smiling visage of the well-dressed representative appears before you, a representative for the Tactistar mercenary group. ""Ah, Captain! Here to consider my offer?""","MPC_IAIICTactistarRepExitBuy:Invalidate the contract ($global.MPC_IAIICTactistarExitAmntDGS)
+MPC_IAIICTactistarRepSupportBuy:Purchase the contract ($global.MPC_IAIICTactistarSupportAmntDGS)
+cutCommLink:Cut the comm link",
+"#END Tactistar - Culann",,,,,,
+,,,,,,
+# Ailmar - give them protection,,,,,,
+MPC_IAIICAilmarAdminInitialOpts,PopulateOptions,"$isPerson
+$market.id == ailmar
+$postId == administrator
+MPC_IAIICJillCMD contribCustomIs ailmar","SetOptionColor MPC_IAIICAilmarAdminInitialInterrogate highlight",,"1:MPC_IAIICAilmarAdminInitialInterrogate:""I've heard you're providing logistical support to the IAIIC. Tell me why.""",
+MPC_IAIICAilmarAdminInitialInterrogate,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialInterrogate",,"Your question catches $hisOrHer attention, quickly brining forth a wave of anxiety. $HisOrHer eyes dart to the comms shut-off button, but $heOrShe seems to think better of it, instead resigning $himOrHerself to your interrogation.
+
+""I'm - not sure what you mean, $playerSirOrMadam..."" $heOrShe stiffly states. ""We'd... we'd never.""","MPC_IAIICAilmarAdminInitialInterrogateTwo:""Then how is nearly a tenth of the IAIIC's food stock is Ailmar grain?""",
+MPC_IAIICAilmarAdminInitialInterrogateTwo,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialInterrogateTwo",,"$HisOrHer armor cracks. Like a thumper seeking fresh hull, you strike. You levy all sorts of vague threats - blockades of trade lanes, unfortunate disappearances, missing trade fleets - all justified, of course. To top it all off, you make sure to emphasize how much you value *honesty*, and how much you respect the Ailmarian spirit; to resist against all odds, to avoid provoking the bear. You openly wonder how much longer that bear can remain asleep...","MPC_IAIICAilmarAdminInitialInterrogateThree:Continue",
+MPC_IAIICAilmarAdminInitialInterrogateThree,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialInterrogateThree",,"""-okay okay!"" the administrator relents, throwing their hands out with a pained grimace. A miserable sigh later, $heOrShe slumps into $hisOrHer chair. ""You've made your point. We..."" $heOrShe hesitates, but your withering stare sets $himOrHer straight. ""-we... the IAIIC is working the league for us, in exchange for cheap food. We -"" $heOrShe grimaces, feeling a pained spot near $hisOrHer heart. ""-the league has been getting more and more zealous with stripping our damned independence! As if things aren't bad enough here, the enforcement fleets have been 'inspecting' more and more of our convoys, and-""
+$HeOrShe calms $himOrHerself with a breath. ""-we don't have a choice. Either we go against the IAIIC and get absorbed by the league, or we go against you, and..."" $heOrShe gestures weakly. ""Well, here you are.""","MPC_IAIICAilmarAdminInitialInterrogateFour:Continue",
+MPC_IAIICAilmarAdminInitialInterrogateFour,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialInterrogateFour",,"""I'm sorry Captain, but we can't expose ourself. The IAIIC is giving us space - working the courts of the league - and with that, we can build a stronger military to protect ourselves. Giving up that protection is a death sentence."" $HeOrShe sighs, grabbing $hisOrHer forehead and massaging the headache such deep thought must've given $himOrHer.","MPC_IAIICAilmarAdminInitialOffer:""If the league is so threatening... we could offer you a better deal.""
+MPC_IAIICAilmarAdminInitialInterrogateThreat:""So is working against us.""
+",
+MPC_IAIICAilmarAdminInitialInterrogateThreat,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialInterrogateThreat","AdjustRepActivePerson VENGEFUL -1
+RemoveOption MPC_IAIICAilmarAdminInitialInterrogateThreat","Your threat causes only a deeper scowl, and a hiss as the headache worsens.",,
+MPC_IAIICAilmarAdminInitialOffer,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialOffer",,"$HeOrShe stops the massage. $HeOrShe stares at the table, processing your words - then whips $hisOrHer head towards you. ""-you would? For a polity as small as us?!""","MPC_IAIICAilmarAdminInitialIAIICDid:""The IAIIC cared, did it not?""
+MPC_IAIICAilmarAdminInitialThreatTwo:""I'd merely rather not wipe you out. Genocide is so boring. Inefficient, too."" (UNFINISHED)",
+MPC_IAIICAilmarAdminInitialIAIICDid,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminInitialIAIICDid","FireAll MPC_IAIICAilmarAdminInitialIAIICRealOffer","""I suppose that's true..."" $heOrShe mutters, dabbing sweat off $hisOrHer forehead with a nanosilk cloth grabbed from offscreen.",,
+MPC_IAIICAilmarAdminInitialIAIICRealOffer,MPC_IAIICAilmarAdminInitialIAIICRealOffer,,"MPC_IAIICIndieCMD ailmarOfferGiven
+FireAll MPC_IAIICAilmarAdminOffers","""So... what are you offering? We need... space. A stronger military. How can you help us with that?""",,
+MPC_IAIICAilmarAdminOffersRep,MPC_IAIICAilmarAdminOffers,,"MPC_addOptionConfirmation MPC_IAIICAilmarAdminOffersRepSel ""This action will decrease your reputation with the Persean League by fourty points. Do you wish to continue?"" ""Yes"" ""No""
+FireAll MPC_IAIICAilmarAdminOffersRepSelModify",,"MPC_IAIICAilmarAdminOffersRepSel:Offer to work the courts instead of the IAIIC",
+MPC_IAIICAilmarAdminOffersRepSelModify,MPC_IAIICAilmarAdminOffersRepSelModify,"!MPC_IAIICIndieCMD alimarCanUseRep","SetEnabled MPC_IAIICAilmarAdminOffersRepSel false
+SetTooltip MPC_IAIICAilmarAdminOffersRepSel ""You need at at least friendly standing with the persean league to use this option.""",,,
+MPC_IAIICAilmarAdminOffersFleetSize,MPC_IAIICAilmarAdminOffers,,"MPC_addOptionConfirmation MPC_IAIICAilmarAdminOffersFleetSizeSel ""This action will decrease your faction-wide fleetsize by 0.8x for one cycle. Do you wish to continue?"" ""Yes"" ""No""",,"MPC_IAIICAilmarAdminOffersFleetSizeSel:Offer to donate a portion of your shipyards for a few months",
+MPC_IAIICAilmarAdminOffersRepSel,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminOffersRepSel","MPC_IAIICIndieCMD ailmarOver REP
+AdjustRep independent FRIENDLY 2
+AdjustRep persean VENGEFUL -40","$HeOrShe blinks, visibly surprised by your bold idea. ""-really? You can do that? No offense but - I haven't heard good stories about your intelligence."" You resist the blow to your faction's character and assure $himOrHer that your INTSEC is nothing but the best - and your good relations with the league will certainly help. You give the order for tactical to begin the operation and turn back to the administrator, who looks disbelieving and spooked.
+
+""...thank you, $playerSirOrMadam. We... we will - try to stay out of your way from now on."" $heOrShe pants.","cutCommLink:Nod, and cut the comm link",
+MPC_IAIICAilmarAdminOffersFleetSizeSel,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminOffersFleetSizeSel","MPC_IAIICIndieCMD ailmarOver FLEETSIZE","$HeOrShe blinks. ""You'd... let us use your shipyards?"" you correct $himOrHer - you'd let them *contract* the shipyards for wildly deflated prices, and only to a point, and without your blueprints - but yes. The gist is correct. You give the order for tactical to begin the operation and turn back to the administrator, who looks disbelieving and spooked.
+
+""...thank you, $playerSirOrMadam. We... we will - try to stay out of your way from now on."" $heOrShe pants.
+
+","cutCommLink:Nod, and cut the comm link",
+MPC_IAIICAilmarAdminOffersLeave,MPC_IAIICAilmarAdminOffers,,,,"cutCommLink:Reconsider, and cut the comm link",
+MPC_IAIICAilmarAdminRevisitOpts,PopulateOptions,"$isPerson
+$market.id == ailmar
+$postId == administrator
+MPC_IAIICJillCMD contribCustomIs ailmar GIVEN_DEAL","SetOptionColor MPC_IAIICAilmarAdminRevisit highlight",,"1:MPC_IAIICAilmarAdminRevisit:""I'd like to revisit assistance, and how to separate you from the IAIIC.""",
+MPC_IAIICAilmarAdminRevisit,DialogOptionSelected,"$option == MPC_IAIICAilmarAdminRevisit","FireAll MPC_IAIICAilmarAdminOffers","The administrator immediately stiffens. ""Y-yeah? Got an offer for us?""",,
+"#END Ailmar - give them protection",,,,,,
+,,,,,,
+# Blacknife - Qaras,,,,,,
+,,,,,,
+# Initial bar encounter,,,,,,
+MPC_IAIICBKQarasInitial,PopulateOptions,"$hasMarket
+$menuState == main
+$market.id == qaras
+MPC_IAIICJillCMD contribCustomIs blackknife","SetTextHighlightColors pirate highlight
+SetTextHighlights ""Blackknife"" ""checking out a bar"" 
+SetOptionColor marketVisitBar highlight","Leaked camfeeds and the occasional marked corpse implicate Blackknife, a band of mercenaries on this planet, with assisting the IAIIC. Unfortunately, INTSEC has minimal intel on how to reach out to this group - so you'll have to do it the hard way. Consider checking out a bar.",,
+MPC_IAIICBKQarasBarAddInitEvent,AddBarEvents,"$market.id == ""qaras""
+MPC_IAIICJillCMD contribCustomIs blackknife","AddBarEvent MPC_IAIICBKQarasBarInitEvent ""Look for leads on Blackknife"" ""Qaras' bars have always been a hotbed for seedy mercenaries looking for their next job. You could ask around - see if anyone here knows Blackknife"" highlight",,,
+MPC_IAIICBKQarasBarInitEvent,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitEvent","SetTextHighlights ""nervous""","You walk between groups of mercenaries, offering outrageous jobs you know none of them would take. Some give you their names - some don't (most in fact brandish a weapon and spit in your face with a gritty laugh) - but that's not what you're probing them for. 
+You near a small-looking man brandishing a rusty CP carbine in one of the furthest booths of the establishment, surveying the bar for any leads. Once his eyes cross yours, however, they find darting back to his half-finished merc-grog, seemingly far more interested in it's flabby bubbles than you. More mercs smile - pat their rifle - or even toss a millicredit to lure you in. This one is nervous.","MPC_IAIICBKQarasBarInitSit:Take a seat across from the man",
+MPC_IAIICBKQarasBarInitSit,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitSit","BeginConversation MPC_blackknifeBarGuy","The seat beneath you crunches, the steel below worn and creaky from lacking maintenance. The mercenary in front of you seems to hesitate - running fingers over fingers - before finally resolving to make an attempt.
+
+""Hello - ah, $playerSirOrMadam-"" he bows, nearly hitting his head on the plastic table you share. ""-as you've probably guessed, I--represent... a member of... I am a member of a mercenary, company-"" he stammers, stumbles, like a child learning to walk. A deep, thoughtful stare later, and he cuts to the chase; ""-would you like something done?""
+
+You note he never mentions the name of his company.","MPC_IAIICBKQarasBarInitOrderDrink:Order some grog to keep yourself company (UNFINISHED)
+MPC_IAIICBKQarasBarInitWhatGotYouDown:""What's got you so nervous?"" (UNFINISHED)
+MPC_IAIICBKQarasBarInitRecognize:""You recognize me, don't you?""
+",
+MPC_IAIICBKQarasBarInitRecognize,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitRecognize",,"With that phrase, something activates inside him. His eyes shoot open, he tenses, and a hand reflexively snaps on and off his rifle as his eyes wander to and from the exit to this establishment.
+
+Without a word, he stands up, and begins to fastwalk away from your table and to his egress.","MPC_IAIICBKQarasBarInitStopLeave:""Not so fast."" (Signal your bodyguards)",
+MPC_IAIICBKQarasBarInitStopLeave,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitStopLeave",,"With a twirl of crossed fingers, your plainclothes bodyguards form a wall against the man, who promptly bumps into them and falls back into the seat with a much more frightened expression than before.
+
+He turns to you, suspense hanging off his face.","MPC_IAIICBKQarasBarInitTalk:""Don't worry. I won't hurt you. I just need to talk to your boss.""
+MPC_IAIICBKQarasBarInitTalkThreat:""Tell me where your boss is, or they'll be the least of your concern."" (Place your sidearm on the table)",
+MPC_IAIICBKQarasBarInitTalk,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitTalk","DoCanAffordCheck 100 MPC_IAIICBKQarasBarInitTalkCredits true","""I-I... I can't, $playerSirOrMadam-"" he attempts, swallowing his terror with a gulp from his grog. ""We're under strict orders not to talk to you, if she finds out -"" he stiffens, clamping his mouth shut. At least you know her gender, now.
+
+TODO: this is sorta rushed","MPC_IAIICBKQarasBarInitTalkThreat:""Tell me where your boss is, or they'll be the least of your concern."" (Place your sidearm on the table)
+MPC_IAIICBKQarasBarInitTalkCredits:""What if I make it worth your while?"" (UNFINISHED)",
+MPC_IAIICBKQarasBarInitTalkThreat,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitTalkThreat","$player.ethosRuthless++
+SetTextHighlights ""Jango Retrina""
+MPC_IAIICIndieCMD blackknifeFoundCommsKey","You gingerly place your sidearm on the table, taking care to pull the chamber back just enough so this poor boy can see just how ready it is to fire. With the click of the safety, he relents. ""OKAY! OKAY! Fine...!"" he scowls, taking out a PDA with a shaky hand - dropping it with a clatter - racing to pick it back up - and pausing as he meekly stares at you. ""Y-your commskey, $playerSirOrMadam?""
+
+A brief data transfer later, you receive the commskey for one ""Jango Retrina"". No location - it seems information is heavily quarantined in this ""Blacknife"" - but perhaps you can still strike a deal even if brute force isn't an option.
+
+The man nervously looks between you and the gun, then between it and the door. Your bodyguards look at you expectantly.","MPC_IAIICBKQarasBarInitLeave:Leave
+MPC_IAIICBKQarasBarInitDrinkGrog:Take a sip of your grog before you go (UNFINISHED)
+MPC_IAIICBKQarasBarInitKill:Pull the trigger (UNFINISHED)",
+MPC_IAIICBKQarasBarInitLeave,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitLeave","BarCMD leaveBar","You step up and out of the booth, much to the relief of the terrified looking mercenary. How someone like that ends up in a PMC, you have no idea - but it just makes things easier for you.",,
+"#END Initial bar encounter",,,,,,
+,,,,,,
+# Talking to the rep for the first time via comms,,,,,,
+MPC_IAIICBKRepInitial,PickGreeting,"$id == MPC_blackknifeRep score:1000
+MPC_IAIICJillCMD contribCustomIs blackknife GOT_COMMS_KEY","BeginConversation MPC_blackknifeRep","The comms-request is sent, hangs for a few seconds, then resolves into a spotty camfeed of an irritated-looking woman, picking at her teeth with a toothpick while she glares at a TriPad. ""Oi, who's this?"" she growls, turning to the camera. ""We ain't-"" her face lights up as she scans yours, then darkens as the implications fall upon her.
+""...so we's got *you* here now."" she spits, leaving a stain of yellow just off-screen. ""How'd you get this commskey, spacer?"" she snorts. ""-killed one of my boys and just wanted to see who's this is?"" she laughs. ""Nah. Nah."" she shakes her head, leaning in with a grim expression.
+","MPC_IAIICBKRepInitialTwo:Continue",
+MPC_IAIICBKRepInitialTwo,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialTwo",,"""You's here 'cause we was sloppy, aintchu? Left a trail?"" she sighs, shaking her head. ""Well let's just cut to the chase. We ain't stoppin', and we ain't lettin' you be. Money's too damn good!"" she chuckles, resuming her dental routine. ""-you pissed some right rich folks off, you know?""
+
+She sighs, revealing a wide, pitted grin as she leans in. ""-plus. It's fun. So -"" she waves you off, making a show of her indifference.  ","MPC_IAIICBKRepInitialOfferPay:""And how much money is this, exactly? Could I pay you more?""
+MPC_IAIICBKRepInitialOfferThreat:""And what's stopping me from just wiping you out?"" (UNFINISHED)",
+MPC_IAIICBKRepInitialOfferPay,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialOfferPay",,"""Puh-PAY me MORE?!"" she breaks into a fit of exaggerated laughter - rolling back and forth in her chair, slapping her side. ""Oh, CAPTAIN, you are ah FUNNY one!"" she snickers, shooting her finger at you thrice. ""-yah can't just *buy* a merc contract out from under someone. What, you think we're somethin' like tactistar? We got *integrity*."" she snorts.
+
+Despite her seemingly belligerent stance, though, you detect a hint of ingenuity as her expression drifts into something like thoughtfulness. ""...maybe... nh..."" she mumbles, narrowing her eyes.","MPC_IAIICBKRepInitialAskWhatsUp:""Thinking of something?""",
+MPC_IAIICBKRepInitialAskWhatsUp,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialAskWhatsUp",,"Your question catches her attention, prompting the humorously belligerent wall to be rebuilt - but with a few cracks. ""Awgh, naw. Just thinking about how best tah breach your arcologies and kill ya citizens."" she snickers. ""No.""","MPC_IAIICBKRepInitialAskWhatsUpTwo:""If you have something on your mind, maybe I can help you with it.""",
+MPC_IAIICBKRepInitialAskWhatsUpTwo,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialAskWhatsUpTwo","SetTextHighlights ""Jenius""
+MPC_IAIICIndieCMD blackknifeGenTargetFleet","She snorts, rolling her eyes. ""Hah! Nothin' like that."" she mumbles, reaching for the privacy-link switch and hitting it, causing a momentary glitch as the commlink goes private.
+
+Instantly, her visage drops from a cocky grin to a annoyed scowl. ""-just thinkin' of that *bitch* on Salamanca that screwed us big-style. Yaknow, we used to have a much better navy-"" she spits, again. ""-but then that *worm* Jenius ratted us out to a PL patrol. After that..."" she scowls, thinking off to some disastrous battle.
+
+this is definitely rushed, TODO","MPC_IAIICBKRepInitialAskWhatsUpThree:Continue",
+MPC_IAIICBKRepInitialAskWhatsUpThree,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialAskWhatsUpThree","SetTextHighlights $global.MPC_IAIICBKTargetSysName
+MPC_IAIICIndieCMD blackknifeGoKillGuy","She exits her trance, glancing to you - once, twice - then narrows her eyes, considering you thoughtfully. Once her decision is made, she huffs and turns away, pretending not to see you. ""-ya know. Be a real shame if that man were to... mhn. Disappear."" she clicks her fingers. ""Last I heard, he was goin' on some expedition to find-"" she waves her hands to her sides. ""'Lost treasure', over in $global.MPC_IAIICBKTargetSysName - outta the core worlds! Real chance for him to get eaten by some sorta monster, eh?"" she chuckles.
+
+Her expression drops, speaking and looking to you directly. ""Kill that fuck and we're done. Can't drop the contract - but we can do a real, real bad job."" she chuckles.","MPC_IAIICBKRepInitialAskWhyNotIAIIC:""Why hasn't the IAIIC done this for you?"" (UNFINISHED)
+MPC_IAIICBKRepInitialLeave:""I think I catch your drift. I'll send you the combat logs when I'm done.""",
+MPC_IAIICBKRepInitialLeave,DialogOptionSelected,"$option == MPC_IAIICBKRepInitialLeave","HideFirstPerson","She grins, slowly nodding. ""Attaboy... see you on the other side, eh?"" she says, before cutting the commlink unceremoniously. You are left staring at the blank screen, wondering if this is really worth it. ","cutCommLink:Cut the comm link",
+"#END Talking to the rep for the first time via comms",,,,,,
+"#END Blacknife - Qaras",,,,,,
+,,,,,,
+# MMMC - Nova Maxios,,,,,,
+MPC_IAIICMMMCRepInitGreet,PickGreeting,"$id == MPC_MMMCRep score:1000
+MPC_IAIICJillCMD contribCustomIs MMMC
+!$temporarilyIgnoreYou","BeginConversation MPC_MMMCRep","A spotty camfeed is quickly established as your commlink is automatically accepted. ""Hey bud."" the man before you says. ""Prices low as ever - got some new blueprints if you're wanting. Some sorta phase ship, small, agile. Real strong. Queue's empty, sending over the menu now..."" you check with sensors, who nods - you've been transmitted some sort of manufacturing manifest. Unfortunately, that's not what you're here for.
+
+He eventually turns to you, raising a brow. ""You ain't one of my usual clients. Who're you?""","MPC_IAIICMMMCRepInitGreetTwo:""Who do you usually sell to?""
+cutCommLink:Cut the comm link",
+MPC_IAIICMMMCRepInitGreetTwo,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetTwo","AdjustRepActivePerson SUSPICIOUS -1","The man frowns. ""Why're you askin'? Look - we can't name our clients. Bad for business. You surely understand. B'sides, most of our ships just go on the open market - people buy em', we don't ask questions. Standard fare.""","MPC_IAIICMMMCRepInitGreetThree:""I have suspicions your ships are being used in the war against my space.""",
+MPC_IAIICMMMCRepInitGreetThree,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetThree",,"Seeming to realize something, the man squints, taking in your appearance and remarking on it. ""...ah... them IAIIC folks."" he nods sagely. ""-ain't none of my business. And if my ships are finding their way to your space?"" he sighs, shrugging. ""Whaddaya want me to do, say sorry? Do you go hunting down the shipworks on Kapteyn because your enemies are buying some?""
+
+He rolls his eyes. ""This is just business. I sell my ships, people buy them. I don't control where it goes.""","MPC_IAIICMMMCRepInitGreetFour:""I'm only here because you seem to have a very disproportionate amount of ships in their fleets.""",
+MPC_IAIICMMMCRepInitGreetFour,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetFour","AdjustRepActivePerson SUSPICIOUS -1","He lets out an exaggerated sigh. ""Well what do you want me to do, vet whoever comes in here?! Noone does that! The more questions you ask the less buyers you have - and it just ain't fair!"" he glares, slapping his PDA on the table. ""You've got some manufacturing dontcha?! You should know what it takes to keep a business like this running!""","MPC_IAIICMMMCRepInitGreetFive:""Well I'm not giving you a choice. Vet your customers.""
+cutCommLink:Apologize, and cut the comm link",
+MPC_IAIICMMMCRepInitGreetFive,DialogOptionSelected,"$option == MPC_IAIICMMMCRepInitGreetFive","$temporarilyIgnoreYou = true
+HideActivePerson
+
+SetTextHiglights ""disruption"" ""orbital works""
+MPC_IAIICIndieCMD MMMCtoldOff
+","He stares at you for a while, weighing his options and sizing you up. He growls, then hits the comms-disconnect, returning your screen to black. Seems they won't listen to reason. Looks like you'll have to hit them a little harder.
+
+""If we take their livelihood..."" tactical muses, idly staring off into the ceiling. You nod to your ops chief, whom estimates a disruption to Nova Maxios' orbital works would do the trick, long enough to cause significant financial harm.
+
+Such an act would surely be seen as unethical in the eyes of the independents, but could spook the MMMC into going on with your admittedly unreasonable demands. Besides, the only alternative is to decivilize them - and that is a far worse alternative.","cutCommLink:Cut the comm link",
+,,,,,,
+# Raided the orbital works,,,,,,
+MPC_IAIICMMMCRepRevisit,PickGreeting,"$id == MPC_MMMCRep score:1000
+MPC_IAIICJillCMD contribCustomIs MMMC DISRUPTED","BeginConversation MPC_MMMCRep","The camfeed resolves quickly, showing a frustrated-looking $personFirstName digging through a mountain of paperwork, veins nearly popping out of his skull. ""-sorry bud, operations c-cancelled for the next few months... some *fuelguzzler* came and-"" he stops, noticing you finally. His frustration appearance melts away, replaced by politely restrained anger.
+
+""Ah... it's *you*."" he grumbles, pushing his paper away. ""Whatd'you want?""","MPC_IAIICMMMCRepRevisitTwo:""Seems like someone destroyed your shipworks. Damn shame.""",
+MPC_IAIICMMMCRepRevisitTwo,DialogOptionSelected,"$option == MPC_IAIICMMMCRepRevisitTwo",,"His visage remains stony as he stares.","MPC_IAIICMMMCRepRevisitThree:""I heard the pirates that did it might strike again if the ships keep going to the IAIIC.""",
+MPC_IAIICMMMCRepRevisitThree,DialogOptionSelected,"$option == MPC_IAIICMMMCRepRevisitThree","AdjustRepActivePerson VENGEFUL -50
+AdjustRep independent VENGEFUL -20
+
+MPC_IAIICIndieCMD MMMCend","He shushes you halfway through your thinly veiled threat, then slapping that hand down. ""-fine... fine... you-you win."" he sighs, staring gloomily off at the pile of paperwork. ""-you know, I hope you're happy. Might just ruin my business with this.""
+
+TODO: more scolding here, i never like writing the conclusions","cutCommLink:Cut the comm link",
+"#END Raided the orbital works",,,,,,
+"#END MMMC - Nova Maxios",,,,,,
 "#END Indie",,,,,,
 ,,,,,,
 # Ark FOB Comms directory,,,,,,

@@ -3,6 +3,7 @@ package data.scripts.campaign.magnetar.crisis.intel
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
@@ -22,7 +23,7 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         fun get(withUpdate: Boolean = false): MPC_indieContributionIntel? {
             if (withUpdate) {
                 if (Global.getSector().memoryWithoutUpdate[KEY] == null) {
-                    val intel = MPC_patherContributionIntel()
+                    val intel = MPC_indieContributionIntel()
                     Global.getSector().intelManager.addIntel(intel)
                     Global.getSector().memoryWithoutUpdate[KEY] = intel
                 }
@@ -36,11 +37,23 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         const val PIECES_OF_EVIDENCE_NEEDED_FOR_VOIDSUN = 3
 
         fun getTactistarExitPrice(): Float {
-            return MPC_incomeTallyListener.MPC_incomeTally.get(true)!!.getHighestIncome() * TACTISTAR_MAX_INCOME_MULT
+            var amount = Global.getSector().memoryWithoutUpdate.getFloat("\$MPC_IAIICTactistarExitAmnt")
+            if (amount == 0f) {
+                amount = (MPC_incomeTallyListener.MPC_incomeTally.get(true)!!.getHighestIncome() * TACTISTAR_MAX_INCOME_MULT).coerceAtLeast(1000000f)
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICTactistarExitAmnt"] = amount
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICTactistarExitAmntDGS"] = Misc.getDGSCredits(amount)
+            }
+            return amount
         }
 
         fun getTactistarJoinPrice(): Float {
-            return MPC_incomeTallyListener.MPC_incomeTally.get(true)!!.getHighestIncome() * TACTISTAR_SUPPORT_INCOME_MULT
+            var amount = Global.getSector().memoryWithoutUpdate.getFloat("\$MPC_IAIICTactistarSupportAmnt")
+            if (amount == 0f) {
+                amount = (MPC_incomeTallyListener.MPC_incomeTally.get(true)!!.getHighestIncome() * TACTISTAR_SUPPORT_INCOME_MULT).coerceAtLeast(2000000f)
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICTactistarSupportAmnt"] = amount
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICTactistarSupportAmntDGS"] = Misc.getDGSCredits(amount)
+            }
+            return amount
         }
 
         fun pickVoidsunPlanet(): MarketAPI {
@@ -49,8 +62,8 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
             return playerMarkets.firstOrNull { it.isFreePort } ?: playerMarkets.random()
         }
 
-        fun getVoidsunPlanet(): MarketAPI {
-            TODO()
+        fun getVoidsunPlanet(): MarketAPI? {
+            return Global.getSector().memoryWithoutUpdate["\$MPC_IAIICvoidsunPlanet"] as? MarketAPI
         }
     }
 
@@ -71,9 +84,6 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         if (listInfoParam is String) {
             when (listInfoParam) {
                 "test" -> info.addPara("a", 5f)
-                "blackknifeGivenDeal" -> {
-                    info.addPara("dunno lol", initPad)
-                }
                 else -> {info.addPara(listInfoParam as String, initPad)}
             }
         }
@@ -165,10 +175,13 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
                 qaras.faction.baseUIColor
             )
 
-            if (blackknifeContrib.custom == "GAVE_DEAL") {
+            if (blackknifeContrib.custom == "GO_KILL_GUY") {
                 info.addPara(
-                    "You've been instrcuted to... i havent decided yet!",
-                    0f
+                    "Apparently, blackknife is willing to cease their operations - or at least make them far less effective - if you kill" +
+                        "a Persean League officer scavenging the %s system. They're likely orbiting a planet with ruins.",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "${Global.getSector().memoryWithoutUpdate["\$MPC_IAIICBKTargetSysName"]}"
                 )
             }
         }
@@ -200,7 +213,7 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
 
         val voidsunContrib = fobIntel.getContributionById("voidsun")
         val voidplanet = getVoidsunPlanet()
-        if (voidsunContrib?.addBenefactorInfo == true) {
+        if (voidsunContrib?.addBenefactorInfo == true && voidplanet != null) {
             info.addSectionHeading("Voidsun", Alignment.MID, 5f)
             info.addPara(
                 "%s, a mercenary company stationed on %s, has potentially been compromised by the IAIIC. You should investigate.",
@@ -251,10 +264,9 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
                 "%s, famous for it's almost mercenary nature, has possibly struck a deal with the IAIIC for protection.",
                 0f,
                 Misc.getHighlightColor(),
-                ailmar.faction.baseUIColor
+                "Ailmar"
             ).setHighlightColors(
-                Misc.getHighlightColor(),
-                maxios.faction.baseUIColor
+                ailmar.faction.baseUIColor
             )
 
             if (ailmarContrib.custom == "GIVEN_DEAL") {
@@ -268,7 +280,7 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         val agreusContrib = fobIntel.getContributionById("agreus")
         val agreus = Global.getSector().economy.getMarket("agreus")
         if (agreusContrib?.addBenefactorInfo == true) {
-            info.addSectionHeading("Agreus", Alignment.MID, 5f)
+            info.addSectionHeading("IIT&S", Alignment.MID, 5f)
             info.addPara(
                 "%s, stationed on %s, has been implicated in a large amount of metal outflow towards the IAIIC.",
                 0f,
@@ -306,6 +318,9 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {
+        val fobIntel = MPC_IAIICFobIntel.get() ?: return null
+        val blackknifeContrib = fobIntel.getContributionById("blackknife")
+        if (blackknifeContrib?.custom == "GO_KILL_GUY") return (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICBKTargetSys"] as StarSystemAPI).hyperspaceAnchor
         return null
     }
 }

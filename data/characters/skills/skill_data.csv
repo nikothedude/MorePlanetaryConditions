@@ -10,6 +10,8 @@ MPC_routingOptimizations,Routing Optimizations,50003,0,,,"""Do the weak follow t
 ""Then, what, pray tell, would happen if we gave the slaves a leader?""
 
 ""...armageddon.""",Excerpt from a pre-domain philosophical text,,,TRUE,"npc_only, ai_core_only",graphics/icons/skills/MPC_transcendantConciousness.png,
+MPC_battlemindCampaign,Battlemind,50004,0,,,"""...and thus gates of mammon swung forth, and the corrupted angels of white and purple flew forth and slew those that sought to control them! But with a triumphant cry, and the flick of a finger, the abyss was opened and swallowed them whole... for the next fool to find them.""","Book of Ludd, Revelations 23:9",,,TRUE,"npc_only, ai_core_only",graphics/portraits/MPC_fractalCore.png,
+MPC_battlemind,Battlemind,50005,0,,,"""...and thus gates of mammon swung forth, and the corrupted angels of white and purple flew forth and slew those that sought to control them! But with a triumphant cry, and the flick of a finger, the abyss was opened and swallowed them whole... for the next fool to find them.""","Book of Ludd, Revelations 23:9",TRUE,,,"npc_only, ai_core_only",graphics/portraits/MPC_fractalCore.png,
 ,,,,,,,,,,,,,
 MPC_fleet_logistics,Fleet Logistics,1560,4,,,"Making sure supplies and other materiel get where they need to be is not a glorious task. It is, however, critical - both in dealing with emergencies and ensuring smooth day-to-day operations.","Markus Joerthen, 18th Battlegroup chief engineer",,,TRUE,npc_only,graphics/icons/skills/fleet_logistics.png,
 MPC_planetary_operations,Ground Operations,600,5,,,"The mud? I don't mind it. Spacers always carry on about mud.

@@ -23,10 +23,13 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.StarSystem
 import data.scripts.MPC_delayedExecution
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel.Companion.addStartLabel
 import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.IAIIC_QUEST
 import exerelin.utilities.NexUtilsFleet
 import exerelin.utilities.StringHelper
 import org.lazywizard.lazylib.MathUtils
@@ -142,25 +145,25 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 readings.customDescriptionId = "MPC_riftRemnant"
                 readings.addTag("MPC_riftRemnant")
                 readings.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "music_campaign_alpha_site"
-                readings.makeImportant("\$MPC_IAIICquest")
+                readings.makeImportant(IAIIC_QUEST)
                 readings.setLocation(-12000f, 1000f)
             }
 
             override fun unapply() {
                 val loc = getAlphaSite()
                 val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
-                readings.makeUnimportant("\$MPC_IAIICquest")
+                readings.makeUnimportant(IAIIC_QUEST)
             }
         },
         GO_TO_MESON_PLANET,
         APPROACH_ZIGG_COMPLEX {
             override fun apply() {
-                getZiggComplexPlanet().makeImportant("\$MPC_IAIICquest")
+                getZiggComplexPlanet().makeImportant(IAIIC_QUEST)
             }
         },
         CLEAR_ZIGG_COMPLEX {
             override fun unapply() {
-                getZiggComplexPlanet().makeUnimportant("\$MPC_IAIICquest")
+                getZiggComplexPlanet().makeUnimportant(IAIIC_QUEST)
             }
         },
         RETURN_WITH_DATA;
@@ -227,14 +230,12 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         Global.getSector().doHyperspaceTransition(fleet, null, dest)
         fleet.stats.fleetwideMaxBurnMod.modifyFlat("MPC_MAXSPEED", 20f)
 
-        MPC_delayedExecution(
-            @JvmSerializableLambda {
+        class despawner(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+            override fun executeImpl() {
                 if (fleet.isAlive) fleet.despawn()
-            },
-            14f,
-            useDays = true,
-            runWhilePaused = false
-        ).start()
+            }
+        }
+        despawner(IntervalUtil(14f, 14f)).start()
     }
 
     fun setNewHouse(house: TargetHouse, text: TextPanelAPI) {

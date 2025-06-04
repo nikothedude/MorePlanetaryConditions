@@ -7,6 +7,7 @@ import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
+import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import data.utilities.niko_MPC_ids
@@ -39,6 +40,11 @@ object MPC_People {
     const val UMBRA_INFILTRATOR = "MPC_umbraInfiltrator"
 
     const val HAMMER_REP = "MPC_hammerRep"
+    const val TACTISTAR_REP = "MPC_tactistarRep"
+    const val BLACKKNIFE_REP = "MPC_blackknifeRep"
+    const val BLACKKNIFE_BAR_GUY = "MPC_blackknifeBarGuy"
+    const val BLACKKNIFE_TARGET = "MPC_blackknifeTarget"
+    const val MMMC_REP = "MPC_MMMCRep"
 
     const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
@@ -303,8 +309,105 @@ object MPC_People {
 
             rep.name = FullName("Jeron", "Blast", Gender.MALE)
 
+            rep.relToPlayer.rel = -0.5f
+
             importantPeople.addPerson(rep)
             MPC_importantPeople[HAMMER_REP] = rep
+        }
+        if (MPC_importantPeople[TACTISTAR_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.MERCENARY).createRandomPerson(Gender.MALE)
+            rep.id = TACTISTAR_REP
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+
+            rep.importance = PersonImportance.MEDIUM
+            rep.voice = Voices.SOLDIER
+
+            rep.name = FullName("Jensen", "DC", Gender.MALE)
+
+            rep.relToPlayer.rel = -0.1f
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[TACTISTAR_REP] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+        if (MPC_importantPeople[BLACKKNIFE_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson(Gender.FEMALE)
+            rep.id = BLACKKNIFE_REP
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+
+            rep.importance = PersonImportance.MEDIUM
+            rep.voice = Voices.VILLAIN
+
+            rep.name = FullName("Jango", "Retrina", Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[BLACKKNIFE_REP] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+        if (MPC_importantPeople[BLACKKNIFE_BAR_GUY] == null) {
+            val rep = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson(Gender.MALE)
+            rep.id = BLACKKNIFE_BAR_GUY
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+
+            rep.importance = PersonImportance.LOW
+            rep.voice = Voices.SOLDIER
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[BLACKKNIFE_BAR_GUY] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+        if (MPC_importantPeople[BLACKKNIFE_TARGET] == null) {
+            val rep = Global.getSector().getFaction(Factions.PERSEAN).createRandomPerson(Gender.MALE)
+            rep.id = BLACKKNIFE_TARGET
+
+            rep.rankId = Ranks.POST_AGENT
+            rep.postId = Ranks.POST_PATROL_COMMANDER
+
+            rep.importance = PersonImportance.LOW
+            rep.voice = Voices.SOLDIER
+
+            rep.name = FullName("Jenius", "Grapetrain", Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[BLACKKNIFE_TARGET] = rep
+
+            rep.stats.level = 7
+            rep.stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            rep.stats.setSkillLevel(Skills.CARRIER_GROUP, 1f)
+            rep.stats.setSkillLevel(Skills.FIGHTER_UPLINK, 1f)
+            rep.stats.setSkillLevel(Skills.HELMSMANSHIP, 1f)
+            rep.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 1f)
+            rep.stats.setSkillLevel(Skills.SYSTEMS_EXPERTISE, 1f)
+            rep.stats.setSkillLevel(Skills.ORDNANCE_EXPERTISE, 1f)
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[MMMC_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.MALE)
+            rep.id = MMMC_REP
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_CITIZEN
+
+            rep.importance = PersonImportance.HIGH
+            rep.voice = Voices.SPACER
+
+            rep.name = FullName("Selius", "Mikhael", Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[MMMC_REP] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {

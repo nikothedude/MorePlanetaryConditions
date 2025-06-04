@@ -2,6 +2,7 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val IAIIC_QUEST = "\$MPC_IAIICquest"
     const val DEFEATED_FRC_RAID = "\$MPC_defeatedFRCRaid"
 
     const val IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION = "\$MPC_immuneToPulseDueToRecentInterdiction"
@@ -34,6 +35,7 @@ object niko_MPC_ids {
     const val FRACTAL_OPTIMIZATIONS_SKILL_ID = "MPC_fractalOptimizations"
     const val TRANSCENDANT_CONCIOUSNESS_SKILL_ID = "MPC_transcendentConciousness"
     const val BATTLEMIND_SKILL_ID = "MPC_battlemind"
+    const val BATTLEMIND_CAMPAIGN_SKILL_ID = "MPC_battlemindCampaign"
     const val ROUTING_OPTIMIZATION_SKILL_ID = "MPC_routingOptimizations"
     const val FRACTAL_CORE_UPGRADED = "\$MPC_fractalCoreUpgraded"
     const val SLAVED_OMEGA_CORE_COMMID = "MPC_slavedOmegaCore"

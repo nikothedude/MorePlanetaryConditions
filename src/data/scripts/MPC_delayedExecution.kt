@@ -5,6 +5,7 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 
+@Deprecated("Lambdas should never be serialized", replaceWith = ReplaceWith("MPC_delayedExecutionNonLambda", "data.scripts.MPC_delayedExecutionNonLambda"))
 class MPC_delayedExecution(
     val execute: () -> Unit,
     delay: Float,
