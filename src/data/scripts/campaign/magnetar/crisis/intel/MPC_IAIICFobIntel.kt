@@ -1970,7 +1970,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         BETRAYED_LINDUNBERG,
         TURNING_HOUSES_AGAINST_HEGEMONY;
     }
-    /** Called if the player attacks the FOB. Triggers sabotage. */
+    /** Triggers sabotage after a delay, and with a notification. */
     fun retaliate(reason: RetaliateReason, dialog: TextPanelAPI? = null) {
         if (daysLeftTilNextRetaliate > 0f) return
 
