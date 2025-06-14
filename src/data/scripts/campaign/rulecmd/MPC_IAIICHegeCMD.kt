@@ -83,7 +83,6 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val newHouse = TargetHouse.valueOf(house) ?: return false
 
                 MPC_hegemonyContributionIntel.get()?.setNewHouse(newHouse, dialog.textPanel)
-                MPC_hegemonyContributionIntel.get()
             }
 
             "createIntel" -> {
@@ -94,6 +93,11 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             "houseTurned" -> {
                 MPC_hegemonyContributionIntel.get()?.turnedHouse(dialog.textPanel)
                 Global.getSector().memoryWithoutUpdate.set("\$MPC_hegeIAIICHouseCooldown", true, 30f)
+            }
+
+            "houseIs" -> {
+                val houseName = params[1].getString(memoryMap)
+                return MPC_hegemonyContributionIntel.get()?.currentHouse?.name == houseName
             }
 
             "readyToConfrontMil" -> {
@@ -178,6 +182,33 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                     MPC_IAIICFobIntel.RetaliateReason.BETRAYED_LINDUNBERG,
                     dialog.textPanel
                 )
+            }
+
+            "ALOgetIntel" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.GET_INTEL
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+            "ALOstateIs" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                val check = params[1].getString(memoryMap)
+                return (intel.aloofState?.name == check)
+            }
+            "ALOincrementEvidence" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.evidencePieces++
+                intel.sendUpdateIfPlayerHasIntel("EVIDENCE_PIECES", dialog.textPanel)
+                if (intel.evidencePieces >= MPC_hegemonyContributionIntel.EVIDENCE_NEEDED) {
+                    intel.aloofState = MPC_hegemonyContributionIntel.AloofState.GOT_EVIDENCE
+                    intel.sendUpdateIfPlayerHasIntel(MPC_hegemonyContributionIntel.AloofState.GOT_EVIDENCE, dialog.textPanel)
+                }
+            }
+            "ALOevidenceDelivered" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.WAIT_FOR_ALOOF
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+
+                intel.aloofTimer = if (Global.getSettings().isDevMode) 0.1f else 7f // one week
             }
         }
 

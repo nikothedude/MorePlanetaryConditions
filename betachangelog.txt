@@ -1,3 +1,8 @@
+0.0.3
+
+IAIIC
+    Militaristic aristocrats now get terrified if you steal chico's nanoforge
+
 0.0.2
 
 IAIIC

@@ -3807,7 +3807,8 @@ $global.MPC_didAloofAristoSecondMeet = true
 FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves into the familiar visage of Aleratus Youn, smiling softly.
 ""Hello Captain!"" she hums, clearing off her desk. ""What brings you here?""",,"!$global.MPC_didAloofAristoSecondMeet score:100"
 MPC_aloofAristoMeetOptsCutComms,MPC_aloofAristoMeetOpts,,,,"100:cutCommLink:Cut the comm link",
-MPC_aloofAristoMeetOptsStartQuest,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo","MPC_addOptionConfirmation MPC_aloofAristoStartQuest ""Youn is known to COMSEC, and this link is likely being monitored by INTSEC at all times. Setting it to private will tip them off and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
+MPC_aloofAristoMeetOptsStartQuest,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
+!MPC_IAIICHegeCMD houseIs ALOOF","MPC_addOptionConfirmation MPC_aloofAristoStartQuest ""Youn is known to COMSEC, and this link is likely being monitored by INTSEC at all times. Setting it to private will tip them off and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
 FireAll MPC_aloofAristoStartQuestModify",,"1:MPC_aloofAristoStartQuest:Switch the commlink to private and get to work",
 MPC_aloofAristoStartQuestModifyHouseActive,MPC_aloofAristoStartQuestModify,"MPC_IAIICHegeCMD dealingWithAHouse","SetEnabled MPC_aloofAristoStartQuest false
 SetTooltip MPC_aloofAristoStartQuest ""Setting your commlink to private while COMSEC is already breathing down your neck could compromise this entire operation. It's best to finish your current dealings first.""",,,
@@ -3815,14 +3816,163 @@ MPC_aloofAristoStartQuestModifyCooldown,MPC_aloofAristoStartQuestModify,"MPC_IAI
 SetTooltip MPC_aloofAristoStartQuest ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
 ,,,,,,
 # The actual questline,,,,,,
+,,,,,,
+# Start - get told to find intel,,,,,,
 MPC_aloofAristoStartQuest,DialogOptionSelected,"$option == MPC_aloofAristoStartQuest",,"Your camfeed glitches momentarily as you set the camfeed to private. No doubt COMSEC will be angered by this, but leaving it public could have disastrous consequences.
 
 ""Hm? Am I missing something?"" Aleratus questions, raising her brow.
 
 ","MPC_aloofAristoStartQuestTwo:""OpSec. I want to talk to you about how best we can 'convince' your house.""",
-MPC_aloofAristoStartQuestTwo,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestTwo",,"She gasps - and lets out a coo, nodding slowly as she slowly comprehends you. ""Ah... smart, Captain!"" she grins, mimicking your motions and setting the already-private link to private. ""Now that we have this 'OpSec', let's get to business.""
+MPC_aloofAristoStartQuestTwo,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestTwo",,"She gasps - and lets out a coo, nodding slowly as she slowly comprehends you. ""Ah... smart, Captain!"" she grins, mimicking your motions and setting the already-private link to private - much to the irritation of your comms officer. ""Now that we have this 'OpSec', let's get to business.""
 
-",,
+","MPC_aloofAristoStartQuestThree:Continue",
+MPC_aloofAristoStartQuestThree,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestThree",,"Your contact hums, pulling up a familiar PDA from off-screen and a glass of regal-looking wine from the other. Swirling the red liquid, she begins: ""I've told you the story of our house, yes? Why we so *desperately* need to fight against this idiotic injustice?""
+She waits not for your response, continuing after a brief sip of alcohol. ""-I, $PersonName, am the *only* member of the Youn that recognizes this! All of them, so terrified of what we might lose they opt to pretend nothing may ever happen and we will remain rich *FOREVER*."" she growls, an uncharacteristic twitch breaching her elegant demeanour.","MPC_aloofAristoStartQuestFour:Continue
+MPC_aloofAristoStartQuestNEH:""They're right. Nothing Ever Happens."" (UNFINISHED, MEME OPTION)",
+MPC_aloofAristoStartQuestFour,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestFour",,"A huff, a forced smile, and she's back to what you would expect of an aristocrat. ""-I would like you to convince them, Captain.""","MPC_aloofAristoStartQuestFive:""What do you have in mind?""
+MPC_aloofAristoStartQuestImplyThreat:""Like... with weapons?"" (UNFINISHED)",
+MPC_aloofAristoStartQuestFive,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestFive",,"A quiet chuckle escapes her lips, which she quickly seals with a sip of her wine. After a breath, she begins, setting down the wine nearby and brandishing her PDA. ""I'd like you to give me the truth, Captain.""
+
+""Get me something. Anything!; I can use as solid proof - something undeniable. And, heh."" she shoots you a smirk. ""It likely wouldn't have to be *much*. Poor pookie bear Alnessa is so scared her head's practically in the ground..."" she adopts a mocking tone and pretends to be sad. You catch comms shaking their head from the corner of your view. 
+
+A laugh, and a cocky smile. ""She's *so* dumb. Ah, anyway - yes -"" she clicks her fingers. ""To keep this... eh heh, this 'OpSec' intact -"" she giggles, covering her mouth as a ""proper woman"" should. ""If you come across this information, give it to me. Wouldn't want COMSEC to notice, hm?"" she chuckles, clearly unaware of how close COMSEC is watching at this very moment.","MPC_aloofAristoStartQuestSix:Continue
+MPC_aloofAristoStartQuestWhyNotEnough:""What about all the intel you showed me before? Is that not enough?"" (UNFINISHED)",
+MPC_aloofAristoStartQuestSix,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestSix",,"She claps her hands together. ""And that's it! Good luck out there, Captain! I'm sure I'll make it worth your while."" $heOrShe ends with a giggle, and reaches for the comms-disconnect.","MPC_aloofAristoStartQuestWait:""-wait.""
+MPC_aloofAristoStartQuestSeven:Continue",
+MPC_aloofAristoStartQuestWait,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestWait",,"She turns, blinking, surprise crossing her face.","MPC_aloofAristoStartQuestNeedHelp:""Aren't you going to tell me... where to look?""",
+MPC_aloofAristoStartQuestNeedHelp,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestNeedHelp","HideFirstPerson","She stares. Stares more. Snrks. Then breaks into harsh laughter, shaking her head in disbelief. ""*Captain!* That's your job! What do you take me for, some sort of tactician?!"" she waves her hand and continues before you can insert a protest. ""You'll figure it out. You mercenaries *always* do! Now, I have a cheese tasting in an hour - and I *must* dress myself up pretty. Toodles!"" she waves her fingers and cuts the comm link, leaving you facing down your annoyed reflection.","MPC_aloofAristoStartQuestSeven:Sigh, and return to your duties",
+MPC_aloofAristoStartQuestSeven,DialogOptionSelected,"$option == MPC_aloofAristoStartQuestSeven","MPC_IAIICHegeCMD ALOgetIntel
+MPC_IAIICHegeCMD newHouse ALOOF","As you return your gaze to the forward viewscreen, you contemplate your next actions. As much as you hate to admit it, she's right. You already have a few promising ideas, and your officers seem to have a few as well.
+
+""Atzlan comms relay. Hardened, but if we get extended access we could run a mem-scan."" electronics suggests. ""Nothing wrong with finding a defector, too - and the Hege has quite a few."" tactical adds. Ops grunts. ""Could use a comms relay in *our* space. Already got the keys. See if we find anything.""
+
+You nod along - all fine suggestions. You can think of a few more angles, as well - perhaps you could coerce a disgruntled shipworker on Chico? Or even raid it for shipmaking logs... the options are expansive, but your time limited. You wish you could have just asked her for her thoughts.
+
+TODO: this is a bit rushed but not too much","cutCommLink:Cut the comm link",
+"#END Start - get told to find intel",,,,,,
+,,,,,,
+# Get intel to prove to the youns,,,,,,
+,,,,,,
+# Hegemony kill-fleets,,,,,,
+MPC_IAIICAloofHunter,MPC_IAIICAloofHunter,,"$entity.ignorePlayerCommRequests = true","The commlink refuses to come to life, instead playing a pre-recorded message from some grizzled soldier.
+
+""You've poked your nose where you shouldn't have. Prepare yourself, spacer.""
+
+You exchange an uneasy glance with tactical. Seems you aren't talking your way out of this one.","cutCommLink:Continue",
+"#END Hegemony kill-fleets",,,,,,
+,,,,,,
+# Atzlan comms relay,,,,,,
+MPC_aloofAristoAtzlanRelayOpts,COB_AddOptions,"$id == ""aztlan_relay""
+MPC_IAIICHegeCMD ALOstateIs GET_INTEL
+!$MPC_IAIICgotData","SetOptionColor MPC_aloofAristoAtzlanRelayHack highlight
+FireAll MPC_aloofAristoAtzlanRelayHackModify
+ShowDefaultVisual","This relay could have information useful in convincing the Youns to pull out of the IAIIC. You should consider hacking into it.","2:MPC_aloofAristoAtzlanRelayHack:Search for data implicating the hegemony with the IAIIC",
+MPC_aloofAristoAtzlanRelayHackModifySeen,MPC_aloofAristoAtzlanRelayHackModify,"IsSeenByPatrols hegemony","SetEnabled MPC_aloofAristoAtzlanRelayHack false
+SetTooltip MPC_aloofAristoAtzlanRelayHack ""Your $shipOrFleet is currently being tracked by a patrol.""",,,
+MPC_aloofAristoAtzlanRelayHack,DialogOptionSelected,"$option == MPC_aloofAristoAtzlanRelayHack",,"Yet again, your ops chief finds themselves coordinating a highly illegal data heist on one of the most rigorously defended datapoints of the entire sector. Clean cuts, steady hands, min-EM plasmatorches removing the primary bulkhead to make way for the traceless mag-stick relay. A few hours of anxious waiting later, tactical pings green - the data filter is complete, giving you a few cycles worth of comms data to analyze while the hegemony (hopefully) remains none the wiser.
+
+Ops begins the lightning-fast restore-and-seal op as you march over to comms and see what you might have found.","MPC_aloofAristoAtzlanRelayHackTwo:""Report, comms.""",
+MPC_aloofAristoAtzlanRelayHackTwo,DialogOptionSelected,"$option == MPC_aloofAristoAtzlanRelayHackTwo",,"""Well, there's not much."" Your officer pulls up a display - a box of strings and variables, some highlighted while some crossed out. Various phrases stand out to you: ""Mirthson"", ""Global Project"", ""Military Support""... 
+
+Your attention is brought back to your officer with a polite 'a-hem'. ""Without an decryption algorithm, our filters didn't quite find anything of extreme value - plus, most logs past a few months are routinely purged, so even less. But,"" your officer leads, inputting a series of commands that erases the crossed-out strings and aligns all the highlighted ones in a neat, formatted line. ""-there *is* something interesting. Seems someone forgot to encrypt a trans-relay message...""
+
+Your officer moves to the side, allowing you a closer view to the dataset before you.","MPC_aloofAristoAtzlanRelayHackThree:Examine the recovered data",
+MPC_aloofAristoAtzlanRelayHackThree,DialogOptionSelected,"$option == MPC_aloofAristoAtzlanRelayHackThree","SetTextHighlightColors player
+SetTextHighlights $global.MPC_playerFacNameWithArticle","Formatted as a block, highlighted in high green and helpfully annotated by your comms team is a message stolen from the relay's data buffer.
+
+        FROM: HMS SHIPYARDS 32///SUPPLY {chico shipyard, endorsed by the hegemony}
+        TO: 241.40.24.521(DAER1) {coordinates just outside our space - NOT ark fob - hyperspace?}
+        TITLE: Early shipment
+        DESC: ""A few cruisers have been completed pre-schedule: two eagles, and a dominator. IDs are scrubbed and crews rotated - keep a space open on your FOB, they're coming in a day or two, assuming $global.MPC_playerFacNameWithArticle patrols don't delay us.""
+
+Unfortunately, the date seems to have not been stored - but that doesn't matter. ""Got the commslink-auth, too."" your comms officer chuckles, a prideful gleam entering their eye. ""Hard to spoof that, that's for sure. We show this to our aristocrat friend, and we've got something hard to dismiss.""","MPC_aloofAristoAtzlanRelayHackFour:Commend your officer and return to your duties",
+MPC_aloofAristoAtzlanRelayHackFour,DialogOptionSelected,"$option == MPC_aloofAristoAtzlanRelayHackFour","$MPC_IAIICgotData = true
+MPC_IAIICHegeCMD ALOincrementEvidence","""Thank you, $playerSirOrMadam."" your officer beams. You return to your station to catch the tail-end of the cleanup operation - your ops chief muttering low orders, salvors dutifully following them. With the faint shimmer of a nano-knit, the primary bulkhead is sealed once again, with only the faintest of traces. It's likely this intrusion will be detected at some point, but without solid analytics and no witnesses, the hegemony will never know it was you.","defaultLeave:Leave",
+"#END Atzlan comms relay",,,,,,
+,,,,,,
+# Player comms relay,,,,,,
+MPC_aloofAristoPlayerRelayOpts,COB_AddOptions,"MPC_IAIICHegeCMD ALOstateIs GET_INTEL
+!$player.MPC_IAIICGotIAIICDataFromFractalRelay
+$tag:comm_relay
+$faction.id == player","SetOptionColor MPC_aloofAristoAtzlanRelayHack highlight",,"2:MPC_aloofAristoPlayerRelaySearch:Search for data implicating the hegemony with the IAIIC",
+MPC_aloofAristoPlayerRelaySearch,DialogOptionSelected,"$option == MPC_aloofAristoPlayerRelaySearch",,"While unlikely, it's possible the hegemony has been using this relay to communicate with Ark FOB. Comms interfaces with the relay, constructs a rudimentary filter, and...","MPC_aloofAristoPlayerRelaySearchTwo:""Anything?""",
+MPC_aloofAristoPlayerRelaySearchTwo,DialogOptionSelected,"$option == MPC_aloofAristoPlayerRelaySearchTwo","MPC_IAIICHegeCMD ALOincrementEvidence
+$player.MPC_IAIICGotIAIICDataFromFractalRelay = true","""I think so."" comms replies, pulling up some sort of metadata analysis. Nothing seems to stick out immediately. Noticing your confusion, comms annotates, ""All these entries listed are noted as coming from Chico. All from their shipyards, logistics hubs, etc, but they're all listed without a target. Source decay, maybe. We can't actually read their contents, but if I had to guess?""
+
+Comms chuckles. ""Usually hegemony comms officers know how to combat source decay. They're not amateurs. This probably isn't a coincidence."" ","defaultLeave:Leave",
+"#END Player comms relay",,,,,,
+,,,,,,
+# Raid chico for intel on IAIIC,,,,,,
+MPC_IAIICAloofChicoRaidOptAdder,PopulateOptions,"$menuState == main
+$hasMarket
+$market.id == ""chicomoztoc""
+MPC_IAIICHegeCMD ALOstateIs GET_INTEL
+!$market.MPC_raidedForIAIICIntel","SetOptionColor MPC_IAIICAloofChicoRaidInit highlight",,"30:MPC_IAIICAloofChicoRaidInit:Raid a shipyard to see if you can traces to the IAIIC",
+MPC_IAIICAloofChicoRaidInit,DialogOptionSelected,"$option == MPC_IAIICAloofChicoRaidInit","$raidGoBackTrigger = MPC_IAIICAloofChicoRaidBack 0
+$raidContinueTrigger = MPC_IAIICAloofChicoRaidFinishedB 0
+$raidRestrictToTrigger = MPC_IAIICAloofChicoRaidFinishedA 0
+$raidDifficulty = 500 0
+
+AddRaidObjective genericIcon ""Storm the shipyard"" EXTREME 500 MPC_IAIICAloofChicoRaidFinishedA true
+
+ShowImageVisual raid_prepare
+","Intel suggests that Chicomoztoc, and the Hegemony at large, are mainly providing the IAIIC with ships rather than anything else. Therfore it would be reasonable to assume that a hegemony shipyard may hold clues towards the Hegemony's motivation.","mktRaidNonMarket:Continue",
+MPC_IAIICAloofChicoRaidBack,MPC_IAIICAloofChicoRaidBack,,"$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+MPC_IAIICAloofChicoRaidFinishedA,MPC_IAIICAloofChicoRaidFinishedA,,,"The hum of ion-chargers and the rustleshimmer of stealth gear fills your shuttle bays as the marines prepare for departure. Your blitzkrieg strategy, while unorthodox, proves effective - overclocked, burning engines fly through chico's defense-net before the heavy guns have a chance to get an angle and scream past incoming SAM installations before crashing gently onto the surface, the hastily installed impact dampeners saving countless grateful lives - at least, the ones you care about.
+
+Once on foot, your marines activate their helm-cams and begin scouring for data. The window is tight, the fighting is bloody, and many men are lost - carried away by your survivors to avoid leaving a trace. In the span of five minutes, your soldiers are in and out, exfiltrating through pre-registered cargo shuttles before a lockdown can begin.",,
+MPC_IAIICAloofChicoRaidFinishedB,MPC_IAIICAloofChicoRaidFinishedB,,"MPC_IAIICHegeCMD ALOincrementEvidence","Unfortunately, most of the data harvested is junk data - just reports of logistics caravans, metal stocks, ship production... you forward it to INTSEC, hoping it may help you in the future. But one thing does catch your eye, reviewing the camera footage..
+
+""Jackpot."" tactical declares, pausing a marine's camfeed. Before you, frozen in terror, is an IAIIC officer, busy scrubbing data-disks, greencap and laurel and all. ""Now why would a greencap be here?"" ops muses. ""Gonna be hard to explain *that* one away."" your chief gruffly laughs. And you agree - it's quite damning.",,
+"#END Raid chico for intel on IAIIC",,,,,,
+,,,,,,
+# Raid ark FOB for intel on IAIIC - two pieces instead of one,,,,,,
+MPC_IAIICAloofArkRaidOptAdder,PopulateOptions,"$menuState == main
+$hasMarket
+$market.id == ""MPC_arkFOB""
+MPC_IAIICHegeCMD ALOstateIs GET_INTEL
+!$market.MPC_raidedForIAIICIntel","SetOptionColor MPC_IAIICAloofArkRaidInit highlight",,"30:MPC_IAIICAloofArkRaidInit:Perform a raid to search for anything that would implicate the hegemony",
+MPC_IAIICAloofArkRaidInit,DialogOptionSelected,"$option == MPC_IAIICAloofArkRaidInit","$raidGoBackTrigger = MPC_IAIICAloofArkRaidBack 0
+$raidContinueTrigger = MPC_IAIICAloofArkRaidFinishedB 0
+$raidRestrictToTrigger = MPC_IAIICAloofArkRaidFinishedA 0
+
+AddRaidObjective genericIcon ""Storm the FOB and search for anything that could implicate the Hegemony"" EXTREME 500 MPC_IAIICAloofArkRaidFinishedA true
+
+ShowImageVisual raid_prepare
+","You gather your senior staff and begin plotting a potential assault. Even if it's defenses were stripped, an assault on the FOB would be an absolute meatgrinder. Very limited schematics have ever been leaked, scans fail to penetrate the thick hull, and most intel you get out of it is what the IAIIC releases themselves - that is, that the FOB is incredibly well defended, and any attack would be ""deeply regrettable and unadvisable"".
+
+However, intercepted communications imply some sort of data vault - or at least a comms relay - somewhere in the northern part of the station, in the seventh or eighth hab-ring. While this is conjecture, the intel is reliable enough that ops is relatively sure of the op's success. Relatively. And if this vault *is* real? The potential intel you could gain would be immense. So maybe it's worth the risk.","mktRaidNonMarket:Continue",
+MPC_IAIICAloofArkRaidBack,MPC_IAIICAloofArkRaidBack,,"$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+MPC_IAIICAloofArkRaidFinishedA,MPC_IAIICAloofArkRaidFinishedA,,,"The plan is simple. Load civilian cargo shuttles with marines, disguise them as unaffiliated independents, and ask for a flight plan. And once the doors open, to fly straight through, firing countermeasures and handheld ion weaponry to secure entry.
+
+Initial entry is successful - the flotilla of trojans approaches in staggered formation, IDENT-hashes and markings wiped, engine traces obscured. They look like any short-range intrasystem trade vessel to first glance. Customs control seem to share this perspective, as the first shuttle lands without issue.
+
+The moment the docking clamps engage, and the greencaps begin to encircle it for routine inspection, they are met with sudden and vicious magfire mixed with a large screeching EMP blast that knocks out the docking bay's rotors, leaving it yawning open.",,
+MPC_IAIICAloofArkRaidFinishedB,MPC_IAIICAloofArkRaidFinishedB,,"$market.MPC_raidedForIAIICIntel = true
+MPC_IAIICHegeCMD ALOincrementEvidence
+MPC_IAIICHegeCMD ALOincrementEvidence","Secondary entry is far more rocky. Countless marines are lost to space in the chaos, and those that land don't fare much better. Fighting is grueling; every angle has a porthole or an autoturret, and the greencaps never stop coming. Still, progress is quick as your marines blitz through the utilitarian hallways, searching door after door for anything that looks promising. 
+
+Stolen intel begins flooding into your $shipOrFleet's bridge as data-leech after data-leech are installed on anything that looks promising, and soon enough your begins withdrawing as the unfathomable reserves of the FOB begin responding and locking down exits. The marines that return are battered, bloody, shaken, but victorious, and that's all you pay them for.",,
+"#END Raid ark FOB for intel on IAIIC - two pieces instead of one",,,,,,
+,,,,,,
+# High level hege contact for intel on IAIIC,,,,,,
+"#END High level hege contact for intel on IAIIC",,,,,,
+"#END Get intel to prove to the youns",,,,,,
+,,,,,,
+# Return to Youn during the evidence collection,,,,,,
+MPC_IAIICAloofReturnDuringCollectionOptAdder,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
+MPC_IAIICHegeCMD houseIs ALOOF","FireAll MPC_aloofAristoGiveEvidenceModify",,"1:MPC_aloofAristoGiveEvidence:Set the link to private, and over the intelligence you've collected",
+MPC_aloofAristoGiveEvidenceModifyNotEnough,MPC_aloofAristoGiveEvidenceModify,"MPC_IAIICHegeCMD ALOstateIs GET_INTEL","SetEnabled MPC_aloofAristoGiveEvidence false
+SetTooltip MPC_aloofAristoGiveEvidence ""You do not have enough evidence just yet.""",,,
+MPC_aloofAristoGiveEvidence,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidence",,"Youn's eyes widen as she notices the telltale vid-flicker of a privacy connection. ""Oh? What's this, Captain?"" she mutters, leaning in towards something off-screen. It only takes a moment for a bright smile to cross her lips, and a delighted gasp to escape them. ""Oh... oh *yes* Captain!"" she turns to you, grinning like a child getting their first credit chit. ""This is spectacular! Oh, oh you mercenaries truely *are* reliable.""
+
+","MPC_aloofAristoGiveEvidenceTwo:Continue
+MPC_aloofAristoGiveEvidenceNotMerc:""I am *not* a mercenary."" (UNFINISHED)","lock MPC_aloofAristoGiveEvidenceNotMerc behind merc value"
+"#END Return to Youn during the evidence collection",,,,,,
 "#END The actual questline",,,,,,
 "#END Aloof house - obtain unassailable proof",,,,,,
 ,,,,,,
@@ -4135,7 +4285,7 @@ $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing la
 # COMSEC intervention,,,,,,
 ,,,,,,
 # COMSEC interception after the second house,,,,,,
-MPC_IAIICHegeCOMSECInterc,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECInterc","BeginConversation MPC_hegeIntsecGoon","Your communication panel disparately tries to cling to the now-obfuscated commlink, fighting through layers of encryption and proxy-stations to locate it's source. And, finally, after what feels like an eternity, it does so.
+MPC_IAIICHegeCOMSECInterc,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECInterc","BeginConversation MPC_hegeIntsecGoon","Your communication panel desperately tries to cling to the now-obfuscated commlink, fighting through layers of encryption and proxy-stations to locate it's source. And, finally, after what feels like an eternity, it does so.
 
 An unfamiliar man sits across from you, likely on the other side of the planet. ""Hello, $PlayerFirstName. Think we should have a little *chat*.""","MPC_IAIICHegeCOMSECIntercTwo:Continue",
 MPC_IAIICHegeCOMSECIntercTwo,DialogOptionSelected,"$option == MPC_IAIICHegeCOMSECIntercTwo",,"""It has come to our *attention* that something... strange, is happening on eventide. Spontanious civil unrest amongst the aristocracy, strangely shifting 'opinions'..."" he takes a mirthful appearance and shrugs. ""Things a faction should, frankly, never say... they're *saying it*. And all-the-while, you run about the sector, back and forth from eventide, either in our space or without, but always returning here...""

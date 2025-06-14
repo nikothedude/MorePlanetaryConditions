@@ -432,6 +432,24 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        if (MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+
+            aristo.id = HEGE_MILITARIST_ARISTO_REP
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = "MPC_militaristicAristo"
+
+            aristo.importance = PersonImportance.VERY_HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Allison", "Mellour", Gender.FEMALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
         if (MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 

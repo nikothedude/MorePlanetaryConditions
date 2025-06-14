@@ -128,6 +128,7 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
         const val MAXIMUM_FLEET_POINTS = 75
 
         const val MAX_PROGRESS = 300
+        const val NANOFORGE_POINTS = 200
         const val KEY = "\$MPC_hegemonyMilitaristicHouseEventIntel"
     }
 
@@ -172,7 +173,7 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
         addFactor(MPC_hegemonyMilHouseRaidIndFactorHint())
         addFactor(MPC_hegemonyPatrolsDestroyedFactorHint())
         addFactor(MPC_hegemonyTradeFleetsDestroyedFactorHint())
-        //addFactor(MPC_hegemonyTradeFleetsDestroyedFactorHint())
+        addFactor(MPC_hegemonyMilHouseNanoforgeStolenFactorHint())
 
         Global.getSector().listenerManager.addListener(this)
     }
@@ -358,7 +359,22 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
         actionData: MarketCMD.TempData?,
         cargo: CargoAPI?
     ) {
-        return
+        if (market == null) return
+        if (cargo == null) return
+
+        if (market.id == "chicomoztoc") {
+            for (item in cargo.stacksCopy) {
+                if (!item.isSpecialStack) continue
+                if (item.specialDataIfSpecial.id == Items.PRISTINE_NANOFORGE) {
+                    val points = NANOFORGE_POINTS
+                    val factor = MPC_hegemonyMilHouseNanoforgeStolenFactor(
+                        points,
+                        "Pristine nanoforge from Chicomoztoc stolen"
+                    )
+                    addFactor(factor, dialog)
+                }
+            }
+        }
     }
 
     override fun reportRaidToDisruptFinished(
@@ -519,7 +535,7 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
                 e.setDelayVeryShort()
             }            //e.setDelayNone();
             e.setDoNotAbortWhenPlayerFleetTooStrong() // small ships, few FP, but a strong fleet
-            e.setLocationOuterSector(true, Factions.INDEPENDENT)
+            e.setLocationInnerSector(true, Factions.INDEPENDENT)
             e.beginCreate()
             e.triggerCreateFleet(
                 FleetSize.MAXIMUM,

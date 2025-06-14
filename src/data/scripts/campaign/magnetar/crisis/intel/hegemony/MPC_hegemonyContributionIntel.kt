@@ -1,12 +1,8 @@
 package data.scripts.campaign.magnetar.crisis.intel.hegemony
 
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.FactionAPI
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
-import com.fs.starfarer.api.campaign.PlanetAPI
-import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.campaign.StarSystemAPI
-import com.fs.starfarer.api.campaign.TextPanelAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
@@ -14,6 +10,10 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
+import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.FleetSize
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.OfficerNum
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.OfficerQuality
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.ui.Alignment
@@ -21,22 +21,20 @@ import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.StarSystem
-import data.scripts.MPC_delayedExecution
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel.Companion.addStartLabel
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.IAIIC_QUEST
-import exerelin.utilities.NexUtilsFleet
-import exerelin.utilities.StringHelper
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.makeNonStoryCritical
 import org.magiclib.kotlin.makeUnimportant
 import java.awt.Color
+import java.lang.Math.random
 
 class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
@@ -68,6 +66,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         const val KEY = "\$MPC_hegeContributionIntel"
         const val HOUSES = 4
+        const val EVIDENCE_NEEDED = 3
     }
 
     var housesTurned = 0
@@ -87,7 +86,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     }
     enum class TargetHouse(val stringName: String) {
         NONE("None"),
-        ALOOF("ONE"),
+        ALOOF("Youn"),
         OPPORTUNISTIC("Lindunberg") {
             override fun apply(text: TextPanelAPI?) {
                 //val intel = MPC_hegemonyMilitaristicHouseEventIntel.get(true)!!
@@ -114,6 +113,44 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         open fun apply(text: TextPanelAPI? = null) {}
         open fun unapply(text: TextPanelAPI? = null) {}
+    }
+
+    enum class AloofState {
+        GET_INTEL {
+            override fun apply() {
+                val chicoRelay = Global.getSector().getEntityById("aztlan_relay")
+                chicoRelay?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+
+                val chico = Global.getSector().economy.getMarket("chicomoztoc")
+                chico?.primaryEntity?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+
+                val fractalColony = getFractalColony()!!
+                val system = fractalColony.containingLocation as? StarSystemAPI
+
+                system?.getCustomEntitiesWithTag(Tags.COMM_RELAY)?.forEach { it.makeImportant(niko_MPC_ids.IAIIC_QUEST) }
+            }
+            override fun unapply() {
+                val chicoRelay = Global.getSector().getEntityById("aztlan_relay")
+                chicoRelay?.makeUnimportant(niko_MPC_ids.IAIIC_QUEST)
+
+                val chico = Global.getSector().economy.getMarket("chicomoztoc")
+                chico?.primaryEntity?.makeUnimportant(niko_MPC_ids.IAIIC_QUEST)
+
+                val fractalColony = getFractalColony()!!
+                val system = fractalColony.containingLocation as? StarSystemAPI
+
+                system?.getCustomEntitiesWithTag(Tags.COMM_RELAY)?.forEach { it.makeUnimportant(niko_MPC_ids.IAIIC_QUEST) }
+            }
+        },
+        GOT_EVIDENCE {
+
+        },
+        WAIT_FOR_ALOOF {
+
+        };
+
+        open fun apply() {}
+        open fun unapply() {}
     }
 
     enum class OpportunisticState {
@@ -178,6 +215,64 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
             field = value
         }
+    var aloofState: AloofState? = null
+        set(value) {
+            field?.unapply()
+            value?.apply()
+
+            field = value
+        }
+    var evidencePieces = 0
+        set(value) {
+            field = value
+            if (value == 2 || value == 3) {
+                spawnHunterKiller()
+            }
+        }
+
+    private fun spawnHunterKiller() {
+        val r = MathUtils.getRandom()
+        val e = DelayedFleetEncounter(r, "MPC_aloofHitSquad_${evidencePieces}")
+
+        if (Global.getSettings().isDevMode) {
+            e.setDelayNone()
+        } else {
+            e.setDelay(20f, 25f)
+        }
+
+        e.setDoNotAbortWhenPlayerFleetTooStrong() // small ships, few FP, but a strong fleet
+        e.setLocationCoreOnly(true, Factions.HEGEMONY)
+        e.beginCreate()
+        e.triggerCreateFleet(
+            FleetSize.MAXIMUM,
+            HubMissionWithTriggers.FleetQuality.SMOD_3,
+            Factions.HEGEMONY,
+            FleetTypes.PATROL_LARGE,
+            Vector2f()
+        )
+        e.triggerSetFleetCombatFleetPoints((Global.getSector().playerFleet.fleetPoints * 0.85f).coerceAtLeast(200f))
+        //e.triggerSetFleetMaxShipSize(1)
+        e.triggerSetFleetDoctrineOther(4, 4)
+
+        e.triggerSetFleetDoctrineComp(4, 1, 0)
+
+        e.triggerFleetAddCommanderSkill(Skills.COORDINATED_MANEUVERS, 1)
+        e.triggerFleetAddCommanderSkill(Skills.ELECTRONIC_WARFARE, 1)
+        e.triggerFleetAddCommanderSkill(Skills.FLUX_REGULATION, 1)
+        e.triggerFleetAddCommanderSkill(Skills.TACTICAL_DRILLS, 1)
+        e.triggerSetFleetOfficers(OfficerNum.MORE, OfficerQuality.UNUSUALLY_HIGH)
+
+        e.triggerFleetMakeFaster(true, 0, true)
+
+        e.triggerSetFleetFaction(Factions.HEGEMONY)
+        e.triggerMakeNoRepImpact()
+        e.triggerSetStandardAggroInterceptFlags()
+        e.triggerMakeFleetIgnoreOtherFleets()
+        e.triggerSetFleetGenericHailPermanent("MPC_IAIICAloofHunter")
+        e.triggerSetFleetFlagPermanent("\$MPC_IAIICAloofHunter")
+        e.triggerFleetSetName("Kill-Fleet")
+        e.endCreate()
+    }
 
     fun spawnWormholeOmega() {
         val loc = getAlphaSite()
@@ -242,16 +337,13 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         currentHouse.unapply()
         currentHouse = house
         house.apply(text)
-
-        if (house != TargetHouse.MILITARISTIC && house != TargetHouse.OPPORTUNISTIC) {
-            sendUpdateIfPlayerHasIntel(house, text)
-        }
     }
 
     var state: State = State.GO_TO_EVENTIDE_INIT
 
     var cooldownActive = false
     var cooldownDays = IntervalUtil(30f, 30f)
+    var aloofTimer: Float? = null
 
     override fun getIcon(): String {
         return Global.getSector().getFaction(Factions.HEGEMONY).crest
@@ -364,6 +456,38 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                     Misc.getHighlightColor(),
                     "Eventide"
+                )
+            }
+            AloofState.GET_INTEL -> {
+                info.addPara(
+                    "%s/%s pieces of proof",
+                    0f,
+                    Misc.getHighlightColor(),
+                    evidencePieces.toString(), EVIDENCE_NEEDED.toString()
+                )
+            }
+            AloofState.GOT_EVIDENCE -> {
+                info.addPara(
+                    "Return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "eventide"
+                )
+            }
+            AloofState.WAIT_FOR_ALOOF -> {
+                info.addPara(
+                    "Wait %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "one week"
+                )
+            }
+            "EVIDENCE_PIECES" -> {
+                info.addPara(
+                    "%s/%s pieces of proof",
+                    0f,
+                    Misc.getHighlightColor(),
+                    evidencePieces.toString(), EVIDENCE_NEEDED.toString()
                 )
             }
             "HOUSES_TURNED" -> {
@@ -491,7 +615,76 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                             )
                         }
                     }
-                    TargetHouse.ALOOF -> TODO()
+                    TargetHouse.ALOOF -> {
+                        val player = Global.getSector().getFaction(Factions.PLAYER)
+                        val faction = Global.getSector().getFaction(Factions.HEGEMONY)
+                        val hege = faction.baseUIColor
+
+                        val fractalColony = getFractalColony()
+                        val fractalSystem = fractalColony?.starSystem!!
+
+                        val IAIICfac = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+                        val IAIIC = IAIICfac.baseUIColor
+
+                        info.addPara(
+                            "%s herself has asked for help with convincing her own house to oppose the IAIIC's occupation of your space," +
+                            " though for entirely self-serving reasons.",
+                            5f,
+                            Misc.getHighlightColor(),
+                            "Aleratus Youn"
+                        )
+
+                        when (aloofState) {
+                            null -> {}
+                            AloofState.GET_INTEL -> {
+                                info.addPara(
+                                    "You've been instructed to obtain %s on the hegemony's involvement with the IAIIC, and to return " +
+                                    "that intel to %s when you're done. You currently have %s/%s pieces.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "verifiable intelligence", "Aleratus Youn", evidencePieces.toString(), EVIDENCE_NEEDED.toString()
+                                )
+
+                                info.addPara(
+                                    "The following targets are likely sources of intelligence:",
+                                    5f
+                                )
+                                val arkFOB = Global.getSector().economy.getMarket("MPC_arkFOB")!!
+                                val chico = Global.getSector().economy.getMarket("chicomoztoc")
+                                info.setBulletedListMode(BaseIntelPlugin.BULLET)
+                                info.addPara("Aztlan Comms Relay", 0f).color = Misc.getHighlightColor()
+                                info.addPara("Raiding %s for intel (Difficult, but can give extra intel)", 0f, arkFOB.faction.baseUIColor, arkFOB.name).color = Misc.getHighlightColor()
+                                if (chico != null) {
+                                    info.addPara("Raiding %s for intel (UNIMPLEMENTED)", 0f, chico.faction.baseUIColor, chico.name).color = Misc.getHighlightColor()
+                                }
+                                info.addPara("%s comms relay (UNIMPLEMENTED)", 0f, player.baseUIColor, fractalSystem.name).color = Misc.getHighlightColor()
+                                //info.addPara("High level %s contact", 0f, hege, "hegemony").color = Misc.getHighlightColor()
+                                info.addPara("The hacker, Gargoyle (UNIMPLEMENTED)", 0f).color = Misc.getHighlightColor()
+                                //info.addPara("Aztlan Comms Relay", 0f).color = Misc.getHighlightColor()
+                                info.setBulletedListMode(null)
+                            }
+
+                            AloofState.GOT_EVIDENCE -> {
+                                info.addPara(
+                                    "You have everything you need. Return to %s on %s.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "Aleratus Youn",
+                                    "Eventide"
+                                )
+                            }
+
+                            AloofState.WAIT_FOR_ALOOF -> {
+                                info.addPara(
+                                    "You have given %s your intelligence, and must now wait a %s for her to convince her sister.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "Aleratus Youn",
+                                    "week"
+                                )
+                            }
+                        }
+                    }
                     TargetHouse.OPPORTUNISTIC -> {
                         val faction = Global.getSector().getFaction(Factions.HEGEMONY)
                         val hege = faction.baseUIColor
@@ -637,6 +830,19 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 )
             }
         }
+
+        if (aloofTimer != null && aloofTimer!! > 0f) {
+            aloofTimer = aloofTimer!! - Misc.getDays(amount)
+            if (aloofTimer!! <= 0f) {
+                aloofTimer = 0f
+                aloofTimerExpired()
+            }
+        }
+    }
+
+    private fun aloofTimerExpired() {
+        aloofState = MPC_hegemonyContributionIntel.AloofState.ALOOF_TIME_EXPIRED
+        sendUpdateIfPlayerHasIntel(aloofState, null)
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {
