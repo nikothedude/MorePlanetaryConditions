@@ -6,6 +6,7 @@ import com.fs.starfarer.api.campaign.JumpPointAPI.JumpDestination
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
@@ -62,6 +63,35 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         fun getZiggComplexPlanet(): PlanetAPI {
             return (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] as StarSystemAPI).planets.first { it.id == "MPC_magnetarSystemPlanetTwo" }
+        }
+
+        fun createEliminationTargetFleet(): CampaignFleetAPI {
+            val eventide = Global.getSector().economy.getMarket("eventide")!!
+
+            val params = FleetParamsV3(
+                eventide,
+                FleetTypes.ACADEMY_FLEET,
+                50f,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+                0f,
+            )
+            val fleet = FleetFactoryV3.createFleet(params)!!
+            eventide.containingLocation.addEntity(fleet)
+            fleet.setLocation(eventide.primaryEntity.location.x, eventide.primaryEntity.location.y)
+            //fleet.flagship.captain = MPC_People.getImportantPeople()[MPC_People.HEGE_ALOOF_SISTER]
+            fleet.commander = MPC_People.getImportantPeople()[MPC_People.HEGE_ALOOF_SISTER]
+            fleet.isNoFactionInName = true
+            fleet.name = "Aristocratic Delegation"
+            fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MISSION_IMPORTANT] = true
+            fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
+            fleet.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+            MPC_aloofTargetAssignmentAI(fleet).start()
+
+            return fleet
         }
 
         const val KEY = "\$MPC_hegeContributionIntel"
@@ -146,6 +176,14 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         },
         WAIT_FOR_ALOOF {
+
+        },
+        ELIMINATE_TARGET {
+            override fun apply() {
+                createEliminationTargetFleet()
+            }
+        },
+        ELIMINATE_TARGET_FINISHED {
 
         };
 
@@ -841,8 +879,22 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     }
 
     private fun aloofTimerExpired() {
-        aloofState = MPC_hegemonyContributionIntel.AloofState.ALOOF_TIME_EXPIRED
-        sendUpdateIfPlayerHasIntel(aloofState, null)
+        //aloofState = MPC_hegemonyContributionIntel.AloofState.ALOOF_TIME_EXPIRED
+        //sendUpdateIfPlayerHasIntel(aloofState, null)
+
+        if (!Global.getSector().campaignUI.showInteractionDialog(
+            RuleBasedInteractionDialogPluginImpl(
+                "MPC_IAIICaloofPanicComms"
+            ),
+                Global.getSector().playerFleet
+        )) {
+            panicTime() // sanity
+        }
+    }
+
+    fun panicTime(text: TextPanelAPI? = null) {
+        aloofState = MPC_hegemonyContributionIntel.AloofState.ELIMINATE_TARGET
+        sendUpdateIfPlayerHasIntel(aloofState, text)
     }
 
     override fun getMapLocation(map: SectorMapAPI?): SectorEntityToken? {

@@ -3802,7 +3802,8 @@ MPC_IAIICHMilBountyHunterDiktat,MPC_IAIICHMilBountyHunterHail,,"$entity.ignorePl
 "#END Militaristic house - sabotage hegemony",,,,,,
 ,,,,,,
 # Aloof house - obtain unassailable proof,,,,,,
-MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000","BeginConversation MPC_hegeAristoDefector
+MPC_aloofAristoMeetHub,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
+!$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoDefector
 $global.MPC_didAloofAristoSecondMeet = true
 FireAll MPC_aloofAristoMeetOpts","The comm-link quickly resolves into the familiar visage of Aleratus Youn, smiling softly.
 ""Hello Captain!"" she hums, clearing off her desk. ""What brings you here?""",,"!$global.MPC_didAloofAristoSecondMeet score:100"
@@ -3972,7 +3973,88 @@ MPC_aloofAristoGiveEvidence,DialogOptionSelected,"$option == MPC_aloofAristoGive
 
 ","MPC_aloofAristoGiveEvidenceTwo:Continue
 MPC_aloofAristoGiveEvidenceNotMerc:""I am *not* a mercenary."" (UNFINISHED)","lock MPC_aloofAristoGiveEvidenceNotMerc behind merc value"
+MPC_aloofAristoGiveEvidenceTwo,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceTwo","MPC_IAIICHegeCMD ALOevidenceDelivered
+$temporarilyIgnoreYou = true","""Ah, yes, this will do nicely..."" she hums, examining the transmission closely. ""Come back, in say, a week, and I'll have done my little *chat* with my house."" she chuckles, washing her amusement down with a swig of newly-poured wine. ""-I cannot thank you enough, Captain."" she turns to you. ""What I stand to lose... ugh! And, well. You. Of course."" she adds, as an afterthought. Then, a grin. ""How kind of me to give you this opportunity, hm?""
+
+She smiles, eying you as she sips her wine.","MPC_aloofAristoGiveEvidenceThree:""...yes. How kind.""
+MPC_aloofAristoGiveEvidenceSelfish:""'Kind.' You're doing this for your benefit, and you know it."" (UNFINISHED)","lock MPC_aloofAristoGiveEvidenceNotMerc behind merc value"
+MPC_aloofAristoGiveEvidenceThree,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceThree",,"""Now, if you have no more questions - I simply *must* prepare for a ball later."" she rests her hand on the comms-disconnect, beaming. ""I've a dress to acquire, and a bouquet of flowers to pick!"" she giggles, covering her lips with a trio of well-mannered fingers.","MPC_aloofAristoGiveEvidenceFour:""Nothing else.""
+MPC_aloofAristoGiveEvidenceWillWorkQuestion:""Are you sure this will work? What if they just... turn you in?"" (UNFINISHED)
+MPC_aloofAristoGiveEvidenceONEWEEK:""A whole week? Why that long!?"" (UNFINISHED - HUMOR OPTION)","Gauge player opinions here - if people dont like her, add a optino to tell her off
+
+MPC_aloofAristoGiveEvidenceONEWEEK, she goes on a massive tangent if you let her"
+MPC_aloofAristoGiveEvidenceFour,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceFour",,"""Well then! Toodles!"" She promptly cuts the commlink, leaving you with nothing but your slightly exasperated expression to converse with. You ask yourself why you ever got involved with aristocrats instead of a more sensical approach.
+
+You offer no reasonable answer.","cutCommLink:Leave",
 "#END Return to Youn during the evidence collection",,,,,,
+,,,,,,
+# Panicked comms call after her house betrays her,,,,,,
+MPC_IAIICaloofPanicComms,MPC_IAIICaloofPanicComms,,"MPC_addOptionConfirmation MPC_IAIICaloofPanicCommsRefuse ""It's very possible that this comms request could be important. Ignoring it might make working the hegemony impossible."" ""Continue"" ""Go back""","Suddenly, you receive a comms request. It's encrypted, privacy locks are enabled, marked with high priority flags...
+
+And from Eventide.
+
+""That Youn personality, no doubt."" ops nods. ""Can't say I'm happy to see she figured out long-ranged comms bouncing."" your chief grunts.","MPC_IAIICaloofPanicCommsAccept:Accept the request
+MPC_IAIICaloofPanicCommsRefuse:Ignore the request, and continue",
+MPC_IAIICaloofPanicCommsRefuse,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsRefuse","MPC_IAIICHegeCMD genericFail","You opt to ignore the Aristocrat. The pulsating migraine in your head thanks you profusely, and shows it's gratitude by fading to an ignorable level.","defaultLeave:Leave",
+MPC_IAIICaloofPanicCommsAccept,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsAccept","BeginConversation MPC_hegeAristoDefector","You reluctantly give the order to have a commlink established, which comms accepts with little more protest than a grimace. But where you expect an annoying smile is instead a grimace, eyes shot open and bloodshot in the corners.
+
+""C-CAPTAIN! YES! HELLO!"" the woman stammers, her typical aristocratic composure utterly shattered by some unknown event.","MPC_IAIICaloofPanicCommsTwo:""What... happened to you?""",
+MPC_IAIICaloofPanicCommsTwo,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsTwo",,"""S-SO it doesn't work. We talked, and it doesn't work."" she stammers, reaching over and spilling some wine on her fine dress as she attempts to drown herself. ""Hah! Haha! T-the first! Person, I approached. Was, uh, my. Sister."" she claps her hands together, sending a dissonant ring through your bridge. ""...a-and! Hah! SHE. She is. Going to COMSEC. RIGHT NOW.""","MPC_IAIICaloofPanicCommsThree:""Okay. Okay. Calm down. What exactly did you tell her?""",
+MPC_IAIICaloofPanicCommsThree,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsThree",,"She takes a deep breath. Her shoulders relax, her grimace relaxes, and she seems to settle to normal - though the deep chug of red wine certainly helps. ""Okay. Okay. Okay."" she breathes.
+
+""-so. I told her about you. And. And everything you got. Uh. And. And then! She... she started freaking out about how I was 'consorting with the enemy'? Heh? Heh hah???"" She swallows. ""And! NOW! Um! She... s-she is going straight to Chicomoztoc.""
+
+The weight of this settles upon you and your bridge. If what she says is true, this could not only ostracize Aleratus in the eyes of the Youn, but also cause a major diplomatic incident - though you estimate the reputation loss caused by one aristocrat to be only somewhat problematic.
+
+""You... y-you have. To stop her. Captain. She... s-she's gonna tarnish my name. I'll *never* get out of prison! PLEASE, captain!"" she begs, crawling closer to the camera with watery eyes.","MPC_IAIICaloofPanicCommsFourAgree:""Sure. To keep you out of prison.""
+MPC_IAIICaloofPanicCommsFourImImportant:""I'll stop her. But not for you.""",
+MPC_IAIICaloofPanicCommsFourAgree,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsFourAgree",,"Her breathing bates for a moment, only to break into hysterics as she balls her hands and shakes them in gracious appreciation. ""Oh, oh thank you captain! Thank you! I-"" she sniffles. ""-y-you are truely so gracious, $playerSirOrMadam! I...""
+
+She breathes. Breathes, breathes more, until she's calm. Relatively, at least. ""--you'll find her near eventide. I'll delay her as much as I can, but I don't know how much she'll listen."" she sighs, closing her eyes in contemplation. ""I'm sorry, captain, but she just - doesn't listen like she used to.""","MPC_IAIICaloofPanicCommsCanKill:""What if I can't talk her down? What if she's... determined?""
+MPC_IAIICaloofPanicCommsFive:""Alright. I'll be there as soon as I can.""",
+MPC_IAIICaloofPanicCommsFourImImportant,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsFourImImportant","$player.ethosCocky++
+$option = MPC_IAIICaloofPanicCommsFourAgree
+FireBest DialogOptionSelected",,,
+MPC_IAIICaloofPanicCommsCanKill,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsCanKill","RemoveOption MPC_IAIICaloofPanicCommsCanKill","""-are you asking if you can kill her?"" she asks bluntly. Then a pained snicker, and a nod. ""You're asking if you can kill her. A-ah, well... if... if it comes to it..."" she clasps her hands together, shaking them. ""...I... I suppose... if it's... for the greater good."" she says, as if the 'greater good' in this scenario was anything more than her own betterment.
+
+""I do love my sister... but she is such a bloody... *pain*... sometimes..."" she sighs, shaking her head thrice. ""I-I'd be sad, yes. But for the greater good.""",,
+MPC_IAIICaloofPanicCommsFive,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsFive","MPC_IAIICHegeCMD ALOeliminateTarget
+HideFirstPerson","""Thank you Captain... I'll try to make this up to you."" she then cuts the comm link, leaving you to stare at your highly irritated reflection. You are really. Really. *Really* starting to regret working with aristocrats.
+
+""We should get there as soon as possible, Captain."" tactical interjects. ""If that woman gets to Daud before we do, damn good chance this entire operation is shot. If not our reputation, then the Youns.""","defaultLeave:Nod, and return to your duties
+MPC_IAIICaloofPanicCommsEndAlt:Groan, and return to your duties",
+MPC_IAIICaloofPanicCommsEndAlt,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsEndAlt","DismissDialog",,,
+,,,,,,
+# Comms with her sister,,,,,,
+MPC_IAIICaloofSisterComms,PickGreeting,"$id == MPC_hegeAristoSister score:1000
+!$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoSister
+FireAll MPC_IAIICaloofSisterCommsOptions","The commlink quickly resolves into the annoyed-looking visage of a sharp-looking aristocrat. One eye twitching, the other resting firmly on the comms-disconnect, she hisses. ""YOU! Of course only *you* have the gall to approach a fleet such as mine!""
+
+She snarls, snapping her jaws. ""Lay but a hand on me and there won't be a single name in the hegemony who will not speak ill of you."" Tactical helpfully adds there doesn't seem to be any indication they have that capability.",,
+MPC_IAIICaloofSisterCommsOptionsNegotiate,MPC_IAIICaloofSisterCommsOptions,"!$MPC_failedNegotiation",,,"MPC_IAIICaloofSisterNegotiate:""Is there any way we can resolve this?""","SetStoryOption MPC_IAIICaloofSisterNegotiate 1 MPC_noBonusXP general ""Entered negotiations with a hostile aristocrat""
+"
+MPC_IAIICaloofSisterNegotiate,DialogOptionSelected,"$option == MPC_IAIICaloofSisterNegotiate",,"She laughs hoarsely. ""Are you kidding me?! The benefits I would receive from this report would be nothing compared to anything you could give me!"" she licks her lips. ""At least... well. Nothing you'd view as *economical* to give me."" she smiles.
+
+TODO want more here","MPC_IAIICaloofSisterNegotiateTwo:""Just name your price.""
+cutCommLink:Cut the comm link",
+MPC_IAIICaloofSisterNegotiateTwo,DialogOptionSelected,"$option == MPC_IAIICaloofSisterNegotiateTwo","SetTextHighlights ""One million credits""
+DoCanAffordCheck 1000000 MPC_IAIICaloofSisterNegotiateConfirm false","A bemused chuckle escapes her lips. ""One million credits."" she smirks.","MPC_IAIICaloofSisterNegotiateConfirm:""Fine."" (Pay 1000000 credits)
+cutCommLink:Cut the comm link",
+MPC_IAIICaloofSisterNegotiateConfirm,DialogOptionSelected,"$option == MPC_IAIICaloofSisterNegotiateConfirm","$entity.ignorePlayerCommRequests = true
+MPC_IAIICHegeCMD ALOtargetBribed","A giggle, then a full-blown cackle fills your bridge as the aristocrat's eyes widen in jubilation. ""HAHA! Yes! YES! Thank you, *Captain*."" she snickers. ""It's so easy when we resolve things non-violently, hm?"" and with that, the commlink disconnects, leaving a black screen where her face once was.
+
+""$PlayerSirOrMadam."" tactical stiffly begins. ""Their fleet is moving back towards eventide. Seems we convinced them to forget about whatever that Youn told them.""","defaultLeave:Leave",
+MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,"100:cutCommLink:Cut the comm link",
+"#END Comms with her sister",,,,,,
+"#END Panicked comms call after her house betrays her",,,,,,
+,,,,,,
+# Return to youn after her sister is eliminated,,,,,,
+MPC_IAIICaloofSisterElim,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
+!$temporarilyIgnoreYou
+MPC_IAIICHegeCMD ALOstateIs ELIMINATE_TARGET_FINISHED score:5","BeginConversation MPC_hegeAristoDefector","The exasperated face of the young aristocrat flickers into view. ""Did-did you take care of her?!""","MPC_IAIICaloofSisterElimYes:""Yes. She won't be a problem any longer.""",
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+"#END Return to youn after her sister is eliminated",,,,,,
 "#END The actual questline",,,,,,
 "#END Aloof house - obtain unassailable proof",,,,,,
 ,,,,,,

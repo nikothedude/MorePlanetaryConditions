@@ -11,6 +11,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.adjustReputationWithPlayer
 import org.magiclib.kotlin.makeImportant
 
 object MPC_People {
@@ -51,6 +52,8 @@ object MPC_People {
     const val HEGE_MILITARIST_ARISTO_REP = "MPC_hegeAristoMilitaryRep"
     const val HEGE_OPPORTUNISTIC_ARISTO_REP = "MPC_hegeAristoOpportunistRep"
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
+
+    const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
 
@@ -429,6 +432,27 @@ object MPC_People {
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_ARISTO_DEFECTOR] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_ALOOF_SISTER] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+
+            aristo.id = HEGE_ALOOF_SISTER
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = Ranks.POST_CITIZEN
+
+            aristo.importance = PersonImportance.MEDIUM
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Alnessa", "Youn", Gender.FEMALE)
+            aristo.adjustReputationWithPlayer(-0.4f, null, null)
+
+            //aristo.portraitSprite = "graphics/portraits/portrait_hegemony10.png"
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[aristo.id] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }

@@ -1,7 +1,10 @@
 package data.scripts.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
+import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
@@ -10,9 +13,11 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_aloofTargetAssignmentAI
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
+import org.magiclib.kotlin.getSourceMarket
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
     override fun execute(
@@ -184,6 +189,13 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 )
             }
 
+            "genericFail" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.state = MPC_hegemonyContributionIntel.State.FAILED
+                intel.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
+                intel.endAfterDelay()
+            }
+
             "ALOgetIntel" -> {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 intel.aloofState = MPC_hegemonyContributionIntel.AloofState.GET_INTEL
@@ -208,7 +220,33 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 intel.aloofState = MPC_hegemonyContributionIntel.AloofState.WAIT_FOR_ALOOF
                 intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
 
-                intel.aloofTimer = if (Global.getSettings().isDevMode) 0.1f else 7f // one week
+                intel.aloofTimer = if (Global.getSettings().isDevMode) 0.1f else 3f
+            }
+            "ALOeliminateTarget" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.ELIMINATE_TARGET
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+            "ALOhegeIsFriendly" -> {
+                return Global.getSector().getFaction(Factions.HEGEMONY).relToPlayer.isAtWorst(RepLevel.FRIENDLY)
+            }
+            "ALOtargetBribed" -> {
+                val target: CampaignFleetAPI = dialog.interactionTarget as? CampaignFleetAPI ?: return false
+                val ai: MPC_aloofTargetAssignmentAI =
+                    (target.scripts.firstOrNull { it is MPC_aloofTargetAssignmentAI } ?: return false) as MPC_aloofTargetAssignmentAI
+                ai.delete()
+
+                target.clearAssignments()
+                target.addAssignmentAtStart(
+                    FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
+                    target.getSourceMarket().primaryEntity,
+                    Float.MAX_VALUE,
+                    null
+                )
+
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.ELIMINATE_TARGET_FINISHED
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
             }
         }
 

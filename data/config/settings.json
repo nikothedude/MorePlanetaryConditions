@@ -59,6 +59,8 @@
 		"MPC_seeBMContact":0,
 		"MPC_getDownPayment":0,
 		"MPC_suicide":0,
+		
+		"MPC_noBonusXP":0,
 	},
 
 	 "designTypeColors":{
