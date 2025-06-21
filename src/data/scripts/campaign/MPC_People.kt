@@ -54,6 +54,9 @@ object MPC_People {
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
 
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
+    const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
+
+    //const val
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
 

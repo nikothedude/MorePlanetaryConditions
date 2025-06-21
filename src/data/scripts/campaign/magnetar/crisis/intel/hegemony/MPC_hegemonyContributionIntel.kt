@@ -721,6 +721,9 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                     "week"
                                 )
                             }
+
+                            AloofState.ELIMINATE_TARGET -> TODO()
+                            AloofState.ELIMINATE_TARGET_FINISHED -> TODO()
                         }
                     }
                     TargetHouse.OPPORTUNISTIC -> {
