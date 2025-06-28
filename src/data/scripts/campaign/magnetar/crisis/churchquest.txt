@@ -71,3 +71,7 @@ Idea two
         "Come to these coordinates. Ludd bless"
 
     Militants
+
+GENERAL OUTLINE
+    Go to... x planet
+        Asher? Gilead? One of the two...

@@ -4030,7 +4030,7 @@ MPC_IAIICaloofSisterComms,PickGreeting,"$id == MPC_hegeAristoSister score:1000
 !$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoSister
 FireAll MPC_IAIICaloofSisterCommsOptions","The commlink quickly resolves into the annoyed-looking visage of a sharp-looking aristocrat. One eye twitching, the other resting firmly on the comms-disconnect, she hisses. ""YOU! Of course only *you* have the gall to approach a fleet such as mine!""
 
-She snarls, snapping her jaws. ""Lay but a hand on me and there won't be a single name in the hegemony who will not speak ill of you."" Tactical helpfully adds there doesn't seem to be any indication they have that capability.",,
+She snarls, snapping her jaws. ""Lay but a hand on me and there won't be a single name in the hegemony who will not speak ill of you."" Tactical helpfully adds there doesn't seem to be any indication they have that capability - assuming short-range jamming holds up as usual.",,
 MPC_IAIICaloofSisterCommsOptionsNegotiate,MPC_IAIICaloofSisterCommsOptions,"!$MPC_failedNegotiation",,,"MPC_IAIICaloofSisterNegotiate:""Is there any way we can resolve this?""","SetStoryOption MPC_IAIICaloofSisterNegotiate 1 MPC_noBonusXP general ""Entered negotiations with a hostile aristocrat""
 "
 MPC_IAIICaloofSisterNegotiate,DialogOptionSelected,"$option == MPC_IAIICaloofSisterNegotiate",,"She laughs hoarsely. ""Are you kidding me?! The benefits I would receive from this report would be nothing compared to anything you could give me!"" she licks her lips. ""At least... well. Nothing you'd view as *economical* to give me."" she smiles.
