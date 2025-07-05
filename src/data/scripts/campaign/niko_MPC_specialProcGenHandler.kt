@@ -332,6 +332,17 @@ object niko_MPC_specialProcGenHandler {
         mothership.setCircularOrbitWithSpin(magnetar, 20f, 700f, 50f, -10f, 10f)
         mothership.addScript(MPC_magnetarMothershipScript(mothership, 1f, 11, 11, 20f, 80, 100)) // VERY THREATENING
 
+        val dispersalUnitOne = system.addCustomEntity("MPC_magnetarDispersalUnitOne", null, "MPC_magnetarSensorScrambler", Factions.NEUTRAL)
+        val dispersalUnitTwo = system.addCustomEntity("MPC_magnetarDispersalUnitTwo", null, "MPC_magnetarSensorScrambler", Factions.NEUTRAL)
+        val dispersalUnitThree = system.addCustomEntity("MPC_magnetarDispersalUnitThree", null, "MPC_magnetarSensorScrambler", Factions.NEUTRAL)
+
+        val dispersalDist = MathUtils.getDistance(magnetar.location, wormholeOne.location) + 1000f
+        val dispersalOrbitDur = 700f
+
+        dispersalUnitOne.setCircularOrbitPointingDown(magnetar, 120f, dispersalDist, dispersalOrbitDur)
+        dispersalUnitTwo.setCircularOrbitPointingDown(magnetar, 240f, dispersalDist, dispersalOrbitDur)
+        dispersalUnitThree.setCircularOrbitPointingDown(magnetar, 0f, dispersalDist, dispersalOrbitDur)
+
         /*mothership.memoryWithoutUpdate["\$defenderFleet"] = createOmegaMothershipDefenders()
         mothership.memoryWithoutUpdate["\$hasDefenders"] = true
         mothership.memoryWithoutUpdate["\$hasStation"] = true

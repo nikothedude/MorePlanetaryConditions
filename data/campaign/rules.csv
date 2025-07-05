@@ -1131,6 +1131,24 @@ Eventually, a single word comes through, showered in distortion and what you thi
                   ""    no ""
 The console dies only a second afterwards. Your comms officer exchanges a panicked look, before manually rebooting it and confirming no intrusion occurred. You order your crew to continue their work - and stop staring at the now-functioning console.","0:cutCommLink:Cut the comm link",
 "#END Magnetar Comms",,,,,,
+,,,,,,
+# Sensor Scramblers,,,,,,
+MPC_exploreMagnetarSensorScrambler,OpenInteractionDialog,"$tag:MPC_magnetarSensorScrambler score:1000","ShowDefaultVisual
+SetShortcut MPC_leaveSensorScrambler ""ESCAPE""
+
+niko_MPC_musicToggle music_encounter_mysterious_non_aggressive true false
+$player.MPC_exploredMagnetarSensorScrambler = true","The image of the object seems to shimmer as you approach, it's readings becoming more and more scattered until they cut out completely about a kilometer out. It appears it is coated in some sort of short-range stealth field, however...
+
+""Seems it's a mere malfunction."" sensor posits. ""What we're seeing here is the tell-tale sign of a sensor scrambler decaying; its local stealth field decays first, than the long-ranged field. And yes, Captain - this object may be why the rest of the sector, and we as well, have not detected any external magnetic pulses from the object.""
+
+""Seems the Domain wanted to keep it a secret."" your chief nods. ""Surprised it lasted this long, given the Domain's tendency to burn out of nowhere."" a gruff laugh escapes your chief's lips, to muted response by your crew.","MPC_magnetarSensorScramblerCanSalvage:""Can we salvage it?""
+MPC_leaveSensorScrambler:Leave",
+MPC_leaveSensorScrambler,DialogOptionSelected,"$option == MPC_leaveSensorScrambler","niko_MPC_musicToggle """" false
+DismissDialog",,,
+MPC_magnetarSensorScramblerCanSalvage,DialogOptionSelected,"$option == MPC_magnetarSensorScramblerCanSalvage","RemoveOption MPC_magnetarSensorScramblerCanSalvage","Your question prompts a pause followed by a scowling head-shake. ""I don't think that's... advisable. From what little we can scan, it appears hooked up to some sort of annihilation device that'll shunt it into p-space if ever disturbed. Forever.""
+
+""Might explain why it's still here, and nothing's come out to rip it apart..."" ops grunts. ""Besides its stealth field."" engineering adds. ""Besides that."" ops nods.",,
+"#END Sensor Scramblers",,,,,,
 "#END Magnetar",,,,,,
 ,,,,,,
 # Singularity,,,,,,
@@ -4052,8 +4070,6 @@ MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,"10
 MPC_IAIICaloofSisterElim,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
 !$temporarilyIgnoreYou
 MPC_IAIICHegeCMD ALOstateIs ELIMINATE_TARGET_FINISHED score:5","BeginConversation MPC_hegeAristoDefector","The exasperated face of the young aristocrat flickers into view. ""Did-did you take care of her?!""","MPC_IAIICaloofSisterElimYes:""Yes. She won't be a problem any longer.""",
-NEW RULE,,,,,,
-NEW RULE,,,,,,
 "#END Return to youn after her sister is eliminated",,,,,,
 "#END The actual questline",,,,,,
 "#END Aloof house - obtain unassailable proof",,,,,,

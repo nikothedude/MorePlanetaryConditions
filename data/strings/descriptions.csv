@@ -123,6 +123,8 @@ Your fleet's scanners pick up the faintest of comm pings from the object. A clos
 ,,,,,
 MPC_magnetarWormholeProbe,CUSTOM,"While at first glance this probe appears to be like any other generic sensor probe, deeper scans show internal modifications, as well as strange angular protrusions on its exterior.",,,
 ,,,,,
+MPC_magnetarSensorScrambler,CUSTOM,"An ancient piece of technology, seemingly of Domain make. Sensors reports a steady stream of highly ionized particles eminating from its sides, and while unlikely to pose a threat to your fleet, their intended function is unknown from cursory examination.",,,
+,,,,,
 MPC_omegaDerelict_probe,CUSTOM,"An example of one of the countless thousands of robot probe ships sent out into the galaxy by the Domain to find new resources to exploit, planets to colonize, and explore the unknown. Some variants are produced by automated motherships. This specimen appears to be inactive; pitted by small impacts, its hull displays iridescence from fearsome radiation scarring. This probe's manufacture could well date to a thousand cycles ago.
 
 This one has had extensive modifications done to it, including shielding against the nearby magnetar.",,,

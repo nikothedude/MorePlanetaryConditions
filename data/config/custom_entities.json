@@ -130,6 +130,37 @@
 		"pluginClass":"com.fs.starfarer.api.impl.campaign.WarningBeaconEntityPlugin",
 	},
 
+	"MPC_magnetarSensorScrambler":{
+		"defaultName":"Annulation Unit",
+		"nameInText":"Annulation Unit",
+		"shortName":"annulator",
+		"aOrAn":"a",
+		"isOrAre":"is",
+		"detectionRange":20, # must be >0 for discoverable/discoveryXP to be used
+		"discoverable":true,
+		"discoveryXP":1000,
+		"defaultRadius":75, # used if radius<0 in addCustomEntity()
+		"customDescriptionId":"MPC_magnetarSensorScrambler",
+		"interactionImage":"graphics/illustrations/generic_probe.jpg",
+		"icon":"graphics/icons/tactical/venting_flux2.png",
+		"iconWidth":16,
+		"iconHeight":16,
+		"sprite":"graphics/ships/stations/module_decor_panels1.png",
+		"spriteWidth":16,
+		"spriteHeight":16,
+		"renderShadow":true,
+		"useLightColor":true,
+		"showInCampaign":true,
+		"showIconOnMap":true,
+		"showNameOnMap":false,
+		"scaleNameWithZoom":false,
+		"scaleIconWithZoom":true,
+		"tags":["has_interaction_dialog", "neutrino_high", "MPC_magnetarSensorScrambler"],
+		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
+		"renderCircleIndicator":true,
+		"renderCircleIndicatorSelectionFlash":true,
+	},
+
 	"MPC_magnetarShield":{
 		"defaultName":"Stellar Shield", # used if name=null in addCustomEntity()
 		"defaultRadius":40, # used if radius<0 in addCustomEntity()

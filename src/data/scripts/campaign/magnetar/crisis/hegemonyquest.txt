@@ -146,6 +146,14 @@ REVISION ONE
             Prove your honor!
 
             They view the hegemony as a very honorable institution, but glimmers of dissent shine...
+                Ultimately, they view hegemony as walkers of the ironclad path of ludd, even if they stray
+                    They are not the best. But they are practical, powerful. A useful ally. Prove yourself you are aligned...
+                    They may not directly ally themselves with you, but two main things shine through
+
+                    1. They believe, ultimately, if you respect their rules, your actions will work with them
+                    2. The hegemony has proven... dishonorable, at the best of times. Someone at least willing to play with
+                    their rules would be well liked. They would even like to beat up the hege! But you need to prove yourself first -
+                    the rules demand it.
 
             IDEA 1
                 Convince various house members of your honor
@@ -172,6 +180,38 @@ REVISION ONE
 
                         And if you win, you HAVE to kill the guy, or you break honor
                             Maybe a story point...?
+
+                General structure?
+                    Introduced to the first guy, as usual
+                        Stereotypical "honorable" guy
+                        Does not trust you. Youve gotten here by using AI so... fuck you?
+                        Stubborn
+
+                        "And what would the depostic 'Youn' have to say to us?"
+                        "...you would take an identity to speak with me?! How do you sit in that chair and call yourself righteous?!"
+                        "Speak no more to me, I will not tolerate your lies!"
+
+                        ...interrupted by guy two
+
+                    Guy two steps in
+                        Really doesnt like the hege - doesnt exactly like you either but sees you as new, hopeful blood that can be molded
+                        Empathetic
+                        Hopeful
+
+                        Door is thrust open, and they exchange a brief argument - why are you here - etc -
+                        2: "Whos' this - oh - its him, the one we are at war with."
+                        1: "I told you not to disturb me-"
+                        2: "I told you not to dispose this man if they come knocking! We have much to discuss!"
+                        1 grumbles but lets 2 approach, standing back
+                        2: Introduces themself graciously, while 1 glares
+                        2: "You are misguided. But I believe you can still hold the iron path. Prove yourself - especially for 1."
+                        1: grumble grumble
+
+                    Together, they are the two heads of their house
+                    These are the guys you will contact
+
+                    What IS the iron path?
+                        Subsect of the luddic faith, mostly forgotten by time, just one of the many misc sects
 
     CAN ONLY DO ONE AT A TIME!!!!
     Time gate - Month or so delay between houses

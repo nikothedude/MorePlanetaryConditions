@@ -1,3 +1,7 @@
+4.3.6
+
+Adds some extra flavor to magnetar
+
 4.3.5a
 SAVE COMPATIBLE
 
