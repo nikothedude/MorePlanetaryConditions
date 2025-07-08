@@ -204,6 +204,11 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
                         Global.getSector().getFaction(Factions.TRITACHYON).baseUIColor
                     )
 
+                    info.addPara(
+                        "You will likely find hints on inhabited planets and (possibly) system objectives such as comm relays.",
+                        5f
+                    )
+
                     if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_foundPirateBMContactInBar") && !(Global.getSector().memoryWithoutUpdate.getBoolean(
                             "\$MPC_deliveredPirateToGilead"
                         ) || Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_handedOverPirate"))) {

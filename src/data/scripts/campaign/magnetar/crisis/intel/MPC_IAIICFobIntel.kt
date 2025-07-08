@@ -243,6 +243,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     companion object {
+        const val GLOBAL_SABOTAGE_MULT = 1f
+        const val GLOBAL_FLEETSIZE_MULT = 1f
         const val DEFAULT_DISARM_TIME = 60f
         const val DEFAULT_COMMAND_DISRUPTION_DAYS = 90f
         const val DISARMAMENT_FLEET_SIZE_MULT = 0.25f
@@ -293,7 +295,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
             var mult = 1f
             for (entry in contributions) {
-                mult += entry.fleetMultIncrement
+                mult += entry.fleetMultIncrement * GLOBAL_FLEETSIZE_MULT
             }
             return mult
         }
@@ -301,8 +303,12 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         fun getSabotageMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
             var mult = 1f
             for (entry in contributions) {
-                mult += entry.sabotageMultIncrement
+                mult += entry.sabotageMultIncrement * GLOBAL_SABOTAGE_MULT
             }
+            if (niko_MPC_settings.astralAscensionEnabled) {
+                mult *= 2f
+            }
+
             return mult
         }
 
@@ -474,6 +480,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 return Global.getSector().economy.getMarket("new_maxios")?.isInhabited() ?: return false
             }
         }
+        Global.getSector().economy.getMarket("new_maxios").commDirectory.addPerson(MPC_People.getImportantPeople()[MPC_People.MMMC_REP])
+        MPC_People.getImportantPeople()[MPC_People.MMMC_REP]?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         list += MPC_factionContribution(
             Factions.INDEPENDENT,
             0.5f,
@@ -1445,6 +1453,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         } else {
             sendUpdateIfPlayerHasIntel(reason, dialog.textPanel)
         }
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IAIIC_EVENT_CONCLUDED] = true
 
         val fob = MPC_fractalCoreFactor.getFOB()
         dismissCombatFleets()

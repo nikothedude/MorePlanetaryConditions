@@ -41,13 +41,13 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         const val BASE_SECONDS = 6f
         const val STRENGTH_PER_SECOND = 200f
 
-        const val MAX_BURN_ANCHOR = 10
+        const val MAX_BURN_ANCHOR = 8
         /** Controls how much having a high or low burn impacts the power of the pulse. */
         const val BASE_SIZE_MULT = 0.9f
 
         const val BASE_REP_LOSS = 0.04f // if a fleet is hit by the shockwave
 
-        const val FUEL_USE_MULT = 2.5f
+        const val FUEL_USE_MULT = 2f
 
         val BASE_COLOR = Color(202, 27, 233, 190)
 

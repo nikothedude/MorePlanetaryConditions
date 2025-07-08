@@ -1,6 +1,12 @@
 4.3.6
+SAVE COMPATIBLE?
 
 Adds some extra flavor to magnetar
+Overgrown nanoforges no longer spawn naturally
+    Can be spawned via commands
+Gave a few untested buffs to ionized pulse, again
+Sustained burn now makles you immune to the effects of the magnetar's pull
+Clarified a few things in magnetar intel
 
 4.3.5a
 SAVE COMPATIBLE

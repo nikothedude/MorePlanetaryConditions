@@ -52,6 +52,7 @@ object MPC_People {
     const val HEGE_MILITARIST_ARISTO_REP = "MPC_hegeAristoMilitaryRep"
     const val HEGE_OPPORTUNISTIC_ARISTO_REP = "MPC_hegeAristoOpportunistRep"
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
+    const val HEGE_MORALIST_ARISTO_REP_TWO = "MPC_hegeAristoMoralistRepTwo"
 
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
     const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
@@ -496,7 +497,7 @@ object MPC_People {
             aristo.makeImportant("MPC_hegeAristo")
         }
         if (MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] == null) {
-            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 
             aristo.id = HEGE_MORALIST_ARISTO_REP
 
@@ -506,10 +507,42 @@ object MPC_People {
             aristo.importance = PersonImportance.HIGH
             aristo.voice = Voices.ARISTO
 
-            aristo.name = FullName("Jerus", "Alotera", Gender.FEMALE)
+            aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+
+            val stats = aristo.stats
+            stats.setSkillLevel(Skills.HELMSMANSHIP, 1f)
+            stats.setSkillLevel(Skills.TARGET_ANALYSIS, 1f)
+            stats.setSkillLevel(Skills.ENERGY_WEAPON_MASTERY, 1f)
+            stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 2f)
+            stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+            stats.setSkillLevel(Skills.FIELD_MODULATION, 2f)
+
+            stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            stats.setSkillLevel(Skills.PHASE_CORPS, 1f)
+            stats.setSkillLevel(Skills.BEST_OF_THE_BEST, 1f)
+
+            stats.level = 10
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_MORALIST_ARISTO_REP_TWO] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
+
+            aristo.id = HEGE_MORALIST_ARISTO_REP_TWO
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = "MPC_honorableAristo"
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MORALIST_ARISTO_REP_TWO] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }

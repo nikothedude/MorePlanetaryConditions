@@ -19,6 +19,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_ids
 import java.awt.Color
 
@@ -67,6 +68,13 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
     override fun advanceImpl(amount: Float) {
         super.advanceImpl(amount)
 
+        val intel = MPC_IAIICFobIntel.get()
+        if (!isEnding && (intel == null || intel.isEnding || intel.isEnded)) {
+            recallFleets(MPC_fractalSupportFleetAssignmentAI.ReturnReason.EVENT_OVER)
+            endAfterDelay()
+            Global.getSector().intelManager.removeIntel(this)
+        }
+
         val days = Misc.getDays(amount)
         if (state == State.ACTIVE) {
             var extraTime = 0f
@@ -85,6 +93,8 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
     }
 
     fun tryCreatingFleet(): CampaignFleetAPI? {
+        val activeFleets = getActiveFleets()
+        if (activeFleets.size >= getMaxActiveFleets()) return null
         val fleet = createFleet() ?: return null
 
         fleet.memoryWithoutUpdate[niko_MPC_ids.FRACTAL_CRISIS_ASSISTANCE_FLEET] = true
@@ -222,6 +232,8 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
         }
     }
 
+    open fun getMaxActiveFleets(): Int = 10
+
     private fun getAllFleets(): Set<CampaignFleetAPI> {
         return fleets
     }
@@ -236,6 +248,10 @@ abstract class MPC_fractalCrisisSupport: BaseIntelPlugin(), FleetEventListener, 
 
     private fun getPatrollingFleets(): List<CampaignFleetAPI> {
         return fleets.filter { MPC_fractalSupportFleetAssignmentAI.get(it)?.state == MPC_fractalSupportState.PATROLLING }
+    }
+
+    private fun getActiveFleets(): List<CampaignFleetAPI> {
+        return getTravellingFleets() + getPatrollingFleets()
     }
 
     override fun reportFleetDespawnedToListener(

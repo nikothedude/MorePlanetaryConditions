@@ -147,7 +147,7 @@ enum class MPC_IAIICSabotageType() {
     companion object {
         fun addApplicableSabotage(random: Random = Random()): MutableSet<MPC_IAIICSabotageResultData> {
             val sabotageList = HashSet<MPC_IAIICSabotageResultData>()
-            val values = values().toList()
+            val values = entries
             for (sabotage in values.shuffled(random)) {
                 val targets = sabotage.getTargetParams()
                 if (targets.isEmpty()) continue

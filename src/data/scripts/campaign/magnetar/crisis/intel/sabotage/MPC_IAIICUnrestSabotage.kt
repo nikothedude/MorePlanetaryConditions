@@ -13,7 +13,7 @@ class MPC_IAIICUnrestSabotage(market: MarketAPI, params: MPC_IAIICSabotageParams
     // unrest is also long term and only decays at a rate of 1 per 3 months
     companion object {
         const val BASE_STABILITY_MALUS = 2.25f
-        const val MIN_PERCENT_OF_COLONIES = 0.2f
+        const val MIN_PERCENT_OF_COLONIES = 0.4f
         const val MAX_COLONIES = 5f
     }
 

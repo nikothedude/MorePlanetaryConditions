@@ -1,0 +1,40 @@
+{
+  "variantId": "afflictor_MPC_duel",
+  "hullId": "afflictor",
+  "displayName": "Duelist",
+  "goalVariant": false,
+  "fluxCapacitors": 10,
+  "fluxVents": 10,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "safetyoverrides",
+    "autorepair"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS 006": "amblaster"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+		"WS 001": "lightmortar",
+        "WS 002": "lightmortar",
+        "WS 003": "lightmortar",
+        "WS 004": "lightmortar",
+	  }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {}
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

@@ -4378,6 +4378,15 @@ MPC_oppAristoMeetHasZiggCantCopy,DialogOptionSelected,"$option == MPC_oppAristoM
 $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing larger. ""Good. Not sure I trust you bloody *s-spacers* with this kind of data anyway."" he eloquently hisses. ""You'd probably just give it back to those genocidal Tri-Tach fellows... or worse."" he cringes. ""The *luddites*...""",,
 "#END Return to opp arristo at any time",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
+,,,,,,
+# Honorable house - PROVE YOUR HONOR!!!,,,,,,
+,,,,,,
+# DEVMODE OPTIONS FOR HONROIABLE,,,,,,
+MPC_IAIICHegeHonorDEVShipDuelTest,PopulateOptions,"$market.id == eventide
+$global.isDevMode",,,"500:MPC_IAIICHonorableTestDuel: (dev) TEST HONORABLE SHIP DUEL",
+MPC_IAIICHonorableTestDuel,DialogOptionSelected,"$option == MPC_IAIICHonorableTestDuel","MPC_IAIICHegeCMD HONbeginShipDuel","test!!!!",,
+"#END DEVMODE OPTIONS FOR HONROIABLE",,,,,,
+"#END Honorable house - PROVE YOUR HONOR!!!",,,,,,
 "#END The four houses you have to convince",,,,,,
 ,,,,,,
 # COMSEC intervention,,,,,,
@@ -4644,7 +4653,8 @@ A brief data transfer later, you receive the commskey for one ""Jango Retrina"".
 The man nervously looks between you and the gun, then between it and the door. Your bodyguards look at you expectantly.","MPC_IAIICBKQarasBarInitLeave:Leave
 MPC_IAIICBKQarasBarInitDrinkGrog:Take a sip of your grog before you go (UNFINISHED)
 MPC_IAIICBKQarasBarInitKill:Pull the trigger (UNFINISHED)",
-MPC_IAIICBKQarasBarInitLeave,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitLeave","BarCMD leaveBar","You step up and out of the booth, much to the relief of the terrified looking mercenary. How someone like that ends up in a PMC, you have no idea - but it just makes things easier for you.",,
+MPC_IAIICBKQarasBarInitLeave,DialogOptionSelected,"$option == MPC_IAIICBKQarasBarInitLeave","EndConversation
+BarCMD leaveBar","You step up and out of the booth, much to the relief of the terrified looking mercenary. How someone like that ends up in a PMC, you have no idea - but it just makes things easier for you.",,
 "#END Initial bar encounter",,,,,,
 ,,,,,,
 # Talking to the rep for the first time via comms,,,,,,

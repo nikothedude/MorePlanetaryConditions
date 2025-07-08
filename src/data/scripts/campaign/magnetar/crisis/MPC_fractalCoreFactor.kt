@@ -21,20 +21,16 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import data.niko_MPC_modPlugin
-import data.scripts.MPC_delayedExecution
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.assignments.MPC_spyAssignmentTypes
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_TTContributionIntel
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addMarketPeople
 import data.utilities.niko_MPC_settings
 import exerelin.ExerelinConstants
-import indevo.exploration.minefields.MineBeltTerrainPlugin
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
 import lunalib.lunaExtensions.getMarketsCopy
@@ -73,7 +69,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
         fun isActive(): Boolean {
             if (MPC_IAIICFobIntel.get() != null) return false
-            if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.PLAYER_DEFENDED_FRACTAL_CORE)) return false
+            if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.IAIIC_EVENT_CONCLUDED)) return false
             if (!Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.DID_HEGEMONY_SPY_VISIT)) return false // this is the confirmation
             if (MPC_hegemonyFractalCoreCause.getFractalColony() == null) return false
             if (getContributingFactions().isEmpty()) return false
@@ -119,7 +115,12 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
         fun createMarket(FOBStation: SectorEntityToken, isReclaimed: Boolean = false): MarketAPI {
             val market = Global.getFactory().createMarket(FOB_MARKET_ID, FOB_MARKET_NAME, 3)
-            if (isReclaimed) market.factionId = Factions.PLAYER else market.factionId = niko_MPC_ids.IAIIC_FAC_ID
+            if (isReclaimed) {
+                market.factionId = Factions.PLAYER
+                market.isPlayerOwned = true
+            } else {
+                market.factionId = niko_MPC_ids.IAIIC_FAC_ID
+            }
             market.primaryEntity = FOBStation
             FOBStation.market = market
             market.name = FOB_MARKET_NAME
@@ -171,6 +172,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             if (!isReclaimed) {
                 market.addCondition(niko_MPC_ids.MPC_BENEFACTOR_CONDID)
                 market.addCondition(Conditions.POPULATION_4)
+                market.size = 4
             } else market.addCondition(Conditions.POPULATION_3)
             market.conditions.forEach { it.isSurveyed = true }
             market.surveyLevel = MarketAPI.SurveyLevel.FULL

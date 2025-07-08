@@ -6,9 +6,16 @@ import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.RepLevel
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
+import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
+import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.FIDConfig
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
+import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
+import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
@@ -20,6 +27,40 @@ import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitari
 import org.magiclib.kotlin.getSourceMarket
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
+
+    companion object {
+        fun createDuelFleet(isPlayerFleet: Boolean): CampaignFleetAPI {
+            val startFac = if (isPlayerFleet) Factions.PLAYER else Factions.HEGEMONY
+            val fleet = FleetFactory.createEmptyFleet(startFac, null, null)
+            val name = if (isPlayerFleet) "Your Fleet" else "Duel Target (INTERIM NAME)"
+
+            fleet.isNoFactionInName = true
+            fleet.name = name
+
+            val ourShip = fleet.fleetData.addFleetMember("afflictor_MPC_duel")
+            val newVariant = ourShip.variant.clone()
+            newVariant.addPermaMod(HullMods.HARDENED_SUBSYSTEMS, true)
+            newVariant.addPermaMod(HullMods.REINFORCEDHULL, true)
+            newVariant.addPermaMod(HullMods.ADAPTIVE_COILS, true)
+            ourShip.setVariant(newVariant, true, true) // just temporary
+            fleet.commander = if (isPlayerFleet) Global.getSector().playerPerson else MPC_People.getImportantPeople()[MPC_People.HEGE_MORALIST_ARISTO_REP]
+            ourShip.captain = if (isPlayerFleet) Global.getSector().playerPerson else MPC_People.getImportantPeople()[MPC_People.HEGE_MORALIST_ARISTO_REP]
+
+            fleet.fleetData.setSyncNeeded()
+            fleet.fleetData.syncIfNeeded()
+
+            ourShip.repairTracker.cr = ourShip.repairTracker.maxCR
+
+            fleet.cargo.addCrew(12)
+
+            val eventide = Global.getSector().economy.getMarket("eventide")!!
+            eventide.primaryEntity.containingLocation.addEntity(fleet)
+            fleet.setLocation(eventide.primaryEntity.location.x, eventide.primaryEntity.location.y)
+
+            return fleet
+        }
+    }
+
     override fun execute(
         ruleId: String?,
         dialog: InteractionDialogAPI?,
@@ -247,6 +288,97 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 intel.aloofState = MPC_hegemonyContributionIntel.AloofState.ELIMINATE_TARGET_FINISHED
                 intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+
+            "HONbeginFirstDuel" -> {
+
+            }
+            "HONbeginShipDuel" -> {
+                if (dialog == null) return false
+
+                val sector = Global.getSector() ?: return false
+                val oldFleet = sector.playerFleet
+
+                val newFleet = createDuelFleet(true)
+                val targetFleet = createDuelFleet(false)
+                sector.playerFleet = newFleet
+
+                Global.getSector().memoryWithoutUpdate["\$MPC_playerFleetStorage"] = oldFleet
+
+                dialog.interactionTarget = targetFleet
+
+                val config = FIDConfig()
+                config.leaveAlwaysAvailable = true
+                config.showCommLinkOption = false
+                config.showEngageText = false
+                config.showFleetAttitude = false
+                config.showTransponderStatus = false
+                config.showWarningDialogWhenNotHostile = false
+                config.alwaysAttackVsAttack = true
+                config.impactsAllyReputation = false
+                config.impactsEnemyReputation = false
+                config.pullInAllies = false
+                config.pullInEnemies = false
+                config.pullInStations = false
+                config.lootCredits = false
+
+                config.firstTimeEngageOptionText = "DUEL!"
+                config.afterFirstTimeEngageOptionText = "DUEL!"
+                config.noSalvageLeaveOptionText = "Continue"
+
+                config.dismissOnLeave = false
+                config.printXPToDialog = true
+
+                val entity = dialog.interactionTarget
+                val originalPlugin = dialog.plugin
+                val plugin = FleetInteractionDialogPluginImpl(config)
+
+                config.delegate = object : FleetInteractionDialogPluginImpl.BaseFIDDelegate() {
+                    override fun notifyLeave(dialog: InteractionDialogAPI) {
+                        super.notifyLeave(dialog)
+
+                        targetFleet.memoryWithoutUpdate.clear()
+                        // there's a "standing down" assignment given after a battle is finished that we don't care about
+                        targetFleet.clearAssignments()
+                        targetFleet.deflate()
+                        targetFleet.despawn()
+
+                        dialog.plugin = originalPlugin
+                        dialog.interactionTarget = entity
+
+                        Global.getSector().playerFleet = Global.getSector().memoryWithoutUpdate.getFleet("\$MPC_playerFleetStorage")
+                        Global.getSector().memoryWithoutUpdate.unset("\$MPC_playerFleetStorage")
+
+                        newFleet.memoryWithoutUpdate.clear()
+                        // there's a "standing down" assignment given after a battle is finished that we don't care about
+                        newFleet.clearAssignments()
+                        newFleet.deflate()
+                        newFleet.despawn()
+
+                        if (plugin.context is FleetEncounterContext) {
+                            val context = plugin.context as FleetEncounterContext
+                            if (context.didPlayerWinEncounterOutright()) {
+                                FireBest.fire(null, dialog, memoryMap, "MPC_IAIICHegeHonWonDuel")
+                            } else {
+                                FireBest.fire(null, dialog, memoryMap, "MPC_IAIICHegeHonLostDuel")
+                            }
+                        }
+                    }
+                }
+
+                dialog.plugin = plugin
+                plugin.init(dialog)
+            }
+            "HONendShipDuel" -> {
+                Global.getSector().playerFleet = Global.getSector().memoryWithoutUpdate.getFleet("\$MPC_playerFleetStorage")
+                Global.getSector().memoryWithoutUpdate.unset("\$MPC_playerFleetStorage")
+            }
+            "HONbeginCOMSECDuel" -> {
+
+            }
+            "HONfuckingDie" -> {
+                val campaignUI = Global.getSector().campaignUI ?: return false
+                campaignUI.cmdExitWithoutSaving()
             }
         }
 

@@ -1,5 +1,15 @@
 0.0.3
 
+A few changes, more progress on aloof aristocrat
+Clarified shit in TT contribution intel
+AA now seriously increases the strength of the IAIIC
+Fixes the Ark FOB having shit be unbuildable
+
+Sabotage is now more aggressive and dangerous
+
+Fixed MMMC guy not showing up
+Fixed fractal support not disappearing and having no limit to their fleets
+
 IAIIC
     Militaristic aristocrats now get terrified if you steal chico's nanoforge
 

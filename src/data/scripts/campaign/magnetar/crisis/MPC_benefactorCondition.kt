@@ -9,6 +9,8 @@ import data.scripts.campaign.skills.MPC_spaceOperations
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_stringUtils
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import data.utilities.niko_MPC_settings
+import kotlin.times
 
 class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
 
@@ -18,7 +20,7 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
         val market = getMarket() ?: return
         val intel = MPC_IAIICFobIntel.get() ?: return
         val escalationLevel = (1 + intel.escalationLevel)
-        val fleetMult = (intel.getFleetMultFromContributingFactions() * escalationLevel) - 1f
+        var fleetMult = (intel.getFleetMultFromContributingFactions() * escalationLevel) - 1f
 
         market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyFlat(id, fleetMult, name)
         market.upkeepMult.modifyMult(id, escalationLevel, "Escalation")
@@ -52,5 +54,12 @@ class MPC_benefactorCondition: niko_MPC_baseNikoCondition() {
             Misc.getHighlightColor(),
             "x${escalationLevel.roundNumTo(1).trimHangingZero()}"
         )
+
+        if (niko_MPC_settings.astralAscensionEnabled) {
+            tooltip.addPara(
+                "(Astral Ascension enabled - all contributions doubled)",
+                5f
+            )
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseHostileActivityFactor
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.utilities.niko_MPC_ids
 import org.magiclib.kotlin.ucFirst
@@ -43,7 +44,7 @@ data class MPC_factionContribution(
         val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
         if (IAIIC != null) {
             removeContribution?.run()
-            intel.removeBlueprintFunctions.add { removeContribution }
+            removeContribution?.let { intel.removeBlueprintFunctions += it }
         }
 
         val reason = if (becauseFactionDead) MPC_changeReason.FACTION_DIED else MPC_changeReason.PULLED_OUT

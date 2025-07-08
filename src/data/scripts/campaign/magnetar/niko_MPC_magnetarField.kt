@@ -200,7 +200,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
         if (bubbleGone) {
             accelMult *= NO_BUBBLE_WIND_MULT
         } else if (fleet.getAbility(Abilities.SUSTAINED_BURN)?.isActive == true) {
-            accelMult *= 0.25f
+            accelMult *= 0f
         }
 
         val seconds = days * Global.getSector().clock.secondsPerDay

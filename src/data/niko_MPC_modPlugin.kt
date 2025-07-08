@@ -3,6 +3,7 @@ package data
 import com.fs.starfarer.api.BaseModPlugin
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.PluginPick
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.InstallableIndustryItemPlugin.InstallableItemDescriptionMode
@@ -108,7 +109,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             IAIIC.clearShipRoleCache()
 
             val intel = MPC_IAIICFobIntel.get() ?: return
-            intel.removeBlueprintFunctions.forEach { it.run() }
+            intel.removeBlueprintFunctions.removeAll { nullable: Script? -> nullable == null } // TODO remove
+            intel.removeBlueprintFunctions.forEach { it?.run() }
         }
     }
 

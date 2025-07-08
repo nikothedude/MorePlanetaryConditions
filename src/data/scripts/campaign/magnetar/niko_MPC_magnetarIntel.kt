@@ -104,7 +104,7 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
         )
         info.addPara("Pulses can be avoided by...", 5f)
         info.setBulletedListMode(BULLET)
-        info.addPara("Sheltering %s", 0f, Misc.getHighlightColor(), "on top of planets")
+        info.addPara("Sheltering %s", 0f, Misc.getHighlightColor(), "on top of or behind planets")
         info.addPara("Fleeing - getting away from the magnetar %s of the pulse", 0f, Misc.getHighlightColor(), "inhibits the effect")
         if (discoveredInterdictTech) {
             info.addPara("Timing an interdiction well", 0f).color = Misc.getHighlightColor()

@@ -28,7 +28,7 @@ object niko_MPC_ids {
     const val SPY_CACHE_FLEET = "\$MPC_spyCacheFleet"
     const val SPY_FLEET_ASSIGNMENT_MEMID = "\$MPC_spyFleetAssignment"
     const val MPC_SPY_FLEET_TAG = "MPC_spyFleet"
-    const val PLAYER_DEFENDED_FRACTAL_CORE = "\$MPC_playerDefendedFractalCore"
+    const val IAIIC_EVENT_CONCLUDED = "\$MPC_IAIICeventConcluded"
     const val IMPORTANT_PEOPLE = "\$MPC_importantPeople"
     const val DID_HEGEMONY_SPY_VISIT = "\$MPC_didHegemonySpyVisit"
     const val MAGNETAR_STAR_SCRIPT_MEMID = "\$MPC_magnetarStarScript"
