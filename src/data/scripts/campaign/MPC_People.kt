@@ -53,6 +53,7 @@ object MPC_People {
     const val HEGE_OPPORTUNISTIC_ARISTO_REP = "MPC_hegeAristoOpportunistRep"
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
     const val HEGE_MORALIST_ARISTO_REP_TWO = "MPC_hegeAristoMoralistRepTwo"
+    const val HEGE_MORALIST_RECEPTIONIST = "MPC_hegeMoralistReceptionist"
 
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
     const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
@@ -460,6 +461,25 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        if (MPC_importantPeople[HEGE_ALOOF_BROTHER] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
+
+            aristo.id = HEGE_ALOOF_BROTHER
+
+            aristo.rankId = Ranks.ARISTOCRAT
+            aristo.postId = Ranks.POST_CITIZEN
+
+            aristo.importance = PersonImportance.LOW
+            aristo.voice = Voices.ARISTO
+
+            aristo.name = FullName("Orthus", "Youn", Gender.FEMALE)
+            aristo.adjustReputationWithPlayer(-0.9f, null, null)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[aristo.id] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
         if (MPC_importantPeople[HEGE_MILITARIST_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
@@ -539,10 +559,28 @@ object MPC_People {
             aristo.importance = PersonImportance.HIGH
             aristo.voice = Voices.ARISTO
 
-            aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+            aristo.name = FullName("Halatius", "Alotera", Gender.MALE)
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_MORALIST_ARISTO_REP_TWO] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_MORALIST_RECEPTIONIST] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
+
+            aristo.id = HEGE_MORALIST_RECEPTIONIST
+
+            aristo.rankId = Ranks.CITIZEN
+            aristo.postId = Ranks.POST_AGENT
+
+            aristo.importance = PersonImportance.LOW
+            aristo.voice = Voices.OFFICIAL
+
+            //aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MORALIST_RECEPTIONIST] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }

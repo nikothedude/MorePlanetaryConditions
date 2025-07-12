@@ -72,9 +72,8 @@ class MPC_DKContributionIntel: BaseIntelPlugin() {
 
     override fun getName(): String = "Diktat involvement"
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        return (super.getIntelTags(map) + mutableSetOf(Factions.DIKTAT, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
+        return (super.getIntelTags(map) + MPC_indieContributionIntel.getBaseContributionTags() + Factions.DIKTAT).toMutableSet()
     }
-
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
         if (info == null || mode == null) return

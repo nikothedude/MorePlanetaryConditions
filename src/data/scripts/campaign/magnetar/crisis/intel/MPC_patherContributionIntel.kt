@@ -49,7 +49,7 @@ open class MPC_patherContributionIntel: BaseIntelPlugin() {
 
     override fun getName(): String = "Pather involvement"
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        return (super.getIntelTags(map) + mutableSetOf(Factions.LUDDIC_PATH, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
+        return (super.getIntelTags(map) + MPC_indieContributionIntel.getBaseContributionTags() + Factions.LUDDIC_PATH).toMutableSet()
     }
 
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {

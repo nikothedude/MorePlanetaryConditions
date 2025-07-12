@@ -389,6 +389,15 @@ class niko_MPC_hyperspaceLinked : niko_MPC_baseNikoCondition(), hasDeletionScrip
             Misc.getHighlightColor(),
             "+${getAdjustedVolatilesBonus()}"
         )
+
+        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.AOTD_VAPORS_UNLOCKED)) {
+            tooltip.addPara(
+                "%s produce %s",
+                10f,
+                Misc.getHighlightColor(),
+                "Biosynth Laboratories", "Cerulean Vapors"
+            )
+        }
     }
 
     private fun marketProtected(): Boolean {

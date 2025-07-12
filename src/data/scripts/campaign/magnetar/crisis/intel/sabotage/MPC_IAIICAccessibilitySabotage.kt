@@ -43,7 +43,7 @@ class MPC_IAIICAccessibilitySabotage(market: MarketAPI, params: MPC_IAIICSabotag
 
     override fun getPossibleNames(): MutableMap<String, Float> {
         return hashMapOf(
-            Pair("Misleading Travel-Buoys", 5f),
+            Pair("Misleading Travel-Buoys", 1f),
             Pair("Damaged Fueljacks", 5f),
             Pair("STC Malware Infection", 5f),
             Pair("Bureaucracy DOS", 5f),

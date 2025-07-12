@@ -36,7 +36,7 @@ class niko_MPC_genericCommand: BaseCommand {
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        MPC_IAIICFobIntel.get()?.progress = 125
+        Global.getSector()?.campaignUI?.cmdSaveAndExit()
 
         return BaseCommand.CommandResult.SUCCESS
     }

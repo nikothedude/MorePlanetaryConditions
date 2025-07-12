@@ -6,9 +6,15 @@ AA now seriously increases the strength of the IAIIC
 Fixes the Ark FOB having shit be unbuildable
 
 Sabotage is now more aggressive and dangerous
+Yunru Industries now adds auxillary shipbays
 
 Fixed MMMC guy not showing up
 Fixed fractal support not disappearing and having no limit to their fleets
+
+Fixed IAIIC inspections never ending
+
+IAIIC retaliation cooldown is 5 days now
+ARK Fob is now essential and wont deciv
 
 IAIIC
     Militaristic aristocrats now get terrified if you steal chico's nanoforge

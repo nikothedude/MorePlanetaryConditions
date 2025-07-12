@@ -8,13 +8,9 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
-import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
-import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteLocationCalculator
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.MemFlags
-import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIAssembleStage
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIOrganizeStage
 import com.fs.starfarer.api.impl.campaign.intel.inspection.HIReturnStage
@@ -140,6 +136,8 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
 
         Global.getSector().intelManager.addIntel(this)
         MPC_IAIICFobIntel.get()?.currentAction = this
+
+        delegate = this
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI, width: Float, height: Float) {
@@ -341,7 +339,7 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
 //					faction.getBaseUIColor(), faction.getDisplayName());
             return
         }
-        if (getListInfoParam() == OUTCOME_UPDATE) {
+        if (getListInfoParam() == OUTCOME_UPDATE || getListInfoParam() == UPDATE_RETURNING || getListInfoParam() == UPDATE_FAILED) {
             if (action !is MPC_IAIICActionStage) return
             val num: Int = (action as MPC_IAIICActionStage).coresRemoved?.size ?: return
             if (num > 0) {
@@ -364,12 +362,12 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
                 )
             }
             initPad = 0f
-            if (repResult != null) {
+            /*if (repResult != null) {
                 addAdjustmentMessage(
                     repResult!!.delta, faction, null,
                     null, null, info, tc, isUpdate, initPad
                 )
-            }
+            }*/
             return
         }
 
@@ -423,6 +421,12 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             }
             unindent(info)
         }
+    }
+
+    override fun notifyEnding() {
+        super.notifyEnding()
+
+        MPC_IAIICInspectionPrepIntel.get()?.inspectionEnded(this)
     }
 
     override fun sendUpdateIfPlayerHasIntel(listInfoParam: Any, onlyIfImportant: Boolean, sendIfHidden: Boolean) {

@@ -59,10 +59,12 @@ import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
 import data.utilities.niko_MPC_settings.SOTF_enabled
 import data.utilities.niko_MPC_settings.astralAscensionEnabled
 import data.utilities.niko_MPC_settings.generatePredefinedSatellites
+import data.utilities.niko_MPC_settings.grandColoniesEnabled
 import data.utilities.niko_MPC_settings.graphicsLibEnabled
 import data.utilities.niko_MPC_settings.loadAllSettings
 import data.utilities.niko_MPC_settings.nexLoaded
 import data.utilities.niko_MPC_settings.stationAugmentsLoaded
+import data.utilities.niko_MPC_settings.yunruIndustriesEnabled
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
@@ -70,6 +72,8 @@ import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
 import org.magiclib.kotlin.*
 import kotlin.collections.set
+import kotlin.math.max
+import kotlin.math.min
 
 class niko_MPC_modPlugin : BaseModPlugin() {
     companion object {
@@ -93,11 +97,12 @@ class niko_MPC_modPlugin : BaseModPlugin() {
 
                 for (ship in faction.knownShips) {
                     val spec = Global.getSettings().getHullSpec(ship) ?: continue
-                    if (spec.hasTag(Tags.AUTOMATED)) continue
+                    if (spec.hasTag(Tags.AUTOMATED) || spec.builtInMods.contains(HullMods.AUTOMATED)) continue
                     IAIIC.knownShips += ship
                     val hullFreq = faction.hullFrequency[ship]
                     if (hullFreq != null) {
-                        IAIIC.hullFrequency[ship] = hullFreq
+                        val maxFreq = if (IAIIC.hullFrequency[ship] != null) max(hullFreq, IAIIC.hullFrequency[ship]!!) else hullFreq
+                        IAIIC.hullFrequency[ship] = maxFreq
                     }
                 }
 
@@ -134,6 +139,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         graphicsLibEnabled = Global.getSettings().modManager.isModEnabled("shaderLib")
         stationAugmentsLoaded = Global.getSettings().modManager.isModEnabled("niko_stationAugments")
         astralAscensionEnabled = Global.getSettings().modManager.isModEnabled("Planetace_AstralAscension")
+        yunruIndustriesEnabled = Global.getSettings().modManager.isModEnabled("yunruindustries")
+        grandColoniesEnabled = Global.getSettings().modManager.isModEnabled("GrandColonies")
         if (!isLazyLibEnabled) {
             throw RuntimeException("LazyLib is required for more planetary conditions!")
         }

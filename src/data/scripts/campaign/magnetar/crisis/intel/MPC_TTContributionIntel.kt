@@ -32,6 +32,9 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
         RESOLVE,
         PAY_UP,
         OVER;
+
+        open fun apply() {}
+        open fun unapply() {}
     }
     enum class PirateTransportState {
         HAS_PIRATE,
@@ -62,7 +65,7 @@ class MPC_TTContributionIntel: BaseIntelPlugin() {
 
     override fun getName(): String = "Tri-Tachyon involvement"
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        return (super.getIntelTags(map) + mutableSetOf(Factions.TRITACHYON, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
+        return (super.getIntelTags(map) + MPC_indieContributionIntel.getBaseContributionTags() + Factions.TRITACHYON).toMutableSet()
     }
 
     override fun notifyEnded() {

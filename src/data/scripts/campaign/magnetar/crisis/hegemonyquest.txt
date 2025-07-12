@@ -84,7 +84,10 @@ REVISION ONE
 
                 At the end of this, Aleratus is still very suspect by COMSEC, but the house is none the wiser
 
-                ENDS HERE! Dont have to go back to aleratus
+            Go back to aleratus for a final dialog
+
+            Orthus approaches you later, enraged
+                This is post questline
 
         HOUSE TWO are entirely opportunistic
             Introduced as pacifist, but turn out to be cunning, speculators, backstabbers
@@ -164,6 +167,7 @@ REVISION ONE
                         "We are called off to help repair these, lol"
 
                     Prove yourself the walker of steel - crush a group of dissenting heretics off in the sector
+                        LP base, maybe?
                     Produce an AI core. Shoot it right in fucking front of them.
 
                     Have high rep with the church
@@ -249,3 +253,5 @@ REVISION ONE
 
         Unrest rises on all hegemony planets, especially eventide
 
+
+    ...I want to add something between this... what should I add?

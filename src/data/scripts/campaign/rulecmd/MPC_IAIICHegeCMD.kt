@@ -16,6 +16,7 @@ import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
@@ -24,6 +25,7 @@ import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_aloofTargetAssig
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import org.magiclib.kotlin.getSourceMarket
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
@@ -289,6 +291,24 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 intel.aloofState = MPC_hegemonyContributionIntel.AloofState.ELIMINATE_TARGET_FINISHED
                 intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
             }
+            "ALOgivenRaidTask" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.CREATE_SCAPEGOAT
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+            "ALOscapegoatMade" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.INSERT_EVIDENCE
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+            "ALOevidencePlanted" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.aloofState = MPC_hegemonyContributionIntel.AloofState.FINALIZE
+                intel.sendUpdateIfPlayerHasIntel(intel.aloofState, dialog.textPanel)
+            }
+            "ALObeginOrthusPayback" -> {
+                MPC_OrthusPaybackScript().start()
+            }
 
             "HONbeginFirstDuel" -> {
 
@@ -383,5 +403,28 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
         }
 
         return false
+    }
+
+    class MPC_OrthusPaybackScript(): niko_MPC_baseNikoScript() {
+        val interval = IntervalUtil(30f, 35f) // days
+
+        override fun startImpl() {
+            Global.getSector().addScript(this)
+        }
+
+        override fun stopImpl() {
+            Global.getSector().removeScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            interval.advance(Misc.getDays(amount))
+            if (interval.intervalElapsed()) {
+                Global.getSector().memoryWithoutUpdate["\$MPC_doOrthusRetaliation"] = true
+                delete()
+            }
+        }
+
     }
 }

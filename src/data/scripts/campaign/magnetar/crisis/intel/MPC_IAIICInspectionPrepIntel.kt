@@ -95,6 +95,14 @@ class MPC_IAIICInspectionPrepIntel(val fobIntel: MPC_IAIICFobIntel): BaseEventIn
     }
 
     var activeInspection: MPC_IAIICInspectionIntel? = null
+        get() {
+            if (field != null) {
+                if (field!!.isEnding || field!!.isEnded) {
+                    field = null
+                }
+            }
+            return field
+        }
     var inspectionsUndergone: Int = 0
 
     init {

@@ -415,6 +415,7 @@ GENERAL OUTLINE
                     ...but these were your ideas.
                     She does nothing but sigh sharply and shake her head.
                     Or... "...he gave them to me. Now, we're operating exclusively on me."
+                    ...maybe an option to skip this phase with a story point? I dunno...
 
         Ushered out, yet again - you express dicontent to yourself. Uncertainly. Will it work this time?
         Might as well try.

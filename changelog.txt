@@ -8,6 +8,8 @@ Gave a few untested buffs to ionized pulse, again
 Sustained burn now makles you immune to the effects of the magnetar's pull
 Clarified a few things in magnetar intel
 
+My end of the AOTD integration for cerulean vapors
+
 4.3.5a
 SAVE COMPATIBLE
 

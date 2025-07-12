@@ -43,6 +43,8 @@ object niko_MPC_settings {
     var graphicsLibEnabled = false
     var astralAscensionEnabled = false
     var stationAugmentsLoaded = false
+    var yunruIndustriesEnabled = false
+    var grandColoniesEnabled = false
 
     var CONDENSE_OVERGROWN_NANOFORGE_INTEL = false
 

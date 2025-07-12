@@ -30,6 +30,7 @@ import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_marketUtils.addMarketPeople
 import data.utilities.niko_MPC_settings
+import data.utilities.niko_MPC_settings.grandColoniesEnabled
 import exerelin.ExerelinConstants
 import indevo.exploration.minefields.conditions.MineFieldCondition
 import indevo.ids.Ids
@@ -96,6 +97,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
             getIndustry("logisitcbureau")?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.WAYSTATION)?.aiCoreId = Commodities.BETA_CORE
+            getIndustry("yunru_shipbays")?.aiCoreId = Commodities.ALPHA_CORE
         }
 
         fun setImportantMarkets() {
@@ -120,6 +122,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                 market.isPlayerOwned = true
             } else {
                 market.factionId = niko_MPC_ids.IAIIC_FAC_ID
+                market.makeStoryCritical("\$MPC_IAIICEvent")
             }
             market.primaryEntity = FOBStation
             FOBStation.market = market
@@ -147,9 +150,15 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                 market.addIndustry(Industries.ORBITALWORKS)
                 market.addIndustry(Industries.WAYSTATION)
             }
+            var shouldAddReq = true
+            if (niko_MPC_settings.yunruIndustriesEnabled) {
+                market.addIndustry("yunru_shipbays")
+                market.getIndustry("yunru_shipbays")?.isImproved = true
+                shouldAddReq = grandColoniesEnabled
+            }
             if (niko_MPC_settings.indEvoEnabled) {
                 market.addIndustry("IndEvo_embassy")
-                market.addIndustry("IndEvo_ReqCenter")
+                if (shouldAddReq) market.addIndustry("IndEvo_ReqCenter")
                 market.addIndustry("IndEvo_IntArray")
                 market.addIndustry("IndEvo_Academy")
             }

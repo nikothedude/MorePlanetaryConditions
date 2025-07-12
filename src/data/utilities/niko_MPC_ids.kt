@@ -150,4 +150,5 @@ object niko_MPC_ids {
     const val SINGULARITY_SYSTEM_MEMID = "\$MPC_singularitySystem"
 
     const val HAS_HAD_OMEGA_CORE_FOR_SOME_TIME = "\$MPC_hasHadSlavedOmegaCoreForSomeTime"
+    const val AOTD_VAPORS_UNLOCKED = "\$aotd_vapors_unlocked"
 }

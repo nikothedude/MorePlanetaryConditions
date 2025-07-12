@@ -36,7 +36,7 @@ enum class MPC_IAIICSabotageType() {
             val intel = MPC_IAIICFobIntel.get() ?: return targets
 
             var validTargets: Collection<MarketAPI> = MPC_IAIICFobIntel.getMilitaryTargets(false).shuffled()
-            if (validTargets.isEmpty()) validTargets = MPC_IAIICFobIntel.getGenericTargets().shuffled()
+            if (validTargets.size < 3) validTargets = MPC_IAIICFobIntel.getGenericTargets().shuffled()
             if (validTargets.isEmpty()) return targets
 
             var numTargetsLeft = (ceil(validTargets.size / MPC_IAIICAccessibilitySabotage.MIN_PERCENT_OF_COLONIES)).coerceAtMost(MPC_IAIICAccessibilitySabotage.MAX_COLONIES)
@@ -73,6 +73,7 @@ enum class MPC_IAIICSabotageType() {
                 includeHeavyIndustry = false,
                 includePatrolHQ = true
             ).shuffled()
+            if (validTargets.size < 3) validTargets = MPC_IAIICFobIntel.getGenericTargets().shuffled()
             if (validTargets.isEmpty()) return targets
 
             var numTargetsLeft = (ceil(validTargets.size / MPC_IAIICFleetSizeSabotage.MIN_PERCENT_OF_COLONIES)).coerceAtMost(MPC_IAIICFleetSizeSabotage.MAX_COLONIES)
@@ -105,9 +106,10 @@ enum class MPC_IAIICSabotageType() {
 
             var validTargets: Collection<MarketAPI> = MPC_IAIICFobIntel.getMilitaryTargets(
                 addFractal = false,
-                includeHeavyIndustry = false,
+                includeHeavyIndustry = true,
                 includePatrolHQ = true
             ).shuffled()
+            if (validTargets.size < 3) validTargets = MPC_IAIICFobIntel.getGenericTargets().shuffled()
             if (validTargets.isEmpty()) return targets
 
             var numTargetsLeft = (ceil(validTargets.size / MPC_IAIICUnrestSabotage.MIN_PERCENT_OF_COLONIES)).coerceAtMost(MPC_IAIICUnrestSabotage.MAX_COLONIES)

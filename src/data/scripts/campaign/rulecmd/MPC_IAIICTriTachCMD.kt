@@ -258,7 +258,7 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
             "isSummoned" -> {
                 val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
                 if (interactionTarget.activePerson != person) return false
-                return (MPC_TTContributionIntel.get(true)?.state == MPC_TTContributionIntel.State.RESOLVE)
+                return (MPC_TTContributionIntel.get(false)?.state == MPC_TTContributionIntel.State.RESOLVE)
             }
             "isPayingUp" -> {
                 val person = MPC_TTContributionIntel.get()?.activePerson ?: return false

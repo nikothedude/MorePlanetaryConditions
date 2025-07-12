@@ -250,7 +250,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         const val DISARMAMENT_FLEET_SIZE_MULT = 0.25f
         const val DISARMAMENT_PREMATURE_DAYS = 10f
         const val KEY = "\$MPC_IAIICIntel"
-        const val RETALIATE_COOLDOWN_DAYS = 60f
+        const val RETALIATE_COOLDOWN_DAYS = 5f
         const val PROGRESS_MAX = 1000
         const val FP_PER_POINT = 0.1f
         const val HEGEMONY_CONTRIBUTION = 1.5f
@@ -334,10 +334,10 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             val fractalColony = getFractalColony() ?: return targets
             targets += fractalColony
 
-            /*for (market in fractalColony.starSystem.getMarketsInLocation()) {
+            for (market in fractalColony.starSystem.getMarketsInLocation()) {
                 if (!marketIsEnemy(market)) continue
                 targets += market
-            }*/
+            }
 
             return targets
         }

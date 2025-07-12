@@ -8,6 +8,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_ailmarFleetsizeCondition.Companion.DURATION
 import data.scripts.campaign.magnetar.crisis.MPC_ailmarFleetsizeCondition.Companion.getAilmar
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import org.magiclib.kotlin.getFactionMarkets
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
@@ -52,10 +53,12 @@ class MPC_ailmarFleetsizeScript: niko_MPC_baseNikoScript() {
 
     private fun addConditions() {
         for (market in Global.getSector().getFaction(Factions.PLAYER).getFactionMarkets()) {
-            market.addCondition("MPC_IAIICDockyardsDonated")
+            market.removeCondition("MPC_IAIICDockyardsDonated")
+            market.addConditionIfNotPresent("MPC_IAIICDockyardsDonated")
         }
 
-        getAilmar()?.addCondition("MPC_IAIICDockyardsDonated")
+        getAilmar()?.removeCondition("MPC_IAIICDockyardsDonated")
+        getAilmar()?.addConditionIfNotPresent("MPC_IAIICDockyardsDonated")
     }
 
     private fun removeConditions() {

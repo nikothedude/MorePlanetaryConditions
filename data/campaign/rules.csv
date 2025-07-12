@@ -2005,9 +2005,7 @@ You glance over to your passenger, who is currently sweating bullets. ""Damn it 
 MPC_IAIICTTBMDeliverPirateOptionLandCurse:Curse, and order the pilot to land",
 MPC_IAIICTTBMDeliverPirateOptionTwoDownpayment,,,"SetTextHighlights ""land immediately"" ""down payment""","""Captain, we... have a problem."" The pilot speaks. ""I've received orders from the local knights sect to... land immediately. And--aw, shit!"" You stiffen as something seems to be added to the ambient roar of engines. ""They've got a skiff on our flank! Interdictors hot, locked on our thrusters! They're not saying anything else-Captain I'm sorry but I've got to put her down!""
 
-You glance over to your passenger, who is currently sweating bullets. ""Damn it - how'd they figure it out? Captain-"" $heOrShe nervously glances at you, mouth agape, searching for words. Finanlly, after a eternity of a second, $heOrShe stammers, ""Y-you can't let them take me. Re-remember-"" $heOrShe clears her throat. ""Without me, you can't get that datacache. You won't learn - ANYTHING!"" $HeOrShe swallows, sitting back.
-
-You consider your options, but are broken out of your thought by your pilot's intercom crackling to life. ""C-Captain-"" the pilot stammers. ""There's five now. They've taken a-a claw formation behind us. We... we can't outrun this.""","MPC_IAIICTTBMDeliverPirateOptionLand:Order the pilot to land
+You glance over to your passenger, who is currently sweating bullets. ""Damn it - how'd they figure it out? Captain-"" $heOrShe nervously glances at you, mouth agape, searching for words. Finanlly, after a eternity of a second, $heOrShe stammers, ""Y-you can't let them take me. Re-remember-"" $heOrShe clears her throat. ""Without me, you can't get that datacache. You won't learn - ANYTHING!"" $HeOrShe swallows, sitting back.","MPC_IAIICTTBMDeliverPirateOptionLand:Order the pilot to land
 MPC_IAIICTTBMDeliverPirateOptionLandCurse:Curse, and order the pilot to land
 ",
 MPC_IAIICTTBMDeliverPirateOptionLandCurse,DialogOptionSelected,"$option == MPC_IAIICTTBMDeliverPirateOptionLandCurse","$option = MPC_IAIICTTBMDeliverPirateOptionLand
@@ -2139,7 +2137,7 @@ Noticing your glare, $heOrShe quickly waves $hisOrHer hands across $hisOrHer fac
 You test another glare, but after getting no response, decide to move onto another line of questioning.",,
 MPC_IAIICTBMDeliverPirateWhatBMDo,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateWhatBMDo","RemoveOption MPC_IAIICTBMDeliverPirateWhatBMDo","""Honestly? I don't know."" $HeOrShe shrugs. ""They never provided me access to the data, and I was just there to pick it up and move it around.""
 
-$HeOrShe shrugs juviantly. ""Sorry. Told you that officer spoiled things!""",,
+$HeOrShe shrugs jubilantly. ""Sorry. Told you that officer spoiled things!""",,
 MPC_IAIICTBMDeliverPirateCache,DialogOptionSelected,"$option == MPC_IAIICTBMDeliverPirateCache
 $global.MPC_acceptedDownPayment != true","AddTextSmall ""Received coordinates for blackmail data cache"" highlight
 MPC_IAIICTriTachCMD getCacheCoords","""Ah - right. I completely forgot in the intensity of our *encounter*."" $HeOrShe giggles, fishing something out of $hisOrHer pocket. A moment later, it comes into view - a small datachip. ""This contains the coordinates to my cache. You should find... uh..."" $HeOrShe's expression painns. ""...I forgot.""
@@ -2648,8 +2646,8 @@ FireBest OpenInteractionDialog","You and your party hurriedly board the shuttle 
 "#END Land on hideout",,,,,,
 ,,,,,,
 # Return to hideout after initial contact,,,,,,
-MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain","FireAll MPC_IAIICLPSecondHideoutVisitOptions","Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.","11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
-MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player",,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
+MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain","FireAll MPC_IAIICLPSecondHideoutVisitOptions","Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.",,
+MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,,,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
 MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player",,,"11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
 ,,,,,,
 # Raid,,,,,,
@@ -2732,9 +2730,10 @@ MPC_IAIICLPHideoutDonateWasntWorthIt,DialogOptionSelected,"$option == MPC_IAIICL
 "#END Return to hideout after initial contact",,,,,,
 ,,,,,,
 # Set transfer target,,,,,,
-MPC_IAIICLPSetTransferTargetOption,PopulateOptions,"MPC_IAIICPatherCMD canAddDedicateOption","FireBest MPC_IAIICLPSetTransferTargetOptionModify",,"100:MPC_IAIICLPSetTransferTargetOptionSel:Dedicate $entityName to the arrow pathers",
-MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,"$MPC_IAIICLPTargetMarket == $market","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
-SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers.""",,,
+MPC_IAIICLPSetTransferTargetOption,PopulateOptions,"MPC_IAIICPatherCMD canAddDedicateOption
+$menuState == main","FireBest MPC_IAIICLPSetTransferTargetOptionModify",,"100:MPC_IAIICLPSetTransferTargetOptionSel:Dedicate $entityName to the arrow pathers",
+MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,"$global.MPC_IAIICLPTargetMarket == $market",,"in another version, the dedicate option would be disabled. but it was bugged so its disabled :)",,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
+SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers."""
 MPC_IAIICLPSetTransferTargetOptionModifyDangerous,MPC_IAIICLPSetTransferTargetOptionModify,"MPC_IAIICPatherCMD isDangerous","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is situated in a dangerous star system and cannot be selected.""",,,
 MPC_IAIICLPSetTransferTargetOptionSel,DialogOptionSelected,"$option == MPC_IAIICLPSetTransferTargetOptionSel","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
@@ -3797,7 +3796,7 @@ $temporarilyIgnoreYou = true","""...I suppose you're right, $playerLastName."" $
 
 $HeOrShe reaches for the camera. ""...and captain?""
 
-""Thank you for giving us an excuse.""
+""Thank you.""
 
 The comm link cuts.","MPC_cutCommLinkIntcrt:Cut the comm link",
 MPC_milAristoDoneMeetFourThreat,DialogOptionSelected,"$option == MPC_milAristoDoneMeetFourThreat","AdjustRepActivePerson VENGEFUL -10
@@ -3913,7 +3912,7 @@ MPC_IAIICHegeCMD ALOincrementEvidence","""Thank you, $playerSirOrMadam."" your o
 MPC_aloofAristoPlayerRelayOpts,COB_AddOptions,"MPC_IAIICHegeCMD ALOstateIs GET_INTEL
 !$player.MPC_IAIICGotIAIICDataFromFractalRelay
 $tag:comm_relay
-$faction.id == player","SetOptionColor MPC_aloofAristoAtzlanRelayHack highlight",,"2:MPC_aloofAristoPlayerRelaySearch:Search for data implicating the hegemony with the IAIIC",
+$faction.id == player","SetOptionColor MPC_aloofAristoPlayerRelaySearch highlight",,"2:MPC_aloofAristoPlayerRelaySearch:Search for data implicating the hegemony with the IAIIC",
 MPC_aloofAristoPlayerRelaySearch,DialogOptionSelected,"$option == MPC_aloofAristoPlayerRelaySearch",,"While unlikely, it's possible the hegemony has been using this relay to communicate with Ark FOB. Comms interfaces with the relay, constructs a rudimentary filter, and...","MPC_aloofAristoPlayerRelaySearchTwo:""Anything?""",
 MPC_aloofAristoPlayerRelaySearchTwo,DialogOptionSelected,"$option == MPC_aloofAristoPlayerRelaySearchTwo","MPC_IAIICHegeCMD ALOincrementEvidence
 $player.MPC_IAIICGotIAIICDataFromFractalRelay = true","""I think so."" comms replies, pulling up some sort of metadata analysis. Nothing seems to stick out immediately. Noticing your confusion, comms annotates, ""All these entries listed are noted as coming from Chico. All from their shipyards, logistics hubs, etc, but they're all listed without a target. Source decay, maybe. We can't actually read their contents, but if I had to guess?""
@@ -3984,7 +3983,8 @@ Stolen intel begins flooding into your $shipOrFleet's bridge as data-leech after
 ,,,,,,
 # Return to Youn during the evidence collection,,,,,,
 MPC_IAIICAloofReturnDuringCollectionOptAdder,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
-MPC_IAIICHegeCMD houseIs ALOOF","FireAll MPC_aloofAristoGiveEvidenceModify",,"1:MPC_aloofAristoGiveEvidence:Set the link to private, and over the intelligence you've collected",
+MPC_IAIICHegeCMD houseIs ALOOF
+MPC_IAIICHegeCMD ALOstateIs GOT_EVIDENCE","FireAll MPC_aloofAristoGiveEvidenceModify",,"1:MPC_aloofAristoGiveEvidence:Set the link to private, and over the intelligence you've collected",
 MPC_aloofAristoGiveEvidenceModifyNotEnough,MPC_aloofAristoGiveEvidenceModify,"MPC_IAIICHegeCMD ALOstateIs GET_INTEL","SetEnabled MPC_aloofAristoGiveEvidence false
 SetTooltip MPC_aloofAristoGiveEvidence ""You do not have enough evidence just yet.""",,,
 MPC_aloofAristoGiveEvidence,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidence",,"Youn's eyes widen as she notices the telltale vid-flicker of a privacy connection. ""Oh? What's this, Captain?"" she mutters, leaning in towards something off-screen. It only takes a moment for a bright smile to cross her lips, and a delighted gasp to escape them. ""Oh... oh *yes* Captain!"" she turns to you, grinning like a child getting their first credit chit. ""This is spectacular! Oh, oh you mercenaries truely *are* reliable.""
@@ -3996,11 +3996,15 @@ $temporarilyIgnoreYou = true","""Ah, yes, this will do nicely..."" she hums, exa
 
 She smiles, eying you as she sips her wine.","MPC_aloofAristoGiveEvidenceThree:""...yes. How kind.""
 MPC_aloofAristoGiveEvidenceSelfish:""'Kind.' You're doing this for your benefit, and you know it."" (UNFINISHED)","lock MPC_aloofAristoGiveEvidenceNotMerc behind merc value"
-MPC_aloofAristoGiveEvidenceThree,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceThree",,"""Now, if you have no more questions - I simply *must* prepare for a ball later."" she rests her hand on the comms-disconnect, beaming. ""I've a dress to acquire, and a bouquet of flowers to pick!"" she giggles, covering her lips with a trio of well-mannered fingers.","MPC_aloofAristoGiveEvidenceFour:""Nothing else.""
-MPC_aloofAristoGiveEvidenceWillWorkQuestion:""Are you sure this will work? What if they just... turn you in?"" (UNFINISHED)
+MPC_aloofAristoGiveEvidenceThree,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceThree",,"""Now, if you have no more questions - I simply *must* prepare for a ball later."" she rests her hand on the comms-disconnect, beaming. ""I've a dress to acquire, and a bouquet of flowers to pick!"" she giggles, covering her lips with a trio of well-manicured fingers.","MPC_aloofAristoGiveEvidenceFour:""Nothing else.""
+MPC_aloofAristoGiveEvidenceWillWorkQuestion:""Are you sure this will work? What if they just... turn you in?""
 MPC_aloofAristoGiveEvidenceONEWEEK:""A whole week? Why that long!?"" (UNFINISHED - HUMOR OPTION)","Gauge player opinions here - if people dont like her, add a optino to tell her off
 
 MPC_aloofAristoGiveEvidenceONEWEEK, she goes on a massive tangent if you let her"
+MPC_aloofAristoGiveEvidenceWillWorkQuestion,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceWillWorkQuestion","RemoveOption MPC_aloofAristoGiveEvidenceWillWorkQuestion
+$player.MPC_askedIfAloofWillBeTurnedIn = true","""Turn me *in*? Turn me *IN*?"" she laughs heartily, nearly spilling wine onto her well-kept dress and shaking her head. Carefully placing the wine back down, she continues. ""I may be somewhat infamous in my house and in COMSEC, but I'll be a *hero* once they come around! All the diamonds on eventide couldn't match what I would become..."" she shudders, a lofty smile coming across her face.
+
+You bring up the possibility of people *not* seeing you as a hero - or even if they do, seeing more of an advantage in turning you in. To that, she bashfully responds: ""I just don't think you quite understand how my house works, Captain."" she hmphs, turning her head up and away in condescending disrespect. ""Just do what I say, and I promise it'll work out, hm?""",,
 MPC_aloofAristoGiveEvidenceFour,DialogOptionSelected,"$option == MPC_aloofAristoGiveEvidenceFour",,"""Well then! Toodles!"" She promptly cuts the commlink, leaving you with nothing but your slightly exasperated expression to converse with. You ask yourself why you ever got involved with aristocrats instead of a more sensical approach.
 
 You offer no reasonable answer.","cutCommLink:Leave",
@@ -4011,13 +4015,13 @@ MPC_IAIICaloofPanicComms,MPC_IAIICaloofPanicComms,,"MPC_addOptionConfirmation MP
 
 And from Eventide.
 
-""That Youn personality, no doubt."" ops nods. ""Can't say I'm happy to see she figured out long-ranged comms bouncing."" your chief grunts.","MPC_IAIICaloofPanicCommsAccept:Accept the request
+""That Youn personality, no doubt."" ops nods. ""Can't say I'm happy to see she figured out long-ranged comms bouncing.""","MPC_IAIICaloofPanicCommsAccept:Accept the request
 MPC_IAIICaloofPanicCommsRefuse:Ignore the request, and continue",
 MPC_IAIICaloofPanicCommsRefuse,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsRefuse","MPC_IAIICHegeCMD genericFail","You opt to ignore the Aristocrat. The pulsating migraine in your head thanks you profusely, and shows it's gratitude by fading to an ignorable level.","defaultLeave:Leave",
 MPC_IAIICaloofPanicCommsAccept,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsAccept","BeginConversation MPC_hegeAristoDefector","You reluctantly give the order to have a commlink established, which comms accepts with little more protest than a grimace. But where you expect an annoying smile is instead a grimace, eyes shot open and bloodshot in the corners.
 
 ""C-CAPTAIN! YES! HELLO!"" the woman stammers, her typical aristocratic composure utterly shattered by some unknown event.","MPC_IAIICaloofPanicCommsTwo:""What... happened to you?""",
-MPC_IAIICaloofPanicCommsTwo,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsTwo",,"""S-SO it doesn't work. We talked, and it doesn't work."" she stammers, reaching over and spilling some wine on her fine dress as she attempts to drown herself. ""Hah! Haha! T-the first! Person, I approached. Was, uh, my. Sister."" she claps her hands together, sending a dissonant ring through your bridge. ""...a-and! Hah! SHE. She is. Going to COMSEC. RIGHT NOW.""","MPC_IAIICaloofPanicCommsThree:""Okay. Okay. Calm down. What exactly did you tell her?""",
+MPC_IAIICaloofPanicCommsTwo,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsTwo","FireBest MPC_IAIICaloofPanicCommsTwoLol","""S-SO it doesn't work. We talked, and it doesn't work."" she stammers, reaching over and spilling some wine on her fine dress as she attempts to drown herself. ""Hah! Haha! T-the first! Person, I approached. Was, uh, my. Sister."" she claps her hands together, sending a dissonant ring through your bridge. ""...a-and! Hah! SHE. She is. Going to COMSEC. RIGHT NOW.""","0:MPC_IAIICaloofPanicCommsThree:""Okay. Okay. Calm down. What exactly did you tell her?""",
 MPC_IAIICaloofPanicCommsThree,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsThree",,"She takes a deep breath. Her shoulders relax, her grimace relaxes, and she seems to settle to normal - though the deep chug of red wine certainly helps. ""Okay. Okay. Okay."" she breathes.
 
 ""-so. I told her about you. And. And everything you got. Uh. And. And then! She... she started freaking out about how I was 'consorting with the enemy'? Heh? Heh hah???"" She swallows. ""And! NOW! Um! She... s-she is going straight to Chicomoztoc.""
@@ -4042,6 +4046,11 @@ HideFirstPerson","""Thank you Captain... I'll try to make this up to you."" she 
 ""We should get there as soon as possible, Captain."" tactical interjects. ""If that woman gets to Daud before we do, damn good chance this entire operation is shot. If not our reputation, then the Youns.""","defaultLeave:Nod, and return to your duties
 MPC_IAIICaloofPanicCommsEndAlt:Groan, and return to your duties",
 MPC_IAIICaloofPanicCommsEndAlt,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsEndAlt","DismissDialog",,,
+MPC_IAIICaloofPanicCommsTwoLol,MPC_IAIICaloofPanicCommsTwoLol,"$player.MPC_askedIfAloofWillBeTurnedIn",,,"100:MPC_IAIICaloofPanicCommsTwoLolSel:""I told you this would happen...""",
+MPC_IAIICaloofPanicCommsTwoLolSel,DialogOptionSelected,"$option == MPC_IAIICaloofPanicCommsTwoLolSel","AdjustRepActivePerson VENGEFUL -5
+RemoveOption MPC_IAIICaloofPanicCommsTwoLolSel","Her face blows up with red like a critically-failing flux reactor, as she sputters and spits to formulate a rebuttal.
+
+""You are c-con*tempt*uous."" she manages to hiss out, growling in a low, embarassed drawl. Her gaze strikes deep, panicked hatred burning through your skin like a plasma leak.",,
 ,,,,,,
 # Comms with her sister,,,,,,
 MPC_IAIICaloofSisterComms,PickGreeting,"$id == MPC_hegeAristoSister score:1000
@@ -4059,7 +4068,8 @@ MPC_IAIICaloofSisterNegotiateTwo,DialogOptionSelected,"$option == MPC_IAIICaloof
 DoCanAffordCheck 1000000 MPC_IAIICaloofSisterNegotiateConfirm false","A bemused chuckle escapes her lips. ""One million credits."" she smirks.","MPC_IAIICaloofSisterNegotiateConfirm:""Fine."" (Pay 1000000 credits)
 cutCommLink:Cut the comm link",
 MPC_IAIICaloofSisterNegotiateConfirm,DialogOptionSelected,"$option == MPC_IAIICaloofSisterNegotiateConfirm","$entity.ignorePlayerCommRequests = true
-MPC_IAIICHegeCMD ALOtargetBribed","A giggle, then a full-blown cackle fills your bridge as the aristocrat's eyes widen in jubilation. ""HAHA! Yes! YES! Thank you, *Captain*."" she snickers. ""It's so easy when we resolve things non-violently, hm?"" and with that, the commlink disconnects, leaving a black screen where her face once was.
+MPC_IAIICHegeCMD ALOtargetBribed
+$player.MPC_IAIICbribedALOTarget = true","A giggle, then a full-blown cackle fills your bridge as the aristocrat's eyes widen in jubilation. ""HAHA! Yes! YES! Thank you, *Captain*."" she snickers. ""It's so easy when we resolve things non-violently, hm?"" and with that, the commlink disconnects, leaving a black screen where her face once was.
 
 ""$PlayerSirOrMadam."" tactical stiffly begins. ""Their fleet is moving back towards eventide. Seems we convinced them to forget about whatever that Youn told them.""","defaultLeave:Leave",
 MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,"100:cutCommLink:Cut the comm link",
@@ -4070,7 +4080,143 @@ MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,"10
 MPC_IAIICaloofSisterElim,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
 !$temporarilyIgnoreYou
 MPC_IAIICHegeCMD ALOstateIs ELIMINATE_TARGET_FINISHED score:5","BeginConversation MPC_hegeAristoDefector","The exasperated face of the young aristocrat flickers into view. ""Did-did you take care of her?!""","MPC_IAIICaloofSisterElimYes:""Yes. She won't be a problem any longer.""",
+MPC_IAIICaloofSisterElimYes,DIalogOptionSelected,"$option == MPC_IAIICaloofSisterElimYes","FireBest MPC_IAIICaloofSisterElimReportOptions","A grotesque smile spreads across her disheveled face, but shrinks quickly as some invisible weight seems to fall upon her. She shrivels, balling her hands and nervously rubbing them together.
+
+""I-is... is she...?"" she stumbles out, eyes shot wide open with full attention, hoping for the correct answer to exit your lips.",,
+MPC_IAIICaloofSisterElimReportOptionsNoKill,MPC_IAIICaloofSisterElimReportOptions,"$player.MPC_IAIICbribedALOTarget",,,"MPC_IAIICaloofSisterElimBribed:""She's alive.""
+MPC_IAIICaloofSisterElimKilledLie:""She'd dead. I'm sorry."" (Lie)",
+MPC_IAIICaloofSisterElimReportOptionsKill,MPC_IAIICaloofSisterElimReportOptions,"!$player.MPC_IAIICbribedALOTarget score:50",,,"MPC_IAIICaloofSisterElimKilled:""She's dead. I'm sorry.""
+MPC_IAIICaloofSisterElimBribedLie:""She's alive."" (Lie)",
+MPC_IAIICaloofSisterElimKilledLie,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimKilledLie","$player.ethosLiar++
+$option = MPC_IAIICaloofSisterElimKilled
+FireBest DialogOptionSelected",,,
+MPC_IAIICaloofSisterElimBribedLie,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimKilledLie","$player.ethosLiar++
+$option = MPC_IAIICaloofSisterElimBribed
+FireBest DialogOptionSelected",,,
+MPC_IAIICaloofSisterElimKilled,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimKilled","FireBest MPC_IAIICaloofSisterElimTwo","Your words wash over her, rinsing away the anxiety and replacing it with unblemished jubilation underneath. ""Oh, good! That makes it so much easier."" she sighs, taking a sip from her wine with a small scowl. ""Even still... I will miss good Alnessa. She made such good casserole...""",,
+MPC_IAIICaloofSisterElimBribed,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimBribed","FireBest MPC_IAIICaloofSisterElimTwo","A wave of disappointment crashes over her, replacing her anticipatory sadness in an instant. ""Ugh... really? Okay... okay."" she sets down her wine and picks up a TriPad, giving it her full attention for a moment, then nods. ""-okay. I'm assuming you took care of her regardless? She won't be an issue?"" she returns your nod with one of her own, and trades the TriPad for a glass of wine. Sipping it, she sighs. ""...it's good she's alive, obviously. But... just... having someone that *knows* is an issue regardless.""",,
+MPC_IAIICaloofSisterElimTwo,MPC_IAIICaloofSisterElimTwo,,,"She winces, letting down the cup after one too many drinks. ""I can't believe she would turn on me... I'm a *hero*! I'm *saving* them!"" she shakes her head, fury rising and subsuming her aristocratic politeness. ""They should be on their knees, *begging* me to tell them just a *little* more, just a *little* more Aloterus, and maybe I'll be able to survive the coming STORM-""
+
+She quickly remembers your existance, covering up her horrified realization with a cough and a smile. ""-I believe we may need another approach, Captain.""","MPC_IAIICaloofSisterElimThree:Continue",
+MPC_IAIICaloofSisterElimThree,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimThree",,"""If my house really are such... short-sighted fools that they would remove me for attempting to *HELP* them..."" she growls, taking another quick sip of wine. ""Then we need another plan. My sister, scorn her heart, still sold off her stock in the military complex."" she crosses her fingers. ""Now, I'd suggest we'd use you, but if we just... plant our evidence, COMSEC will start digging. And find me. But, if we give them a convenient scapegoat..."" she grins, slowly pulling her PDA up to the screen. ""Then they'll have no need. COMSEC doesn't much care about actual justice, just, well, keeping the peace, hm?""
+
+""Besides - they already know it was you. They just want to know who to punish for helping you.""","MPC_IAIICaloofSisterElimFour:""A scapegoat. Anyone in mind?""",
+MPC_IAIICaloofSisterElimFour,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimFour",,"""Of course I do, Captain! What, do you think I don't know what I'm *doing*?"" she feigns offense, but if you said what you thought, you feel it would become genuine in an instant. ""Remember who you're imitating with those commkeys I gave you? Orthus. My long lost brother. Already a prime target from our *shenanigans*, he's a tad estranged and has a rebellious streak. Plus, ah...""
+
+She hums, paying close attention to the corner of the room as she pretends to be in thought. ""I don't like him."" A snicker. ","MPC_IAIICaloofSisterElimFive:Continue
+MPC_IAIICaloofSisterElimMorality:""'I don't like him'? Has he done something to you?""",
+MPC_IAIICaloofSisterElimMorality,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimMorality","RemoveOption MPC_IAIICaloofSisterElimMorality","""Oh, you don't need to know about *that*."" she waves a hand dismissively, rolling her eyes. ""He's just not a very good brother. that's all...""",,"(he crossed her ONCE and hasnt stayed in contract)"
+MPC_IAIICaloofSisterElimFive,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimFive","MPC_IAIICHegeCMD ALOgivenRaidTask","""There's a few ways I can think of to turn him into our scapegoat, and a few ways we can capitalize on it. But the best way, I think..."" she taps her PDA a few times, prompting a package of location data to be sent to your PDA. ""...is to find one of his villas and plant some evidence. You have experience, right?"" Not waiting for your response, you quickly receive another packet. ""And *then*, you'll find the abodes of many influential Youn members here. Once we're safe, break in and... show them what we've found?"" she smiles.
+
+You quickly review what you were sent. A set of coordinates in a remote location on Jangala, and a small cluster of coordinates on Eventide. Should be easy... wait, is... that *Jangala*?","MPC_IAIICaloofSisterElimWilling:""Alright. Two raids.""
+MPC_IAIICaloofSisterElimJANGALA:""Jangala?! Orthus has a villa on *Jangala*?!""",
+MPC_IAIICaloofSisterElimJANGALA,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimJANGALA","RemoveOption MPC_IAIICaloofSisterElimJANGALA","She scoffs, rolling her eyes dismissively. ""Oh, I know, I know, it's insane! He seems to enjoy *STROLLING* through the clouds of toxic fumes and spores, as if it 'brings him closer to Ludd', whatever that means.""
+
+She notices your confusion and quickly clarifies. ""Ah, yes. He's a devout follower of Ludd. That idiot 'prophet' wouldn't know the difference between Chardonnay and Volturnian Brandy..."" she grumbles, seemingly getting more upset over the figure's lack of decorum than the potential hazard her brother faces.",,
+MPC_IAIICaloofSisterElimWilling,DialogOptionSelected,"$option == MPC_IAIICaloofSisterElimWilling","HideFirstPerson","""Good to see you understand!"" she beams, then promptly cuts the commlink. So. A pair of covert raids. One for implication, the other for delivery. Nothing you haven't done before. You really, really hope she knows what she's doing this time.","cutCommLink:Cut the comm link",
 "#END Return to youn after her sister is eliminated",,,,,,
+,,,,,,
+# Raid Jangala to implicate,,,,,,
+MPC_IAIICAloofJangalaRaidOptAdder,PopulateOptions,"$menuState == main
+$hasMarket
+$market.id == ""jangala""
+MPC_IAIICHegeCMD ALOstateIs CREATE_SCAPEGOAT","SetOptionColor MPC_IAIICAloofJangalaRaidInit highlight",,"30:MPC_IAIICAloofJangalaRaidInit:Prepare a raid on Orthus' Villa to plant evidence",
+MPC_IAIICAloofJangalaRaidInit,DialogOptionSelected,"$option == MPC_IAIICAloofJangalaRaidInit","$raidGoBackTrigger = MPC_IAIICAloofJangalaImplicateGoBack 0
+$raidContinueTrigger = MPC_IAIICAloofJangalaImplicateFinishedB 0
+$raidRestrictToTrigger = MPC_IAIICAloofJangalaImplicateFinishedA 0
+$raidDifficulty = 25  0
+
+AddRaidObjective genericIcon ""Plant evidence"" LOW 500 MPC_IAIICAloofJangalaImplicateFinishedA true
+
+ShowImageVisual raid_prepare
+","You pull up the set of coordinates Youn gave you. As predicted, a shining hologram of a expansive villa projects before you, motes of blackened pestilence floating in thick formation around it. You exchange a glance with your marine chief, who is already ordering a full HAZMAT-3 protocol for your waiting marines.
+
+The operation to plant evidence shouldn't be hard from a military standpoint - but assuming the villa is inhabited, dodging the residents will be difficult and may require more subterfuge than you're used to. Your marine chief assures you, however, there's already a squad in mind, one with extensive experience in these type of operations.","mktRaidNonMarket:Continue",
+MPC_IAIICAloofJangalaImplicateFinishedA,MPC_IAIICAloofJangalaImplicateFinishedA,,,"Unfortunately, standard cloak-and-shimmer stealth gear is inapplicable for an insertion and action such as this, as stealth gear simply isn't a HAZMAT level appreciable enough to offer protection for your marines. Instead, your marine chief hatches another plan. 
+
+An incoming crew shuttle is quickly disabled, boarded, and taken over, your marines donning the protective gear of the cleaning crew on-board. Then, they load up on data-sticks, paper trails, and other bits of incriminating evidence as they move to join the workforce for the day. Noone pays them any mind as they walk through the front door and clock in under another name, before fanning out and making a show of organizing and cleaning the villa.
+
+",,
+MPC_IAIICAloofJangalaImplicateFinishedB,MPC_IAIICAloofJangalaImplicateFinishedB,,"MPC_IAIICHegeCMD ALOscapegoatMade","Through hidden cameras inserted in stolen fiber-clothes, you watch as your marines masterfully avoid enforcers, supervisors, and other people that would give them away. When a carpet is lifted up to dust, a data-stick is inserted. Papers being sorted prompts a incriminating document to be inserted. A forgotten data-chit put in a dry-pressed jacket. Plausible locations with plausible quantity and plausible contents, each placed in either a remote room or in some place only a inspector would look.
+
+After only a few hours, the marines walk out a back entrance, into a nearby shuttle, and fly back to your $shipOrFleet, ending the operation. After dropping off your prisoners a few kliks out of a nearby spaceport, you re-enter orbit, having surely given COMSEC just what they need to lock Orthus behind bars for the foreseeable future. Now you just need to trigger their investigation.",,
+MPC_IAIICAloofJangalaImplicateGoBack,MPC_IAIICAloofJangalaImplicateGoBack,,"$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+"#END Raid Jangala to implicate",,,,,,
+,,,,,,
+# Raid eventide to insert evidence,,,,,,
+MPC_IAIICAloofEventideInsrtEvdOptAdder,PopulateOptions,"$menuState == main
+$hasMarket
+$market.id == ""jangala""
+MPC_IAIICHegeCMD ALOstateIs INSERT_EVIDENCE","SetOptionColor MPC_IAIICAloofEventideInsrtEvdRaidInit highlight",,"30:MPC_IAIICAloofEventideInsrtEvdRaidInit:Prepare to plant evidence in the Youn's dwellings",
+MPC_IAIICAloofEventideInsrtEvdRaidInit,DialogOptionSelected,"$option == MPC_IAIICAloofEventideInsrtEvdRaidInit","$raidGoBackTrigger = MPC_IAIICAloofEventideInsrtEvdRaidGoBack 0
+$raidContinueTrigger = MPC_IAIICAloofEventideInsrtEvdRaidFinishedB 0
+$raidRestrictToTrigger = MPC_IAIICAloofEventideInsrtEvdRaidFinishedA 0
+$raidDifficulty = 25  0
+
+AddRaidObjective genericIcon ""Plant evidence"" LOW 500 MPC_IAIICAloofEventideInsrtEvdRaidFinishedA true
+
+ShowImageVisual raid_prepare
+","Having successfully inserted damning evidence in places only COMSEC would look, all you need to do now is place the evidence and leave just enough of a breadcrumb that Orthus is targetted first. Of course, it won't be easy, but your top-of-the-line marine force should have no issue infiltrating the various houses of the Youns and leaving evidence of the IAIIC's involvement.
+
+This should, without a doubt, be the last part of this trail - once armed with your evidence, the Youns will likely disengage from the hegemony. Aloretus may still be incriminated, your entire scapegoating may fail, and a war with the hegemony *is* possible, but this one thing is certain.","mktRaidNonMarket:Continue",
+MPC_IAIICAloofEventideInsrtEvdRaidFinishedA,MPC_IAIICAloofEventideInsrtEvdRaidFinishedA,,,"Compared to the villa, this will be a breeze. No HAZMAT protocol, no extended access, just one stealthy break-in, a paper tucked underneath a document, and exfiltration. You nod to your marine chief and give the go-ahead, and the shuttles quickly depart. They descend upon the welcoming host city, opening their hatches for the rustleshimmer of stealth-cloaked marines to exit, walking past confused-looking customs officers waiting for a trader or somesuch.",,
+MPC_IAIICAloofEventideInsrtEvdRaidFinishedB,MPC_IAIICAloofEventideInsrtEvdRaidFinishedB,,"MPC_IAIICHegeCMD ALOevidencePlanted","A simple mat-phaser allows undetectable access through windows, doors, walls, and your marines quickly find a curious spot to find a data-stick and drop their intelligence, exfiltrating just as fast as they came. The staff of the villas and homes appear nonethewiser, continuing their daily routine unaware of the shimmering space just feet from their mops and vacuums. It's likely long-ranged MuniSec sensors detected access, and an investigation *will* commence, but that's exactly what you want. Anything to get eyes off you, and eyes on Orthus.
+
+All that's left is to return to Aleratus and report your operation. With any luck, she'll have good news.",,
+MPC_IAIICAloofEventideInsrtEvdRaidGoBack,DialogOptionSelected,"$option == MPC_IAIICAloofEventideInsrtEvdRaidGoBack","$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+"#END Raid eventide to insert evidence",,,,,,
+,,,,,,
+# Return to Youn after evidence inserted,,,,,,
+MPC_aloofAristoFinalizeOptAdder,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
+MPC_IAIICHegeCMD houseIs ALOOF
+MPC_IAIICHegeCMD ALOstateIs FINALIZE","FireAll MPC_aloofAristoPlantedEvidenceModify",,"1:MPC_aloofAristoPlantedEvidence:Set the commlink to private and inform her of your success",
+MPC_aloofAristoPlantedEvidence,DialogOptionSelected,"$option == MPC_aloofAristoPlantedEvidence",,"An excited look comes over her as she notices the flicker of the commlink, knowing it must bring good news. ""Well, Captain?! How goes your adventures?!""","MPC_aloofAristoPlantedEvidenceTwo:""The evidence is planted, and Orthis implicated.?""",
+MPC_aloofAristoPlantedEvidenceTwo,DialogOptionSelected,"$option == MPC_aloofAristoPlantedEvidenceTwo",,"She claps her hands together giddily. ""Wonderful! Just wonderful, Captain! How long ago was this? Mayhaps I can-""
+
+With a ding, her attention is caught by her PDA. Scrambling to pick it up, she stammers out the results of your efforts with an excited laugh, ""It's worked, Captain! Xerocan just announced a 'meeting with the High Hegemon' to discuss the 'traitorous intelligence' - as well as discussing the future of our military."" she laughs, shaking her head. ""You really did it, Captain! You really did it!""","MPC_aloofAristoPlantedEvidenceThree:Continue
+MPC_aloofAristoPlantedEvidenceNoSus:""And COMSEC is blaming Orthus, not you?""",
+MPC_aloofAristoPlantedEvidenceNoSus,DialogOptionSelected,"$option == MPC_aloofAristoPlantedEvidenceNoSus","RemoveOption MPC_aloofAristoPlantedEvidenceNoSus","""Well, I haven't heard any knocks on my door, if that's what you mean."" $HeOrShe smiles, amusement between her lips. ""We'll just have to wait and see, hm?""",,
+MPC_aloofAristoPlantedEvidenceThree,DialogOptionSelected,"$option == MPC_aloofAristoPlantedEvidenceThree",,"""I really can't thank you enough, Captain. With my house turnt against the Hegemony, we'll surely join you on the stage once we bring this up with that hive-scum."" she sighs wistfully, rolling her wine around in her class, examining its legs. ""And... thankfully... *my* future is secure."" she mumbles, chasing those words down with a nice gulp of red liquid. 
+She notices you again, chuckling, and puts down the glass. ""Maybe once I've graduated to head of house, I'll give you a nice job as a ferryman, from star to back?"" she snickers, shooting you a wink as she reaches for the comms-disconnect.","MPC_aloofAristoPlantedEvidenceFour:Continue",
+MPC_aloofAristoPlantedEvidenceFour,DialogOptionSelected,"$option == MPC_aloofAristoPlantedEvidenceFour","$temporarilyIgnoreYou = true
+HideFirstPerson
+MPC_IAIICHegeCMD houseTurned
+MPC_IAIICHegeCMD ALObeginOrthusPayback","And with that, the screen returns to black, leaving you sighing in your chair, a sense of relief washing over you. Finally, you are free from this less-than-intelligent woman, and one step closer to eradicating the IAIIC.","cutCommLink:Cut the comm link",
+"#END Return to Youn after evidence inserted",,,,,,
+,,,,,,
+# Orthus retaliation,,,,,,
+MPC_IAIICOrthusRetaliateInit,DialogOptionSelected,"$option == marketVisitBar
+$global.MPC_doOrthusRetaliation
+!$global.MPC_didOrthusRetaliation","BarCMD playAmbience
+ShowImageVisual space_bar
+$global.MPC_didOrthusRetaliation = true
+$global.MPC_doOrthusRetaliation = false","You take a shuttle down to the main concourse with intent to find a social area to snoop around in. Your bodyguards flank you, sentinel eyes scanning the horizon of flesh, metal and cloth looking for trouble. And they quickly find it.
+
+The sound of metal unhooking from leather quickly alerts you and your guards, whom tackle you to the ground before the iron-tungsten slug can rip through your skull. The soft hum and thuk of a soft-pellet launcher indicates the downfall of your assailant, confirmed by the groans of pain and the sound of body hitting artificial earth.","MPC_IAIICOrthusRetaliateTwo:Take stock of your situation",
+MPC_IAIICOrthusRetaliateTwo,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateTwo",,"Firstly, you're alive. That's good. Secondly, you aren't in pain, aside from the rugburn. Your guards lift you to your feet and point out your assailant - a young-looking man hissing in agony, a slug-launcher kicked to the side, a boot to the neck and barrel to the forehead.
+
+Something strikes you as familiar...","MPC_IAIICOrthusRetaliateThree:Continue",
+MPC_IAIICOrthusRetaliateThree,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateThree","BeginConversation MPC_hegeAloofBrother","The resemblance is undeniable. This is Orthus Youn, brother of the aristocrat you worked with to turn the Youns against the Hegemony - and scapegoat of the entire operation. Here he lies, rolling in agony, covered in rags and laser burns, intent on killing you.
+
+""---YOUUU!!"" he hisses, a sudden moment of lucidity through his screaming agony. He reaches with all his strength to the slug-launcher, but is unable to reach it. He opts for the next best thing - reaching for your *throat*. And when that fails?","MPC_IAIICOrthusRetaliateFour:Continue",
+MPC_IAIICOrthusRetaliateFour,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateFour",,"""EVERYONE!! LISTEN!!"" he growls, shouting to the gawking bystandards and apprioaching MuniSec. ""This is $PlayerName! Leader of $global.MPC_playerFacNameWithArticle, traitor to the Hegemony -"" he hisses, straining as his hands are surrounded with cold steel. ""-if you're hearing me, COMSEC, $playerHeOrShe framed me! I'VE BEEN FRAMED!! YOU SHOULD *DIE*! YOU SHOULD BE *DEAD*! I'LL KILL YOUU-!!"" he screams, straining against the MuniSec officers ushering him away.
+
+One stays behind, apologizing profusely, assuring you and your guards over and over that ""incidents like these are so uncommon, we are so, so sorry."" All you can do is watch that poor man be dragged away and wonder if your actions really were just. Or maybe it's just part of the business? ","MPC_IAIICOrthusRetaliateFive:Sigh, and shake your head",
+MPC_IAIICOrthusRetaliateFive,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateFive",,"You turn to address the MuniSec officer and get things straight. After a brief examination, he concludes you do not need medical, and that you're free to leave whenever you want, but he's willing to provide you with a free consult with a psychologist in case of any lasting trauma. You elegantly turn down the offer.","MPC_IAIICOrthusRetaliatePressCharges:""I'd like to press charges.""
+MPC_IAIICOrthusRetaliateHowGetIn:""It's my understanding that man is a fugitive from the Hegemony. How did slip past you?""
+MPC_IAIICOrthusRetaliateSix:Thank the officer for the assistance, and find a bar",
+MPC_IAIICOrthusRetaliatePressCharges,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliatePressCharges","AdjustRepActivePerson VENGEFUL -100
+RemoveOption MPC_IAIICOrthusRetaliatePressCharges","""Of course, $PlayerSirOrMadam."" the officer nods. ""He's looking at attempted murder, at least, as well as a plethora of other charges. Don't worry - we'll get em locked up for good.""",,
+MPC_IAIICOrthusRetaliateHowGetIn,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateHowGetIn","RemoveOption MPC_IAIICOrthusRetaliateHowGetIn","The officer shrinks even further. ""I... I don't know, $playerSirOrMadam. You'd have to ask my superiors.""",,
+MPC_IAIICOrthusRetaliateSix,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateSix","AdjustRep hegemony VENGEFUL -10","Despite coming off as a total madman, you have no doubts that this little stunt will cause diplomatic tensions with the Hegemony later, as they investigate this lead and find traces you were unable to clean up.
+
+Still - the common folk of this place seem unconvinced of your guilt, as when you enter a local bar all you receive are sympathetic looks and invitations for a drink. You exchange a tired glance with the bartender - at least you're not dead.","MPC_IAIICOrthusRetaliateEnd:Look for any leads",
+MPC_IAIICOrthusRetaliateEnd,DialogOptionSelected,"$option == MPC_IAIICOrthusRetaliateEnd","BarCMD showOptions",,,
+"#END Orthus retaliation",,,,,,
 "#END The actual questline",,,,,,
 "#END Aloof house - obtain unassailable proof",,,,,,
 ,,,,,,
@@ -4375,11 +4521,40 @@ MPC_oppAristoMeetHasZiggDenyConfirm,DialogOptionSelected,"$option == MPC_oppAris
 HideFirstPerson
 MPC_IAIICHegeCMD OPPtraitor","The enraged face of the aristocrat vanishes, replaced by the blackness of a vacant commlink. You're certain this will have consequences. But you don't care. This dataset is infinitely more valuable than some assistance in a foreign war.","MPC_cutCommLinkIntcrt:Cut the comm link",
 MPC_oppAristoMeetHasZiggCantCopy,DialogOptionSelected,"$option == MPC_oppAristoMeetHasZiggCantCopy","RemoveOption MPC_oppAristoMeetHasZiggCantCopy
-$temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing larger. ""Good. Not sure I trust you bloody *s-spacers* with this kind of data anyway."" he eloquently hisses. ""You'd probably just give it back to those genocidal Tri-Tach fellows... or worse."" he cringes. ""The *luddites*...""",,
+$temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing larger. ""Good. Not sure I trust you bloody *spacers* with this kind of data anyway."" he eloquently hisses. ""You'd probably just give it back to those genocidal Tri-Tach fellows... or worse."" he cringes. ""The *luddites*...""",,
 "#END Return to opp arristo at any time",,,,,,
 "#END Opportunistic House - Bribe them with something",,,,,,
 ,,,,,,
 # Honorable house - PROVE YOUR HONOR!!!,,,,,,
+MPC_honAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoHonorableRep score:1000
+!$global.MPC_metHegeHonorableAristo
+!$temporarilyIgnoreYou","SetShortcut cutCommLink ESCAPE true
+MPC_addOptionConfirmation MPC_honAristoInitialMeetTwo ""Submitting these credentials will tip off INTSEC to your activities and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
+
+FireAll MPC_honAristoInitialMeetModifyOptions","As the commlink springs to life, a robotic auto-greeter cheerfully announces the denial of your connection. ""Hello and thank you for contacting [JERUS ALOTERA]. Our house is not taking external calls right now, under INTSEC order 2552:ERETH. Please try again later...""
+
+TODO differentiate greeting text from other houses","MPC_honAristoInitialMeetTwo:Input your aristocratic credentials
+cutCommLink:Cut the comm link",
+MPC_honAristoInitialMeetModifyOptionsHouseActive,MPC_honAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD dealingWithAHouse","SetEnabled MPC_honAristoInitialMeetTwo false
+SetTooltip MPC_honAristoInitialMeetTwo ""Using your credentials while already dealing with a house could compromise this entire operation. It's best to finish your dealings first.""",,,
+MPC_honAristoInitialMeetModifyOptionsCooldown,MPC_honAristoInitialMeetModifyOptions,"MPC_IAIICHegeCMD cooldownActive","SetEnabled MPC_honAristoInitialMeetTwo false
+SetTooltip MPC_honAristoInitialMeetTwo ""INTSEC is hypervigilant about the eventide houses right now. You need to wait for the heat to die down.""",,,
+MPC_honAristoInitialMeetTwo,DialogOptionSelected,"$option == MPC_honAristoInitialMeetTwo","BeginConversation MPC_hegeMoralistReceptionist","With your credentials inserted, the auto-greeter vanishes, replaced by a tired-looking woman who would clearly be happier drinking a stim-coffee rather than doing her job at the moment. The quiet chatter of a reception center rings behind her, each as tired as her own. Behind her is a amber-brown wall of possibly authentic wood, a depiction of a iron fist graciously offering the Luddic emblem emblazed somewhat heretically across it.
+
+""Hello, and Ludd bless, Sir."" she drawls, each word heavier than a neutronium ingot. ""As you must know, Alotera is not taking calls from the Youns, following your..."" her grimace spreads. ""...'dishonorable stunt', involving a particular member and five kilograms of red dust. So I'm *assuming* this is important...?""
+
+She impatiently taps the gold-green desk-cover, waiting for your response.","MPC_honAristoInitialMeetIsntThisComms:""Isn't this the comms-key of one 'Jerus Alotera'? I wanted to speak with him.""
+MPC_honAristoInitialMeetNotYoun:""Listen. I'm not actually a Youn. I'm $PlayerName, I-""
+MPC_honAristoInitialMeetHasEmergency:""...yes, it's an emergency. I can't tell you exactly *what* it's about, but I assure you, I MUST speak with a house official.""",
+MPC_honAristoInitialMeetNotYoun,DialogOptionSelected,"$option == MPC_honAristoInitialMeetNotYoun","RemoveOption MPC_honAristoInitialMeetNotYoun","""You tried that already."" she cuts you off. ""You're $PlayerName, and you have something VERY IMPORTANT to tell him, and you need to tell him now, and you also need a *generous donation of credits*-""
+
+She takes a deep breath, letting it out as she caresses her scalp to relieve the mounting pressure from having to relive the 'incident', whatever it is.
+
+""Now, do you have an emergency, or what?""",,
+MPC_honAristoInitialMeetHasEmergency,DialogOptionSelected,"$option == MPC_honAristoInitialMeetHasEmergency",,"She listens patiently, nodding along, but the tired look only grows. With a deep siiiigh, she shakes her head. ""Without a *description*, I cannot *verify* if this is a emergency. Much like the countless other times your house has tried to reach us without a solid description, this will not *work*, Youn.""",,
+MPC_honAristoInitialMeetIsntThisComms,DialogOptionSelected,"$option == MPC_honAristoInitialMeetIsntThisComms","RemoveOption MPC_honAristoInitialMeetIsntThisComms","She sighs, rolling her eyes, and nods. ""Yes, and you have been rerouted to the House Alotera communication centre."" She takes a sip of her nearby coffee. ""It *was* introduced after your stunt, Youn. So you would stop calling and demanding an apology. And also to stop you from sending us endless Fikenhildian chik-fliks. Which we didn't watch. Any of them.""
+
+You catch your tactical officer snorting in amusement.",,
 ,,,,,,
 # DEVMODE OPTIONS FOR HONROIABLE,,,,,,
 MPC_IAIICHegeHonorDEVShipDuelTest,PopulateOptions,"$market.id == eventide

@@ -65,6 +65,10 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         fun getVoidsunPlanet(): MarketAPI? {
             return Global.getSector().memoryWithoutUpdate["\$MPC_IAIICvoidsunPlanet"] as? MarketAPI
         }
+
+        fun getBaseContributionTags(): MutableSet<String> {
+            return mutableSetOf<String>(niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)
+        }
     }
 
     override fun getIcon(): String {
@@ -73,7 +77,7 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
 
     override fun getName(): String = "Independent involvement"
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        return (super.getIntelTags(map) + mutableSetOf(Factions.INDEPENDENT, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
+        return (super.getIntelTags(map) + MPC_indieContributionIntel.getBaseContributionTags() + Factions.INDEPENDENT).toMutableSet()
     }
 
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {

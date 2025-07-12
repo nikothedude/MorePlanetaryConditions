@@ -26,6 +26,7 @@ import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
+import data.scripts.campaign.magnetar.crisis.intel.MPC_indieContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel.Companion.addStartLabel
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.IAIIC_QUEST
@@ -184,6 +185,15 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             }
         },
         ELIMINATE_TARGET_FINISHED {
+
+        },
+        CREATE_SCAPEGOAT {
+
+        },
+        INSERT_EVIDENCE {
+
+        },
+        FINALIZE {
 
         };
 
@@ -389,9 +399,8 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
     override fun getName(): String = "Hegemony involvement"
     override fun getIntelTags(map: SectorMapAPI?): MutableSet<String> {
-        return (super.getIntelTags(map) + mutableSetOf(Factions.HEGEMONY, niko_MPC_ids.IAIIC_FAC_ID, Tags.INTEL_COLONIES)).toMutableSet()
+        return (super.getIntelTags(map) + MPC_indieContributionIntel.getBaseContributionTags() + Factions.HEGEMONY).toMutableSet()
     }
-
     override fun addBulletPoints(info: TooltipMakerAPI?, mode: IntelInfoPlugin.ListInfoMode?, isUpdate: Boolean, tc: Color?, initPad: Float) {
         super.addBulletPoints(info, mode, isUpdate, tc, initPad)
         if (info == null || mode == null) return
@@ -518,6 +527,49 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                     Misc.getHighlightColor(),
                     "one week"
+                )
+            }
+            AloofState.ELIMINATE_TARGET -> {
+                info.addPara(
+                    "Eliminate %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Alnessa Youn"
+                )
+                info.addPara(
+                    "One month remaining - at most", 5f
+                )
+            }
+            AloofState.ELIMINATE_TARGET_FINISHED -> {
+                info.addPara(
+                    "Return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Aleratus"
+                )
+            }
+            AloofState.CREATE_SCAPEGOAT -> {
+                info.addPara(
+                    "Raid %s' villa on %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Orthus", "Jangala"
+                )
+            }
+            AloofState.INSERT_EVIDENCE -> {
+                info.addPara(
+                    "Insert evidence on %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "eventide"
+                )
+            }
+            AloofState.FINALIZE -> {
+                info.addPara(
+                    "Return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Aleratus"
                 )
             }
             "EVIDENCE_PIECES" -> {
@@ -722,8 +774,47 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                 )
                             }
 
-                            AloofState.ELIMINATE_TARGET -> TODO()
-                            AloofState.ELIMINATE_TARGET_FINISHED -> TODO()
+                            AloofState.ELIMINATE_TARGET -> {
+                                info.addPara(
+                                    "You've received an urgent summons from %s, claiming her sister has turned traitor and will %s. " +
+                                    "You must intercept her at %s and put a stop to this situation before it becomes unrecoverable.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "Aleratus", "soon depart for chicomoztoc", "eventide"
+                                )
+                            }
+                            AloofState.ELIMINATE_TARGET_FINISHED -> {
+                                info.addPara(
+                                    "You have removed %s as a potential threat vector. You should return to %s and discuss your next steps.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "Alnessa", "Aleratus"
+                                )
+                            }
+                            AloofState.CREATE_SCAPEGOAT -> {
+                                info.addPara(
+                                    "Aleratus has hatched a plan; infiltrate her sister's villa and insert evidence in hard-to-reach places " +
+                                    "to frame him for the data heists, and as a traitor.",
+                                    5f
+                                )
+                                info.addPara(
+                                    "While you're not entirely confidant with this plan, you are at least confidant that, should Aleratus be caught, " +
+                                    "your efforts here should (at least partially) cover your tracks.",
+                                    5f
+                                )
+                            }
+                            AloofState.INSERT_EVIDENCE -> {
+                                info.addPara(
+                                    "You have successfully implicated %s as a scapegoat. Now you must return to %s and plant the evidence, as to " +
+                                    "get the Youns to turn traitor.",
+                                    5f,
+                                    Misc.getHighlightColor(),
+                                    "Orthus"
+                                )
+                            }
+                            AloofState.FINALIZE -> {
+                                info.addPara("Everything is in place. Return to %s, on %s.", 5f, Misc.getHighlightColor(), "Aleratus", "Eventide")
+                            }
                         }
                     }
                     TargetHouse.OPPORTUNISTIC -> {
