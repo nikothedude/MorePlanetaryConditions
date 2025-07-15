@@ -24,6 +24,7 @@ import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.makeUnimportant
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.max
 
 class MPC_IAIICPatherCMD: BaseCommandPlugin() {
 
@@ -172,15 +173,16 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 interactionTarget.market?.addCondition("MPC_arrowPatherCondition")
 
                 Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketName"] = interactionTarget.market.name
-                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market.id
             }
             "setTarget" -> {
                 Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketName"] = interactionTarget.market.name
-                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market.id
             }
             "targetReady" -> {
-                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? MarketAPI ?: return false
-                return marketSuitableForTransfer(target)
+                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? String ?: return false
+                val market = Global.getSector().economy.getMarket(target)
+                return marketSuitableForTransfer(market)
             }
 
             "canVisitHideoutAgain" -> {
@@ -210,8 +212,8 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.market?.removeCondition("MPC_arrowPatherCondition")
                 (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.makeUnimportant("\$MPC_IAIICPatherHideout")
 
-                val targetMarket = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? MarketAPI ?: return false
-                targetMarket.factionId = Factions.LUDDIC_PATH
+                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? String ?: return false
+                val targetMarket = Global.getSector().economy.getMarket(target) ?: return false
                 targetMarket.isPlayerOwned = false
                 targetMarket.admin = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
                 targetMarket.admin.stats.setSkillLevel(Skills.INDUSTRIAL_PLANNING, 1f)
@@ -249,7 +251,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 (targetMarket.getSubmarket(Submarkets.SUBMARKET_STORAGE)?.plugin as? StoragePlugin)?.setPlayerPaidToUnlock(true)
                 targetMarket.connectedEntities.forEach { it.setFaction(Factions.LUDDIC_PATH) }
 
-                targetMarket.size = 4
+                targetMarket.size = max(targetMarket.size, 4)
                 targetMarket.removeCondition(Conditions.POPULATION_3)
                 targetMarket.addCondition(Conditions.POPULATION_4)
 

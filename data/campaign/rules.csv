@@ -2646,7 +2646,8 @@ FireBest OpenInteractionDialog","You and your party hurriedly board the shuttle 
 "#END Land on hideout",,,,,,
 ,,,,,,
 # Return to hideout after initial contact,,,,,,
-MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain","FireAll MPC_IAIICLPSecondHideoutVisitOptions","Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.",,
+MPC_IAIICLPSecondHideoutVisitPopulateOptions,PopulateOptions,"MPC_IAIICPatherCMD canVisitHideoutAgain",,"Your nav automatically marks the Arrow pather hideout on your navscreen. You could visit it anytime you like.","10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout
+11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out","FireAll MPC_IAIICLPSecondHideoutVisitOptions"
 MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,,,,"10:MPC_IAIICLPHideoutSecondVisit:Take a shuttle down to the pather hideout",
 MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,"$faction.id == player",,,"11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out",
 ,,,,,,
@@ -2732,11 +2733,14 @@ MPC_IAIICLPHideoutDonateWasntWorthIt,DialogOptionSelected,"$option == MPC_IAIICL
 # Set transfer target,,,,,,
 MPC_IAIICLPSetTransferTargetOption,PopulateOptions,"MPC_IAIICPatherCMD canAddDedicateOption
 $menuState == main","FireBest MPC_IAIICLPSetTransferTargetOptionModify",,"100:MPC_IAIICLPSetTransferTargetOptionSel:Dedicate $entityName to the arrow pathers",
-MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,"$global.MPC_IAIICLPTargetMarket == $market",,"in another version, the dedicate option would be disabled. but it was bugged so its disabled :)",,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
+MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,"$global.MPC_IAIICLPTargetMarket == $market.id","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
+SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers.""",,,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers."""
 MPC_IAIICLPSetTransferTargetOptionModifyDangerous,MPC_IAIICLPSetTransferTargetOptionModify,"MPC_IAIICPatherCMD isDangerous","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is situated in a dangerous star system and cannot be selected.""",,,
-MPC_IAIICLPSetTransferTargetOptionSel,DialogOptionSelected,"$option == MPC_IAIICLPSetTransferTargetOptionSel","SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
+MPC_IAIICLPSetTransferTargetOptionSel,DialogOptionSelected,"$option == MPC_IAIICLPSetTransferTargetOptionSel","MPC_IAIICPatherCMD setTarget
+
+SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers.""","You dedicate $entityName to the arrow pathers, meaning you may transfer it to them when the time is right.",,
 "#END Set transfer target",,,,,,
 "#END Pather",,,,,,
@@ -4526,6 +4530,14 @@ $temporarilyIgnoreYou = true","His smile seems to squirm grotesquely, growing la
 "#END Opportunistic House - Bribe them with something",,,,,,
 ,,,,,,
 # Honorable house - PROVE YOUR HONOR!!!,,,,,,
+,,,,,,
+# DEVMODE OPTIONS FOR HONROIABLE,,,,,,
+MPC_IAIICHegeHonorDEVShipDuelTest,PopulateOptions,"$market.id == eventide
+$global.isDevMode",,,"500:MPC_IAIICHonorableTestDuel: (dev) TEST HONORABLE SHIP DUEL",
+MPC_IAIICHonorableTestDuel,DialogOptionSelected,"$option == MPC_IAIICHonorableTestDuel","MPC_IAIICHegeCMD HONbeginShipDuel","test!!!!",,
+"#END DEVMODE OPTIONS FOR HONROIABLE",,,,,,
+,,,,,,
+# Initial meeting with honroable,,,,,,
 MPC_honAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoHonorableRep score:1000
 !$global.MPC_metHegeHonorableAristo
 !$temporarilyIgnoreYou","SetShortcut cutCommLink ESCAPE true
@@ -4551,16 +4563,148 @@ MPC_honAristoInitialMeetNotYoun,DialogOptionSelected,"$option == MPC_honAristoIn
 She takes a deep breath, letting it out as she caresses her scalp to relieve the mounting pressure from having to relive the 'incident', whatever it is.
 
 ""Now, do you have an emergency, or what?""",,
-MPC_honAristoInitialMeetHasEmergency,DialogOptionSelected,"$option == MPC_honAristoInitialMeetHasEmergency",,"She listens patiently, nodding along, but the tired look only grows. With a deep siiiigh, she shakes her head. ""Without a *description*, I cannot *verify* if this is a emergency. Much like the countless other times your house has tried to reach us without a solid description, this will not *work*, Youn.""",,
 MPC_honAristoInitialMeetIsntThisComms,DialogOptionSelected,"$option == MPC_honAristoInitialMeetIsntThisComms","RemoveOption MPC_honAristoInitialMeetIsntThisComms","She sighs, rolling her eyes, and nods. ""Yes, and you have been rerouted to the House Alotera communication centre."" She takes a sip of her nearby coffee. ""It *was* introduced after your stunt, Youn. So you would stop calling and demanding an apology. And also to stop you from sending us endless Fikenhildian chik-fliks. Which we didn't watch. Any of them.""
 
 You catch your tactical officer snorting in amusement.",,
+MPC_honAristoInitialMeetHasEmergency,DialogOptionSelected,"$option == MPC_honAristoInitialMeetHasEmergency",,"She listens patiently, nodding along. As you end, she takes a breath, preparing to speak...
+
+""...without a description, we cannot act on your emergency, Youn. You should know this, given the amount of times you have tried this in the past."" her eye twitches. ""Now, I will assume that - much like those times - you will, despite repeated requests, you will *not* elaborate?""
+
+She doesn't wait for your response. ""We've reached our allocated time. As per usual, your commskey will be rejected for a week, after which you may call us again..."" she is clearly relieved to be done dealing with you. ""Ludd guide you, and may the steel chainlinks remain int-""","MPC_honAristoInitialMeetThree:Continue",
+MPC_honAristoInitialMeetThree,DialogOptionSelected,"$option == MPC_honAristoInitialMeetThree",,"""$PersonName!"" a roaring voice comes from offscreen, prompting the receptionist to shrivel into $hisOrHer chair. ""Yet again, your posture is undisciplined. Straighten your back! Brush that hair out of your face!"" The receptionist does so, a look of nervous exhaustion coming over her. Her eyes track an approaching set of footsteps, which soon reveal their owner as they come into view of the camera.","MPC_honAristoInitialMeetFour:Continue",
+MPC_honAristoInitialMeetFour,DialogOptionSelected,"$option == MPC_honAristoInitialMeetFour","ShowSecondPerson MPC_hegeAristoMoralistRep","A hardened-looking man appears before you, pushing the nervous-looking receptionist out of the way and nearly off-screen as he takes center stage. ""The Alotera apologize for this civilian's insolence. The iron path never..."" he grunts, narrowing his eyes as a slow, steady realization comes over him.
+
+Nonetheless, he continues. ""...the iron path purports respect and honor above all. This *woman* clearly forgot that."" He shoots her a nasty look. ""Now, I will take your call in private. $PersonFirstName."" He nods to the receptionist and, without another word, walks back off-screen.","MPC_honAristoInitialMeetFive:Continue",
+MPC_honAristoInitialMeetFive,DialogOptionSelected,"$option == MPC_honAristoInitialMeetFive","BeginConversation MPC_hegeAristoMoralistRep","The terrified-looking receptionist utters a quick wispy apology before presumably transferring you across a private comm-link, sending your cam-view from her visage, to black, to the hegemony crest, then finally to the hardened visage of $PersonName, glaring at you with vitriol burning behind his eyes like AM-scorch. The architecture behind him is similar to the receptionist, with green desk-covers, gilded carpets, and a gracious steel hand offering the luddic emblem.
+
+""So you, wretch you are, decided to thieve the identity of a wretch themselves?! Hah! Did you think this would grant you an audience with me?"" he snorts. ""Your wickedness is well known. Your honor is blemished by the blood and tears of Ludd and those that follow - the blood of innocents that you crushed in your wake. Your audience is denied, and-""
+
+His berating is interrupted by the sound of a door creaking open.
+","MPC_honAristoInitialMeetSix:Continue",
+MPC_honAristoInitialMeetSix,DialogOptionSelected,"$option == MPC_honAristoInitialMeetSix","ShowSecondPerson MPC_hegeAristoMoralistRepTwo","From behind, a door opens, revealing a much younger looking aristocrat. Much like the first, he is well decorated - iron chains weave over his sleeves, a playfully woven green-gold sweater with an iron fist in the middle.
+
+The two stare at eachother for a few moments, before the younger one slowly turns to you.
+
+""'Wretch?' Denial of audience? Do you really think this follows the path, Jerus?"" Jerus snorts, grumbling. ""There is no honor in this man. To string up the very demons of Moloch as saints and use them to advantage $playerHimorHerself...""","MPC_honAristoInitialMeetSeven:Continue",
+MPC_honAristoInitialMeetSeven,DialogOptionSelected,"$option == MPC_honAristoInitialMeetSeven","ShowSecondPerson MPC_hegeAristoMoralistRepTwo","""-those are *rumors*, Jerus. Nothing more."" the younger man softly adds. Turning to you, he continues. ""And if they're not - I'm surely $playerHeOrShe has an explanation?"" he prompts.","MPC_honAristoInitialMeetRumors:""Rumors, nothing more."" (Lie)
+MPC_honAristoInitialMeetStudy:""I am studying them. Determing how best to destroy them.""
+MPC_honAristoInitialMeetPractical:""I am using them to safeguard my citizenry. The IAIIC is proof I need it.""
+MPC_honAristoInitialMeetProAI:""I am giving them a safe harbor; a place away from the genocidal maniacs that would kill them.""",
+MPC_honAristoInitialMeetRumors,DialogOptionSelected,"$option == MPC_honAristoInitialMeetRumors","$option = MPC_honAristoInitialMeetEight
+FireBest DialogOptionSelected
+
+$player.ethosLiar++","He nods. ""See, Jerus? Rumors."" Noticing the older man's scowl, he adds, ""Remember - the Iron Path teaches us humility, honor, and grace. Let us donate some of that grace to $playerHimOrHer."" he nods.",,
+MPC_honAristoInitialMeetStudy,DialogOptionSelected,"$option == MPC_honAristoInitialMeetStudy","$option = MPC_honAristoInitialMeetEight
+FireBest DialogOptionSelected
+
+$player.ethosAntiAI++","He raises a brow, but nods nonetheless. ""See, Jenius? The Iron Path teaches us to have humility and learn before acting. Remember; you are not omniscient."" Jenius seems unconvinced, but relents with a grunt.",,
+MPC_honAristoInitialMeetPractical,DialogOptionSelected,"$option == MPC_honAristoInitialMeetPractical","$option = MPC_honAristoInitialMeetEight
+FireBest DialogOptionSelected
+
+$player.ethosMercenary++","Halatius nods politely. ""Distasteful. But, we respect it, do we not, Jerus?"" He looks over to Jerius, who is still grumbling and glaring. The younger man turns back; ""He's quite Anti-AI, you see. Unable to look past it for the broader strokes of the Path.""",,
+MPC_honAristoInitialMeetProAI,DialogOptionSelected,"$option == MPC_honAristoInitialMeetProAI","$option = MPC_honAristoInitialMeetEight
+FireBest DialogOptionSelected
+
+$player.ethosProAI++
+$player.ethosTruth++
+
+AdjustRep MPC_hegeAristoMoralistRep VENGEFUL -25
+AdjustRep MPC_hegeAristoMoralistRepTwo VENGEFUL -5","Halatius stares. His calm demeanour twitches.
+
+""...at least you have a sense of empathy, Captain."" he sighs, shaking his head.",,
+MPC_honAristoInitialMeetEight,DialogOptionSelected,"$option == MPC_honAristoInitialMeetEight",,"""Regardless, I believe Jenius is being a tad too harsh. I am Halatius Alotera, and I believe you're here on business, yes?""
+
+You notice Jenius grumbling in the corner, arms crossed like an petulant child unable to play his games.","MPC_honAristoInitialMeetOnBusiness:""Yes. The IAIIC.""
+MPC_honAristoInitialMeetOffBusiness:""No, I wanted to talk about other things."" (Lie) (UNFINISHED)",
+MPC_honAristoInitialMeetOnBusiness,DialogOptionSelected,"$option == MPC_honAristoInitialMeetOnBusiness",,"He nods. ""The IAIIC. The hegemony. You wish for the hegemon to divest from the IAIIC, and make your war against the sector just a bit easier. And *we*, one of the more influential eventide houses, can make this happen.""
+
+""Of course. It's not that easy."" he nods, turning to Jenius, who has not stopped glaring at you for even a second. ""You see, we in Alotera are the last remnants of the Iron Path; a luddic sect that made up the earliest portions of the knights. And while we care not about resurfacing, we do care about our values..."" Jenius scowls a little, prompting Halatius to softly chuckle and add, ""...well maybe a few of us still hold nostalgia for the old days.""
+
+He turns to you. ""Our values... values we hope you share. Skills, accomplishments, abilities...""","MPC_honAristoInitialIfMeetGood:""If I have these values, these abilities... you'll back me?""",
+MPC_honAristoInitialIfMeetGood,DialogOptionSelected,"$option == MPC_honAristoInitialIfMeetGood",,"He walks over and picks up a small, dusty book, from a nearby shelf. ""Maybe."" he says, dusting off the cover. He walks back to the desk and sets it down. ""Depends on how aligned you find yourself. Depends on a few other things, too."" The book opens; artfully designed hands grasp an iron chain, wrapped around their wrists. Beneath, a sun shines over old earth, watched over by the hard steel above.","MPC_honAristoInitialNine:Continue",
+MPC_honAristoInitialNine,DialogOptionSelected,"$option == MPC_honAristoInitialNine","SetTextHighlights ""strength"" ""honor"" ""direction""","The page flips. Halatius reads; ""The first, and foremest tenet, is strength. Strength to dominate, strength to destroy, but above all, strength to protect. We follow in Ludd's steps - his fight against Mammon - with hammer in hand."" 
+He flips the page. ""The second is honor; Your vows are eternal. You do not go back on your promises. Your strength is forever. And the third is direction; Your strength defines you, and must not be miswielded. We are the iron, the chains, the gate before the storm - we must protect those we care for and crush those we do not.""","MPC_honAristoInitialTen:""Okay... where are you going with this?""",
+MPC_honAristoInitialTen,DialogOptionSelected,"$option == MPC_honAristoInitialTen","MPC_IAIICHegeCMD newHouse HONORABLE","He claps the book closed, dust flitting up and into the air. ""To gain our support, you must prove yourself valiant and strong. You will pass our rites; Combat. You will prove your honor; dispatch those that have none. And you will prove yourself to Jenius."" he snickers behind a soft smile, turning to the disgruntled man beside him. ""I believe you will have to prove your willingness to battle the demons of Moloch. We *are* luddites, after all.""","MPC_honAristoInitialWhatInItForYou:""What's in this for you? Why are you willing to support me?""
+MPC_honAristoInitialWhyConvinceYou:""I'm assuming you two hold great power in the Alotera?""
+MPC_honAristoInitialEleven:""Very well. What do you want me to do?""",
+MPC_honAristoInitialWhatInItForYou,DialogOptionSelected,"$option == MPC_honAristoInitialWhatInItForYou","RemoveOption MPC_honAristoInitialWhatInItForYou","He nods. ""As you may have gathered, we have mixed opinions on the hegemony's involvement with the IAIIC. On one hand - it is righteous. These rumors, if true, are damning - a black mark on your soul, a tendril of mammon behind your subconcious.""
+
+He raises a hand. ""But on the other; the hegemony weakens itself. Shows it's hypocrisy by coming after you again. It is weak - it breaks its promise - it has little *honor*, in our eyes. You, on the other hand..."" he takes a deep breath. ""You are an unknown factor. Malleable. Assisting you could mean giving you values you never wanted to have, as well as, perhaps... and far more likely... 'encouraging' the hegemony to restore it's own.""
+
+""Of course, our rules dictate the importance of honor, strength, et. cetera - none of these you have shown yourself to be within so far. Thereby, you must pass our rites and prove yourself. I wouldn't mind seeing a few changes in your heart here and there, too..."" he softly smiles.",,
+MPC_honAristoInitialWhyConvinceYou,DialogOptionSelected,"$option == MPC_honAristoInitialWhyConvinceYou","RemoveOption MPC_honAristoInitialWhyConvinceYou","His smile widens, and he nods. ""Halatius. Jerus, won't you introduce yourself?"" he turns to the grumpy man, who reluctantly grunts and begins a canned introduction. ""...Jerus Alotera... second patriarch of the Alotera house..."" Halatius kindly nods and returns to you. ""We are the two heads of the house. We decide what happens, where resources go... quite useful for someone like you, I'm sure.""",,
+MPC_honAristoInitialElevenNormal,DialogOptionSelected,"$option == MPC_honAristoInitialEleven","FireAll MPC_honAristoInitialEthosReactions
+FireAll MPC_honAristoInitialElevenNormalB","""Well...""",,
+MPC_honAristoInitialEthosReactionHonorable,MPC_honAristoInitialEthosReactions,"$player.ethosHonorable >= 3","MPC_IAIICHegeCMD HONincrementHonor","""Your honor is well known; we will not scorn you as much as we would otherwise."" Halatius - and reluctantly, Jenius - nod sagely.",,
+MPC_honAristoInitialElevenNormalB,MPC_honAristoInitialElevenNormalB,,,"""Firstly, the rite of combat. Jenius here - old fart he is -"" Jenius shoots the younger man a death glare. ""-hasn't had a good duel in ages. We can tell you more when asked.""
+""Secondly, another tenet of our path is temperament. I would have you learn the values of meditation and silence, if you'd let me.""
+""Jenius? You have a few you'd like to share, don't you?"" the younger man turns to the older one, a knowing look cast. The man grumbles but eventually relents under immense visual pressure.
+""...I have a few things I'd like to see, yes."" he growls. ""The shattered form of a molochian servant. The bodies of our *traitors*."" he grinds his teeth. ""The traitorous dogs in the knights who cast us aside torn asunder with their flesh and-""
+
+""Thaaat's enough, Jenius."" The younger man scowls, pinching his arm, prompting a pained hiss and a welcome silence. ""He's... got some issues, $personLastName. Still; I have no qualms if you choose to pursue his ideas of honor. After all, he *is* my second-in-command, after all."" Jenius grumbles, clearly upset by the status of only being *second*.","MPC_honAristoInitialTwelve:Continue",
+MPC_honAristoInitialTwelve,DialogOptionSelected,"$option == MPC_honAristoInitialTwelve","AddTextSmall ""Recieved direct Alotera comm-keys"" good
+FireAll MPC_honAristoHubOpts","""With that out of the way, you will undoubtably find yourself off, completing the tasks we give you. So, to make this more convenient..."" the younger man leans in front of Jenius - whom grumbles - and transmits you a set of data keys. ""Use these; it will bypass our reception and connect you to us directly. I cannot guarantee we will be here at all times, but we can try."" he bows, clasping his chained hands together.
+
+""Now, would you like to get started?""",,
+"#END Initial meeting with honroable",,,,,,
 ,,,,,,
-# DEVMODE OPTIONS FOR HONROIABLE,,,,,,
-MPC_IAIICHegeHonorDEVShipDuelTest,PopulateOptions,"$market.id == eventide
-$global.isDevMode",,,"500:MPC_IAIICHonorableTestDuel: (dev) TEST HONORABLE SHIP DUEL",
-MPC_IAIICHonorableTestDuel,DialogOptionSelected,"$option == MPC_IAIICHonorableTestDuel","MPC_IAIICHegeCMD HONbeginShipDuel","test!!!!",,
-"#END DEVMODE OPTIONS FOR HONROIABLE",,,,,,
+# Meet honorable after initial,,,,,,
+MPC_honAristoRevisit,PickGreeting,"$id == MPC_hegeAristoHonorableRep score:1000
+$global.MPC_metHegeHonorableAristo
+MPC_IAIICHegeCMD HONstateIs CONVINCE score:5
+!$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoMoralistRep
+ShowSecondPerson MPC_hegeAristoMoralistRepTwo
+FireAll MPC_honAristoHubOpts","Your commlink flashes through black, white, iron chains, before finally landing on the combined faces of Halatius and Jerus Alotera - one of which who looks much less happy to see you than the other.
+
+""Good to see you, $PlayerName."" Halatius smiles. ""Come to show your honor? Or just here for a mere chat? Either is acceptable.""",,
+MPC_honAristoHubOptsJerus,MPC_honAristoHubOpts,,,,"5:MPC_honAristoJerusOpts:Address Jerus",
+MPC_honAristoHubOptsHalatius,MPC_honAristoHubOpts,,,,"10:MPC_honAristoHalatiusOpts:Address Halatius",
+MPC_honAristoBackToHub,DialogOptionSelected,"$option == MPC_honAristoBackToHub","FireAll MPC_honAristoHubOpts","You consider your options.",,
+MPC_honAristoHubOptsLeave,MPC_honAristoHubOpts,,,,"100:cutCommLink:Cut the comm link",
+,,,,,,
+# Jerus Dialog,,,,,,
+MPC_honAristoJerusOpts,DialogOptionSelected,"$option == MPC_honAristoJerusOpts","SetShortcut MPC_honAristoBackToHub ESCAPE","You turn your gaze to the old-looking aristocrat, who grunts in annoyance.","MPC_honAristoJerusTaskOpts:Ask him about tasks
+MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
+MPC_honAristoJerusTaskOpts,DialogOptionSelected,"$option == MPC_honAristoJerusTaskOpts","FireAll MPC_honAristoJerusTaskOptsImpl","He raises a brow and grunts. ""Your path will be arduous, slave to mammon."" He growls. ""But it will not be impossible.""
+
+Jerus leans in, telling you about...",,
+MPC_honAristoJerusTasksAICore,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusAICoreTask",,,"10:MPC_honAristoJerusTasksAICoreSel:""...the shattered corpse of your demons...""",
+MPC_honAristoJerusTasksDeserters,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusDesertersTask",,,"20:MPC_honAristoJerusTasksDesertersSel:""...the wretched traitors, vagabonds, deserters...""",
+MPC_honAristoJerusTasksTraitors,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusTraitorsTask",,,"30:MPC_honAristoJerusTasksDesertersSel:""...the traitorous knights, who cast us out..."" (TODO; what is this quest...?)",
+MPC_honAristoJerusTasksReturn,MPC_honAristoJerusTaskOptsImpl,,"SetShortcut MPC_honAristoJerusTasksReturnSel ESCAPE",,"100:MPC_honAristoJerusTasksReturnSel:Thank him for his time, but don't take him up on anything (Back)",
+MPC_honAristoJerusTasksReturnSel,DialogOptionSelected,"$option == MPC_honAristoJerusTasksReturnSel","SetShortcut MPC_honAristoBackToHub ESCAPE","He merely grunts.","MPC_honAristoJerusTaskOpts:Ask him about tasks
+MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
+"#END Jerus Dialog",,,,,,
+,,,,,,
+# Halatius Dialog,,,,,,
+MPC_honAristoHalatiusOpts,DialogOptionSelected,"$option == MPC_honAristoHalatiusOpts","SetShortcut MPC_honAristoBackToHub ESCAPE","Your  turn your gaze to the softly smiling aristocrat, who beams at your attention.","MPC_honAristoHalatiusTaskOpts:Ask him about tasks
+MPC_honAristoHalatiusDialogOpts:Ask him about himself
+MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
+MPC_honAristoHalatiusTaskOpts,DialogOptionSelected,"$option == MPC_honAristoHalatiusTaskOpts","FireAll MPC_honAristoHalatiusTaskOptsImpl","He gently bows his head, hands clasped together. ""Together, we will find a path for you yet. And perhaps even lighten Jerus up a bit?"" he smirks, much to Jerus' irritation.
+
+He tells you about...",,
+MPC_honAristoHalatiusTasksDuel,MPC_honAristoHalatiusTaskOptsImpl,"!$player.MPC_didHalatiusDuelTask",,,"10:MPC_honAristoHalatiusTasksDuelSel:""...a rite of combat that would prove your honor...""",
+MPC_honAristoHalatiusTasksMeditate,MPC_honAristoHalatiusTaskOptsImpl,"!$player.MPC_didHalatiusMeditateTask",,,"20:MPC_honAristoHalatiusTasksMeditateSel:""...an opportunity to meditate, to learn more about yourself...""",
+MPC_honAristoHalatiusTasksReturn,MPC_honAristoHalatiusTaskOptsImpl,,"SetShortcut MPC_honAristoHalatiusTasksReturnSel ESCAPE",,"100:MPC_honAristoHalatiusTasksReturnSel:Thank him for his time, but don't take him up on anything (Back)",
+MPC_honAristoHalatiusTasksReturnSel,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksReturnSel","SetShortcut MPC_honAristoBackToHub ESCAPE","He nods, smiling. ""Take your time.""","MPC_honAristoJerusTaskOpts:Ask him about tasks
+MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
+MPC_honAristoHalatiusTaskAbort,DialogOptionSelected,"$option == MPC_honAristoHalatiusTaskAbort","FireAll MPC_honAristoHalatiusTaskOptsImpl","He nods. ""Of course.""",,
+,,,,,,
+# Flavor - talk personally with halatius,,,,,,
+"#END Flavor - talk personally with halatius",,,,,,
+,,,,,,
+# Duel - afflictor v afflictor,,,,,,
+MPC_honAristoHalatiusTasksDuelSel,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel",,"""We have a ritual we sometimes take initiates through; a a rite of combat that would prove your honor. Unfortunately, it has quite fallen out of favor as we have shrunk in size, but it is still rarely practiced...""
+
+He drops to a whisper, leaning into the camera. ""And poor Jerius over here hasn't had a good fight in ages.""","MPC_honAristoHalatiusTasksDuelTwo:Continue",
+MPC_honAristoHalatiusTasksDuelTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelTwo",,"""Two afflictors, each fitted for a good fight.","MPC_honAristoHalatiusDuelAccept:
+MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
+"#END Duel - afflictor v afflictor",,,,,,
+"#END Halatius Dialog",,,,,,
+"#END Meet honorable after initial",,,,,,
 "#END Honorable house - PROVE YOUR HONOR!!!",,,,,,
 "#END The four houses you have to convince",,,,,,
 ,,,,,,

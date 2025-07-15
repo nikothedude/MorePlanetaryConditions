@@ -5,13 +5,16 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.campaign.rules.MemKeys
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.FIDConfig
+import com.fs.starfarer.api.impl.campaign.eventide.Actions
+import com.fs.starfarer.api.impl.campaign.eventide.DuelDialogDelegate
+import com.fs.starfarer.api.impl.campaign.eventide.DuelPanel
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory
 import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
@@ -60,6 +63,21 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             fleet.setLocation(eventide.primaryEntity.location.x, eventide.primaryEntity.location.y)
 
             return fleet
+        }
+
+        fun playerSkilledDuelist(): Boolean = Global.getSector().playerMemoryWithoutUpdate.getBoolean("\$bladeSkill")
+        fun createCOMSECDuel(playerSkilled: Boolean, enemySkilled: Boolean, ambienceLoopID: String?): DuelPanel {
+            val panel = DuelPanel.createDefault(playerSkilled, enemySkilled, ambienceLoopID)
+            val enemy = panel.enemy
+            enemy.maxHealth = 7
+            enemy.health = 7
+
+            val speedMult = 1.2f
+
+            enemy.actionSpeedMult[Actions.ATTACK_HIGH] = speedMult
+            enemy.actionSpeedMult[Actions.ATTACK] = speedMult
+
+            return panel
         }
     }
 
@@ -393,12 +411,37 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 Global.getSector().playerFleet = Global.getSector().memoryWithoutUpdate.getFleet("\$MPC_playerFleetStorage")
                 Global.getSector().memoryWithoutUpdate.unset("\$MPC_playerFleetStorage")
             }
+            "HONbeginDuelTutorial" -> {
+                val skilled = playerSkilledDuelist()
+                val duelPanel = DuelPanel.createTutorial(skilled, null)
+                dialog.showCustomVisualDialog(1024f, 700f, MPC_IAIICHonorableDuelDelegate(null, duelPanel, dialog, memoryMap, true))
+            }
+            "HONbeginNormalDuel" -> {
+                /*val skilled = playerSkilledDuelist()
+                val duelPanel = DuelPanel.createDefault(skilled, )
+                dialog.showCustomVisualDialog(1024f, 700f, DuelDialogDelegate(null, duelPanel, dialog, memoryMap, true))*/
+            }
             "HONbeginCOMSECDuel" -> {
-
+                val skilled = playerSkilledDuelist()
+                val duelPanel = createCOMSECDuel(skilled, true, "soe_ambience")
+                dialog.showCustomVisualDialog(1024f, 700f, MPC_IAIICHonorableDuelDelegate(null, duelPanel, dialog, memoryMap, false))
+            }
+            "HONforceSave" -> {
+                val campaignUI = Global.getSector().campaignUI ?: return false
+                campaignUI.cmdSaveCopy()
             }
             "HONfuckingDie" -> {
                 val campaignUI = Global.getSector().campaignUI ?: return false
                 campaignUI.cmdExitWithoutSaving()
+            }
+            "HONincrementHonor" -> {
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                intel.incrementHonor(dialog.textPanel)
+            }
+            "HONstateIs" -> {
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                val check = params[1].getString(memoryMap)
+                return (intel.honorableState?.name == check)
             }
         }
 
@@ -426,5 +469,28 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             }
         }
 
+    }
+
+    class MPC_IAIICHonorableDuelDelegate(
+        musicId: String?, duelPanel: DuelPanel, dialog: InteractionDialogAPI,
+        memoryMap: MutableMap<String, MemoryAPI>?, tutorialMode: Boolean
+    ): DuelDialogDelegate(musicId, duelPanel, dialog, memoryMap, tutorialMode) {
+        override fun reportDismissed(option: Int) {
+
+//		Global.getSoundPlayer().setSuspendDefaultMusicPlayback(false);
+//		Global.getSoundPlayer().restartCurrentMusic();
+            if (memoryMap != null) { // null when called from the test dialog
+                if (!tutorialMode) {
+                    if (duelPanel.getPlayer().health > 0) {
+                        memoryMap[MemKeys.LOCAL]!!.set("\$MPC_IAIICHonPlayerWonCOMSECDuel", true, 0f)
+                    } else {
+                        memoryMap[MemKeys.LOCAL]!!.set("\$MPC_IAIICHonPlayerLostCOMSECDuel", true, 0f)
+                    }
+                    FireBest.fire(null, dialog, memoryMap, "MPC_IAIICHonCOMSECDuelFinished")
+                } else {
+                    FireBest.fire(null, dialog, memoryMap, "MPC_IAIICHonTutorialDuelFinished")
+                }
+            }
+        }
     }
 }

@@ -98,6 +98,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         const val KEY = "\$MPC_hegeContributionIntel"
         const val HOUSES = 4
         const val EVIDENCE_NEEDED = 3
+        const val HONOR_NEEDED = 4
     }
 
     var housesTurned = 0
@@ -140,7 +141,17 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 intel.endAfterDelay()
             }
         },
-        HONORABLE("FOUR");
+        HONORABLE("Alotera") {
+            override fun apply(text: TextPanelAPI?) {
+                if (text != null) {
+                    val intel = get(true) ?: return
+                    intel.honorableState = HonorableState.CONVINCE
+                    intel.sendUpdateIfPlayerHasIntel(intel.honorableState, text)
+                }
+            }
+            override fun unapply(text: TextPanelAPI?) {
+            }
+        };
 
         open fun apply(text: TextPanelAPI? = null) {}
         open fun unapply(text: TextPanelAPI? = null) {}
@@ -196,6 +207,15 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         FINALIZE {
 
         };
+
+        open fun apply() {}
+        open fun unapply() {}
+    }
+
+    enum class HonorableState {
+        CONVINCE,
+        GOT_ENOUGH_HONOR,
+        WIN_FINAL_DUEL;
 
         open fun apply() {}
         open fun unapply() {}
@@ -264,6 +284,13 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             field = value
         }
     var aloofState: AloofState? = null
+        set(value) {
+            field?.unapply()
+            value?.apply()
+
+            field = value
+        }
+    var honorableState: HonorableState? = null
         set(value) {
             field?.unapply()
             value?.apply()
@@ -570,6 +597,28 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                     Misc.getHighlightColor(),
                     "Aleratus"
+                )
+            }
+            HonorableState.CONVINCE -> {
+                info.addPara(
+                    "Convince %s of your honor",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Alotera"
+                )
+            }
+            HonorableState.GOT_ENOUGH_HONOR -> {
+                info.addPara(
+                    "Return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Eventide"
+                )
+            }
+            HonorableState.WIN_FINAL_DUEL -> {
+                info.addPara(
+                    "PROVE YOUR HONOR, ONE FINAL TIME!",
+                    0f,
                 )
             }
             "EVIDENCE_PIECES" -> {
@@ -922,7 +971,35 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     TargetHouse.MILITARISTIC -> {
                         addStartLabel(info)
                     }
-                    TargetHouse.HONORABLE -> TODO()
+                    TargetHouse.HONORABLE -> {
+                        info.addPara(
+                            "You've met with a pair of aristocrats from the %s house. It appears you will have to convince them that you are " +
+                            "compatible with the \"%s\" - a long-lost luddic sect only maintained by this singular eventide house.",
+                            0f,
+                            Misc.getHighlightColor(),
+                            "Alotera",
+                            "Iron Path"
+                        )
+
+                        when (honorableState) {
+                            HonorableState.CONVINCE -> {
+                                info.addPara(
+                                    "You have not fully convinced them quite just yet.",
+                                    0f
+                                )
+                            }
+                            HonorableState.WIN_FINAL_DUEL -> {
+                                info.addPara("u shouldnt see this", 0f)
+                            }
+                            null -> {}
+                            HonorableState.GOT_ENOUGH_HONOR -> info.addPara(
+                                "You may have convinced the Alotera of your honor. You should return to %s.",
+                                0f,
+                                Misc.getHighlightColor(),
+                                "Eventide"
+                            )
+                        }
+                    }
                 }
             }
             State.FAILED -> {
@@ -1046,6 +1123,17 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         currentHouse = TargetHouse.NONE
         cooldownActive = true
+    }
+
+    var honor = 0
+    fun incrementHonor(text: TextPanelAPI?) {
+        honor++
+        sendUpdateIfPlayerHasIntel("HONOR_UPDATE", text)
+
+        if (honor >= HONOR_NEEDED) {
+            honorableState = HonorableState.GOT_ENOUGH_HONOR
+            sendUpdateIfPlayerHasIntel(honorableState, text)
+        }
     }
 
 }
