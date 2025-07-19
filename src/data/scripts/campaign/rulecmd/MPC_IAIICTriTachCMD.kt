@@ -263,7 +263,7 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
             "isPayingUp" -> {
                 val person = MPC_TTContributionIntel.get()?.activePerson ?: return false
                 if (interactionTarget.activePerson != person) return false
-                return (MPC_TTContributionIntel.get(true)?.state == MPC_TTContributionIntel.State.PAY_UP)
+                return (MPC_TTContributionIntel.get(false)?.state == MPC_TTContributionIntel.State.PAY_UP)
             }
             "payingUpNow" -> {
                 val intel = MPC_TTContributionIntel.get(true)
@@ -277,7 +277,7 @@ class MPC_IAIICTriTachCMD: BaseCommandPlugin() {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
                 val toRemove = intel.getContributionById(Factions.TRITACHYON) ?: return false
                 MPC_IAIICFobIntel.get()?.removeContribution(toRemove, false, dialog)
-                val intel2 = MPC_TTContributionIntel.get(true) ?: return false
+                val intel2 = MPC_TTContributionIntel.get(false) ?: return false
                 intel2.state = MPC_TTContributionIntel.State.OVER
                 intel2.endAfterDelay()
                 interactionTarget.market.makeNonStoryCritical("\$MPC_TTSearch")
