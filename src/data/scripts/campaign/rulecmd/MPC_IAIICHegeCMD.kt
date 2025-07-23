@@ -58,9 +58,9 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
             fleet.cargo.addCrew(12)
 
-            val eventide = Global.getSector().economy.getMarket("eventide")!!
-            eventide.primaryEntity.containingLocation.addEntity(fleet)
-            fleet.setLocation(eventide.primaryEntity.location.x, eventide.primaryEntity.location.y)
+            val playerFleet = Global.getSector().playerFleet
+            playerFleet.containingLocation.addEntity(fleet)
+            fleet.setLocation(playerFleet.location.x, playerFleet.location.y)
 
             return fleet
         }
@@ -346,7 +346,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 dialog.interactionTarget = targetFleet
 
                 val config = FIDConfig()
-                config.leaveAlwaysAvailable = true
+                config.leaveAlwaysAvailable = false
                 config.showCommLinkOption = false
                 config.showEngageText = false
                 config.showFleetAttitude = false
@@ -406,10 +406,6 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
                 dialog.plugin = plugin
                 plugin.init(dialog)
-            }
-            "HONendShipDuel" -> {
-                Global.getSector().playerFleet = Global.getSector().memoryWithoutUpdate.getFleet("\$MPC_playerFleetStorage")
-                Global.getSector().memoryWithoutUpdate.unset("\$MPC_playerFleetStorage")
             }
             "HONbeginDuelTutorial" -> {
                 val skilled = playerSkilledDuelist()

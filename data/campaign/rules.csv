@@ -4697,11 +4697,44 @@ MPC_honAristoHalatiusTaskAbort,DialogOptionSelected,"$option == MPC_honAristoHal
 "#END Flavor - talk personally with halatius",,,,,,
 ,,,,,,
 # Duel - afflictor v afflictor,,,,,,
-MPC_honAristoHalatiusTasksDuelSel,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel",,"""We have a ritual we sometimes take initiates through; a a rite of combat that would prove your honor. Unfortunately, it has quite fallen out of favor as we have shrunk in size, but it is still rarely practiced...""
+MPC_honAristoHalatiusTasksDuelSel,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel
+!$player.MPC_previouslyFailedHalatiusDuel",,"""We have a ritual we sometimes take initiates through; a a rite of combat that would prove your honor. Unfortunately, it has quite fallen out of favor as we have shrunk in size, but it is still rarely practiced...""
 
 He drops to a whisper, leaning into the camera. ""And poor Jerius over here hasn't had a good fight in ages.""","MPC_honAristoHalatiusTasksDuelTwo:Continue",
-MPC_honAristoHalatiusTasksDuelTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelTwo",,"""Two afflictors, each fitted for a good fight.","MPC_honAristoHalatiusDuelAccept:
+MPC_honAristoHalatiusTasksDuelSelAgain,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel
+$player.MPC_previouslyFailedHalatiusDuel score:20",,"""Do you wish to attempt the duel again, Captain?"" Halatius kindly smiles. ""Two afflictors, set up in mirrored loadouts.""","MPC_honAristoHalatiusDuelAccept:Accept
 MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
+MPC_honAristoHalatiusTasksDuelTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelTwo","$player.MPC_heardJeniusCanPilotAfflictor","""Two afflictors, each fitted with an array of mortars and a strike weapon, as well as various other modifications. If you're truely the pilot I've heard about, Captain..."" he clicks his tongue. ""...I believe Jenius would be quite happy to test your mettle.""","MPC_honAristoHalatiusDuelAccept:Accept
+MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
+MPC_honAristoHalatiusDuelAccept,DialogOptionSelected,"$option == MPC_honAristoHalatiusDuelAccept
+!$player.MPC_previouslyFailedHalatiusDuel",,"""Wonderful!"" he claps his hands together and glances over to Jenius, who has been rigorously pretending not to listen. ""Jenius - our friend here would like to invoke the rite of steel. Do you accept?"" he smiles, knowing his response. And of course, Jenius nods; turning to face you and glare intensely.
+
+With the smallest of smiles, he hisses, ""I will meet you in orbit. Come to these coordinates; face me in warfare, and we will see how true the rumors are."" True to his word, your $shipOrFleet quickly receives a set of coordinates in Eventide orbit. And predictably, a pair of afflictors are already being towed into place, a small cordon being set to dissuade civilian traffic and spectatorship.
+
+","MPC_honAristoHalatiusDuelAcceptTwo:Take a shuttle to your ship",
+MPC_honAristoHalatiusDuelAcceptAgain,DialogOptionSelected,"$option == MPC_honAristoHalatiusDuelAccept
+$player.MPC_previouslyFailedHalatiusDuel score:20","MPC_IAIICHegeCMD HONbeginShipDuel","""Very well."" And with that, the two depart for orbit, which you do as well.
+
+Quickly, the afflictors are set up, the cordon is established, and your battle is ready. Time to fight.",,
+MPC_honAristoHalatiusDuelAcceptTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusDuelAcceptTwo",,"You enter your vessel; it's skeleton crew, dressed in the gold-green of the Alotera, saluting stiffly before returning to their stations. You catch a few strange glimpses, the crew clearly not used to working with a spacer versus a path-abiding aristocrat. Still, they do their duties diligently, as they must.
+
+You finally come across the empty bridge, the gilded pilot seat in the middle; inviting you.","MPC_honAristoHalatiusDuelAcceptThree:Sit",
+MPC_honAristoHalatiusDuelAcceptThree,DialogOptionSelected,"$option == MPC_honAristoHalatiusDuelAcceptThree","MPC_IAIICHegeCMD HONbeginShipDuel","It's time. The lights dim. The engines fire. You begin your approach, as does your opponent.
+
+Time to prove your honor.",,
+,,,,,,
+# After duel - winning or loss,,,,,,
+MPC_IAIICHegeHonWonDuel,MPC_IAIICHegeHonWonDuel,"$player.MPC_didHalatiusDuelTask = true",,"With a crash, and fiery inferno, your opponent flashes their only operational frontal lights white - the sign of surrender. And just after, a flurry of escape pods are detected as your target's crew abandons ship just before the flames engulf the whole vessel and reduce it to explosive slag.
+
+Escape pods are quickly retrieved by spectating tender-ships, and a small talon escort forms around yours, shining yellow victory-lights upon you and showering the vessel with fragments of your destroyed target in celebration.
+
+The rite has been passed.","MPC_IAIICHegeHonWonDuelTwo:Continue",
+MPC_IAIICHegeHonWonDuelTwo,DialogOptionSelected,"$option == MPC_IAIICHegeHonWonDuelTwo","BeginConversation MPC_hegeAristoMoralistRep
+ShowSecondPerson MPC_hegeAristoMoralistRepTwo","A rumble of cheer sweeps across your bridge, but is quickly shut down by your stiff ops chief. Soon, you receive the tell-tale pinging of a incoming comms request, which is accepted in due course.
+
+An injured-looking Jerus, covered in med-patches, grunts and scowls at you. On the other panel is the beaming visage of Halatius, spreading his arms wide in glee. ""Wonderful! Oh, just wonderful, Captain! Jerus here is ex-special forces for the navy. The fact you bested him..."" Halatius turns to his right, queueing the injured Jerus to grunt and admit, ""...you're strong. You have power. And *some* of my respect."" he growls - turning into an agonized hiss as a particularly bad burn is treated with medspray.","MPC_IAIICHegeHonWonDuelThree:Continue",
+MPC_IAIICHegeHonWonDuelThree,DialogOptionSelected,"$option == MPC_IAIICHegeHonWonDuelThree","MPC_IAIICHegeCMD HONincrementHonor",,,
+"#END After duel - winning or loss",,,,,,
 "#END Duel - afflictor v afflictor",,,,,,
 "#END Halatius Dialog",,,,,,
 "#END Meet honorable after initial",,,,,,
