@@ -4724,7 +4724,7 @@ MPC_honAristoHalatiusDuelAcceptThree,DialogOptionSelected,"$option == MPC_honAri
 Time to prove your honor.",,
 ,,,,,,
 # After duel - winning or loss,,,,,,
-MPC_IAIICHegeHonWonDuel,MPC_IAIICHegeHonWonDuel,"$player.MPC_didHalatiusDuelTask = true",,"With a crash, and fiery inferno, your opponent flashes their only operational frontal lights white - the sign of surrender. And just after, a flurry of escape pods are detected as your target's crew abandons ship just before the flames engulf the whole vessel and reduce it to explosive slag.
+MPC_IAIICHegeHonWonDuel,MPC_IAIICHegeHonWonDuel,,"$player.MPC_didHalatiusDuelTask = true","With a crash, and fiery inferno, your opponent flashes their only operational frontal lights white - the sign of surrender. And just after, a flurry of escape pods are detected as your target's crew abandons ship just before the flames engulf the whole vessel and reduce it to explosive slag.
 
 Escape pods are quickly retrieved by spectating tender-ships, and a small talon escort forms around yours, shining yellow victory-lights upon you and showering the vessel with fragments of your destroyed target in celebration.
 
