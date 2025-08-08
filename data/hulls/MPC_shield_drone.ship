@@ -1,0 +1,71 @@
+{
+    "center": [
+        2,
+        2
+    ],
+    "collisionRadius": 2,
+    "coversColor": "",
+    "engineSlots": [
+        {
+            "angle": 180,
+            "contrailSize": 64,
+            "length": 20,
+            "location": [
+                -7,
+                4
+            ],
+            "style": "HIGH_TECH",
+            "width": 4
+        },
+        {
+            "angle": 180,
+            "contrailSize": 64,
+            "length": 20,
+            "location": [
+                -7,
+                -4
+            ],
+            "style": "HIGH_TECH",
+            "width": 4
+        }
+    ],
+    "height": 21,
+    "hullId": "MPC_shield_drone",
+    "hullName": "Shield Drone",
+    "hullSize": "FRIGATE",
+    "shieldCenter": [
+        1,
+        0
+    ],
+    "shieldRadius": 15,
+    "spriteName": "graphics/fx/empty.png",
+    "style": "HIGH_TECH",
+    "viewOffset": 0,
+    "weaponSlots": [
+        {
+            "angle": -90,
+            "arc": 360,
+            "id": "WS 000",
+            "locations": [
+                0,
+                0
+            ],
+            "mount": "TURRET",
+            "size": "SMALL",
+            "type": "SYSTEM"
+        },
+        {
+            "angle": -90,
+            "arc": 360,
+            "id": "WS 001",
+            "locations": [
+                0,
+                0
+            ],
+            "mount": "TURRET",
+            "size": "MEDIUM",
+            "type": "SYSTEM"
+        }
+    ],
+    "width": 4
+}

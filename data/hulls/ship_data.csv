@@ -25,3 +25,4 @@ Domestric,MPC_omegurat,Corrupted Monstrosity,Unknown,MPC_spatialBreach,80,24000,
 ,MPC_omega_derelict_mothership_bow_module,Bow Shield Module,,damper_omega,1,9000,1200,3000,6250,600,32,,0,0,0,10,10,200,NONE,,0,0,0,,,0,0,0,0,1,0,,500000,,1,,,0,0,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelictMPC, niko_MPC_omegaDerelict",,0.5,2,2,,2105
 ,MPC_omega_derelict_mothership_sensor_mast,Bow Sensor Mast,,highenergyfocus,1,700,500,3500,6250,600,64,,0,0,0,10,10,280,NONE,,0,0,0,,,0,0,0,0,1,0,,500000,,1,,,0,0,,,,,,,"UNBOARDABLE, HIDE_IN_CODEX","derelictMPC, niko_MPC_omegaDerelict",,0.7,2,2,,2106
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Shield Drone,MPC_shield_drone,,,,,10000000,0,0,,0,,,100,100,100,100,100,100,NONE,,,,,,,,,,,,,,,,,,,,,,,,,,,,"restricted, no_sell, hide_in_codex",,,0,,,2106

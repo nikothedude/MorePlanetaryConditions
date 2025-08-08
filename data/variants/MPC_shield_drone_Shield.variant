@@ -1,0 +1,15 @@
+{
+	"quality":1,
+	"displayName":"",
+	"hullId":"MPC_shield_drone",
+	"variantId":"MPC_shield_drone_Shield",
+	"fluxVents":0,
+	"fluxCapacitors":0,
+	"hullMods":["no_weapon_flux"], # array of strings
+	#"hullMods":["no_weapon_flux", "low_powered_beams"], # array of strings
+	
+	# mode is either LINKED or ALTERNATING
+	# slot ids (WS ***) must match what's in the .ship file
+	"weaponGroups":[
+	],
+}
