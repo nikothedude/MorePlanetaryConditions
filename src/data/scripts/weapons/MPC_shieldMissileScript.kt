@@ -18,6 +18,7 @@ import com.fs.starfarer.api.util.IntervalUtil
 import data.scripts.weapons.MPC_shieldMissileScript.MPC_shieldMissileEveryframeScript.Companion.updateDronePos
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
+import java.awt.Color
 import kotlin.math.PI
 import kotlin.math.ceil
 
@@ -37,7 +38,7 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         val oldSuppress = fleetManager.isSuppressDeploymentMessages
         fleetManager.isSuppressDeploymentMessages = true
         val drone = fleetManager.spawnShipOrWing(variantId, projectile.location, 0f) // we update its movement later
-        drone.isAlly = true
+        drone.isAlly = projectile.source?.isAlly == true
         drone.isHoldFire = true
         fleetManager.isSuppressDeploymentMessages = oldSuppress
 
@@ -52,6 +53,7 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
 
         drone.collisionClass = CollisionClass.FIGHTER
+        drone.hullSize = ShipAPI.HullSize.FIGHTER
 
         val shield = createShieldAndFlux(drone, projectile)
         if (projectile is MissileAPI) {
@@ -65,7 +67,7 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         return drone
     }
 
-    fun createShieldAndFlux(drone: ShipAPI, projectile: DamagingProjectileAPI): ShieldAPI {
+    open fun createShieldAndFlux(drone: ShipAPI, projectile: DamagingProjectileAPI): ShieldAPI {
         drone.setShield(
             getShieldType(),
             getShieldUpkeep(),
@@ -76,9 +78,20 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         drone.mutableStats.fluxDissipation.modifyFlat(id, getFluxDissipation())
         drone.mutableStats.hardFluxDissipationFraction.modifyFlat(id, getHardFluxFraction())
         drone.mutableStats.overloadTimeMod.modifyMult(id, getOverloadTimeMult())
+        drone.mutableStats.shieldUnfoldRateMult.modifyFlat(id, getShieldUnfoldMult())
 
         drone.shield.radius = projectile.collisionRadius * 5f
         drone.collisionRadius = drone.shield.radius * 1.2f
+
+        val shieldInner = getShieldInnerColor()
+        val shieldOuter = getShieldOuterColor()
+
+        if (shieldInner != null) {
+            drone.shield.innerColor = shieldInner
+        }
+        if (shieldOuter != null) {
+            drone.shield.ringColor = shieldOuter
+        }
 
         return drone.shield
     }
@@ -92,6 +105,10 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
     abstract fun getFluxDissipation(): Float
     open fun getHardFluxFraction(): Float = 0f
     open fun getOverloadTimeMult(): Float = 1f
+    open fun getShieldUnfoldMult(): Float = 1f
+
+    open fun getShieldInnerColor(): Color? = null
+    open fun getShieldOuterColor(): Color? = null
 
     open class MPC_shieldMissileEveryframeScript(
         val drone: ShipAPI,
@@ -124,6 +141,10 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
             checkInterval.advance(amount)
             if (checkInterval.intervalElapsed()) {
 
+                val projHpFraction = (projectile.hitpoints / projectile.maxHitpoints).coerceAtLeast(0.000001f)
+                val ourNewHp = drone.maxHitpoints * projHpFraction
+                drone.hitpoints = ourNewHp // might as well use the status bar for something
+
                 if (drone.shield.activeArc >= 360f) { // so we can be SURE it wont die with a bubble shield
                     storedHP = projectile.maxHitpoints
                     projectile.hitpoints = Float.MAX_VALUE
@@ -133,21 +154,25 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
                 }
 
                 updateDronePos(drone, projectile)
+                var forceShield = true
                 if (projectile.isFading) {
-                    drone.aiFlags.unsetFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
+                    drone.aiFlags.removeFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
                     drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.DO_NOT_USE_SHIELDS)
-                    drone.shield.toggleOff()
-                } else {
-                    drone.shield.toggleOn() // idk why but its super hesitant to do this otherwise, even with the ai flag
+                    if (drone.shield.isOn) drone.shield.toggleOff()
+                    forceShield = false
                 }
 
                 if (projectile is MissileAPI) {
                     if (projectile.isFizzling) {
-                        drone.shield.toggleOff()
-                        drone.aiFlags.unsetFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
+                        drone.aiFlags.removeFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
                         drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.DO_NOT_USE_SHIELDS)
+                        if (drone.shield.isOn) drone.shield.toggleOff()
+                        forceShield = false
                     }
                 }
+
+                if (forceShield && drone.shield.isOff && !drone.fluxTracker.isOverloaded) drone.shield.toggleOn() // idk why but its super hesitant to do this otherwise, even with the ai flag
+
 
                 if (projectile.isExpired || !Global.getCombatEngine().isEntityInPlay(projectile)) {
                     delete()

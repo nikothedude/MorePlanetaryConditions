@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="aitweaks">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../starsector-ai-tweaks-master/jars/asm-9.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../starsector-ai-tweaks-master/jars/aitweaks-core.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../starsector-ai-tweaks-master/jars/aitweaks-launcher.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../starsector-ai-tweaks-master/obfuscated/src" />
+      <root url="file://$PROJECT_DIR$/../starsector-ai-tweaks-master/src" />
+    </SOURCES>
+  </library>
+</component>

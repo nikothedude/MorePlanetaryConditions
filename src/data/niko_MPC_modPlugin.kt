@@ -8,9 +8,11 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.InstallableIndustryItemPlugin.InstallableItemDescriptionMode
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
+import com.fs.starfarer.api.combat.AutofireAIPlugin
 import com.fs.starfarer.api.combat.MissileAIPlugin
 import com.fs.starfarer.api.combat.MissileAPI
 import com.fs.starfarer.api.combat.ShipAPI
+import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.BoostIndustryInstallableItemEffect
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
@@ -24,6 +26,7 @@ import data.codex.CodexData
 import data.compatability.MPC_compatabilityUtils
 import data.kaysaar.aotd.vok.Ids.AoTDTechIds
 import data.kaysaar.aotd.vok.scripts.research.AoTDMainResearchManager
+import data.scripts.autofire.MPC_towerTorpedoAutofirePlugin
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.MPC_hostileActivityHook
 import data.scripts.campaign.econ.MPC_incomeTallyListener
@@ -451,32 +454,11 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             }
         }
     }
-}
 
-class MilitaryBaseNoRouteSaviorListener: BaseCampaignEventListener(false) {
-    override fun reportFleetDespawned(
-        fleet: CampaignFleetAPI?,
-        reason: CampaignEventListener.FleetDespawnReason?,
-        param: Any?
-    ) {
-        if (fleet == null || reason == null) return
-
-        if (reason == CampaignEventListener.FleetDespawnReason.REACHED_DESTINATION) {
-            var militaryBase: MilitaryBase? = null
-            for (listener in fleet.eventListeners) {
-                if (listener is MilitaryBase) {
-                    militaryBase = listener
-                    break
-                }
-            }
-            if (militaryBase == null) return
-            val route = RouteManager.getInstance().getRoute(militaryBase.routeSourceId, fleet)
-            if (route == null) {
-                displayError("found broken route for fleet, logging info and removing listener")
-                niko_MPC_debugUtils.log.info("${fleet.name}, ${fleet.market?.name}")
-                fleet.removeEventListener(militaryBase)
-            }
-        }
+    override fun pickWeaponAutofireAI(weapon: WeaponAPI?): PluginPick<AutofireAIPlugin?>? {
+        if (weapon == null) return null
+        if (weapon.id == "MPC_towerTorpedo") return PluginPick(MPC_towerTorpedoAutofirePlugin(weapon), CampaignPlugin.PickPriority.MOD_SPECIFIC)
+        return null
     }
 }
 

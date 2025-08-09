@@ -29,5 +29,6 @@
     <orderEntry type="library" name="ExerelinCore" level="project" />
     <orderEntry type="library" name="sotf" level="project" />
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
+    <orderEntry type="library" name="aitweaks" level="project" />
   </component>
 </module>
