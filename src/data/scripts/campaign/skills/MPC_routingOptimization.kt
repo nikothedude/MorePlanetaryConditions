@@ -156,7 +156,7 @@ class MPC_routingOptimization {
             fun generateAIEffectMap(): MutableMap<String, AICoreEffect> {
                 val map = HashMap<String, AICoreEffect>()
 
-                for (entry in AICoreEffect.values()) {
+                for (entry in entries) {
                     map[entry.coreId] = entry
                 }
 
