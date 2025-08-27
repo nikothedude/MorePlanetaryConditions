@@ -3,15 +3,15 @@ niko_MPC_defenseSatellite,CUSTOM,"A domain-era derelict anti-asteroid satellite,
 niko_MPC_defenseSatelliteBarrage,TERRAIN,"An array of defense satellites constantly watch over this area, showering anything they deem a threat with a hail of long-ranged artillery.",,,
 niko_MPC_defenseSatelliteCore,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
-When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase it's chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
+When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
 
-Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of it's nature.
+Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of its nature.
 Between those that are aware of their existance now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
 niko_MPC_defenseSatelliteCore_swarm,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
-When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase it's chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
+When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
 
-Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of it's nature.
+Between those that were aware of the existance of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of its nature.
 Between those that are aware of their existance now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
 ,,,,,
 MPC_omega_derelict_mothership,SHIP,"One of the legendary survey motherships, the quiet automated workhorse of the Domain exploration and colonization effort. This is in essence a von Neumann probe, as the survey motherships contain autoforge capacity to manufacture a suite of smaller survey ships and the supplies required to perform its ongoing mission. This specimen is burned and battered by its centuries of service to the Domain, a drifting forgotten hulk.
@@ -29,14 +29,14 @@ MPC_ramjet,SHIP,"Although automated machines of war were forbidden in core Domai
 The ramjet-class tug is a rare sight in the sector, due to the fact that their blueprint was only ever distributed to frontier reinforcement centers. Featuring an overclocked drive stabilizer, these tugs are known for being rather expensive to run - but well worth the cost.",,,
 MPC_spearHead,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
-A very rare sight in the sector, owing to it's very specific role. Mbaye-Gogol was challenged with creating a cruiser-sized ship capable of bolstering frontier patrols while helping them catch up to escortees, and they delivered, with a massively oversized drive core so powerful it can be weaponized to disable the drive field of nearby ships - an unintended effect, but quite valuable, the engineers thought.",,,
+A very rare sight in the sector, owing to its very specific role. Mbaye-Gogol was challenged with creating a cruiser-sized ship capable of bolstering frontier patrols while helping them catch up to escortees, and they delivered, with a massively oversized drive core so powerful it can be weaponized to disable the drive field of nearby ships - an unintended effect, but quite valuable, the engineers thought.",,,
 ,,,,,
 MPC_pickhead,SHIP,"Fragile, lacking significant firepower, and with an abysmal comms module, the pickhead is only useful for budget close-up intercepting.
 
 The outguard defense satellite doesn't actually destroy most orbitting asteroids by itself. The pickhead interceptor is actually a mining vessel, tasked with finding mineral-rich asteroids and carefully cutting them into harvestable chunks, and turning the mundane ones into space dust.",,,
-MPC_minecart,SHIP,"Slow, bulky, and with an abysmal comms module, the minecart is still frighteningly effective in close range at both point-defense and bodyblocking for it's parent vessel.
+MPC_minecart,SHIP,"Slow, bulky, and with an abysmal comms module, the minecart is still frighteningly effective in close range at both point-defense and bodyblocking for its parent vessel.
 
-Used in tandem with the pickhead-class interceptor, the minecart is used to haul materials back to it's parent satellite for processing. The LPC features an automatic combat augment - once combat is confirmed, any new craft created will have collapsed cargo holds - significantly hampering shuttling ability and speed, but vastly improving hull integrity.",,,
+Used in tandem with the pickhead-class interceptor, the minecart is used to haul materials back to its parent satellite for processing. The LPC features an automatic combat augment - once combat is confirmed, any new craft created will have collapsed cargo holds - significantly hampering shuttling ability and speed, but vastly improving hull integrity.",,,
 ,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
@@ -65,7 +65,7 @@ Unlike its cousin, the pinprick uses conventional propulsion instead of an ion t
 
 ",,,
 MPC_scatterpin,WEAPON,"A smaller derivative of the pinprick, the scatterpin fires a spread of flathead missiles capable of severely damaging exposed hull.",,,
-MPC_heavyFlak,WEAPON,"A flak cannon upgraded with superheavy rounds, the heavy flak cannon sits in the uncomfortable role of PD specialist as a large ballistic. Thankfully, however, it's area denial capabilities make it a worthy pick.",,,
+MPC_heavyFlak,WEAPON,"A flak cannon upgraded with superheavy rounds, the heavy flak cannon sits in the uncomfortable role of PD specialist as a large ballistic. Thankfully, however, its area denial capabilities make it a worthy pick.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,
@@ -89,7 +89,7 @@ MPC_gasGiantIntrastellarCapture,PLANET,"Primarily composed of hydrogen and heliu
 
 This gas giant resides past the ""frost line"" of the nearby star, where normal gas giants rarely, if ever, form. While carefree minds quickly jump to conspiracy theory, your scientists are pretty sure this is just an interstellar capture.",,,
 ,,,,,
-MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-state power system which enables theoretical operation and station-keeping half-life with an upwards range in the hundreds of thousands of cycles. This one is not doing so well - it's pulses are faint, and inconsistantly timed. Something is clearly wrong with it.
+MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-state power system which enables theoretical operation and station-keeping half-life with an upwards range in the hundreds of thousands of cycles. This one is not doing so well - its pulses are faint, and inconsistantly timed. Something is clearly wrong with it.
 
 The astute starship captain will heed well its warning... if it still has one to give.",,,
 ,,,,,
@@ -134,9 +134,9 @@ MPC_station_researchMagnetarOne,CUSTOM,"A strange research station of domain mak
 Unlike the other structures of the system, it is neither constructed to exploratorium standards nor (as far as your sensors can tell) modified to the eggshell standard of everything else. Worryingly, your sensors still pick up power fluctuations within the core, meaning it may still be active.
 ",,,
 ,,,,,
-MPC_slavedOmegaCore,RESOURCE,"This AI core matches no known specifications, rendering it one-of-a-kind. It seems to speak in arcane riddles, disjointed sentences, unable to properly communicate with a human. However, it's processing capacity far exceeds even that of the terrifying alpha-level AI. Whatever this thing is, it's exceptionally powerful, and as a result, incredibly dangerous.",,,
+MPC_slavedOmegaCore,RESOURCE,"This AI core matches no known specifications, rendering it one-of-a-kind. It seems to speak in arcane riddles, disjointed sentences, unable to properly communicate with a human. However, its processing capacity far exceeds even that of the terrifying alpha-level AI. Whatever this thing is, it's exceptionally powerful, and as a result, incredibly dangerous.",,,
 ,,,,,
-MPC_guardStationDescViolence,CUSTOM,"An old star fortress, marked by both battle and time. It's surface is pockmarked by impact craters, though seemingly filled in via a repair effort, and it's paint is faded by relentless exposure to the nearby black hole. Curiously, it most closely matches the ARMD-5 pattern star fortress - one swapped out for the more modern ARMD-6 just before the collapse. Whatever this is, it's old. Very old.
+MPC_guardStationDescViolence,CUSTOM,"An old star fortress, marked by both battle and time. Its surface is pockmarked by impact craters, though seemingly filled in via a repair effort, and its paint is faded by relentless exposure to the nearby black hole. Curiously, it most closely matches the ARMD-5 pattern star fortress - one swapped out for the more modern ARMD-6 just before the collapse. Whatever this is, it's old. Very old.
 
 It seems partially submerged in the blood-red energy field, and could be a possible vector for approach.
 ",,,
@@ -144,7 +144,7 @@ MPC_guardStationDescIntelligence,CUSTOM,"An atypical research station, following
 
 It seems partially submerged in the ocean-blue energy field, and could be a possible vector for approach.
 ",,,
-MPC_guardStationDescMorality,CUSTOM,"A rather ornately built station, strange for it's location. It's exterior walls are marble instead of hard steel, and it's lights are an elegant 200 lumens, barely enough to even light the outside.
+MPC_guardStationDescMorality,CUSTOM,"A rather ornately built station, strange for its location. Its exterior walls are marble instead of hard steel, and its lights are an elegant 200 lumens, barely enough to even light the outside.
 
 It seems partially submerged in the grass-green energy field, and could be a possible vector for approach.",,,
 ,,,,,
