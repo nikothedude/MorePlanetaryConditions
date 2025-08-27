@@ -119,13 +119,13 @@ MPC_corrupted_weapons_cache,CUSTOM,These drifting cargo pods give peculiar readi
 MPC_corrupted_supply_cache,CUSTOM,"A cache of supplies, weapons, or other equipment. There are clear signs of prior activity and modification, and they seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.",,,
 MPC_magnetarOmegaCache,CUSTOM,"A strange collection of eggshell-colored angular cargo pods, not unlike a certain foe you've previously faced. They seem to be shielded against the magnetic field and ionic pulses of the nearby magnetar.",,,
 ,,,,,
-MPC_spySupplyCache,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of sensor-blocking material.
+MPC_spySupplyCache,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors' view, seeming to be coated in some kind of sensor-blocking material.
 
 Your sensors are already struggling to keep a lock on them - getting too far might cause you to lose sight of them forever.",,,
-MPC_spySupplyCacheTwo,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of sensor-blocking material.
+MPC_spySupplyCacheTwo,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors' view, seeming to be coated in some kind of sensor-blocking material.
 
 Your sensors are already struggling to keep a lock on them - getting too far might cause you to lose sight of them forever.",,,
-MPC_spySupplyCacheThree,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors view, seeming to be coated in some kind of sensor-blocking material.
+MPC_spySupplyCacheThree,CUSTOM,"A cache of supplies, weapons, or other equipment. The pods fade in and out of your sensors' view, seeming to be coated in some kind of sensor-blocking material.
 
 Your sensors are already struggling to keep a lock on them - getting too far might cause you to lose sight of them forever.",,,
 ,,,,,
