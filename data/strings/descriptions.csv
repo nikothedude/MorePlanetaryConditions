@@ -3,13 +3,13 @@ niko_MPC_defenseSatellite,CUSTOM,"A domain-era derelict anti-asteroid satellite,
 niko_MPC_defenseSatelliteBarrage,TERRAIN,"An array of defense satellites constantly watch over this area, showering anything they deem a threat with a hail of long-ranged artillery.",,,
 niko_MPC_defenseSatelliteCore,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
-When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
+When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erroneously entering their sphere of influence. 
 
 Between those that were aware of the existence of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of its nature.
 Between those that are aware of their existence now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
 niko_MPC_defenseSatelliteCore_swarm,SHIP,"Although automated machines of war were forbidden in core Domain space, war drones were quietly employed outside of officially incorporated volume. Frontier garrisons were often bolstered by drone ships, and they were deployed liberally against rebellious worlds to tip the terrible balance of attrition, setting the industrial might of the Domain versus the lives of 'freedom fighters'.
 
-When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erronously entering their sphere of influence. 
+When exploratorium drones discover a planet, they often perform rudimentary terraforming to better increase its chances of becoming a viable planet for the ever-growing domain. One such terraform is to prevent any space debris from falling down to earth, and these satellites are one such way of doing it. Armed to the teeth with anti-asteroid, anti-scrap, and, some may argue, anti-ship weaponry, these quite intimidating orbital bastions dominate the orbit of whatever planet they orbit, preventing any unidentified and unauthorized matter from erroneously entering their sphere of influence. 
 
 Between those that were aware of the existence of these satellite prior to the collapse, there was often a hushed whisper and quiet idea that these satellites were built for more than just point-defense duty, rationalizing this obvious nonsense - at least, that's what domain ComSec portrayed it as - with the unusual amount of heavy weaponry and layered armor for something of its nature.
 Between those that are aware of their existence now - There is a very common agreement that these things are terribly annoying, intimidating, and lucrative to control.",,,
@@ -33,7 +33,7 @@ A very rare sight in the sector, owing to its very specific role. Mbaye-Gogol wa
 ,,,,,
 MPC_pickhead,SHIP,"Fragile, lacking significant firepower, and with an abysmal comms module, the pickhead is only useful for budget close-up intercepting.
 
-The outguard defense satellite doesn't actually destroy most orbitting asteroids by itself. The pickhead interceptor is actually a mining vessel, tasked with finding mineral-rich asteroids and carefully cutting them into harvestable chunks, and turning the mundane ones into space dust.",,,
+The outguard defense satellite doesn't actually destroy most orbiting asteroids by itself. The pickhead interceptor is actually a mining vessel, tasked with finding mineral-rich asteroids and carefully cutting them into harvestable chunks, and turning the mundane ones into space dust.",,,
 MPC_minecart,SHIP,"Slow, bulky, and with an abysmal comms module, the minecart is still frighteningly effective in close range at both point-defense and bodyblocking for its parent vessel.
 
 Used in tandem with the pickhead-class interceptor, the minecart is used to haul materials back to its parent satellite for processing. The LPC features an automatic combat augment - once combat is confirmed, any new craft created will have collapsed cargo holds - significantly hampering shuttling ability and speed, but vastly improving hull integrity.",,,
@@ -49,7 +49,7 @@ MPC_realspaceHyperspace_deep,TERRAIN,"This volume of hyperspace is particularly 
 MPC_realspaceHyperspace_storm,TERRAIN,"This volume of hyperspace is undergoing chaotic phase shifts leading to wildly fluctuating resonance cascades. Ancient and dire warnings of prolonged exposure to so-called ""hyperspace storms"" have been passed down through generations of spacers.",,,
 MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps high energy charged particles. It's extremely difficult to get any sensor readings on a fleet lurking within, and often impossible, due to the frequency of ion storms.",,,
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
-MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomobly strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
+MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomably strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
 ,,,,,
 MPC_devilRocketPod,WEAPON,"The devil-class torpedo combines the destructive power of the famous reaper with a long-distance ion thruster, creating a terrifyingly effective cruise missile capable of striking targets from across the battlefield with 50 MJ of explosive force. A combat-rated autoloader system ensures usefulness in protracted engagements.
 
@@ -75,10 +75,10 @@ These pre-collapse emitters are considered both a rarity and a sad reminder of w
 ",,,
 MPC_baryonEmitterPostcollapse,CUSTOM,"Portable baryon emitters such as this one are useful for supporting attacking fleets during a military action such as a raid. One quickly realizes why they were typically built on planets - the potential output, without a massive power district, is middling at best, and can only partially protect a fleet from the dangers of space. 
 
-Constructed using a recovered fac-chip and smartly substituted resources, this emitter is not only incredibly cheaper than the propietary ErugNostic units, but significantly more effective - though still inferior in comparison to a planet-based emitter. This piece of machinery is proof that, despite everything, we can recover what we've lost.
+Constructed using a recovered fac-chip and smartly substituted resources, this emitter is not only incredibly cheaper than the proprietary ErugNostic units, but significantly more effective - though still inferior in comparison to a planet-based emitter. This piece of machinery is proof that, despite everything, we can recover what we've lost.
 ",,,
 ,,,,,
-MPC_star_blackDwarf,PLANET,"Once considered theoretical, a black dwarf is the final stage of life for any main sequence star. After exhausting all fusable material, white dwarves cease to output any significant light or energy, leaving behind a scorching-hot mass of degenerate matter, slowly cooling into an inert ball of stable metal.
+MPC_star_blackDwarf,PLANET,"Once considered theoretical, a black dwarf is the final stage of life for any main sequence star. After exhausting all fusible material, white dwarves cease to output any significant light or energy, leaving behind a scorching-hot mass of degenerate matter, slowly cooling into an inert ball of stable metal.
 
 Domain scientists reacted to the discovery of black dwarves in the sector with a mixture of intrigue and fright - on one hand, it allows for a new perspective on astrophysics and cosmo-chronology. On the other hand, it implies our universe my be aging faster than we anticipated.
 ",,,
@@ -89,7 +89,7 @@ MPC_gasGiantIntrastellarCapture,PLANET,"Primarily composed of hydrogen and heliu
 
 This gas giant resides past the ""frost line"" of the nearby star, where normal gas giants rarely, if ever, form. While carefree minds quickly jump to conspiracy theory, your scientists are pretty sure this is just an interstellar capture.",,,
 ,,,,,
-MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-state power system which enables theoretical operation and station-keeping half-life with an upwards range in the hundreds of thousands of cycles. This one is not doing so well - its pulses are faint, and inconsistantly timed. Something is clearly wrong with it.
+MPC_magnetarBeacon,CUSTOM,"A fully autonomous warning beacon. Contains a solid-state power system which enables theoretical operation and station-keeping half-life with an upwards range in the hundreds of thousands of cycles. This one is not doing so well - its pulses are faint, and inconsistently timed. Something is clearly wrong with it.
 
 The astute starship captain will heed well its warning... if it still has one to give.",,,
 ,,,,,
@@ -159,6 +159,6 @@ Your sensors officer reports unusual readings - reminiscent of a phase coil - fr
 ",,,
 MPC_ultimaSingularity,PLANET,"The result of the apocalyptic collapse of a massive star. No object can escape from the black hole, nor light itself. The black hole does however emit detectable Hawking radiation due to poorly-understood quantum effects. No information can be detected beyond the event horizon with any device known to exist in the Sector. The intense gravity of the black hole rips and tears nearby objects into an accretion disc which inevitably spirals into the gravitational abyss. Extremely dangerous. This black hole is completely shrouded in an awe-inspiring accretion disc, derived from the nearby planet. 
 
-Your sensors report exotic phase readings eminating from the core of the singularity. It is unlike anything you, or any scientist in the sector, for that matter, has ever seen before. To make matters worse, this SHOULD be an impossibility - nothing can escape the event horizon of a black hole. And yet, here you are, listening to whining phase oscillation.
+Your sensors report exotic phase readings emanating from the core of the singularity. It is unlike anything you, or any scientist in the sector, for that matter, has ever seen before. To make matters worse, this SHOULD be an impossibility - nothing can escape the event horizon of a black hole. And yet, here you are, listening to whining phase oscillation.
 ",,,
 ,,,,,
