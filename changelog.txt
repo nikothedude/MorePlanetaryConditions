@@ -1,6 +1,8 @@
 4.3.6
 SAVE COMPATIBLE?
 
+Waits no longer expire if you fight a fleet
+
 Adds some extra flavor to magnetar
 Overgrown nanoforges no longer spawn naturally
     Can be spawned via commands

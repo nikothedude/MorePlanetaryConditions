@@ -1,10 +1,12 @@
 package data.scripts.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemKeys
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
@@ -14,9 +16,14 @@ import com.fs.starfarer.api.impl.campaign.eventide.Actions
 import com.fs.starfarer.api.impl.campaign.eventide.DuelDialogDelegate
 import com.fs.starfarer.api.impl.campaign.eventide.DuelPanel
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel
+import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseManager
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
 import com.fs.starfarer.api.util.IntervalUtil
@@ -29,7 +36,10 @@ import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContribu
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_ids
+import org.magiclib.kotlin.getFactionMarkets
 import org.magiclib.kotlin.getSourceMarket
+import org.magiclib.kotlin.makeImportant
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
@@ -369,7 +379,15 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
                 val entity = dialog.interactionTarget
                 val originalPlugin = dialog.plugin
-                val plugin = FleetInteractionDialogPluginImpl(config)
+                val plugin = object : FleetInteractionDialogPluginImpl(config) {
+                    override fun updateEngagementChoice(withText: Boolean) {
+                        super.updateEngagementChoice(withText)
+
+                        options.removeOption(OptionId.ATTEMPT_TO_DISENGAGE)
+                        options.removeOption(OptionId.DISENGAGE)
+                        options.removeOption(OptionId.CLEAN_DISENGAGE)
+                    }
+                }
 
                 config.delegate = object : FleetInteractionDialogPluginImpl.BaseFIDDelegate() {
                     override fun notifyLeave(dialog: InteractionDialogAPI) {
@@ -434,6 +452,75 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_hegemonyContributionIntel.get() ?: return false
                 intel.incrementHonor(dialog.textPanel)
             }
+            "HONsendGenericUpdate" -> {
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                val gen = params[1].getString(memoryMap)
+                intel.sendUpdateIfPlayerHasIntel(gen, dialog.textPanel)
+            }
+            "HONbeginKillingTraitor" -> {
+                val hesp = Global.getSector().economy.getMarket("hesperus")
+                hesp.primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                intel.sendUpdateIfPlayerHasIntel("HONbeginKillingTraitor", dialog.textPanel)
+            }
+            "HONgetTargetPather" -> {
+                var intel: List<LuddicPathBaseIntel> = Global.getSector().intelManager.getIntel(LuddicPathBaseIntel::class.java) as List<LuddicPathBaseIntel>
+                val manager = LuddicPathBaseManager.getInstance()
+                if (intel.isEmpty()) {
+                    manager.advance(100000f)
+                    intel = Global.getSector().intelManager.getIntel(LuddicPathBaseIntel::class.java) as List<LuddicPathBaseIntel>
+                }
+                val target = intel.random().market
+
+                val params = FleetParamsV3(
+                    target,
+                    target.locationInHyperspace,
+                    Factions.LUDDIC_PATH,
+                    null,
+                    FleetTypes.PATROL_LARGE,
+                    350f,  // combatPts
+                    0f,  // freighterPts
+                    0f,  // tankerPts
+                    0f,  // transportPts
+                    0f,  // linerPts
+                    0f,  // utilityPts
+                    0f // qualityMod
+                )
+                params.officerNumberMult = 3f
+                val fleet = FleetFactoryV3.createFleet(params)
+
+                target.containingLocation.addEntity(fleet)
+                fleet.setLocation(target.location.x, target.location.y)
+
+                class AfterMarketGoneAssignment(): Script {
+                    override fun run() {
+                        val despawnLoc = Global.getSector().getFaction(Factions.LUDDIC_PATH).getFactionMarkets().randomOrNull() ?: Global.getSector().economy.marketsCopy.random()
+
+                        fleet.clearAssignments()
+                        fleet.addAssignment(
+                            FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
+                            despawnLoc.primaryEntity,
+                            Float.MAX_VALUE
+                        )
+                    }
+
+                }
+
+                fleet.addAssignment(
+                    FleetAssignment.ORBIT_AGGRESSIVE,
+                    target.primaryEntity,
+                    9999f,
+                    "defending",
+                    AfterMarketGoneAssignment()
+                )
+
+                target.primaryEntity.customDescriptionId = "MPC_IAIICIronPathDefectorMkt"
+
+                target.primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICHonPatherTargetMarketId"] = target.id
+                MPC_IAIICHegeHonPatherTargetChecker(target).start()
+            }
             "HONstateIs" -> {
                 val intel = MPC_hegemonyContributionIntel.get() ?: return false
                 val check = params[1].getString(memoryMap)
@@ -442,6 +529,28 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
         }
 
         return false
+    }
+
+    class MPC_IAIICHegeHonPatherTargetChecker(val market: MarketAPI): niko_MPC_baseNikoScript() {
+        override fun startImpl() {
+            Global.getSector().addScript(this)
+        }
+
+        override fun stopImpl() {
+            Global.getSector().removeScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            if (!market.isInEconomy) {
+                val intel = MPC_hegemonyContributionIntel.get()
+                intel?.incrementHonor(null)
+                Global.getSector().playerPerson.memoryWithoutUpdate["\$MPC_didJerusDesertersTask"] = true
+                delete()
+            }
+        }
+
     }
 
     class MPC_OrthusPaybackScript(): niko_MPC_baseNikoScript() {

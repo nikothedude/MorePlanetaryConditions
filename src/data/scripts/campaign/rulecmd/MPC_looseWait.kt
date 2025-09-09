@@ -40,7 +40,7 @@ class MPC_looseWait: BaseCommandPlugin() {
         }
         handle = params[0].getVarNameAndMemory(memoryMap)
         //val durationDays = params[1].string.toFloat()
-        val durationDays: Float = dialog.interactionTarget.memoryWithoutUpdate[params[1].string] as Float
+        val durationDays: Float = dialog.interactionTarget.memoryWithoutUpdate.getFloat(params[1].string)
         finished = params[2].getVarNameAndMemory(memoryMap)
         interrupted = params[3].getVarNameAndMemory(memoryMap)
         inProgress = params[4].getVarNameAndMemory(memoryMap)
@@ -90,7 +90,7 @@ class MPC_looseWait: BaseCommandPlugin() {
 //				float sinceLastBattle = clock.getElapsedDaysSince(Global.getSector().getLastPlayerBattleTimestamp());
 //				if (sinceLastBattle <= elapsedDays) {
                 val tooFar = (MathUtils.getDistance(playerFleet, target) > MAX_DIST_FROM_TARGET)
-                if (tooFar || battleOccured || interactedWithSomethingElse) {
+                if (tooFar || interactedWithSomethingElse) {
                     done = true
                     target.addTag(Tags.HAS_INTERACTION_DIALOG)
                     interrupted!!.memory[interrupted!!.name] = true

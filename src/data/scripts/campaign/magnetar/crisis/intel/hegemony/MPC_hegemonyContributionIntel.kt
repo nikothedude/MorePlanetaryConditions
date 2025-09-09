@@ -221,6 +221,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         open fun unapply() {}
     }
 
+    enum class HonorableTask {
+        KILL_TRAITOR,
+    }
+
     enum class OpportunisticState {
         GO_TO_ALPHA_SITE {
             override fun apply() {
@@ -621,6 +625,15 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                 )
             }
+            "MPC_IAIICHegeHonKillingTraitor" -> {
+                info.addPara(
+                    "Assassinate %s on %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    getHonorableTraitorPerson().name.fullName,
+                    "Hesperus"
+                )
+            }
             "EVIDENCE_PIECES" -> {
                 info.addPara(
                     "%s/%s pieces of proof",
@@ -655,6 +668,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                 )
             }
         }
+    }
+
+    fun getHonorableTraitorPerson(): PersonAPI {
+        return Global.getSector().importantPeople.getPerson(MPC_People.HEGE_HON_TRAITOR)
     }
 
     override fun getFactionForUIColors(): FactionAPI {
@@ -999,6 +1016,15 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                 "Eventide"
                             )
                         }
+
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICHegeHonKillingTraitor")) {
+                            info.addPara(
+                                "You've 'accepted' a 'task' from %s, who wants you to take revenge on a certain %s - a member of the " +
+                                "initial 'iron schism' that forced the %s out of the church. They are currently retired on %s.",
+                                5f,
+
+                            )
+                        }
                     }
                 }
             }
@@ -1091,7 +1117,12 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                         }
                     }
                     TargetHouse.MILITARISTIC -> null
-                    TargetHouse.HONORABLE -> null
+                    TargetHouse.HONORABLE -> {
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICHegeHonKillingTraitor")) {
+                            return Global.getSector().economy.getMarket("hesperus").primaryEntity
+                        }
+                        null
+                    }
                 }
             }
             State.DONE -> null

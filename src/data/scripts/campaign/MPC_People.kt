@@ -58,6 +58,8 @@ object MPC_People {
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
     const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
 
+    const val HEGE_HON_TRAITOR = "MPC_hegeHonTraitor"
+
     //const val
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
@@ -581,6 +583,26 @@ object MPC_People {
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_MORALIST_RECEPTIONIST] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_HON_TRAITOR] == null) {
+            val aristo = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.FEMALE)
+            aristo.name = FullName("Jane", "Blackwell", Gender.FEMALE)
+
+            aristo.id = HEGE_HON_TRAITOR
+
+            aristo.rankId = Ranks.KNIGHT_CAPTAIN
+            aristo.postId = Ranks.POST_PATROL_COMMANDER
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.OFFICIAL
+            aristo.portraitSprite = "graphics/portraits/portrait_luddic07.png"
+
+            //aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_HON_TRAITOR] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }

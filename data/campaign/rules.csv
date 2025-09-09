@@ -4345,8 +4345,9 @@ $global.MPC_goingToZiggPlanet = true","Your officer freezes, lets out a shudderi
 
 ""Our target should be a planetoid with a small gravitational profile and a thick meson field surrounding it. Once we get there, we should run a detailed depth scan to find any artificial structures."" they pause. ""Any artificial structures not matching Domain architecture, that is.""","MPC_IAIICAlphaSiteMesonReadingsScanFive:""Understood.""
 MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd:""Ludd guide us...""",
-MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd","$player.luddicAttitudeFaithful++","$option = MPC_IAIICAlphaSiteMesonReadingsScanFive
-FireBest DialogOptionSelected",,
+MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFiveLudd","$player.luddicAttitudeFaithful++
+$option = MPC_IAIICAlphaSiteMesonReadingsScanFive
+FireBest DialogOptionSelected",,,
 MPC_IAIICAlphaSiteMesonReadingsScanFive,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanFive",,"You nod, and give one last look to your sensor panel. That familiar tingling in the back of your head returns, bringing your thoughts to the sense of a beautiful orchestra, plucking the strings of your heart... wait... what's... is that something moving? Is-is that...","MPC_IAIICAlphaSiteMesonReadingsScanSix:Look closer",
 MPC_IAIICAlphaSiteMesonReadingsScanSix,DialogOptionSelected,"$option == MPC_IAIICAlphaSiteMesonReadingsScanSix",,"Before you stands a mass of asymmetrical ships, burning fast. You guesstimate an ETA of less then a day, and your sensors officer agrees with a quick nod. At any moment they could transition through this rift the same way they did before - and you don't have much time to get away. Even a transverse jump would take too long.
 
@@ -4538,7 +4539,7 @@ MPC_IAIICHonorableTestDuel,DialogOptionSelected,"$option == MPC_IAIICHonorableTe
 "#END DEVMODE OPTIONS FOR HONROIABLE",,,,,,
 ,,,,,,
 # Initial meeting with honroable,,,,,,
-MPC_honAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoHonorableRep score:1000
+MPC_honAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoMoralistRep score:1000
 !$global.MPC_metHegeHonorableAristo
 !$temporarilyIgnoreYou","SetShortcut cutCommLink ESCAPE true
 MPC_addOptionConfirmation MPC_honAristoInitialMeetTwo ""Submitting these credentials will tip off INTSEC to your activities and make it impossible to deal with another house until your dealings with this one are complete. Do you wish to continue?"" ""Yes"" ""No""
@@ -4574,8 +4575,8 @@ She doesn't wait for your response. ""We've reached our allocated time. As per u
 MPC_honAristoInitialMeetThree,DialogOptionSelected,"$option == MPC_honAristoInitialMeetThree",,"""$PersonName!"" a roaring voice comes from offscreen, prompting the receptionist to shrivel into $hisOrHer chair. ""Yet again, your posture is undisciplined. Straighten your back! Brush that hair out of your face!"" The receptionist does so, a look of nervous exhaustion coming over her. Her eyes track an approaching set of footsteps, which soon reveal their owner as they come into view of the camera.","MPC_honAristoInitialMeetFour:Continue",
 MPC_honAristoInitialMeetFour,DialogOptionSelected,"$option == MPC_honAristoInitialMeetFour","ShowSecondPerson MPC_hegeAristoMoralistRep","A hardened-looking man appears before you, pushing the nervous-looking receptionist out of the way and nearly off-screen as he takes center stage. ""The Alotera apologize for this civilian's insolence. The iron path never..."" he grunts, narrowing his eyes as a slow, steady realization comes over him.
 
-Nonetheless, he continues. ""...the iron path purports respect and honor above all. This *woman* clearly forgot that."" He shoots her a nasty look. ""Now, I will take your call in private. $PersonFirstName."" He nods to the receptionist and, without another word, walks back off-screen.","MPC_honAristoInitialMeetFive:Continue",
-MPC_honAristoInitialMeetFive,DialogOptionSelected,"$option == MPC_honAristoInitialMeetFive","BeginConversation MPC_hegeAristoMoralistRep","The terrified-looking receptionist utters a quick wispy apology before presumably transferring you across a private comm-link, sending your cam-view from her visage, to black, to the hegemony crest, then finally to the hardened visage of $PersonName, glaring at you with vitriol burning behind his eyes like AM-scorch. The architecture behind him is similar to the receptionist, with green desk-covers, gilded carpets, and a gracious steel hand offering the luddic emblem.
+Nonetheless, he continues. ""...the iron path purports respect and honor above all. This *woman* clearly forgot that."" He shoots her a nasty look. ""Now, I will take your call in private. $personFirstName."" He nods to the receptionist and, without another word, walks back off-screen.","MPC_honAristoInitialMeetFive:Continue",
+MPC_honAristoInitialMeetFive,DialogOptionSelected,"$option == MPC_honAristoInitialMeetFive","BeginConversation MPC_hegeAristoMoralistRep","The terrified-looking receptionist utters a quick wispy apology before presumably transferring you across a private comm-link, sending your cam-view from her visage, to black, to the hegemony crest, then finally to the hardened visage of Jerus Alotera, glaring at you with vitriol burning behind his eyes like AM-scorch. The architecture behind him is similar to the receptionist, with green desk-covers, gilded carpets, and a gracious steel hand offering the luddic emblem.
 
 ""So you, wretch you are, decided to thieve the identity of a wretch themselves?! Hah! Did you think this would grant you an audience with me?"" he snorts. ""Your wickedness is well known. Your honor is blemished by the blood and tears of Ludd and those that follow - the blood of innocents that you crushed in your wake. Your audience is denied, and-""
 
@@ -4649,8 +4650,7 @@ FireAll MPC_honAristoHubOpts","""With that out of the way, you will undoubtably 
 "#END Initial meeting with honroable",,,,,,
 ,,,,,,
 # Meet honorable after initial,,,,,,
-MPC_honAristoRevisit,PickGreeting,"$id == MPC_hegeAristoHonorableRep score:1000
-$global.MPC_metHegeHonorableAristo
+MPC_honAristoRevisit,PickGreeting,"$id == MPC_hegeAristoMoralistRep score:1000
 MPC_IAIICHegeCMD HONstateIs CONVINCE score:5
 !$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoMoralistRep
 ShowSecondPerson MPC_hegeAristoMoralistRepTwo
@@ -4670,12 +4670,75 @@ MPC_honAristoJerusTaskOpts,DialogOptionSelected,"$option == MPC_honAristoJerusTa
 
 Jerus leans in, telling you about...",,
 MPC_honAristoJerusTasksAICore,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusAICoreTask",,,"10:MPC_honAristoJerusTasksAICoreSel:""...the shattered corpse of your demons...""",
-MPC_honAristoJerusTasksDeserters,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusDesertersTask",,,"20:MPC_honAristoJerusTasksDesertersSel:""...the wretched traitors, vagabonds, deserters...""",
-MPC_honAristoJerusTasksTraitors,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusTraitorsTask",,,"30:MPC_honAristoJerusTasksDesertersSel:""...the traitorous knights, who cast us out..."" (TODO; what is this quest...?)",
+MPC_honAristoJerusTasksDeserters,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusDesertersTask
+!$player.MPC_killingJerusDeserters",,,"20:MPC_honAristoJerusTasksDesertersSel:""...the wretched traitors, vagabonds, deserters...""",
+MPC_honAristoJerusTasksTraitors,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_didJerusTraitorsTask
+!$global.MPC_IAIICHegeHonKillingTraitor",,,"30:MPC_honAristoJerusTasksTraitorsSel:""...the traitorous knights, who cast us out...""",
 MPC_honAristoJerusTasksReturn,MPC_honAristoJerusTaskOptsImpl,,"SetShortcut MPC_honAristoJerusTasksReturnSel ESCAPE",,"100:MPC_honAristoJerusTasksReturnSel:Thank him for his time, but don't take him up on anything (Back)",
 MPC_honAristoJerusTasksReturnSel,DialogOptionSelected,"$option == MPC_honAristoJerusTasksReturnSel","SetShortcut MPC_honAristoBackToHub ESCAPE","He merely grunts.","MPC_honAristoJerusTaskOpts:Ask him about tasks
 MPC_honAristoJerusDialogOpts:Ask him about himself
 MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
+MPC_honAristoJerusTaskAbort,DialogOptionSelected,"$option == MPC_honAristoJerusTaskAbort","FireAll MPC_honAristoJerusTaskOptsImpl","He frowns.",,
+,,,,,,
+# Knights - go and punish a sect of knights as part of a grudge,,,,,,
+MPC_honAristoJerusTasksTraitorsSel,DialogOptionSelected,"$option == MPC_honAristoJerusTasksTraitorsSel",,"Here, Jerus enters a long, exhausted rant about the ""folly of trust"" and ""traitorous fools"". At a certain point, it becomes clear he's just rambling, and not asking anything of you. But maybe...
+
+""...the traitorous knights, who cast us out... we were STRONG! WE! WERE! POWERFUL! We HEeEld the chuRCh in the PaAlm of ourr HANDD!"" he growls, grabbing his palm with his other. ""But then the knights came along... said we were too 'strong'... removed us in the name of a 'calmer Ludd'..."" he remains silent for a moment, before slamming his fist into the table, staring into it as he contemplates his failures.","MPC_honAristoJerusTasksTraitorsSelTwo:""...that's terrible. Have you considered revenge?""
+MPC_honAristoJerusTaskAbort:""I'm sorry. But... may we return to more pressing matters?"" (BACK)",
+MPC_honAristoJerusTasksTraitorsSelTwo,DialogOptionSelected,"$option == MPC_honAristoJerusTasksTraitorsSelTwo",,"""'Revenge'?"" He laughs. ""REVENGE!"" he cackles!! ""REVenge... what *revenge* can I hope to accomplish now? I was afraid those years ago, and let my chance *SLIP. FROM. MY. FINGERS.*"" he hisses, balling his other hand. ""To strike now would be to provoke war, and, we are not known for our subtlety...""
+
+He glances up to you. Thoughtfully. ""...unless...""","MPC_honAristoJerusTasksTraitorsSelThree:Wait
+MPC_honAristoJerusTaskAbort:""...let's talk about something else."" (BACK)",
+MPC_honAristoJerusTasksTraitorsSelThree,DialogOptionSelected,"$option == MPC_honAristoJerusTasksTraitorsSelThree",,"A sneer crosses his face, as a hearty laugh escapes his lips. ""-forget it. You are not worth it, servant of Mammon. Now excuse me, as I must perform a task unseen."" True to his word, he gets up and walks away, out of sight.
+
+You wait.
+
+And wait.
+
+Until eventually, he returns; all signs of emotion wiped from his face into his usual judgemental stoic glare. But somehow, you sense a small... shame in his gaze.","MPC_honAristoJerusTasksTraitorsSelFour:""...let's talk about something else.""","$global.MPC_IAIICHegeHonKillingTraitor = true
+MPC_IAIICHegeCMD HONbeginKillingTraitor
+
+SetTextHighlights"
+MPC_honAristoJerusTasksTraitorsSelFour,DialogOptionSelected,"$option == MPC_honAristoJerusTasksTraitorsSelFour","SetTextHighlights ""Jane Blackwell""","But before you can say anything else, you are interrupted by your comms officer, approaching with a confused expression. You excuse yourself from Jerus, who merely grunts, and walk with your officer to their station. 
+
+""We've received a encrypted transmission from the surface, signed with hegemony codes. Seems someone wanted to tell us something without anyone else knowing."" a finger on the display pulls out a text-based message, sent without embroidery or any flavor. You lean in...
+
+""The blood of vengeance boils brightly in my arms. This wretch must be brought to justice. The corrupted arm of Mammon may not be wielded, but this is not wielding. It is directing.      Cut her down. And when she is bleeding, bloodless beneath you, hiss through your teeth - 'The iron path remains'."" Attached is a set of coordinates - a small villa in the mountains, nearby a knights outpost. 
+
+It would seem Jerus has a chip on his shoulder, and while ashamed of it, wants you to kill his adversary.","MPC_honAristoJerusTasksTraitorsSelFive:Return to your station, and give Jerus a nod","$global.MPC_IAIICHegeHonKillingTraitor = true
+MPC_IAIICHegeCMD HONbeginKillingTraitor"
+MPC_honAristoJerusTasksTraitorsSelFive,DialogOptionSelected,"$option == MPC_honAristoJerusTasksTraitorsSelFive","$global.MPC_IAIICHegeHonKillingTraitor = true
+MPC_IAIICHegeCMD HONbeginKillingTraitor
+
+FireAll MPC_honAristoJerusTaskOptsImpl","You walk over to your camfeed, to the still stoicly embarassed Jerus. Giving him a nod, he grunts, glances off, and sighs, before nodding back to you, that ashamed look coming over him with renewed intensity.
+
+You decide to ask him about...",,
+"#END Knights - go and punish a sect of knights as part of a grudge",,,,,,
+,,,,,,
+# AI core - shoot an AI core right in front of them,,,,,,
+MPC_honAristoJerusTasksAICoreSel,DialogOptionSelected,"$option == MPC_honAristoJerusTasksAICoreSel","FireBest MPC_honAristoJerusTasksAICoreAcceptModify","""...we desire scrap, blood, oil, the shattered corpse of your demons, the ones your worship and use, mammon-taint."" he growls. ""Show us your willingness to fight for righteousness and maybe - just maybe - I will consider myself misinformed.""","MPC_honAristoJerusTasksAICoreAccept:Produce an AI core, and place it right in front of your camera
+MPC_honAristoJerusTaskAbort:""...I don't have any *demons*."" (BACK)",
+MPC_honAristoJerusTasksAICoreAcceptModify,MPC_honAristoJerusTasksAICoreAcceptModify,"!PlayerHasCargo alpha_core","SetEnabled MPC_honAristoJerusTasksAICoreAccept false
+SetTooltip MPC_honAristoJerusTasksAICoreAccept ""You have no alpha cores.""",,,
+MPC_honAristoJerusTasksAICoreAccept,DialogOptionSelected,"$option == MPC_honAristoJerusTasksAICoreAccept","AdjustRepActivePerson VENGEFUL -5","He gasps as he sees it, and then *hisses*. ""I knew it! You, servant of mammon, are NOTHING b-""","MPC_honAristoJerusTasksAICoreAcceptTwo:Draw your pistol",
+MPC_honAristoJerusTasksAICoreAcceptTwo,DialogOptionSelected,"$option == MPC_honAristoJerusTasksAICoreAcceptTwo",,"You withdraw your magpistol, silencing the old man before you. You check its mag - loaded. Rack the slide - charged. Then, you aim, staring right at Jerus as you line it up.","MPC_honAristoJerusTasksAICoreAcceptThree:Fire","AdjustRepActivePerson COOPERATIVE 5"
+MPC_honAristoJerusTasksAICoreAcceptThree,DialogOptionSelected,"$option == MPC_honAristoJerusTasksAICoreAcceptThree","AddRemoveAnyItem alpha_core 1
+PlaySound storyevent_diktat_execution","WIth a flash of pulsefire, the AI core explodes into a shower of debris. You wince as you feel bits of intelligent steel cut into your arms, the AI core's last ditch effort to fight back.
+
+Jerus, stunned, watches with bulging eyes and an awe-struck look.","MPC_honAristoJerusTasksAICoreAcceptFour:""I was never a servant of Mammon, Jerus. They are nothing to me.""","AdjustRepActivePerson COOPERATIVE 5
+AdjustRepActivePerson COOPERATIVE 5"
+MPC_honAristoJerusTasksAICoreAcceptFour,DialogOptionSelected,"$option == MPC_honAristoJerusTasksAICoreAcceptFour","MPC_IAIICHegeCMD HONincrementHonor
+AdjustRepActivePerson COOPERATIVE 5
+$player.MPC_didJerusAICoreTask = true
+FireAll MPC_honAristoHalatiusTaskOptsImpl","Jerus does not respond, opting instead to stare. And yet, you get the feeling he might, if not trust you, be a bit more doubtful in himself. Just a bit.",,
+"#END AI core - shoot an AI core right in front of them",,,,,,
+,,,,,,
+# Deserters - Go kill a bunch if ex-iron pathers,,,,,,
+MPC_honAristoJerusTasksDesertersSel,DialogOptionSelected,"$option == MPC_honAristoJerusTasksDesertersSel",,"""...there are many that would defy the iron path."" he growls, a psychotic twitch entering his brow. ""...the wretched traitors, vagabonds, deserters. But only ONE has the audacity to OPENLY SHOUT!"" he yells, slamming the desk. ""Find these bastards, cut them to ribbons, and send me their remains. We will display them as examples of the consequences of TREACHERY!!""","MPC_honAristoJerusTasksDesertersAccept:""Who should I go after?""
+MPC_honAristoJerusTaskAbort:""Not now."" (BACK)",
+MPC_honAristoJerusTasksDesertersAccept,DialogOptionSelected,"$option == MPC_honAristoJerusTasksDesertersAccept","MPC_IAIICHegeCMD HONgetTargetPather
+$player.MPC_killingJerusDeserters = true",,,
+"#END Deserters - Go kill a bunch if ex-iron pathers",,,,,,
 "#END Jerus Dialog",,,,,,
 ,,,,,,
 # Halatius Dialog,,,,,,
@@ -4695,6 +4758,55 @@ MPC_honAristoHalatiusTaskAbort,DialogOptionSelected,"$option == MPC_honAristoHal
 ,,,,,,
 # Flavor - talk personally with halatius,,,,,,
 "#END Flavor - talk personally with halatius",,,,,,
+,,,,,,
+# Meditation - just a month of inaction,,,,,,
+MPC_IAIICHegeHonMedInit,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksMeditateSel
+!$player.MPC_previouslyFailedHalatiusMeditate","SetTextHighlights ""one month""","""While Jerus prefers more... martial, solutions, to inner turmoil, I can suggest an opportunity to meditate, to learn more about yourself, with me at your side."" he folds his hands, softly smiling.
+
+""I will board your ship, and together, we will practice inner peace, temperance, and mediation for one month. After that; we will see if you've learned anything. We will stay in orbit - I'd like to stay in proximity to eventide, if possible. But if you must leave... we may continue our session another day."" he smiles softly.","MPC_honAristoHalatiusMeditateAccept:Accept
+MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
+MPC_honAristoHalatiusMeditateAccept,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateAccept",,"You cringe, but nod; while this isn't your idea of a fun friday night, if it furthers your goals, it might just be worth it.
+
+A nod, and a smile later, Halatius quickly finds himself on your flagship, hands behind his back and with a polite smile. ""We'll have to make some arrangements - do you have a spare room? We'll need incense, water, and mats. We shall begin tomorrow - mind exhumation is the first on the docket. We'll be eating nutrient bars, nuts, and bread; luxurious foods is *not* the hammer's strike."" he frowns.
+
+""Now, shall we begin?""","MPC_honAristoHalatiusMeditateAcceptTwo:Groan, force a smile, and comply",
+MPC_honAristoHalatiusMeditateAcceptTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateAcceptTwo","$entity.MPCIAIICHonMeditateWait = 30
+MPC_looseWait $MPCIAIICMeditateWait $MPCIAIICHonMeditateWait $MPCIAIICMeditateFinished $MPCIAIICMeditateInterrupted $MPCIAIICMeditateInProgress ""Meditating...""",,,
+MPC_honAristoHalatiusMeditateInterrupted,OpenInteractionDialog,"$market.id == ""eventide""
+$MPCIAIICMeditateInterrupted score:1000","$MPCIAIICMeditateInterrupted = false
+FireBest OpenInteractionDialog","test!!!!",,
+MPC_honAristoHalatiusMeditateFinished,OpenInteractionDialog,"$market.id == ""eventide""
+$MPCIAIICMeditateFinished score:1000","BeginConversation MPC_hegeAristoMoralistRepTwo
+$player.MPC_didHalatiusMeditateTask = true","The ring of the alarm. The hum of your companion. The burning of incense, and the opening of your eyes. Another day has passed, but this time, it feels different.
+
+""I believe that is the end of our session, Captain!"" a delighted Halatius exclaims, clapping his hands together and turning on the lights. Your eyes sear - it has been nearly a week since Halatius mandated darkness and a fog of incense. You almost don't believe you survived; you were certain you would starve to death.
+
+You take Halatius' outstretched hand, coming to your wobbly feet, staring at him in disbelief. ""You've learned much, Captain. While the first week was hard, you seem to have really taken to introspection; you meditate like a sleepy dog..."" he hums, chuckling lowly.","MPC_honAristoHalatiusMeditateFinishedTwo:Continue","$MPCIAIICMeditateFinished = false
+FireBest OpenInteractionDialog"
+MPC_honAristoHalatiusMeditateFinishedTwo,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateFinishedTwo","MPC_IAIICHegeCMD HONincrementHonor","He's not wrong. While you were initially skeptical, his regimen does seem to be effective... you haven't felt this relaxed, thoughtful, and - quite frankly - *clear-headed* in a while. Though, that might be the mystery drug he mandated you be dosed with but a week ago. Mystery drug...
+
+...it's in this moment you remember the needs of your body. While Halatius, ascetic that he is, is accustomed towards long periods of fasting, you, a space captain, most certainly are not. Hearing the growl of your stomach, and your emaciated expression, Halatius nods and opens the door for you - prompting a shrill atmos-alarm from the incense, promptly silenced by a nearby med-team, stretcher already deployed.
+
+""I took the liberty of calling your medical staff to nurse you back to health about five minutes ago. Don't worry Captain, you may leave now - you've proven yourself quite the thoughtful sort."" a clap on your back later, you catch a hint of genuine admiration in his eyes - it would seem you've truely made an impression on this man.","MPC_honAristoHalatiusMeditateFinishedThree:Lay down and pass out from exhaustion",
+MPC_honAristoHalatiusMeditateFinishedThree,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateFinishedThree","HideFirstPerson","As you find yourself in the comforting embrace of the sili-thread vambrace of the medical stretcher, blackness encroaches, threatening to take over your vision. Having not eaten for a week, the mere act of standing, talking, and groaning was enough to push your over the edge.
+
+.......by the time you awake, you find yourself in your flagship's medical bay, surrounded by your best officers and medical staff from across your entire $shipOrFleet. 
+
+""Malnutrition. Lung poisoning. What is *this* in here?"" your chief medical officer, rarely seen, comments over your chart, not having noticed your lucidity. ""Some kind of neurotoxin... the brain damage is minor, but substantial. We'll-"" your chief turns, eyes widening, quickly flipping your chart over. ""$PlayerSirOrMadam! You're awake. I'll say, that meditation did you in. You'll need a nutrition IV, some aerosolized medicine, and a pinch of mannitol. You may feel dizzy for a few days, but that should subside. You're good for duty, whenever you decide to return.""","MPC_honAristoHalatiusMeditateFinishedFour:Nod, rising to your feet",
+MPC_honAristoHalatiusMeditateFinishedFour,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateFinishedFour","HideFirstPerson","As you trudge through your flagship's halls, corners of your vision pick-white from your e-stim-addled brain, soldiers, crewmen, and deck workers notice your presence and either groan, stiffen, or smile. Nonetheless, they all stand, salute, and nod. The hallways and side rooms show tell-tale signs of disorder; card games, stray food itemry, and a general slackery in absence of your command. Such is common in long periods without a mission or battle.
+
+""COMMANDER ON DECK!"" you wince as your XO's voice rings through the bridge, prompting a cauciphony of boots-on-ground as your entire bridge crew salutes. With a mere hand-wave, they sit back down, with a select few beginning the onslaught of missed reports and tactical analysis of the IAIIC crisis.
+
+As you read through, you feel that peace this month of meditation has engrained in you begin to slowly, slowly slip away, until you're back in the familiar embrace of bureaucratic command. It's still comforting. Just in a different way.
+
+","MPC_honAristoHalatiusMeditateFinishedFive:Check on Halatius",
+MPC_honAristoHalatiusMeditateFinishedFive,DialogOptionSelected,"$option == MPC_honAristoHalatiusMeditateFinishedFive","$MPCIAIICMeditateFinished = false
+EndConversation
+FireBest OpenInteractionDialog","As you expected, the man has already taken his shuttle back to Eventide's surface. You smile; even if you are rapidly losing what little you gained from this excursion, at least he's confidant in your ability. And maybe you are, just a bit, too.
+
+You turn your attention back, back up to the viewscreen, and pick out a star. One day. You'll name it after yourself.
+",,
+"#END Meditation - just a month of inaction",,,,,,
 ,,,,,,
 # Duel - afflictor v afflictor,,,,,,
 MPC_honAristoHalatiusTasksDuelSel,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel
@@ -4758,6 +4870,38 @@ The duel over, the victor decided, you choose to ask him about...",,
 "#END Duel - afflictor v afflictor",,,,,,
 "#END Halatius Dialog",,,,,,
 "#END Meet honorable after initial",,,,,,
+,,,,,,
+# Go to hesperus to assassinate a knight,,,,,,
+MPC_IAIICHonAssassinateKnightOptAdder,PopulateOptions,"$menuState == main
+$hasMarket
+$market.id == ""hesperus""
+$global.MPC_IAIICHegeHonKillingTraitor","SetOptionColor MPC_IAIICHonAssassinateKnightInit highlight","Your tactical officer helpfully highlights Blackwell's villa in red. If you so chose, you could raid and kill her for Jerus.","30:MPC_IAIICHonAssassinateKnightInit:Prepare a raid on Orthus' Villa to plant evidence",
+MPC_IAIICHonAssassinateKnightInit,DialogOptionSelected,"$option == MPC_IAIICHonAssassinateKnightInit","$raidGoBackTrigger = MPC_IAIICHonAssassinateKnightGoBack 0
+$raidContinueTrigger = MPC_IAIICHonAssassinateKnightFinishedB 0
+$raidRestrictToTrigger = MPC_IAIICHonAssassinateKnightFinishedA 0
+$raidDifficulty = 25  0
+
+AddRaidObjective genericIcon ""Assassinate Jane Blackwell"" LOW 500 MPC_IAIICHonAssassinateKnightFinishedA true
+
+ShowImageVisual raid_prepare
+","While you doubt the ""honor"" of such an action, Jerus sure seemed like he wanted you to do this. According to your intel, Jane Blackwell is a ninety-year old knight, retired in her villa in the mountains. This is not to say an assassination will be clean or even easy, due to the presence of nearby military as well as constant guards surrounding her.
+
+While not a difficult operation, blood must be shed, and if you're not careful, the eyes of the church may fall upon you. This operation will have to be fast; the airspace is restricted, and if you take too long, the knights will rapidly deploy and make the op unnecessarily ugly.
+
+","mktRaidNonMarket:Continue",
+MPC_IAIICHonAssassinateKnightGoBack,MPC_IAIICHonAssassinateKnightGoBack,,"$menuState = main 0
+FireAll PopulateOptions
+ShowDefaultVisual",,,
+MPC_IAIICHonAssassinateKnightFinishedA,MPC_IAIICHonAssassinateKnightFinishedA,,,"The first component is disorder. A quick sabotage op on an exposed radio relay leaves only a few armored bodies and a downed comms network. And while the knights are unable to communicate, your shuttles entire the restricted airspace with only minor anti-aircraft fire. Once on the ground, your marines swiftly dispatch the underprepared knights guarding the villa's entrance and begin a search for the target.
+
+It doesn't take long. The elderly, wrinkled knight is found in her bedroom, scrambling for a pistol, when she is shot in the gut and rolled onto her back. You watch as the squad leader leans in, pops a local privacy field, and murmurs, rifle to skull... ""The Iron Path Remains."" 
+
+At first, she expresses confusion. And then a look of horror, and disgust. But just before she can spit on your soldier, the trigger is pulled, and the brown hardwood is stained pinkish red.",,
+MPC_IAIICHonAssassinateKnightFinishedB,MPC_IAIICHonAssassinateKnightFinishedB,,"$player.MPC_didJerusTraitorsTask = true
+MPC_IAIICHegeCMD HONincrementHonor","You're only left a moment to admire your handiwork before your marines begin pulling out. Even without comms, the knights have spotted your illegal entry and are quickly responding. But thanks to your strict time schedule, your shuttles are gone before they get there. Taking a moment to let the heat die down in a nearby cloud formation, your marines quickly return to your $shipOrFleet without much hassle.
+
+You make sure to queue a encrypted transmission to eventide for once you enter proximity, footage attached, metadata removed. With any luck, Jerus will be slightly more convinced of your honor. Or at least, indebted.",,
+"#END Go to hesperus to assassinate a knight",,,,,,
 "#END Honorable house - PROVE YOUR HONOR!!!",,,,,,
 "#END The four houses you have to convince",,,,,,
 ,,,,,,
