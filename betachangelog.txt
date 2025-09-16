@@ -1,6 +1,5 @@
 0.0.3
 
-A few changes, more progress on aloof aristocrat
 Clarified shit in TT contribution intel
 AA now seriously increases the strength of the IAIIC
 Fixes the Ark FOB having shit be unbuildable
@@ -13,11 +12,17 @@ Fixed fractal support not disappearing and having no limit to their fleets
 
 Fixed IAIIC inspections never ending
 
-IAIIC retaliation cooldown is 5 days now
+IAIIC retaliation cooldown is 0 days now
 ARK Fob is now essential and wont deciv
 
-IAIIC
+Hegemony
+    FINISHED
     Militaristic aristocrats now get terrified if you steal chico's nanoforge
+
+Indie
+    Voidsun finished (Mostly)
+    Ibrahim finished - will be fleshed out more later
+    MMMC fixed
 
 0.0.2
 

@@ -46,6 +46,7 @@ object MPC_People {
     const val BLACKKNIFE_BAR_GUY = "MPC_blackknifeBarGuy"
     const val BLACKKNIFE_TARGET = "MPC_blackknifeTarget"
     const val MMMC_REP = "MPC_MMMCRep"
+    const val VOIDSUN_REP = "MPC_voidsunRep"
 
     const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
@@ -54,6 +55,7 @@ object MPC_People {
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
     const val HEGE_MORALIST_ARISTO_REP_TWO = "MPC_hegeAristoMoralistRepTwo"
     const val HEGE_MORALIST_RECEPTIONIST = "MPC_hegeMoralistReceptionist"
+    const val HEGE_MORALIST_COMSEC_DUELIST = "MPC_hegeAristoMoralistComsecDuelist"
 
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
     const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
@@ -422,6 +424,24 @@ object MPC_People {
             rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
+        if (MPC_importantPeople[VOIDSUN_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.MALE)
+            rep.id = VOIDSUN_REP
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+
+            rep.importance = PersonImportance.HIGH
+            rep.voice = Voices.SPACER
+
+            rep.name = FullName("Mike", "Jackdaw", Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[VOIDSUN_REP] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
@@ -565,6 +585,24 @@ object MPC_People {
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_MORALIST_ARISTO_REP_TWO] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_MORALIST_COMSEC_DUELIST] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
+
+            aristo.id = HEGE_MORALIST_COMSEC_DUELIST
+
+            aristo.rankId = Ranks.SPECIAL_AGENT
+            aristo.postId = Ranks.POST_SPECIAL_AGENT
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.SOLDIER
+
+            aristo.name = FullName("Jamaniah", "Glowfest", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MORALIST_COMSEC_DUELIST] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }

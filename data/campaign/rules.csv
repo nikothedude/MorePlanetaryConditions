@@ -863,6 +863,40 @@ Noting the nearby wormhole terminus, you guess the fleet must have traversed it 
 MPC_scavengerDebrisFieldReactionKnowsAboutKanta,MPC_scavengerDebrisFieldReaction,$global.MPC_kantaMagnetarQuestStarted == true,,"You think back to Cydonia's talk of a ""contracted salvage fleet""... is it possible this is that fleet? Perhaps they undeployed the terminus once the salvagers went through... or maybe, the salvagers didn't get a chance to return, because they were destroyed by something on the other side...? Whatever the case, you feel a shiver run down your spine, as you begin to doubt this ""deal"" even further.",,
 #END Scavenger debris field,,,,,,
 ,,,,,,
+# Totem to hal's sins,,,,,,
+MPC_halTotemOpenDialog,PopulateOptions,"$tag:MPC_totemToHalHubris
+!$didInitialHubrisDialog",$didInitialHubrisDialog = true,"Pockmarks, twisting crack-patterns, and acid-wrought decay wracks this ship. It's a miracle it's still intact - though maybe it's clever hiding spot within the rock belt has something to do with it.
+
+Interestingly, radiation patterns suggest this vessel was disabled signicantly later than the rest of the Domain infrastructure in-system.",,
+MPC_halTotemSalvage,BeginSalvage,"$tag:MPC_totemToHalHubris
+!$didHubrisSecondDialog",$didHubrisSecondDialog = true,"As your salvors fan out across the wreck, something becomes immediately clear. This is no ordinary afflictor.
+
+Hulking flux-wires span the halls, complimented by a sophisticated auto-repair system. The phase grid has been triple-reinforced, and it's weaponry shows signs of extensive modification. Unfortunately, all of this has been rendered inoperable - and likely unrestorable, by the extreme damage the vessel has experienced.",MPC_halTotemSalvageTwo:Continue,
+MPC_halTotemSalvageTwo,DialogOptionSelected,$option == MPC_halTotemSalvageTwo,,"External salvage shows something very interesting; a camera, mounted to the front, long-since blasted into non-function by a familiar wintery pattern. But maybe...
+
+*CLIK!*
+
+A salvor pumps their fist as their wrist-computer successfully interfaces with the data-store. Slowly, images begin flowing into your $shipOrFleet's mainframe. And what you see is awe-inspiring.
+
+Tens. Hundreds of images. Each depicting a devastated hijacked droneship, much like the ones inhabiting this system. Some firing on the vessel, some not, but all clearly imminently about to fail.
+
+And then; someone else comes in. A salvor has found another datacore in the bridge, this time with audio.",MPC_halTotemSalvageThree:Play it,
+MPC_halTotemSalvageThree,DialogOptionSelected,$option == MPC_halTotemSalvageThree,,"""Hello. I know noone will find this, but in the off-chance someone does, heh-might as well record my last moments."" Says a young-sounding male voice.
+""Name's Hal. You know, I don't even know how I got here. Woke up in a cryopod, noticed those weird ships... learned what they did here..."" he sighs.
+
+There's a klik - the hum of charging engines. ""...I'm gonna try to get out of here. See if they have... something they used to get here. If not, well, I'm gonna go out in a blaze of glory. Used what little was left of my transport ship to jury-rig this afflictor for, ah, hah, let's just say 'intense combat'? And, well... there should be a camera at the front of the ship. If I'm good, there should be a few pics. If I'm great, ten. if I'm *really* good..."" he chuckles.
+
+""See you on the other side. This thing's almost out of storage anyway. A-"" and then, it abruptly cuts, likely reaching its max storage.",MPC_halTotemSalvageFour:Continue,
+MPC_halTotemSalvageFour,DialogOptionSelected,$option == MPC_halTotemSalvageFour,,"Your chief engineer approaches, nodding in admiration. ""Never seen a single-man job this ridiculous before. I bet this ship could've stayed in phase for twenty, thirty minutes? Those AM blasters would've been real strong too, if they were recoverable."" your chief snorts. ""...would've loved to have an engineer like him.""
+
+You nod, and take a moment of silence for this fallen warrior.
+
+Salvage continues. The rest of the ship is unremarkable, save for its battle damage. No notable cargo, no notable fuel reserves, and not even a notable corpse. Somewhere, he's likely floating in the freezing void - or added to the greedy mass of the Magnetar.
+
+Regardless. You have a job to do.",MPC_halTotemSalvageFive:Turn to the salvage report,
+MPC_halTotemSalvageFive,DialogOptionSelected,$option == MPC_halTotemSalvageFive,"SalvageEntity showCost
+FireAll PopulateSalvageOptions2",,,
+# END Totem to hal's sins,,,,,,
 # Planet three (Omega manufactorum),,,,,,
 MPC_magnetarPlanetThreeTryExplore,OpenInteractionDialog,"$id == MPC_magnetarSystemPlanetThree
 !$global.MPC_playerDiscoveredOmegaManufactorum",FireBest MPC_OManInitialExploreInit,,,
@@ -4186,8 +4220,7 @@ MPC_aloofAristoPlantedEvidenceNoSus:""And COMSEC is blaming Orthus, not you?""",
 MPC_aloofAristoPlantedEvidenceNoSus,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidenceNoSus,RemoveOption MPC_aloofAristoPlantedEvidenceNoSus,"""Well, I haven't heard any knocks on my door, if that's what you mean."" $HeOrShe smiles, amusement between her lips. ""We'll just have to wait and see, hm?""",,
 MPC_aloofAristoPlantedEvidenceThree,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidenceThree,,"""I really can't thank you enough, Captain. With my house turnt against the Hegemony, we'll surely join you on the stage once we bring this up with that hive-scum."" she sighs wistfully, rolling her wine around in her class, examining its legs. ""And... thankfully... *my* future is secure."" she mumbles, chasing those words down with a nice gulp of red liquid. 
 She notices you again, chuckling, and puts down the glass. ""Maybe once I've graduated to head of house, I'll give you a nice job as a ferryman, from star to back?"" she snickers, shooting you a wink as she reaches for the comms-disconnect.",MPC_aloofAristoPlantedEvidenceFour:Continue,
-MPC_aloofAristoPlantedEvidenceFour,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidenceFour,"$temporarilyIgnoreYou = true
-HideFirstPerson
+MPC_aloofAristoPlantedEvidenceFour,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidenceFour,"HideFirstPerson
 MPC_IAIICHegeCMD houseTurned
 MPC_IAIICHegeCMD ALObeginOrthusPayback","And with that, the screen returns to black, leaving you sighing in your chair, a sense of relief washing over you. Finally, you are free from this less-than-intelligent woman, and one step closer to eradicating the IAIIC.",cutCommLink:Cut the comm link,
 #END Return to Youn after evidence inserted,,,,,,
@@ -4223,6 +4256,27 @@ MPC_IAIICOrthusRetaliateEnd,DialogOptionSelected,$option == MPC_IAIICOrthusRetal
 #END Orthus retaliation,,,,,,
 #END The actual questline,,,,,,
 #END Aloof house - obtain unassailable proof,,,,,,
+,,,,,,
+# Return to aloof after turning all houses - begin the unrest,,,,,,
+MPC_IAIICAloofAfterTurnedInit,MPC_aloofAristoMeetOpts,MPC_IAIICHegeCMD generalStateIs RETURN_TO_ALOOF,,,"1:MPC_IAIICAloofAfterTurnedInitSel:""It's done. We're ready.""",
+MPC_IAIICAloofAfterTurnedInitSel,DialogOptionSelected,$option == MPC_IAIICAloofAfterTurnedInitSel,,"The commlink, flickers, winks, then stabilizes as the Youn readily turns it private at your words.
+
+""'It', Captain? What is this 'it'?"" she hums, crossing one leg over the other.
+","MPC_IAIICAloofAfterTurnedInitTwo:""The houses. They're all on my - our, side.""",
+MPC_IAIICAloofAfterTurnedInitTwo,DialogOptionSelected,$option == MPC_IAIICAloofAfterTurnedInitTwo,,"She lunges forward out of her seat, nearly knocking over a nearby stool with her wine resting utop. ""R-really?! You've really done it? Hah! Haha! Brilliant! Brilliant, Captain! Brilliant!"" she applauds, making you wince from the volume.
+
+""-I'll get to contacting them right away. This will *surely* guarantee the Youn's future--"" she pauses, giving you a weird look. And with a nod, ""-and. Yours. Of course.""","MPC_IAIICAloofAfterTurnedInitThree:""Yes. Of course. Now what's next?""",
+MPC_IAIICAloofAfterTurnedInitThree,DialogOptionSelected,$option == MPC_IAIICAloofAfterTurnedInitThree,,"Detecting your irritated tone, she wastes no time getting to the point. ""Well, with my leadership - and your blessing, of course - we will begin lobbying the courts and changing the minds of those lessers beneath us. With this much poilitical power, I'd argue... ah... maybe a month until the high hegemon strikes a deal with me?"" she snickers - until she notices your suspicious glance, at which point she continues, ""-me, yes. I'll be the head, so it's only fair I get to make the terms, hm?""","MPC_IAIICAloofAfterTurnedInitFour:""I was under the impression I would have a larger part.""",
+MPC_IAIICAloofAfterTurnedInitFour,DialogOptionSelected,$option == MPC_IAIICAloofAfterTurnedInitFour,,"""Ah-Captain, you've already done *so much*! Surely you'd like to take a moment to relax while old Aloterus works?"" she smiles.
+
+""-besides, you, a space captain? What do *you* know about politics?"" she laughs, shaking her head - ignoring your tenure as a leader of a major sector power. ""Trust me, it'll be much easier if you stay on the sidelines. And don't worry. I know what you'd do if the Hegemony stayed within the IAIIC - you'll see *total* disinvolvement. Total! Complete! Absolute!"" she claps her hands together.","MPC_IAIICAloofAfterTurnedInitFive:(Sigh) ""As long as you get them out, I don't care what you do.""",
+MPC_IAIICAloofAfterTurnedInitFive,DialogOptionSelected,$option == MPC_IAIICAloofAfterTurnedInitFive,"$temporarilyIgnoreYou = true
+EndConversation DO_NOT_FIRE
+SetTextHighlights ""a month""
+MPC_IAIICHegeCMD beginFinalWait","""Brilliant!"" her face lights up. ""I'll get started right away. Again; I estimate a month, Captain. After that, you may see some real progress! Toodles!""
+
+With a playful waggle of her fingers, the commlink blinks to black. You sigh and lie back, taking a well-deserved rest after all this work. Finally, the Hegemony will stop assisting the IAIIC; and all you have to do is wait.",cutCommLink:Cut the comm link,
+#END Return to aloof after turning all houses - begin the unrest,,,,,,
 ,,,,,,
 # Opportunistic House - Bribe them with something,,,,,,
 MPC_oppAristoInitialMeet,PickGreeting,"$id == MPC_hegeAristoOpportunistRep score:1000
@@ -4987,10 +5041,10 @@ MPC_honAristoRevisitEnoughHonor,PickGreeting,"$id == MPC_hegeAristoMoralistRep s
 MPC_IAIICHegeCMD HONstateIs GOT_ENOUGH_HONOR score:5
 !$temporarilyIgnoreYou","FireBest MPC_honAristoRevisitEnoughHonorImpl
 ",,,
-MPC_honAristoRevisitEnoughHonorImplFirst,MPC_honAristoRevisitEnoughHonorImpl,!$MPC_IAIICHegeHonDidSecondRecepVisit,"BeginConversation MPC_hegeMoralistReceptionist
+MPC_honAristoRevisitEnoughHonorImplFirst,MPC_honAristoRevisitEnoughHonorImpl,!$global.MPC_IAIICHegeHonDidSecondRecepVisit,"BeginConversation MPC_hegeMoralistReceptionist
 AddTextSmall ""Recieved planetary coordinates"" highlight
 FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts
-$MPC_IAIICHegeHonDidSecondRecepVisit = true","You input your Alotera diplomatic credentials, and wait. But instead of the white chains, you see hardwood backwall, a familiar luddic mural - and an annoyed-looking face.
+$global.MPC_IAIICHegeHonDidSecondRecepVisit = true","You input your Alotera diplomatic credentials, and wait. But instead of the white chains, you see hardwood backwall, a familiar luddic mural - and an annoyed-looking face.
 
 ""Oh. *You*."" $HeOrShe scowls. ""...the patriarchs revoked your credentials. Said you had to meet them 'face-to-face'."" $HeOrShe snirks. ""You know what they *do* to people down there? The only people that ever get invited..."" She leans in, making a neck-cutting gesture. ""Are *victims*.""
 
@@ -5002,25 +5056,25 @@ MPC_honAristoReceptionistSecondVisitVictimAsk,MPC_honAristoRevisitEnoughHonorImp
 !$saidWillReport",,,"30:MPC_honAristoReceptionistSecondVisitVictimSel:""'Victim'?""",
 MPC_honAristoReceptionistSecondVisitContinue,MPC_honAristoRevisitEnoughHonorImplFirstOpts,,,,40:MPC_honAristoFinalInitShuttle:Take a shuttle down to the coordinates,
 MPC_honAristoReceptionistSecondVisitAbort,MPC_honAristoRevisitEnoughHonorImplFirstOpts,,,,50:cutCommLink:Cut the comm link,
-MPC_honAristoReceptionistSecondVisitWhyHateMeSel,DialogOptionSelected,$option == MPC_honAristoReceptionistSecondVisitWhyHateMe,"$askedWhyMe = true
-FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts",,"""Why do I hate you?"" she muses, tapping her lip thoughtfully, before looking back and smiling. ""You made me look like a *fool*, Captain."" she teases. ""In front of the *patriarchs*. Do you even realize how hard I've fought to get to this position? You, and your little *stunt* with those stolen credentials..."" her smile has faded. ""It's a miracle I'm still employed.""
+MPC_honAristoReceptionistSecondVisitWhyHateMeSel,DialogOptionSelected,$option == MPC_honAristoReceptionistSecondVisitWhyHateMeSel,"$askedWhyMe = true
+FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts","""Why do I hate you?"" she muses, tapping her lip thoughtfully, before looking back and smiling. ""You made me look like a *fool*, Captain."" she teases. ""In front of the *patriarchs*. Do you even realize how hard I've fought to get to this position? You, and your little *stunt* with those stolen credentials..."" her smile has faded. ""It's a miracle I'm still employed.""
 
-""So now, I'm merely expressing my gratitude in your impending *torture*."" she giggles.",
+""So now, I'm merely expressing my gratitude in your impending *torture*."" she giggles.",,
 MPC_honAristoReceptionistSecondVisitWillReportSel,DialogOptionSelected,$option == MPC_honAristoReceptionistSecondVisitWillReportSel,"$saidWillReport = true
 AdjustRepActivePerson VENGEFUL -50
 HideFirstPerson
-FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts",,"As the words hit $hisOrHer ears, a deep, worried scowl comes over her as $heOrShe seems to realize the potential consequences of $hisOrHer actions.
+FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts","As the words hit $hisOrHer ears, a deep, worried scowl comes over her as $heOrShe seems to realize the potential consequences of $hisOrHer actions.
 
 ""U-uh, I-well, you see--""
 
-A sharp gasp later, you find yourself alone yet again, staring at a black screen, with only a set of coordinates to go off of. Maybe once you're down there, you can make good on your threat.",
+A sharp gasp later, you find yourself alone yet again, staring at a black screen, with only a set of coordinates to go off of. Maybe once you're down there, you can make good on your threat.",,
 MPC_honAristoReceptionistSecondVisitVictimSel,DialogOptionSelected,$option == MPC_honAristoReceptionistSecondVisitVictimSel,"$askedVictim = true
-FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts",,"""The *trial*, Captain, as they so call it, has never been passed. Fire and brimstone! Steel and blood! Rapier and firearm!"" she claps her hands together. ""Hundreds dead! Zero victors.""
+FireAll MPC_honAristoRevisitEnoughHonorImplFirstOpts","""The *trial*, Captain, as they so call it, has never been passed. Fire and brimstone! Steel and blood! Rapier and firearm!"" she claps her hands together. ""Hundreds dead! Zero victors.""
 
 ""Maybe you're the exception, you're thinking? Hah! Unlikely.""
 
-...worrisome. And not just for the reason that this might explain the relatively high rate of missing persons cases around the coordinates you were sent.",
-MPC_honAristoRevisitEnoughHonorImplAgain,MPC_honAristoRevisitEnoughHonorImpl,$MPC_IAIICHegeHonDidSecondRecepVisit score:20,,"You open a comm link, which ends up in static limbo as it is summarily rejected.
+...worrisome. And not just for the reason that this might explain the relatively high rate of missing persons cases around the coordinates you were sent.",,
+MPC_honAristoRevisitEnoughHonorImplAgain,MPC_honAristoRevisitEnoughHonorImpl,$global.MPC_IAIICHegeHonDidSecondRecepVisit score:20,,"You open a comm link, which ends up in static limbo as it is summarily rejected.
 
 Your diplomatic credentials denied, the only feedback you recieve is the repeated pinging of your nav-map, suggesting your flight path down to the planet's surface.
 
@@ -5030,7 +5084,9 @@ The trial awaits.","40:MPC_honAristoFinalInitShuttle:Take a shuttle down to the 
 "#END Introductions - come here, etc.",,,,,,
 ,,,,,,
 # Actually leave - descend into the halls,,,,,,
-MPC_honAristoFinalInitShuttle,DialogOptionSelected,$option == MPC_honAristoFinalInitShuttle,HideFirstPerson,"You board a shuttle, alongst your bodyguards, and begin your slow descent into Eventide.
+MPC_honAristoFinalInitShuttle,DialogOptionSelected,$option == MPC_honAristoFinalInitShuttle,HideFirstPerson,"(NOTE: this is uneditted and needs a pass... 1. it drags on - esp the beginning, 2. it restates and redefines things a few unnecessary times - esp *why* youre coming down here, what jerus will do to you...)
+
+You board a shuttle, alongst your bodyguards, and begin your slow descent into Eventide.
 
 The provided coordinates don't seem to be near any population centers; instead placed out in the wild grassy fields of the aristocracy, carefully placed away as far away from possible from the poors.
 
@@ -5054,17 +5110,252 @@ Your PDA blips - you've lost contact with your $shipOrFleet. If this is a trap, 
 MPC_honAristoFinalShuttleFive,DialogOptionSelected,$option == MPC_honAristoFinalShuttleFive,,"The humming group eventually finds its way off the stairs, and into another long brutalist hallway, gold-masked long-robed guards guards standing at the ready with reddenned energy-spears. The light rises; on the walls, you can see painted murals of battles, wars, luddic figures, and demons - being slaughtered, in intricate gory detail, you note.
 
 Aside the murals are small divots in the wall. A closer inspection grants you important insight - a tap causes the rock to shudder and glitch. A one-way shield. Convenient for defense, if an adversary such as yourself were to come inside. Thankfully, though, it seems you're here on business.",MPC_honAristoFinalSix:Continue,
+MPC_honAristoFinalSix,DialogOptionSelected,$option == MPC_honAristoFinalSix,,"After five minutes or so, and a few twists and turns in the labyrinthian halls, the congregation fans out into a tall, dome-shaped room. Unlike the brutalist halls, this dome is painted green, red, black - elaborate murals of valiant warriors banishing terrible demons, elegantly painted.
+
+In the middle is a small raised platform; a podium, a table, and a knife. Surrounding this, is a moat of blood-like liquid, and to the other side are three paths, leading from hallways to this center. Between these paths are numberous raised blocks of cement; for sitting, you imagine. You can't imagine it being comfortable, though.",MPC_honAristoFinalSeven:Continue,
+MPC_honAristoFinalSeven,DialogOptionSelected,$option == MPC_honAristoFinalSeven,,"On the borders of the dome, hugging the wall, are the same heavily robed guards you saw earlier - about one for each five feet. As the two patriarchs enter, they salute and fire one salvo of searing-red plasma into the tip of the dome - which clearly, has seen plenty of use.
+
+The *crak* of the energyspears coincidides with a swell, and then death, of the robed's humming. Soon, all there is to listen to is the echoing of many footsteps as they gather around the central platform, where Jerus, Halatius, and your entarage continue towards.",MPC_honAristoFinalEight:Continue,
+MPC_honAristoFinalEight,DialogOptionSelected,$option == MPC_honAristoFinalEight,,"""I hope you've enjoyed the decor so far, Captain."" Halatius turns, chuckling, stopping just before the red moat. Jerus continues forward, stepping conspicuously over the moat as he makes his way to the altar.
+""Welcome to the fordē."" Halatius slowly brings his arms out, and as if on queue, the guards fire another crackling blast of energy into the tip of the dome. 
+""In modern tongue... well, it has no translation."" he chuckles, bringing his arms down. ""But this chamber... is where some of our most sacred rites and rituals are practiced. Such as the one you will go through in just a moment - our rite of exordium."" 
+Sensing your confused look - and the tension amongst your guards - he quickly raises a finger and shakes his head. ""No no no, Captain, don't be afraid. This is merely a formality. Minimal harm will come to you - well, save for maybe a nick from our dagger."" he nods back to the table, and an annoyed Jerus.
+",MPC_honAristoFinalNine:Continue,
+MPC_honAristoFinalNine,DialogOptionSelected,$option == MPC_honAristoFinalNine,,"""Jerus will administer the rite - as he has so clearly earned the right to do after all these years. Isn't that right, Jerus?"" he turns, smiling. Jerus's lip quivers.
+
+Then, Halatius turns to you, smile as bright as ever. He leans in, dropping his voice to a whisper; ""...thank you, Captain. Jerus... really needed this. What you have done has not only prove yourself as strong - as capable - but... well... this old fart here was rotting away in his anger. At least now... he is satisfied.""
+He leans back. Nodding, then bowing, he makes way for you to the platform. And then...
+
+""The RITE OF EXORDIUM WILL NOW COMMENCE!"" he howls, flipping up his hood as he crosses the moat - again, inexplicably avoiding the blood-like liquid. Taking a position to the left of Jerus, he extends his arms wide and shoots them up.
+",MPC_honAristoFinalTen:Continue,
+MPC_honAristoFinalTen,DialogOptionSelected,$option == MPC_honAristoFinalTen,,"""Ever since our exile, we have been isolated. We have been trot on! The iron path, rotted, rusted, our swords broken and shattered. The honor of the Persean Sector has been cast into doubt, and found wanting! However..."" he turns from the crowd, to you. ""This may have changed.""
+
+He turns to Jerus, who is intentionally avoiding eye contact. After a gentle nudge on the shoulder, and a few murmurs from his friend, he closes his eyes - before finally addressing you.
+
+""...$PlayerName. The leader of $global.MPC_playerFacNameWithArticle."" Jerus begins, scowling at you. ""...when $playerHeOrShe came to me at first, I dismissed $playerHimOrHer as a weak-willed slave of Mammon, unable to resist temptation and Moloch's grasp.""
+
+His lip curls upwards as he contemplates his next words.",MPC_honAristoFinalEleven:Continue,
+MPC_honAristoFinalEleven,DialogOptionSelected,$option == MPC_honAristoFinalEleven,,"""...$playerHeOrShe is still that. The Hegemony is weak, wills of paper and blood of children, but their actions tell a story - a story of corruption.""
+Nodding furiously, the hooded Halatius smiles excitedly at Jerus, who again - grunts. ""But that is not the end of $playerHisOrHer story. $PlayerHisOrHer failing is in direction. Strength, however, has been clearly established.""
+
+""And for our third Tenet, honor? Valor? Glory?"" He pulls out a familiar book - the same Halatius used to introduce the so-called Iron Tenets to you. ""$PlayerHeOrShe has proven $playerHimOrHerself. $PlayerHisOrher hands... stained with the blood of the *unworthy*."" he drawls. ""Not once before have I felt my blood run as hot as in our duel; or my lips curl in a smile, as much as when that bastard blackwell finally took her LAST BREATH!"" the crowd cheers, flashing daggers at you and holstering them in one solid motion.
+
+""$PlayerHeOrShe may be a wyrmslave! Tainted by Mammon! A Molochian servant! But I beleive, in the future. $PlayerHeOrShe may be what the iron path needs to purify the persean sector; and for that reason, we begin our exordium to determine $playerHisOrHer mettle. Come, $PlayerName.""","MPC_honAristoFinalAvoidMoat:Step over the moat
+MPC_honAristoFinalMoat:Walk through the moat",
+MPC_honAristoFinalAvoidMoat,DialogOptionSelected,$option == MPC_honAristoFinalAvoidMoat,,"Jerus grabs the dagger off the table, mutters a prayer, then lets loose a small drop of blood from his finger. Wiping it with his shirt, he sets it down, and stares you in the eyes.
+
+""Complete this rite, $PlayerName - mix our bloods - and step forth for your judgement.""",MPC_honAristoFinalTwelve:Cut yourself,
+MPC_honAristoFinalMoat,DialogOptionSelected,$option == MPC_honAristoFinalMoat,"AdjustRepActivePerson VENGEFUL -1
+$option = MPC_honAristoFinalAvoidMoat
+FireBest DialogOptionSelected","As your foot enters the moat, you catch a growl by Jerus. You proceed - tracking red onto the concrete...",,
+MPC_honAristoFinalTwelve,DialogOptionSelected,$option == MPC_honAristoFinalTwelve,"niko_MPC_musicToggle """" true","Grabbing the dagger, you look to Halatius - who nods, smiling. Then, with a deep breath, you-",MPC_honAristoFinalInterrupt:...,
+MPC_honAristoFinalInterrupt,DialogOptionSelected,$option == MPC_honAristoFinalInterrupt,"PlaySound MPC_swordUnsheath
+ShowThirdPerson MPC_hegeAristoMoralistComsecDuelist","-are interrupted by the sound of a sword escaping a scabbard from across the room. Jerus turns, as does Halatius - to the Hegemony-colored officer before you, framed by the guards in close pursuit - stopping as he draws his blade.
+
+Stony-faced, well-dressed, and wielding a classic rapier, the man stares you, and only you, down. Before long, he speaks - ""The man that stands before you is an abberation! JERUS!"" Jerus stammers, face filled with shock. ""You said it yourself. This wyrmspawn is but a servant of Moloch! You would consort with such spawn? BAH!""
+
+...you realize. You recognize that dress... the curved accents... this is no Alotera.
+
+He raises his rapier to you. ""If one is sufficiently strong, they may rule. That is a tenet of your religion, is it not?!"" the crowd gasps at his audacity, turning to hisses as cold steel flashes under their robes. ""Well *I* doubt this man's strength! I! INVOKE! THE RIGHTEBOUS!""","MPC_honAristoFinalInterruptTwo:""The wh-""",
+MPC_honAristoFinalInterruptTwo,DialogOptionSelected,$option == MPC_honAristoFinalInterruptTwo,"PlaySound soe_crowd_gasp
+MPC_addOptionConfirmation MPC_honAristoFinalInterruptThreeNo ""This will permanently dishonor you in the eyes of the Alotera, making disrupting the Hegemony impossible. Are you sure you want to deny this duel?"" ""Yes"" ""No""
+
+niko_MPC_musicToggle ""music_hegemony_encounter_hostile"" true","The crowd gasps, as does Halatius. Jerus stumbles a bit, looking confused, before seeming to remember - ""...the rightebous..."" he closes his eyes. Pinches his nose. Then looks back up, ignoring your confused look. ""Challenger! Do you understand your accusation, and the consequences?"" ""Oh, I most certainly do, my fair knight."" Jerus makes a face that screams ""don't call me that"" - but accepts this nonetheless.
+
+The older man turns to you. ""And you, challenged. Do you accept this duel? Fought with sabers, not pistol.""
+
+A. A duel? You've been challenged to a duel. You exchange glances with Halatius, who looks half-terrified and half-excited. He leans in - ""...to say no would dishonor you, Captain. But--"" Jerus growls, prompting Halatius to yelp and jump back.","MPC_honAristoFinalInterruptThreeYes:""Yes. I accept.""
+MPC_honAristoFinalInterruptThreeNo:""No. This is ridiculous."" (UNFINISHED)",
+MPC_honAristoFinalInterruptThreeYes,DialogOptionSelected,$option == MPC_honAristoFinalInterruptThreeYes,"EndConversation DO_NOT_FIRE
+BeginConversation MPC_hegeAristoMoralistRepTwo","""...then it is settled. HALATIUS!"" Jerus growls, turning to the younger man who jumps at his attention. ""Take him to the chamber. Guards, do the same for this interloper. I will come myself; I would like a *word*."" he growls.
+
+You are quickly whisked away, out of the chamber, back into a square hall, and finally into a triangular room. To the left is a heavy-set wooden door, through which a crack you can hear incessant footfall, a worried murmur, and the blow of the wind. To the right is a weapon rack, populated exclusively by pristine-looking dueling swords. Ahead is a small bench, and behind? Is Halatius.
+
+""Ohmygoodness - what a--haha, what a TURN! Of, events-lord-"" he dabs his head with a hankerchief, wheezing with either excitement or terror. ""Captain, oh, Captain Captain I am *so sorry*. I simply have no idea of who that was! And now you're in a duel, oh, goodness gracious...""","MPC_honAristoFinalDuelRoomFirst:""I might know who that was.""",
+MPC_honAristoFinalDuelRoomFirst,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomFirst,"niko_MPC_musicToggle """" false","He perks up, giving you a curious-yet-terrified look. ""And, that would... be?""","MPC_honAristoFinalDuelRoomSecond:""COMSEC.""",
+MPC_honAristoFinalDuelRoomSecond,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomSecond,,"He slowly tilts his head. ""COMSEC, you say... the Hegemony intelligence agency? How so?""",MPC_honAristoFinalDuelRoomThird:Explain,
+MPC_honAristoFinalDuelRoomThird,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomThird,,"It was quickly obvious. Clearly, he's not from around here, and he's not dressed like anyone else. Another thing of note is how hot COMSEC has been on you lately; of course they'd love to find any way to sabotage you.
+
+But what really gave it away, you explain, was the clothing. Instead of the gold-and-green robes of the congregation, he was wearing a standard-issue Hegemony naval officer's uniform. And since you don't recognize this man at all, it only stands to reason it must be someone with a grudge. And who else would know to invoke this specific rite known only to the Alotera, but the ones whos job it is to monitor them?
+
+""...oh. That... makes a lot of sense, Captain."" he slowly nods.","MPC_honAristoFinalDuelRoomFour:""He is likely a lone operator, as COMSEC would never sanction direct intervention. Officially.""",
+MPC_honAristoFinalDuelRoomFour,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomFour,"FireBest MPC_honAristoFinalDuelRoomSkilledModify
+EndConversation DO_NOT_FIRE
+BeginConversation MPC_hegeAristoMoralistRepTwo","That just leaves the aftermath. ""Unfortunately, the rite is perfectly valid. During any rite of exordium - the rite of 'new beginnings' - any challenger may step forward and risk their honor to challenge a newcomer. This challenge is inevitably...""
+His voice pains. ""...a saber duel to the death."" he sighs, turning back. ""And while rules are flexible now, the rightebous is one of our oldest rites. But - if you beat him - you are considered unquestionably honorable, powerful - and do a degree, with good direction. So, consider it that way and...?""
+
+He sighs, shaking his head. ""-who am I kididng. This is a disaster; You're a space captain! Oh, gods - I am so sorry, there's no stopping it now. You'll have to learn on the go!""","MPC_honAristoFinalDuelRoomNotSkilled:""...I'm adaptable. I'm sure I'll figure it out...""
+MPC_honAristoFinalDuelRoomSkilled:""Don't worry Jerus. I have *experience*.""
+MPC_honAristoFinalDuelRoomCantJustLeave:""...can't I just leave? Abort this whole operation?"" (Glance to your guards)",
+MPC_honAristoFinalDuelRoomSkilledModifyNotSkilled,MPC_honAristoFinalDuelRoomSkilledModify,!$player.bladeSkill,"SetStoryOption MPC_honAristoFinalDuelRoomSkilled 1 MPC_getDownPayment ui_char_spent_story_point ""Remembered proficiency in dueling""",,,
+MPC_honAristoFinalDuelRoomCantJustLeave,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomCantJustLeave,RemoveOption MPC_honAristoFinalDuelRoomCantJustLeave,"You exchange uneasy glances with your bodyguards, who have already begun testing the barricade of guards by your exit - and failing. 
+
+""I'm sorry Captain but-"" Halatius inhales. ""...this rite in particular... we've had troubles with people running at the last moment. Therfore... we no longer allow it.""
+
+While you *could* fight through thousands of highly-armed guards with your small detachment, you'd really perfer not to. Might just want to test your luck with the duel instead.",,
+MPC_honAristoFinalDuelRoomAlreadySkilled,DialogOptionSelected,"$option == MPC_honAristoFinalDuelRoomSkilled
+$player.bladeSkill score:50",FireBest MPC_honAristoFinalDuelRoomSkilledImpl,,,
+MPC_honAristoFinalDuelRoomNowSkilled,DialogOptionSelected,"$option == MPC_honAristoFinalDuelRoomSkilled
+!$player.bladeSkill score:10","AddTextSmall ""Remembered duelist training"" story
+$player.bladeSkill = true
+FireBest MPC_honAristoFinalDuelRoomSkilledImpl",,,
+MPC_honAristoFinalDuelRoomSkilledImpl,MPC_honAristoFinalDuelRoomSkilledImpl,,FireBest MPC_honAristoFinalDuelRoomPhaseTwo ,"You walk over to the sword rack, pick up the one you favor the most, and give the air a good jab, causing a whistling to ring through your ears. The weapons are fairly heavy. A defensive posture might be ideal. You swing a few more times before setting it down.
+
+You turn back to Halatius, who looks shocked - before positively *beaming*. ""I'm so glad to hear it, Captain.""",,
+MPC_honAristoFinalDuelRoomNotSkilled,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomNotSkilled,FireBest MPC_honAristoFinalDuelRoomPhaseTwo,,,
+MPC_honAristoFinalDuelRoomPhaseTwo,MPC_honAristoFinalDuelRoomPhaseTwo,,"MPC_IAIICHegeCMD HONbeginDuelPrep
+FireAll MPC_honAristoDuelPrepOpts","""...the rules are simple. You strike the enemy until they stop moving. The only specification is that you must use standard dueling stance. If you don't know what that is, that's fine - just copy your opponent. If he strikes, you move your sword to block. Here - "" he nods to the rack. We can practice, if you'd like. Otherwise... I believe the crowd is waiting.",,
+MPC_honAristoDuelPrepDuel,MPC_honAristoDuelPrepOpts,,,,"10:MPC_honAristoDuelPrepBeginSel:""I'm ready.""",
+MPC_honAristoDuelPrepTutorial,MPC_honAristoDuelPrepOpts,,,,"20:MPC_honAristoDuelPrepTutorialSel:""How about a warmup?"" (Begin dueling tutorial)",
+MPC_honAristoDuelPrepWasDramatic,MPC_honAristoDuelPrepOpts,!$saidDramatic,,,"30:MPC_honAristoDuelPrepWasDramaticSel:""This 'rite of exordium' - it's quite dramatic. Why not just help me outright? I've proven myself.""",
+MPC_honAristoDuelPrepIsJerusOk,MPC_honAristoDuelPrepOpts,"$saidDramatic
+!$askedAboutJerus",,,"30:MPC_honAristoDuelPrepIsJerusOkSel:""I noticed quite a few 'honorable tasks' were merely running errands for Jerus, or related.""",
+MPC_honAristoDuelPrepIsDeath,MPC_honAristoDuelPrepOpts,!$askedIsDeath,,,"40:MPC_honAristoDuelPrepIsDeathSel:""Is this really a fight to the death?""",
+MPC_honAristoDuelPrepTutorialSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepTutorialSel,"niko_MPC_musicToggle """" true
+MPC_IAIICHegeCMD HONbeginDuelTutorial","Halatius smiles. ""Of course!"" He then picks up a rapier, tosses you one, and assumes standard dueling stance. ""Once we're done - maybe, heh. Maybe you'll be ready?""",,
+MPC_IAIICHonTutorialDuelFinished,MPC_IAIICHonTutorialDuelFinished,,"niko_MPC_musicToggle """" false
+FireAll MPC_honAristoDuelPrepOpts","You both throw down your practice rapiers, sitting back down on the bench. Halatius claps you on the back - ""...not quite ready. But close enough.""",,
+MPC_honAristoDuelPrepWasDramaticSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepWasDramaticSel,"$saidDramatic = true
+FireAll MPC_honAristoDuelPrepOpts","""...it certainly is, isn't it?"" he chuckles, shaking his head. ""The reason... is... well... Jerus *really* needed it."" his lips curl. ""He hasn't... done. Anything. In ages. The... the poor old man he-""
+
+He notices you staring, smiles, then glances off. ""...I'm just trying to give him something to do.""",,
+MPC_honAristoDuelPrepIsJerusOkSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepIsJerusOkSel,$askedAboutJerus = true,"He nods, letting loose a small laugh. He seems to contemplate something, tapping his knees, chuckling... then *sighing*.
+
+He leans over to your ear, a look of faint shame worn atop his jovial smile. ""Captain... I... you're right."" he nods sadly. ""...all this 'honor' Captain... it... I frankly don't care about your 'growth', Captain. The moment I walked in, I knew... you were enough for our help. But Jerus...""
+
+He sighs. ""...I just want him to be happy. And all he ever talks about is the knights, those pathers, *honor*, the *good* old days, and I... I just wanted him to be able to live that out. Just a little. And with you? It's possible. It *was*, and *is*, possible. In fact, I've... never seen him happier."" he softly smiles, his head drifting with his attention.","MPC_honAristoDuelPrepIsJerusOkTwo:""So I've just been running errands for no reason? Is that it?""
+MPC_honAristoDuelPrepIsJerusOkTwoKind:""I'm glad I've brightened your lives.""",
+MPC_honAristoDuelPrepIsJerusOkTwo,DialogOptionSelected,$option == MPC_honAristoDuelPrepIsJerusOkTwo,FireAll MPC_honAristoDuelPrepOpts,"He frantically waves his hands, shaking his head. ""No, no, not at all, Captain! Jerus would have NEVER wanted to work with you if you hadn't, ah... well, proven yourself. And I never would have allowed it, either. So, win-win?"" he winks.",,
+MPC_honAristoDuelPrepIsJerusOkTwoKind,DialogOptionSelected,$option == MPC_honAristoDuelPrepIsJerusOkTwoKind,"$player.ethosHumanitarian++
+FireAll MPC_honAristoDuelPrepOpts
+AdjustRepActivePerson FRIENDLY 50","His attention returns to you as he makes a small, delighted chortle. Resting a hand on yours, he says...
+
+""...maybe you *are* a little more than a spacer. Let the Iron Path guide you, friend. The stars are yours.""",,
+MPC_honAristoDuelPrepIsDeathSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepIsDeathSel,$askedIsDeath = true,"""Unfortunately, Captain, yes, it is. And I advise you not to hesitate - as long as the opponent is alive, they may strike. And this one seems particuarly nasty.""",,
+MPC_honAristoDuelPrepBeginSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginSel,,"Freezing for a moment, Halatius solemnly nods. ""...then let us not delay this any longer. Your sword, Captain."" 
+Halatius walks over, picks out a small-looking rapier, and hands it to you - presenting it like a knight would to a king.",MPC_honAristoDuelPrepBeginTwo:Take it,
+MPC_honAristoDuelPrepBeginTwo,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginTwo,EndConversation DO_NOT_FIRE,"You gingerly pick up the thin blade. You carefully cut the air, a playful swooshing noise at odds with the roarous murmuring from the other room. Halatius then stands; and directs to you the door.
+
+""You will recieve instructions on the stage. Remember - mimic his movements if you're not sure of what to do. And I'll be cheering for you all the way."" he pats your back. ""Now. PROVE your honor!"" he laughs, nudging you to the door.","MPC_honAristoDuelPrepBeginThree:Exit the prep room, and enter the dueling arena",
+MPC_honAristoDuelPrepBeginThree,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginThree,"niko_MPC_musicToggle """" true
+BeginConversation MPC_hegeAristoMoralistRep","You are momentarily blinded by the Samarra shining down atop you, reflected through three-layers arco-glass. Above you is the blue Eventide sky, and above that, your $shipOrFleet. Beneath, the solid concrete walls of the courtyard tower nearly fourty meters, only broken by windows filled with solemn spectators. Your PDA pings with its new connection to the sky.
+
+To the right, a crowd of what must be thousands of spectators, dressed in green-gold robes and sitting on solid concrete blocks. At the front, stands Jerus, who surveys you both - and sneers when you look at him too long.
+
+Beneath, is a hardwood floor, polished and sanded for optimal traction. And in front?",MPC_honAristoDuelPrepBeginFour:Look up to your opponent,
+MPC_honAristoDuelPrepBeginFour,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginFour,ShowSecondPerson MPC_hegeAristoMoralistComsecDuelist,"Your mysterious opponent. Staring you down, playfully flourishing his shining, eloquently designed rapier. He grins.",MPC_honAristoDuelPrepBeginFive:Continue,
+MPC_honAristoDuelPrepBeginFive,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginFive,,"""SILENCE!"" roars Jerus, accompanied by the long ringing of a gong. Once the murmurs have stopped, he steps further up onto his podium and begins to speak. ""$PlayerName. Leader of $global.MPC_playerFacNameWithArticle. You stand, defending, against Jamaniah Glowfest - of unknown rank, house, or origin. Nonetheless, the duel will proceed as planned.""
+
+""You will strike until the other has fallen! And when they have fallen, you will cut their throat for a swift and bloody end! There will be NO hesitation! NO mercy! And above all, there WILL! BE! HONOR!""
+
+Glowfest takes this opportunity to enter his dueling pose - and you do the same.",MPC_honAristoDuelPrepBeginSix:Continue,
+MPC_honAristoDuelPrepBeginSix,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginSix,,"""Are you ready?!"" Jerus roars, to which both you and Glowfest nod. ""RAISE YOUR BLADES!"" you raise yours, as does Glowfest. ""SAY YOUR PRAYERS!"" you catch Glowfest muttering something under his breath.""
+
+And with the roar of the gong, its time to...",MPC_honAristoDuelPrepBeginSTART:DUEL!,
+MPC_honAristoDuelPrepBeginSTART,DialogOptionSelected,$option == MPC_honAristoDuelPrepBeginSTART,"niko_MPC_musicToggle ""music_soe_fight"" true
+MPC_IAIICHegeCMD HONbeginCOMSECDuel",,,
 ,,,,,,
-MPC_honAristoFinalSix,DialogOptionSelected,$option == MPC_honAristoFinalSix,,,,
+MPC_IAIICHonPlayerWonCOMSECDuel,MPC_IAIICHonCOMSECDuelFinished,$MPC_IAIICHonPlayerWonCOMSECDuel,"BeginConversation MPC_hegeAristoMoralistComsecDuelist
+ShowSecondPerson MPC_hegeAristoMoralistRep
+niko_MPC_musicToggle """" true","The agent falls before you, outfit now torn and soaked in his blood. He groans in agony, reaching for his rapier - which you kick away. Raising your blade to his neck, planting your boot on his chest, you look to Jerus - who gives you a grim nod.
+
+""...so this is how it ends, huh...? the agent wheezes - before coughing up blood. ""...can't say I'm happy to die to scum like you... just get it over with."" He closes his eyes, and in this moment - the world feels more silent than it ever has.",MPC_IAIICHonFinalWonNoOneliner:Finish him,
+MPC_IAIICHonFinalWonNoOneliner,DialogOptionSelected,$option == MPC_IAIICHonFinalWonNoOneliner,"PlaySound soe_rip
+EndConversation DO_NOT_FIRE
+BeginConversation MPC_hegeAristoMoralistRep","With one swift motion, you slice open his neck, spilling his precious crimson all over the polished floor and creating a horrible gurgling noise as he tries to scream - but can't. 
+He reaches for the wound, gripping it, but quickly loses his grip... goes limp... and never moves again.",MPC_IAIICHonFinalWonTwo:...,
+MPC_IAIICHonFinalWonTwo,DialogOptionSelected,$option == MPC_IAIICHonFinalWonTwo,,"You turn to Jerus. He stands; frozen, eyes wide, back at you.
+
+The crowd watches in silence.
+
+The only sound is the faint wind outside.",MPC_IAIICHonFinalWonThree:...?,
+MPC_IAIICHonFinalWonThree,DialogOptionSelected,$option == MPC_IAIICHonFinalWonThree,,"...
+...
+...
+
+
+""...the challenger. Has been defeated."" Jerus quietely mumbles, audible only to you and those near him. Then; he turns to the crowd, raising his arms to the ceiling. ""THE CHALLENGER! HAS BEEN! DEFEATED! THE ACCUSED! IS! VICTORIOUS!""",MPC_IAIICHonFinalWonFour:Continue,
+MPC_IAIICHonFinalWonFour,DialogOptionSelected,$option == MPC_IAIICHonFinalWonFour,"PlaySound MPC_crowdCheer
+niko_MPC_musicToggle ""music_hegemony_market_friendly"" true","And with that, the crowd roars to life. Wildly gesticulating, yelling, cheering, you'd think they've never seen a duel like that in their lives. And maybe they haven't.
+
+Jerus dismounts the podium, climbing up to the stage, and up to you. He makes no effort to avoid the pooling blood; instead, rolling in it, coating himself in fresh iron.
+
+Grabbing your hand, he raises it with his own, and turns you to the crowd. ""THE FIRST FAILED RIGHTEBOUS IN NEARLY FOURTY CYCLES!"" the crowd's cheering swells.",MPC_IAIICHonFinalWonFive:Continue,
+MPC_IAIICHonFinalWonFive,DialogOptionSelected,$option == MPC_IAIICHonFinalWonFive,,"With a swish, and a gust of wind, Jerus withdraws a dagger from his cloak - which the crowd mimics, each blade pointing at you.
+
+Turning to you, Jerus grunts, looking you up and down. Then, speaks. ""...I was doubtful at first. I did not believe you had true power - I believed you were merely a poser. A molochian slave, using demon's blood to give you power. But the way you fought right there?""
+
+He claps your shoulder, and nods firmly. ""You are more a warrior than many our *own*. Now -"" he spins his dagger around, offering no reaction as he cuts into his finger, causing a slow drip-drip of blood into the pool beneath. Then, he offers it to you. ""-finish the exortium. Let our blood mix. For our pact.""",MPC_IAIICHonFinalWonSix:Seal the pact,
+MPC_IAIICHonFinalWonSix,DialogOptionSelected,$option == MPC_IAIICHonFinalWonSix,,"A new cut is added to your already ravaged body. The small pool of crimson beneath you now mixes with Jerus, with Glowfield, creating a veritable river of blood.
+
+Jerus, taking the dagger back, then licks it clean, a satisfied smile coming across his face. The crowd is silent now - daggers held high. And then, Jerus speaks.
+
+""Our pact is sealed. The rite of exortium passed - valor, honor, and glory proven in this field of battle!"" The cheering rises, yet again. ""We now give the title of Honored Auxillary to $PlayerName, and promise to back them in this conflict - as long as they continue to project their IRON STRENGTH!""",MPC_IAIICHonFinalWonSeven:Continue,
+MPC_IAIICHonFinalWonSeven,DialogOptionSelected,$option == MPC_IAIICHonFinalWonSeven,"PlaySound MPC_crowdCheer
+ShowSecondPerson MPC_hegeAristoMoralistRepTwo","The crowd cheers, yet again, thrusting their daggers in the air as Jerus does the same. 
+
+---------------------------------------
+
+You hiss as the robed doctor seals your wounds with some organic alternative to medi-gel. It certainly stings like it, at least. You awkwardly re-adjust the honorific bracelet Jerus gave to you before ushering you into the halls - it's just a bit too big for you. Maybe you could ask them to adjust it?
+
+Soon enough, however, you find yourself sat up and walked back out into the halls, and soon, back into the landing pad, where your shuttle is waiting. Halatius and Jerus stand your door, both smiling - one more than the other.",MPC_IAIICHonFinalWonEight:Continue,
+MPC_IAIICHonFinalWonEight,DialogOptionSelected,$option == MPC_IAIICHonFinalWonEight,"MPC_IAIICHegeCMD houseTurned
+$temporarilyIgnoreYou = true","""Captain! Oh, Captain, I was so worried - but then I heard of your victory!"" Halatius beams, striding forth. ""Truely spectacular! Truely! Truely! I heard Jerus even let you skip judgement, is that true?!""
+
+Then, comes Jerus, a thin smile across his lips. ""Yes, Halatius. That's right. The bloodshed $playerHeOrShe demonstrated was..."" he takes a wispy breath, smelling the blood-soaked sleeve on his right. ""...*immaculate*."" He re-opens his eyes, focused on you. ""You've proven yourself a fine individual, $PlayerName. Far more fine than this Hegemony. And thus, once you give us the word? We will act."" he bows, as does Halatius.",MPC_IAIICHonFinalWonNine:Board the shuttle,
+MPC_IAIICHonFinalWonNine,DialogOptionSelected,$option == MPC_IAIICHonFinalWonNine,EndConversation DO_NOT_FIRE,"You board your shuttle, flanked by your exhausted-looking bodyguards. Just before you leave, you catch Halatius' eye - who gives you a deep, genuine smile. ""Thank you"", he's trying to say.
+
+You nod. You meet his look up until the door closes in front, and you return to your seat.
+
+You promptly return to your $shipOrFleet, much to the relief of your crew and officers. Taking your seat, you sigh, and can't help but smile, just a little.
+
+Another victory. (TODO; slow this a lil. get a moment with halatius and jerus)",MPC_IAIICHonFinalWonTen:Return to normal duties,
+MPC_IAIICHonFinalWonTen,DialogOptionSelected,$option == MPC_IAIICHonFinalWonTen,"FireBest OpenInteractionDialog
+niko_MPC_musicToggle """" false",,,
 ,,,,,,
-# AMBUSHED! DUEL!,,,,,,
-,,,,,,
-# Win the duel - Kill or spare?,,,,,,
-#END Win the duel - Kill or spare?,,,,,,
-,,,,,,
-# Lose the duel - Shoot the guy and lose your honor...,,,,,,
-#END Lose the duel - Shoot the guy and lose your honor...,,,,,,
-#END AMBUSHED! DUEL!,,,,,,
+MPC_IAIICHonPlayerLostCOMSECDuel,MPC_IAIICHonCOMSECDuelFinished,$MPC_IAIICHonPlayerLostCOMSECDuel,"BeginConversation MPC_hegeAristoMoralistComsecDuelist
+ShowSecondPerson MPC_hegeAristoMoralistRep
+niko_MPC_musicToggle """" true","It's just too much.
+
+Blow after blow, thrust after thrust, the agent outmaneuvers you at every turn. When you try to defend, he counters, and when you try to attack, he ripostes.
+
+Before long, the screaming red in the corners of your vision overwhelm your senses, and you find yourself on the floor, reaching for your rapier, but you, just, can't, seem, to...
+
+-something presses against your neck. It's cold. Hard. You don't dare to look. But what you *do* look at are the eyes of your opponent, getting ever-closer as he laughs slowly, relishing his victory.",MPC_IAIICHonPlayerLostCOMSECDuelTwo:Continue,
+MPC_IAIICHonPlayerLostCOMSECDuelTwo,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelTwo,,"""...they said I was crazy. That I couldn't get you - I just wasn't strong enough. They disavowed me. Said a political assassination would be insane."" he whispers into your ear. ""...but NONE of them knew the Alotera like I did. NONE of them practiced fencing. And now... look where I have you.""",MPC_IAIICHonPlayerLostCOMSECDuelThree:Act,
+MPC_IAIICHonPlayerLostCOMSECDuelThree,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelThree,,"You again, reach for the rapier - but he just kicks it out of the way. You attempt to grab for his throat - but he just stands up. 
+
+You roll up your sleeve...
+
+He raises his blade high. The light of Samarra catches on your blodd, making a reddish, terrifying sheen... 
+
+You reach for your cuff...
+
+He speaks out loud, boisterous hubris following his every word. ""RIGHT WHERE I WANT YOU!""",MPC_IAIICHonPlayerLostCOMSECDuelFour:ACT! NOW!,
+MPC_IAIICHonPlayerLostCOMSECDuelFour,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelFour,"HideFirstPerson
+HideSecondPerson
+PlaySound storyevent_diktat_execution",...,MPC_IAIICHonPlayerLostCOMSECDuelFive:...?,
+MPC_IAIICHonPlayerLostCOMSECDuelFive,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelFive,"ShowFirstPerson
+ShowSecondPerson MPC_hegeAristoMoralistRep","You open your eyes... and close them, as scorched blood drip. Drip. Drips. From a small hole in his chest.
+
+He stands there. Rapier dropped on the floor. Hands held just an inch from the hole. Before collapsing on his side, dead instantly.
+
+From your wrist, a small e-derinnger, expertly concealed, smokes. The scent is acrid.",MPC_IAIICHonPlayerLostCOMSECDuelSix:Turn to your right,
+MPC_IAIICHonPlayerLostCOMSECDuelSix,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelSix,PlaySound soe_crowd_gasp,"The crowd gasps. They cannot believe what they have just witnessed. Jerus too, stands there in amazement. But soon, the tide turns, and a growling anger fills the soundscape, as the robed congregation begins to stand, some of them reaching for your weapons.
+
+It's a good thing you always keep a plan B.",MPC_IAIICHonPlayerLostCOMSECDuelSeven:Ping your PDA,
+MPC_IAIICHonPlayerLostCOMSECDuelSeven,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelSeven,,"Your PDA chirps happily, and immediately, a shuttle ascends just over the hole above you, extending a rope, which you - and your sprinting bodyguards - quickly grab onto. You quickly are hoisted through, narrowly avoiding blood-red plasma beams as you make your escape from your dishonorable display.
+
+You can hear Jerus roaring, ""YOU TRAITOOOOOOOOOOOOOR!"". You can only imagine the misery Halatius must be going through right now, but unfortunately, that's not your concern at the moment. Your main concern is surviving your wounds.",MPC_IAIICHonPlayerLostCOMSECDuelEight:Enter the shuttle,
+MPC_IAIICHonPlayerLostCOMSECDuelEight,DialogOptionSelected,$option == MPC_IAIICHonPlayerLostCOMSECDuelEight,"MPC_IAIICHegeCMD genericFail
+niko_MPC_musicToggle """" false
+FireBest OpenInteractionDialog","You enter a chaotic shuttle, missile-alarms pinging while your $shipOrFleet's pre-planned EW complex works overtime to ensure your escape. You move to the medical bay, holding onto the railing for dear life while your pilot makes evasive maneuvers.
+
+You are quickly patched up, blood transfused, and returned to your $shipOrFleet, barely escaping massive head trauma from the bumpy ride.
+
+You quickly find your way back to your bridge. No incoming comm requests. Looks like they want nothing to do with you.
+
+It might be wise to never return.",,
 #END Actually leave - descend into the halls,,,,,,
 "#END Once your honor is maxed, invited in for a final rite",,,,,,
 #END Honorable house - PROVE YOUR HONOR!!!,,,,,,
@@ -5095,6 +5386,18 @@ He flattens the photo against the steel desk he sits at. ""We are watching. And 
 ""That is all. Dismissed."" he grumbles, cutting the comm link with one swift motion.",cutCommLink:Cut the comm link,
 #END COMSEC interception after the second house,,,,,,
 #END COMSEC intervention,,,,,,
+# Daud calls you after the hege pulls out,,,,,,
+MPC_IAIICDaudAngryCommlinkInit,MPC_IAIICDaudAngryCommlinkInit,,,"You're in the middle of a routine crew manifest review when your panel panel suddenly lights up. A long-ranged, high-focus comms request, bouncing off a nearby comms-buoy to deliver you this encrypted inquiry...
+
+Taking a closer look, it becomes obvious that this isn't sent by your own faction - instead, it's signed with Hegemony COMSEC markings. Marked urgent. And requested for *you*, specifically.
+
+A quick check with comms confirms you can interface with the request, and open a channel - provided, of course, you use semi-illegal COMSEC chatcodes...","MPC_IAIICDaudAngryCommlinkAccept:Open a channel
+MPC_IAIICDaudAngryCommlinkDeny:Ignore it - you have better things to do",
+MPC_IAIICDaudAngryCommlinkDeny,DialogOptionSelected,$option == MPC_IAIICDaudAngryCommlinkDeny,DismissDialog,,,
+MPC_IAIICDaudAngryCommlinkAccept,DialogOptionSelected,$option == MPC_IAIICDaudAngryCommlinkAccept,BeginConversation daud,"The commlink sputters, trying desparately to bring this spotty signal to life. Eventually, however; it works. And what you see is not what you expected in the slightest.
+
+You see High Hegemon Daud, back turned to you, furiously scribbling on some paperwork in his office",MPC_IAIICDaudAngryCommlinkTwo:Continue,
+#END Daud calls you after the hege pulls out,,,,,,
 #END Hegemony,,,,,,
 ,,,,,,
 # Indie,,,,,,
@@ -5368,7 +5671,7 @@ MPC_IAIICBKRepInitialLeave,DialogOptionSelected,$option == MPC_IAIICBKRepInitial
 ,,,,,,
 # MMMC - Nova Maxios,,,,,,
 MPC_IAIICMMMCRepInitGreet,PickGreeting,"$id == MPC_MMMCRep score:1000
-MPC_IAIICJillCMD contribCustomIs MMMC
+MPC_IAIICJillCMD contribCustomIs mmmc
 !$temporarilyIgnoreYou",BeginConversation MPC_MMMCRep,"A spotty camfeed is quickly established as your commlink is automatically accepted. ""Hey bud."" the man before you says. ""Prices low as ever - got some new blueprints if you're wanting. Some sorta phase ship, small, agile. Real strong. Queue's empty, sending over the menu now..."" you check with sensors, who nods - you've been transmitted some sort of manufacturing manifest. Unfortunately, that's not what you're here for.
 
 He eventually turns to you, raising a brow. ""You ain't one of my usual clients. Who're you?""","MPC_IAIICMMMCRepInitGreetTwo:""Who do you usually sell to?""
@@ -5392,7 +5695,7 @@ Such an act would surely be seen as unethical in the eyes of the independents, b
 ,,,,,,
 # Raided the orbital works,,,,,,
 MPC_IAIICMMMCRepRevisit,PickGreeting,"$id == MPC_MMMCRep score:1000
-MPC_IAIICJillCMD contribCustomIs MMMC DISRUPTED",BeginConversation MPC_MMMCRep,"The camfeed resolves quickly, showing a frustrated-looking $personFirstName digging through a mountain of paperwork, veins nearly popping out of his skull. ""-sorry bud, operations c-cancelled for the next few months... some *fuelguzzler* came and-"" he stops, noticing you finally. His frustration appearance melts away, replaced by politely restrained anger.
+MPC_IAIICJillCMD contribCustomIs mmmc DISRUPTED",BeginConversation MPC_MMMCRep,"The camfeed resolves quickly, showing a frustrated-looking $personFirstName digging through a mountain of paperwork, veins nearly popping out of his skull. ""-sorry bud, operations c-cancelled for the next few months... some *fuelguzzler* came and-"" he stops, noticing you finally. His frustration appearance melts away, replaced by politely restrained anger.
 
 ""Ah... it's *you*."" he grumbles, pushing his paper away. ""Whatd'you want?""","MPC_IAIICMMMCRepRevisitTwo:""Seems like someone destroyed your shipworks. Damn shame.""",
 MPC_IAIICMMMCRepRevisitTwo,DialogOptionSelected,$option == MPC_IAIICMMMCRepRevisitTwo,,His visage remains stony as he stares.,"MPC_IAIICMMMCRepRevisitThree:""I heard the pirates that did it might strike again if the ships keep going to the IAIIC.""",
@@ -5404,6 +5707,194 @@ MPC_IAIICIndieCMD MMMCend","He shushes you halfway through your thinly veiled th
 TODO: more scolding here, i never like writing the conclusions",cutCommLink:Cut the comm link,
 #END Raided the orbital works,,,,,,
 #END MMMC - Nova Maxios,,,,,,
+# Voidsun - merc group borne out of your faction,,,,,,
+# Voidsun bar intro,,,,,,
+MPC_IAIICVoidsunBarIntro,AddBarEvents,MPC_IAIICIndieCMD voidsunCanGenBarEvent,"AddBarEvent MPC_IAIICVoidsunBarIntroSel ""Meet the IntSec officer in their booth"" ""In the corner of the eye, you notice someone you recognize: The IntSec officer you witnessed arrest that \""drunkard\"" a while ago."" highlight",,,
+MPC_IAIICVoidsunBarIntroSel,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroSel,"BeginConversation MPC_playerFacIntsecSquadChief
+$global.MPC_didVoidsunBar = true
+MPC_IAIICHegeCMD getFractalCoreColonyName
+FireBest MPC_IAIICVoidsunBarIntroSelImpl",,,
+MPC_IAIICVoidsunBarIntroSelImpl,MPC_IAIICVoidsunBarIntroSelImpl,,,"Yet again, you find yourself sitting in a fuzzy hexfield with this officer, alone in your discussions, away the debauchery of the bar.
+
+""Hello again, $PlayerSirOrMadam."" $HeOrShe politely nods. ""Apologies for meeting you in such an informal establishment - you don't exactly give us the best of ways to contact you. Anyway, we have some intel on possible insurgent activity within our borders."" $HeOrShe passes a small holo-emitter to you, which being playing automatically.
+
+Displayed is a fuzzy yet distinct picture; a $global.MPC_fractalColonyName city street, with heavy traffic going both ways. Suddenly, the feed glitches, and the street is scattered with debris, bodies, and blood - it appears some large detonation has wracked the building to the left, and rendered it nearly collapsed. It then zooms in - revealing a strange emblem embossed on a shoulderplate left over. A black star, shooting black tendrils out of its corona - labelled ""Voidsun"".","MPC_IAIICVoidsunBarIntroTwo:""What am I looking at, $personLastName?""",
+MPC_IAIICVoidsunBarIntroTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroTwo,,"""The aftermath of terrorist activity on $global.MPC_fractalColonyName. Recently, our adverseries struck multiple of our colonies simultaniously. Sabotaging fueljacks, stealing ships, kidnapping politicians, you name it."" You realize $heOrShe is referring to the IAIIC's efforts to 'sabotage' your colonies.
+""Most of the parties involved were local insurgents, criminals, or other merc groups. Nothing big time, nothing we have jurisdiction over, and certainly nothing *you* need to go out chasing. But here..."" $heOrShe taps the emblem, prompting the holofield to emit a disconcerting buzz. ""*Here* is where it gets interesting.""
+
+Clicking the side of the emitter, $heOrShe swaps the video to images - images of voidsun operatives in $global.MPC_fractalColonyName wilderness, private buildings, and all around places they shouldn't be. ""We've already fined them for B&E; but nothing has linked them to the IAIIC, or even capital crimes. And frankly, we're stretched too thin as it is to take a close look... and honestly, it wouldn't surprise me if they're bribing someone in power.""","MPC_IAIICVoidsunBarIntroThree:""Concerning. I'm assuming I have a place in your operation?""
+MPC_IAIICVoidsunBarIntroTMM:""Tell me more about this 'Voidsun'.""",
+MPC_IAIICVoidsunBarIntroTMM,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroTMM,RemoveOption MPC_IAIICVoidsunBarIntroTMM,"The holo-display kliks to the black sun - the Voidsun emblem. ""Voidsun. Elite merc PMC. Established a few cycles back, has become a fairly major player in international PMC operations. Specializes in black-ops operations under-the-radar - that is to say, perfect for treasonous activity.""
+
+""Has virtually no navy, but is exemplary on the ground. Though, in recent times, their customer base has begun complaining about a certain 'sloppiness' in their tactics."" $HeOrShe nods to the holoprojector. ""-which is how we got these images, $playerSirOrMadam. Just a cycle ago they'd never had make such a rookie mistake as letting themselves get caught on camera.""
+
+...they've been getting sloppy. Maybe you can use that to your advantage?",,
+MPC_IAIICVoidsunBarIntroThree,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroThree,MPC_IAIICIndieCMD voidsunGetPlanet,"$HeOrShe nods. ""We're waiting for solid proof to arrest them - but unfortunately, they're damn good at covering their tracks - if they have tracks at all. Of course, you *can* give the order to kick them out right now, but..."" $heOrShe looks pained. ""Well, let's just say the politicoeconomic consequences wouldn't be pretty. Bad for business, let's say."" You concur. Arresting a private company on unsubstantiated rumors would surely damage your reputation with the independents and drive away trade for a while.
+
+""If you can find something we haven't, it would go a long way towards evicting them. Of course, that is, if they're guilty."" $HeOrShe shrugs. ""Frankly sir, it *could* be a case of wrong-place-wrong-time. But now that's for you to decide.""","MPC_IAIICVoidsunBarIntroFour:""Where is this 'Voidsun' stationed? Do they have someone I can contact?""",
+MPC_IAIICVoidsunBarIntroFour,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroFour,"MPC_IAIICIndieCMD voidsunBegin
+SetTextHighlightColors player
+SetTextHighlights $global.MPC_IAIICvoidsunPlanetName
+
+EndConversation DO_NOT_FIRE
+","The agent nods. ""$global.MPC_IAIICvoidsunPlanetName. You'll find them on the public directory. I wouldn't expect anything to come of it, though... I've already tried social engineering myself. They're resilient.""
+
+""Anyway. That's all I had. I'll send your $shipOrFleet the rest of my intel, and be on my way."" A tap on the PDA, then a tap on the emitter, and the privacy field collapses. And with a salute, $heOrShe is gone.",MPC_IAIICVoidsunBarIntroFive:Turn your attention to the rest of the bar,
+MPC_IAIICVoidsunBarIntroFive,DialogOptionSelected,$option == MPC_IAIICVoidsunBarIntroFive,BarCMD showOptions,,,
+#END Voidsun bar intro,,,,,,
+# Evict voidsun without reason,,,,,,
+MPC_IAIICVoidsunAddEvictNROpt,PopulateOptions,"$menuState == main
+MPC_IAIICIndieCMD voidsunCanAddEvictOption",SetOptionColor MPC_IAIICVoidsunEvict highlight,,50:MPC_IAIICVoidsunEvict:Give the order to arrest the Voidsun PMC,
+MPC_IAIICVoidsunEvictNR,DialogOptionSelected,"$option == MPC_IAIICVoidsunEvict
+!MPC_IAIICIndieCMD voidsunHasProof",,"You consider your situation, and your options.
+
+Voidsun, a private $global.MPC_playerFacName company, has been implicated in treason, but you have no solid proof of this just yet. To order an arrest would not only cause a panic amongst independent business owners, but would potentially be for nothing: You aren't actually sure of their involvement yet.
+
+If you're not sure, it may be wise to reconsider.","MPC_IAIICVoidsunEvictNRConfirm:Confirm the order
+MPC_IAIICVoidsunEvictNRAbort:Reconsider your options",
+MPC_IAIICVoidsunEvictNRAbort,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictNRAbort,FireAll PopulateOptions,You think better of an unlawful arrest.,,
+MPC_IAIICVoidsunEvictNRConfirm,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictNRConfirm,MPC_IAIICIndieCMD voidsunUnlawfullyEvict,"MuniSec strikes like a spring unloaded. Before ten minutes have passed, the entire Voidsun PMC leadership is rounded up and in cuffs. It's unlikely they will face charges, but the company will be dissolved. If they've provided any assistance, it ends here.",MPC_IAIICVoidsunEvictNRConfirmTwo:Continue,
+MPC_IAIICVoidsunEvictNRConfirmTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictNRConfirmTwo,"AdjustRep independent INHOSPITABLE -10
+AddTextSmall ""Accessibility and stability temporarily reduced on all worlds"" bad","Once the news hits the press, though, things get messy. Inquiries come immediately - lawyers probing for the reason of the dissolving, as well as proof. Panicked companies trying to cover their bases - as well as many businesses opting to move out, or limit operations. Seems you've made the independents nervous.
+
+You leave the fallout to your government to handle, and turn back to your station.",MPC_IAIICVoidsunEvictNRConfirmThree:Continue,
+MPC_IAIICVoidsunEvictNRConfirmThree,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictNRConfirmThree,FireAll PopulateOptions,,,
+#END Evict voidsun without reason,,,,,,
+# Evict voidsun with evidence,,,,,,
+MPC_IAIICVoidsunEvict,DialogOptionSelected,"$option == MPC_IAIICVoidsunEvict
+MPC_IAIICIndieCMD voidsunHasProof score:20",,"You have concrete evidence that Voidsun has been working with the IAIIC. Now, you just have to give the word.","MPC_IAIICVoidsunEvictConfirm:Confirm the order
+MPC_IAIICVoidsunEvictNRAbort:Reconsider your options",
+MPC_IAIICVoidsunEvictConfirm,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictConfirm,MPC_IAIICIndieCMD voidsunNormalArrest,"MuniSec strikes like a spring unloaded. Before ten minutes have passed, the entire Voidsun PMC leadership is rounded up and in cuffs. The company dissolved, the leadership in custody, you call this is a job well done.",MPC_IAIICVoidsunEvictTwo:Return to your normal duties,
+MPC_IAIICVoidsunEvictTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunEvictTwo,FireAll PopulateOptions,,,
+,,,,,,
+#END Evict voidsun with evidence,,,,,,
+# Voidsun rep dialog,,,,,,
+# Initial meeting with voidsun rep,,,,,,
+MPC_IAIICVoidsunRepInit,PickGreeting,"$id == MPC_voidsunRep score:1000
+!$hadInitialTalk","$hadInitialTalk = true
+BeginConversation MPC_voidsunRep","The commlink stutters as its redirected through three layers of military-grade encryption, before finally reaching the mercenary you came here to have a 'chat' with.
+
+He glances over, rolling over his office chair to the desk to meet you face-to-face. ""You've reached Voidsun Adjunct Operative, Mike Jackd-"" he freezes as his eyes study you, letting the chair roll himself into the desk before continuing.
+
+""-Jackdaw. Here to make a purchase? Inquiry? We've already told your IntSec all we know, $PlayerSirOrMadam. Voidsun is a strictly law-abiding organization, $PlayerSirOrMadam."" he says, looking remarkably clear-headed for someone being interrogated.","MPC_IAIICVoidsunRepInitTwo:""Yes. I'd just like to hear what you have to say about the accusations.""",
+MPC_IAIICVoidsunRepInitTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitTwo,,"He gives a firm nod. ""Voidsun denounces the acts of terrorism committed against $global.MPC_playerFacNameWithArticle and is working with law enforcement to discover the individuals responsible. Voidsun has no reason to betray their host nation, as they are our home and our profit.""
+
+He sends your $shipOrFleet a manifest of recent voidsun activity - mostly heavily redacted, but just enough shown to imply nothing shady. ""We will fully cooperate with any further investigation, $PlayerSirOrMadam, and will continue to assist in investigatory and military actions."" He gives another firm nod, then a salute.","MPC_IAIICVoidsunRepInitThree:""I see... could I have your list of recent clients?""",
+MPC_IAIICVoidsunRepInitThree,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitThree,,"He shakes his head. ""No, $PlayerSirOrMadam. Can't do that, $PlayerSirOrMadam."" Another head-shake. ""As a LLIMC business, we are not obligated and are not expected to share customer details with any government official unless officially subpoenad - and the courts have not decided on the case yet. Assuming it goes through, $PlayerSirOrMadam, you can expect our records in six months or so.""
+
+Assuming they actually hand them over, that is. You frown.","MPC_IAIICVoidsunRepInitFour:""Then, an *unredacted* list of recent activities?""",
+MPC_IAIICVoidsunRepInitFour,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitFour,,"Another firm head-shake. ""No can do, $PlayerSirOrMadam. Those contents are op-sensitive, $PlayerSirOrMadam. Not only are these confidential, they are under HIHJ protection - the only papers the government will ever recieve are under class-1 redaction, $PlayerSirOrMadam.""
+
+So much for cooperating with the investigation.","MPC_IAIICVoidsunRepInitFive:""Very well. Thank you for your time."" (Leave)
+MPC_IAIICVoidsunRepInitThreat:""Understand that if you obstruct justice, we can and *will* dissolve your company.""",
+MPC_IAIICVoidsunRepInitThreat,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitThreat,"AdjustRep independent SUSPICIOUS -1
+RemoveOption MPC_IAIICVoidsunRepInitThreat","You swear a small smile crosses his lips for a moment. ""Unlikely, $PlayerSirOrMadam. We have been convicted of no crimes - no major crimes - and to dissolve Voidsun without any good reason would not only cancel many valid contracts, but would tarnish your faction's reputation across light years of space.""
+
+""Plus, it would be illegal, $PlayerSirOrMadam."" He nods.",,
+MPC_IAIICVoidsunRepInitFive,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitFive,"HideFirstPerson
+EndConversation DO_NOT_FIRE","""You as well, $PlayerSirOrMadam."" he stiffly salutes, and cuts the comm link.
+
+You sigh - what a waste of time. Of course you wouldn't be able to gather anything new. INTSEC already checked this lead and got nothing. You wonder - what next? You could always just arrest them, but the political consequences cannot be understated. Maybe you could raid a complex of theirs, or-",MPC_IAIICVoidsunRepInitSix:...,
+MPC_IAIICVoidsunRepInitSix,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitSix,"SetTextHighlights ""comms relay"" ""stealth""","""$PlayerSirOrMadam!"" a voice from your bridge rings. You turn - it's a junior communications officer. Striding over, your officer makes way for you to see the screen - a very recent, heavily redacted fleet movement report from Voidsun.
+Your officer points at a small line near the bottom of the report - ""ARGUS21-S: HQ -> 2391;59629;1452"". Then, pulls up another file - ""ARGUS21: HQ-S -> 2391;59629;1452"". And again. And again. Over the course of a month. Some redacted (and uncovered thanks to your officer) but sometimes not. ""That's not just a random set of coordinates. They've been sending out a fleet, over and over, to our comms relay. And not just that - I recognize this fleet-IDENT format. That S at the end? It means stealth.""
+
+Voidsun has been sending a stealth fleet to your in-system comms relay - likely dodging your patrols on the way. Worrying. ","MPC_IAIICVoidsunRepInitSeven:""What do you think this means?""
+MPC_IAIICVoidsunRepInitHowINTSECNotSee:""How in the hells did INTSEC not notice this?""",
+MPC_IAIICVoidsunRepInitHowINTSECNotSee,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitHowINTSECNotSee,RemoveOption MPC_IAIICVoidsunRepInitHowINTSECNotSee,"""Well, $PlayerSirOrMadam, the pattern is only really visible across a few of the more recent reports - over the past few days. One, two, or three visits isn't enough for concern, *especially* if you don't understand the suffix pattern. Seems they've been getting sloppy with their redaction technique. And, ah...""
+
+The faintest hint of pride appears in your officer's voice, tempered with professional modesty. ""I had a brief stint in COMSEC's comms division. Finding patterns like this is my specialty.""
+
+You chuckle. Maybe you'll reccomend a promotion to your head communications officer...",,
+MPC_IAIICVoidsunRepInitSeven,DialogOptionSelected,$option == MPC_IAIICVoidsunRepInitSeven,MPC_IAIICIndieCMD voidsunGoToComms,"""What I think this means? Well... clearly, they've been doing something sketchy around our comms infrastructure. And if INTSEC has been monitoring comms but not seeing anything strange... maybe our relay is modified. But - I'm not an engineer, cap'n, so... that's just a guess.""
+
+You nod. Seems you have a new task - to investigate the comms relay. You return to your station.",cutCommLink:Cut the comm link,
+#END Initial meeting with voidsun rep,,,,,,
+# Revisit voidsun rep,,,,,,
+MPC_IAIICVoidsunRepRevisit,PickGreeting,"$id == MPC_voidsunRep score:1000
+$hadInitialTalk score:10","BeginConversation MPC_voidsunRep
+FireAll MPC_voidsunOpts","The commlink stutters as its redirected through three layers of military-grade encryption, before finally reaching the familiar face of the Voidsun mercenary.
+
+Turning to face you, he nods, then salutes. ""Jackdaw here, representing the Voidsun PMC! What's your business?""",,
+MPC_voidsunLeave,MPC_voidsunOpts,,,,100:cutCommLink:Cut the comm link,
+#END Revisit voidsun rep,,,,,,
+#END Voidsun rep dialog,,,,,,
+# Investigate compromised comms relay,,,,,,
+MPC_IAIICVoidsunCommsRelayInitOptAdder,COB_AddOptions,MPC_IAIICIndieCMD voidsunIsRelayGoodTarget,SetOptionColor MPC_IAIICVoidsunCommsRelayInit highlight,This relay may have been compromised by Voidsun; investigating would be prudent.,40:MPC_IAIICVoidsunCommsRelayInit:Search the comms relay for signs of tampering,
+MPC_IAIICVoidsunCommsRelayInit,DialogOptionSelected,$option == MPC_IAIICVoidsunCommsRelayInit,,"Just as your officers interface with the relay and search for abnormal patterns, your ops chief begins a physical inspection of the hull. Nothing seems out of the ordinary at first, and even at second - the panels are still ID-locked, the internals are all where they should be, and even the dish is spotless.
+
+As for the digital side of things, everything is, predictably, uneventful: Your data-filters fail to pick up any unusual IAIIC activity, nor Voidsun activity. No deamons, no viruses, no unauthorized software. So either it's a rootkit, or they really haven't touched it.",MPC_IAIICVoidsunCommsRelayTwo:Order a deeper investigation,
+MPC_IAIICVoidsunCommsRelayTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunCommsRelayTwo,MPC_IAIICIndieCMD voidsunGenRelay,"Your officers comply, and quickly begin using more 'intensive' measures. Wires are spliced, operating systems swapped, a total workup over this machine's body. If it wasn't for your crack-team of engineers, you're sure the system would be without FTL communication right now. And eventually, it pays off.
+
+The operation abruptly comes to halt with a shout from your ops chief. ""Drones full reverse - locon op 2.3. Deep-scan then removal. Execute."" You take a look over to the ops screen - deep within the wiring of the comms relay is an object not present on the holo-schematics floating just a few feet away. A small blue box, embedded in the inner hull of the relay, and with small translucent wires spiderwebbing out and interfacing with circuitry.",MPC_IAIICVoidsunCommsRelayThree:Continue,
+MPC_IAIICVoidsunCommsRelayThree,DialogOptionSelected,$option == MPC_IAIICVoidsunCommsRelayThree,SetTextHighlights $global.MPC_voidsunRelaySysName,"""Whoever did this was a professional."" your ops chief nods in admiration, watching as the drones gently cut out the item. ""Stealth-coated. Insulated to scanners. Put *inside* the machine. If we weren't looking right here, we wouldn't have found it.""
+
+The item is quickly extracted, checked for booby-traps, then deposited in a cargo bay for further analysis. It has no markings, no serial number, and no noticable trace to any known faction - even in its software.
+
+Apparantly, according to your chief engineer, this object is a FTL rootkit - and according to your comms officer, its been redirecting particular bits of traffic off towards the $global.MPC_voidsunRelaySysName. ""Real genius bit of engineering, here."" your chief engineer offers. ""Invisible to the system, invisible to the casual observer, and fitted perfectly in that little frame to deliver a precise FTL message across a star system. Love to meet who made this.""","MPC_IAIICVoidsunCommsRelayFour:""Can we access its logs?""",
+MPC_IAIICVoidsunCommsRelayFour,DialogOptionSelected,$option == MPC_IAIICVoidsunCommsRelayFour,"SetTextHighlights ""stable location"" $global.MPC_voidsunRelaySysName
+MPC_IAIICIndieCMD voidsunGoToRelay
+FireAll COB_AddOptions","""Nay."" your communication officer says, shaking their head. ""There's no memory or even storage in this thing - its entirely circuitry and transmission devices. We're going to have to follow its trail. If its another relay, its likely to be positioned in a stable location, as all FTL transmitters are.""
+
+While nothing here *explicitely* implicates Voidsun, maybe if you follow the trail to $global.MPC_voidsunRelaySysName? Regardless - you make sure to file a report to IntSec before you leave. Might as well, now that comms are truely secure.",,
+#END Investigate compromised comms relay,,,,,,
+,,,,,,
+# Investigate FTL relay outside your space,,,,,,
+MPC_IAIICVoidsunRelayInit,OpenInteractionDialog,$tag:MPC_voidsunRelay score:1000,ShowDefaultVisual,"Your $shipOrFleet approaches the strange relay. Immediately, sensors picks up a slow pinging of FTL messages coming to and from your space - all centered on this small buoy. If nothing else, at least you can eavesdrop.","MPC_IAIICVoidsunRelayOne:Eavesdrop
+defaultLeave:Leave",
+MPC_IAIICVoidsunRelayOne,DialogOptionSelected,$option == MPC_IAIICVoidsunRelayOne,,"Ops deploys a few drones to intercept some transmissions. Unfortunately, they seem to be nothing more than ""Hello world"" type messages - heartbeats. Nothing substantial. It's unlikely you'll be able to catch a substantial message like this - so many you should check the relay's storage instead.","MPC_IAIICVoidsunRelayTwo:""UNCON Protocol 3, HAZOP protocols. ATMO-drones are a go; We're breaking in.""",
+MPC_IAIICVoidsunRelayTwo,DialogOptionSelected,$option == MPC_IAIICVoidsunRelayTwo,,"Ops grunts in acknoledgement, and within minutes, salvor drones have been dispatched to cut into the probe's hull and extract valuable information.
+
+The cold ion thrusters of the drones drift further, further away, the probe growing larger and larger in the camfeeds - until eventually, the drones make contact. Ops makes muffled grunts - orders for the salvors. Soon, the drones begin cutting into the hull, prying out the outer layer... exposing the circuitry underneath.",MPC_IAIICVoidsunRelayThree:Continue,
+MPC_IAIICVoidsunRelayThree,DialogOptionSelected,$option == MPC_IAIICVoidsunRelayThree,MPC_IAIICIndieCMD voidsunEvidenceGet,"""EXCON-three four five, extend data-link. Mark."" A drone finds a conveniently placed data-port on the exposed circuitry and begins exploring the data-stores of the probe, which helpfully, are only lightly encrypted, broken in seconds by your senior communication staff.
+
+Past the heartbeats, and miscillanious data, are hundreds of correspondances between the IAIIC and voidsun. Troop movements, payments, agreements, and everything inbetween. ""Jackpot."" comms murmurs. And you agree - this is enough to lock away their leaders for life, and then some.
+
+A solid operation, so far.",MPC_IAIICVoidsunRelayFour:Continue,
+MPC_IAIICVoidsunRelayFour,DialogOptionSelected,$option == MPC_IAIICVoidsunRelayFour,,"But that changes in an instant.
+
+""Captain!"" comms hails, urgently. ""We just detected a broadband signal coming from the probe. This time, it was *not* oriented towards our space - and it sounded like a distress signal. I think something is coming. An-"" but before your officer can continue, they're interrupted by a frantic order-stream from your ops chief, and a startled look by your sensors officer.
+
+""-$PlayerSirOrMadam! I think we activated some anti-tamper mechanism-"" you rush over, shoving your officer's shoulder aside to see the sensor readings. And what you see makes you rush right back to your station.","MPC_IAIICVoidsunRelayFive:""Evasive maneuvers!""",
+MPC_IAIICVoidsunRelayFive,DialogOptionSelected,$option == MPC_IAIICVoidsunRelayFive,"MPC_IAIICIndieCMD voidsunBeginAmbush
+MPC_IAIICIndieCMD voidsunEXPLODE","But its too late. The relay's internals glow white, then red, then orange, before eventually, your $shipOrFleet is engulfed in scalding hellfire, with a hostile fleet in close pursuit.",defaultLeave:Leave,
+,,,,,,
+MPC_IAIICVoidsunAmbushFleet,MPC_IAIICVoidsunAmbushFleetHail,,$entity.ignorePlayerCommRequests = true,"The comm-signal crackles into a stable link. The commander of the fleet stands before you, staring you down with grim determination in $hisOrHer eyes.
+
+""We've finally got you right where we want you. What an end to the war, huh? Put down like a dog in some unexplored system?"" $HeOrShe chuckles. ""Don't worry - you'll get a viking burial.""",cutCommLink:Cut the comm link,
+,,,,,,
+#END Investigate FTL relay outside your space,,,,,,
+,,,,,,
+#END Voidsun - merc group borne out of your faction,,,,,,
+# Agreus - IIT&S,,,,,,
+MPC_IAIICIbrahimIAIICOptAdder,PopulateOptions,"$id == ""ibrahim""
+MPC_IAIICIndieCMD ibrahimCanAddInitialOpt",,,"10:MPC_IAIICIbrahimIAIIC:""Are you aware that many of your scavenged hulls have ended up in the IAIIC's warfleets?""",
+MPC_IAIICIbrahimIAIIC,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIIC,FireAll MPC_IAIICIbrahimIAIICOpts,"She looks you up and down, frowning, then seems to realize something. ""Ahh, right. You're *that* upstart spacer. Poking around and trying to buy out or intimidate everyone you can to help fight this toy war of yours."" she scoffs.
+
+""Listen, our hulls and our metal end up everywhere. I sell to the highest bidder, and thats that. You can't *seriously* expect me to vet *every single one* of my customers."" She gives you a tired look, as if understanding thats exactly what you want from her.",,
+MPC_IAIICIbrahimIAIICNoHamatsu,MPC_IAIICIbrahimIAIICOpts,!$global.gaRH_completed,,,"MPC_IAIICIbrahimIAIICNoHamatsuSel:""Well, the alternative surely isn't as pretty.""",
+MPC_IAIICIbrahimIAIICHamatsu,MPC_IAIICIbrahimIAIICOpts,$global.gaRH_completed score:10,,,"MPC_IAIICIbrahimIAIICHamatsuSel:""Surely you owe me a favor after returning your prize vessel, the Hamatsu?""",
+MPC_IAIICIbrahimIAIICNoHamatsuSel,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIICNoHamatsuSel,FireBest MPC_IAIICIbrahimIAIICTwo,"""That alternative being a AM-canister on my head?"" she grumbles. Then sighs, looking around for any way out of this - but failing. ""I'm already in your sights, aren't I? Fine. Fine!"" she throws her hand up. ""I never wanted a part in your war anyway. This is *exactly* why I avoid conflict. But before I do my audit, I need *proof*.""",,
+MPC_IAIICIbrahimIAIICHamatsuSel,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIICHamatsuSel,"AdjustRepActivePerson VENGEFUL -1
+FireBest MPC_IAIICIbrahimIAIICTwo","""No."" her lips curl angrily. ""No! Because I *paid* you! It was never a *gift*. You got PAID!"" She swiftly reaches for the comms-disconnect, but as she gets closer, she slows, and then eventually, stops, sighing.
+
+Her arm lazily falls onto her desk, and then to her side. ""...but I'm already in your sights, aren't I? Fine. Fine!"" she throws her hand up. ""I never wanted a part in your war anyway. This is *exactly* why I avoid conflict. But before I do my audit, I need *proof*.""",,
+MPC_IAIICIbrahimIAIICTwo,MPC_IAIICIbrahimIAIICTwo,,,"""You claim a significant amount of our material and shipworks are going towards your enemy. And in the interest of *self-preservation*, I'll help you. But you need to prove this, first.""",MPC_IAIICIbrahimIAIICThree:Continue,
+MPC_IAIICIbrahimIAIICThree,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIICThree,,"Sitting down, she continues - though not happily. ""Whenever we recover, build, sell a reactor core, we always inscribe it with 'IIT&S' right under the third adjunct manifold. Obscure place - most people never look."" she gestures vaguely. ""Not an invasion of privacy or customer wishes, mind you, the only thing it does is put *us* in the line of fire of the law."" She mumbles. She frowns - wondering if it's truely a great practice for a grey-market dealer. Shaking that thought off, she continues.
+""Bring me proof that say, more than five percent of a given IAIIC fleet has an IIT&S reactor - our most commonly sold part - and I'll consider that significant. I don't care *how* you get that proof - combat, salvage, I just don't care. Find it, and we can talk. Otherwise, you're proven wrong. Win win.""","MPC_IAIICIbrahimIAIICFour:""Agreed.""",
+MPC_IAIICIbrahimIAIICFour,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIICFour,MPC_IAIICIndieCMD ibrahimKillPatrol,"She sighs sharply, rolling her eyes. ""Of course you do. The only other option is *mass murder*, which even someone like you *generally* tries to avoid.""
+
+Reaching for the comms-disconnect, she stops. ""-generally, it's the bigger combat fleets that need the kind of reactors we sell. Try those."" And with that, the commslink dies.",cutCommLink:Cut the comm link,
+,,,,,,
+MPC_IAIICIbrahimIAIICEndOptAdder,PopulateOptions,"$id == ""ibrahim""
+MPC_IAIICIndieCMD ibrahimCanAddEndOpt",,,"10:MPC_IAIICIbrahimIAIICEnd:Send Ibrahim the recovered reactors, as well as video proof",
+MPC_IAIICIbrahimIAIICEnd,DialogOptionSelected,$option == MPC_IAIICIbrahimIAIICEnd,MPC_IAIICIndieCMD ibrahimEnd,"Ibrahim puts on a tired frown as she watches the footage. A side-display lights up - prompting her to look even more tired. Finally, she turns to you, and lets out a long, hearty, sigh.
+
+""Well I'll be damned. You were right. At least seven percent of those ships had one of our reactors. Shows us for trusting all our customers to be 'politically neutral'."" she grumbles. She reaches for her desk, taps a few buttons, and leans back. ""There. I just gave the order for the audit. Effective immediately, your 'IAIIC' should no longer have many - or any - IIT&S product. Assuming our audit works as intended.""
+
+She leans back, rubbing her migrane-riddled temple. ""Now please, give me some quiet... you've done nothing but give me a headache."" And with that, she reaches - and cuts the commlink.",cutCommLink:Cut the comm link,
+,,,,,,
+,,,,,,
+#END Agreus - IIT&S,,,,,,
 #END Indie,,,,,,
 ,,,,,,
 # Ark FOB Comms directory,,,,,,

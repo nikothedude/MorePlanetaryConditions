@@ -23,6 +23,7 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.People
 import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel
 import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseManager
@@ -33,6 +34,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
+import data.scripts.campaign.magnetar.crisis.MPC_hegemonyUnrestScript
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_aloofTargetAssignmentAI
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
@@ -45,6 +47,7 @@ import org.magiclib.kotlin.getFactionMarkets
 import org.magiclib.kotlin.getSourceMarket
 import org.magiclib.kotlin.getStationIndustry
 import org.magiclib.kotlin.makeImportant
+import org.magiclib.kotlin.makeUnimportant
 import sound.int
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
@@ -169,6 +172,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
             "createIntel" -> {
                 val intel = MPC_hegemonyContributionIntel.get(true)
+                Global.getSector().importantPeople.getPerson(People.DAUD).makeUnimportant(IAIIC_QUEST)
                 Global.getSector().economy.getMarket("eventide").primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
                 intel?.sendUpdateIfPlayerHasIntel("Rumors of involvement", dialog.textPanel)
             }
@@ -283,6 +287,18 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 val check = params[1].getString(memoryMap)
                 return (intel.aloofState?.name == check)
+            }
+            "generalStateIs" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                val check = params[1].getString(memoryMap)
+                return (intel.state.name == check)
+            }
+            "beginFinalWait" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.state = MPC_hegemonyContributionIntel.State.WAIT
+                intel.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
+
+                MPC_hegemonyUnrestScript().start()
             }
             "ALOincrementEvidence" -> {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
@@ -571,6 +587,11 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
                 target.respawnAllFleets()
 
+            }
+            "HONbeginDuelPrep" -> {
+                val contribIntel = MPC_hegemonyContributionIntel.get() ?: return false
+                contribIntel.honorableState = MPC_hegemonyContributionIntel.HonorableState.WIN_FINAL_DUEL
+                contribIntel.sendUpdateIfPlayerHasIntel(contribIntel.honorableState, dialog.textPanel)
             }
             "HONbeginPatherHunt" -> {
                 val contribIntel = MPC_hegemonyContributionIntel.get() ?: return false

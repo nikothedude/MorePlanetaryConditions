@@ -6,6 +6,7 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
+import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin
 import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
@@ -13,12 +14,16 @@ import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageSpecialAssigner.ShipRecoverySpecialCreator
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySpecial
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager.WormholeItemData
-import com.fs.starfarer.api.impl.campaign.terrain.*
-import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASCENT_WELL_DETECTED_RANGE
+import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
 import com.fs.starfarer.api.util.Misc
 import data.coronaResistStationCoreFleetListener
 import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
@@ -34,6 +39,7 @@ import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getPulsarInSystem
 import org.magiclib.kotlin.setDefenderOverride
+import org.magiclib.kotlin.setSalvageSpecial
 import org.magiclib.util.MagicCampaign
 import java.awt.Color
 
@@ -289,6 +295,28 @@ object niko_MPC_specialProcGenHandler {
         system.addCustomEntity("MPC_magnetarShieldFive", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 7420f, -90f)
         system.addCustomEntity("MPC_magnetarShieldSix", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2900f, -90f)
         system.addCustomEntity("MPC_magnetarShield_hijacked", null, "MPC_magnetarShield_hijacked", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), ringCenter, -90f)
+
+        // THE TOTEM - i agreed that if hal solod magnetar with an afflictor id add a totem for his hubris. and. he
+        // soloed it with like 500 stacks of modded nonsense but a prOMISE IS A PROMISE
+        val perShipData = ShipRecoverySpecial.PerShipData("afflictor_Strike", ShipRecoverySpecial.ShipCondition.WRECKED)
+        perShipData.sModProb = 100f
+        perShipData.shipName = "Hal's Hubris"
+        val totemParams = DerelictShipEntityPlugin.DerelictShipData(
+            perShipData,
+            false
+        )
+        val totem = BaseThemeGenerator.addSalvageEntity(
+            system,
+            Entities.WRECK,
+            Factions.NEUTRAL,
+            totemParams
+        )
+        val creator = ShipRecoverySpecialCreator(null, 0, 0, false, null, null)
+        totem.setSalvageSpecial(creator)
+        totem.tags += "MPC_totemToHalHubris"
+        totem.isDiscoverable = true
+        totem.discoveryXP = 50f
+        totem.setCircularOrbitWithSpin(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), ringCenter, 270f, 5f, -5f)
 
         // OMEGA CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitWithSpin(magnetar, 250f, 1208f, 365f, -10f, 10f)

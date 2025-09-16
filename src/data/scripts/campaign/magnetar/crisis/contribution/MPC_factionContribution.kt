@@ -19,7 +19,7 @@ data class MPC_factionContribution(
     val removeContribution: Script?,
     val removeNextAction: Boolean = false,
     val requireMilitary: Boolean = false,
-    val contributorExists: ContributorExistsScript? = ContributorExistsScript(factionId, requireMilitary),
+    var contributorExists: ContributorExistsScript? = ContributorExistsScript(factionId, requireMilitary),
     val repOnRemove: Float? = null,
     val baseMarketEmbargoValue: Float = 1f,
     val contributionId: String = factionId,
@@ -37,7 +37,7 @@ data class MPC_factionContribution(
 
     }
 
-    fun onRemoved(intel: MPC_IAIICFobIntel, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null) {
+    fun onRemoved(intel: MPC_IAIICFobIntel, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null, sendMessage: Boolean = true) {
         if (removeNextAction) {
             intel.removeNextAction()
         }
@@ -49,10 +49,12 @@ data class MPC_factionContribution(
 
         val reason = if (becauseFactionDead) MPC_changeReason.FACTION_DIED else MPC_changeReason.PULLED_OUT
         val data = MPC_factionContributionChangeData(this, reason, true)
-        if (dialog != null) {
-            intel.sendUpdate(data, dialog.textPanel)
-        } else {
-            intel.sendUpdateIfPlayerHasIntel(data, false)
+        if (sendMessage) {
+            if (dialog != null) {
+                intel.sendUpdate(data, dialog.textPanel)
+            } else {
+                intel.sendUpdateIfPlayerHasIntel(data, false)
+            }
         }
 
         if (becauseFactionDead) return

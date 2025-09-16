@@ -9,11 +9,11 @@ import kotlin.math.floor
 class MPC_hegemonyUnrestCondition: niko_MPC_baseNikoCondition() {
 
     fun getMaxDecrement(): Int {
-        var base = 3f
+        var base = 4f
         if (market == null) return 0
-        if (market.isMilitary()) return 4
+        if (market.isMilitary()) return 5
         if (market.id == "eventide") return 6
-        if (market.id == "chicomoztoc") return 4
+        if (market.id == "chicomoztoc") return 7
 
         return floor(base).toInt()
     }
@@ -27,7 +27,7 @@ class MPC_hegemonyUnrestCondition: niko_MPC_baseNikoCondition() {
         val maxDecrement = getMaxDecrement()
 
         val decrement = floor(maxDecrement * unrestLevel)
-        market.stability.modifyFlat(id, decrement, name)
+        market.stability.modifyFlat(id, -decrement, name)
     }
 
     override fun unapply(id: String?) {
@@ -45,10 +45,10 @@ class MPC_hegemonyUnrestCondition: niko_MPC_baseNikoCondition() {
 
         if (stability > 0) {
             tooltip.addPara(
-                "% stability",
+                "%S stability",
                 5f,
                 Misc.getNegativeHighlightColor(),
-                "-${getMaxDecrement()}"
+                "-${stability}"
             )
 
             if (market.id == "eventide") {

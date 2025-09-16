@@ -21,6 +21,18 @@
 		],
 	},
 	
+	"MPC_swordUnsheath":{
+		"sounds":[
+			{"file":"sounds/MPC_swordUnsheath.ogg","pitch":1.1,"volume":1.3},
+		],
+	},
+	
+	"MPC_crowdCheer":{
+		"sounds":[
+			{"file":"sounds/MPC_crowdCheer.ogg","pitch":1.0,"volume":1.0},
+		],
+	},
+	
 	"MPC_superheavyDamperStart":[
 		{"file":"sounds/sfx_systems/damper_field_activate.ogg","pitch":0.7,"volume":1.2},
 	],

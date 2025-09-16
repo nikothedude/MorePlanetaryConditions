@@ -241,6 +241,14 @@
 		"tags":["has_interaction_dialog", "neutrino", "MPC_magnetarWormholeProbe"]
 	},
 
+	"MPC_voidsunRelay":{
+		"defaultName":"FTL Relay",
+		"nameInText":"relay",
+		"baseId":"generic_probe",
+		"customDescriptionId":"MPC_voidsunRelay",
+		"tags":["has_interaction_dialog", "neutrino", "MPC_voidsunRelay"]
+	},
+
 	"MPC_corrupted_weapons_cache": {
 		"baseId": "weapons_cache",
 		"detectionRange":100, # low, because finding one is a big deal

@@ -113,6 +113,8 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     enum class State {
         GO_TO_EVENTIDE_INIT,
         CONVINCE_HOUSES,
+        RETURN_TO_ALOOF,
+        WAIT,
         DONE,
         FAILED
     }
@@ -472,6 +474,30 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     currentHouse.stringName
                 )
             }
+            State.WAIT -> {
+                info.addPara(
+                    "Wait approximately %s",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "one month"
+                )
+            }
+            State.DONE -> {
+                info.addPara(
+                    "Completed",
+                    5f
+                )
+                /*info.addPara(
+                    "Received summons from High Hegemon Daud",
+                    5f,
+                ).color = Misc.getNegativeHighlightColor()*/
+            }
+            State.FAILED -> {
+                info.addPara(
+                    "Failed",
+                    5f
+                )
+            }
             TargetHouse.MILITARISTIC -> {
                 info.addPara(
                     "Disrupt %s or destroy %s",
@@ -693,7 +719,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     "$housesTurned", "$HOUSES"
                 )
             }
-            "HOUSES_DONE" -> {
+            "HOUSES_DONE", State.RETURN_TO_ALOOF -> {
                 info.addPara(
                     "%s - return to %s",
                     0f,
@@ -1114,15 +1140,42 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor
                 )
             }
+
+            State.RETURN_TO_ALOOF -> {
+                info.addPara(
+                    "You've successfully turnt all four target against the Hegemony. You must now return to %s, on %s.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    getAloofRep().name.fullName, "Eventide"
+                )
+            }
+            State.WAIT -> {
+                info.addPara(
+                    "The four houses are currently spreading dissent, politically maneuvering, and lobbying the Hegemony. You must wait until Daud cracks - which is, presumably, an inevitability.",
+                    5f
+                )
+            }
         }
+    }
+
+    override fun notifyEnding() {
+        super.notifyEnding()
+
+        val eventide = Global.getSector().economy.getMarket("eventide") ?: return
+        val comms = eventide.commDirectory ?: return
+        val importantPeople = MPC_People.getImportantPeople()
+        comms.removePerson(importantPeople[MPC_People.HEGE_MILITARIST_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_OPPORTUNISTIC_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_MORALIST_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_ARISTO_DEFECTOR])
+
+        eventide.makeNonStoryCritical("\$MPC_IAIICEvent")
     }
 
     override fun notifyEnded() {
         super.notifyEnded()
 
         Global.getSector().memoryWithoutUpdate[KEY] = null
-
-        Global.getSector().economy.getMarket("eventide")?.makeNonStoryCritical("\$MPC_IAIICEvent")
     }
 
     override fun advanceImpl(amount: Float) {
@@ -1198,12 +1251,19 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                             val id = Global.getSector().memoryWithoutUpdate.getString("\$MPC_IAIICHonPatherTargetMarketId")
                             return Global.getSector().economy.getMarket(id)?.primaryEntity
                         }
-                        return null
+                        when (honorableState) {
+                            HonorableState.CONVINCE -> null
+                            HonorableState.WIN_FINAL_DUEL -> Global.getSector().economy.getMarket("eventide").primaryEntity
+                            HonorableState.GOT_ENOUGH_HONOR -> Global.getSector().economy.getMarket("eventide").primaryEntity
+                            null -> null
+                        }
                     }
                 }
             }
             State.DONE -> null
             State.FAILED -> null
+            State.RETURN_TO_ALOOF -> Global.getSector().economy.getMarket("eventide").primaryEntity
+            State.WAIT -> null
         }
     }
 
@@ -1228,8 +1288,9 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             text?.addPara("Suddenly, MilSec lights up with alarming reports of IAIIC activity - it seems INTSEC is not happy about your attempts to sabotage their efforts.")
             retaliate(text)
         } else if (housesTurned == HOUSES) {
+            state = State.RETURN_TO_ALOOF
             sendUpdateIfPlayerHasIntel(
-                "HOUSES_DONE",
+                state,
                 text
             )
         }

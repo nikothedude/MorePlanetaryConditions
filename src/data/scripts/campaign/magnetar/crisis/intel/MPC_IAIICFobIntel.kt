@@ -137,12 +137,12 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         return factionContributions
     }
 
-    fun removeContribution(contribution: MPC_factionContribution, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null) {
+    fun removeContribution(contribution: MPC_factionContribution, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null, sendMessage: Boolean = true) {
         if (!becauseFactionDead) {
             pulledOut++
         }
         factionContributions -= contribution
-        contribution.onRemoved(this, becauseFactionDead, dialog)
+        contribution.onRemoved(this, becauseFactionDead, dialog, sendMessage)
         updateDoctrine()
         checkContributionValues()
 
@@ -289,7 +289,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (fleetPointsDestroyed <= 0) return 0
             var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
             if (points < 1) points = 1
-            return points.coerceAtMost(100)
+            return points.coerceAtMost(50)
         }
 
         fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
@@ -457,7 +457,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         //Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP).makeImportant("\$MPC_IAIICquest")
         //Global.getSector().economy.getMarket("baetis")?.commDirectory?.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP))
-        Global.getSector().economy.getMarket("baetis").makeStoryCritical(IAIIC_QUEST)
+        //Global.getSector().economy.getMarket("baetis").makeStoryCritical(IAIIC_QUEST)
         Global.getSector().economy.getMarket("baetis").primaryEntity.makeImportant(IAIIC_QUEST)
 
         class BlackKnifeExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
@@ -465,6 +465,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 return Global.getSector().economy.getMarket("qaras")?.isInhabited() ?: return false
             }
         }
+        Global.getSector().economy.getMarket("qaras").primaryEntity.makeImportant(IAIIC_QUEST)
         list += MPC_factionContribution(
             Factions.PIRATES,
             0.1f,
@@ -497,6 +498,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             0.3f,
             0.6f,
             null,
+            bulletColor = Global.getSector().playerFaction.baseUIColor,
             contributorExists = null, // exists on one of your planets
             addBenefactorInfo = false,
             contributionId = "voidsun",
@@ -517,6 +519,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             contributionId = "agreus",
             factionName = "IIT&S"
         )
+        Global.getSector().importantPeople.getPerson(People.IBRAHIM).makeImportant(IAIIC_QUEST)
         class AlimarExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
                 return Global.getSector().economy.getMarket("ailmar")?.isInhabited() ?: return false
@@ -571,7 +574,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         list += MPC_factionContribution(
             Factions.LUDDIC_PATH,
             0.3f,
-            0.7f,
+            0.8f,
             removeContribution = null,
             removeNextAction = false,
             requireMilitary = false,
@@ -1630,7 +1633,11 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (stage.wasEverReached) continue
             if (stage.progress < lowestReachableProgress) lowestReachableProgress = stage.progress
         }
-        super.setProgress(progress.coerceAtMost(lowestReachableProgress))
+        val newProgress = progress.coerceAtMost(lowestReachableProgress)
+        if (newProgress >= (maxProgress / 0.4f)) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_voidsunCanSpawnNow"] = true
+        }
+        super.setProgress(newProgress)
     }
 
     private fun startBombardment() {

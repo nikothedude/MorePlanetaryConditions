@@ -63,7 +63,7 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         }
 
         fun getVoidsunPlanet(): MarketAPI? {
-            return Global.getSector().memoryWithoutUpdate["\$MPC_IAIICvoidsunPlanet"] as? MarketAPI
+            return Global.getSector().economy.getMarket(Global.getSector().memoryWithoutUpdate.getString("\$MPC_IAIICvoidsunPlanetId")) as? MarketAPI
         }
 
         fun getBaseContributionTags(): MutableSet<String> {
@@ -88,7 +88,34 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         if (listInfoParam is String) {
             when (listInfoParam) {
                 "test" -> info.addPara("a", 5f)
-                else -> {info.addPara(listInfoParam as String, initPad)}
+                "voidsunBegin" -> {
+                    info.addPara(
+                        "Go to %s",
+                        5f,
+                        Global.getSector().playerFaction.baseUIColor,
+                        getVoidsunPlanet()?.name
+                    )
+                }
+                "VS_GO_TO_RELAY_PLACE" -> {
+                    val targetSysId = Global.getSector().memoryWithoutUpdate.getString("\$MPC_voidsunRelaySysId")
+                    val targetSys = Global.getSector().getStarSystem(targetSysId) ?: return
+                    info.addPara(
+                        "Go to %s",
+                        5f,
+                        Misc.getHighlightColor(),
+                        targetSys.name
+                    )
+                }
+                "VS_GOT_EVIDENCE" -> {
+                    val voidsunPlanet = getVoidsunPlanet() ?: return
+                    info.addPara(
+                        "Obtained evidence - return to %s",
+                        5f,
+                        Global.getSector().playerFaction.baseUIColor,
+                        voidsunPlanet.name
+                    )
+                }
+                else -> {info.addPara(listInfoParam as? String, initPad)}
             }
         }
     }
@@ -257,6 +284,40 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
                         "diplomatic consequences"
                     )
                 }
+            } else if (voidsunContrib.custom == "GO_TO_COMMS_RELAY") {
+                val sysName = voidplanet.starSystem.name
+                info.addPara(
+                    "The %s %s has potentially been compromised by Voidsun. You should investigate.",
+                    0f,
+                    Misc.getHighlightColor(),
+                    sysName, "comms relay"
+                ).setHighlightColors(
+                    voidplanet.faction.baseUIColor,
+                    Misc.getHighlightColor()
+                )
+
+                if (voidplanet.containingLocation.customEntities.none { it.hasTag(Tags.COMM_RELAY) }) {
+                    info.addPara(
+                        "You will need to construct a comm relay to progress this quest.",
+                        0f
+                    ).color = Misc.getGrayColor()
+                }
+            } else if (voidsunContrib.custom == "GO_TO_EXTERNAL_RELAY") {
+                val sysName = voidplanet.starSystem.name
+                val targetSysId = Global.getSector().memoryWithoutUpdate.getString("\$MPC_voidsunRelaySysId")
+                val targetSys = Global.getSector().getStarSystem(targetSysId) ?: return
+
+                info.addPara(
+                    "You've found a FTL relay on the $sysName comms relay, that has seemingly been directing specific traffic to somewhere in %s. You'll likely find it near a %s.",
+                    0f,
+                    Misc.getHighlightColor(),
+                    targetSys.name, "stable location"
+                )
+            } else if (voidsunContrib.custom == "GOT_EVIDENCE") {
+                info.addPara(
+                    "You found damning evidence of the IAIIC's involvement with Voidsun. You may now arrest them freely.",
+                    0f
+                )
             }
         }
 
@@ -325,6 +386,12 @@ class MPC_indieContributionIntel: BaseIntelPlugin() {
         val fobIntel = MPC_IAIICFobIntel.get() ?: return null
         val blackknifeContrib = fobIntel.getContributionById("blackknife")
         if (blackknifeContrib?.custom == "GO_KILL_GUY") return (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICBKTargetSys"] as StarSystemAPI).hyperspaceAnchor
+        val voidsunContrib = fobIntel.getContributionById("voidsun")
+        if (voidsunContrib?.custom == "GO_TO_EXTERNAL_RELAY") {
+            val targetSysId = Global.getSector().memoryWithoutUpdate.getString("\$MPC_voidsunRelaySysId")
+            val targetSys = Global.getSector().getStarSystem(targetSysId) ?: return null
+            return targetSys.hyperspaceAnchor
+        }
         return null
     }
 }
