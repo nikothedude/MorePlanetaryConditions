@@ -62,6 +62,8 @@ object MPC_People {
 
     const val HEGE_HON_TRAITOR = "MPC_hegeHonTraitor"
 
+    const val PATHER_BROKER = "MPC_patherBroker"
+
     //const val
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
@@ -661,6 +663,28 @@ object MPC_People {
             MPC_importantPeople[HEGE_INTSEC_GOON] = goon
 
             goon.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        // LUDDIC CHURCH SHIT
+
+        if (MPC_importantPeople[PATHER_BROKER] == null) {
+            val broker = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.ANY)
+            broker.id = PATHER_BROKER
+
+            broker.rankId = Ranks.CITIZEN
+            broker.postId = Ranks.POST_HERMIT
+
+            broker.importance = PersonImportance.VERY_HIGH
+            broker.voice = Voices.PATHER
+
+            broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
+
+            broker.name = FullName("Broker", "", Gender.ANY)
+
+            importantPeople.addPerson(broker)
+            MPC_importantPeople[PATHER_BROKER] = broker
+
+            broker.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true
