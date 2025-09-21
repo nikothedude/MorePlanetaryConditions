@@ -35,6 +35,7 @@ import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel
 import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI
 import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI.GenericRaidParams
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
+import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission.FleetStyle
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.rulecmd.SetStoryOption.BaseOptionStoryPointActionDelegate
@@ -53,6 +54,7 @@ import com.fs.starfarer.campaign.ai.CampaignFleetAI
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript
+import data.scripts.campaign.magnetar.crisis.MPC_IAIICChurchInitializerScript
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
@@ -129,6 +131,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     /** If true, reputation can go above hostile for this frame. */
     var acceptingPeaceOneFrame: Boolean = false
     var pulledOut: Int = 0
+    var contribsRemoved: Int = 0
     /** How long the IAIIC is suffering disrupted command for. */
     var disruptedCommandDaysLeft = 0f
 
@@ -141,6 +144,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         if (!becauseFactionDead) {
             pulledOut++
         }
+        contribsRemoved++
         factionContributions -= contribution
         contribution.onRemoved(this, becauseFactionDead, dialog, sendMessage)
         updateDoctrine()
@@ -1636,6 +1640,12 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val newProgress = progress.coerceAtMost(lowestReachableProgress)
         if (newProgress >= (maxProgress / 0.4f)) {
             Global.getSector().memoryWithoutUpdate["\$MPC_voidsunCanSpawnNow"] = true
+        }
+        if (newProgress >= (maxProgress / 0.3f) && contribsRemoved >= 2 && !Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICchurchInitiated")) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_IAIICchurchInitiated"] = true
+
+            MPC_IAIICChurchInitializerScript().start()
+
         }
         super.setProgress(newProgress)
     }
