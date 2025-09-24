@@ -8,6 +8,7 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.campaign.ai.FleetAIFlags
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.FleetEventListener
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
@@ -21,10 +22,18 @@ import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
+import lunalib.lunaExtensions.getMarketsCopy
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.makeImportant
 
 class MPC_IAIICChurchInitializerScript: niko_MPC_baseNikoScript(), FleetEventListener {
+
+    companion object {
+        const val KEY = "\$MPC_IAIICChurchInit"
+
+        fun get(): MPC_IAIICChurchInitializerScript? = Global.getSector().memoryWithoutUpdate[KEY] as MPC_IAIICChurchInitializerScript
+    }
 
     var spawnedFleet: CampaignFleetAPI? = null
         set(value) {
@@ -36,10 +45,14 @@ class MPC_IAIICChurchInitializerScript: niko_MPC_baseNikoScript(), FleetEventLis
 
     override fun startImpl() {
         Global.getSector().addScript(this)
+        Global.getSector().memoryWithoutUpdate[KEY] = this
     }
 
     override fun stopImpl() {
         Global.getSector().removeScript(this)
+        spawnedFleet?.removeEventListener(this)
+
+        Global.getSector().memoryWithoutUpdate[KEY] = null
     }
 
     override fun runWhilePaused(): Boolean = false
@@ -72,6 +85,7 @@ class MPC_IAIICChurchInitializerScript: niko_MPC_baseNikoScript(), FleetEventLis
     }
 
     fun locIsGood(location: LocationAPI): MarketAPI? {
+        if (!location.hasTag(Tags.THEME_CORE)) return null
         for (market in location.getMarketsInLocation()) {
             if (market.faction.getRelationshipLevel(Factions.LUDDIC_CHURCH) <= RepLevel.FRIENDLY) {
                 return market
@@ -90,7 +104,7 @@ class MPC_IAIICChurchInitializerScript: niko_MPC_baseNikoScript(), FleetEventLis
                 fleet.clearAssignments()
                 fleet.addAssignment(
                     FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
-                    fleet.market?.primaryEntity,
+                    Global.getSector().getFaction(Factions.LUDDIC_CHURCH).getMarketsCopy().randomOrNull()?.primaryEntity ?: fleet.market?.primaryEntity,
                     Float.MAX_VALUE
                 )
             }
@@ -114,24 +128,47 @@ class MPC_IAIICChurchInitializerScript: niko_MPC_baseNikoScript(), FleetEventLis
         params.commander = MPC_People.getImportantPeople()[MPC_People.CHURCH_ALOOF_MILITANT]
         val fleet = FleetFactoryV3.createFleet(params)
         fleet.makeImportant(niko_MPC_ids.IAIIC_QUEST)
-        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_NON_HOSTILE] = true
+        Misc.makeNonHostileToFaction(fleet, Factions.PLAYER, 30f)
+        //fleet.memoryWithoutUpdate[FleetAIFlags.PLACE_TO_LOOK_FOR_TARGET] = Vector2f(playerFleet.location)
+        /*if (playerFleet.isInHyperspace) {
+            fleet.memoryWithoutUpdate[FleetAIFlags.SEEN_TARGET_JUMPING_FROM] = market.containingLocation.id
+        }*/
         fleet.memoryWithoutUpdate.set("\$genericHail", true)
         fleet.memoryWithoutUpdate.set("\$genericHail_openComms", "MPC_IAIICChurchInitialHail")
         fleet.name = "Civilian"
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_NON_HOSTILE] = true
+        fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORED_BY_OTHER_FLEETS] = true
+        fleet.memoryWithoutUpdate[MemFlags.FLEET_IGNORES_OTHER_FLEETS] = true
+        //fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_PURSUE_PLAYER] = true
         //fleet.isNoFactionInName = true
+        fleet.sensorRangeMod.modifyMult("MPC_INFINITERANGE", 100f)
 
+        fleet.addAssignment(
+            FleetAssignment.GO_TO_LOCATION,
+            playerFleet,
+            30f,
+            "approaching your fleet",
+        )
         fleet.addAssignment(
             FleetAssignment.INTERCEPT,
             playerFleet,
-            Float.MAX_VALUE,
+            30f,
             "approaching your fleet",
-            ReturnScript(fleet)
+            //ReturnScript(fleet)
+        )
+        fleet.addAssignment(
+            FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
+            Global.getSector().getFaction(Factions.LUDDIC_CHURCH).getMarketsCopy().randomOrNull()?.primaryEntity ?: fleet.market?.primaryEntity,
+            Float.MAX_VALUE
         )
         fleet.addEventListener(this)
+        fleet.stats.fleetwideMaxBurnMod.modifyFlat("MPC_FAST", 10f)
         spawnedFleet = fleet
 
-        market.containingLocation.addEntity(fleet)
-        fleet.setLocation(market.primaryEntity.location.x, market.primaryEntity.location.y)
+        playerFleet.containingLocation.addEntity(fleet)
+        val range = playerFleet.sensorStrength + (fleet.sensorProfile * 1.5f)
+        val point = Misc.getPointAtRadius(playerFleet.location, range).scale(1.1f) as Vector2f
+        fleet.setLocation(point.x, point.y)
     }
 
     override fun reportFleetDespawnedToListener(

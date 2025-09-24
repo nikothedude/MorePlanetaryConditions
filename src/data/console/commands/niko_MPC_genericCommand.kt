@@ -17,6 +17,7 @@ import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.DebrisFieldTerrainPlugin.DebrisFieldParams
 import com.fs.starfarer.api.impl.campaign.terrain.StarCoronaTerrainPlugin.CoronaParams
 import com.fs.starfarer.api.util.Misc
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.singularity.MPC_energyFieldInstance
 import data.scripts.campaign.singularity.MPC_singularityHyperspaceProximityChecker
@@ -36,7 +37,7 @@ class niko_MPC_genericCommand: BaseCommand {
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        Global.getSector()?.campaignUI?.cmdSaveAndExit()
+        niko_MPC_modPlugin.addExtraExodusPlanet()
 
         return BaseCommand.CommandResult.SUCCESS
     }

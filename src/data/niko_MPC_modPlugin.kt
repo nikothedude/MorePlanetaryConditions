@@ -7,6 +7,7 @@ import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.InstallableIndustryItemPlugin.InstallableItemDescriptionMode
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
 import com.fs.starfarer.api.combat.MissileAIPlugin
 import com.fs.starfarer.api.combat.MissileAPI
@@ -42,6 +43,7 @@ import data.scripts.campaign.magnetar.crisis.listeners.MPC_ArkFOBColonizedListen
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
+import data.scripts.campaign.rulecmd.MPC_IAIICChurchCMD
 import data.scripts.campaign.rulecmd.MPC_IAIICTriTachCMD.Companion.DOWN_PAYMENT
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
@@ -53,6 +55,7 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
 import data.utilities.niko_MPC_ids.specialSyncrotronItemId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
+import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
@@ -70,6 +73,8 @@ import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
+import org.lazywizard.console.commands.Survey
+import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -116,6 +121,33 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             val intel = MPC_IAIICFobIntel.get() ?: return
             intel.removeBlueprintFunctions.removeAll { nullable: Script? -> nullable == null } // TODO remove
             intel.removeBlueprintFunctions.forEach { it?.run() }
+        }
+
+        fun addExtraExodusPlanet(): PlanetAPI {
+            val exodus = MPC_IAIICChurchCMD.getExodus()
+            val furthestPlanet = exodus.planets.filter { !it.isStar && it.orbit != null }.maxBy { it.orbit.orbitalPeriod }
+            val furthestOrbit = furthestPlanet.orbit.makeCopy()
+            val newPlanet = exodus.addPlanet(
+                MPC_IAIICChurchCMD.HIDEOUT_ID,
+                exodus.star,
+                "Altreides",
+                Planets.FROZEN2,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                240f,
+                MathUtils.getDistance(exodus.star, furthestPlanet) + 6000f,
+                furthestOrbit.orbitalPeriod * 1.5f
+            )
+
+            newPlanet.market.addConditionIfNotPresent(Conditions.VERY_COLD)
+            newPlanet.market.addConditionIfNotPresent(Conditions.POOR_LIGHT)
+            newPlanet.market.addConditionIfNotPresent(Conditions.THIN_ATMOSPHERE)
+            newPlanet.market.addConditionIfNotPresent(Conditions.VOLATILES_TRACE)
+            newPlanet.market.addConditionIfNotPresent(Conditions.ORE_SPARSE)
+
+            newPlanet.market.conditions.forEach { it.isSurveyed = true }
+            newPlanet.market.surveyLevel = MarketAPI.SurveyLevel.FULL
+
+            return newPlanet
         }
     }
 
@@ -374,11 +406,13 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.PIRATES, -0.5f)
         IAIIC.setRelationship(Factions.REMNANTS, -0.5f)
         IAIIC.setRelationship(Factions.LUDDIC_PATH, -0.5f) // only officially
-        IAIIC.setRelationship(Factions.PLAYER, -0.2f)
+        IAIIC.relToPlayer.rel = -0.2f // this way it doesnt make a noise
         IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
         //IAIIC.isShowInIntelTab = false
 
         setupIAIICBlueprints()
+
+        addExtraExodusPlanet()
 
         doSpecialProcgen(true)
     }

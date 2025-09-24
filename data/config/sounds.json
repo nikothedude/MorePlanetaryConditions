@@ -11,6 +11,21 @@
 		"MPC_magnetarAmbience":[
 			{"file":"MPC_ambiencemagnetar.ogg","source":"sounds/music","volume":0.8},
 		],
+		"MPC_icecaveAmbience":[
+			{"file":"MPC_icecaveAmbience.ogg","source":"sounds/music","volume":0.8},
+		],
+		"MPC_ludditeMenace":[
+			{
+				"source":"sounds/music/music.bin",
+				"volume":0.8,
+				"pitch":0.4,
+				"files":[
+					"faction_luddite_market_02_hostile_var01.ogg",
+					"faction_luddite_market_02_hostile_var02.ogg",
+				],
+				"randomStart":true, 
+			},
+		],
 		
 	# collapseclose
 	},

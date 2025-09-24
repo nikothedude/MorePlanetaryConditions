@@ -5,5 +5,6 @@ sounds/music/MPC_contactWithTheUnknownTwo.ogg sourced from https://www.fesliyans
 sounds/music/MPC_ambiencemagnetar.ogg sourced from https://cryochamber.bandcamp.com/track/portal-to-the-unknown (Cryo Chamber)
 sounds/MPC_swordUnsheath.ogg sourced from - unsheath_sword.wav by Qat -- https://freesound.org/s/107589/ -- License: Creative Commons 0
 sounds/MPC_crowdCheer.ogg sourced from - 181001_005_crowd_cheer.wav by wangzhuokun -- https://freesound.org/s/442580/ -- License: Creative Commons 0
+sounds/music/MPC_icecaveAmbience.ogg sourced from https://www.youtube.com/watch?v=oR18ucQ5aTw (Cryo Chamber)
 
 Fractal core oracle, optimiser, enlightenment skills from astral ascension

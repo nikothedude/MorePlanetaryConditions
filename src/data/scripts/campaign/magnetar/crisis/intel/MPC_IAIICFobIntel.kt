@@ -1645,7 +1645,6 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             Global.getSector().memoryWithoutUpdate["\$MPC_IAIICchurchInitiated"] = true
 
             MPC_IAIICChurchInitializerScript().start()
-
         }
         super.setProgress(newProgress)
     }

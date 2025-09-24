@@ -64,6 +64,8 @@ object MPC_People {
 
     const val PATHER_BROKER = "MPC_patherBroker"
     const val CHURCH_ALOOF_MILITANT = "MPC_aloofMilitant"
+    const val CHURCH_HARDCORE_MILITANT = "MPC_hardcoreMilitant"
+    const val CHURCH_KNIGHT_FENCE = "MPC_knightFence"
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
 
@@ -675,14 +677,67 @@ object MPC_People {
             militant.importance = PersonImportance.VERY_HIGH
             militant.voice = Voices.FAITHFUL
 
-            //broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
-
             militant.name = FullName("Alice", "Semblemind", Gender.FEMALE)
+            militant.portraitSprite = "graphics/portraits/portrait_luddic10.png"
+
+            militant.stats.level = 4
+            militant.stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            militant.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
+            militant.stats.setSkillLevel(Skills.OFFICER_MANAGEMENT, 1f)
+            militant.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 1f)
 
             importantPeople.addPerson(militant)
             MPC_importantPeople[CHURCH_ALOOF_MILITANT] = militant
 
             militant.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[CHURCH_HARDCORE_MILITANT] == null) {
+            val militant = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.FEMALE)
+            militant.id = CHURCH_HARDCORE_MILITANT
+
+            militant.rankId = Ranks.CITIZEN
+            militant.postId = Ranks.POST_TERRORIST
+            militant.relToPlayer.rel = -0.1f
+
+            militant.importance = PersonImportance.VERY_HIGH
+            militant.voice = Voices.FAITHFUL
+
+            militant.name = FullName("Alaz", "Blackwind", Gender.FEMALE)
+            militant.portraitSprite = "graphics/portraits/portrait_luddic01.png"
+
+            militant.stats.level = 7
+            militant.stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            militant.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
+            militant.stats.setSkillLevel(Skills.OFFICER_MANAGEMENT, 1f)
+            militant.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 1f)
+            militant.stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+            militant.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)
+            militant.stats.setSkillLevel(Skills.BALLISTIC_MASTERY, 2f)
+
+            importantPeople.addPerson(militant)
+            MPC_importantPeople[CHURCH_HARDCORE_MILITANT] = militant
+
+            militant.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[CHURCH_KNIGHT_FENCE] == null) {
+            val fence = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.MALE)
+            fence.id = CHURCH_KNIGHT_FENCE
+
+            fence.rankId = Ranks.CITIZEN
+            fence.postId = Ranks.POST_SMUGGLER
+
+            fence.importance = PersonImportance.MEDIUM
+            fence.voice = Voices.BUSINESS
+
+            fence.name = FullName("Rodger", "Jackden", Gender.MALE)
+            fence.portraitSprite = "graphics/portraits/portrait18.png"
+
+            importantPeople.addPerson(fence)
+            MPC_importantPeople[CHURCH_KNIGHT_FENCE] = fence
+
+            fence.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
         if (MPC_importantPeople[PATHER_BROKER] == null) {

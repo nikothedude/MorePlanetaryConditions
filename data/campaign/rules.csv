@@ -3490,6 +3490,369 @@ MPC_IAIICPLReynardSupportOptLeave,DialogOptionSelected,$option == MPC_IAIICPLRey
 #END League,,,,,,
 ,,,,,,
 # Church,,,,,,
+"# Pre-intel, ask admins",,,,,,
+MPC_IAIICChurchAdminAskAdder,PopulateOptions,"$postId == administrator
+$faction.id == luddic_church
+MPC_IAIICChurchCMD canDoPreIntelStuff
+!$player.MPC_IAIICaskedChurchAdminAboutIAIIC",,,"5:MPC_IAIICChurchAdminAsk:""Church ships and personnel are appearing within hostile fleets in my space. I'd like to submit an inquiry.""",
+MPC_IAIICChurchAdminAsk,DialogOptionSelected,"$option == MPC_IAIICChurchAdminAsk
+!MPC_IAIICChurchCMD churchHostile score:30","SetTextHighlights ""better opportunity will present itself later""
+$player.MPC_IAIICaskedChurchAdminAboutIAIIC = true 1
+FireAll PopulateOptions","The $post swallows. ""I assure you, $PlayerSirOrMadam, whatever reason these independent walkers have to find refuge within your... 'enemy', it is nothing more than chance and smoke. Perhaps your policies simply attract the more... militant amongst us?"" A thin, forced smile crosses $hisOrHer lips.
+
+Noticing your unsatisfied glare, $heOrShe awkwardly coughs, wiping any expression off $hisOrHer face. ""Regardless, ah, let us - pray for their salvation from wrath and-""
+$HeOrShe swallows. ""-your inquiry will be filed, $PlayerSirOrMadam. If the Knights take note, you may expect a response within the cycle.""
+
+You doubt you'll get one. You sigh - maybe a better opportunity will present itself later. You exchange a canned prayer with the stressed-looking $post, and turn to other, more accessible matters.",,
+MPC_IAIICChurchAdminAskHated,DialogOptionSelected,"$option == MPC_IAIICChurchAdminAsk
+MPC_IAIICChurchCMD churchHostile score:20","SetTextHighlights ""better opportunity will present itself later""
+$player.MPC_IAIICaskedChurchAdminAboutIAIIC = true 1
+FireAll PopulateOptions","""...hostile fleets within your space? Who..."" the $post mumbles, before gasping - and scowling. ""Ah. You. Head trapped in the sandy depths of Mammon's labyrinth, cursed to forever chase the glinting light of an anglerfish?""
+
+$HeOrShe sighs, uttering a quiet prayer - a prayer for your salvation. ""I know not of our involvement with your war. And even if I did - would it be of any good sense to *tell* you about it? You, who we have sworn our lives against?""
+
+$HeOrShe turns to the side, waving away at you. ""Speak no more of this - I have nothing to give you.""
+
+You sigh - maybe a better opportunity will present itself later. You turn to other, more accessible matters.",,
+"#END Pre-intel, ask admins",,,,,,
+,,,,,,
+# Hailed by aloof militant for first time,,,,,,
+MPC_IAIICChurchInitialHail,MPC_IAIICChurchInitialHail,,,"Incompatible vidlink protocols make accepting the hail a challenge, but not impossible. Soon, a grainy commlink springs to near-life, showing a knightly-looking woman in front of you - head bowed between two clasped hands, gentle murmurs in deep, tired-sounding prayer.","MPC_IAIICChurchInitialHailWait:Wait for her to notice you
+MPC_IAIICChurchInitialHailClearThroat:Clear your throat
+MPC_IAIICChurchInitialHailUhhh:""I usually expect to be addressed, at least, when I'm hailed.""",
+MPC_IAIICChurchInitialHailWait,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailWait,FireBest MPC_IAIICChurchInitialHailWaitDialog,"It doesn't take long. Perhaps having taken notice of the now flesh-colored glow penetrating her shut eyelids, she slowly emerges from her meditation - shock screaming across her face as she finally lays eyes on you.
+
+""I-it... worked! Oh, thank Ludd, she was right! You *are* here! Hah-hahah! Hahah!"" After taking a few well-needed breaths, she clears her throat, mutters another prayer, and returns to you. ",,
+MPC_IAIICChurchInitialHailClearThroat,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailClearThroat,FireBest MPC_IAIICChurchInitialHailWaitDialog,"At the unexpected noise, she starts from her meditation - shock screaming across her face as she finally lays eyes on you.
+
+""I-it... worked! Oh, thank Ludd, she was right! You *are* here! Hah-hahah! Hahah!"" After taking a few well-needed breaths, she clears her throat, mutters another prayer, and returns to you. ",,
+MPC_IAIICChurchInitialHailWaitDialog,MPC_IAIICChurchInitialHailWaitDialog,,,"""Alice. Alice Semblemind. And you must be $PlayerName! Oh, by Ludd, I've been searching for months. But now! But now! I *have* you! We've *found* you! And now-""","MPC_IAIICChurchInitialHailYoullAttack:(Sarcastic) ""You'll kill me?""
+MPC_IAIICChurchInitialHailLetFinish:Let her finish",
+MPC_IAIICChurchInitialHailYoullAttack,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailYoullAttack,FireBest MPC_IAIICChurchInitialHailExposit,"Your words seem to stun the woman, but she soon resumes, swiping her hands around, ""What, no, no no no! No! I couldn't even scratch your *paint* with this fleet! Listen...""",,
+MPC_IAIICChurchInitialHailLetFinish,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailLetFinish,FireBest MPC_IAIICChurchInitialHailExposit,"""-I have something, I think, you'd like to hear. A... a proposition."" she examines your face, gauging your reaction, then - seemingly satisfied - continues.",,
+MPC_IAIICChurchInitialHailExposit,MPC_IAIICChurchInitialHailExposit,,,"""You are... involved in a great, terrible war... and despite how much they try to hide it, the Knights - the decadent hand of iron - cannot help but reach into the pod and grant its heretical technologies?""
+
+She gives a sad smile. ""It is true. The Knights of Ludd, while outwardly denying it, are supplying the IAIIC with a large amount of fleet and manpower. How else would they have obtained the tech-spawn Invictus?"" she says, a look of disgust briefly crossing her face - then falling with a resigned sigh. ""-for once, $PlayerName, we have a common enemy. While, in another time, we would be the ones hunting you down, now, *now*, we share a goal.""","MPC_IAIICChurchInitialHailExpositTwo:""And that goal is?""",
+MPC_IAIICChurchInitialHailExpositTwo,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositTwo,,"""The eradication of the so-called 'Knights of Ludd'.""",MPC_IAIICChurchInitialHailExpositThree:Continue,
+MPC_IAIICChurchInitialHailExpositThree,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositThree,,"She continues. ""Ludd, famously, anti-violence, anti-technology - his words suggested, peace, harmony, and not a long stick. And yet."" she frowns. 
+""You can not find a street in Ludd's great church without a flash of white, the hum of a mag-coil-"" she sighs, eyes drifting to the Luddic-embroidered book on her desk. ""-and techno-heresy shown publicly like a lemon ice cream.""
+
+She interrupts her pondering to look back at you. ""What do you think, Captain? What do *you* think of the Knights?""","MPC_IAIICChurchInitialHailExpositThreeNeutral:""They're - even if they don't admit it - at war with me. What do you think?""
+MPC_IAIICChurchInitialHailExpositThreeNecessary:""The sector is a dangerous place. A big stick is necessary.""
+MPC_IAIICChurchInitialHailExpositThreeHeresy:""Heretics. Did Ludd ever raise a hand against another?""",
+MPC_IAIICChurchInitialHailExpositThreeNeutral,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositThreeNeutral,FireBest MPC_IAIICChurchInitialHailExpositFour,"""*I* think, that is a perfectly valid reason to distrust the Knights."" she thinly smiles.",,
+MPC_IAIICChurchInitialHailExpositThreeNecessary,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositThreeNecessary,"AdjustRepActivePerson SUSPICIOUS -1
+$player.ethosOrder++
+FireBest MPC_IAIICChurchInitialHailExpositFour","A darkened shadow covers her eyelids as she listens to your words. Shaking her head, she sighs - utters a prayer for your salvation - and continues. ""Even if we disagree on the principles. I'm sure you'd enjoy a chance to weaken your enemy.""",,
+MPC_IAIICChurchInitialHailExpositThreeHeresy,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositThreeHeresy,"AdjustRepActivePerson FRIENDLY 1
+$player.luddicAttitudeFaithful++
+FireBest MPC_IAIICChurchInitialHailExpositFour","A thin smile spreads across her lips, nodding in appreciation. ""Indeed. Never once did Ludd lift a finger - his Charisma simply won over his followers!""",,
+MPC_IAIICChurchInitialHailExpositFour,MPC_IAIICChurchInitialHailExpositFour,,FireAll MPC_IAIICChurchInitialHailExpositFourOpts,"She continues. ""I am a representative of a group of like-minded faithful who - like ourselves - are unhappy with the Knights. We have been trying, and trying, and *trying*, but *failing* to undermine them - but with YOU, Captain, maybe, just *maybe*-!"" her eyes light up. ""-we can finally accomplish our goal!""
+
+Her heavy, fanatic breathing comes to an end as she closes her eyes, prays once more, and returns to face you. ""-what say you, Captain? Are you interested?""",,
+MPC_IAIICChurchInitialHailExpositFourHowGoodAdder,MPC_IAIICChurchInitialHailExpositFourOpts,!$askedHowGood,,,"10:MPC_IAIICChurchInitialHailExpositFourHowGood:""How exactly does dismantling the Knights of Ludd improve the situation in my space?""",
+MPC_IAIICChurchInitialHailExpositFourHowGood,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourHowGood,"$askedHowGood = true 0
+FireAll MPC_IAIICChurchInitialHailExpositFourOpts","""Well, it's quite simple Captain. The Knights of Ludd is supplying arms, armaments, ships, and blasphemers - soldiers - to fight in the IAIIC's army. Surely you've noticed the presence of their ships and commanders?"" she swings her arm to the left. ""By the time we're done, they won't have the time to help this war.""",,
+MPC_IAIICChurchInitialHailExpositFourHowGoodTwoAdder,MPC_IAIICChurchInitialHailExpositFourOpts,"$askedHowGood
+!$askedHowGoodTwo",,,"10:MPC_IAIICChurchInitialHailExpositFourHowGoodTwo:""Surely it's not only the Knights that are supplying the IAIIC. What about the inquisitorium?""",
+MPC_IAIICChurchInitialHailExpositFourHowGoodTwo,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourHowGoodTwo,"$askedHowGoodTwo = true 0
+FireAll MPC_IAIICChurchInitialHailExpositFourOpts","She meekly nods. ""...yes, Captain, ah - I have no guarantee defeating the Knights with us would *completely* strip the presence of Luddites within your space. *But*."" She raises a finger - and points it gently towards you. ""Surely you'd enjoy having a severely gimped fleet, at least? Less infiltrators? I understand war, Captain - I've been fighting it nearly all my life. The Knights are your biggest, greatest, *gravest* threat in the Church."" She grimaces. ""...why do you think we've been unable to uproot them?""",,
+MPC_IAIICChurchInitialHailExpositFourArePatherAdder,MPC_IAIICChurchInitialHailExpositFourOpts,!$askedIsPather,,,"20:MPC_IAIICChurchInitialHailExpositFourIsPather:""So, are you pathers?""",
+MPC_IAIICChurchInitialHailExpositFourIsPather,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourIsPather,"$askedIsPather = true 0
+FireAll MPC_IAIICChurchInitialHailExpositFourOpts","She winces, recoiling from your question. Her eyes dart to the Book of Ludd on her desk - and she utters a small prayer.
+
+""We... we do not prefer to think ourselves of, as uh, that. We follow the teachings of Ludd - we uh... we don't bomb civilian households, Captain. We are not monstrous - tainted by Mammon.""
+
+""Militants, Captain."" She nods, finally confidant. ""Militants.""",,
+MPC_IAIICChurchInitialHailExpositFourAcceptAdder,MPC_IAIICChurchInitialHailExpositFourOpts,,MPC_IAIICChurchCMD getHideoutName,,"40:MPC_IAIICChurchInitialHailExpositFourAccept:""Yes. I'm interested."" (Accept)",
+MPC_IAIICChurchInitialHailExpositFourAccept,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourAccept,"SetTextHighlightColors luddic_church player
+SetTextHighlights ""Eos Exodus"" $global.MPC_IAIICChurchHideoutPlanetName","Your words don't seem to register at first. You have to say it again - then again - for her to finally have a reaction.
+
+""-YES! Yes, *yes*-"" she excites, giddily squirming in her chair until she remembers - she has a witness. Clearing her throat, throwing one leg over another, and making a veneer of calmness, she continues. ""-I knew seeking you out was a good idea."" She inhales - pausing, before resuming.
+
+""I need to introduce you to the rest of the group before we continue. I-we... uh, didn't actually have a plan for if you... agreed. So we'll need to link up and reorganize. Come - the Eos Exodus star system, $global.MPC_IAIICChurchHideoutPlanetName."" You promptly recieve a set of coordinates - as well as a key-phrase. 'In the light of darkness.'",MPC_IAIICChurchInitialHailExpositFourAcceptTwo:Continue,
+MPC_IAIICChurchInitialHailExpositFourAcceptTwo,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourAcceptTwo,"MPC_IAIICChurchCMD beginIntel
+MPC_IAIICChurchCMD goToHideout
+MPC_IAIICChurchCMD endScript
+$entity.ignorePlayerCommRequests = true
+EndConversation DO_NOT_FIRE","""You will find a cavern at these coordinates. Follow it down - mind the uh, icicles - they're prone to fall. Speak the codeword to the guards at front, and they'll know its you. Now. Let us depart!""
+
+And with that, the commlink blinks to black, and the opposing fleet moves towards Eos Exodus - and burns. If you want to meet them in good time, you should too.",cutCommLink:Cut the comm link,
+MPC_IAIICChurchInitialHailExpositFourDenyAdder,MPC_IAIICChurchInitialHailExpositFourOpts,,"MPC_addOptionConfirmation MPC_IAIICChurchInitialHailExpositFourDeny ""You may not find a better opportunity to divest the church from the IAIIC. Denying at this stage will lock you out. Are you sure?"" ""Yes"" ""No""
+",,"50:MPC_IAIICChurchInitialHailExpositFourDeny:""No. I'll find my own way."" (Decline)",
+MPC_IAIICChurchInitialHailExpositFourDeny,DialogOptionSelected,$option == MPC_IAIICChurchInitialHailExpositFourDeny,"$global.MPC_IAIICChurchDenied = true
+$entity.ignorePlayerCommRequests = true
+$MPC_IAIICChurchCMD endScript
+EndConversation DO_NOT_FIRE","Your words don't seem to register at first. You have to say it again - then again - for her to finally have a reaction.
+
+And that reaction is of resigned sadness. A simple nod, a sigh, and a short sentence - ""...of course, Captain. I suppose... she was right. You would never have been an asset."" - and then the commlink fades to black, as the opposing fleet moves away, presumably to whence it came.
+
+You'll find your own way. You don't need some 'militants'.",cutCommLink:Cut the comm link,
+#END Hailed by aloof militant for first time,,,,,,
+# Militant hideout dialog,,,,,,
+# First meeting. Descend through the caverns,,,,,,
+MPC_IAIICChurchHideoutInitAdder,PopulateOptions,"$id == MPC_eos_hideout_planet
+!$global.MPC_IAIICChurchMetMilitantHideout
+MPC_IAIICChurchCMD eventActive",SetOptionColor MPC_IAIICChurchHideoutInit highlight,"""Coordinates locked in, Captain."" nav declares. ""No nearby artificial structures, and nothing sub-surface. Detecting a small breach in the ice-sheets, though - I assume that's where our 'friend' wanted us to descend.""",1:MPC_IAIICChurchHideoutInit:Consider your approach options,
+MPC_IAIICChurchHideoutInit,DialogOptionSelected,$option == MPC_IAIICChurchHideoutInit,FireAll MPC_IAIICChurchHideoutInitOpts,"You approach your tactical display, and expand the spinning hologram. Before you, and your officers, is a deep scan of the planet's crust. The icey ravine your coordinates point to has clearly been touched by humans, and your scan only penetrates about a kilometer before terminating. If there really is something down there, it's *deep*.
+
+""Are we even sure this isn't a trap?"" tactical interjects. ""We've made many enemies within the luddic faith. The pathers, certainly, would want our head on a spike for what we've - what they *think* we've done.""
+
+""Are we even sure they have what it takes to fight off the Knights?"" ops grunts. ""They could just have their head swimming with fairy tales of Luddic warriors fighting demons and whatnot."" your chief chuckles. 
+
+""*I* say it's worth investigating, at least."" comms concludes, nodding - to which a few officers reciprocate. ""Our options are total societal destruction, investigating this lead, or swat in the dart until we find another idea. This is the best path, for now.""","MPC_IAIICChurchHideoutHail:Broadcast a wide-spectrum hail
+MPC_IAIICChurchHideoutScout:Send a group of scout drones inside the crevasse
+MPC_IAIICChurchHideoutMarines:Take a detachment of marines with you (UNFINISHED)
+MPC_IAIICChurchHideoutDescend:Descend into the ice crevasse",
+MPC_IAIICChurchHideoutHailAdder,MPC_IAIICChurchHideoutInitOpts,!$MPC_hailed,,,10:MPC_IAIICChurchHideoutHail:Broadcast a wide-spectrum hail,
+MPC_IAIICChurchHideoutScoutAdder,MPC_IAIICChurchHideoutInitOpts,!$MPC_scouted,,,20:MPC_IAIICChurchHideoutScout:Send a group of scout drones inside the crevasse,
+MPC_IAIICChurchHideoutMarinesAdder,MPC_IAIICChurchHideoutInitOpts,!$MPC_didMarines,,,30:MPC_IAIICChurchHideoutMarines:Take a detachment of marines with you (UNFINISHED),
+MPC_IAIICChurchHideoutDescendAdder,MPC_IAIICChurchHideoutInitOpts,,,,40:MPC_IAIICChurchHideoutDescend:Descend into the ice crevasse,
+MPC_IAIICChurchHideoutAbortAdder,MPC_IAIICChurchHideoutInitOpts,,,,50:MPC_IAIICChurchHideoutAbort:Reconsider your options (Back),
+MPC_IAIICChurchHideoutAbort,DialogOptionSelected,$option == MPC_IAIICChurchHideoutAbort,FireAll PopulateOptions,,,
+MPC_IAIICChurchHideoutHail,DialogOptionSelected,$option == MPC_IAIICChurchHideoutHail,"$MPC_hailed = true 0
+FireAll MPC_IAIICChurchHideoutInitOpts","Comms fires off multiple hails - one on standard frequencies, another on well-known pather frequencies, and then finally one on a low-frequency, terrain-penetrating emergency channel.
+
+The only response is the eerie hum of cosmic background radiation.",,
+MPC_IAIICChurchHideoutScout,DialogOptionSelected,$option == MPC_IAIICChurchHideoutScout,"$MPC_scouted = true 0
+FireAll MPC_IAIICChurchHideoutInitOpts","The scout-drones descend into the icy crevasse, commanded and captained by your ops chief. Further, and further, they go, following the conveniently placed marker-lamps down. One hundred meters. Two hundred. Three. Around the four hundred mark, their connection becomes spotty - stuttery - until, eventually, all control is lost. Ops attempts to rectify, barking orders - ""Opscon five manual level two, rectify-"" but its too late. The last thing you see before the camfeed cuts out are the drones headed towards the icey walls, their fate all but sealed.
+
+Sensors hums thoughtfully. ""Ice isn't much of an insulator. If I had to guess, the drones were jammed, rather than having naturally lost contact."" A thin mask of worry comes over your officer. Turning to you, they continue: ""...I suggest we tread with caution, Captain. There's no telling what's down there.""",,
+MPC_IAIICChurchHideoutDescend,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescend,,"You board your shuttle, which promptly takes off, passive scans combing the surface for any sign of anti-air. Soon, you find your way through the thin $entity.name atmosphere, past the nonexistant clouds, and touch down on the barren snowy soil, frozen solid into one gargantuan sheet of ice. From here, its more obvious - the snow near the entrance of the ravine is melted, and a gas-analyzer from one of your bodyguards reports AM residue. A ship, or ships, must have left this crevasse.
+
+And it is indeed large enough. You estimate a small shuttle could fit through the sizable icey hole in the ground, but you yourself would rather not, for safety reasons.",MPC_IAIICChurchHideoutDescendTwo:Look down,
+MPC_IAIICChurchHideoutDescendTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendTwo,,"You peer through your EVA-glass and - making sure to fasten yourself to a nearby piton - take a look down.
+
+The ravine is massive. Your stomach churns just staring, down, down into the hundred meter drop, before the sharp and frozen cave twists to the right - likely what caused the scan to fail.
+
+You exchange uneasy glances with your bodyguards, but you know there's only one thing left to do.","MPC_IAIICChurchHideoutDescendThree:""$PlayerName to fleet. I'm going in.""",
+MPC_IAIICChurchHideoutDescendThree,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendThree,"ShowImageVisual MPC_icecave
+niko_MPC_musicToggle ""MPC_icecaveAmbience"" true false
+AddTextSmall ""DEPTH: THREE HUNDRED METERS"" highlight","(TODO: thin down the introduction, its pretty long)
+
+You and your bodyguards make one last check. Climbing gear, check. Emergency ripcord, check. Flares, check. Torches, check. Everything is a go. You confirm with tactical, and indeed, they're ready to pull you out at a moment's notice. You just hope the small arms fire scanners can pick up your weapons fire from however far down you have to go.
+
+You descend. Jumping down the walls of the slippery and treacharous snow, using the TIK-TIK-TIK of the terrain scanner to nervously guide where your feet go next. Thankfully, the snow only gets more solid the further down the wall you scale, but that also means its more and more slippery. Thank Ludd for cleats. The gaping maw of the cavern slowly gets smaller, smaller, smaller, until eventually, all that's left is a small pinprick. And then, you turn.",MPC_IAIICChurchHideoutDescendFour:Dive deeper,
+MPC_IAIICChurchHideoutDescendFour,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendFour,"AddTextSmall ""DEPTH: FIVE HUNDRED METERS"" highlight","Cutting your ropes and quickly re-setting your pitons, you enter the dark cutaway at the side, bringing you deeper and deeper into the planet's crust. And as you descend, the routine call-and-response with your fleet becomes more and more difficult - from some form of jamming or simply the kilometers of ice above your head, you can't tell.",MPC_IAIICChurchHideoutDescendFive:Keep going - the ripcord is still attached. You're safe.,
+MPC_IAIICChurchHideoutDescendFive,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendFive,"MPC_IAIICChurchCMD vignette
+AddTextSmall ""DEPTH: NINE HUNDRED METERS"" highlight","As the light becomes more sparse, so too do the guide-lamps. You and your enterage are forced to activate your torches to see anything, but even that is made difficult by the refraction of the ice. Instead, a low-power mode - merely pushing the darkness back a few inches as you nervously descend into what now is the unknown. One step at a time, one lamp at a time, one meter at a time.
+
+As you go deeper, the caverns twist, branch off, more and more. If it wasn't for the sparse lampsets, you'd be completely lost.",MPC_IAIICChurchHideoutDescendSix:Descend further,
+MPC_IAIICChurchHideoutDescendFiveTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendFiveTwo,"AddTextSmall ""DEPTH: ONE KILOMETER"" highlight","As you descend, you note strange markings on the wall. Warped, blackened ice, in long lines. Blown out chunks of snow. A quick scan from the terrain analyzer confirms your belief - these were destroyed by ship munitions. Curiously, without these marks, you estimate the tunnel would've been too small to fit a shuttle through...",MPC_IAIICChurchHideoutDescendSix:Descend further,
+MPC_IAIICChurchHideoutDescendSix,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSix,"AddTextSmall ""DEPTH: ONE POINT TWO KILOMETERS"" highlight","The lights from your torches twinkle off the shining ice, blinding you on occasion, but more often simply putting on a eerie lightshow in the dark. By now, the torches have all but vanished, leaving you in the pitch black with only a dim glow for company.
+
+On occasional, you hear a clink. A slide. A scrape. An icicle, falling from the stasised ceiling to crash into the rigid ice below. Each time, your hand finds the comforting presence of your firearm, still charged and humming. But will you even be able to see an ambush?
+
+You brush that thought aside.",MPC_IAIICChurchHideoutDescendSeven:Nothing yet. Keep going,
+MPC_IAIICChurchHideoutDescendSeven,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSeven,"AddTextSmall ""DEPTH: ONE POINT FIVE KILOMETERS"" highlight
+AddTextSmall ""DEPTH: TWO POINT THREE KILOMETERS"" highlight
+AddTextSmall ""DEPTH: TWO POINT SEVEN KILOMETERS"" highlight
+FireBest MPC_IAIICChurchHideoutDescendEight",,,
+MPC_IAIICChurchHideoutDescendEight,MPC_IAIICChurchHideoutDescendEight,,"AddTextSmall ""DEPTH: THREE KILOMETERS"" highlight",The cold is unbearable.,MPC_IAIICChurchHideoutDescendNine:...,
+MPC_IAIICChurchHideoutDescendNine,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendNine,,"...finally, you reach a large clearing in the crevice. It seems to smooth out here, breaking from a treacharous vertical drop to a long, frigid cavern. You and your exhausted bodyguards accept the new terrain with eagerness, and begin to trek across the wide icy floors.
+
+Your gas-analyzer pings - more AM traces, but in high concentration. Seems you're getting closer.",MPC_IAIICChurchHideoutDescendTen:You're almost there. Keep going.,
+MPC_IAIICChurchHideoutDescendTen,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendTen,,"After another ten minutes or so of walking, you finally find it. A small, well-lit area, with two well-armored men sitting by a table, cards in their hands. They don't seem to have noticed you. They are flanked by what appears to be a makeshift blast door, dug into the ice. To their sides are numerous small shuttles, and on their feet - a steel plate.
+
+You and your bodyguards crouch down, considering your next move.",MPC_IAIICChurchHideoutDescendSpeak:Make yourself known,
+MPC_IAIICChurchHideoutDescendSpeak,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSpeak,"niko_MPC_musicToggle """" true false
+MPC_IAIICChurchCMD endVignette","You didn't climb all this way just to make enemies. You carefully train your pistol on the nearest guard's head, and utter...","MPC_IAIICChurchHideoutDescendSpeakTwo:""In the light of darkness, we stand.""",
+MPC_IAIICChurchHideoutDescendSpeakTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSpeakTwo,,"Reacting instantly, the guards stumble to their feet with confused excalamations. One trains their gun on your voice's source - making your trigger finger itch - but the rifle is quickly batted down by the other. ""Idiot! That's a passphrase! *Passphrase*!"" turning to you, he produces a torch, shines it on you - examines you for a moment - then continues.
+
+""*Who* are you? And who sent you?"" the man demands, keeping his finger on his rifle's trigger.","MPC_IAIICChurchHideoutDescendSpeakThree:Introduce yourself, and the woman you met prior",
+MPC_IAIICChurchHideoutDescendSpeakThree,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSpeakThree,,"Your name prompts no reaction, but the mention of Semblemind prompts him to relax. He, and his compatriot, lower their weapons, and their lights as well. ""Huh. Semblemind *did* tell us we'd have some uh, guests. Well. You've got the passphrase. No reason to keep you out."" the armored man beckons with a gauntlet. ""Come inside. It's warmer.""",MPC_IAIICChurchHideoutDescendSpeakFour:Exit the darkness,
+MPC_IAIICChurchHideoutDescendSpeakFour,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendSpeakFour,ShowDefaultVisual,"You and your entourage step into the dim light of the entryway, shedding your ripcords along the way. But before you can make it to the rusty-looking door, you're stopped by a palm to your hand - ""No weapons, $playerBrotherOrSister. You're a guest.""
+
+---------
+
+A quick search patdown later - and a cleverly hidden carbon-lattice slingshot - your pistol and knife is confiscated, leaving you (somewhat) weaponless. The other guard, the one that aimed at you, sheepishly moves up to the door and pulls on its handle, causing a dissonant grinding as it fights against the mis-maintained groundslide to open. ""-may Ludd light your path, $playerSirOrMadam."" the second guard nods, ushering you and your team inside.",MPC_IAIICChurchHideoutDescendAirlock:Continue,
+MPC_IAIICChurchHideoutDescendAirlock,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendAirlock,,"The airlock hisses behind you, and misty air rushes through rusty air-ports into the unhealthy-looking room. Your PSI indicator pings as your suit unseald and accepts the soothing warmth of a terran-adjacent atmosphere, artificially seeded into this underground bunker.
+
+Soon, the air stops flowing, a red light switches to green, and the door ahead of you emits a mechanical klik. You step forward.",MPC_IAIICChurchHideoutDescendAirlockExit:Push it open,
+MPC_IAIICChurchHideoutDescendAirlockExit,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendAirlockExit,ShowImageVisual volturn_shrine_fake,"With a shrill three-ping alarm, the airlock door first pushes into its frame, and then to the side - with the help of your bodyguards. What waits for you is a surprisingly fanciful-looking bunker, with concrete flooring, woodsteel walls, and dim hanging lamps - with a few spooked-looking guards, already on the way to raise their weapons.","MPC_IAIICChurchHideoutDescendAirlockExitTwo:""In the light of darkness.""",
+MPC_IAIICChurchHideoutDescendAirlockExitTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendAirlockExitTwo,,"The guards freeze - and then one by one, lower their weapons to a ready. Seems the passphrase worked - somewhat.
+
+Ahead of you, traced with magazines, pulse-munitions, and carefully carved ice-statues (in various states of decay), is a small shrine, carved into the form of a wounded, Ludd-era marine. One arm carrying the other, painted blood trailing on the floor...
+
+...to the right, is what appears to be a hallway leading to a barracks, and canteen. You hear significant foot traffic from that direction, and a faint music...
+
+...and to the left, you hear furious arguing. One of the guards gestures with their rifle in that direction - muttering ""I think you should go meet with the Orbitrus."" You sense a faint trepidation in her words.",MPC_IAIICChurchHideoutDescendMeet:Head to the left,
+MPC_IAIICChurchHideoutDescendMeet,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeet,,"You turn, entering the narrow hallway with your guards. As you approach, the words become clearer - it's a woman's voice, speaking harshly, discussing tactics and logistics.
+
+""...y left? Three? Four?"" a muffled, terrified voice, and then - ""WHAT?! *ZERO*?! How did you let this HAPPEN?! By Ludd's Grace, why do I even KEEP you here?! Report back to your platoon, and-""",MPC_IAIICChurchHideoutDescendMeetTwo:Push open the door,
+MPC_IAIICChurchHideoutDescendMeetTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetTwo,BeginConversation MPC_hardcoreMilitant,"With a grinding hiss, the rusty bunker door grinds open. You step into the command room - tables with maps, stammering radios, and numerous cam-feeds across the bunker are displayed here, alongside a notable marine guard and a woman dressed in green leathers, who up until now, was berating a sheepish-looking militant.
+With a snarl, the dark-skinned woman snaps to you, teeth bared, fire in her eyes. She opens her mouth, holy fury spilling forth - but stops just short of entering her hateful lecture on interruptions.
+
+""...""
+
+Her eyes shoot open. And she draws her pistol.
+
+""...GUARDS!""",MPC_IAIICChurchHideoutDescendMeetThree:Continue,
+MPC_IAIICChurchHideoutDescendMeetThree,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetThree,"niko_MPC_musicToggle ""music_luddite_market_hostile"" true false","You freeze just short of your sling, stopped in your tracks by the blinding light of four laser-sights trained on your forehead - and more barrels *without* such indication. Your bodyguards, in the thin hallway behind you, are not spared this fate, being forced to freeze like a dog in a headlight.
+
+The sound of charging weaponry and storming boots fills the bunker - getting evercloser - as the woman continues speaking. ""On your knees. Hands on your head, or by Ludd's sword, you'll *bleed*.""",MPC_IAIICChurchHideoutDescendMeetFour:Surrender,
+MPC_IAIICChurchHideoutDescendMeetFour,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetFour,,"You don't have any choice. You could take out one, two maybe, before you're peppered with pulsefire. So, begrudgingly, you comply - falling to your knees, interlocking your hands behind your head...
+
+""Secure the bunker! Check the entrance, lock the doors, and clear it out! I want to know *how* this intruder got in here, and I want to know *NOW*!"" she snarls. On cue, a number of the marines ahead and behind you fan out, beginning a methodical clearing operation.
+
+She turns to you, eyes full of righteous fury. ""This installment was supposed to be *secure*. And yet, someone found us. Brilliant. Great. I just hope we won't have to move out *again*..."" she sighs.",MPC_IAIICChurchHideoutDescendMeetFive:Continue,
+MPC_IAIICChurchHideoutDescendMeetFive,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetFive,,"""Before I end your miserable life, I want to know a few things. One. How did you find us. Two. How did you get in here? Three - who *else* is here with you?""","MPC_IAIICChurchHideoutDescendAmAlone:""I'm alone. You won't find anyone else.""
+MPC_IAIICChurchHideoutDescendMarinesOutside:""There's a platoon of marines outside. If you want to survive, I suggest letting me go."" (Lie)
+MPC_IAIICChurchHideoutDescendMeetSix:""I was sent by a friend! Semblemind, I think! 'In the light of dark-'""",
+MPC_IAIICChurchHideoutDescendAmAlone,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendAmAlone,"RemoveOption MPC_IAIICChurchHideoutDescendAmAlone
+RemoveOption MPC_IAIICChurchHideoutDescendMarinesOutside","She snorts. ""We'll see about that.""",,
+MPC_IAIICChurchHideoutDescendMarinesOutside,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMarinesOutside,"RemoveOption MPC_IAIICChurchHideoutDescendAmAlone
+RemoveOption MPC_IAIICChurchHideoutDescendMarinesOutside","She snorts. ""To surrender to a warrior of Moloch?! Never. We will kill you, and use your body as our shield. And believe me - we know how to fight."" she growls.",,
+MPC_IAIICChurchHideoutDescendMeetSix,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetSix,"niko_MPC_musicToggle """" true false","She stiffens, her eyes widening just a bit. Her pistol drops an inch. She stops...",MPC_IAIICChurchHideoutDescendMeetSeven:...get up...?,
+MPC_IAIICChurchHideoutDescendMeetSeven,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetSeven,"niko_MPC_musicToggle ""MPC_ludditeMenace"" true false","Your effort to recompose is interrupted by searing white pain and the feeling of your face ripping against concrete floor. She raises her pistol again - now lined in your blood - and aims it right at your forehead. ""Where is she?! What did you do to her?! TELL me! NOW!"" The pulse pistol hums ominously, glowing a slight blue...",MPC_IAIICChurchHideoutDescendMeetReach:This is too dangerous. You need to act. Now.,
+MPC_IAIICChurchHideoutDescendMeetReach,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetReach,,"There's no reasoning with her. You need to disable her, secure your exit, and exfil. 
+You reach for your concealed flashbang. You doubt such makeshift militants have flash protection - which thankfully, your cleverly concealed flash contacts and earpieces do.
+You pull the pin - ready the hook - and -",MPC_IAIICChurchHideoutDescendMeetEight:...?,
+MPC_IAIICChurchHideoutDescendMeetEight,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetEight,ShowSecondPerson MPC_aloofMilitant,"""Blackwind?! Blackwind, what the hells-what is going ON here?!"" a familiar-sounding voice rings out. You turn - only to see a spooked-looking Semblemind sprinting through guards, carefully stepping over bodyguards to your side.
+
+Blackwind looks up to her compatriot, and visibly shudders - a sense of relief coming over her. But soon, that vanishes, replaced by her righteous fury yet again. ""...this intruder was using your passphrase, Alice. Claimed you brought $playerHimOrHer here. But of course, that's *stupid*. What should we do with $playerHimOrHer? Suggestions?""",MPC_IAIICChurchHideoutDescendMeetNine:Continue,
+MPC_IAIICChurchHideoutDescendMeetNine,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetNine,"niko_MPC_musicToggle """" true false","""N-no! No, stop! Stop! They're not an intruder! I did! I *invited* $playerHimOrHer here! Please, just listen-"" she clasps her hands together, walking up to the spooked-looking Orbitrus...",MPC_IAIICChurchHideoutDescendMeetTen:Continue,
+MPC_IAIICChurchHideoutDescendMeetTen,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetTen,"niko_MPC_musicToggle ""music_luddite_market_hostile"" true false","...only to be stopped in her tracks by the darker woman grabbing her by the collar and bringing her close - taking care to maintain the bead on your forehead with the glowing pistol. The guards stand by, watching nervously.
+
+""You invited a STRANGER into our home?! You did not even CONSULT me! I do not recognize this face at ALL! Alice. Alice! ALICE!"" she hisses, getting spittle on the fliching woman's face. A hand - raises to caress her cheek. And then, nails dig in and strip the first layer of skin. ""We. Can not afford. Further distractions.""
+
+The white-skinned woman nods. Gulps. Then. Continues: ""...it. It is not a stranger, Alaz. $PlayerHeOrShe - leads $global.MPC_playerFacNameWithArticle. We have a common enemy. We-""",MPC_IAIICChurchHideoutDescendMeetEleven:Continue,
+MPC_IAIICChurchHideoutDescendMeetEleven,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetEleven,"niko_MPC_musicToggle """" true false","""You invited $PlayerName here?! The one currently fighting a WAR over AI usage?! Ludd, Alice, what are you THINKING?""
+
+""--listen-- please, just listen."" Semblemind pleads. ""$PlayerHeOrShe too, is fighting the Knights. We have a common enemy. A VERY common enemy. $PlayerHeOrShe already expressed interest in helping us, so... maybe...""
+
+Alaz remains silent. Staring. And thus, Semblemind continues: ""It's been twenty years, Alaz. We can't afford to pick and choose. We need allies. And this... is our best chance.""",MPC_IAIICChurchHideoutDescendMeetTwelve:Continue,
+MPC_IAIICChurchHideoutDescendMeetTwelve,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetTwelve,,"""...""
+
+""...""
+
+""...""
+
+The brown-skinned luddite's body untenses. Her pistol limps to her side. And she lets out a deep, hearty sigh - surveying the room. Surveying the infinite failed battle tactics on the table. Surveying the lacking radio communications. Surveying the tired, exhausted marines watching her fight. Surveying herself - the aching, groaning muscles of both mind and body, wishing for an end to the eternal fight.
+
+Then, she nods.",MPC_IAIICChurchHideoutDescendMeetThirteen:Continue,
+MPC_IAIICChurchHideoutDescendMeetThirteen,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetThirteen,"niko_MPC_musicToggle ""music_luddite_market_neutral"" true false","""I'm still going to beat your skull into tiny shards, Alice. This was risky. And it *is* risky. And you're an IDIOT!"" she hisses. ""For taking this risk."" Alice shrivels - walking a few steps back, bowing her head.
+
+Then, she turns to you. She appraises you - from head to toe, soul to body. ""Is it true? What she says? That you too, seek the destruction of the so-called 'Knights of Ludd'?""","MPC_IAIICChurchHideoutDescendMeetFourteen:""That's why I came all this way. I heard you could help.""",
+MPC_IAIICChurchHideoutDescendMeetFourteen,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendMeetFourteen,,"She sighs. ""...I'm not happy about this. I am deeply, deeply unhappy about this. But, if you're offering, we will gladly accept. *Welcome* to our ragtag team of debatably-faithful-walkers, '$PlayerBrotherOrSister'."" she grumbles out, shivering when she suffers having to say your title.
+
+With a snap of her fingers, a marine in white-red livery appears from your backside, lifting you up and sitting you down on a nearby office chair. ""Medic - patch $playerHimOrHer up. Take them to the infirmary, I-need a gods-damned moment to clear my head."" she mumbles, finding a chair of her own and covering her face in her hands. Obligingly, the medic ushers you away, to which you follow - nothing better to do. Plus, you might have a concussion.",MPC_IAIICChurchHideoutDescendInfirmary:Continue,
+MPC_IAIICChurchHideoutDescendInfirmary,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendInfirmary,,"--------------------
+
+A few stitches and a cerebral stabilizer later, the world still spins just a bit, but you're able to walk, think, and shoot without assistance. A marine then enters, nods to you, and ushers you out of the infirmary, down a hallway, and back into the command center, where the density of guards has notably lowered, and the two women sit next to eachother by a large office table - one of which looking remarkably more terrified than before.
+
+""Sit."" Blackwind commands.",MPC_IAIICChurchHideoutDescendExposit:Find a seat,
+MPC_IAIICChurchHideoutDescendExposit,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExposit,,"You find a small, uncomfortable seat at the opposite end of the table - which has been cleared of its contents to reveal a steel top.
+
+""Ludd would never have worked with *evil* such as yourself, worm. However,"" she inhales. ""-Ludd had many luxuries we simply do not have. So, a deal with the devil, to fight a greater evil? I find that to be a good deal. Now. Let me introduce ourselves.""
+
+She takes a deep breath. ""We have no name. But we have a purpose: The destruction of the heretics that call themselves the 'Knights of Ludd', as you know. For twenty cycles, we have been hard at work, but have never made major progress. But with someone as powerful as you? Maybe that can change.""
+
+""And with our knowledge, our intelligence, and our, how do I say - 'insider perspective'. Maybe. *Maybe* we can help you.""",MPC_IAIICChurchHideoutDescendExpositTwo:Continue,
+MPC_IAIICChurchHideoutDescendExpositTwo,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositTwo,,"Another deep breath. Then, a period of silence.
+
+""...""
+
+""...tactics. We need a plan. How best can we utilize this new resource? Hm-what of open war? Never before have we had access to an entire battlefleet! If we could just-""","MPC_IAIICChurchHideoutDescendExpositThree:""I'm fighting a defensive war, Blackwind. Any ship I spare for an offensive reduces my security.""",
+MPC_IAIICChurchHideoutDescendExpositThree,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositThree,,She stops in her tracks.,"MPC_IAIICChurchHideoutDescendExpositFour:""Plus, a war against the church would set off the Hegemony, the League, the pathers... and might destroy the church instead of the Knights.""",
+MPC_IAIICChurchHideoutDescendExpositFour,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositFour,,"At the mention of the destruction of the church, she stiffens, then nods solemnly. ""...yes. The human cost would be too great. Perhaps, then... economic sanctions? Surely, the Church relies on some of your imports-""
+
+""A-alaz, that's the Church's domain. Not the Knights. Again, that just... won't... work..."" Semblemind adds, to which blackwind grumbles, shooting her a death glare - but nodding nonetheless.",MPC_IAIICChurchHideoutDescendExpositFive:Continue,
+MPC_IAIICChurchHideoutDescendExpositFive,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositFive,,"The conversation continues, ideas being brought up and shot down. Assassinations. Marine raids. Some topics being explored to a great extent, some dying immediately. No progress is made. Until...
+
+""...an uprising. I'm aware $PlayerName here is very good with *people*. And the political capital of their little pocket empire..."" she grumbles, but then shakes her head, moving on.
+
+But before she can - Semblemind has a look of inspiration come over her. ""...our friend here is... a heretic, right? $PlayerHeOrShe has access to heretical technologies?"" She turns to you. ""What would set off the faithful more than seeing the knights take the most unholy of unholy artifacts?""
+
+Everyone in the room turns to you, awaiting your response.","MPC_IAIICChurchHideoutDescendExpositSix:""...I may have a few 'artifacts', yes.""",
+MPC_IAIICChurchHideoutDescendExpositSix,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositSix,AdjustRepActivePerson SUSPICIOUS -5,"Your words prompt a grumble from everyone in the room, except for Semblemind. And yet - despite her hateful glare - Blackwind can't help but be entranced by your admission.
+
+""...tensions. *Have* been high, lately. Many faithful dislike the knights - maybe, seeing your tech fall into their hands, seeing use like that invictus-class... could it break the back that keeps the sheep complacent?""",MPC_IAIICChurchHideoutDescendExpositSeven:Nod - this is promising,
+MPC_IAIICChurchHideoutDescendExpositSeven,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositSeven,,"""-I don't think this will work, uh, Alaz."" Semblemind adds. ""The Knights are... principled, in their own way."" she withers under Blackwind's glare. ""I-I mean. Ah. They... don't often accept demons, or demonic weaponry, or-anything.""
+
+Blackwind frowns. Then groans. Then rubs her head - the headache intensifying. She thinks - thinks, thinks, in silence, until-
+
+""Why not Asher? We can try Asher."" Semblemind interjects. ""What about Rodger?"" Blackwind looks up, deep in thought. Then... nods. ""Asher... there's a small group of knights, known for their... 'technological malleability'..."" Alaz cringes. ""Gods-damned heretics, is what they are...""
+
+""But - we know of a fence that often works with them. Sells tech to them. Sells *us* plenty of ships, too... maybe this plan *would* work. We'd just need solid evidence of an... 'anonymous benefactor' selling to the Knights...""","MPC_IAIICChurchHideoutDescendExpositWpnTalk:""Are you sure you want the Knights obtaining 'Molochian artifacts'?""
+MPC_IAIICChurchHideoutDescendExpositEight:Continue",
+MPC_IAIICChurchHideoutDescendExpositWpnTalk,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositWpnTalk,RemoveOption MPC_IAIICChurchHideoutDescendExpositWpnTalk,"Blackwind glares. ""No. That's why you'll only sell them *insignificant* itemry, right, $PlayerName? Besides - once our goal is achieved..."" she smiles crookedly. ""We can just take it back. And burn it.""
+
+A certain menace follows her last words.",,
+MPC_IAIICChurchHideoutDescendExpositEight,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositEight,MPC_IAIICChurchCMD meetFence,"They nod. You nod as well. It's... well, it's not the best plan. But from what you've discussed, they've tried everything, and none of it has worked. This is probably your best shot - provoke the latent civil unrest already present in the church, by reinforcing the unspoken accusations of heresy towards the Knights. And if this fails, well. You can always try another angle.
+
+""Worm."" Alaz addresses you, eyes like fire. ""You will travel to Asher, and visit Subseqa City. Find yourself in Arrow Teahouse at exactly 15:35, and you will find a man dressed in black in the fourth-from-the-back booth. Likely endulging in his vices..."" she grunts, balling her fist out of righteous fury. ""-speak to him. Speak nothing of your involvement with us, and give him this."" You are handed a small credit-link by a guard - untraceable, redeemable by someone with the correct encryption-key. You don't have this - so it's for the fence only.",MPC_IAIICChurchHideoutDescendExpositNine:Continue,
+MPC_IAIICChurchHideoutDescendExpositNine,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositNine,,"""You would like to sell artifacts to the 'practical'. Tell him exactly that. And once you recieve your directions, your meeting, your - whatever, shoot him in the head. He knows too much about us."" Semblemind winces, looking off shamefully at Alaz' harsh words, but nods nonetheless.
+
+A moment of silence passes, before Semblemind adds: ""If we'd like to ah... broadcast this, I know a way. "" This catches Alaz off-guard, who looks at her with surprise. ""Many, ah, Luddic villages have town squares with video projectors. And our comms protocols... sometimes have emergency channels. You could, once you have this footage - hack into the comm relays... and... uh... transmit... it to... all planets and... fleets..."" she tapers off, shrinking under Alaz's gaze. 
+
+""--not... a bad idea, actually, Alice."" Alaz nods in appreciation. Turning to you, she continues: ""So, two parts. Get proof of their *willingless* to use this horrible tech, and tell the populace. Simple.""",MPC_IAIICChurchHideoutDescendExpositTen:Continue,
+MPC_IAIICChurchHideoutDescendExpositTen,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositTen,"$global.MPC_IAIICChurchBlockedFromHideout = true
+niko_MPC_musicToggle """" false false
+$global.MPC_IAIICChurchMetMilitantHideout = true
+EndConversation DO_NOT_FIRE
+FireAll PopulateOptions","""Now. Go, worm. Fight your battle. Once the sheeps are wolves, we will strike, and have no need of you anymore.""
+
+-as you turn to leave, you're stopped by that voice. ""...and one last thing. Say nothing, and we will fight together. But betray us, and we will spend the lest of our lives destroying your wicknedness."" The marines in the room stiffen. You wonder if they'd desert. ""And once we're done? We will see you on the battlefield.""
+
+""Now. MARINES! Escort this wretch out of our bunker.""
+You are promptly siezed, ejected, stuffed in a shuttle, and deposited - after a few minutes of flying - into the icy surface. 
+
+Seems you have a job to do. You board your own shuttle and return to your $shipOrFleet, and after a quick examination and a positive affirmation, you are back in command, though now with a aching headache and a few unlikely 'allies'.",,
+,DialogOptionSelected,$option == ,,,,
+,,,,,,
+#END First meeting. Descend through the caverns,,,,,,
+# Revisit the bunker,,,,,,
+MPC_IAIICChurchHideoutRevisitAdder,PopulateOptions,"$id == MPC_eos_hideout_planet
+$global.MPC_IAIICChurchMetMilitantHideout
+MPC_IAIICChurchCMD eventActive",SetOptionColor MPC_IAIICChurchHideoutRevisitInit highlight,"Your nav-panel automatically highlights the small unassuming cavern leading to the underground hideout. Without knowing exactly where it was before, you would never have found it.",1:MPC_IAIICChurchHideoutRevisitInit:Approach the hideout,
+MPC_IAIICChurchHideoutRevisitInit,DialogOptionSelected,$option == MPC_IAIICChurchHideoutRevisitInit,"AddTextSmall ""DEPTH: THREE KILOMETERS"" highlight
+FireBest MPC_IAIICChurchHideoutRevisitImpl","You take a shuttle down, down, down the icey depths of the cavern. Led by your autopilot, you make a clean landing next to the entrance, and disembark.",,
+MPC_IAIICChurchHideoutRevisitDisallowed,MPC_IAIICChurchHideoutRevisitImpl,$global.MPC_IAIICChurchBlockedFromHideout,,"Unfortunately, the guards don't let you in. Seem they have orders to keep you outside, for now. All you can do is leave.",MPC_IAIICChurchHideoutRevisitDisallowedLeave:Leave,
+MPC_IAIICChurchHideoutRevisitDisallowedLeave,DialogOptionSelected,$option == MPC_IAIICChurchHideoutRevisitDisallowedLeave,FireAll PopulateOptions,,,
+#END Revisit the bunker,,,,,,
+MPC_IAIICChurchHideoutPlntFlvr,PopulateOptions,$id == MPC_eos_hideout_planet,,"A largely useless rock, there was once an effort by the Domain to understand the nature of its gigantic intra-crust fissures - spanning hundreds of kilometers into the planets interior, often branching into massive openings. Unfortunately, the collapse made short work of this endeavour, and its inhabitability, inconvenient distance, and lack of resource has made any reproach impractical.",,
+,,,,,,
+,,,,,,
+#END Militant hideout dialog,,,,,,
+,,,,,,
+# Get incriminating stuff on knights - asher and co,,,,,,
+# Meet fence and buy the contact,,,,,,
+MPC_IAIICCHAshrFnceOptAddr,PopulateOptions,MPC_IAIICChurchCMD stateIs FIND_ASHER_CONTACT,SetOptionColor MPC_IAIICCHAshrFnceInit highlight,"'Subseqa City, Arrow Teahouse at exactly 15:30'. After checking with comms, you find the city on your scanners - and you're sure you'll be able to find that teahouse once you're down there.",60:MPC_IAIICCHAshrFnceInit:Take a shuttle down to Subseqa City,
+MPC_IAIICCHAshrFnceInit,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceInit,ShowImageVisual mairaath,"The time-window proves to be a boon - it gives you and your pilot an excuse to wait out yet another cat-7 duststorm promising nothing but hellish approach. Therefore, once the time comes, the only obstacle is a cat-3, which is still enough to bat at the hull of your shuttle and force corrective action.
+
+Nonetheless, your pilot - though blinded by the howling dust - makes a fair landing on a visible-to-sensors landing pad, and you and your entourage quickly depart into the the thin Asher atmosphere.",MPC_IAIICCHAshrFnceTwo:Find the teahouse,
+MPC_IAIICCHAshrFnceTwo,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceTwo,,"Subseqa city has no bio-dome, instead requiring transport to be done in EVA or sealed vehicle. This, thankfully, makes locating the teahouse - even in the blinding duststorm - simple. You board the nearest tram, and - ignoring the gawking citizens - and wait. 
+While unprotected exposure on Asher is not immediately fatal, it is extremely uncomfortable, and thus - in this city at least - the tram-exits and complex-entrances are situated just beside eachother. You wait until the hailer yells for your destination, ""Concurrus Concourse"", and then exit again into the howling dust-storm, and only for a moment until you find shelter in the waiting rust-and-dust caked airlock.",MPC_IAIICCHAshrFnceThree:Continue,
+MPC_IAIICCHAshrFnceThree,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceThree,ShowImageVisual teahouse,"The rudimentary airlock does its job, pumping air into the sealed chamber and allowing entry. From there, its only a matter of minutes before you find the target - a rather run-down looking teahouse with minimal patronage.  It is silent, beneath the low prayer-murmurs and quiet ""please"" and ""thank yous"". Your arrival attracts a few strange looks, and at least one report to local Munisec, but nothing serious.
+
+You remember what those militants told you - ""The fourth-from-the-back booth"", ""dressed in black"". ",MPC_IAIICCHAshrFnceFour:Take a look,
+MPC_IAIICCHAshrFnceFour,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceFour,BeginConversation MPC_knightFence,"The backend booths are even more deserted than the ones in front. Therfore, even if you didn't know the target's specs, you would have immediately noticed the only person this far back here.
+
+In the fourth booth, dressed in black leathers, is a man closely considering a cup of tea. To his left is a pink-and-purple narco-stick - clearly, this man is not of the most 'faithful' in Asher. A good sign.",MPC_IAIICCHAshrFnceFive:Get cozy next to him,
+MPC_IAIICCHAshrFnceFive,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceFive,,"You sit in the bench across from him. He looks up - and chuckles, pushing his tea to the side. ""Looking for some company, eh?""","MPC_IAIICCHAshrFncePlyAlng:""Yeah, you look pretty nice..."" (Slide him a datapad with your request)",
+MPC_IAIICCHAshrFncePlyAlng,DialogOptionSelected,$option == MPC_IAIICCHAshrFncePlyAlng,,"You slide your pre-prepared datapad, declaring your desire to have an audience with the 'practical' - and possibly even make a purchase.
+
+He grins, sliding forth a small privacy projector. ""-well, let's not have the rest of this place see us, eh? Privacy..."" he taps it - projecting a thin hexfield around you, muffling the already dull soundscape of the teahouse. ""-is key.""",,
+MPC_IAIICCHAshrFnceSix,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceSix,,"""Soooo."" He slides back, one arm slithering behind his head while the other for his tea. ""You one of those Luddites?"" he nods to the datapad. ""My usual client list doesn't include someone with *bodyguards*. Much less anyone contacting the... 'practical' folk."" he siiips, chuckling.
+
+You realize - he must mean the militants you've in cahoots with. ","MPC_IAIICCHAshrFnceYesMltnt:""Yes.""
+MPC_IAIICCHAshrFnceYesMltntLie:""Yes."" (Lie)
+MPC_IAIICCHAshrFnceNoMltnt:""No - just an associate.""",
+MPC_IAIICCHAshrFnceYesMltntLie,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceYesMltntLie,"$player.ethosLiar++
+$option = MPC_IAIICCHAshrFnceYesMltnt
+FireBest MPC_IAIICCHAshrFnceYesMltnt",,,
+MPC_IAIICCHAshrFnceYesMltnt,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceYesMltnt,,,,
+,DialogOptionSelected,$option == ,,,,
+,DialogOptionSelected,$option == ,,,,
+,DialogOptionSelected,$option == ,,,,
+,DialogOptionSelected,$option == ,,,,
+,DialogOptionSelected,$option == ,,,,
+#END Meet fence and buy the contact,,,,,,
+,,,,,,
+,,,,,,
+#END Get incriminating stuff on knights - asher and co,,,,,,
+,,,,,,
 #END Church,,,,,,
 ,,,,,,
 # Hegemony,,,,,,

@@ -3,6 +3,7 @@ package data.scripts.campaign.magnetar.crisis
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -12,6 +13,7 @@ import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContribu
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import lunalib.lunaExtensions.getMarketsCopy
+import kotlin.math.ceil
 
 class MPC_hegemonyUnrestScript: niko_MPC_baseNikoScript() {
 
@@ -82,6 +84,15 @@ class MPC_hegemonyUnrestScript: niko_MPC_baseNikoScript() {
     }
 
     fun end() {
+
+        for (market in marketsAffecting) {
+            val cond = market.getCondition("MPC_hegeUnrest") ?: continue
+            val plugin = cond.plugin as MPC_hegemonyUnrestCondition
+            val unrestNum = plugin.getMaxDecrement()
+            val unrest = RecentUnrest.get(market, true)
+            unrest.add(ceil(unrestNum / 2f).toInt(), "Aristocratic Upheaval")
+        }
+
         Global.getSector().memoryWithoutUpdate[HEGEMONY_UNREST_LEVEL] = 0f
         val fobIntel = MPC_IAIICFobIntel.get() ?: return
         val hegeContrib = fobIntel.getContributionById(Factions.HEGEMONY) ?: return
