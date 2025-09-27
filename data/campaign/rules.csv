@@ -3782,7 +3782,7 @@ A certain menace follows her last words.",,
 MPC_IAIICChurchHideoutDescendExpositEight,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositEight,MPC_IAIICChurchCMD meetFence,"They nod. You nod as well. It's... well, it's not the best plan. But from what you've discussed, they've tried everything, and none of it has worked. This is probably your best shot - provoke the latent civil unrest already present in the church, by reinforcing the unspoken accusations of heresy towards the Knights. And if this fails, well. You can always try another angle.
 
 ""Worm."" Alaz addresses you, eyes like fire. ""You will travel to Asher, and visit Subseqa City. Find yourself in Arrow Teahouse at exactly 15:35, and you will find a man dressed in black in the fourth-from-the-back booth. Likely endulging in his vices..."" she grunts, balling her fist out of righteous fury. ""-speak to him. Speak nothing of your involvement with us, and give him this."" You are handed a small credit-link by a guard - untraceable, redeemable by someone with the correct encryption-key. You don't have this - so it's for the fence only.",MPC_IAIICChurchHideoutDescendExpositNine:Continue,
-MPC_IAIICChurchHideoutDescendExpositNine,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositNine,,"""You would like to sell artifacts to the 'practical'. Tell him exactly that. And once you recieve your directions, your meeting, your - whatever, shoot him in the head. He knows too much about us."" Semblemind winces, looking off shamefully at Alaz' harsh words, but nods nonetheless.
+MPC_IAIICChurchHideoutDescendExpositNine,DialogOptionSelected,$option == MPC_IAIICChurchHideoutDescendExpositNine,,"""You would like to sell artifacts to the 'practical'. Tell him exactly that. And once you recieve your directions, your meeting, your - whatever, end him. He knows too much about us."" Semblemind winces, looking off shamefully at Alaz' harsh words, but nods nonetheless.
 
 A moment of silence passes, before Semblemind adds: ""If we'd like to ah... broadcast this, I know a way. "" This catches Alaz off-guard, who looks at her with surprise. ""Many, ah, Luddic villages have town squares with video projectors. And our comms protocols... sometimes have emergency channels. You could, once you have this footage - hack into the comm relays... and... uh... transmit... it to... all planets and... fleets..."" she tapers off, shrinking under Alaz's gaze. 
 
@@ -3842,8 +3842,57 @@ MPC_IAIICCHAshrFnceNoMltnt:""No - just an associate.""",
 MPC_IAIICCHAshrFnceYesMltntLie,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceYesMltntLie,"$player.ethosLiar++
 $option = MPC_IAIICCHAshrFnceYesMltnt
 FireBest MPC_IAIICCHAshrFnceYesMltnt",,,
-MPC_IAIICCHAshrFnceYesMltnt,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceYesMltnt,,,,
-,DialogOptionSelected,$option == ,,,,
+MPC_IAIICCHAshrFnceYesMltnt,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceYesMltnt,,"""Ah! The 'ol reliable."" he chuckles. ""You know, as much as you fight, really, I'm not sure you'll get anywhere. The Knights, ah, are... powerful. Realize how hard this is? You and your mottly gang..."" he rolls his eyes, chuffing.","MPC_IAIICCHAshrFnceNotLddic:""Chewing narco-sticks, benefitting from heresy and war... not very luddic of you.""
+MPC_IAIICCHAshrFnceSix:Continue",
+MPC_IAIICCHAshrFnceNoMltnt,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceNoMltnt,,"""Hah. Good choice."" he snickers, then - thoughtfully taps his brow. ""You know, even if you don't really like the Knights, they serve a good purpose, don't they? But, ah - I'm not here to change minds. Just reap the benefits on this little unrest we've got here..."" he gestures broadly, a smile plastered on his face.","MPC_IAIICCHAshrFnceNotLddic:""Chewing narco-sticks, benefitting from heresy and war... not very luddic of you.""
+MPC_IAIICCHAshrFnceSix:Continue",
+MPC_IAIICCHAshrFnceNotLddic,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceNotLddic,RemoveOption MPC_IAIICCHAshrFnceNotLddic,"""Yeah, and?"" he smirks, grinding a hole in the base of his narco-stick with his teeth. ""Can't a man have his vices? Besides - it's not like either of us here are exactly *friends* with the holy enforcers. Well - one of us, at least."" a dull laugh escapes his lips, cut off by another suck on the drug-stick.",,
+MPC_IAIICCHAshrFnceSix,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceSix,,"He clears his throat, sitting up straight and pulling out a PDA of his own. ""Now, as much as I'd like to help you, there's something I'm missing. Y'know..."" he pulls out a thin book of luddite quotes and flips to the fifth page. You read - ""Ludd gave to the need his arm, his leg, and his bread.""
+
+""Don't you wanna be like Ludd?"" he hums, unrolling his hand as if expecting something.",MPC_IAIICCHAshrFnceSeven:Give him the credit-link,
+MPC_IAIICCHAshrFnceSeven,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceSeven,,"You gingerly place the long, rectangular steel into his hand, like Ludd feeding the needy. And like a starving child, he laughs giddily and stuffs it in his pocket - for later consumption.
+
+""Nothin' like hypocritical credits, am I right?"" he winks, tapping his PDA once - twice - thrice - and then setting it back down, returning his gaze to you.
+
+""Say. If I might ask. You're not one of my usual contacts. What'dyou need with these guys?"" he asks, carefully dropping his drug-stick on the table while you respond.","MPC_IAIICCHAshrFnceNoExpln:""Is it any of your business?"" (Refuse to explain)
+MPC_IAIICCHAshrFnceExpln:Explain the plan
+MPC_IAIICCHAshrFnceExplnTech:Explain the plan - artifacts included",
+MPC_IAIICCHAshrFnceNoExpln,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceNoExpln,FireBest MPC_IAIICCHAshrEight,"""Hah!"" a hearty laugh escapes his lips, quickly sealed away by a swig of his boozy tea. ""Nope. But a man's gotta feed his curiosity, right?""",,
+MPC_IAIICCHAshrFnceExpln,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceExpln,,"You explain to him the plan - to turn the population against the knights, to broadcast their heresy across the planets of the church, and promote rebellion. 
+
+""Huh! A schism, huh?"" he nods, forcing an impressed frown as he brings the tea to his lips. ""Well, I won't say anything. The less I say, the more I get paid, right?"" he smiles at you - and then at his pocket. ""Though, I will say one thing. To you."" he sets the tea down. ""The knights aren't just gonna sit around. Theys been ignoring you cause you're not really a threat... but if you pull this off...""
+
+""Well, just be careful of knives in the back, eh? A dead customer is someone not paying me."" his smile spreads across his lips once more.",MPC_IAIICCHAshrFnceExplnTwo:Continue,
+MPC_IAIICCHAshrFnceExplnTech,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceExplnTech,$player.ethosTruth++,"You explain to him the plan - to sell heretical artifacts to the knights, broadcast this dealing across the planets, and invoke rebellion. Shock spreads across his face, his limbs, before exitting his body in a disbelieving single laugh. 
+
+""Hah! Wow! You're desparate aren't you?"" he cheerfully muses, taking a sip of his tea. ""So far gone you've decided to consort with the devil? Well, when you find the gates of hell, don't tell em about me, you hear? I'd rather find myself in eden. Or, ah, wherever I'm going."" he snorts.
+
+""Anyway - a warning. The moment you start broadcasting is the moment you'll find a knight with a sword at your doorstep. Be careful, right? A dead customer isn't paying me."" he chuckles, slapping his pocket.",MPC_IAIICCHAshrFnceExplnTwo:Continue,
+MPC_IAIICCHAshrFnceExplnTwo,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceExplnTwo,FireBest MPC_IAIICCHAshrEight,,,
+MPC_IAIICCHAshrEight,MPC_IAIICCHAshrEight,,MPC_IAIICChurchCMD findAsherKnight,"""Anyway, I'll tell my buddy over at Artebus Station - a few kliks north of here - to be expectin' you. You'll find a nice hole in the knight patrols, all of em either praying or off duty. Orders from above, right?"" he cackles.
+
+""Be careful, right? Anyone figures this out, they're gonna have that complex on lockdown."" He withdraws his PDA, and reaches for the privacy emitter. ""An' good luck. Though, I doubt you need it!""
+
+...
+
+You recall what Blackwind asked you.","MPC_IAIICCHAshrFnceWrn:""They wanted me to shoot you, by the way.""
+MPC_IAIICCHAshrFnceSht:Kill him
+MPC_IAIICCHAshrFnceLeaveWtht:Just leave",
+MPC_IAIICCHAshrFnceWrn,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceWrn,$player.ethosTruth++,"He stops just short of the privacy emitter, eyes shooting open, body stuck in place like a drifting hound after an ion barrage. ""-what?""","MPC_IAIICCHAshrFnceWrnTwo:""The leadership. Blackwind. She wanted me to kill you for knowing too much.""",
+MPC_IAIICCHAshrFnceWrnTwo,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceWrnTwo,"AdjustRepActivePerson COOPERATIVE 30
+AddPotentialContact
+EndConversation DO_NOT_FIRE","He stares at you, scanning your expression for any hints of sarcasm. Finally, he speaks: ""...you kidding?""
+
+When it becomes clear you're not, he lets out a single, bemused and aggravated breath as he leans back into the booth. He sits there for a moment, thinking, breathing, before looking to you, and nodding - ""But you didn't"", he says without words. ""I knew that bitch was treacharous. But to just kill her number one fence?""
+
+He sighs, his cocky grin returnig to his face. ""No damn wonder she keeps messing up. Hey - Stardust?"" he looks to you. ""Look me up in the comms directory once you get out. Need a new business partner."" he grins - before slamming the privacy emitter, flooding your ears with the relative quiet of the teahouse. And then, with a wink, and a feigned kiss, he exits the premisis - to which you follow suit. ",MPC_IAIICCHAshrFnceExtNormal:Return to your $shipOrFleet,
+MPC_IAIICCHAshrFnceSht,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceSht,"PlaySound storyevent_diktat_execution
+EndConversation DO_NOT_FIRE
+$player.ethosRuthless++","The privacy field makes the perfect cover. A bright flash is all anyone can see or hear - and is the last thing he ever sees, before his lights fade and his blood fills the floor. He lies in the booth, eyes dull and faded, staring at the ceiling in a slump. You make sure to jam his drug-stick in his mouth and spill his tea on his clothing - to the unobservant, he would appear to simply be asleep.
+
+You walk through the fuzzy hexfield, to your bodyguards, and leave.",MPC_IAIICCHAshrFnceExtNormal:Return to your $shipOrFleet,
+MPC_IAIICCHAshrFnceLeaveWtht,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceLeaveWtht,EndConversation DO_NOT_FIRE,"You sit up out of your seat, offer a polite nod to the man, and exit the now-disabled privacy field. Time to go.",MPC_IAIICCHAshrFnceExtNormal:Return to your $shipOrFleet,
+MPC_IAIICCHAshrFnceExtNormal,DialogOptionSelected,$option == MPC_IAIICCHAshrFnceExtNormal,FireAll PopulateOptions,"You exit the same way you came - through the tram network, through the horrid duststorm, and back to your landing pad. From there, it is a short - yet treacharous - journey through the twisting sands and spotty STC. And yet, you make it.",,
 ,DialogOptionSelected,$option == ,,,,
 ,DialogOptionSelected,$option == ,,,,
 ,DialogOptionSelected,$option == ,,,,

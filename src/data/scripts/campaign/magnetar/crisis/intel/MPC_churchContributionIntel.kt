@@ -113,6 +113,17 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
                         getMarket("asher")!!.faction.baseUIColor
                     )
                 }
+                State.GO_TO_ASHER_NANOFORGE -> {
+                    info.addPara(
+                        "Visit the %s on %s",
+                        initPad,
+                        Misc.getHighlightColor(),
+                        "Knights", getMarket("asher")?.name
+                    ).setHighlightColors(
+                        Misc.getHighlightColor(),
+                        getMarket("asher")!!.faction.baseUIColor
+                    )
+                }
                 State.FAILED -> {
                     info.addPara("Failed", initPad)
                 }

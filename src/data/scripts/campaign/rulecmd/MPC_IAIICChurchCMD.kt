@@ -104,6 +104,10 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
                 val state = params[1].getString(memoryMap)
                 return (contribIntel.state.name == state)
             }
+            "findAsherKnight" -> {
+                contribIntel?.state = MPC_churchContributionIntel.State.GO_TO_ASHER_NANOFORGE
+                contribIntel?.sendUpdate(contribIntel.state, dialog.textPanel)
+            }
         }
 
         return false

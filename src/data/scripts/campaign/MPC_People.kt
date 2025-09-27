@@ -8,8 +8,10 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Skills
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.loading.ContactTagSpec
 import data.utilities.niko_MPC_ids
 import org.magiclib.kotlin.adjustReputationWithPlayer
 import org.magiclib.kotlin.makeImportant
@@ -729,7 +731,9 @@ object MPC_People {
             fence.postId = Ranks.POST_SMUGGLER
 
             fence.importance = PersonImportance.MEDIUM
-            fence.voice = Voices.BUSINESS
+            fence.addTag(Tags.CONTACT_UNDERWORLD)
+            fence.addTag(Tags.CONTACT_TRADE)
+            fence.voice = Voices.SPACER
 
             fence.name = FullName("Rodger", "Jackden", Gender.MALE)
             fence.portraitSprite = "graphics/portraits/portrait18.png"
