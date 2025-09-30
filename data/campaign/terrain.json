@@ -55,5 +55,13 @@
 		# inside active aurora/magnetic storm
 		#"loopTwo":"terrain_magstorm",
 	},
+	"MPC_missileTerrain":{
+		"plugin":"data.scripts.campaign.econ.industries.missileLauncher.MPC_missileTargettingTerrain",
+		"musicSuppression":0.0,
+		# inside field
+		#"loopOne":"terrain_magfield",
+		# inside active aurora/magnetic storm
+		#"loopTwo":"terrain_magstorm",
+	},
 }
 

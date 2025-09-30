@@ -4,3 +4,8 @@ metals,MPC_stationComponent,20
 supplies,MPC_stationComponent,10
 rare_metals,MPC_stationComponent,1
 ,,
+nothing,MPC_fortressBulk,100
+hand_weapons,MPC_fortressBulk,5
+food,MPC_fortressBulk,10
+organics,MPC_fortressBulk,10
+domestic_goods,MPC_fortressBulk,5

@@ -9,10 +9,13 @@ import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.BaseFIDDelegate
 import com.fs.starfarer.api.impl.campaign.FleetInteractionDialogPluginImpl.FIDConfig
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
+import com.fs.starfarer.api.ui.UIComponentAPI
+import com.fs.starfarer.api.ui.UIPanelAPI
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.utilities.niko_MPC_fleetUtils.getSatelliteEntityHandler
 import data.utilities.niko_MPC_fleetUtils.satelliteFleetDespawn
 import data.utilities.niko_MPC_satelliteUtils.hasSatellites
+import niko_SA.ReflectionUtils
 
 object niko_MPC_dialogUtils {
     @JvmStatic
@@ -108,5 +111,18 @@ object niko_MPC_dialogUtils {
             if (marketEntity != null) mutableEntity = marketEntity
         }
         return mutableEntity
+    }
+
+    @JvmStatic
+    fun UIPanelAPI.getChildrenCopy() : List<UIComponentAPI> {
+        return ReflectionUtils.invoke("getChildrenCopy", this) as List<UIComponentAPI>
+    }
+    @JvmStatic
+    fun UIPanelAPI.getChildrenNonCopy() : List<UIComponentAPI>  {
+        return ReflectionUtils.invoke("getChildrenNonCopy", this) as List<UIComponentAPI>
+    }
+    @JvmStatic
+    fun UIComponentAPI.getParent() : UIPanelAPI {
+        return ReflectionUtils.invoke("getParent", this) as UIPanelAPI
     }
 }

@@ -48,6 +48,19 @@ The few that have ever staffed a Toyol-class ship often refer to the experience 
 MPC_omegurat,SHIP,UNKNOWN ENTRY,Unidentified Vessel,Target profile resembles a phase-enabled hull on a theoretically impossible scale; likely highly unstable. Sensors indicate capital-equivalent weapon loadout in addition to anomalous readings suggesting one or more unknown technology systems. Tactical analysis adjunct cannot determine role of unknown technology. Extreme caution advised.,
 MPC_spatialBreach,SHIP_SYSTEM,"Tears through space-time to place the ship in an unfamiliar area of p-space. Effectively a low-upkeep phase cloak, albiet with limited uptime, an extended downtime, and an explosive visual effect. Spawns motes as long as the system is active; has a small chance to spawn blue motes that attack the ship.",,,
 ,,,,,
+MPC_lockbow,SHIP,"Converted from some unpopular cargo transport design not found in the persean sector, the 'Lockbow' - and other ships like it - carry the unique designation of ""missile carrier"", a highly prized ship classification that could make any Domain commander salivate. Capable of delivering various high-yield payloads across entire star systems, the Lockbow is - if technically subpar - surely a prize worth fighting for.
+
+Missile carriers formed a important part of the Domain's core military doctrine, able to project force over vast swaths of space without the need for an entire battlegroup to patrol the space. 
+Missile carriers are foreign to the Persean sector, and that's not by accident. The only place missile carriers were used liberally were the Domain core worlds, and on the rare long range patrol by a carrier group. A missile carrier falling in the wrong hands was considered an emergency - while a battlegroup can defeat any rebellion in a standup fight, they typically sport weak defense against intra-stellar basllistic missiles capable of delivering enough energy to crack a planet.
+
+This may be why the Lockbow is such a rare, coveted, and less-documented ship designation. It is less of a strict label, and more of a descriptor: Any lockbow is a civilian, mercenary, or otherwise sub-par ship converted around a often-misplaced missile complex. In this ones case, the missile complex used is the classic XLY-293 - quite deprecated, but still very deadly. The low-tech nature of the cargo-freighter hull creates a humorous divide, however; given its size, nearly half the ship is the original, rust-bucket frieghter, and the other half is an ultratech missile forge. It certainly doesn't make the ship easier to maintain.",,,
+MPC_cruiseLauncher,WEAPON,"While typically suited for firing ISBMs across vast swaths of space, the XLY-293 missile complex also includes limited close-combat capabilities, such as a 100 gigaton nuclear warhead with a maximum speed of five thousand kilometers per hour and advanced optics. One must simply hit the switch.
+
+test",,,
+MPC_cruiseMissile,CUSTOM,"An ultra-long-range ISBM, capable of travelling extreme distances at extreme speeds and striking hostile targets before any garrison even comes into contact.
+
+Airbursts in close proximity to hostile targets. If its headed your way, your best bet is to burn. Hard.",,,
+,,,,,
 MPC_superheavyDamper,SHIP_SYSTEM,"An ancient design of the damper field that was discontinued due to the fact that it was extremely inefficient and had to shut down engines to prevent interference. 
 
 Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",Defensive,"Very briefly activates an energy field that mitigates incoming damage by 90% at the cost of disabling engines, generating a significant amount of flux, and halving the fire rate of all weapons.",
@@ -63,6 +76,7 @@ MPC_realspaceHyperspace_storm,TERRAIN,"This volume of hyperspace is undergoing c
 MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps high energy charged particles. It's extremely difficult to get any sensor readings on a fleet lurking within, and often impossible, due to the frequency of ion storms.",,,
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
 MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomobly strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
+MPC_missileTerrain,TERRAIN,Not displayed in-game!,,,
 ,,,,,
 MPC_devilRocketPod,WEAPON,"The devil-class torpedo combines the destructive power of the famous reaper with a long-distance ion thruster, creating a terrifyingly effective cruise missile capable of striking targets from across the battlefield with 50 MJ of explosive force. A combat-rated autoloader system ensures usefulness in protracted engagements.
 
@@ -204,3 +218,13 @@ MPC_BMDataCache,CUSTOM,"A brightly painted cargo pod. Contrary to it's vibrant a
 MPC_arrowPatherPlanet,PLANET,"Unofficially known as the ""crossbow of Ludd"", this planet is home of the Arrow pathers - a highly militant and opportunistic sect of pathers with ""progressive"" views on AI technology, though they'll still hunt down anyone who uses them. A very recent development in the sector, this planet was gifted to the arrow pathers by a certain starfarer as part of an agreement to remove pather involvement from the IAIIC. In exchange, the arrow pathers would be put in control of a industrial powerhouse, that would supply endless war fleets to the pathers' efforts. And as most spacers across the sector can attest - it has succeeded in that goal, much to their dismay.",,,
 ,,,,,
 MPC_voidsunRelay,CUSTOM,"A small, makeshift FTL relay, floating in space. It does not resemble any commercial design you're familiar with; someone must have placed it here for a reason.",,,
+,,,,,
+MPC_abandonedStarFort,CUSTOM,"A once proud bastion of an unknown polity, this massive structure is now little more than a husk of warped metal and scorched circuitry. Its battered hull is pockmarked with countless punctures, and its once vibrant lights have fallen dark. No life signs detected.
+
+A cursory scan indicates that it has been cold and dead for tens of cycles at the very least, possibly hundreds. Surprisingly, it appears untouched- closer inspection may yield salvage.",,,
+MPC_abandonedBattlestation,CUSTOM,"Once a vast orbital structure with thousands of citizens, this massive piece of military infrastructure is now little more than a husk of warped metal and scorched circuitry.
+
+A cursory scan indicates that it has been cold and dead for tens of cycles at the very least, possibly hundreds. Surprisingly, it appears untouched- closer inspection may yield salvage.",,,
+MPC_missileSpotter,CUSTOM,"A rudimentary device similar to a comms relay in function, a device such as this acted as the eyes of a missile carrier, allowing for instantaneous response to undesired entry into contested space.
+
+Thankfully, it seems to be inactive. Closer inspection may yield salvage.",,,

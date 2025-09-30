@@ -1,3 +1,18 @@
+4.3.7
+SAVE COMPATIBLE
+
+Magnetar now makes the bwummm noise if you cant see it
+Magnetar intel updated
+Magnetar pulse delay increased to ~4 days
+Magnetar pulse nerfed, now destroys your drive field for 30% less time
+
+Ionized pulse is now super fast and does appreciable cr damage
+
+Magnetar, kanta questlines rewritten
+    Magnetar rewrite is mostly small details, and breaking up giant walls of text
+chair.png can be given to any church admin
+    If you do this while the quest is active, immediately pisses off kanta and cancels her protection
+
 4.3.6
 SAVE COMPATIBLE?
 

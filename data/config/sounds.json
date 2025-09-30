@@ -121,6 +121,12 @@
 			{"file":"sounds/weapons/MPC_tachyonPikeFire.ogg", "pitch":1.0,"volume":1.0},
 		],
 	},
+	
+	# CRUISE
+	"MPC_cruiseLaunch":
+	[
+		{"file":"sounds/weapons/MPC_cruiseLaunch.ogg","pitch":1,"volume":1},
+	],
 
 
 }

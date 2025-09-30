@@ -7,6 +7,7 @@ import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisRocketPodsScript
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_orbitalMissileLauncher
 import java.util.*
 
@@ -16,6 +17,7 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
 
     companion object {
         const val GROUND_DEFENSE_MULT = 2f
+        const val SIZE_TO_RANGE_MULT = 0.5f
     }
 
     override fun apply() {
@@ -41,6 +43,9 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
                 setupDefenseGrid()
             }
         }
+
+        rocketHandler?.maxMissilesLoaded = getMaxRockets()
+        rocketHandler?.missilesLoaded = getMaxRockets()
     }
 
     override fun unapply() {
@@ -51,11 +56,15 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
     }
 
     private fun setupDefenseGrid() {
+        if (rocketHandler != null) return
 
+        rocketHandler = MPC_aegisRocketPodsScript(market, this)
+        rocketHandler?.start()
     }
 
     private fun dismantleDefenseGrid() {
-        TODO("Not yet implemented")
+        rocketHandler?.delete()
+        rocketHandler = null
     }
 
     override fun addRightAfterDescriptionSection(tooltip: TooltipMakerAPI?, mode: Industry.IndustryTooltipMode?) {
@@ -88,5 +97,15 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
             return false
         }
         return super.isAvailableToBuild()
+    }
+
+    fun getMaxRockets(): Float {
+        return 3f
+    }
+
+    fun getMaxRange(): Float {
+        val effectiveSize = (market.size - 2) * SIZE_TO_RANGE_MULT
+
+        return 7500f * effectiveSize
     }
 }

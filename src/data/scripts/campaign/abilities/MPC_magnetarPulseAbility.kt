@@ -34,9 +34,9 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         const val MAX_EFFECT = 1f
 
         //public static final float RANGE = 1000f;
-        const val BASE_RADIUS = 200f
-        const val BASE_DURATION = BASE_SHOCKWAVE_DURATION * 0.056f
-        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 1.1f
+        const val BASE_RADIUS = 225f
+        const val BASE_DURATION = BASE_SHOCKWAVE_DURATION * 0.03f
+        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 1.5f
         const val BASE_PULSE_ACCEL = 20f
         const val BASE_SECONDS = 6f
         const val STRENGTH_PER_SECOND = 200f
@@ -183,7 +183,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
             //val accel = BASE_PULSE_ACCEL * getSizeMult(fleet)
             val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(fleet.containingLocation, fleet.location, radius, 2f, color = BASE_COLOR, shockwaveDuration = duration, shockwaveSpeed = speed)
             params.sourceFleet = fleet
-            params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
+            params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.MEDIUM
             params.baseRepLoss = BASE_REP_LOSS
             params.makeParticlesMaxVelocityImmediately = true
             params.respectIgnore = false
@@ -339,10 +339,13 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
 
         tooltip.addPara(
             "Injects an impressive amount of power into the drive field, allowing your fleet to fire off a highly ionized pulse " +
-            "that is capable of %s** (excluding your fleet's own) and modestly damaging ships.",
+            "that is capable of %s** (excluding your fleet's own) and %s damaging ships.",
             pad,
             highlight,
-            "destroying nearby drive bubbles"
+            "destroying nearby drive bubbles", "severely"
+        ).setHighlightColors(
+            Misc.getHighlightColor(),
+            Misc.getNegativeHighlightColor()
         )
         tooltip.addPara(
             "Base range of %s* units, increased for every burn level above %s, " +

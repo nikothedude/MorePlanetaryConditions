@@ -5,3 +5,5 @@ Go Dark,MPC_escort_go_dark,TOGGLE,"stealth+, burn-, hide_in_codex",0.1,,,,,,FALS
 ,,,,,,,,,,,,,,,,,,,,,,
 Ionized Pulse,MPC_ionizedPulse,DURATION,"stealth-, codex_unlockable",0.1,,0.001,,4,,FALSE,,ui_interdict_on,ui_interdict_off,ui_interdict_loop,world_interdict_on,world_interdict_off,world_interdict_loop,graphics/icons/abilities/MPC_magnetar_pulse.png,data.scripts.campaign.abilities.MPC_magnetarPulseAbility,com.fs.starfarer.api.impl.campaign.abilities.ai.InterdictionPulseAbilityAI,Fire off a frightengly energetic pulse capable of immobilzing nearby fleets.,2500
 ,,,,,,,,,,,,,,,,,,,,,,
+Missile Strike,MPC_missileStrike,DURATION,codex_unlockable,0,,0,0,20,,FALSE,,ui_neutrino_detector_on,ui_neutrino_detector_off,,,,,graphics/icons/markets/meteor_strike.png,data.scripts.campaign.abilities.MPC_missileStrikeAbility,,Fire off a high-yield high-speed ISBM across the star system. TODO,3000
+,,,,,,,,,,,,,,,,,,,,,,

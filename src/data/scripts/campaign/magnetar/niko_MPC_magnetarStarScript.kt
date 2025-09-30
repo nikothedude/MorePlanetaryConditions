@@ -61,8 +61,8 @@ class niko_MPC_magnetarStarScript(
             fleet.cargo.removeCrew(crewToLose)
         }
 
-        const val MIN_DAYS_PER_PULSE = 3.4f
-        const val MAX_DAYS_PER_PULSE = 4f
+        const val MIN_DAYS_PER_PULSE = 4f
+        const val MAX_DAYS_PER_PULSE = 4.3f
 
         const val BASE_X_COORD_FOR_SYSTEM = -30800f
         const val BASE_Y_COORD_FOR_SYSTEM = -57320f
@@ -192,6 +192,7 @@ class niko_MPC_magnetarStarScript(
         val color = niko_MPC_magnetarPulse.BASE_COLOR
         val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(magnetar.containingLocation, magnetar.location, 500f, 2f, color = color)
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
+        params.explosionDisruptionMult = 0.7f
         val explosion = magnetar.containingLocation.addCustomEntity(
             Misc.genUID(), "Ionized Pulse",
             "MPC_magnetarPulse", Factions.NEUTRAL, params

@@ -1,3 +1,7 @@
+0.0.4
+
+Luddic questline in progress
+
 0.0.3
 
 Clarified shit in TT contribution intel
