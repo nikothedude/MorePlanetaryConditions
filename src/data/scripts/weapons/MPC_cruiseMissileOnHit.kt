@@ -7,6 +7,9 @@ import com.fs.starfarer.api.combat.DamagingProjectileAPI
 import com.fs.starfarer.api.combat.OnHitEffectPlugin
 import com.fs.starfarer.api.combat.listeners.ApplyDamageResultAPI
 import com.fs.starfarer.api.util.Misc
+import data.utilities.niko_MPC_settings
+import org.dark.shaders.distortion.DistortionShader
+import org.dark.shaders.distortion.RippleDistortion
 import org.lwjgl.util.vector.Vector2f
 
 class MPC_cruiseMissileOnHit: OnHitEffectPlugin {
@@ -25,5 +28,17 @@ class MPC_cruiseMissileOnHit: OnHitEffectPlugin {
             point,
             Misc.ZERO
         )
+
+        if (projectile == null || point == null) return
+
+        if (niko_MPC_settings.graphicsLibEnabled) {
+            val ripple = RippleDistortion(point, Misc.ZERO)
+            ripple.intensity = 400f
+            ripple.size = 1800f
+            ripple.fadeInSize(0.8f)
+            ripple.fadeOutIntensity(0.4f)
+
+            DistortionShader.addDistortion(ripple)
+        }
     }
 }

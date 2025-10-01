@@ -93,7 +93,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
             getIndustry("triheavy")?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
             getIndustry("triheavy")?.aiCoreId = Commodities.BETA_CORE
-            getIndustry("militarygarrison")?.aiCoreId = Commodities.ALPHA_CORE
+            //getIndustry("militarygarrison")?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
             getIndustry("logisitcbureau")?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.WAYSTATION)?.aiCoreId = Commodities.BETA_CORE
@@ -143,9 +143,9 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
             if (niko_MPC_settings.AOTD_vaultsEnabled) {
                 market.addIndustry("triheavy") // skunkworks
-                market.addIndustry("militarygarrison")
+                //market.addIndustry("militarygarrison")
                 market.addIndustry("logisitcbureau") // terminus
-                market.getIndustry("militarygarrison")?.isImproved = true
+                //market.getIndustry("militarygarrison")?.isImproved = true
             } else {
                 market.addIndustry(Industries.ORBITALWORKS)
                 market.addIndustry(Industries.WAYSTATION)

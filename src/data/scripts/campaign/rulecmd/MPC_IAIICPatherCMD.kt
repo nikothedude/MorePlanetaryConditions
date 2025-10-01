@@ -255,9 +255,9 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 targetMarket.removeCondition(Conditions.POPULATION_3)
                 targetMarket.addCondition(Conditions.POPULATION_4)
 
-                if (niko_MPC_settings.AOTD_vaultsEnabled) {
+                /*if (niko_MPC_settings.AOTD_vaultsEnabled) {
                     targetMarket.constructionQueue.addToEnd("militarygarrison", 0)
-                }
+                }*/
                 targetMarket.constructionQueue.addToEnd(Industries.WAYSTATION, 0)
                 targetMarket.getIndustry(Industries.MILITARYBASE)?.startUpgrading()
                 targetMarket.getIndustry(Industries.MILITARYBASE)?.isImproved = true

@@ -7,6 +7,178 @@ MPC_FRTBeacon,OpenInteractionDialog,$tag:MPC_fortressBeacon score:1000,"ShowDefa
 SetTextHighlights ""missile defense system""","This autonomous warning beacon emits a looping high-frequency message on all channels.
 
 ""DANGER! DO NOT ENTER! This star system is known to contain potentially active autonomous weapon systems, as well as an active missile defense system of unknown design or make. Entry danger is noted as DEFCON 3, and access to this system by unauthorized parties is forbidden by Hegemony Navy diktat 224.34.""",defaultLeave:Leave,
+,,,,,,
+# Destroyed star fort,,,,,,
+MPC_FRTStarFortInit,PopulateSalvageOptions1,$customType == MPC_abandonedStarFort,,,,
+MPC_FRTStarFortTriggerDefensesText,TriggerAutomatedDefenses,$customType == MPC_abandonedStarFort,MPC_SalvageDefenderInteractionWithObjectives,"As your $shipOrFleet moves closer, the decrepit hangars of the $nameInText suddenly light up with the tell-tale engine glow of burning autoship engines. Before long, a gaggle of defenders have assembled themselves between you and your target. Tactical waits for your command.",,
+MPC_FRTStarFortSalvage,BeginSalvage,"$customType == MPC_abandonedStarFort score:20
+!$global.MPC_abandonedStarFortExposition",,"Your salvor shuttles push through the defenders' scattered debris as they make their way to the hulking construct they were defending. Entry is easy enough, what with the countless plasma-holes and nuclear caverns.
+
+The damage goes deep, some tungsten slugs even having found their mark in the core of the station. The sheer damage is so extreme, your tactical officer concludes the barrage must have continued even after the star fortress ceased function, and for at least an additional hour. Interestingly, the carbon-date on the lodged projectiles go hundreds of cycles back - possibly pre-collapse.
+
+Mummified corpses are a common find - some near a box of tools and a broken junction, some in combat armor, some in glorious silk robes, but all of them dead. Interestingly, many of the walls are decorated with various flags, paintings, and colorful trinkets - most of which are now destroyed.",MPC_FRTStarFortTwo:Continue,
+MPC_FRTStarFortTwo,DialogOptionSelected,$option == MPC_FRTStarFortTwo,,"At the center of the station, nearly untouched by the damage (likely thanks to its thick internal armor), lies some sort of control room. As before, the dead are in dread abundance, but so are insights.
+
+The emblem  - the orange-and-white chevron - makes its second debut here. Beneath, a small globe - an artistic depiction of the planet beneath. A small motor in the pedestal would have rotated it, but it has long since burned out.
+
+Your comms panel pings as it recieves a transmission from a salvor - apparantly, some combat footage remains on in the station's data storage, despite severe damage.",MPC_FRTStarFortThree:View the footage,
+MPC_FRTStarFortThree,DialogOptionSelected,$option == MPC_FRTStarFortThree,"ShowImageVisual MPC_harry
+SetTextHighlights $global.MPC_FTRInnerPlanetName","The footage buzzes, crackles, glitches in both video and audio; likely data-rot, electronics suggests. But its still clear as day.
+
+Taken from the top-dome of the station, this footage captures the final moments of this station. A sizable fleet, comprised primarily of converted civilian ships, engages a sparse defensive fleet - each ship embazened with the same emblem found on the station - while frantic voices discuss how to activate the weaponry on the station. Beneath the station, many ships are already unloading their payload on the planet below, dooming many thousands to their death.
+
+Repeated mentions of $global.MPC_FTRInnerPlanetName - accompanied with slurs and accusations of 'treason' - are heard throughout the dialog, at least until the footage randomly glitches and turns to meaningless noise.
+""That's one of the planets in-system."" sensors notes. ""Seems they had a falling out."" tactical muses.",MPC_FRTStarFortFour:Continue,
+MPC_FRTStarFortFour,DialogOptionSelected,$option == MPC_FRTStarFortFour,"ShowDefaultVisual
+SalvageEntity showCost
+FireAll PopulateSalvageOptions2
+$global.MPC_abandonedStarFortExposition = true","Turning your attention from this recording, you resume the salvage operation - which proceeds apace. Numerous more miscillanious finds are made: Anti-Domain pamphlets stuffed in semi-accessible panels, marble statues within the marine barricks, and many more miscellaneous details.
+
+Soon enough, the survey is complete, and a salvage estimation is placed on your desk. Maybe you should pay a visit to that planet once you're done here?",,
+,DialogOptionSelected,$option ==,,,,
+,DialogOptionSelected,$option ==,,,,
+#END Destroyed star fort,,,,,,
+# Destroyed battlestation,,,,,,
+MPC_FRTBattlestationTriggerDefensesText,TriggerAutomatedDefenses,$customType == MPC_abandonedBattlestation,MPC_SalvageDefenderInteractionWithObjectives,"As your $shipOrFleet moves closer, the decrepit hangars of the $nameInText suddenly light up with the tell-tale engine glow of burning autoship engines. Before long, a gaggle of defenders have assembled themselves between you and your target. Tactical waits for your command.",,
+MPC_FRTBattlestationSalvage,BeginSalvage,"$customType == MPC_abandonedBattlestation score:20
+!$global.MPC_abandonedBattlestationExposition",,"Your salvor shuttles push through the defenders' scattered debris as they make their way to the hulking construct they were defending. Entry is made trivial by the titanic holes where hull should have been - though complicated by a higher-then-average radiation level near the caverns.
+
+The ridges are scorched, warped, and blast-sheared - whatever did this was powerful, and very, very intense.",MPC_FRTBattlestationSalvageTwo:Continue,
+MPC_FRTBattlestationSalvageTwo,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageTwo,,"Your salvors navigate the brutalist interior of the station. The walls are flat, the curves jagged, the doors a simple sliding design - absolutely zero flair can be found anywhere. Engineering takes a particular interest in the presence of rust on the walls, claiming that since vaccum removes all oxygen, this decay must have occured before the station was destroyed.
+
+Countless suited bodies staff the dead station - often in multiple pieces. Many are marked in the same colors as the station - red black and blue, and even more clearly manning a weapon, repairing a junction, something productive... at least, until the end.",MPC_FRTBattlestationSalvageThree:Wait for the salvage op to end,
+MPC_FRTBattlestationSalvageThree,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageThree,"SetTextHighlights ""cruise missile""","...
+
+...
+
+-and then, suddenly. An alarm.
+
+Turning your attention to the screen, you watch a salvor stumble back in terror and then take off sprinting in the opposite direction. And you can see why, from the frozen camera of his crewmate.
+
+A massive cruise missile. Unexploded, lodged in a relatively intact part of the station, and with a orange-white chevron emblazened on it. If this exploded, it could take out half the station, taking most of your crew alongst with it.","MPC_FRTBattlestationSalvageFour:""Hazcon five! Evac nearby areas, UXO protocols!",
+MPC_FRTBattlestationSalvageFour,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageFour,,"Before long, your salvors have evacuated back into their shuttles and have entered a wide holding pattern, and a small detachment of drones is dispatched into the station for disposal of the missile.
+
+Carefully, your ops chief coordinates a remote removal of the missile. It quickly becomes clear that it was a dud - a catastrophic failure in the missile's fuse renders it completely inert and easy to transport. Though...
+
+""$PlayerSirOrMadam. If I had to guess, this is what did the station in."" Tactical interrupts. ""Not this uh, missile, no. But similar. And if I had to guess...""","MPC_FRTBattlestationSalvageFive:""...it's related to the missiles we're currently evading?""",
+MPC_FRTBattlestationSalvageFive,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageFive,,"Tactical nods in agreement. ""Though, its worth noting... that missile is carbon-dated a few hundred cycles old. Possibly pre-collapse. It wasn't the autoships that did this, $PlayerSirOrMadam, but another adversery - one that had the missile platform we're currently evading before the remnants ever did.""
+
+Nodding, you turn your attention back to the screen. Your salvors have since re-entered the station and are making a complete salvage analysis - of what is left, there are a few valuables, but nothing particuarly noteworthy, save for that repeated red-blue-black emblem and a few anti-Domain flyers stuffed in an access panel.",MPC_FRTBattlestationSalvageSix:Resume salvage operations,
+MPC_FRTBattlestationSalvageSix,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageSix,"SalvageEntity showCost
+FireAll PopulateSalvageOptions2
+$global.MPC_abandonedBattlestationExposition = true",,,
+,DialogOptionSelected,$option ==,,,,
+#END Destroyed battlestation,,,,,,
+,,,,,,
+# Missile planet exploration,,,,,,
+#MPC_FRTMissilePlanetExplInit,DialogOptionSelected,"$option == salExplore
+!$hasDefenders
+$MPC_aegisMissileSource score:1000
+!$global.MPC_exploredMissilePlanet",,test,,
+MPC_FRTMissilePlanetExplDefenders,DialogOptionSelected,"$option == salExplore
+$MPC_aegisMissileSource score:1000
+$hasDefenders",MPC_SalvageDefenderInteractionWithObjectives,"As your $shipOrFleet approaches the planet, your sensors detect numerous ships ascending from the surface to meet you.",,
+MPC_FRTMissilePlanetExplDefendersDead,BeatDefendersContinue,$MPC_aegisMissileSource score:1000,,The vessels disintegrate into harmless debris and burn up on re-entry. You finish your approach without issue.,0:MPC_FRTMissilePlanetExplDefendersDeadContinue:Continue,
+MPC_FRTMissilePlanetExplDefendersDeadContinue,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplDefendersDeadContinue,"ShowDefaultVisual
+","Your shuttles touch down in the ravaged meadows, streets, and oceans of the planet. Where there was once nature is now devastated glass, remnants of a long-ago bombardment, most likely. 
+
+Your salvors fan out across the planet - performing typical survey techniques, gathering samples, examining the ruins. However, it becomes quickly apparant this isn't your average salvage op.",MPC_FRTMissilePlanetExplTwo:Continue,
+MPC_FRTMissilePlanetExplTwo,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplTwo,,"The first and most striking difference between $name and other ruined civilizations is the aesthetic. Everything feels hand-crafted with intent - the first most common construction material is marble, followed by granite. Within the cratered ruins of homesteads are statues, sculptures, paintings, and a wide variety of creative supplies. Theatres and wineries are a common sight, as are combine harvesters and extractive operations - though, these are often pushed out of view.
+
+Even the dead wear silkin robes, colored orange, white - and sometimes, crimson. The dead are in dread abundance, here. They lie in the streets, stylish garbs tinged with their own blood, cut in twain by heavy weaponry. Rarely, a marine - marked by red black and blue - is found, skeletonized, gripping a heavy weapon tightly - but they don't seem to have come from this planet at all.
+
+Indeed, $name has little to no military, or even police, infrastructure at all. Coupled with the ancient bombardment scars, you summise this planet must have been invaded - or destroyed.",MPC_FRTMissilePlanetExplThree:Continue,
+MPC_FRTMissilePlanetExplThree,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplThree,,"Further, more in-depth exploration, reveals even more insights into this world. On top of their artistic inclination, it seemed they had a rebellious streak: Submerged in the sandy equator are numerous point defense emplacements, coated in stealth plating, and connected to sizable guerilla networks. These guerilla camps are often filled with small arms, anti-Domain recruitment pamphlets, and countless bits of media poking fun at the $global.MPC_FTRInnerPlanetName 'snot dripplers', alongst other slurs.
+
+And yet, you find evidence of cooperation between these two polities in these same camps - correspondances, tactical reports, manifests, all implying a military and capital agreement between the two planets, all in the pursuit of independence from the Domain. It seems their differences got in the way of this more than once - said reports are coated in frustrations, insults, and ideas (and reports) on how to subvert their counterpart.",MPC_FRTMissilePlanetExplFour:Continue,
+MPC_FRTMissilePlanetExplFour,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplFour,"SetTextHighlights ""missile defense system""","This collaberation seems to have coalesced into one final plan to secure their victory over the Domain: A massive planet-spanning missile defense system, capable of striking even a battlegroup away with sheer force, accuracy, and volume. This, of course, would necessitate a highly specialized missile-forge - one of which is coincidentally scanning for you as you survey these ruins.
+
+(Un)fortunately, this grand plan never came to fruition. Recovered materials imply a snapping of tensions once the collapse came around, and then, nothing. Now, the grand silos sit vacant, barely even a quarter built alongst the equator.",MPC_FRTMissilePlanetExplFive:Continue,
+MPC_FRTMissilePlanetExplFive,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplFive,AddRemoveAnyItem SPECIAL industry_bp niko_MPC_aegisMissileSystem 1,"While the silos may be incomplete, the blueprints are not. A set of blueprints for the silos, their control system, and everything inbetween are found in a particuarly large, lavishly decorated guerilla camp. Your ops chief reviews them - as does tactical - and comes to the conclusion that they are logically sound. Of course, assuming, you get your hands on a XLY-293 missile complex.
+
+Unfortunately, using such a device would necessitate removing the complex from its host - but the results would surely be worth it.",MPC_FRTMissilePlanetExplSix:Continue,
+MPC_FRTMissilePlanetExplSix,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplSix,,"Your salvors continue exploring the ravaged planet. Survivors are minimal - the few that remain are either pirates, primitive, or insane, and all of them keep their distance. Artifacts are everywhere, but none of value - many are simply scrapped.
+
+Before long, the survey is complete, and the spoils are up for grabs.",MPC_FRTMissilePlanetExplEnd:Resume salvage operations,
+MPC_FRTMissilePlanetExplEnd,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplEnd,"$global.MPC_exploredMissilePlanet = true
+FireBest CheckSalvageSpecial",,,
+#END Missile planet exploration,,,,,,
+,,,,,,
+# Innermost planet exploration,,,,,,
+MPC_FRTInnerPlanetExplInit,DialogOptionSelected,"$option == salExplore
+$MPC_FTRInnerPlanet score:1000
+!$global.MPC_exploredFTRInnerPlanet",,"As the shuttles descend, something becomes clearer, clearer, and clearer.
+
+Something terrible happened here.
+
+Vast swaths of death. That is all that is left of the cratered cities, nulled from existance by precision weaponry. The only clue they seem to have left is a trace radiation. Only a few, small emplacements remain, of far less note, but no less death.",MPC_FRTInnerPlanetExplTwo:Continue,
+MPC_FRTInnerPlanetExplTwo,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplTwo,,"In the small, fractured hab-domes, your salvors find nothing but death. Corpses, succumbed to the thin ammonia-atmosphere, inches away from resipirators - or simply with a self-inflicted wound to the head.
+
+As for the infrastucture itself, it seems remarkably intact for the time spent exposed to the harsh atmosphere of $name. Rigid, angular designs, made of highly machined steel, doubtlessly manufactured by the countless refineries dotted around the planet. Limited amenities are found, and what there is is mostly just drugs, alcohol, the rare digi-game.",MPC_FRTInnerPlanetExplThree:Continue,
+MPC_FRTInnerPlanetExplThree,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplThree,,"Of particular note on this planet is the military infrastructure: Sprase swaths of dockyards, headquarters, and training grounds - with an equally high number of marine corpses, each marked with a small emblem colored in red black and blue - the same color as the emblem of the destroyed battlestation in orbit.
+
+Interestingly, of the military command centers to survive the cataclysmic bombing of $name, many seem to harbor paperwork implying a secret agreement between $name and $global.MPC_FTRSecondPlanetName - though it is quickly superceded by endless moaning and complaining about the $global.MPC_FTRSecondPlanetName citizenry, with a few choice words being ""silver-spooned"" and ""entitled"". 
+
+This agreement seems to be a military treaty that would enable the two polities to rebel against the Domain together - but it would seem that never quite came to fruition.",MPC_FRTInnerPlanetExplFour:Continue,
+MPC_FRTInnerPlanetExplFour,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplFour,,"Your salvors quickly finish the survey of the ravaged planet. Little salvage remains, but what is left is of great value.
+
+You take a moment to reflect. The cored out station in orbit. The missiles in-system. The massive, nuclear craters. Something terrible truely happened here.",MPC_FRTInnerPlanetExplEnd:Resume salvage operations,
+MPC_FRTInnerPlanetExplEnd,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplEnd,"$global.MPC_exploredFTRInnerPlanet = true
+FireBest CheckSalvageSpecial",,,
+#END Innermost planet exploration,,,,,,
+,,,,,,
+# Missile carrier bounty,,,,,,
+MPC_remnantMissileCarrierBountyConclusion,MPC_remnantMissileCarrierBountyConclusion,,FireAll MPC_remnantMissileCarrierBountyConclusionImpl,,,
+MPC_remnantMissileCarrierBountyConclusionSuccess,MPC_remnantMissileCarrierBountyConclusionImpl,$global.MPC_destroyMissileCarrier_succeeded,MPC_remnantMissileCarrierCMD addSpecialItem,,,
+#END Missile carrier bounty,,,,,,
+# Post missile system,,,,,,
+,,,,,,
+# Missile carrier - uh stuff,,,,,,
+MPC_remnantMissileCarrierFlavor,BeginFleetEncounter,$MPC_remnantMissileCarrier score:1000,,"You finally close the distance on the carrier group, and from here, you can see it. Somehow, the Remnants have converted a human missile carrier into an automated ship and are using it to harass interlopers. Depending on the conversion method, maybe you'll even be able to recover it.
+
+You'll just have to see. You give tactical a nod - who gives you one back. This will be satisfying.",,
+,,,,,,
+MPC_recoveredMissileCarrier,MPC_recoveredMissileCarrier,,ShowImageVisual space_wreckage,"The missile carrier burns before you, now a ruinous mass of scrap and brimstone. You've ordered it recovered - which now means you must have it staffed, or at least, mothballed.",MPC_recoveredMissileCarrierTwo:Send in the salvors,
+MPC_recoveredMissileCarrierTwo,DialogOptionSelected,$option == MPC_recoveredMissileCarrierTwo,,"Your salvors routinely fly, board, and explore the ship. Its a strange sight - half the ship is a low-tech combat frieghter, while the other is an ultratech missile foundry, control center, and blastpit. Whats even stranger is the automation mechanism.
+
+Rather than deep integration, each control panel simply has a small control uplink to be controlled by an AI core in the heart of the ship, which is summarily removed and stored in a secure crate. What this means, however, is you can decide to keep it automated, or convert it back to a human-crewed ship.","MPC_recoveredMissileCarrierCrew:Convert it to a human-crewable ship
+MPC_recoveredMissileCarrierAutomate:Keep it automated",
+MPC_recoveredMissileCarrierCrew,DialogOptionSelected,$option == MPC_recoveredMissileCarrierCrew,"MPC_remnantMissileCarrierCMD convertToCrew
+FireBest MPC_recoveredMissileCarrierThree","Your salvors gleefully pick and disassemble the control-circuits, freeing the ship for human use.",,
+MPC_recoveredMissileCarrierAutomate,DialogOptionSelected,$option == MPC_recoveredMissileCarrierAutomate,"MPC_remnantMissileCarrierCMD convertToAutomated
+FireBest MPC_recoveredMissileCarrierThree",The control-circuits remain.,,
+MPC_recoveredMissileCarrierThree,MPC_recoveredMissileCarrierThree,,"SetTextHighlights ""It's still fully functional.""","Your salvors continue exploring the ship. While the freighter-half in unremarkable, the missile complex is something of beauty.
+
+Massive nano-vats, walls of integrated, component-specific nanoforges, and a highly sophisticated control network. The best part?
+
+It's still fully functional.
+
+""$PlayerSirOrMadam."" Tactical interrupts. ""The sitrep is complete. While it suffered damage in the battle, I believe we'll still be able to use the missile complex for our own purposes. *Including*..."" a small, excited small crawls across your officer's lips. ""...strategically.""","MPC_recoveredMissileCarrierFour:""And the catch is?""",
+MPC_recoveredMissileCarrierFour,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFour,"SetTextHighlights ""armaments"" ""fuel""","""-ah."" tactical frowns. ""Yes. The catch. Well. As I said, it was damaged.  The matter-vats are, ah. Cracked. And, while replacable on a grand scale, we simply can't repair this on a ship level. Therfore, each launch will cost significant quantities of armaments and fuel, and it will take quite a long time to make a new missile.""
+
+""Additionally, the Hegemony will likely not take this lying down. A strategic weapon like this..."" tactical shivers, imagining the possibilities. ""-let's just say they won't be happy to see it.""","MPC_recoveredMissileCarrierFive:Nod, and thank your officer",
+MPC_recoveredMissileCarrierFive,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFive,AddAbility MPC_missileStrike 9,"""Of course, $PlayerSirOrMadam."" tactical says, before returning to their post.
+
+You turn your gaze back to your wrecked missile carrier. You sigh - you may have the only one of these in the entire sector. You hope you can make good use of it.",defaultLeave:Leave,
+,,,,,,
+#END Missile carrier - uh stuff,,,,,,
+,,,,,,
+# Aegis shit,,,,,,
+MPC_aegisConvertToAegisAdder,PopulateOptions,"MPC_remnantMissileCarrierCMD canAddAegisConvertOpt
+!$global.MPC_carrierIsAegis",,,500:MPC_aegisConvertToAegis:Move your carrier missile complex onto the surface,
+MPC_aegisConvertFromAegisAdder,PopulateOptions,"MPC_remnantMissileCarrierCMD canAddAegisConvertOpt
+$global.MPC_carrierIsAegis",,,500:MPC_aegisConvertFromAegis:Move your aegis missile complex into your missile carrier,
+MPC_aegisConvertToAegis,DialogOptionSelected,$option == MPC_aegisConvertToAegis,"MPC_remnantMissileCarrierCMD convertShipToAegis
+FireAll PopulateOptions","You have your engineers remove the missile complex from your carrier and transport it to the planet's surface, enabling the use of your aegis rocket pods.
+
+Unfortunately, this renders the missile launcher on your carrier inert, but sometimes a sacrifice has to be made.",,
+MPC_aegisConvertFromAegis,DialogOptionSelected,$option == MPC_aegisConvertFromAegis,"MPC_remnantMissileCarrierCMD convertAegisToShip
+FireAll PopulateOptions","You have your engineers remove the missile complex from your aegis system and transport it to your missile carrier, enabling the use of it's missile silo.
+
+Unfortunately, this renders the aegis system inoperable, but sometimes sacrifices have to be made.",,
+#END Aegis shit,,,,,,
+,,,,,,
+#END Post missile system,,,,,,
 #END Fortress missile system,,,,,,
 ,,,,,,
 # Overgrown nanoforge stuff,,,,,,

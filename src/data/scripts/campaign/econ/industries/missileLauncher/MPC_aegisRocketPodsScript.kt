@@ -7,12 +7,25 @@ import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.industries.MPC_aegisRocketPods
+import data.utilities.niko_MPC_marketUtils.isApplied
 import data.utilities.niko_MPC_miscUtils.isOrbitalStation
 import java.awt.Color
 
 class MPC_aegisRocketPodsScript(val market: MarketAPI, val industry: MPC_aegisRocketPods): MPC_orbitalMissileLauncher() {
     override var maxMissilesLoaded: Float = 0f // defined in the industry
     override var missilesLoaded: Float = 0f
+        get() {
+            field = field.coerceAtMost(maxMissilesLoaded)
+            return field
+        }
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+
+        if (!industry.market.hasIndustry(industry.spec.id)) {
+            delete()
+        }
+    }
 
     override fun getHost(): SectorEntityToken {
         return market.primaryEntity

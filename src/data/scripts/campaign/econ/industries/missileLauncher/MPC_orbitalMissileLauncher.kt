@@ -53,6 +53,12 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
     open var useTerrain: Boolean = true
     var terrainRing: MPC_missileTargettingTerrain? = null
 
+    var reloadRateMult: Float = 1f
+        get() {
+            if (field == null) field = 1f
+            return field
+        }
+
     abstract fun getHost(): SectorEntityToken
 
     open fun apply() {
@@ -101,7 +107,8 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
     }
 
     open fun reloadMissiles(days: Float) {
-        missileReloadInterval.advance(days)
+        val newDays = days * reloadRateMult
+        missileReloadInterval.advance(newDays)
         if (missileReloadInterval.intervalElapsed()) {
             missilesLoaded = (missilesLoaded + 1).coerceAtMost(maxMissilesLoaded)
         }
@@ -134,7 +141,7 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
                 if (target != null) {
                     val amount = getDetectionLevel(target)
                     target.addFloatingText(
-                        "Missile detection level: ${niko_MPC_stringUtils.toPercent(amount.roundNumTo(1))}",
+                        "Missile detection level: ${niko_MPC_stringUtils.toPercent(amount.roundNumTo(2))}",
                         Misc.getNegativeHighlightColor(),
                         0.3f
                     )
@@ -157,7 +164,7 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
             }
         }
 
-        checkInterval.advance(days)
+         checkInterval.advance(days)
         if (checkInterval.intervalElapsed()) {
             if (readyToFire()) {
                 val possibleTargets = getPossibleTargets()

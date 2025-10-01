@@ -1,6 +1,7 @@
 package data.scripts.campaign.econ.industries.missileLauncher
 
 import com.fs.starfarer.api.Global
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
@@ -8,11 +9,13 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
-import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.loading.CampaignPingSpec
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.utilities.niko_MPC_mathUtils.roundNumTo
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
@@ -22,6 +25,35 @@ import java.awt.Color
 class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     companion object {
+        fun getDamageStringAndColor(damage: ExplosionEntityPlugin.ExplosionFleetDamage): Pair<String, Color> {
+            val damageString: String
+            val damageColor: Color
+            when (damage) {
+                ExplosionEntityPlugin.ExplosionFleetDamage.NONE -> {
+                    damageString = "None"
+                    damageColor = Misc.getGrayColor()
+                }
+                ExplosionEntityPlugin.ExplosionFleetDamage.LOW -> {
+                    damageString = "Moderate"
+                    damageColor = Misc.getHighlightColor()
+                }
+                ExplosionEntityPlugin.ExplosionFleetDamage.MEDIUM -> {
+                    damageString = "High"
+                    damageColor = Misc.getHighlightColor()
+                }
+                ExplosionEntityPlugin.ExplosionFleetDamage.HIGH -> {
+                    damageString = "Very High"
+                    damageColor = Misc.getNegativeHighlightColor()
+                }
+                ExplosionEntityPlugin.ExplosionFleetDamage.EXTREME -> {
+                    damageString = "Extreme"
+                    damageColor = Misc.getNegativeHighlightColor()
+                }
+            }
+
+            return Pair(damageString, damageColor)
+        }
+
         fun createNew(params: MissileParams, containing: LocationAPI, loc: Vector2f, facing: Float): MPC_aegisMissileEntityPlugin {
             val name = params.name
             val id = params.id
@@ -96,6 +128,8 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     var ending = false
 
+    var profileTooLowsecs = 0f
+
     lateinit var params: MissileParams
     lateinit var lifespan: IntervalUtil // days
 
@@ -120,7 +154,10 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         var onHitEffect: MissileOnHitEffect? = null,
 
-        var useTargetFacing: Boolean = true
+        var useTargetFacing: Boolean = true,
+
+        var losesLockUnderProfile: Float = 200f,
+        var secsToLoseLock: Float = 2f
     )
 
     abstract class MissileOnHitEffect() {
@@ -139,8 +176,8 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         super.advance(amount)
 
         if (entity.isExpired || !entity.isAlive || ending) return
-        if (target != null && target!!.isExpired || target!!.containingLocation != entity.containingLocation) {
-            missed = true
+        if (target != null && (target!!.isExpired || target!!.containingLocation != entity.containingLocation)) {
+            target = null
         }
         val days = Misc.getDays(amount)
         lifespan.advance(days)
@@ -151,6 +188,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             return
         }
 
+        checkLockStatus(amount)
         homeInOnTarget(amount)
 
         if (!playedSound) {
@@ -294,6 +332,47 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     }
 
+    private fun checkLockStatus(amount: Float) {
+        if (target == null) return
+        if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) return
+        val profile = target!!.detectedRangeMod.computeEffective(target!!.sensorProfile)
+        if (profile < params.losesLockUnderProfile) {
+            profileTooLowsecs += amount
+
+            if (profileTooLowsecs >= params.secsToLoseLock) {
+                loseLock()
+                return
+            }
+        } else {
+            profileTooLowsecs = 0f
+        }
+    }
+
+    private fun loseLock() {
+        if (target == null) return
+        val visibilityLevel = entity.visibilityLevelToPlayerFleet
+        if (visibilityLevel == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
+            val color: Color
+            val playerFleet = Global.getSector().playerFleet
+            if (target == playerFleet) {
+                color = Misc.getPositiveHighlightColor()
+            } else if (target is CampaignFleetAPI && (target as CampaignFleetAPI).isHostileTo(playerFleet)) {
+                color = Misc.getNegativeHighlightColor()
+            } else {
+                color = Misc.getHighlightColor()
+            }
+            entity.addFloatingText(
+                "Lost lock!",
+                color,
+                1f
+            )
+            val lastSeenLoc = target!!.containingLocation.createToken(target!!.location.x, target!!.location.y)
+            lastSeenLoc.memoryWithoutUpdate["\$MPC_lastSeenLoc"] = true
+            target = lastSeenLoc
+            profileTooLowsecs = 0f
+        }
+    }
+
     private fun performOnHitEffects(hit: SectorEntityToken) {
 
         if (params.onHitEffect != null) {
@@ -301,7 +380,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         }
 
         if (hit.isPlayerFleet) {
-
+            // todo highfleet missile defense
         }
 
         return
@@ -312,23 +391,28 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         if (hit == null || !hit.isPlayerFleet || params.combatVariant == null) {
             // do explosioin stuff here
             var targetLoc = Vector2f(entity.location)
-            if (hit != null) {
+            /*if (hit != null) {
                 val diffX = hit.location.x - targetLoc.x
                 val diffY = hit.location.y - targetLoc.y
 
                 targetLoc.x += (diffX)
                 targetLoc.y += (diffY)
 
-            }
+            }*/
             params.explosionParams.loc = targetLoc
             val explosion = entity.containingLocation.addCustomEntity(
                 "${entity.id}_explosion",
                 null,
-                Entities.EXPLOSION,
+                "MPC_missileExplosion",
                 entity.faction.id,
                 params.explosionParams
             )
             explosion.setLocation(targetLoc.x, targetLoc.y)
+            if (hit != null && hit is CampaignFleetAPI) {
+                val plugin = explosion.customPlugin as MPC_missileExplosionPlugin
+                plugin.applyDamageToFleet(hit, 1f)
+                plugin.getAlreadyDamaged() += hit.id
+            }
         }
 
         Misc.fadeAndExpire(entity, 0.2f)
@@ -345,15 +429,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
     }
 
     private fun checkContact(target: SectorEntityToken): Boolean {
-        val dist = MathUtils.getDistance(entity, target)
-        val radius = entity.radius
-        val targetRadius = target.radius
-        // TODO something with this logic is borked with larger fleets
-        val distNeeded = (radius / 2) + (targetRadius / 2)
-
-        if (dist <= distNeeded) return true
-
-        return false
+        return MathUtils.getDistance(entity, target) <= 0f
     }
 
     val pingColor = Color(222, 86, 0, 255)
@@ -382,37 +458,44 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     private fun homeInOnTarget(amount: Float) {
         // code based heavily on indevo arty stations but with many additions and changes and fixes
-
         timeElapsed += amount
         currSpeed = (timeElapsed / params.accelTime).coerceAtMost(1f)
 
-        val targetDist = MathUtils.getDistance(entity, target)
-        if (timeElapsed >= TIME_FOR_FINAL_APPROACH_TO_BEGIN && targetDist <= DIST_FOR_FINAL_APPROACH) {
-            finalApproach = true
+        if (target != null) {
+            val targetDist = MathUtils.getDistance(entity, target)
+            if (timeElapsed >= TIME_FOR_FINAL_APPROACH_TO_BEGIN && targetDist <= DIST_FOR_FINAL_APPROACH) {
+                finalApproach = true
+            }
+            if (finalApproach && targetDist >= DIST_FOR_FINAL_APPROACH + 100f) {
+                missed = true
+            }
         }
-        if (finalApproach && targetDist >= DIST_FOR_FINAL_APPROACH + 100f) {
-            missed = true
-        }
-
         val dist = params.speed * amount
-        var turn = params.turnRate * amount
-        val moveAngle = entity.facing
-        val currentTarget = target ?: return
-        val targetAngle = VectorUtils.getAngle(entity.location, currentTarget.location)
-        val angleDiff = Misc.getAngleDiff(targetAngle, moveAngle)
-        turn = turn.coerceAtMost(angleDiff)
 
         //direction
         var nextAngle: Float
-        if (moveAngle > 180) {
-            val inverted = moveAngle - 180f
-            val targetIsInLeftHemisphere = !(targetAngle < moveAngle && targetAngle > inverted)
-            nextAngle = entity.facing + turn * (if (targetIsInLeftHemisphere) 1 else -1)
+        if (missed || target == null) {
+            nextAngle = entity.facing
         } else {
-            val inverted = moveAngle + 180f
-            val targetIsInLeftHemisphere = targetAngle > moveAngle && targetAngle < inverted
-            nextAngle = entity.facing + turn * (if (targetIsInLeftHemisphere) 1 else -1)
+            val currentTarget = target
+            val targetAngle = VectorUtils.getAngle(entity.location, currentTarget!!.location)
+            val moveAngle = entity.facing
+            val angleDiff = Misc.getAngleDiff(targetAngle, moveAngle)
+            var turn = params.turnRate * amount
+            turn = turn.coerceAtMost(angleDiff)
+            if (moveAngle > 180) {
+                val inverted = moveAngle - 180f // dont normalize this.
+                val targetIsLeft = !(targetAngle < moveAngle && targetAngle > inverted)
+                val targetSign = (if (targetIsLeft) 1 else -1)
+                nextAngle = entity.facing + turn * targetSign
+            } else {
+                val inverted = moveAngle + 180f
+                val targetIsLeft = targetAngle > moveAngle && targetAngle < inverted
+                val targetSign = (if (targetIsLeft) 1 else -1)
+                nextAngle = entity.facing + turn * targetSign
+            }
         }
+
         nextAngle = Misc.normalizeAngle(nextAngle)
 
         val nextPos = MathUtils.getPointOnCircumference(entity.location, dist, nextAngle)
@@ -448,5 +531,91 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
     }
 
     fun getEntityExternal(): SectorEntityToken = entity
+
+    fun addTargetSection(tooltip: TooltipMakerAPI) {
+        tooltip.setBulletedListMode(BaseIntelPlugin.BULLET)
+        tooltip.addSpacer(5f)
+        //tooltip.setGridFontSmallInsignia()
+
+        val targetColor: Color
+        val targetName: String
+
+        if (target != null) {
+            if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) {
+                targetColor = Misc.getGrayColor()
+                targetName = "Last known position"
+            } else {
+
+                val targetSensorLevel = target!!.visibilityLevelToPlayerFleet
+                when (targetSensorLevel) {
+                    SectorEntityToken.VisibilityLevel.NONE -> {
+                        targetColor = Misc.getGrayColor()
+                        targetName = "Unknown"
+                    }
+
+                    SectorEntityToken.VisibilityLevel.SENSOR_CONTACT -> {
+                        targetColor = Misc.getGrayColor()
+                        targetName = "Unknown Entity"
+                    }
+
+                    SectorEntityToken.VisibilityLevel.COMPOSITION_DETAILS -> {
+                        targetColor = Misc.getGrayColor()
+                        targetName = "Unknown Entity"
+                    }
+
+                    SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS -> {
+                        targetColor = target!!.faction.baseUIColor
+                        targetName = if (target!!.isPlayerFleet) "Your fleet" else target!!.fullName
+                    }
+                }
+            }
+        } else {
+            targetColor = Misc.getGrayColor()
+            targetName = "None"
+        }
+
+        tooltip.addPara(
+            "Target: %s",
+            5f,
+            targetColor,
+            targetName
+        )
+
+        val damagePair = getDamageStringAndColor(params.explosionParams.damage)
+        val damageString = damagePair.first
+        val damageColor = damagePair.second
+
+        tooltip.addPara(
+            "Loses lock under %s sensor profile",
+            5f,
+            Misc.getHighlightColor(),
+            params.losesLockUnderProfile.roundNumTo(1).trimHangingZero().toString()
+        )
+
+        //tooltip.setParaFontDefault()
+        tooltip.setBulletedListMode(null)
+    }
+
+    override fun appendToCampaignTooltip(tooltip: TooltipMakerAPI?, level: SectorEntityToken.VisibilityLevel?) {
+        super.appendToCampaignTooltip(tooltip, level)
+
+        if (tooltip == null) return
+        if (level == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
+            addTargetSection(tooltip)
+        }
+    }
+
+    override fun createMapTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {
+        super.createMapTooltip(tooltip, expanded)
+
+        if (tooltip == null) return
+
+        tooltip.addPara(entity.name, 0f).color = entity.faction.baseUIColor
+        addTargetSection(tooltip)
+    }
+
+    override fun hasCustomMapTooltip(): Boolean {
+        return true
+    }
 
 }

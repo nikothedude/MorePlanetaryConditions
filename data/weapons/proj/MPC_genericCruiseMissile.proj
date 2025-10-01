@@ -2,7 +2,7 @@
 	"id":"MPC_genericCruiseMissile",
 	"specClass":"missile",	
 	"missileType":"MISSILE",
-	"onFireEffect":"data.scripts.weapons.MPC_pinprickScript",
+	"onFireEffect":"data.scripts.weapons.MPC_cruiseMissileScript",
 	"onHitEffect":"data.scripts.weapons.MPC_cruiseMissileOnHit",
 	"sprite":"graphics/missiles/heavy_mine.png",
 	"size":[48,48],	
@@ -12,10 +12,10 @@
 	"explosionColor":[100,100,255,255],  # purely visual, will get a white additively blended core on top of this color
 	"explosionRadius":1800, # purely visual
 	"explosionSpec":{"duration":0.1, # not visual
-				 "radius":600,
-				 "coreRadius":200, # full damage within core radius
-				 "collisionClass":HITS_SHIPS_AND_ASTEROIDS,
-				 "collisionClassByFighter":HITS_SHIPS_AND_ASTEROIDS,
+				 "radius":300,
+				 "coreRadius":60, # full damage within core radius
+				 "collisionClass":HITS_SHIPS_ONLY_NO_FF,
+				 "collisionClassByFighter":HITS_SHIPS_ONLY_NO_FF,
 				 "particleSizeMin":6.0,
 				 "particleSizeRange":3.0,
 				 "particleDuration":1.3,
@@ -24,7 +24,7 @@
 				 "explosionColor":[255,100,100,255],
 				 "detailedExplosionFlashColorFringe":[255,100,100,255],
 				 "detailedExplosionFlashRadius":1800,
-				 "useDetailedExplosion":true
+				 "useDetailedExplosion":true,
 	 },
 	#"alwaysAccelerate":true,
 #	"engineSpec":{"turnAcc":110,
@@ -32,26 +32,26 @@
 #				  "acc":300,
 #				  "dec":100},
 	"engineSpec":{"turnAcc":160,
-				  "turnRate":200,
+				  "turnRate":240,
 				  "acc":30,
-				  "dec":0},
+				  "dec":40},
 	"engineSlots":[{"id":"ES1",
 					"loc":[-16, 0],
 				    #"style":"MISSILE_HIGH_TECH",
 				    "style":"CUSTOM",
 					"styleSpec":{
 						"mode":"QUAD_STRIP", # PARTICLES or QUAD_STRIP, determines which params are used
-						"engineColor":[255,100,100,255],
-						"contrailDuration":3,
-						"contrailWidthMult":2,
+						"engineColor":[255,125,25,255],
+						"contrailDuration":0,
+						"contrailWidthMult":0,
 						"contrailWidthAddedFractionAtEnd":2.5,  # can be negative. makes trail spread out/narrow at the end
-						"contrailMinSeg":4, # min segment length, in pixels
+						"contrailMinSeg":1, # min segment length, in pixels
 						"contrailMaxSpeedMult":0.5f,
 						"contrailAngularVelocityMult":0.5f,
 						"contrailSpawnDistMult":0f, # how far away from engine it starts
 						"contrailColor":[255,100,100,50],
 						"glowSizeMult":0.9,
-						"glowAlternateColor":[255,0,0,255],
+						"glowColor":[250,70,0,255],
 						"type":"SMOKE" # GLOW or SMOKE; additive or regular blend mode
 					},
 				    "width":32.0,

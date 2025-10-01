@@ -8,9 +8,9 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
-import com.fs.starfarer.api.impl.campaign.BaseAICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin
 import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.WarningBeaconEntityPlugin
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
@@ -27,7 +27,6 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageSpecialAssigner.
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySpecial
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager.WormholeItemData
-import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain
 import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin
@@ -36,9 +35,8 @@ import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.PingScript
-import com.fs.starfarer.ui.new
 import data.coronaResistStationCoreFleetListener
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_remnantMissileCarrierScript
 import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
 import data.scripts.campaign.magnetar.MPC_magnetarThreatFleetManager
@@ -53,12 +51,10 @@ import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.kotlin.addEntity
 import org.magiclib.kotlin.addSalvageEntity
 import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.getPulsarInSystem
 import org.magiclib.kotlin.hasRuins
-import org.magiclib.kotlin.isSpecialMod
 import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.setDefenderOverride
 import org.magiclib.kotlin.setSalvageSpecial
@@ -269,10 +265,14 @@ object niko_MPC_specialProcGenHandler {
             market.removeCondition(condId)
         }
 
-        market.addConditionIfNotPresent(Conditions.ORE_RICH)
+        market.addConditionIfNotPresent(Conditions.ORE_ULTRARICH)
         market.addConditionIfNotPresent(Conditions.THIN_ATMOSPHERE)
         market.addConditionIfNotPresent(Conditions.HOT)
         market.addConditionIfNotPresent(Conditions.RUINS_EXTENSIVE)
+
+        Global.getSector().memoryWithoutUpdate["\$MPC_FTRInnerPlanetName"] = market.name
+        market.memoryWithoutUpdate["\$MPC_FTRInnerPlanet"] = true
+        market.primaryEntity.memoryWithoutUpdate["\$MPC_FTRInnerPlanet"] = true
     }
 
     private fun genInnermostPlanet(picked: StarSystemAPI): PlanetAPI {
@@ -308,7 +308,7 @@ object niko_MPC_specialProcGenHandler {
             "Hanarat Skies",
             getSecondPlanetType(),
             MathUtils.getRandomNumberInRange(0f, 360f),
-            600f,
+            200f,
             dist + 1000f,
             270f
         )
@@ -330,11 +330,12 @@ object niko_MPC_specialProcGenHandler {
             Conditions.RARE_ORE_SPARSE, Conditions.RARE_ORE_RICH, Conditions.RARE_ORE_ULTRARICH, Conditions.RARE_ORE_MODERATE, Conditions.RARE_ORE_ABUNDANT,
             Conditions.VOLATILES_TRACE, Conditions.VOLATILES_PLENTIFUL, Conditions.VOLATILES_DIFFUSE, Conditions.VOLATILES_ABUNDANT,
             Conditions.NO_ATMOSPHERE, Conditions.THIN_ATMOSPHERE,
-            Conditions.TECTONIC_ACTIVITY, Conditions.EXTREME_TECTONIC_ACTIVITY,
+            Conditions.EXTREME_TECTONIC_ACTIVITY,
             Conditions.TOXIC_ATMOSPHERE,
             Conditions.IRRADIATED,
             Conditions.ORGANICS_TRACE, Conditions.ORGANICS_COMMON, Conditions.ORGANICS_ABUNDANT, Conditions.ORGANICS_PLENTIFUL,
-            Conditions.FARMLAND_POOR, Conditions.FARMLAND_RICH, Conditions.FARMLAND_ADEQUATE, Conditions.FARMLAND_BOUNTIFUL
+            Conditions.FARMLAND_POOR, Conditions.FARMLAND_RICH, Conditions.FARMLAND_ADEQUATE, Conditions.FARMLAND_BOUNTIFUL,
+            Conditions.DECIVILIZED
         )
 
         for (condId in disallowedConds) {
@@ -350,6 +351,19 @@ object niko_MPC_specialProcGenHandler {
         market.addConditionIfNotPresent(Conditions.FARMLAND_ADEQUATE)
 
         market.addConditionIfNotPresent("niko_MPC_carnivorousFauna")
+
+        market.addConditionIfNotPresent(Conditions.POLLUTION)
+
+        market.memoryWithoutUpdate["\$MPC_aegisMissileSource"] = true
+        market.primaryEntity.memoryWithoutUpdate["\$MPC_aegisMissileSource"] = true
+        Global.getSector().memoryWithoutUpdate["\$MPC_FTRSecondPlanetName"] = market.name
+
+        market.primaryEntity.setDefenderOverride(DefenderDataOverride(
+            Factions.REMNANTS,
+            100f,
+            200f,
+            210f
+        ))
     }
 
     private fun getSecondPlanetType(): String = Planets.PLANET_TERRAN
@@ -456,6 +470,25 @@ object niko_MPC_specialProcGenHandler {
                 Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER_ACTIVE] = false
                 Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER] = null
                 fleet.memoryWithoutUpdate.unset(niko_MPC_ids.REMNANT_MISSILE_CARRIER)
+                val script = fleet.scripts.find { it is MPC_remnantMissileCarrierScript } as? MPC_remnantMissileCarrierScript
+                script?.delete()
+
+                class DialogAdder: MPC_delayedExecutionNonLambda(
+                    IntervalUtil(0f, 0f),
+                    false,
+                    false
+                ) {
+                    override fun executeImpl() {
+                        val playerFleet = Global.getSector().playerFleet
+                        if (playerFleet.fleetData.membersListCopy.any { it.hullId.contains("MPC_lockbow") }) {
+                            val plugin = RuleBasedInteractionDialogPluginImpl("MPC_recoveredMissileCarrier")
+
+                            Global.getSector().campaignUI.showInteractionDialog(plugin, playerFleet)
+                        }
+                    }
+                }
+                DialogAdder().start()
+                //createCarrierWreck(fleet)
             }
         }
 

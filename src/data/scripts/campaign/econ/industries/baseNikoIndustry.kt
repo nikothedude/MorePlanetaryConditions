@@ -4,6 +4,7 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.BaseIndustry
 import com.sun.org.apache.xpath.internal.operations.Bool
 
 abstract class baseNikoIndustry: BaseIndustry() {
+    @Deprecated("INDUSTRY DOESNT CALL INDUSTRY.REAPPLY CONSISTANTLY WHYYY")
     var reapplying = false
 
     open fun delete() {

@@ -17,16 +17,14 @@ import com.fs.starfarer.ui.impl.StandardTooltipV2Expandable
 import com.fs.state.AppDriver
 import data.utilities.niko_MPC_dialogUtils.getChildrenCopy
 import data.utilities.niko_MPC_reflectionUtils
-import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.input.Keyboard
-import org.lwjgl.util.vector.Vector2f
 
 class MPC_missileStrikeInputListener: CampaignInputListener, EveryFrameScript {
 
     companion object {
-        fun get(): MPC_missileStrikeInputListener {
+        fun get(withUpdate: Boolean): MPC_missileStrikeInputListener? {
             var listener = Global.getSector().memoryWithoutUpdate["\$MPC_missileStrikeListener"] as? MPC_missileStrikeInputListener
-            if (listener == null) {
+            if (listener == null && withUpdate) {
                 listener = MPC_missileStrikeInputListener()
                 Global.getSector().memoryWithoutUpdate["\$MPC_missileStrikeListener"] = listener
             }
@@ -53,11 +51,10 @@ class MPC_missileStrikeInputListener: CampaignInputListener, EveryFrameScript {
         for (input in events!!) {
             if (input == null || input.isConsumed) continue
 
-            if (input.isKeyboardEvent && input.eventType == InputEventType.MOUSE_DOWN && input.eventValue != Keyboard.KEY_SPACE && input.eventValue != Keyboard.KEY_LSHIFT && input.eventValue != Keyboard.KEY_TAB) {
+            if (input.isKeyboardEvent && input.eventValue == Keyboard.KEY_ESCAPE || input.eventValue == Keyboard.KEY_LCONTROL) {
                 deactivate(true)
                 return
             }
-
 
             if (input.eventType == InputEventType.MOUSE_DOWN && input.eventValue == InputEventMouseButton.LEFT) {
                 //input.consume() // always consume it so we dont move
@@ -118,8 +115,8 @@ class MPC_missileStrikeInputListener: CampaignInputListener, EveryFrameScript {
         Global.getSector().listenerManager.addListener(this, true)
         Global.getSector().addTransientScript(this)
         Global.getSector().campaignUI.messageDisplay.addMessage(
-            "Select a fleet for missile strike - open system map for long-ranged targeting (Press alt/ctrl/esc to abort)",
-            "(Press alt/ctrl/esc to abort)",
+            "Select a fleet for missile strike - open system map for long-ranged targeting (Press ctrl/esc to abort)",
+            "(Press ctrl/esc to abort)",
             Misc.getNegativeHighlightColor()
         )
     }

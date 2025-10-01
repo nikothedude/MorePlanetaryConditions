@@ -8,7 +8,6 @@
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/../MagicLib/jars/MagicLib.jar!/" />
       <root url="file://$PROJECT_DIR$/../MagicLib/src" />
-      <root url="file://$PROJECT_DIR$/../MagicLib/MagicLib-Kotlin/src" />
     </SOURCES>
   </library>
 </component>

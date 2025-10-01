@@ -438,6 +438,11 @@
 		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 	},
 
+    "MPC_missileExplosion":{
+      "baseId":"explosion",
+      "pluginClass":"data.scripts.campaign.econ.industries.missileLauncher.MPC_missileExplosionPlugin"
+    },
+
 	"MPC_abandonedStarFort": {
 		"baseId":"station_lowtech3",
 		"defaultName":"Destroyed Star Fortress",

@@ -118,9 +118,9 @@ enum class cullingStrengthReasons {
 
                 var industryScore = 0f
                 industry.spec.tags.forEach { it -> tagMap[it]?.let { industryScore += it } }
-                if (industry.id == "militarygarrison") { // aotd
+                /*if (industry.id == "militarygarrison") { // aotd
                     industryScore += AOTD_planetaryGarrisonScore
-                }
+                }*/
 
                 if (industryScore == 0f) continue
 

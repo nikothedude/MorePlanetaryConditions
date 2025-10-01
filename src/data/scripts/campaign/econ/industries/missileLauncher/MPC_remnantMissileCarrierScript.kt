@@ -10,9 +10,9 @@ import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 class MPC_remnantMissileCarrierScript(
     val fleet: CampaignFleetAPI
 ): MPC_orbitalMissileLauncher() {
-    override var maxMissilesLoaded: Float = 3f
-    override var missilesLoaded: Float = 3f
-    override var missileReloadInterval = IntervalUtil(2.3f, 2.4f) // days
+    override var maxMissilesLoaded: Float = 2f
+    override var missilesLoaded: Float = 2f
+    override var missileReloadInterval = IntervalUtil(6.2f, 6.3f) // days
     override var renderTerrain: Boolean = false
 
     override var minSensorProfile: Float = 800f
@@ -28,7 +28,7 @@ class MPC_remnantMissileCarrierScript(
     }
 
     override fun getDetectionIncrement(fleet: CampaignFleetAPI, amount: Float): Float {
-        if (fleet.isVisibleToSensorsOf(getHost())) return maxDetectionRate * amount
+        if (canTargetFleet(fleet) && fleet.isVisibleToSensorsOf(getHost())) return maxDetectionRate * amount
 
         return super.getDetectionIncrement(fleet, amount)
     }
@@ -48,8 +48,8 @@ class MPC_remnantMissileCarrierScript(
             target,
             "MPC_remnantCarrierMissile"
         )
-        params.explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
         MPC_missileStrikeAbility.Missile.EXPLOSIVE.adjustMissileParams(params)
+        params.explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
         return params
     }
 

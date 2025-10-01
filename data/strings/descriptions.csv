@@ -221,8 +221,12 @@ MPC_voidsunRelay,CUSTOM,"A small, makeshift FTL relay, floating in space. It doe
 ,,,,,
 MPC_abandonedStarFort,CUSTOM,"A once proud bastion of an unknown polity, this massive structure is now little more than a husk of warped metal and scorched circuitry. Its battered hull is pockmarked with countless punctures, and its once vibrant lights have fallen dark. No life signs detected.
 
+Emblazed on its side is a kilometer-long emblem, an orange-white chevron - though, the colors are hard to make out, granted the natural decay of unmaintained paint in vaccum.
+
 A cursory scan indicates that it has been cold and dead for tens of cycles at the very least, possibly hundreds. Surprisingly, it appears untouched- closer inspection may yield salvage.",,,
-MPC_abandonedBattlestation,CUSTOM,"Once a vast orbital structure with thousands of citizens, this massive piece of military infrastructure is now little more than a husk of warped metal and scorched circuitry.
+MPC_abandonedBattlestation,CUSTOM,"Once a vast orbital structure with thousands of citizens, this massive piece of military infrastructure is now little more than a husk of warped metal and scorched circuitry. Massive chunks of the hull seem to have been blown off, the interior of the battlestation exposed to the elements.
+
+Emblazed on its side is a kilometer-long emblem, red black and blue - though, the colors are hard to make out, granted the natural decay of unmaintained paint in vaccum.
 
 A cursory scan indicates that it has been cold and dead for tens of cycles at the very least, possibly hundreds. Surprisingly, it appears untouched- closer inspection may yield salvage.",,,
 MPC_missileSpotter,CUSTOM,"A rudimentary device similar to a comms relay in function, a device such as this acted as the eyes of a missile carrier, allowing for instantaneous response to undesired entry into contested space.

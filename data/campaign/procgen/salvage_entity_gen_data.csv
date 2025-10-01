@@ -150,4 +150,4 @@ goods:2x5000,
 weapons2:10,
 any_hullmod_low:20,
 blueprints:1x15",remnant,1,1,120,160,,0,0
-MPC_missileSpotter,2,600,DISCOVERABLE,50,,500,,basic:300,,,,,,,,,
+MPC_missileSpotter,2,600,DISCOVERABLE,50,,500,,basic:5000,,,,,,,,,

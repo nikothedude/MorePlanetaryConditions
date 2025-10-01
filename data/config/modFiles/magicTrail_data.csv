@@ -1,0 +1,2 @@
+trail,projectile,sprite,minLength,fadeIn,duration,fadeOut,sizeIn,sizeOut,colorIn,colorOut,opacity,textLength,textScroll,randomTextureOffset,distance,dispersion,drift,frameOffsetMult,fadeOnFadeOut,angleAdjustment,additive,velocityIn,velocityOut,randomVelocity,angle,rotationIn,rotationOut,randomRotation,renderBelowExplosions
+MPC_genericCruiseMissile_smoke,MPC_genericCruiseMissile,base_trail_heavySmoke,10,0.1,1,2,72,128,"[50,50,50]","[20,20,20]",0.9,300,5,TRUE,-16,2,1,1,FALSE,FALSE,FALSE,0,0,0,0,0,0,true,true
