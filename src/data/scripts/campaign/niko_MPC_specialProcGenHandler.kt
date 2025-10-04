@@ -35,6 +35,7 @@ import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.ai.ModularFleetAI
 import data.coronaResistStationCoreFleetListener
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_remnantMissileCarrierScript
@@ -97,7 +98,10 @@ object niko_MPC_specialProcGenHandler {
             candidates += system
             break
         }
-        if (candidates.isEmpty()) return
+        if (candidates.isEmpty()) {
+            niko_MPC_debugUtils.log.info("Failed to find a fortress system candidate")
+            return
+        }
         val nebulaCandiates = candidates.filter { sys -> sys.hasSystemwideNebula() && sys.planets.filter { !it.isStar }.size > 1f }
         if (nebulaCandiates.isNotEmpty()) candidates = nebulaCandiates.toHashSet()
         picked = candidates.maxBy { it.planets.size }
@@ -369,7 +373,7 @@ object niko_MPC_specialProcGenHandler {
     private fun getSecondPlanetType(): String = Planets.PLANET_TERRAN
 
     fun generateMissileCarrierFleet(containingLoc: LocationAPI, loc: Vector2f): CampaignFleetAPI {
-        val FP = 325f
+        val FP = 375f
 
         val params = FleetParamsV3(
             null,
@@ -385,7 +389,7 @@ object niko_MPC_specialProcGenHandler {
             0f
         )
         params.averageSMods = 3
-        params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_MIXED
+        params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_ALPHA
 
         val fleet = FleetFactoryV3.createFleet(params)
         fleet.name = "Carrier Group"
@@ -397,16 +401,15 @@ object niko_MPC_specialProcGenHandler {
         fleet.inflater = null
 
         val member = fleet.fleetData.addFleetMember("MPC_lockbow_Ordnance")
-        val newVariant = member.variant.clone()
-        newVariant.hullVariantId = null
+        val variant = member.variant
+        val newVariant = variant.clone()
         newVariant.source = VariantSource.REFIT
         newVariant.originalVariant = null
+        newVariant.hullVariantId = Misc.genUID()
         member.setVariant(newVariant, false, false)
-        newVariant.originalVariant = null
         newVariant.addPermaMod(HullMods.AUTOMATED)
         newVariant.addPermaMod(HullMods.AUXILIARY_THRUSTERS, true)
         newVariant.addPermaMod(HullMods.REINFORCEDHULL, true)
-        newVariant.addPermaMod(HullMods.TURRETGYROS, true)
         newVariant.addTag(Tags.VARIANT_ALWAYS_RECOVERABLE)
 
         for (member in fleet.fleetData.membersListCopy) {
@@ -414,7 +417,6 @@ object niko_MPC_specialProcGenHandler {
         }
 
         fleet.fleetData.sort()
-        newVariant.originalVariant = null
 
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_AVOID_PLAYER_SLOWLY] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true

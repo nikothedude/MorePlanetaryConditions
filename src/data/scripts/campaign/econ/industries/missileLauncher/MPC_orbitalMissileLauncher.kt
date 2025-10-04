@@ -15,6 +15,7 @@ import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.CampaignEngine
+import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_stringUtils
 import org.lazywizard.lazylib.MathUtils
@@ -284,17 +285,17 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
     open fun fireOn(target: SectorEntityToken, possibleTargets: MutableList<SectorEntityToken>): Boolean {
         if (target is CampaignFleetAPI && !canTargetFleet(target)) return false
 
-        val params = getMissileParams(target)
-        createMissile(params)
+        val spec = getSpec(target)
+        createMissile(spec, target)
 
         missilesLoaded = (missilesLoaded - 1).coerceAtLeast(0f)
         possibleTargets -= target
         return true
     }
 
-    abstract fun createMissile(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin
+    abstract fun createMissile(spec: MPC_missileStrikeAbility.Missile, target: SectorEntityToken): MPC_aegisMissileEntityPlugin
 
-    abstract fun getMissileParams(target: SectorEntityToken): MPC_aegisMissileEntityPlugin.MissileParams
+    abstract fun getSpec(target: SectorEntityToken): MPC_missileStrikeAbility.Missile
 
     open fun advanceInCombat(amount: Float, engine: CombatEngineAPI) {
 

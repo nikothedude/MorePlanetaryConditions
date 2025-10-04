@@ -127,6 +127,10 @@
 	[
 		{"file":"sounds/weapons/MPC_cruiseLaunch.ogg","pitch":1,"volume":1},
 	],
+	"MPC_missileStrikeReload":
+	[
+		{"file":"sounds/MPC_missileStrikeReload.ogg","pitch":1,"volume":1},
+	],
 
 
 }

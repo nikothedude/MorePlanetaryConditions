@@ -1,17 +1,33 @@
 package data.scripts.campaign.econ.industries.missileLauncher
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
-import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
-import com.fs.starfarer.api.impl.campaign.ids.Tags
-import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.api.util.WeightedRandomPicker
+import data.scripts.campaign.abilities.MPC_missileStrikeAbility
+import data.scripts.campaign.abilities.MPC_missileStrikeAbility.Missile
+import data.scripts.campaign.abilities.MPC_missileStrikeReactionScript
 import data.scripts.campaign.econ.industries.MPC_aegisRocketPods
-import data.utilities.niko_MPC_marketUtils.isApplied
 import data.utilities.niko_MPC_miscUtils.isOrbitalStation
-import java.awt.Color
 
 class MPC_aegisRocketPodsScript(val market: MarketAPI, val industry: MPC_aegisRocketPods): MPC_orbitalMissileLauncher() {
+
+    companion object {
+        val eligibleSpecs = hashMapOf<MPC_missileStrikeAbility.Missile, Float>(
+            Pair(MPC_missileStrikeAbility.Missile.EXPLOSIVE, 100f),
+            Pair(MPC_missileStrikeAbility.Missile.INTERDICT, 6f),
+            Pair(MPC_missileStrikeAbility.Missile.SENSOR, 40f),
+            Pair(Missile.EXPLOSIVE_HEAVY, 1f)
+        )
+
+        fun getPicker(): WeightedRandomPicker<MPC_missileStrikeAbility.Missile> {
+            val picker = WeightedRandomPicker<MPC_missileStrikeAbility.Missile>()
+            eligibleSpecs.forEach { picker.add(it.key, it.value) }
+            return picker
+        }
+    }
+
     override var maxMissilesLoaded: Float = 0f // defined in the industry
     override var missilesLoaded: Float = 0f
         get() {
@@ -48,31 +64,17 @@ class MPC_aegisRocketPodsScript(val market: MarketAPI, val industry: MPC_aegisRo
         return "a $stationOrPlanet-based ISBM complex"
     }
 
-    override fun createMissile(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin {
-        val missile = MPC_aegisMissileEntityPlugin.createNewFromMarket(
-            market,
-            params
-        )
+    override fun createMissile(spec: MPC_missileStrikeAbility.Missile, target: SectorEntityToken): MPC_aegisMissileEntityPlugin {
+        val missile = MPC_missileStrikeAbility.Missile.getMissileFrom(spec, getHost(), target, market = market)
+
+        if (market.isPlayerOwned && !Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_missileStrikeReactionPrepared")) {
+            MPC_missileStrikeReactionScript.get(true)?.start()
+        }
 
         return missile
     }
 
-    override fun getMissileParams(target: SectorEntityToken): MPC_aegisMissileEntityPlugin.MissileParams {
-        val explosionParams = ExplosionEntityPlugin.ExplosionParams(
-            Color(255, 90, 60),
-            market.containingLocation,
-            market.location,
-            200f,
-            0.5f
-        )
-        explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
-        val params = MPC_aegisMissileEntityPlugin.MissileParams(
-            target,
-            Misc.genUID(),
-            getHost(),
-            explosionParams
-        )
-
-        return params
+    override fun getSpec(target: SectorEntityToken): MPC_missileStrikeAbility.Missile {
+        return getPicker().pick()
     }
 }

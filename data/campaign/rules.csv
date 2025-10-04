@@ -157,11 +157,168 @@ It's still fully functional.
 MPC_recoveredMissileCarrierFour,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFour,"SetTextHighlights ""armaments"" ""fuel""","""-ah."" tactical frowns. ""Yes. The catch. Well. As I said, it was damaged.  The matter-vats are, ah. Cracked. And, while replacable on a grand scale, we simply can't repair this on a ship level. Therfore, each launch will cost significant quantities of armaments and fuel, and it will take quite a long time to make a new missile.""
 
 ""Additionally, the Hegemony will likely not take this lying down. A strategic weapon like this..."" tactical shivers, imagining the possibilities. ""-let's just say they won't be happy to see it.""","MPC_recoveredMissileCarrierFive:Nod, and thank your officer",
-MPC_recoveredMissileCarrierFive,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFive,AddAbility MPC_missileStrike 9,"""Of course, $PlayerSirOrMadam."" tactical says, before returning to their post.
+MPC_recoveredMissileCarrierFive,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFive,"AddAbility MPC_missileStrike 9
+MPC_remnantMissileCarrierCMD startReactionTimer","""Of course, $PlayerSirOrMadam."" tactical says, before returning to their post.
 
 You turn your gaze back to your wrecked missile carrier. You sigh - you may have the only one of these in the entire sector. You hope you can make good use of it.",defaultLeave:Leave,
 ,,,,,,
 #END Missile carrier - uh stuff,,,,,,
+,,,,,,
+#Missile carrier - reaction by hege,# note: we should probably also have a bit for visiting a hege market without aegis,"#basically, lets have hege bar happen if you hvae a carrier, and then an event on the market with aegis",,,,
+,,,,,,
+"# Hege market, no aegis",,,,,,
+MPC_MCHegeMktInit,MPC_MCHegeInitImpl,"$faction.id == ""hegemony"" score:25
+!$global.MPC_didHegeMissileCarrierReaction",BeginConversation MPC_missileCarrierAgentTwo,"Your eyes scan the bar like lasers, looking for leads. But suddenly - you catch something that makes your heart drop. A $manOrWoman in hegemony colors, glaring lowly at you while muttering to a local MuniSec. A finger - a movement - a shuffle - and the walls start to close in.
+
+You spin on your heels, trying to find an inconspicuous exit, but soon find more-and-more c-cons inconspicuously blocking your movements. A click, a ting, and a swish, and you summise that - despite not seeing it - a multitude of small-arms are pointed at you, your guards, and your potential exit.",MPC_MCHegeMktTwo:Continue,
+MPC_MCHegeMktTwo,DialogOptionSelected,$option == MPC_MCHegeMktTwo,"$global.MPC_didHegeMissileCarrierReaction = true
+MPC_hegemonySpyCMD endAmbience","The sudden movement has put the entire room at ease, leaving only the hum of ventilation and the muttering of holo-ads as your only source of audio. Slowly, patrons filter out - leaving as quickly as they came -  before you're alone with the MuniSec, the agent, and your bodyguards. Like it's just another Tuesday.
+
+Your eyes naturally slide towards the now-approaching officer. With a wave of $hisOrHer fingers, the c-cons drop their weapons and melt back into the shadows - some leaving entirely. You feel an ease return.
+
+""Sorry for that, $PlayerSirOrMadam. It's just protocol. Let's sit down - and have a drink. On the house."" Still feeling the prick of IR-targetting lasers on your neck, you comply.",MPC_MCHegeMktThree:Continue,
+MPC_MCHegeMktThree,DialogOptionSelected,$option == MPC_MCHegeMktThree,,"The two of you sit in a small, uncomfortable table in the middle of the bar. The bartender stands stiffly in the corner, watching as the agent simply walks behind the counter and ""borrows"" a pair of brandies - compensation for which is likely to never come.
+
+""Have you heard of a thing called a missile carrier, Captain? A vessel capable of striking targets across the system. Extremely dangerous - untracable, undetectable, and highly lethal.""
+
+$HeOrShe pours both of you a drink. ""Highly illegal, too. Logistics Protocol 23 Alpha dictates any missile carrier in the sector must be under the control of the Hegemony - or any other Domain equivilant."" $heOrShe sips. ""None of which besides us exists.""","MPC_MCHegeMktDrink:Take a sip
+MPC_MCHegeMktFour:""Your point being?""",
+MPC_MCHegeMktDrink,DialogOptionSelected,$option == MPC_MCHegeMktDrink,RemoveOption MPC_MCHegeMktDrink,"The stench is more obivous than the taste. Eventide Olde. 03 brandy. Drunk mostly by aristoacracy - available at a premium.
+
+Tastes like piss. You try not to gag as you force it down your throat.",,
+MPC_MCHegeMktFour,DialogOptionSelected,$option == MPC_MCHegeMktFour,"SetTextHighlights ""Lockbow """"unsavory""","""Well, it's quite simple, really..."" the agent purses $hisOrHer lips, rolling the ice around $hisOrHer brandy. ""We've heard reports of a missile carrier. In the Persean Sector, of all places! Fancy that, hm?""
+
+$HeOrShe smiles, contrasting your frown. ""Ah, don't worry. You're not being accused of anything. It's just... well, you've always been in the vicinity, haven't you? And you *do* have a rather peculiar ship in your fleet. The Lockbow, you call it?""
+
+$HeOrShe smacks $hisOrHer lips. ""We simply ask you to explain what you may know. And, well... if you lie, let's just say the political consequences would be *unsavory*.""","MPC_MCHegeMktOutrightDeny:""I don't have a missile carrier. There, happy? Can I go now?""
+MPC_MCHegeMktRationalize:""My Lockbow has a cruise missile launcher, but its range is strictly tactical.""
+MPC_MCHegeMktAdmit:""Fine, you got me. I have a missile carrier.""",
+MPC_MCHegeMktRationalize,DialogOptionSelected,$option == MPC_MCHegeMktRationalize,,"A frown forms on $hisOrHer face, but $heOrShe nods nonetheless. ""Of course. How silly of me. Care to answer a few more questions?""
+
+You and the agent exchange questions, answers, lies, truths. Mostly lies. You try to make it clear - you have no idea about any missile carriers. Your answers don't seem to satisfy $himOrHer, but at least they get you to the end.
+
+""Hmph."" $heOrShe mumbles, finishing $hisOrHer brandy. ""Well, this was unhelpful. Seems we're at the end of our allocated time. You may leave. You may all leave..."" $heOrShe waves $hisOrHer hand - prompting the c-cons to leave without as much as a sound. Then, turning to you... ""Before you go - I have a warning.""",MPC_MCHegeMktRationalizeTwo:Continue,
+MPC_MCHegeMktRationalizeTwo,DialogOptionSelected,$option == MPC_MCHegeMktRationalizeTwo,"MPC_remnantMissileCarrierCMD retaliate
+EndConversation DO_NOT_FIRE","""In the off-chance you... are, lying. And *do* know something about a strategic weapon carrier."" $HeOrShe leans in. ""The next person they send will not be so *nice*. I am a *courtesy call*.""
+
+Grunting, $heOrShe then stands, turns away, and walks out without another word. You should do the same.","MPC_MCHegeMktApologize:Apologize to the bartender
+MPC_MCHegeMktResolve:Continue",
+MPC_MCHegeMktAdmit,DialogOptionSelected,$option == MPC_MCHegeMktAdmit,$player.ethosTruth++,"$HeOrShe blinks twice, stunned by your bravado. Then, after a sawig of $hisOrHer resolute brandy, $heOrShe starts - ""Hah! Really? You're just... saying it? I mean, of course, it was never confirmed... but this is very interesting.""
+
+Then, $heOrShe narrows $hisOrHer eyes - glaring. ""To what end, then, do you admit this?""","MPC_MCHegeMktAdmitMessing:""Because I'm messing with you, idiot. Why would I ever admit it?""
+MPC_MCHegeMktAdmitGive:""Because I don't want to break the law."" (Give the Hegemony the missile carrier)",
+MPC_MCHegeMktAdmitMessing,DialogOptionSelected,$option == MPC_MCHegeMktAdmitMessing,"AdjustRepActivePerson VENGEFUL -30
+AdjustRep hegemony INHOSPITABLE -5
+MPC_remnantMissileCarrierCMD retaliate
+EndConversation DO_NOT_FIRE
+$player.ethosTruth--
+$player.ethosCocky++","$HeOrShe sputters, cheeks turning rosy red, brandy-glass falling and shattering on the floor.
+
+$HisOrHer face twists, contorts, shifts into a terrible, hateful scowl. Pointing a shaking finger, $heOrShe continues, ""You, you... *you*...""
+
+And then... a deep breath. A wave of the hand, dismissing the c-cons. A sharp, angry glare. And then, a sentence. ""-the next person they send will not be so *nice*, $PlayerName. Count the days.""
+
+$HeOrShe storms out.","MPC_MCHegeMktApologize:Apologize to the bartender
+MPC_MCHegeMktResolve:Continue",
+MPC_MCHegeMktAdmitGive,DialogOptionSelected,$option == MPC_MCHegeMktAdmitGive,"AdjustRepActivePerson FRIENDLY 30
+AdjustRep hegemony COOPERATIVE 20
+RemoveShipWithBaseHull MPC_lockbow
+EndConversation DO_NOT_FIRE","""...wonderful! Well. That settles that!"" A bright smile has spread across $hisOrHer face. Clapping $hisOrHer hands together, $heOrShe continues - ""Send the vessel to docking bay 23B, we'll handle it from there. Thank you for your cooperation, citizen.""
+
+And with that, you find yourself alone in the bar - yet again - save for your bodyguards, the bartender, and yourself.
+
+At least you didn't cause a political incident.","MPC_MCHegeMktApologize:Apologize to the bartender
+MPC_MCHegeMktResolve:Continue",
+MPC_MCHegeMktOutrightDeny,DialogOptionSelected,$option == MPC_MCHegeMktOutrightDeny,"AdjustRepActivePerson VENGEFUL -10
+AdjustRep hegemony INHOSPITABLE -5
+MPC_remnantMissileCarrierCMD retaliate
+EndConversation DO_NOT_FIRE","A crack in $hisOrHer smug facade quickly shows. ""...yes, Captain. You may leave.""
+
+As you stand up, a hand catches your cuff - ""But be warned. I was the *first* person they sent. A warning. If you *are* lying? The next one they send won't be so... nice.""
+
+$HeOrShe growls, letting go of your cuff and signalling the c-cons - who silently snake out of the bar without making as much as a noise. And then themselves.","MPC_MCHegeMktApologize:Apologize to the bartender
+MPC_MCHegeMktResolve:Continue",
+MPC_MCHegeMktApologize,DialogOptionSelected,$option == MPC_MCHegeMktApologize,RemoveOption MPC_MCHegeMktApologize,You utter a canned apology and toss the bartender a few hundred millicredits on your way out. You hope that'll make up for a shift of ruined business.,,
+MPC_MCHegeMktResolve,DialogOptionSelected,$option == MPC_MCHegeMktResolve,BarCMD leaveBar,There's nothing left for you to do here.,,
+,,,,,,
+MPC_missileCarrierRetaliation,MPC_missileCarrierRetaliation,,"HideFirstPerson
+$entity.ignorePlayerCommRequests = true","The commlink refuses to come to life, instead playing a pre-recorded message from some grizzled soldier.
+
+""No amount of missile strikes will save you from us. Prepare yourself, Captain. We'll be sure to tow your burning lockbow back to Chico.""
+
+You exchange an uneasy glance with tactical. Seems you aren't talking your way out of this one.",cutCommLink:Continue,
+,,,,,,
+,,,,,,
+"#END Hege market, no aegis",,,,,,
+,,,,,,
+MPC_MCHegeInit,DialogOptionSelected,"$option == marketVisitBar
+$global.MPC_canDoHegeMissileCarrierReaction
+MPC_remnantMissileCarrierCMD canDoReactionInBar","BarCMD playAmbience
+ShowImageVisual space_bar
+FireBest BarShuttleDownPrintDesc
+FireBest BarPrintDesc
+FireBest MPC_MCHegeInitImpl",,,
+MPC_MCHegeInitImpl,MPC_MCHegeInitImpl,"$faction.id == ""player"" score:10
+!$global.MPC_didHegeMissileCarrierReactionAegis","BeginConversation MPC_missileCarrierAgent
+FireBest MPC_MCHegeInitImplImpl",,,
+MPC_MCHegeInitImplImpl,MPC_MCHegeInitImplImpl,,,"Before you can find a seat, you are stopped in your tracks by teh approaching body of a Hegemony agent - military, from the looks of it, and highly decorated too. ""$PersonName. I assume this is $PlayerName?"" $HeOrShe extends $hisOrHer hand towards yours, waiting patiently.","MPC_MCHegeInitImplShake:Shake $hisOrHer hand
+MPC_MCHegeInitImplDontShake:Don't",
+MPC_MCHegeInitImplShake,DialogOptionSelected,$option == MPC_MCHegeInitImplShake,FireBest MPC_MCHegeInitImplTwo,You firmly grasp $hisOrHer hand and give it a good shake.,,
+MPC_MCHegeInitImplDontShake,DialogOptionSelected,$option == MPC_MCHegeInitImplDontShake,"AdjustRepActivePerson VENGEFUL -1
+FireBest MPC_MCHegeInitImplTwo","$HeOrShe frowns at your lack of decorum, but says nothing of it.",,
+MPC_MCHegeInitImplTwo,MPC_MCHegeInitImplTwo,,,"""Good to finally meet you, $PlayerSirOrMadam. I'm here on request of INTSEC, $PlayerSirOrMadam. Been looking for a while - you're a hard individual to find, $PlayerSirOrMadam.""
+
+You both walk to a nearby stool. Sitting down, the reason for this atypical meeting spot becomes quickly clear - the bottle of half-empty narco-liquor on $hisOrHer side of the  table. 'Hard to find', huh?",MPC_MCHegeInitImplThree:Sit down,
+MPC_MCHegeInitImplThree,DialogOptionSelected,$option == MPC_MCHegeInitImplThree,"SetTextHighlights ""high-velocity missile defense system""","You take a seat in the rather stiff stool, as your 'companion' resumes $hisOrHer speech.
+
+""HEGEINT has recognized the presence of a high-velocity missile defense system on $marketName. As you likely already know, this is illegal under the Logistics Protocol 23 Alpha.""
+
+$HeOrShe lets that hang for a moment.","MPC_MCHegeInitImplFour:""Illegal? Are you here to arrest me, then?""",
+MPC_MCHegeInitImplFour,DialogOptionSelected,$option == MPC_MCHegeInitImplFour,"SetTextHighlights ""Chicomoztoc""
+AddTextSmall ""If you sell your Aegis system, you will also be giving up your missile forge."" bad","""No $PlayerSirOrMadam. Absoluitely not, $PlayerSirOrMadam.  This polity is outside of our jurisdiction, and we cannot - legally - detain you. At least not without political consequence.""
+
+$HeOrShe stiffens. ""Instead, HEGEINT has sent me with an offer. We would be willing to trade you significant quantity of material, ships, and credits for your defense system, provided its prompt delivery to Chicomoztoc.""","MPC_MCHegeInitImplWhy:""What would you use this system for?""
+MPC_MCHegeInitImplCredits:""How many credits are we talking?""
+MPC_MCHegeInitImplMaterial:""Elaborate on this 'material'.""
+MPC_MCHegeInitImplShips:""Ships? How many?""
+MPC_MCHegeInitImplSellAegis:""I agree. I'll coordinate the delivery."" (Accept)
+MPC_MCHegeInitImplSellDeny:""Sorry, no can do. This system is integral to my defense."" (Deny)",
+MPC_MCHegeInitImplWhy,DialogOptionSelected,$option == MPC_MCHegeInitImplWhy,"SetTextHighlights ""install the defense system on Chicomoztoc""
+RemoveOption MPC_MCHegeInitImplWhy","""None of your concern, $PlayerSirOrMadam. This is COMSEC Alabaster private."" $heOrShe responds.
+
+If you had to guess, they'd install the defense system on Chicomoztoc. Such a powerful defense system would surely tip the balance of power in the sector...",,
+MPC_MCHegeInitImplCredits,DialogOptionSelected,$option == MPC_MCHegeInitImplCredits,"SetTextHighlights $global.MPC_aegisTradeCreditsDGS
+RemoveOption MPC_MCHegeInitImplCredits","""HEGEINT is offering $global.MPC_aegisTradeCreditsDGS for your defense system, $PlayerSirOrMadam. Paid on delivery to Chicomoztoc, $PlayerSirOrMadam.""",,
+MPC_MCHegeInitImplMaterial,DialogOptionSelected,$option == MPC_MCHegeInitImplMaterial,"SetTextHighlights $global.MPC_aegisTradeArmaments ""heavy armaments"" ""plenty of other itemry""
+RemoveOption MPC_MCHegeInitImplMaterial","""The Hegemony has a significant quanity of leftover material from the AI wars that are going unused. Delivery of the defense system would allow us to deposit $global.MPC_aegisTradeArmaments tonnes of heavy armaments onto Chicomoztoc, as well as plenty of other itemry.",,
+MPC_MCHegeInitImplShips,DialogOptionSelected,$option == MPC_MCHegeInitImplShips,"SetTextHighlights ""a small fleet of XIV battleships""
+RemoveOption MPC_MCHegeInitImplShips","""With the protection of your missile silos, we would be able to retire - and donate - a small fleet of XIV battleships. You would find them on Chicomoztoc, $PlayerSirOrMadam.""",,
+MPC_MCHegeInitImplSellDeny,DialogOptionSelected,$option == MPC_MCHegeInitImplSellDeny,"$global.MPC_didHegeMissileCarrierReactionAegis = true
+$global.MPC_didHegeMissileCarrierReaction = true
+
+HideFirstPerson
+ShowImageVisual space_bar
+EndConversation DO_NOT_FIRE","Listening to your denial, $hisOrHer eyes naturally drift to the narco-beer sitting invitingly on the table. Then - perhaps remembering $hisOrHer purpose - $heOrShe turns back to you. ""Of course, $PlayerSirOrMadam. HEGINT won't be pleased, but we will bother you no further on this.""
+
+And with that, $heOrShe takes the beer, gets up, and walks out.",MPC_MCHegeReacEnd:Return your attention to the patrons,
+MPC_MCHegeReacEnd,DialogOptionSelected,$option == MPC_MCHegeReacEnd,BarCMD showOptions,,,
+MPC_MCHegeInitImplSellAegis,DialogOptionSelected,$option == MPC_MCHegeInitImplSellAegis,"$global.MPC_didHegeMissileCarrierReactionAegis = true
+$global.MPC_didHegeMissileCarrierReaction = true
+SetTextHighlights ""check Chicomoztoc for your rewards""
+MPC_remnantMissileCarrierCMD giveAegisToHege
+AddCredits $global.MPC_aegisTradeCredits
+AddTextSmall ""Ships and resources deposited on Chizomoztoc"" good
+AddTextSmall ""Missile complex moved to Chicomoztoc"" bad
+
+AdjustRepActivePerson FRIENDLY 25
+AdjustRep hegemony COOPERATIVE 10
+
+EndConversation DO_NOT_FIRE","Your words fall upon $himOrHer like an ion cannon on a talon-class interceptor. Frozen in place - you have to repeat your assertation for a response.
+
+$HeOrShe practically jumps, surprise coming over $hisOrHer face. ""Ah-of course. Yes, $PlayerSirOrMadam, deal confirmed, will contact OPSCON to coordinate the transfer!""
+
+Soon enough, a small fleet of cargo ships - with a hefty escort - appears off the horizon. With the help of your engineers, the missile complex is loaded, the blueprints transferred, and the credits granted. Soon enough, the credits roll in, as does a reminder to check Chicomoztoc for your rewards.",MPC_MCHegeReacEnd:Return your attention to the patrons,
+#END Missile carrier - reaction by hege,,,,,,
 ,,,,,,
 # Aegis shit,,,,,,
 MPC_aegisConvertToAegisAdder,PopulateOptions,"MPC_remnantMissileCarrierCMD canAddAegisConvertOpt

@@ -27,6 +27,9 @@ object MPC_People {
     const val PLAYER_FACTION_INTSEC_SQUAD_CHIEF = "MPC_playerFacIntsecSquadChief"
     const val HEGEMONY_SPY = "MPC_hegemonySpy"
 
+    const val MISSILE_CARRIER_AGENT = "MPC_missileCarrierAgent"
+    const val MISSILE_CARRIER_AGENT_TWO = "MPC_missileCarrierAgentTwo"
+
     const val IAIIC_LEADER = "MPC_IAIIC_Leader"
     const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
 
@@ -165,6 +168,26 @@ object MPC_People {
             //moralityGuard.voice = Voices.FAITHFUL
             importantPeople.addPerson(intsecChief)
             MPC_importantPeople[PLAYER_FACTION_INTSEC_SQUAD_CHIEF] = intsecChief
+        }
+
+        if (MPC_importantPeople[MISSILE_CARRIER_AGENT] == null) {
+            val agent = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson()
+            agent.id = MISSILE_CARRIER_AGENT
+            agent.rankId = Ranks.SPECIAL_AGENT
+            agent.postId = Ranks.POST_SPECIAL_AGENT
+
+            importantPeople.addPerson(agent)
+            MPC_importantPeople[MISSILE_CARRIER_AGENT] = agent
+        }
+
+        if (MPC_importantPeople[MISSILE_CARRIER_AGENT_TWO] == null) {
+            val agent = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson()
+            agent.id = MISSILE_CARRIER_AGENT_TWO
+            agent.rankId = Ranks.SPECIAL_AGENT
+            agent.postId = Ranks.POST_SPECIAL_AGENT
+
+            importantPeople.addPerson(agent)
+            MPC_importantPeople[MISSILE_CARRIER_AGENT_TWO] = agent
         }
 
         if (MPC_importantPeople[HEGEMONY_SPY] == null) {

@@ -27,6 +27,7 @@ import data.kaysaar.aotd.vok.Ids.AoTDTechIds
 import data.kaysaar.aotd.vok.scripts.research.AoTDMainResearchManager
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.MPC_hostileActivityHook
+import data.scripts.campaign.abilities.MPC_missileStrikeKeypressListener
 import data.scripts.campaign.econ.MPC_incomeTallyListener
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
@@ -326,6 +327,14 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         MPC_People.createCharacters() // safe to call multiple times
         setupIAIICBlueprints()
         setupIAIICResearch()
+
+        Global.getSector().listenerManager.addListener(MPC_missileStrikeKeypressListener() ,true)
+
+        val aegisAmount = 1000000f
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeCredits"] = aegisAmount
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeCreditsDGS"] = Misc.getDGSCredits(aegisAmount)
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeArmaments"] = 350
+
 
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()

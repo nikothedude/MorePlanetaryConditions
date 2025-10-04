@@ -1,7 +1,6 @@
 package data.scripts.campaign.econ.industries.missileLauncher
 
 import com.fs.starfarer.api.Global
-import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
 import com.fs.starfarer.api.campaign.RepLevel
@@ -9,15 +8,20 @@ import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import data.utilities.niko_MPC_mathUtils.roundNumTo
+import com.fs.starfarer.campaign.ai.ModularFleetAI
+import com.fs.starfarer.campaign.fleet.CampaignFleetMemberView
+import com.fs.starfarer.campaign.ui.fleet.FleetMemberView
+import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
+import org.lazywizard.lazylib.ext.rotateAroundPivot
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.plugins.MagicCampaignTrailPlugin
 import java.awt.Color
@@ -60,7 +64,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             val entity = containing.addCustomEntity(id, name, "MPC_cruiseMissile", params.faction, params)
 
             entity.isDiscoverable = false
-            entity.sensorProfile = params.sensorProfile
+            entity.sensorProfile = params.spec.getSensorProfile()
             entity.facing = facing
 
             entity.setLocation(loc.x, loc.y)
@@ -72,36 +76,54 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         fun createNewFromMarket(
             market: MarketAPI,
-            params: MissileParams
+            params: MissileParams,
+            spec: MPC_missileStrikeAbility.Missile
         ): MPC_aegisMissileEntityPlugin {
-            if (params.name == null) params.name = "${market.faction.entityNamePrefix} Cruise Missile (${market.name})"
+            if (params.name == null) params.name = "${market.faction.entityNamePrefix} ${spec.getBaseEntityName()} (${market.name})"
             params.originMarket = market
             params.faction = market.factionId
 
             return createNewFromEntity(market.primaryEntity, params)
         }
 
+        fun createNewFromFleet(
+            fleet: CampaignFleetAPI,
+            params: MissileParams,
+        ): MPC_aegisMissileEntityPlugin {
+            val carriers = MPC_missileStrikeAbility.getMissileCarriers(fleet)
+            val picked = carriers.randomOrNull() ?: return createNewFromEntity(fleet, params)
+            val view = fleet.getViewForMember(picked) as? CampaignFleetMemberView ?: return createNewFromEntity(fleet, params)
+            val movementMod = view.movementModule
+            val loc = movementMod.location
+
+            return createNewFromEntity(fleet, params, loc)
+        }
+
         fun createNewFromEntity(
             entity: SectorEntityToken,
-            params: MissileParams
+            params: MissileParams,
+            spawnLoc: Vector2f? = null
         ): MPC_aegisMissileEntityPlugin {
-            val loc = entity.location
-            val effectiveRadius = entity.radius / 2
-            val randX = MathUtils.getRandomNumberInRange(-effectiveRadius, effectiveRadius)
-            val randY = MathUtils.getRandomNumberInRange(-effectiveRadius, effectiveRadius)
-            val randomSpot = Vector2f(loc).translate(randX, randY)
+            var spawnLoc = spawnLoc
+            if (spawnLoc == null) {
+                val loc = entity.location
+                val effectiveRadius = entity.radius / 2
+                val randX = MathUtils.getRandomNumberInRange(-effectiveRadius, effectiveRadius)
+                val randY = MathUtils.getRandomNumberInRange(-effectiveRadius, effectiveRadius)
+                spawnLoc = Vector2f(loc).translate(randX, randY)
+            }
             val facName = if (entity.faction.id == Factions.NEUTRAL) "" else "${entity.faction.entityNamePrefix}"
-            val ourName = params.name ?: "$facName Cruise Missile"
+            val ourName = params.name ?: "$facName ${params.spec.getBaseEntityName()}"
             params.name = ourName
             params.origin = entity
             if (params.faction == null) params.faction = entity.faction.id
 
-            val facing = if (params.useTargetFacing) VectorUtils.getAngle(entity.location, params.target.location) else entity.facing
+            val facing = if (params.launchFacingTarget) VectorUtils.getAngle(entity.location, params.target.location) else entity.facing
 
             val plugin = createNew(
                 params,
                 entity.containingLocation,
-                randomSpot,
+                spawnLoc,
                 facing
             )
             return plugin
@@ -109,6 +131,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         const val DIST_FOR_FINAL_APPROACH = 300f
         const val TIME_FOR_FINAL_APPROACH_TO_BEGIN = 4f
+        const val PANIC_EBURN_SPEED_TO_DIST_RATIO = 10f
         val defaultTrailColor = Color(255, 200, 50, 255)
     }
 
@@ -130,38 +153,26 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     var profileTooLowsecs = 0f
 
+    var didAlertCheck = false
+
     lateinit var params: MissileParams
     lateinit var lifespan: IntervalUtil // days
 
     data class MissileParams(
         var target: SectorEntityToken,
         val id: String,
+        var name: String?,
         var origin: SectorEntityToken?,
+        var spec: MPC_missileStrikeAbility.Missile,
         var explosionParams: ExplosionEntityPlugin.ExplosionParams,
-        var name: String? = null,
         var faction: String = Factions.NEUTRAL,
-        val sensorProfile: Float = 5000f,
         var originMarket: MarketAPI? = null,
-        var lifespan: Float = 10f,
 
-        /// If null, will just explode on the player fleet
-        var combatVariant: String? = null,
-        var turnRate: Float = 12f,
-        var speed: Float = 600f,
-        var accelTime: Float = 3f,
-
-        var trailColor: Color = defaultTrailColor,
-
-        var onHitEffect: MissileOnHitEffect? = null,
-
-        var useTargetFacing: Boolean = true,
-
-        var losesLockUnderProfile: Float = 200f,
-        var secsToLoseLock: Float = 2f
+        var launchFacingTarget: Boolean = true,
     )
 
     abstract class MissileOnHitEffect() {
-        abstract fun execute(hit: SectorEntityToken)
+        abstract fun execute(source: SectorEntityToken?, hit: SectorEntityToken)
     }
 
     override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
@@ -169,11 +180,23 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         if (pluginParams !is MissileParams) throw RuntimeException("incorrect missile params!")
         params = pluginParams
-        lifespan = IntervalUtil(params.lifespan, params.lifespan)
+        lifespan = IntervalUtil(getSpec().getLifespan(), getSpec().getLifespan())
     }
 
+    fun getSpec(): MPC_missileStrikeAbility.Missile = params.spec
     override fun advance(amount: Float) {
         super.advance(amount)
+
+        if (!didAlertCheck && params.origin != null) {
+            for (iterFleet in entity.containingLocation.fleets) {
+                if (iterFleet == params.origin) continue
+                val level = entity.getVisibilityLevelTo(iterFleet)
+                if (level.ordinal < SectorEntityToken.VisibilityLevel.SENSOR_CONTACT.ordinal) continue
+
+                MPC_missileStrikeAbility.alertFleetToThreat(iterFleet, params.origin!!)
+            }
+            didAlertCheck = true
+        }
 
         if (entity.isExpired || !entity.isAlive || ending) return
         if (target != null && (target!!.isExpired || target!!.containingLocation != entity.containingLocation)) {
@@ -190,6 +213,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         checkLockStatus(amount)
         homeInOnTarget(amount)
+        tryAvoidingMissile()
 
         if (!playedSound) {
             Global.getSoundPlayer().playSound("atropos_fire", MathUtils.getRandomNumberInRange(0.9f, 1.1f), 5f, entity?.location, Misc.ZERO)
@@ -332,14 +356,54 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     }
 
+    var didEburn = false
+    private fun tryAvoidingMissile() {
+        if (target !is CampaignFleetAPI) return
+        if (missed) return
+        val castedTarget = target as CampaignFleetAPI
+        if (castedTarget.isPlayerFleet) return
+        val ai = castedTarget.ai as? ModularFleetAI ?: return
+
+        val level = entity.getVisibilityLevelTo(target)
+        if (level.ordinal >= SectorEntityToken.VisibilityLevel.SENSOR_CONTACT.ordinal) {
+            val nav = ai.navModule
+
+            val boundVar = 10f
+
+            val topBound = boundVar
+            val bottomBound = -boundVar
+
+            val diff = entity.facing - castedTarget.facing
+
+            if (diff in bottomBound..topBound) {
+                nav.unavoidEntity(entity)
+                val avoidLoc = Vector2f(castedTarget.location).rotateAroundPivot(entity.location, 10f)
+                nav.avoidLocation(entity.containingLocation, avoidLoc, 2000f, 3000f, 0.1f)
+            } else {
+                nav.avoidEntity(entity, 2000f, 3000f, 0.2f)
+            }
+            val range = MathUtils.getDistance(entity, target)
+            if (range <= (params.spec.getMaxSpeed() * PANIC_EBURN_SPEED_TO_DIST_RATIO)) {
+                val ability = target!!.getAbility(Abilities.EMERGENCY_BURN)
+                if (ability?.isUsable == true) {
+                    didEburn = true
+
+                    if (MathUtils.getRandomNumberInRange(0f, 1f) <= 0.9f) {
+                        ability.activate()
+                    }
+                }
+            }
+        }
+    }
+
     private fun checkLockStatus(amount: Float) {
         if (target == null) return
         if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) return
         val profile = target!!.detectedRangeMod.computeEffective(target!!.sensorProfile)
-        if (profile < params.losesLockUnderProfile) {
+        if (profile < getSpec().getLosesLockUnderProfile()) {
             profileTooLowsecs += amount
 
-            if (profileTooLowsecs >= params.secsToLoseLock) {
+            if (profileTooLowsecs >= getSpec().getSecsToLoseLock()) {
                 loseLock()
                 return
             }
@@ -375,8 +439,8 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     private fun performOnHitEffects(hit: SectorEntityToken) {
 
-        if (params.onHitEffect != null) {
-            params.onHitEffect!!.execute(hit)
+        if (getSpec().getOnHitEffect() != null) {
+            getSpec().getOnHitEffect()!!.execute(params.origin, hit)
         }
 
         if (hit.isPlayerFleet) {
@@ -388,7 +452,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     fun explode(hit: SectorEntityToken?) {
 
-        if (hit == null || !hit.isPlayerFleet || params.combatVariant == null) {
+        if (hit == null || !hit.isPlayerFleet || getSpec().combatVariant == null) {
             // do explosioin stuff here
             var targetLoc = Vector2f(entity.location)
             /*if (hit != null) {
@@ -410,6 +474,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             explosion.setLocation(targetLoc.x, targetLoc.y)
             if (hit != null && hit is CampaignFleetAPI) {
                 val plugin = explosion.customPlugin as MPC_missileExplosionPlugin
+                plugin.source = this
                 plugin.applyDamageToFleet(hit, 1f)
                 plugin.getAlreadyDamaged() += hit.id
             }
@@ -456,10 +521,11 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         return target == Global.getSector().playerFleet || isHostileToFleet(Global.getSector().playerFleet)
     }
 
+    var triedBurn = false
     private fun homeInOnTarget(amount: Float) {
         // code based heavily on indevo arty stations but with many additions and changes and fixes
         timeElapsed += amount
-        currSpeed = (timeElapsed / params.accelTime).coerceAtMost(1f)
+        currSpeed = (timeElapsed / getSpec().getAccelTime()).coerceAtMost(1f)
 
         if (target != null) {
             val targetDist = MathUtils.getDistance(entity, target)
@@ -470,7 +536,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
                 missed = true
             }
         }
-        val dist = params.speed * amount
+        val dist = getSpec().getMaxSpeed() * amount
 
         //direction
         var nextAngle: Float
@@ -478,10 +544,10 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             nextAngle = entity.facing
         } else {
             val currentTarget = target
-            val targetAngle = VectorUtils.getAngle(entity.location, currentTarget!!.location)
+            val targetAngle = VectorUtils.getAngle(Vector2f(entity.location).translate(1f, 1f), currentTarget!!.location)
             val moveAngle = entity.facing
             val angleDiff = Misc.getAngleDiff(targetAngle, moveAngle)
-            var turn = params.turnRate * amount
+            var turn = getSpec().getTurnRate() * amount
             turn = turn.coerceAtMost(angleDiff)
             if (moveAngle > 180) {
                 val inverted = moveAngle - 180f // dont normalize this.
@@ -502,16 +568,31 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         val diffX = (nextPos.x - entity.location.x) * currSpeed
         val diffY = (nextPos.y - entity.location.y) * currSpeed
 
+
         val newLoc = Vector2f(entity.location).translate(diffX, diffY) as Vector2f
         entity.setLocation(newLoc.x, newLoc.y)
         if (!missed) {
             entity.facing = nextAngle
         }
+
+        /*val level = entity.getVisibilityLevelTo(target)
+        if (level == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
+            if (!triedBurn) {
+                val newDist = MathUtils.getDistance(entity, target)
+                if (newDist <= DIST_TO_TRY_BURN) {
+                    triedBurn = true
+
+                    if (MathUtils.getRandomNumberInRange(0f, 1f) <= 70f) {
+                        target?.getAbility(Abilities.EMERGENCY_BURN)?.activate()
+                    }
+                }
+            }
+        }*/
     }
 
     val trailID = MagicCampaignTrailPlugin.getUniqueID()
     fun addTrailToProj() {
-        val trailColor = if (isHostileToPlayer()) Misc.getNegativeHighlightColor() else params.trailColor
+        val trailColor = getSpec().getTrailColor()
         val playerFleet = Global.getSector().playerFleet
         MagicCampaignTrailPlugin.addTrailMemberSimple(
             entity,
@@ -532,7 +613,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     fun getEntityExternal(): SectorEntityToken = entity
 
-    fun addTargetSection(tooltip: TooltipMakerAPI) {
+    fun addToTooltip(tooltip: TooltipMakerAPI) {
         tooltip.setBulletedListMode(BaseIntelPlugin.BULLET)
         tooltip.addSpacer(5f)
         //tooltip.setGridFontSmallInsignia()
@@ -574,6 +655,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             targetName = "None"
         }
 
+
         tooltip.addPara(
             "Target: %s",
             5f,
@@ -581,7 +663,10 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             targetName
         )
 
-        val damagePair = getDamageStringAndColor(params.explosionParams.damage)
+        tooltip.setBulletedListMode(null)
+        params.spec.addToTooltip(tooltip, params, false)
+
+        /*val damagePair = getDamageStringAndColor(params.explosionParams.damage)
         val damageString = damagePair.first
         val damageColor = damagePair.second
 
@@ -589,11 +674,10 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             "Loses lock under %s sensor profile",
             5f,
             Misc.getHighlightColor(),
-            params.losesLockUnderProfile.roundNumTo(1).trimHangingZero().toString()
-        )
+            getSpec().getLosesLockUnderProfile().roundNumTo(1).trimHangingZero().toString()
+        )*/
 
         //tooltip.setParaFontDefault()
-        tooltip.setBulletedListMode(null)
     }
 
     override fun appendToCampaignTooltip(tooltip: TooltipMakerAPI?, level: SectorEntityToken.VisibilityLevel?) {
@@ -601,7 +685,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
         if (tooltip == null) return
         if (level == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
-            addTargetSection(tooltip)
+            addToTooltip(tooltip)
         }
     }
 
@@ -611,7 +695,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         if (tooltip == null) return
 
         tooltip.addPara(entity.name, 0f).color = entity.faction.baseUIColor
-        addTargetSection(tooltip)
+        addToTooltip(tooltip)
     }
 
     override fun hasCustomMapTooltip(): Boolean {

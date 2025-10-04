@@ -48,7 +48,7 @@ Sadly, it seems only able to fire bursts strong enough to envelop a fleet of shi
 
 Nullifies CR drain from terrain for all friendly/trade fleets in-system, as well as heavily mitigating terrain movement. Ideal for colonization of black hole systems.",110,HIGH
 niko_MPC_constructionAcceleratorIndustry,Scaffolding Infrastructure,20,20,,18,,,"industry, hide_in_codex",,graphics/illustrations/industrial_megafacility.jpg,data.scripts.campaign.econ.industries.MPC_constructionAcceleratorIndustry,"While the titular infrastructure always existed, it was rarely, if ever, taken to this extent. Massive subsidies, incentives, and liberally placed construction outposts permits the host colony easy access to material, manpower, and location for new industry.",301,LOW
-niko_MPC_aegisMissileSystem,Aegis Missile System,100,20,,30,,,"structure, tactical_bombardment, hide_in_codex",,graphics/illustrations/desert_moons_ruins.jpg,data.scripts.campaign.econ.industries.MPC_aegisRocketPods,"Recovered from a rebellious tomb-world, the Aegis Missile System is a bootstrap network of modular ISBM missile silos, capable of delivering their payloads across entire star systems.
+niko_MPC_aegisMissileSystem,Aegis Missile System,100,20,,18,,,"structure, tactical_bombardment, hide_in_codex",,graphics/illustrations/desert_moons_ruins.jpg,data.scripts.campaign.econ.industries.MPC_aegisRocketPods,"Recovered from a rebellious tomb-world, the Aegis Missile System is a bootstrap network of modular ISBM missile silos, capable of delivering their payloads across entire star systems.
 
 Using the old-but-gold XLY-293 missile complex, this undertaking is sure to make pirates think thrice.",302,HIGH
 ,,,,,,,,,,,,,,

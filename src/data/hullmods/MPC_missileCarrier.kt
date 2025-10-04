@@ -6,14 +6,29 @@ import com.fs.starfarer.api.combat.BaseHullMod
 import com.fs.starfarer.api.combat.MutableShipStatsAPI
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipAPI.HullSize
+import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.combat.entities.Ship
 import data.utilities.niko_MPC_stringUtils
 
 class MPC_missileCarrier: BaseHullMod() {
 
     companion object {
+        fun getNumMissiles(carrier: FleetMemberAPI): Int {
+            var numMissiles = 0
+            for (tag in carrier.hullSpec.baseHull.tags) {
+                if (!tag.contains("MPC_carriesMissiles")) continue
+                val num = tag.filter { it.isDigit() }
+                numMissiles = num.toInt()
+            }
+
+            if (carrier.hullSpec.baseHullId == "MPC_lockbow" && Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_AOTDLockbowImproved")) numMissiles++
+
+            return numMissiles
+        }
+
         const val DISARMED_DP_DEC = 10f
         const val DISARMED_MAINT_MULT = 0.5f
     }
@@ -55,6 +70,16 @@ class MPC_missileCarrier: BaseHullMod() {
                 Misc.getPositiveHighlightColor(),
                 "deployment point", "${DISARMED_DP_DEC.toInt()}", niko_MPC_stringUtils.toPercent(1 - DISARMED_MAINT_MULT)
             )
+        } else {
+            val member = ship.fleetMember
+            if (member != null) {
+                tooltip.addPara(
+                    "This ship can carry %s missiles at a time.",
+                    10f,
+                    Misc.getHighlightColor(),
+                    getNumMissiles(member).toString()
+                )
+            }
         }
     }
 
@@ -75,6 +100,11 @@ class MPC_missileCarrier: BaseHullMod() {
                 stats.suppliesPerMonth.modifyMult(id, DISARMED_MAINT_MULT)
                 stats.dynamic.getMod(Stats.DEPLOYMENT_POINTS_MOD).modifyFlat(id, -DISARMED_DP_DEC)
             }
+        }
+
+        val fleet = ship.fleetMember?.fleetData?.fleet ?: return
+        if (fleet.isPlayerFleet) { // todo: separate ai from the remnant fleet carrier script
+            Global.getSector().characterData.addAbility("MPC_missileStrike")
         }
     }
 }

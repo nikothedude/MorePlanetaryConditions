@@ -9,17 +9,6 @@ import org.lwjgl.input.Keyboard
 
 class MPC_missileStrikeKeypressListener: CampaignInputListener {
 
-    companion object {
-        fun get(withUpdate: Boolean): MPC_missileStrikeKeypressListener? {
-            var listener = Global.getSector().memoryWithoutUpdate["\$MPC_missileKeypressListener"] as? MPC_missileStrikeKeypressListener
-            if (listener == null && withUpdate) {
-                listener = MPC_missileStrikeKeypressListener()
-                Global.getSector().memoryWithoutUpdate["\$MPC_missileKeypressListener"] = listener
-            }
-            return listener
-        }
-    }
-
     override fun getListenerInputPriority(): Int {
         return 0
     }

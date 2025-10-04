@@ -77,6 +77,7 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
             if (!isFunctional) reloadMult = 0f
             rocketHandler?.reloadRateMult = (reloadMult * mult)
             rocketHandler?.maxMissilesLoaded = if (!isFunctional) 0f else getMaxRockets()
+            rocketHandler?.minSensorProfile = getMinSensorProfile()
             //rocketHandler?.missilesLoaded = getMaxRockets()
         } else {
             dismantleDefenseGrid()
@@ -104,7 +105,7 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
         rocketHandler = null
     }
 
-    fun getMinSensorProfile(): Float = 300f
+    fun getMinSensorProfile(): Float = 700f
     fun getReloadRate(): Float {
         return 5f
     }

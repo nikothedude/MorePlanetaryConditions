@@ -3,13 +3,27 @@ package data.scripts.campaign.econ.industries.missileLauncher
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.util.IntervalUtil
+import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 
 class MPC_remnantMissileCarrierScript(
     val fleet: CampaignFleetAPI
 ): MPC_orbitalMissileLauncher() {
+
+    companion object {
+        val eligibleSpecs = hashMapOf<MPC_missileStrikeAbility.Missile, Float>(
+            Pair(MPC_missileStrikeAbility.Missile.EXPLOSIVE, 20f),
+            Pair(MPC_missileStrikeAbility.Missile.INTERDICT, 2f)
+        )
+
+        fun getPicker(): WeightedRandomPicker<MPC_missileStrikeAbility.Missile> {
+            val picker = WeightedRandomPicker<MPC_missileStrikeAbility.Missile>()
+            eligibleSpecs.forEach { picker.add(it.key, it.value) }
+            return picker
+        }
+    }
+
     override var maxMissilesLoaded: Float = 2f
     override var missilesLoaded: Float = 2f
     override var missileReloadInterval = IntervalUtil(6.2f, 6.3f) // days
@@ -33,24 +47,17 @@ class MPC_remnantMissileCarrierScript(
         return super.getDetectionIncrement(fleet, amount)
     }
 
-    override fun createMissile(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin {
-        val missile = MPC_aegisMissileEntityPlugin.createNewFromEntity(
-            fleet,
-            params
-        )
+    override fun createMissile(
+        spec: MPC_missileStrikeAbility.Missile,
+        target: SectorEntityToken
+    ): MPC_aegisMissileEntityPlugin {
+        val missile = MPC_missileStrikeAbility.Missile.getMissileFrom(spec, getHost(), target)
 
         return missile
     }
 
-    override fun getMissileParams(target: SectorEntityToken): MPC_aegisMissileEntityPlugin.MissileParams {
-        val params = MPC_missileStrikeAbility.getStandardAbilityParams(
-            fleet,
-            target,
-            "MPC_remnantCarrierMissile"
-        )
-        MPC_missileStrikeAbility.Missile.EXPLOSIVE.adjustMissileParams(params)
-        params.explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
-        return params
+    override fun getSpec(target: SectorEntityToken): MPC_missileStrikeAbility.Missile {
+        return getPicker().pick()
     }
 
     override fun getFaction(): FactionAPI {
