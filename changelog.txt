@@ -1,3 +1,10 @@
+4.3.7a
+
+Fixes a random sector crash
+Fixed another crash
+
+Cruise missile can now resist up to 10 emp bolts before flaming out
+
 4.3.7
 SAVE COMPATIBLE - RUN MPC_genSpecialContent IF UPDATING
 

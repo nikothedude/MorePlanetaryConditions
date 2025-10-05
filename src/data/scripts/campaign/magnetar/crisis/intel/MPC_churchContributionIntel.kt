@@ -44,7 +44,7 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
         VISIT_HIDEOUT {
             override fun apply() {
                 val target = MPC_IAIICChurchCMD.getHideout()
-                target.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                target?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
             }
             /*override fun unapply() {
                 val target = MPC_IAIICChurchCMD.getHideout()
@@ -99,7 +99,7 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
             when (listInfoParam) {
                 State.VISIT_HIDEOUT -> {
                     info.addPara(
-                        "Visit the hideout on %s", initPad, Misc.getBasePlayerColor(), hideout.name
+                        "Visit the hideout on %s", initPad, Misc.getBasePlayerColor(), hideout?.name
                     )
                 }
                 State.FIND_ASHER_CONTACT -> {
@@ -157,7 +157,7 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
             "working together to disrupt the Knights - which you have agreed to. They have a hideout on %s, in the %s system.",
             5f,
             Misc.getHighlightColor(),
-            militantOne.nameString, hideout.name, "Eos Exodus"
+            militantOne.nameString, hideout?.name, "Eos Exodus"
         ).setHighlightColors(
             Misc.getHighlightColor(),
             Misc.getBasePlayerColor(),

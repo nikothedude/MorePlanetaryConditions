@@ -18,7 +18,8 @@ class MPC_missileCarrier: BaseHullMod() {
     companion object {
         fun getNumMissiles(carrier: FleetMemberAPI): Int {
             var numMissiles = 0
-            for (tag in carrier.hullSpec.baseHull.tags) {
+            val spec = carrier.hullSpec.baseHull ?: Global.getSettings().getHullSpec(carrier.hullSpec.baseHullId)
+            for (tag in spec.tags) {
                 if (!tag.contains("MPC_carriesMissiles")) continue
                 val num = tag.filter { it.isDigit() }
                 numMissiles = num.toInt()

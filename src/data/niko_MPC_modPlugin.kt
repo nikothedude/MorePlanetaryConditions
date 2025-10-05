@@ -124,8 +124,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             intel.removeBlueprintFunctions.forEach { it?.run() }
         }
 
-        fun addExtraExodusPlanet(): PlanetAPI {
-            val exodus = MPC_IAIICChurchCMD.getExodus()
+        fun addExtraExodusPlanet(): PlanetAPI? {
+            val exodus = MPC_IAIICChurchCMD.getExodus() ?: return null
             val furthestPlanet = exodus.planets.filter { !it.isStar && it.orbit != null }.maxBy { it.orbit.orbitalPeriod }
             val furthestOrbit = furthestPlanet.orbit.makeCopy()
             val newPlanet = exodus.addPlanet(

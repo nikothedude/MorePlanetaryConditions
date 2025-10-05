@@ -29,8 +29,8 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
         const val HIDEOUT_ID = "MPC_eos_hideout_planet"
         const val HIDEOUT_NAME = "\$MPC_IAIICChurchHideoutPlanetName"
 
-        fun getExodus(): StarSystemAPI = Global.getSector().getStarSystem("Eos Exodus")
-        fun getHideout(): PlanetAPI = getExodus().planets.find { it.id == HIDEOUT_ID }!!
+        fun getExodus(): StarSystemAPI? = Global.getSector().getStarSystem("Eos Exodus")
+        fun getHideout(): PlanetAPI? = getExodus()?.planets?.find { it.id == HIDEOUT_ID }
     }
 
     @Transient
@@ -60,12 +60,12 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
                 return (fobIntel.getContributionById(Factions.LUDDIC_CHURCH)) != null && contribIntel == null
             }
             "getHideoutName" -> {
-                Global.getSector().memoryWithoutUpdate[HIDEOUT_NAME] = getHideout().name
+                Global.getSector().memoryWithoutUpdate[HIDEOUT_NAME] = getHideout()?.name
             }
             "beginIntel" -> {
                 val intel = MPC_churchContributionIntel.get(true, noUpdate = true, text = dialog.textPanel)
                 intel?.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
-                getHideout().makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                getHideout()?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
             }
             "goToHideout" -> {
                 val fleet = interactionTarget as? CampaignFleetAPI ?: return false
