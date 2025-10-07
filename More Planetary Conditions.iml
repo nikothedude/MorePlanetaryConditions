@@ -31,5 +31,6 @@
     <orderEntry type="library" name="commons-compiler" level="project" />
     <orderEntry type="library" name="starsector-cor" level="project" />
     <orderEntry type="library" name="MagicLib" level="project" />
+    <orderEntry type="library" name="WideHorizons" level="project" />
   </component>
 </module>

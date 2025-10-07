@@ -94,7 +94,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             val picked = carriers.randomOrNull() ?: return createNewFromEntity(fleet, params)
             val view = fleet.getViewForMember(picked) as? CampaignFleetMemberView ?: return createNewFromEntity(fleet, params)
             val movementMod = view.movementModule
-            val loc = movementMod.location
+            val loc = Vector2f(fleet.location.translate(movementMod.location.x, movementMod.location.y))
 
             return createNewFromEntity(fleet, params, loc)
         }

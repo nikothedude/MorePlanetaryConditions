@@ -525,13 +525,13 @@ abstract class niko_MPC_satelliteHandlerCore(
         val oldEntity = cachedEntity
         val currentEntity = entity
         if (currentEntity === oldEntity) {
-            displayError("desync attempt: $oldEntity, ${oldEntity.name} is the same as the provided entity")
-            logDataOf(oldEntity)
+            //displayError("desync attempt: $oldEntity, ${oldEntity.name} is the same as the provided entity")
+            //logDataOf(oldEntity)
         }
         if (oldEntity != null) {
             if (oldEntity.hasSatelliteHandler(this)) {
-                displayError("Desync check failure-$oldEntity still has $this" + "applied to it")
-                logDataOf(oldEntity)
+                //displayError("Desync check failure-$oldEntity still has $this" + "applied to it")
+                //logDataOf(oldEntity)
             }
         }
         migrateEntityFeatures(oldEntity, currentEntity)
@@ -554,14 +554,14 @@ abstract class niko_MPC_satelliteHandlerCore(
     protected open fun handleMarketDesync(currentMarket: MarketAPI? = market) {
         val oldMarket = cachedMarket
         if (currentMarket === oldMarket) {
-            displayError("Desync check failure: ${oldMarket?.name} is the same as the provided market")
-            logDataOf(currentMarket)
+            //displayError("Desync check failure: ${oldMarket?.name} is the same as the provided market")
+            //logDataOf(currentMarket)
             return
         }
         if (oldMarket != null) {
             if (oldMarket.hasSatelliteHandler(this) && oldMarket != currentMarket) {
-                displayError("Desync check failure-${oldMarket.name} still has $this" + "applied to it")
-                logDataOf(oldMarket)
+                //displayError("Desync check failure-${oldMarket.name} still has $this" + "applied to it")
+                //logDataOf(oldMarket)
             }
         }
         migrateMarketFeatures(oldMarket, currentMarket)

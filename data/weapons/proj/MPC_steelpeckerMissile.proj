@@ -1,5 +1,5 @@
 {
-	"id":"MPC_steelpeckerStageTwo",
+	"id":"MPC_steelpeckerProj",
 	"specClass":"missile",
 	"missileType":"MISSILE",
 	"onFireEffect":"data.scripts.weapons.MPC_interceptScriptTwo",
@@ -11,15 +11,15 @@
 	"collisionRadius":5,
 	"collisionClass":"MISSILE_NO_FF",
 	"explosionColor":[185,245,255,255],  # purely visual, will get a white additively blended core on top of this color
-	"explosionRadius":100, # purely visual
+	"explosionRadius":15, # purely visual
 	"flameoutTime":1, # total time from flameout to full fadeout
 	"noEngineGlowTime":0.5, # time spent without the engine glow being rendered
 	"fadeTime":0.5, # fadeout duration	
-	"engineSpec":{"turnAcc":1000,
+	"engineSpec":{"turnAcc":3000,
 				  "turnRate":500,
-				  "acc":5000,
-				  "dec":5000,
-				  "maxSpeed":900},
+				  "acc":6000,
+				  "dec":9500,
+				  "maxSpeed":2600},
 	"engineSlots":[{"id":"ES1",
 					"loc":[-1, 0],
 				    #"style":"ROCKET_LOW_TECH",
@@ -41,20 +41,6 @@
 				    "width":4.0,
 				    "length":30.0,
 				    "angle":180.0}],
-	"behaviorSpec":{"behavior":"PROXIMITY_FUSE",
-				"range":90,
-				"explosionSpec":{"duration":0.1f,
-								 "radius":135,
-								 "coreRadius":90, # full damage within core radius - also equal to proximity fuse range
-								 "collisionClass":PROJECTILE_FF,
-								 "collisionClassByFighter":PROJECTILE_FIGHTER,
-								 "particleSizeMin":1.0,
-								 "particleSizeRange":2.0,
-								 "particleDuration":0.3,
-								 "particleCount":120,
-								 "particleColor":[255,155,155,255],
-								 "sound":"MPC_heavyFlakExplosion"},
-				}
 }
 
 			

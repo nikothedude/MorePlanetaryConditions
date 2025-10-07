@@ -147,7 +147,7 @@ abstract class niko_MPC_antiAsteroidSatellitesBase: niko_MPC_industryAddingCondi
         if (ourHandler != null) {
             if (cachedMarket != null) {
                 if (cachedMarket!!.hasSatelliteHandler(ourHandler)) {
-                    return displayError("Desync check failure-$cachedMarket still has $ourHandler" + "applied to it")
+                    //return displayError("Desync check failure-$cachedMarket still has $ourHandler" + "applied to it")
                 }
             }
         }

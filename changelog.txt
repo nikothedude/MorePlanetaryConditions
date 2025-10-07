@@ -1,3 +1,11 @@
+4.3.7b
+
+Fixes the [REDACTED] firing its [ERR] from the center of the system
+
+Removes the fucking desync check
+
+Implements the steelpecker in code, but not in game
+
 4.3.7a
 
 Fixes a random sector crash

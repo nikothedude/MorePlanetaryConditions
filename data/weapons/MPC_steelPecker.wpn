@@ -24,6 +24,6 @@
 				 "blowbackLength":30.0,
 				 "blowbackSpread":10.0,
 				 "particleColor":[100,100,100,200]},
-	"projectileSpecId":"MPC_steelpeckerStageOne",
+	"projectileSpecId":"MPC_steelpeckerProj",
 	"fireSoundTwo":"annihilator_fire",
 }
