@@ -1,3 +1,7 @@
+4.3.7c
+
+Fixes magnetar rules (Wow, lots of bugs this release, huh?)
+
 4.3.7b
 
 Fixes the [REDACTED] firing its [ERR] from the center of the system
