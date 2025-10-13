@@ -216,7 +216,15 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         tryAvoidingMissile()
 
         if (!playedSound) {
-            Global.getSoundPlayer().playSound("atropos_fire", MathUtils.getRandomNumberInRange(0.9f, 1.1f), 5f, entity?.location, Misc.ZERO)
+            if (entity.containingLocation.isCurrentLocation) {
+                Global.getSoundPlayer().playSound(
+                    "atropos_fire",
+                    MathUtils.getRandomNumberInRange(0.9f, 1.1f),
+                    5f,
+                    entity?.location,
+                    Misc.ZERO
+                )
+            }
             playedSound = true
         }
 

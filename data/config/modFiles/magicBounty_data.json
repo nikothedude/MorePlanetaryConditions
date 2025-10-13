@@ -78,6 +78,7 @@
             "gas_giant",
         ],
 
+        "fleet_flagship_alwaysRecoverable":true,
         "job_comm_reply": "The commander of the fleet appears on your vid-screen, grinning widely. \"Like this thing? Just found it, and its got a bit of a *kick*. I can see the way you're lookin' at it...\" $HeOrShe cracks $hisOrHer fingers. \"If you've got the knocks for it, go ahead and try. Need a test run anyway!\" $HeOrShe cackles.",
     },
 

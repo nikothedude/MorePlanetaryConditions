@@ -92,6 +92,7 @@ object niko_MPC_specialProcGenHandler {
             if (system !is StarSystemAPI) continue
             if (system.hasTag(Tags.THEME_SPECIAL) || system.hasTag(Tags.THEME_HIDDEN) || system.getMarketsInLocation().any { it.isInhabited() }) continue
             if (system.hasTag(Tags.SYSTEM_ABYSSAL)) continue
+            if (!system.isProcgen) continue
 
             val planets = system.planets
             if (planets.isEmpty()) continue
@@ -245,6 +246,7 @@ object niko_MPC_specialProcGenHandler {
         }
 
         picked.addTag(Tags.THEME_SPECIAL)
+        picked.addTag(Tags.THEME_UNSAFE)
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER] = fleet
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.FORTRESS_SYSTEM] = picked

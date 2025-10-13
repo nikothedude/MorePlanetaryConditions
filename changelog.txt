@@ -1,3 +1,9 @@
+4.3.7d
+
+Fixes missiles playing their sound when theyre in a different location
+Fixes toyol not being always recoverable
+Some proofreading
+
 4.3.7c
 
 Fixes magnetar rules (Wow, lots of bugs this release, huh?)

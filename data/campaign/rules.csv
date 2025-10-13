@@ -28,11 +28,11 @@ SetTextHighlights $global.MPC_FTRInnerPlanetName","The footage buzzes, crackles,
 Taken from the top-dome of the station, this footage captures the final moments of this station. A sizable fleet, comprised primarily of converted civilian ships, engages a sparse defensive fleet - each ship embazened with the same emblem found on the station - while frantic voices discuss how to activate the weaponry on the station. Beneath the station, many ships are already unloading their payload on the planet below, dooming many thousands to their death.
 
 Repeated mentions of $global.MPC_FTRInnerPlanetName - accompanied with slurs and accusations of 'treason' - are heard throughout the dialog, at least until the footage randomly glitches and turns to meaningless noise.
-""That's one of the planets in-system."" sensors notes. ""Seems they had a falling out."" tactical muses.",MPC_FRTStarFortFour:Continue,
+""That's one of the planets in-system."" sensors notes. ""Seems they had a falling out.""",MPC_FRTStarFortFour:Continue,
 MPC_FRTStarFortFour,DialogOptionSelected,$option == MPC_FRTStarFortFour,"ShowDefaultVisual
 SalvageEntity showCost
 FireAll PopulateSalvageOptions2
-$global.MPC_abandonedStarFortExposition = true","Turning your attention from this recording, you resume the salvage operation - which proceeds apace. Numerous more miscillanious finds are made: Anti-Domain pamphlets stuffed in semi-accessible panels, marble statues within the marine barricks, and many more miscellaneous details.
+$global.MPC_abandonedStarFortExposition = true","Turning your attention from this recording, you resume the salvage operation - which proceeds apace. Numerous more miscellanious finds are made: Anti-Domain pamphlets stuffed in semi-accessible panels, marble statues within the marine barricks, and many more small details.
 
 Soon enough, the survey is complete, and a salvage estimation is placed on your desk. Maybe you should pay a visit to that planet once you're done here?",,
 ,DialogOptionSelected,$option ==,,,,
@@ -85,7 +85,7 @@ MPC_FRTMissilePlanetExplDefendersDeadContinue,DialogOptionSelected,$option == MP
 Your salvors fan out across the planet - performing typical survey techniques, gathering samples, examining the ruins. However, it becomes quickly apparant this isn't your average salvage op.",MPC_FRTMissilePlanetExplTwo:Continue,
 MPC_FRTMissilePlanetExplTwo,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplTwo,,"The first and most striking difference between $name and other ruined civilizations is the aesthetic. Everything feels hand-crafted with intent - the first most common construction material is marble, followed by granite. Within the cratered ruins of homesteads are statues, sculptures, paintings, and a wide variety of creative supplies. Theatres and wineries are a common sight, as are combine harvesters and extractive operations - though, these are often pushed out of view.
 
-Even the dead wear silkin robes, colored orange, white - and sometimes, crimson. The dead are in dread abundance, here. They lie in the streets, stylish garbs tinged with their own blood, cut in twain by heavy weaponry. Rarely, a marine - marked by red black and blue - is found, skeletonized, gripping a heavy weapon tightly - but they don't seem to have come from this planet at all.
+Even the dead wear silken robes, colored orange, white - and sometimes, a dreadful crimson. The dead are in abundance, here. They lie in the streets, stylish garbs tinged with their own blood, cut in twain by heavy weaponry. Rarely, a marine - marked by red black and blue - is found, skeletonized, gripping a heavy weapon tightly - but they don't seem to have come from this planet at all.
 
 Indeed, $name has little to no military, or even police, infrastructure at all. Coupled with the ancient bombardment scars, you summise this planet must have been invaded - or destroyed.",MPC_FRTMissilePlanetExplThree:Continue,
 MPC_FRTMissilePlanetExplThree,DialogOptionSelected,$option == MPC_FRTMissilePlanetExplThree,,"Further, more in-depth exploration, reveals even more insights into this world. On top of their artistic inclination, it seemed they had a rebellious streak: Submerged in the sandy equator are numerous point defense emplacements, coated in stealth plating, and connected to sizable guerilla networks. These guerilla camps are often filled with small arms, anti-Domain recruitment pamphlets, and countless bits of media poking fun at the $global.MPC_FTRInnerPlanetName 'snot dripplers', alongst other slurs.
@@ -109,20 +109,22 @@ MPC_FRTInnerPlanetExplInit,DialogOptionSelected,"$option == salExplore
 $MPC_FTRInnerPlanet score:1000
 !$global.MPC_exploredFTRInnerPlanet",,"As the shuttles descend, something becomes clearer, clearer, and clearer.
 
-Something terrible happened here.
+Something wicked.
 
-Vast swaths of death. That is all that is left of the cratered cities, nulled from existance by precision weaponry. The only clue they seem to have left is a trace radiation. Only a few, small emplacements remain, of far less note, but no less death.",MPC_FRTInnerPlanetExplTwo:Continue,
+Vast swaths of death. That is all that is left of the cratered cities, nulled from existance by precision weaponry. The only clue they seem to have left is a trace radiation. Only a few, small emplacements remain, of far less note, but no less horror.",MPC_FRTInnerPlanetExplTwo:Continue,
 MPC_FRTInnerPlanetExplTwo,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplTwo,,"In the small, fractured hab-domes, your salvors find nothing but death. Corpses, succumbed to the thin ammonia-atmosphere, inches away from resipirators - or simply with a self-inflicted wound to the head.
 
 As for the infrastucture itself, it seems remarkably intact for the time spent exposed to the harsh atmosphere of $name. Rigid, angular designs, made of highly machined steel, doubtlessly manufactured by the countless refineries dotted around the planet. Limited amenities are found, and what there is is mostly just drugs, alcohol, the rare digi-game.",MPC_FRTInnerPlanetExplThree:Continue,
-MPC_FRTInnerPlanetExplThree,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplThree,,"Of particular note on this planet is the military infrastructure: Sprase swaths of dockyards, headquarters, and training grounds - with an equally high number of marine corpses, each marked with a small emblem colored in red black and blue - the same color as the emblem of the destroyed battlestation in orbit.
+MPC_FRTInnerPlanetExplThree,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplThree,,"Of particular note on this planet is the military infrastructure: Fields of dockyards, headquarters, and training grounds - with an equally high number of marine corpses, each marked with a small emblem colored in red black and blue; the same color as the emblem of the destroyed battlestation in orbit.
 
 Interestingly, of the military command centers to survive the cataclysmic bombing of $name, many seem to harbor paperwork implying a secret agreement between $name and $global.MPC_FTRSecondPlanetName - though it is quickly superceded by endless moaning and complaining about the $global.MPC_FTRSecondPlanetName citizenry, with a few choice words being ""silver-spooned"" and ""entitled"". 
 
-This agreement seems to be a military treaty that would enable the two polities to rebel against the Domain together - but it would seem that never quite came to fruition.",MPC_FRTInnerPlanetExplFour:Continue,
+This agreement seems to be a military treaty that would enable the two polities to rebel against the Domain together, but it would seem that never quite came to fruition.",MPC_FRTInnerPlanetExplFour:Continue,
 MPC_FRTInnerPlanetExplFour,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplFour,,"Your salvors quickly finish the survey of the ravaged planet. Little salvage remains, but what is left is of great value.
 
-You take a moment to reflect. The cored out station in orbit. The missiles in-system. The massive, nuclear craters. Something terrible truely happened here.",MPC_FRTInnerPlanetExplEnd:Resume salvage operations,
+You take a moment to reflect. The cored out station in orbit. The missiles in-system. The massive, nuclear craters.
+
+You shiver.",MPC_FRTInnerPlanetExplEnd:Resume salvage operations,
 MPC_FRTInnerPlanetExplEnd,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplEnd,"$global.MPC_exploredFTRInnerPlanet = true
 FireBest CheckSalvageSpecial",,,
 #END Innermost planet exploration,,,,,,
@@ -147,7 +149,7 @@ MPC_recoveredMissileCarrierCrew,DialogOptionSelected,$option == MPC_recoveredMis
 FireBest MPC_recoveredMissileCarrierThree","Your salvors gleefully pick and disassemble the control-circuits, freeing the ship for human use.",,
 MPC_recoveredMissileCarrierAutomate,DialogOptionSelected,$option == MPC_recoveredMissileCarrierAutomate,"MPC_remnantMissileCarrierCMD convertToAutomated
 FireBest MPC_recoveredMissileCarrierThree",The control-circuits remain.,,
-MPC_recoveredMissileCarrierThree,MPC_recoveredMissileCarrierThree,,"SetTextHighlights ""It's still fully functional.""","Your salvors continue exploring the ship. While the freighter-half in unremarkable, the missile complex is something of beauty.
+MPC_recoveredMissileCarrierThree,MPC_recoveredMissileCarrierThree,,"SetTextHighlights ""It's still fully functional.""","Your salvors continue exploring the ship. While the freighter-half is unremarkable, the missile complex is something of beauty.
 
 Massive nano-vats, walls of integrated, component-specific nanoforges, and a highly sophisticated control network. The best part?
 
@@ -156,7 +158,7 @@ It's still fully functional.
 ""$PlayerSirOrMadam."" Tactical interrupts. ""The sitrep is complete. While it suffered damage in the battle, I believe we'll still be able to use the missile complex for our own purposes. *Including*..."" a small, excited small crawls across your officer's lips. ""...strategically.""","MPC_recoveredMissileCarrierFour:""And the catch is?""",
 MPC_recoveredMissileCarrierFour,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFour,"SetTextHighlights ""armaments"" ""fuel""","""-ah."" tactical frowns. ""Yes. The catch. Well. As I said, it was damaged.  The matter-vats are, ah. Cracked. And, while replacable on a grand scale, we simply can't repair this on a ship level. Therfore, each launch will cost significant quantities of armaments and fuel, and it will take quite a long time to make a new missile.""
 
-""Additionally, the Hegemony will likely not take this lying down. A strategic weapon like this..."" tactical shivers, imagining the possibilities. ""-let's just say they won't be happy to see it.""","MPC_recoveredMissileCarrierFive:Nod, and thank your officer",
+""Additionally, the Hegemony will likely not take this lying down. A strategic weapon like this..."" tactical pauses, imagining the possibilities. ""-let's just say they won't be happy to see it.""","MPC_recoveredMissileCarrierFive:Nod, and thank your officer",
 MPC_recoveredMissileCarrierFive,DialogOptionSelected,$option == MPC_recoveredMissileCarrierFive,"AddAbility MPC_missileStrike 9
 MPC_remnantMissileCarrierCMD startReactionTimer","""Of course, $PlayerSirOrMadam."" tactical says, before returning to their post.
 
@@ -179,7 +181,7 @@ Your eyes naturally slide towards the now-approaching officer. With a wave of $h
 ""Sorry for that, $PlayerSirOrMadam. It's just protocol. Let's sit down - and have a drink. On the house."" Still feeling the prick of IR-targetting lasers on your neck, you comply.",MPC_MCHegeMktThree:Continue,
 MPC_MCHegeMktThree,DialogOptionSelected,$option == MPC_MCHegeMktThree,,"The two of you sit in a small, uncomfortable table in the middle of the bar. The bartender stands stiffly in the corner, watching as the agent simply walks behind the counter and ""borrows"" a pair of brandies - compensation for which is likely to never come.
 
-""Have you heard of a thing called a missile carrier, Captain? A vessel capable of striking targets across the system. Extremely dangerous - untracable, undetectable, and highly lethal.""
+""Have you heard of a thing called a missile carrier, Captain? A vessel capable of striking targets across an entire solar system. Extremely dangerous - untracable, undetectable, and highly lethal.""
 
 $HeOrShe pours both of you a drink. ""Highly illegal, too. Logistics Protocol 23 Alpha dictates any missile carrier in the sector must be under the control of the Hegemony - or any other Domain equivilant."" $heOrShe sips. ""None of which besides us exists.""","MPC_MCHegeMktDrink:Take a sip
 MPC_MCHegeMktFour:""Your point being?""",
@@ -203,7 +205,7 @@ EndConversation DO_NOT_FIRE","""In the off-chance you... are, lying. And *do* kn
 
 Grunting, $heOrShe then stands, turns away, and walks out without another word. You should do the same.","MPC_MCHegeMktApologize:Apologize to the bartender
 MPC_MCHegeMktResolve:Continue",
-MPC_MCHegeMktAdmit,DialogOptionSelected,$option == MPC_MCHegeMktAdmit,$player.ethosTruth++,"$HeOrShe blinks twice, stunned by your bravado. Then, after a sawig of $hisOrHer resolute brandy, $heOrShe starts - ""Hah! Really? You're just... saying it? I mean, of course, it was never confirmed... but this is very interesting.""
+MPC_MCHegeMktAdmit,DialogOptionSelected,$option == MPC_MCHegeMktAdmit,$player.ethosTruth++,"$HeOrShe blinks twice, stunned by your bravado. Then, after a swig of $hisOrHer resolute brandy, $heOrShe starts - ""Hah! Really? You're just... saying it? I mean, of course, it was never confirmed... but this is very interesting.""
 
 Then, $heOrShe narrows $hisOrHer eyes - glaring. ""To what end, then, do you admit this?""","MPC_MCHegeMktAdmitMessing:""Because I'm messing with you, idiot. Why would I ever admit it?""
 MPC_MCHegeMktAdmitGive:""Because I don't want to break the law."" (Give the Hegemony the missile carrier)",
@@ -1867,7 +1869,7 @@ MPC_RACAFCIAIICDefeatedInit,MPC_RACAFractalCoreTwo,"$global.MPC_IAIICDefeated sc
 # Core upgrade dialog,,,,,,
 MPC_coreUpgradedInit,MPC_coreUpgradedInit,,"SetTextHighlightColors player player
 SetTextHighlights $global.MPC_fractalSystemName $global.MPC_fractalColonyName
-niko_MPC_musicToggle music_diktat_encounter_friendly true true",You abruptly get a comms request from $global.MPC_fractalSystemName space - marked high priority. It seems to be encoded with the colonial transponder of $global.MPC_fractalColonyName - the planet you recently fought a sector-spanning war over.,MPC_coreUpgradedTwo:Open a channel,
+niko_MPC_musicToggle music_diktat_encounter_friendly true true","You abruptly get a comms request from $global.MPC_fractalSystemName space, marked high priority. It seems to be encoded with the colonial transponder of $global.MPC_fractalColonyName - the planet you recently fought a sector-spanning war over.",MPC_coreUpgradedTwo:Open a channel,
 MPC_coreUpgradedTwo,DialogOptionSelected,$option == MPC_coreUpgradedTwo,"MPC_IAIICJillCMD showFractalCorePerson
 
 SetTextHighlightColors highlight player
@@ -2948,7 +2950,7 @@ BeginConversation MPC_arrowPatherRep","Before you can make a decision, your hair
 
 A perfect ambush.
 
-In the middle, you see an unarmed individual, dressed in more decorum than the rest. In one hand, is a CP pistol. In the other, the Book of Ludd.",MPC_IAIICLPInitialHideoutLandedAmbushTwo:Continue,
+In the middle, you see an individual dressed in more decorum than the rest. In one hand, is a CP pistol. In the other, the Book of Ludd.",MPC_IAIICLPInitialHideoutLandedAmbushTwo:Continue,
 MPC_IAIICLPInitialHideoutLandedAmbushTwo,DialogOptionSelected,"$option == MPC_IAIICLPInitialHideoutLandedAmbushTwo
 !$MPC_bombarded",,"""And so the righteous will stomp out the unsatiated, and restore tranquility to humanity."" $HeOrShe slaps the book closed, staring into you. ""We've been expecting you.""","MPC_IAIICLPInitialHideoutAmbushSurrender:Slowly raise your hands
 MPC_IAIICLPInitialHideoutAmbushDefiant:Glare defiantly",
