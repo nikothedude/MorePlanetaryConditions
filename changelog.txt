@@ -1,7 +1,12 @@
 4.4.0
 SEMI-SAVE COMPATIBLE - Lockbow hullmods wont update if youve salvaged it
 
+Fixed drive field resonators not unapplying
+
 You can now use ECM to scramble the guidance of missiles
+    The avg. ECCM value across your missile carriers determines how much you ignore their ECM
+You can now install high res sensors on stations to give your aegis systems better detection thresholds
+Aegis missile system now occasionally fires torpedoes
 Reduced the armament cost for some missiles
 
 Fixed the dialogutils needing station augments
@@ -12,6 +17,12 @@ Lockbow given a special hullmod that lets you toggle its automation on the fly
 Lockbow armor increased
 Lockbow shield eff reduced
 Lockbow given missile autoforge instead of burn drive
+Lockbow ordnance variant reworked - now has harpoons and sarissas
+Lockbow now spams missiles
+
+Missile system now generates more intelligently
+
+Cruise Missile now doesnt lose lock on close misses
 
 4.3.7d
 

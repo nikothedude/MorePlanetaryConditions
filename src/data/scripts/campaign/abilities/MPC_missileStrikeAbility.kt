@@ -169,15 +169,17 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             ) {
                 super.addAfterStatsSection(tooltip, params, isForAbility)
 
-                tooltip.addPara(
-                    "Costs %s to fire. Requires %s.",
-                    5f,
-                    Misc.getHighlightColor(),
-                    "$spNeeded story points", "missile specialization"
-                ).setHighlightColors(
-                    Misc.getStoryOptionColor(),
-                    Misc.getHighlightColor()
-                )
+                if (isForAbility) {
+                    tooltip.addPara(
+                        "Costs %s to fire. Requires %s.",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "$spNeeded story points", "missile specialization"
+                    ).setHighlightColors(
+                        Misc.getStoryOptionColor(),
+                        Misc.getHighlightColor()
+                    )
+                }
 
                 tooltip.addPara(
                     "Has a large blast radius, and can hit multiple fleets in the blast.",
@@ -1039,6 +1041,22 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 5f,
                 Misc.getHighlightColor(),
                 "orient your fleet towards your target"
+            )
+
+            val eccmMult = MPC_aegisMissileEntityPlugin.getECCMValue(fleet)
+            val eccmValue = 1f - eccmMult
+
+            val eccmColor = if (eccmValue > 0f) Misc.getPositiveHighlightColor() else Misc.getNegativeHighlightColor()
+            tooltip.addPara(
+                "Target fleets can use their %s to jam incoming missiles. Your average ECCM value across your missile carriers is %s, meaning " +
+                "hostile ECM is reduced to %s its usual value.",
+                5f,
+                Misc.getHighlightColor(),
+                "ECM", "${(eccmValue * 100f).roundNumTo(1).trimHangingZero()}%", "${(eccmMult * 100f).roundNumTo(1).trimHangingZero()}%"
+            ).setHighlightColors(
+                Misc.getHighlightColor(),
+                eccmColor,
+                eccmColor
             )
 
             val color = if (currMissile.canFireFromAbility()) currMissile.nameColor else Misc.getGrayColor()

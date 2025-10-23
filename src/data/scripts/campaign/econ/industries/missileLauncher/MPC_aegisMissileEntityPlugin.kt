@@ -13,6 +13,7 @@ import com.fs.starfarer.api.impl.campaign.BaseCustomEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -22,7 +23,11 @@ import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleetMemberView
 import com.fs.starfarer.campaign.ui.fleet.FleetMemberView
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_mathUtils
+import data.utilities.niko_MPC_settings
+import niko_SA.MarketUtils.getStationIndustry
+import niko_SA.MarketUtils.hasStationAugment
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lazywizard.lazylib.ext.rotateAroundPivot
@@ -144,6 +149,20 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
                 }
             }
             return false
+        }
+
+        fun getECCMValue(fleet: CampaignFleetAPI): Float {
+            var eccmMult = 1f
+            val carriers = MPC_missileStrikeAbility.getMissileCarriers(fleet)
+
+            var totalECCM = 0f
+            for (member in carriers) {
+                if (member.isMothballed) continue
+                totalECCM += (((member.stats.dynamic.getValue(Stats.ELECTRONIC_WARFARE_PENALTY_MOD, 1f)) - 1) * -1f).coerceAtLeast(0f).coerceAtMost(1f)
+            }
+            eccmMult = 1f - (totalECCM / carriers.size)
+
+            return eccmMult
         }
 
         const val DIST_FOR_FINAL_APPROACH = 300f
@@ -458,7 +477,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
                 nav.avoidEntity(entity, 2000f, 3000f, 0.2f)
             }
             val range = MathUtils.getDistance(entity, target)
-            if (range <= (params.spec.getMaxSpeed() * PANIC_EBURN_SPEED_TO_DIST_RATIO)) {
+            if ((target as? CampaignFleetAPI)?.battle != null && range <= (params.spec.getMaxSpeed() * PANIC_EBURN_SPEED_TO_DIST_RATIO)) {
                 val ability = target!!.getAbility(Abilities.EMERGENCY_BURN)
                 if (ability?.isUsable == true) {
                     didEburn = true
@@ -482,6 +501,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
     private fun checkLockStatus(amount: Float) {
         if (target == null) return
         if (missed) return
+        if (scrambled) return
         if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) return
         val profile = if (scrambled) Float.MAX_VALUE else (target!!.detectedRangeMod.computeEffective(target!!.sensorProfile))
         if (profile < getSpec().getLosesLockUnderProfile()) {
@@ -509,11 +529,24 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         if (ecm < MIN_ECM_NEEDED) return
 
         val dist = MathUtils.getDistance(entity, target)
-        if (dist >= 10000f) {
-            ecm *= 0.25f
+        if (dist >= 9000f) {
+            ecm *= 0.05f
         } // it only gets affected close up
 
-        val coeff = getSpec().getECMCoeff() * 1.5f
+        val fleetSource = params.origin as? CampaignFleetAPI
+        var eccmMult = 1f
+        if (fleetSource != null) {
+            eccmMult = getECCMValue(fleetSource)
+        }
+        if (params.originMarket != null && niko_MPC_settings.stationAugmentsLoaded) {
+            if (params.originMarket!!.hasStationAugment("SA_eccmPackage") && params.originMarket!!.getStationIndustry()?.isFunctional == true) {
+                eccmMult = 0.5f
+            }
+        }
+        eccmMult = eccmMult.coerceAtMost(1f).coerceAtLeast(0f)
+        ecm *= eccmMult
+        //if (ecm <= 0f) return
+        val coeff = getSpec().getECMCoeff() * if (fleet.isPlayerFleet) 1.5f else 1f
         val scrambleChance = (coeff * ecm)
 
         if (niko_MPC_mathUtils.prob(scrambleChance)) {

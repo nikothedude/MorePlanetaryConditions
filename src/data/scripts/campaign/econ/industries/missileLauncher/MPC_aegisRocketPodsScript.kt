@@ -9,16 +9,19 @@ import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility.Missile
 import data.scripts.campaign.abilities.MPC_missileStrikeReactionScript
 import data.scripts.campaign.econ.industries.MPC_aegisRocketPods
+import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_miscUtils.isOrbitalStation
+import data.utilities.niko_MPC_settings
+import org.magiclib.kotlin.getStationIndustry
 
 class MPC_aegisRocketPodsScript(val market: MarketAPI, val industry: MPC_aegisRocketPods): MPC_orbitalMissileLauncher() {
 
     companion object {
         val eligibleSpecs = hashMapOf<MPC_missileStrikeAbility.Missile, Float>(
             Pair(MPC_missileStrikeAbility.Missile.EXPLOSIVE, 100f),
-            Pair(MPC_missileStrikeAbility.Missile.INTERDICT, 6f),
+            Pair(MPC_missileStrikeAbility.Missile.INTERDICT, 8f),
             Pair(MPC_missileStrikeAbility.Missile.SENSOR, 40f),
-            Pair(Missile.EXPLOSIVE_HEAVY, 1f)
+            Pair(Missile.EXPLOSIVE_HEAVY, 3f)
         )
 
         fun getPicker(): WeightedRandomPicker<MPC_missileStrikeAbility.Missile> {
@@ -26,6 +29,9 @@ class MPC_aegisRocketPodsScript(val market: MarketAPI, val industry: MPC_aegisRo
             eligibleSpecs.forEach { picker.add(it.key, it.value) }
             return picker
         }
+
+        const val MIN_PROFILE = 300f
+        const val HIGH_RES_SENSORS_BONUS_MULT = 3f
     }
 
     override var maxMissilesLoaded: Float = 0f // defined in the industry

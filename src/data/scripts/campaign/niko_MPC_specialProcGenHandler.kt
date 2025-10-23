@@ -416,6 +416,7 @@ object niko_MPC_specialProcGenHandler {
         newVariant.addPermaMod("MPC_toggleAutomationEnabledHandler")
         newVariant.addPermaMod(HullMods.AUXILIARY_THRUSTERS, true)
         newVariant.addPermaMod(HullMods.REINFORCEDHULL, true)
+        newVariant.addPermaMod(HullMods.DEFENSIVE_TARGETING_ARRAY, true) // built into the hull, just improving it
         newVariant.addTag(Tags.VARIANT_ALWAYS_RECOVERABLE)
 
         for (member in fleet.fleetData.membersListCopy) {
@@ -442,7 +443,7 @@ object niko_MPC_specialProcGenHandler {
         capStats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
         capStats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
         capStats.setSkillLevel(Skills.POINT_DEFENSE, 2f)
-        capStats.setSkillLevel(Skills.BALLISTIC_MASTERY, 2f)
+        capStats.setSkillLevel(Skills.SYSTEMS_EXPERTISE, 2f)
         capStats.setSkillLevel(Skills.COMBAT_ENDURANCE, 2f)
 
         fleet.commander = member.captain

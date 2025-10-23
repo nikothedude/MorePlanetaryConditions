@@ -14,11 +14,15 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.econ.industries.MPC_constructionAcceleratorIndustry.Companion.IMPROVED_BONUS
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisRocketPodsScript
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisRocketPodsScript.Companion.HIGH_RES_SENSORS_BONUS_MULT
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_orbitalMissileLauncher
 import data.scripts.campaign.rulecmd.MPC_remnantMissileCarrierCMD.Companion.getComplexMarket
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils
+import niko_SA.MarketUtils.hasStationAugment
+import org.magiclib.kotlin.getStationIndustry
 import java.util.*
 
 class MPC_aegisRocketPods: baseNikoIndustry() {
@@ -105,7 +109,16 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
         rocketHandler = null
     }
 
-    fun getMinSensorProfile(): Float = 700f
+    fun getMinSensorProfile(): Float {
+        var base = 700f
+        if (niko_MPC_settings.stationAugmentsLoaded) {
+            val ind = market.getStationIndustry()
+            if (ind != null && ind.isFunctional && market.hasStationAugment("SA_highResSensors")) {
+                base /= HIGH_RES_SENSORS_BONUS_MULT
+            }
+        }
+        return base
+    }
     fun getReloadRate(): Float {
         return 5f
     }
@@ -138,6 +151,8 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
                 Misc.getHighlightColor(),
                 "cruise missiles", "severe damage", "${getMinSensorProfile().toInt()}"
             )
+
+            tooltip.addSectionHeading("Variables", Alignment.MID, 5f)
 
             tooltip.addPara(
                 "Has a range of %s, increasing by %s for each market size over %s.",
@@ -183,8 +198,34 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
             )
             tooltip.setBulletedListMode(null)
 
+            if (niko_MPC_settings.stationAugmentsLoaded) {
+                tooltip.addSectionHeading("Station Augments", Alignment.MID, 5f)
+
+                tooltip.addPara(
+                    "The %s grants each launched missile %s - provided the station remains functional.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "ECCM Package station augment", "50% ECCM"
+                ).setHighlightColors(
+                    Misc.getHighlightColor(),
+                    Misc.getPositiveHighlightColor()
+                )
+
+                tooltip.addPara("If %s are installed in an orbiting station, " +
+                        "the detection threshold would be decreased by %s.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "high resolution sensors",
+                    "${MPC_aegisRocketPodsScript.HIGH_RES_SENSORS_BONUS_MULT.trimHangingZero()}x"
+                ).setHighlightColors(
+                    Misc.getHighlightColor(),
+                    Misc.getPositiveHighlightColor()
+                )
+            }
+
             val mult = getDeficitMult(Commodities.SUPPLIES, Commodities.MARINES, Commodities.HAND_WEAPONS)
             if (mult < 1f) {
+                tooltip.addSectionHeading("Deficits", Alignment.MID, 5f)
                 tooltip.addPara(
                     "Ground defense bonus and reload rate reduced by %s due to deficits.",
                     5f,
