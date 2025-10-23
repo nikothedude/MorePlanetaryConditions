@@ -11,6 +11,10 @@ Fixed pather questline
     Also, the pather rep now tells you what conditions are not satisfied
 Fixed parts of hege questline
 
+Proofread a lot of hege questline
+
+IAIIC all out attack now spawns less fleets, and those it does spawn are larger
+
 0.0.4
 
 Luddic questline in progress

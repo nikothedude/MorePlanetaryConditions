@@ -27,9 +27,7 @@ import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
-import sound.int
 import java.awt.Color
-import kotlin.math.PI
 import kotlin.math.max
 
 class MPC_missileStrikeAbility: BaseDurationAbility() {
@@ -38,8 +36,13 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
     // if reading bc you want to copy; WWLB is CC BY-NC, meaning you can copy this and remix it as long as you dont profit off it
 
-    enum class Missile(val nameColor: Color, val frontEndName: String, val availableToAbility: Boolean = true, val combatVariant: String? = null) {
-        EXPLOSIVE(Color(255, 90, 60), "Explosive (Low-Yield)") {
+    enum class Missile(
+        val nameColor: Color,
+        val frontEndName: String,
+        val availableToAbility: Boolean = true,
+        val combatVariant: String? = null,
+    ) {
+        EXPLOSIVE(Color(255, 90, 60), "Explosive (Low-Yield)",) {
             override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
 
@@ -71,7 +74,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             }
 
             override fun getArmamentCost(): Float {
-                return 325f
+                return 195f
             }
 
             override fun getFuelCost(): Float {
@@ -89,8 +92,16 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             override fun getBaseRepLoss(): Float {
                 return 10f
             }
+
+            override fun getECMCoeff(): Float {
+                return 0.3f
+            }
+
+            override fun getECMHl(): Color {
+                return Misc.getPositiveHighlightColor()
+            }
         },
-        EXPLOSIVE_HEAVY(Color(255, 40, 20), "Explosive (High-Yield)") {
+        EXPLOSIVE_HEAVY(Color(255, 40, 20), "Explosive (High-Yield)",) {
             override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
 
@@ -122,7 +133,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             }
 
             override fun getArmamentCost(): Float {
-                return 1500f
+                return 1000f
             }
 
             override fun getFuelCost(): Float {
@@ -210,8 +221,20 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 )
                 Global.getSector().campaignUI.addMessage("Spent $spNeeded story points!", Misc.getStoryOptionColor())
             }
+
+            override fun getECMCoeff(): Float {
+                return 0f
+            }
+
+            override fun getECMHl(): Color {
+                return Misc.getGrayColor()
+            }
+
+            override fun getECMString(): String {
+                return "Unaffected"
+            }
         },
-        INTERDICT(Color(134, 255, 228), "Interdictor") {
+        INTERDICT(Color(134, 255, 228), "Interdictor",) {
             override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
                 val source = params.origin ?: return params
@@ -241,7 +264,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             }
 
             override fun getArmamentCost(): Float {
-                return 125f
+                return 55f
             }
 
             override fun getFuelCost(): Float {
@@ -354,8 +377,16 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                     "${getBaseInterdictTime().trimHangingZero()}"
                 )
             }
+
+            override fun getECMCoeff(): Float {
+                return 3f
+            }
+
+            override fun getECMHl(): Color {
+                return Misc.getNegativeHighlightColor()
+            }
         },
-        SENSOR(Color(147, 20, 170), "Obscure") {
+        SENSOR(Color(147, 20, 170), "Obscure",) {
             override fun getArmamentCost(): Float {
                 return 200f
             }
@@ -510,6 +541,12 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 getManeuverHl(),
                 getManeuverString()
             )
+            tooltip.addPara(
+                "ECM Susceptibility: %s",
+                5f,
+                getECMHl(),
+                getECMString()
+            )
             if (isForAbility) {
                 val fleet = Global.getSector().playerFleet
 
@@ -561,6 +598,11 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
         abstract fun getSpeedHl(): Color
         abstract fun getManeuverHl(): Color
         abstract fun getBaseRepLoss(): Float
+        open fun getECMCoeff(): Float = 1f
+        open fun getECMString(): String {
+            return "${getECMCoeff().roundNumTo(1).trimHangingZero()}x"
+        }
+        open fun getECMHl(): Color = Misc.getHighlightColor()
         open fun getSensorProfile(): Float = 3000f
         open fun getLifespan(): Float = 10f // days
 

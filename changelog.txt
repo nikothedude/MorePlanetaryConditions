@@ -1,6 +1,9 @@
 4.4.0
 SEMI-SAVE COMPATIBLE - Lockbow hullmods wont update if youve salvaged it
 
+You can now use ECM to scramble the guidance of missiles
+Reduced the armament cost for some missiles
+
 Fixed the dialogutils needing station augments
 
 Fixed that annoying rep loss sound at new game

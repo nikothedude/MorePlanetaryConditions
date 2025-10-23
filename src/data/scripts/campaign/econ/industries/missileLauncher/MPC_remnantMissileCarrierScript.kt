@@ -29,7 +29,7 @@ class MPC_remnantMissileCarrierScript(
     override var missileReloadInterval = IntervalUtil(6.2f, 6.3f) // days
     override var renderTerrain: Boolean = false
 
-    override var minSensorProfile: Float = 800f
+    override var minSensorProfile: Float = 850f
     override var maxSensorProfile: Float = 3000f
     override var maxDetectionRate: Float = 0.2f
 

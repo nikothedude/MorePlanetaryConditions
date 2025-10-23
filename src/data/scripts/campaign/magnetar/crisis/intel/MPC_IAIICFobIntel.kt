@@ -247,6 +247,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     companion object {
+        const val ALL_OUT_ATTACK_BASE_FP = 600f
+        const val ALL_OUT_ATTACK_FP_MULT = 7f // fleets are HUGE
         const val GLOBAL_SABOTAGE_MULT = 1f
         const val GLOBAL_FLEETSIZE_MULT = 1f
         const val DEFAULT_DISARM_TIME = 60f
@@ -1757,7 +1759,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
         //if (validTargets.isEmpty()) validTargets = getGenericTargets()
 
-        val spawnFP = 1100f // multiplied against the fob's fleetsize
+        val spawnFP = ALL_OUT_ATTACK_BASE_FP // multiplied against the fob's fleetsize
         val raidIntel = MPC_IAIICAllOutAttack(FOB, colony, spawnFP)
 
         /*

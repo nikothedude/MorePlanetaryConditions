@@ -1,5 +1,8 @@
 package data.scripts.campaign.econ.industries.missileLauncher
 
+import data.utilities.niko_MPC_mathUtils.roundNumTo
+import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import data.utilities.niko_MPC_fleetUtils.getApproximateECMValue
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.LocationAPI
@@ -19,6 +22,7 @@ import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleetMemberView
 import com.fs.starfarer.campaign.ui.fleet.FleetMemberView
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility
+import data.utilities.niko_MPC_mathUtils
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lazywizard.lazylib.ext.rotateAroundPivot
@@ -129,10 +133,31 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             return plugin
         }
 
+        fun targetUsingECM(fleet: CampaignFleetAPI): Boolean {
+            if (!fleet.isPlayerFleet) return true
+            for (id in ecmAbilities) {
+                val ability = fleet.getAbility(id) ?: continue
+                if (id == Abilities.TRANSPONDER) {
+                    if (ability.isActive) return true
+                } else {
+                    if (ability.isActiveOrInProgress) return true
+                }
+            }
+            return false
+        }
+
         const val DIST_FOR_FINAL_APPROACH = 300f
         const val TIME_FOR_FINAL_APPROACH_TO_BEGIN = 4f
         const val PANIC_EBURN_SPEED_TO_DIST_RATIO = 10f
+        const val ECM_CHECK_TIME = 1f
+        const val MIN_ECM_NEEDED = 8f
         val defaultTrailColor = Color(255, 200, 50, 255)
+        val ecmAbilities = listOf(
+            Abilities.TRANSPONDER,
+            Abilities.SENSOR_BURST,
+            Abilities.GRAVITIC_SCAN,
+            Abilities.INTERDICTION_PULSE
+        )
     }
 
     var target: SectorEntityToken? = null
@@ -153,10 +178,31 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     var profileTooLowsecs = 0f
 
+    var scrambled = false
+        get() {
+            if (field == null) field = false
+            return field
+        }
+    var scrambleRelocateInterval = IntervalUtil(1f, 1.1f) // secs
+        get() {
+            if (field == null) field = IntervalUtil(1f, 1.1f)
+            return field
+        }
+    var scrambleExplodeInterval = IntervalUtil(7f, 11f) // secs
+        get() {
+            if (field == null) field = IntervalUtil(7f, 11f)
+            return field
+        }
+
     var didAlertCheck = false
 
     lateinit var params: MissileParams
     lateinit var lifespan: IntervalUtil // days
+    var ECMinterval = IntervalUtil(ECM_CHECK_TIME, ECM_CHECK_TIME * MathUtils.getRandomNumberInRange(1f, 1.1f)) // seconds
+        get() {
+            if (field == null) field = IntervalUtil(ECM_CHECK_TIME, ECM_CHECK_TIME * MathUtils.getRandomNumberInRange(1f, 1.1f))
+            return field
+        }
 
     data class MissileParams(
         var target: SectorEntityToken,
@@ -209,6 +255,18 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             ending = true
 
             return
+        }
+
+        if (scrambled) {
+            scrambleRelocateInterval.advance(amount)
+            if (scrambleRelocateInterval.intervalElapsed()) {
+                updateScrambledLoc()
+            }
+            scrambleExplodeInterval.advance(amount)
+            if (scrambleExplodeInterval.intervalElapsed()) {
+                explode(null)
+                return
+            }
         }
 
         checkLockStatus(amount)
@@ -364,6 +422,15 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
     }
 
+    private fun updateScrambledLoc() {
+        val entityLoc = Vector2f(entity.location)
+        val randX = entityLoc.x + MathUtils.getRandomNumberInRange(-5000f, 5000f)
+        val randY = entityLoc.y + MathUtils.getRandomNumberInRange(-5000f, 5000f)
+        val randTarget = entity.containingLocation.createToken(randX, randY)
+
+        target = randTarget
+    }
+
     var didEburn = false
     private fun tryAvoidingMissile() {
         if (target !is CampaignFleetAPI) return
@@ -396,18 +463,27 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
                 if (ability?.isUsable == true) {
                     didEburn = true
 
-                    if (MathUtils.getRandomNumberInRange(0f, 1f) <= 0.9f) {
+                    if (MathUtils.getRandomNumberInRange(0f, 1f) <= 0.86f) {
                         ability.activate()
                     }
                 }
             }
+
+            /*if (target is CampaignFleetAPI) {
+                val fleet = target as CampaignFleetAPI
+                val ecm = fleet.getApproximateECMValue()
+                if (ecm >= MIN_ECM_NEEDED) {
+                    if (!fleet.isTransponderOn)
+                }
+            }*/
         }
     }
 
     private fun checkLockStatus(amount: Float) {
         if (target == null) return
+        if (missed) return
         if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) return
-        val profile = target!!.detectedRangeMod.computeEffective(target!!.sensorProfile)
+        val profile = if (scrambled) Float.MAX_VALUE else (target!!.detectedRangeMod.computeEffective(target!!.sensorProfile))
         if (profile < getSpec().getLosesLockUnderProfile()) {
             profileTooLowsecs += amount
 
@@ -417,6 +493,73 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             }
         } else {
             profileTooLowsecs = 0f
+        }
+
+        ECMinterval.advance(amount)
+        if (ECMinterval.intervalElapsed()) {
+            checkECM()
+        }
+    }
+
+    private fun checkECM() {
+        val fleet = target as? CampaignFleetAPI ?: return
+
+        if (!targetUsingECM(fleet)) return
+        var ecm = fleet.getApproximateECMValue()
+        if (ecm < MIN_ECM_NEEDED) return
+
+        val dist = MathUtils.getDistance(entity, target)
+        if (dist >= 10000f) {
+            ecm *= 0.25f
+        } // it only gets affected close up
+
+        val coeff = getSpec().getECMCoeff() * 1.5f
+        val scrambleChance = (coeff * ecm)
+
+        if (niko_MPC_mathUtils.prob(scrambleChance)) {
+            scrambleLock()
+        } else {
+            val visibilityLevel = entity.visibilityLevelToPlayerFleet
+            if (visibilityLevel == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
+                val color: Color
+                val playerFleet = Global.getSector().playerFleet
+                if (target == playerFleet) {
+                    color = Misc.getNegativeHighlightColor()
+                } else if (target is CampaignFleetAPI && (target as CampaignFleetAPI).isHostileTo(playerFleet)) {
+                    color = Misc.getPositiveHighlightColor()
+                } else {
+                    color = Misc.getHighlightColor()
+                }
+
+                entity.addFloatingText(
+                    "Resisted ECM! Chance to scramble: ${scrambleChance.roundNumTo(1).trimHangingZero()}%",
+                    color,
+                    0.25f
+                )
+            }
+        }
+    }
+
+    private fun scrambleLock() {
+        val visibilityLevel = entity.visibilityLevelToPlayerFleet
+        if (visibilityLevel == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS) {
+            val color: Color
+            val playerFleet = Global.getSector().playerFleet
+            if (target == playerFleet) {
+                color = Misc.getPositiveHighlightColor()
+            } else if (target is CampaignFleetAPI && (target as CampaignFleetAPI).isHostileTo(playerFleet)) {
+                color = Misc.getNegativeHighlightColor()
+            } else {
+                color = Misc.getHighlightColor()
+            }
+            entity.addFloatingText(
+                "Scrambled by ECM!",
+                color,
+                1f
+            )
+            profileTooLowsecs = 0f
+            scrambled = true
+            updateScrambledLoc()
         }
     }
 
@@ -633,6 +776,9 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             if (target!!.memoryWithoutUpdate.getBoolean("\$MPC_lastSeenLoc")) {
                 targetColor = Misc.getGrayColor()
                 targetName = "Last known position"
+            } else if (scrambled) {
+                targetColor = Misc.getGrayColor()
+                targetName = "Scrambled by ECM"
             } else {
 
                 val targetSensorLevel = target!!.visibilityLevelToPlayerFleet
