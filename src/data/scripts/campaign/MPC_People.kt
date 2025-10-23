@@ -6,6 +6,7 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Personalities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Skills
 import com.fs.starfarer.api.impl.campaign.ids.Tags
@@ -73,6 +74,8 @@ object MPC_People {
     const val CHURCH_KNIGHT_FENCE = "MPC_knightFence"
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
+
+    const val IMMORTAL_SNAIL = "MPC_immortalSnailCaptain"
 
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
@@ -791,6 +794,33 @@ object MPC_People {
             MPC_importantPeople[PATHER_BROKER] = broker
 
             broker.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[IMMORTAL_SNAIL] == null) {
+            val broker = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.ANY)
+            broker.id = IMMORTAL_SNAIL
+
+            broker.rankId = Ranks.CITIZEN
+            broker.postId = Ranks.POST_CITIZEN
+
+            broker.importance = PersonImportance.VERY_HIGH
+            broker.voice = Voices.VILLAIN
+
+            broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
+
+            broker.relToPlayer.rel = -100f
+            val stats = broker.stats
+            stats.level = 15
+            stats.setSkillLevel("MPC_immortalSnailSkill", 2f)
+
+            broker.setPersonality(Personalities.RECKLESS)
+
+            broker.name = FullName("Immortal", "Adversary", Gender.ANY)
+
+            importantPeople.addPerson(broker)
+            MPC_importantPeople[IMMORTAL_SNAIL] = broker
+
+            broker.makeImportant("\$MPC_immortalSnail")
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

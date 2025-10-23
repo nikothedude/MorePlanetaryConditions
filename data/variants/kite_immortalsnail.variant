@@ -1,0 +1,23 @@
+{
+    "displayName": "Immortal Adversary",
+    "fluxCapacitors": 999,
+    "fluxVents": 999,
+    "goalVariant": false,
+    "hullId": "kite",
+    "hullMods": [],
+    "permaMods": ["MPC_immortalSnailHmod"],
+    "sMods": [],
+    "variantId": "kite_immortalsnail",
+    "weaponGroups": [
+        {
+            "autofire": false,
+            "mode": "ALTERNATING",
+            "weapons": {"WS 001": "hephag", "WS 002": "hephag"},
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {"WS 003": "multineedler"}
+        }
+    ]
+}

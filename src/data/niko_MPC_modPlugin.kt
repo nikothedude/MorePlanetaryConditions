@@ -190,6 +190,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
 
         Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
+        Global.getSettings().loadTexture("graphics/portraits/MPC_luddicBroker.png")
         Global.getSettings().getShipSystemSpec("MPC_deepDive").isCanUseWhileRightClickSystemOn = true
         // afaik, theres no flag for this you can set via json, has to be done through code
 

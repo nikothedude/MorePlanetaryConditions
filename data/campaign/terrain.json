@@ -63,5 +63,13 @@
 		# inside active aurora/magnetic storm
 		#"loopTwo":"terrain_magstorm",
 	},
+	"MPC_interdictionField":{
+		"plugin":"data.scripts.campaign.sinkhole.MPC_sinkholeTerrain",
+		"musicSuppression":0.5,
+		# inside field
+		"loopOne":"terrain_magfield",
+		# inside active aurora/magnetic storm
+		#"loopTwo":"terrain_magstorm",
+	},
 }
 

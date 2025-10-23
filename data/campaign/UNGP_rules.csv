@@ -1,0 +1,6 @@
+id,name,short,desc,cost,isBonus,spritePath,effectPlugin,extra1,extra2
+MPC_immortalSnail,Immortal Kite,An Immortal Adversary,"[What We Left Behind] A hateful, otherworldy enemy pursues you, never stopping, never resting. Dont let it catch you.
+
+Creates a %s around itself for %s, disabling movement abilities (excluding emergency burn) and slowing your fleet.
+
+If defeated, respawns in the next %s.",5,FALSE,graphics/UNGP/MPC_theImmortalSnail.png,data.UNGP.MPC_immortalKite,,

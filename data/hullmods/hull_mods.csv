@@ -49,4 +49,6 @@ All these modifications have been made with absolutely zero respect to the struc
 ,,,,,,,,,,,,,,,,,,,
 Subsumed Intelligence,niko_MPC_subsumedIntelligence,5,,,"no_drop, restricted, MPC_omegaDerelict, hide_in_codex","Weapons, Defenses",1000000,FALSE,TRUE,,0,0,0,0,data.hullmods.niko_MPC_subsumedIntelligance,A terrifying machine intelligance has seized control of this ship's AI inhabitants.,,,graphics/hullmods/damper_field.png
 ,,,,,,,,,,,,,,,,,,,
+Immortal Snail,MPC_immortalSnailHmod,5,,,"no_drop, restricted, hide_in_codex",,,,TRUE,TRUE,0,0,0,0,data.hullmods.MPC_immortalSnailHmod,uh oh,,,graphics/hullmods/damper_field.png
+,,,,,,,,,,,,,,,,,,,
 YOU SHOULDNT SEE THIS,niko_MPC_coronaResistShielding,,,,hide_in_codex,,,,TRUE,TRUE,0,0,0,0,data.hullmods.niko_MPC_coronaResistShielding,,,,graphics/hullmods/solar_shielding.png
