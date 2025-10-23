@@ -84,6 +84,9 @@ object MPC_People {
     fun createCharacters() {
         val importantPeople = Global.getSector().importantPeople
 
+        // something in here is causing the rep loss sound
+        // its NOT the reltoplayer.rel shit
+
         // Pirate bar encounter after delivering loke, points you to the magnetar quest
         val MPC_importantPeople = getImportantPeople()
         if (MPC_importantPeople[KANTA_GOON_ONE] == null) {
@@ -392,6 +395,7 @@ object MPC_People {
 
             rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
+
         if (MPC_importantPeople[BLACKKNIFE_BAR_GUY] == null) {
             val rep = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson(Gender.MALE)
             rep.id = BLACKKNIFE_BAR_GUY
@@ -469,7 +473,7 @@ object MPC_People {
 
             rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
-
+        // no sound on return here
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
@@ -502,7 +506,7 @@ object MPC_People {
             aristo.voice = Voices.ARISTO
 
             aristo.name = FullName("Alnessa", "Youn", Gender.FEMALE)
-            aristo.adjustReputationWithPlayer(-0.4f, null, null)
+            aristo.relToPlayer.rel = -0.4f
 
             //aristo.portraitSprite = "graphics/portraits/portrait_hegemony10.png"
 
@@ -523,7 +527,7 @@ object MPC_People {
             aristo.voice = Voices.ARISTO
 
             aristo.name = FullName("Orthus", "Youn", Gender.FEMALE)
-            aristo.adjustReputationWithPlayer(-0.9f, null, null)
+            aristo.relToPlayer.rel = -0.9f
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[aristo.id] = aristo
@@ -548,6 +552,7 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        // made sound at return here
         if (MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 
@@ -566,6 +571,7 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        // made sound at return here
         if (MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 

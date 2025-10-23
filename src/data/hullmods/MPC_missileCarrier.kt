@@ -102,8 +102,12 @@ class MPC_missileCarrier: BaseHullMod() {
                 stats.dynamic.getMod(Stats.DEPLOYMENT_POINTS_MOD).modifyFlat(id, -DISARMED_DP_DEC)
             }
         }
+    }
 
-        val fleet = ship.fleetMember?.fleetData?.fleet ?: return
+    override fun advanceInCampaign(member: FleetMemberAPI?, amount: Float) {
+        super.advanceInCampaign(member, amount)
+
+        val fleet = member?.fleetData?.fleet ?: return
         if (fleet.isPlayerFleet) { // todo: separate ai from the remnant fleet carrier script
             Global.getSector().characterData.addAbility("MPC_missileStrike")
         }

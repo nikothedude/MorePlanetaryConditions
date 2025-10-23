@@ -1,3 +1,15 @@
+4.4.0
+SEMI-SAVE COMPATIBLE - Lockbow hullmods wont update if youve salvaged it
+
+Fixed the dialogutils needing station augments
+
+Fixed that annoying rep loss sound at new game
+
+Lockbow given a special hullmod that lets you toggle its automation on the fly
+Lockbow armor increased
+Lockbow shield eff reduced
+Lockbow given missile autoforge instead of burn drive
+
 4.3.7d
 
 Fixes missiles playing their sound when theyre in a different location

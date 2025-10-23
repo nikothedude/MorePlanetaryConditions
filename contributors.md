@@ -37,7 +37,7 @@ The IAIIC crisis is meant to be an end-game crisis that challenges even modded p
     and serve as a way to slow down your own faction and force you to go defensive.
 2. Politics - The FOB cannot be invaded or decivilized. Raiding it triggers sabotage.
     It is a proxy state of various factions. **The intended way to counter it is to do missions and favors for it's contributing factions.**
-3. The IAIIC is meant to be a long-term threat that cannnot be instantly squashed. You are intended to struggle and have to rise to the challenge
+3. The IAIIC is meant to be a long-term threat that cannot be instantly squashed. You are intended to struggle and have to rise to the challenge
    \- or at least spend a lot of resources and time.
 
 The culture/history of the IAIIC has not been fully established, but there are a few tips.
@@ -82,16 +82,16 @@ If going for "a favor" approach, it is suggested that whatever plot you design h
 
 #### TODO List
 
-1. Hegemony (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS) - see hegemonyquest.txt
-2. Luddic Church (UNCLAIMED, NOT STARTED) - see churchquest.txt
-3. Independent (STARTED, CAN BE CLAIMED, ASK ME FOR DETAILS) - SEE independentquest.txt
+1. Hegemony (FINISHED, NEEDS TOUCHUPS AND FLUFF, ASK ME FOR DETAILS) - see hegemonyquest.txt
+2. Luddic Church (UNCLAIMED, STARTED) - see churchquest.txt
+3. Independent (FINISHED, NEEDS TOUCHUPS) - SEE independentquest.txt
    1. Tactistar - Finished, touchups are desired
-   2. Baetis - Finished, proofreading is desired
+   2. Baetis - Finished, proofreading is desired, trim it down
    3. Ailmar - Finished, could possibly use extra dialog
-   4. Qaras - Prototyped - Should be longer, have more fluff
-   5. MMMC - Prototyped - conclusion is too short
-   6. Voidsun - Started
-   7. Agreus - Not started
+   4. Qaras - Finished - Should be longer, have more fluff
+   5. MMMC - Finished - conclusion is too short
+   6. Voidsun - Started - Needs moer fluff
+   7. Agreus - Finished - But isnt good
    8. More independent quests are always welcome
 4. Tri-Tachyon (FINISHED - NEEDS TOUCHUPS AND FURTHER RESOURCE INVESTMENT)
 5. Diktat (FINISHED - NEEDS A REWRITE, POSSIBLY REDESIGN)

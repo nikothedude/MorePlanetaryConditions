@@ -158,8 +158,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val fleetSize = getFleetMultFromContributingFactions()
 
         if (fleetSize <= MIN_FLEET_SIZE_TIL_GIVE_UP) {
-            //forceAllOutAttack()
-            end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
+            forceAllOutAttack()
+            //end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
         }
     }
 
@@ -169,7 +169,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 stages.remove(stage)
             }
         }
-        setProgress(999999999)
+        setProgress(maxProgress)
     }
 
     fun updateDoctrine() {

@@ -156,16 +156,6 @@ class MPC_remnantMissileCarrierCMD: BaseCommandPlugin() {
                     SpecialItemData(Items.INDUSTRY_BP, niko_MPC_industryIds.AEGIS_ROCKET_INDID), 1f
                 )
             }
-            "convertToCrew" -> {
-                val playerFleet = Global.getSector().playerFleet
-                val ship = playerFleet.fleetData.membersListCopy.find { it.hullId.contains("MPC_lockbow") } ?: return false
-                ship.variant.removePermaMod(HullMods.AUTOMATED)
-            }
-            "convertToAutomated" -> {
-                val playerFleet = Global.getSector().playerFleet
-                val ship = playerFleet.fleetData.membersListCopy.find { it.hullId.contains("MPC_lockbow") } ?: return false
-                ship.variant.addTag(Tags.AUTOMATED_RECOVERABLE)
-            }
 
             "convertShipToAegis" -> {
                 val carriers = getMissileCarriers()
@@ -189,6 +179,21 @@ class MPC_remnantMissileCarrierCMD: BaseCommandPlugin() {
 
             "giveCarrierToHege" -> {
                 // handled in the rules
+            }
+
+            "addModularHMOD" -> {
+                val playerFleet = Global.getSector().playerFleet
+                val ship = playerFleet.fleetData.membersListCopy.find { it.hullId.contains("MPC_lockbow") } ?: return false
+                if (!ship.variant.hasHullMod("MPC_toggleAutomationEnabled") && !ship.variant.hasHullMod("MPC_toggleAutomationDisabled")) {
+                    ship.variant.addMod("MPC_toggleAutomationEnabled")
+                    ship.variant.addPermaMod("MPC_toggleAutomationEnabledHandler")
+                }
+            }
+
+            "convertToAutomated" -> {
+                val playerFleet = Global.getSector().playerFleet
+                val ship = playerFleet.fleetData.membersListCopy.find { it.hullId.contains("MPC_lockbow") } ?: return false
+                ship.variant.addTag(Tags.AUTOMATED_RECOVERABLE)
             }
 
             "giveAegisToHege" -> {

@@ -35,7 +35,7 @@ class MPC_aloofTargetAssignmentAI(val fleet: CampaignFleetAPI): niko_MPC_baseNik
         fleet.addAssignmentAtStart(
             FleetAssignment.ORBIT_PASSIVE,
             Global.getSector().economy.getMarket("eventide").primaryEntity,
-            90f, // you actually have a lot of time
+            if (fleet.containingLocation.isCurrentLocation) 1f else 90f, // you actually have a lot of time
             "preparing for departure",
             beginDeparture()
         )

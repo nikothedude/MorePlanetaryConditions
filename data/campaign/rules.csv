@@ -61,7 +61,7 @@ MPC_FRTBattlestationSalvageFour,DialogOptionSelected,$option == MPC_FRTBattlesta
 Carefully, your ops chief coordinates a remote removal of the missile. It quickly becomes clear that it was a dud - a catastrophic failure in the missile's fuse renders it completely inert and easy to transport. Though...
 
 ""$PlayerSirOrMadam. If I had to guess, this is what did the station in."" Tactical interrupts. ""Not this uh, missile, no. But similar. And if I had to guess...""","MPC_FRTBattlestationSalvageFive:""...it's related to the missiles we're currently evading?""",
-MPC_FRTBattlestationSalvageFive,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageFive,,"Tactical nods in agreement. ""Though, its worth noting... that missile is carbon-dated a few hundred cycles old. Possibly pre-collapse. It wasn't the autoships that did this, $PlayerSirOrMadam, but another adversery - one that had the missile platform we're currently evading before the remnants ever did.""
+MPC_FRTBattlestationSalvageFive,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageFive,,"Tactical nods in agreement. ""Though, its worth noting... that missile is carbon-dated a few hundred cycles old. Possibly pre-collapse. It wasn't the autoships that did this, $PlayerSirOrMadam, but another adversary - one that had the missile platform we're currently evading before the remnants ever did.""
 
 Nodding, you turn your attention back to the screen. Your salvors have since re-entered the station and are making a complete salvage analysis - of what is left, there are a few valuables, but nothing particuarly noteworthy, save for that repeated red-blue-black emblem and a few anti-Domain flyers stuffed in an access panel.",MPC_FRTBattlestationSalvageSix:Resume salvage operations,
 MPC_FRTBattlestationSalvageSix,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageSix,"SalvageEntity showCost
@@ -111,7 +111,7 @@ $MPC_FTRInnerPlanet score:1000
 
 Something wicked.
 
-Vast swaths of death. That is all that is left of the cratered cities, nulled from existance by precision weaponry. The only clue they seem to have left is a trace radiation. Only a few, small emplacements remain, of far less note, but no less horror.",MPC_FRTInnerPlanetExplTwo:Continue,
+Vast swaths of death. That is all that is left of the cratered cities, nulled from existence by precision weaponry. The only clue they seem to have left is a trace radiation. Only a few, small emplacements remain, of far less note, but no less horror.",MPC_FRTInnerPlanetExplTwo:Continue,
 MPC_FRTInnerPlanetExplTwo,DialogOptionSelected,$option == MPC_FRTInnerPlanetExplTwo,,"In the small, fractured hab-domes, your salvors find nothing but death. Corpses, succumbed to the thin ammonia-atmosphere, inches away from resipirators - or simply with a self-inflicted wound to the head.
 
 As for the infrastucture itself, it seems remarkably intact for the time spent exposed to the harsh atmosphere of $name. Rigid, angular designs, made of highly machined steel, doubtlessly manufactured by the countless refineries dotted around the planet. Limited amenities are found, and what there is is mostly just drugs, alcohol, the rare digi-game.",MPC_FRTInnerPlanetExplThree:Continue,
@@ -141,15 +141,17 @@ MPC_remnantMissileCarrierFlavor,BeginFleetEncounter,$MPC_remnantMissileCarrier s
 You'll just have to see. You give tactical a nod - who gives you one back. This will be satisfying.",,
 ,,,,,,
 MPC_recoveredMissileCarrier,MPC_recoveredMissileCarrier,,ShowImageVisual space_wreckage,"The missile carrier burns before you, now a ruinous mass of scrap and brimstone. You've ordered it recovered - which now means you must have it staffed, or at least, mothballed.",MPC_recoveredMissileCarrierTwo:Send in the salvors,
-MPC_recoveredMissileCarrierTwo,DialogOptionSelected,$option == MPC_recoveredMissileCarrierTwo,,"Your salvors routinely fly, board, and explore the ship. Its a strange sight - half the ship is a low-tech combat frieghter, while the other is an ultratech missile foundry, control center, and blastpit. Whats even stranger is the automation mechanism.
+MPC_recoveredMissileCarrierTwo,DialogOptionSelected,$option == MPC_recoveredMissileCarrierTwo,"AddTextSmall ""You can toggle the Lockbow's automation status with a special hullmod"" good","Your salvors routinely fly, board, and explore the ship. Its a strange sight - half the ship is a low-tech combat frieghter, while the other is an ultratech missile foundry, control center, and blastpit. Whats even stranger is the automation mechanism.
 
-Rather than deep integration, each control panel simply has a small control uplink to be controlled by an AI core in the heart of the ship, which is summarily removed and stored in a secure crate. What this means, however, is you can decide to keep it automated, or convert it back to a human-crewed ship.","MPC_recoveredMissileCarrierCrew:Convert it to a human-crewable ship
-MPC_recoveredMissileCarrierAutomate:Keep it automated",
+Rather than deep integration, each control panel simply has a small control uplink to be controlled by an AI core in the heart of the ship, which is summarily removed and stored in a secure crate. What this means, however, is you can decide to keep it automated, or convert it back to a human-crewed ship.",MPC_recoveredMissileCarrierThreeOpt:Continue,"MPC_recoveredMissileCarrierCrew:Convert it to a human-crewable ship
+MPC_recoveredMissileCarrierAutomate:Keep it automated"
 MPC_recoveredMissileCarrierCrew,DialogOptionSelected,$option == MPC_recoveredMissileCarrierCrew,"MPC_remnantMissileCarrierCMD convertToCrew
 FireBest MPC_recoveredMissileCarrierThree","Your salvors gleefully pick and disassemble the control-circuits, freeing the ship for human use.",,
 MPC_recoveredMissileCarrierAutomate,DialogOptionSelected,$option == MPC_recoveredMissileCarrierAutomate,"MPC_remnantMissileCarrierCMD convertToAutomated
 FireBest MPC_recoveredMissileCarrierThree",The control-circuits remain.,,
-MPC_recoveredMissileCarrierThree,MPC_recoveredMissileCarrierThree,,"SetTextHighlights ""It's still fully functional.""","Your salvors continue exploring the ship. While the freighter-half is unremarkable, the missile complex is something of beauty.
+MPC_recoveredMissileCarrierThree,MPC_recoveredMissileCarrierThree,,,,,
+MPC_recoveredMissileCarrierThreeOpt,DialogOptionSelected,$option == MPC_recoveredMissileCarrierThreeOpt,"SetTextHighlights ""It's still fully functional.""
+MPC_remnantMissileCarrierCMD addModularHMOD","Your salvors continue exploring the ship. While the freighter-half is unremarkable, the missile complex is something of beauty.
 
 Massive nano-vats, walls of integrated, component-specific nanoforges, and a highly sophisticated control network. The best part?
 
@@ -1252,7 +1254,7 @@ MPC_omegaManufactorumCMD sensorBurst","Results come in rather quickly. The compl
 
 ""See that?"" You hear a voice over your shoulder inquire. Whipping around, you see your ops chief, completely ignoring your surprise. ""Those are weapon emplacements."" your chief points out various positions amongst the length of the complex, which your system helpfully highlights in red. 
 
-""Look anti-ship."" Your ops chief grunts. ""Some sorta up-gunned AM blasters tha' wouldn't even fit in a XL mount. Could punch a hole through our strongest shields then melt our armor in a second. And if we get past that..."" your chief taps a strange contraption in the center of the complex, larger than any of the other emplacement. You recognize it as a...",0:MPC_OManInitialExploreTwoTwo:Consider your options,
+""Look anti-ship."" Your ops chief grunts. ""Some sorta up-gunned AM blasters tha' wouldn't even fit in a XL mount. Could punch a hole through our strongest shields then melt our armor in a second. And if we get past that..."" your chief taps a strange contraption in the center of the complex, larger than any of the other emplacement. You recognize it as a...",0:MPC_OManInitialExploreTwoTwo:Continue,
 MPC_OManInitialExploreTwoTwo,DialogOptionSelected,$option == MPC_OManInitialExploreTwoTwo,"SetTextHighlights ""Rift torpedo rack""","""Rift torpedo rack."" Your sensors officer continues, worriedly. ""And from the looks of it..."" your ops chief draws a circle around it, highlighting the load-feed that burrows into the ground, before continuing off what your sensors officer said. ""Looks like it's got some kinda autoloader underneath the surface."" The chief's arms cross, thinking a moment. ""All that on top of planetary targetting systems that could outrange chico station a thousandfold..""
 
 Looks like a direct approach isn't an option.",0:MPC_OManInitialExploreThree:Consider your options,
@@ -3033,7 +3035,8 @@ MPC_IAIICLPSecondHideoutVisitOptionsVisit,MPC_IAIICLPSecondHideoutVisitOptions,,
 MPC_IAIICLPSecondHideoutVisitOptionsRaid,MPC_IAIICLPSecondHideoutVisitOptions,$faction.id == player,,,11:MPC_IAIICLPHideoutRaid:Prepare a raid on the pather hideout to clear them out,
 ,,,,,,
 # Raid,,,,,,
-MPC_IAIICLPHideoutRaid,DialogOptionSelected,$option == MPC_IAIICLPHideoutRaid,FireBest MPC_IAIICLPHideoutRaidImpl,,,
+MPC_IAIICLPHideoutRaid,DialogOptionSelected,$option == MPC_IAIICLPHideoutRaid,"FireBest MPC_IAIICLPHideoutRaidImpl
+MPC_IAIICPatherCMD tempSetMktFac",,,
 MPC_IAIICLPHideoutRaidImpl,MPC_IAIICLPHideoutRaidImpl,!$MPC_bombarded,"$raidDifficulty = 500 0
 $raidGoBackTrigger = MPC_IAIICLPHideoutRaidAbort 0
 $raidContinueTrigger = MPC_IAIICLPHideoutRaidFinishedB 0
@@ -3063,10 +3066,12 @@ Carrying through with this action will certainly mean the end of your campaign t
 MPC_IAIICLPHideoutRaidFinishedA,MPC_IAIICLPHideoutRaidFinishedA,!$MPC_bombarded,,"With the orbital ASBs still active, this operation is bound to be bloody. And bloody it is; nearly a quarter of the dispatched shuttles are reduced to nothing other than scrap, bones and dust by the bolts of Ludd ascending upon them. The remainder make touch down only through advanced evasive maneuvers, and come under heavy ground fire by the fanatical pathers poking their heads out of the ground. After a long and hard battle, your marines eventually push into the mountain compound and begin methodically clearing it out.",,
 MPC_IAIICLPHideoutRaidFinishedABombarded,MPC_IAIICLPHideoutRaidFinishedA,$MPC_bombarded score:50,,"Due to the inactive status of the ASBs, your shuttles approach the surface with zero losses, countermeasures proving effective against the primitive MANPADs wielded by the pathers. The flotilla makes touch down, and immediately comes under heavy ground fire by the fanatical pathers poking their heads out of the ground. After a long and hard battle, your marines eventually push into the mountain compound and begin methodically clearing it out.",,
 MPC_IAIICLPHideoutRaidFinishedB,MPC_IAIICLPHideoutRaidFinishedB,,"MPC_IAIICPatherCMD raidFinished
+MPC_IAIICPatherCMD resetMktFac
 AddTextSmall ""Removed \""Arrow Pather\"" condition"" good","The organized resistance of the residents are no match to the overwhelming force and skill of your marines. One by one, each hiding spot is found and methodically cleared out with the thump of pulsefire. Eventually, all that's left is the core of the compound, which is eliminated through tactical deployment of explosives.
 
 A few hours after the initial deployment of the op, you receive the call: The arrow pathers are no more.",,
-MPC_IAIICLPHideoutRaidAbort,MPC_IAIICLPHideoutRaidAbort,,FireAll PopulateOptions,,,
+MPC_IAIICLPHideoutRaidAbort,MPC_IAIICLPHideoutRaidAbort,,"FireAll PopulateOptions
+MPC_IAIICPatherCMD resetMktFac",,,
 #END Raid,,,,,,
 ,,,,,,
 # Subsequent Visits,,,,,,
@@ -3076,10 +3081,11 @@ MPC_IAIICLPHideoutSecondVisitImpl,MPC_IAIICLPHideoutSecondVisitImpl,,,"You board
 
 Waiting for you at the landing site with a judgy stare is $personName, a CP rifle strapped to $hisOrHer chest. ""What is it, demon?""","MPC_IAIICLPHideoutSecondVisitAppraise:""Do you think $global.MPC_IAIICLPTargetMarketName is ready?""
 MPC_IAIICLPHideoutSecondVisitLeave:Return to your $shipOrFleet",
-MPC_IAIICLPHideoutSecondVisitLeave,DialogOptionSelected,$option == MPC_IAIICLPHideoutSecondVisitLeave,"EndConversation
+MPC_IAIICLPHideoutSecondVisitLeave,DialogOptionSelected,$option == MPC_IAIICLPHideoutSecondVisitLeave,"HideFirstPerson
+EndConversation DO_NOT_FIRE
 FireAll PopulateOptions",You return on your shuttle to your $shipOrFleet.,,
 MPC_IAIICLPHideoutSecondVisitAppraise,DialogOptionSelected,$option == MPC_IAIICLPHideoutSecondVisitAppraise,FireBest MPC_IAIICLPHideoutSecondVisitAppraiseImpl,,,
-MPC_IAIICLPHideoutSecondVisitAppraiseImplNo,MPC_IAIICLPHideoutSecondVisitAppraiseImpl,!MPC_IAIICPatherCMD targetReady,,"""No."" $HisOrHer face scrunches up. ""Not yet.""",,
+MPC_IAIICLPHideoutSecondVisitAppraiseImplNo,MPC_IAIICLPHideoutSecondVisitAppraiseImpl,!MPC_IAIICPatherCMD targetReady,MPC_IAIICPatherCMD printNotReadyText,"""No."" $HisOrHer face scrunches up. ""Not yet.""",,
 MPC_IAIICLPHideoutSecondVisitAppraiseImplYes,MPC_IAIICLPHideoutSecondVisitAppraiseImpl,MPC_IAIICPatherCMD targetReady score:50,,"""You have fulfilled all the requirements, yes..."" $heOrShe raps $hisOrHer fingers on $hisOrHer arms.. ""Are you ready to open the gates of war?""","MPC_IAIICLPHideoutDonate:""Yes."" (Donate the colony)
 MPC_IAIICLPHideoutSecondVisitLeave:""No."" (Leave)",
 MPC_IAIICLPHideoutDonate,DialogOptionSelected,$option == MPC_IAIICLPHideoutDonate,"MPC_IAIICPatherCMD donateColony
@@ -3114,7 +3120,7 @@ MPC_IAIICLPHideoutDonateWasntWorthIt,DialogOptionSelected,$option == MPC_IAIICLP
 # Set transfer target,,,,,,
 MPC_IAIICLPSetTransferTargetOption,PopulateOptions,"MPC_IAIICPatherCMD canAddDedicateOption
 $menuState == main",FireBest MPC_IAIICLPSetTransferTargetOptionModify,,100:MPC_IAIICLPSetTransferTargetOptionSel:Dedicate $entityName to the arrow pathers,
-MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,$global.MPC_IAIICLPTargetMarket == $market.id,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
+MPC_IAIICLPSetTransferTargetOptionModifySelected,MPC_IAIICLPSetTransferTargetOptionModify,$global.MPC_IAIICLPTargetMarketId == $market.id,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers.""",,,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
 SetTooltip MPC_IAIICLPSetTransferTargetOptionSel ""$entityName is already dedicated to the arrow pathers."""
 MPC_IAIICLPSetTransferTargetOptionModifyDangerous,MPC_IAIICLPSetTransferTargetOptionModify,MPC_IAIICPatherCMD isDangerous,"SetEnabled MPC_IAIICLPSetTransferTargetOptionSel false
@@ -4262,7 +4268,7 @@ MPC_IAIICHGMeetDaudInitialStart,DialogOptionSelected,$option == MPC_IAIICHGMeetD
 The display flickers back to the spinning crest of the hegemony.",MPC_IAIICHGMeetDaudInitialMeet:Wait,
 MPC_IAIICHGMeetDaudInitialMeet,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialMeet,"BeginConversation daud false true
 
-FireAll MPC_IAIICHGMeetDaudInitialOpts","The visage of the high hegemon quickly replaces the spinning phoenix, staring stiffly at you.
+FireAll MPC_IAIICHGMeetDaudInitialOpts","The visage of the high hegemon quickly replaces the spinning phoenix, staring at you with barely hidden exhaustion.
 
 ""$PlayerName."" He remarks. ""This is about those IAIIC folk, isn't it."" He doesn't look happy to see you, nor be talking about this.",,
 MPC_IAIICHGMeetDaudInitialAsk,MPC_IAIICHGMeetDaudInitialOpts,,,,"MPC_IAIICHGMeetDaudInitialAsk:""Yes. Are you involved?""",
@@ -4272,20 +4278,43 @@ MPC_IAIICHGMeetDaudInitialAskSel,DialogOptionSelected,$option == MPC_IAIICHGMeet
 
 Finally, he speaks, taking a breath to steady himself.
 
-""Our *fleets* are busy building border-guards and patrolling our space for commerce raiders, outlaws, and other criminals. Our *citizenship* is exhausted from war and just wants peace. And *you*...""
+""Captain.""
 
-His eyelids fall, exhausted.
+""As promised, your colonies are treated in accordance with Domain frontier colony diktat. That is to say, the Hegemony. Will not. Enter war.""
 
-""You're too much work for an open war.""","MPC_IAIICHGMeetDaudInitialAskNo:""So that's a no?""
-MPC_IAIICHGMeetDaudInitialAskYes:""So that's a yes?""",
-MPC_IAIICHGMeetDaudInitialAskNo,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskNo,"SetTextHighlights ""politics"" ""foreign matter""","His stare deepens. ""You beat us, $PlayerName. We don't want to get involved in your..."" he rubs his forehead, like he has a splitting headache. ""...politics.""
+He bows his head - a dark shadow cast unto his eyes. ""Even if you *are* harboring a superintelligence that threatens to destroy what little remains of humanity.""",MPC_IAIICHGMeetDaudInitialAskTwo:Continue,
+MPC_IAIICHGMeetDaudInitialAskTwo,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskTwo,,"""All rumor, of course."" he skips, knowingly. ""Rumor enough, at least, for my involvement with your... play war to ruin my career.""
 
-Recovering, he brings up a small PDA and starts tapping away - some officer manifest, by the looks of it. Just another document of the pile - more interested in it than you. ""This is a foreign matter. The hegemony does *not* perform interventionism.""
+He walks off, taking a glass of brandy and sipping it, caring not to spare you but a glance. ""And this nation, as well.""
 
-He slides the PDA onto the table, and locks eyes in the brief moment of moved attention. ""Settle it yourself.""","MPC_IAIICHGMeetDaudInitialBS:""So the ancient XIV ships appearing in the IAIIC's fleets are just coincidence, then?""",
+He observes the drink. Rolling it in his hand. Inspecting its label. Lost in thought. 
+
+He glances back to you - finally, looking even more exhausted. ""Ever since you made that little colony of yours, you've been a terrible, terrible pain. To everyone. You know that? Not everyone has what it takes to go from nothing to... *this*... not everyone can acquire the treasures you have.""
+
+""Nor the tech."" he sighs.",MPC_IAIICHGMeetDaudInitialAskThree:Continue,
+MPC_IAIICHGMeetDaudInitialAskThree,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskThree,,"Then, he sets the drink on the table, archs his back, and adopts an official, speaker's voice.
+
+""The Hegemony refuses to involve itself with the affairs of an officially registered Domain polity, no matter what 'rumors' may persist. Independent operators, contractors, *merchants*, may of course act without sanction...""
+
+He steadies his gaze onto yours. You feel it burn. ""...however the Hegemony will not officially approve action against $global.MPC_playerFacNameWithArticle."" You catch an acidic emphasis on ""officially"", but it could be your imagination.",MPC_IAIICHGMeetDaudInitialAskFour:Continue,
+MPC_IAIICHGMeetDaudInitialAskFour,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskFour,,"""Any vessel, operator, or fleet operating unlawfully within $global.MPC_playerFacName space may be detained, prosecuted, and if necessary, destroyed, pursuant to $global.MPC_playerFacName law.""
+""The Hegemony will not interfere.""
+
+He stands there, a 5'6"" monolith of raw authority, projecting its shadow onto you. Until, eventually, it shifts, moving back to its precious brandy - though not using it. Merely letting its fingers rest on the throat.","MPC_IAIICHGMeetDaudInitialAskNo:""So that's a no?""
+MPC_IAIICHGMeetDaudInitialAskYes:""So that's a yes?""
+MPC_IAIICHGMeetDaudInitialAskFrustrated:""Cut the crap. Just give me the truth."" (UNFINISHED)",
+,DialogOptionSelected,$option == ,,,,
+,DialogOptionSelected,$option == ,,,,
+MPC_IAIICHGMeetDaudInitialAskNo,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskNo,,"His stare deepens. ""Captain. If I really was involved. Would I tell you? As a world leader, a sector leader, even, you should know how we deal with eachother.""
+
+Stepping forward, Daud reaches for the comms-disconnect. ""But if you really want to know? If you really, won't leave until you hear it leave my mouth?""
+
+He sighs, a deep, tired, weary sigh. A pause. A second. And then, whispered...
+
+""No.""",MPC_IAIICHGMeetDaudInitialBS:Continue,
 MPC_IAIICHGMeetDaudInitialAskYes,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialAskYes,"$option = MPC_IAIICHGMeetDaudInitialAskNo
 FireBest DialogOptionSelected",,,
-MPC_IAIICHGMeetDaudInitialBS,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialBS,HideFirstPerson,"Halfway through your protest, you find yourself facing the spinning phoenix of the hegemony - the obstinance of hegemony bureaucracy. 
+MPC_IAIICHGMeetDaudInitialBS,DialogOptionSelected,$option == MPC_IAIICHGMeetDaudInitialBS,HideFirstPerson,"You find yourself facing the spinning phoenix of the hegemony - the obstinance of hegemony bureaucracy. 
 
 Irritation spreads through your spine and finds it's home in your grinding teeth. Looks like you'll have to solve this problem some other way.",MPC_IAIICHGAristoContactInitial:Cut the comm link,todo more optionsn
 MPC_IAIICHGAristoContactInitial,DialogOptionSelected,$option == MPC_IAIICHGAristoContactInitial,,"Just before you begrudgingly give the comms-disconnect order, you hear a familiar ping - an incoming comms-request. Subsequent analysis reveals little more than a high-quality encryption algorithm and a approximate location from somewhere in Chicozmostoc orbit.
@@ -4311,9 +4340,7 @@ And just like that, the commlink abruptly cuts out. Your comms officer quickly e
 
 Indeed, your sensor officer reports a number of picket-ships emerging from the planet's surface, converging on the signal source. You silently hope for her safety - if she really is a member of an eventide house and wants to dismantle the IAIIC, she will be invaluable to your efforts.
 
-All that's left is to see if she got away. To eventide.
-
-",MPC_IAIICHGAristoContactEnd:Return to normal duties,
+All that's left is to see if she got away. To Eventide.",MPC_IAIICHGAristoContactEnd:Return to normal duties,
 MPC_IAIICHGAristoContactEnd,DialogOptionSelected,$option == MPC_IAIICHGAristoContactEnd,EndConversation,,,
 #END Initial meeting with daud and aristocrat defector,,,,,,
 ,,,,,,
@@ -4574,7 +4601,7 @@ MPC_IAIICHegeCMD readyToConfrontMil score:50
 !$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoMilitaryRep
 $global.MPC_milAristoDone = true","Your comms request is accepted immediately. You see $personName, hands balled, a privacy field already smudging out $hisOrHer background. A quick check confirms the commlink is private, too.
 
-""$PlayerLastName."" $HeOrShe starts, a grimace spread across $hisOrHer face.","MPC_milAristoDoneMeetTwo:""$PersonLastName.""",
+""$PlayerName."" $HeOrShe starts, a grimace spread across $hisOrHer face.","MPC_milAristoDoneMeetTwo:""$PersonName.""",
 MPC_milAristoDoneMeetTwo,DialogOptionSelected,$option == MPC_milAristoDoneMeetTwo,,"""Tell me."" $HisOrHer gaze burns deep, a high intensity laser attempting to penetrate your layered armor. ""Why are you calling me, $playerLastName?""","MPC_milAristoDoneMeetThree:""You tell me.""
 MPC_milAristoDoneMeetThreeYouKnow:""I think you know, $personLastName.""(UNFINISHED)
 MPC_milAristoDoneMeetThreeSilence:Remain silent (UNFINISHED)",
@@ -4738,7 +4765,8 @@ ShowDefaultVisual",,,
 MPC_IAIICAloofChicoRaidFinishedA,MPC_IAIICAloofChicoRaidFinishedA,,,"The hum of ion-chargers and the rustleshimmer of stealth gear fills your shuttle bays as the marines prepare for departure. Your blitzkrieg strategy, while unorthodox, proves effective - overclocked, burning engines fly through chico's defense-net before the heavy guns have a chance to get an angle and scream past incoming SAM installations before crashing gently onto the surface, the hastily installed impact dampeners saving countless grateful lives - at least, the ones you care about.
 
 Once on foot, your marines activate their helm-cams and begin scouring for data. The window is tight, the fighting is bloody, and many men are lost - carried away by your survivors to avoid leaving a trace. In the span of five minutes, your soldiers are in and out, exfiltrating through pre-registered cargo shuttles before a lockdown can begin.",,
-MPC_IAIICAloofChicoRaidFinishedB,MPC_IAIICAloofChicoRaidFinishedB,,MPC_IAIICHegeCMD ALOincrementEvidence,"Unfortunately, most of the data harvested is junk data - just reports of logistics caravans, metal stocks, ship production... you forward it to INTSEC, hoping it may help you in the future. But one thing does catch your eye, reviewing the camera footage..
+MPC_IAIICAloofChicoRaidFinishedB,MPC_IAIICAloofChicoRaidFinishedB,,"MPC_IAIICHegeCMD ALOincrementEvidence
+$market.MPC_raidedForIAIICIntel = true","Unfortunately, most of the data harvested is junk data - just reports of logistics caravans, metal stocks, ship production... you forward it to INTSEC, hoping it may help you in the future. But one thing does catch your eye, reviewing the camera footage..
 
 ""Jackpot."" tactical declares, pausing a marine's camfeed. Before you, frozen in terror, is an IAIIC officer, busy scrubbing data-disks, greencap and laurel and all. ""Now why would a greencap be here?"" ops muses. ""Gonna be hard to explain *that* one away."" your chief gruffly laughs. And you agree - it's quite damning.",,
 #END Raid chico for intel on IAIIC,,,,,,
@@ -4781,7 +4809,7 @@ Stolen intel begins flooding into your $shipOrFleet's bridge as data-leech after
 # Return to Youn during the evidence collection,,,,,,
 MPC_IAIICAloofReturnDuringCollectionOptAdder,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
 MPC_IAIICHegeCMD houseIs ALOOF
-MPC_IAIICHegeCMD ALOstateIs GOT_EVIDENCE",FireAll MPC_aloofAristoGiveEvidenceModify,,"1:MPC_aloofAristoGiveEvidence:Set the link to private, and over the intelligence you've collected",
+MPC_IAIICHegeCMD ALOstateIs GOT_EVIDENCE",FireAll MPC_aloofAristoGiveEvidenceModify,,"1:MPC_aloofAristoGiveEvidence:Set the link to private, and hand over the intelligence you've collected",
 MPC_aloofAristoGiveEvidenceModifyNotEnough,MPC_aloofAristoGiveEvidenceModify,MPC_IAIICHegeCMD ALOstateIs GET_INTEL,"SetEnabled MPC_aloofAristoGiveEvidence false
 SetTooltip MPC_aloofAristoGiveEvidence ""You do not have enough evidence just yet.""",,,
 MPC_aloofAristoGiveEvidence,DialogOptionSelected,$option == MPC_aloofAristoGiveEvidence,,"Youn's eyes widen as she notices the telltale vid-flicker of a privacy connection. ""Oh? What's this, Captain?"" she mutters, leaning in towards something off-screen. It only takes a moment for a bright smile to cross her lips, and a delighted gasp to escape them. ""Oh... oh *yes* Captain!"" she turns to you, grinning like a child getting their first credit chit. ""This is spectacular! Oh, oh you mercenaries truely *are* reliable.""
@@ -4825,8 +4853,7 @@ MPC_IAIICaloofPanicCommsThree,DialogOptionSelected,$option == MPC_IAIICaloofPani
 
 The weight of this settles upon you and your bridge. If what she says is true, this could not only ostracize Aleratus in the eyes of the Youn, but also cause a major diplomatic incident - though you estimate the reputation loss caused by one aristocrat to be only somewhat problematic.
 
-""You... y-you have. To stop her. Captain. She... s-she's gonna tarnish my name. I'll *never* get out of prison! PLEASE, captain!"" she begs, crawling closer to the camera with watery eyes.","MPC_IAIICaloofPanicCommsFourAgree:""Sure. To keep you out of prison.""
-MPC_IAIICaloofPanicCommsFourImImportant:""I'll stop her. But not for you.""",
+""You... y-you have. To stop her. Captain. She... s-she's gonna tarnish my name. I'll *never* get out of prison! PLEASE, captain!"" she begs, crawling closer to the camera with watery eyes.",,
 MPC_IAIICaloofPanicCommsFourAgree,DialogOptionSelected,$option == MPC_IAIICaloofPanicCommsFourAgree,,"Her breathing bates for a moment, only to break into hysterics as she balls her hands and shakes them in gracious appreciation. ""Oh, oh thank you captain! Thank you! I-"" she sniffles. ""-y-you are truely so gracious, $playerSirOrMadam! I...""
 
 She breathes. Breathes, breathes more, until she's calm. Relatively, at least. ""--you'll find her near eventide. I'll delay her as much as I can, but I don't know how much she'll listen."" she sighs, closing her eyes in contemplation. ""I'm sorry, captain, but she just - doesn't listen like she used to.""","MPC_IAIICaloofPanicCommsCanKill:""What if I can't talk her down? What if she's... determined?""
@@ -4844,13 +4871,15 @@ HideFirstPerson","""Thank you Captain... I'll try to make this up to you."" she 
 MPC_IAIICaloofPanicCommsEndAlt:Groan, and return to your duties",
 MPC_IAIICaloofPanicCommsEndAlt,DialogOptionSelected,$option == MPC_IAIICaloofPanicCommsEndAlt,DismissDialog,,,
 MPC_IAIICaloofPanicCommsTwoLol,MPC_IAIICaloofPanicCommsTwoLol,$player.MPC_askedIfAloofWillBeTurnedIn,,,"100:MPC_IAIICaloofPanicCommsTwoLolSel:""I told you this would happen...""",
+MPC_IAIICaloofPanicCommsFourAgreeAdder,MPC_IAIICaloofPanicCommsTwoLol,,,,"10:MPC_IAIICaloofPanicCommsFourAgree:""Sure. To keep you out of prison.""",
+MPC_IAIICaloofPanicCommsFourImpAdder,MPC_IAIICaloofPanicCommsTwoLol,,,,"20:MPC_IAIICaloofPanicCommsFourImImportant:""I'll stop her. But not for you.""",
 MPC_IAIICaloofPanicCommsTwoLolSel,DialogOptionSelected,$option == MPC_IAIICaloofPanicCommsTwoLolSel,"AdjustRepActivePerson VENGEFUL -5
 RemoveOption MPC_IAIICaloofPanicCommsTwoLolSel","Her face blows up with red like a critically-failing flux reactor, as she sputters and spits to formulate a rebuttal.
 
 ""You are c-con*tempt*uous."" she manages to hiss out, growling in a low, embarassed drawl. Her gaze strikes deep, panicked hatred burning through your skin like a plasma leak.",,
 ,,,,,,
 # Comms with her sister,,,,,,
-MPC_IAIICaloofSisterComms,PickGreeting,"$id == MPC_hegeAristoSister score:1000
+MPC_IAIICaloofSisterComms,OpenCommLink,"$id == MPC_hegeAristoSister score:1000
 !$temporarilyIgnoreYou","BeginConversation MPC_hegeAristoSister
 FireAll MPC_IAIICaloofSisterCommsOptions","The commlink quickly resolves into the annoyed-looking visage of a sharp-looking aristocrat. One eye twitching, the other resting firmly on the comms-disconnect, she hisses. ""YOU! Of course only *you* have the gall to approach a fleet such as mine!""
 
@@ -4868,7 +4897,7 @@ MPC_IAIICaloofSisterNegotiateConfirm,DialogOptionSelected,$option == MPC_IAIICal
 MPC_IAIICHegeCMD ALOtargetBribed
 $player.MPC_IAIICbribedALOTarget = true","A giggle, then a full-blown cackle fills your bridge as the aristocrat's eyes widen in jubilation. ""HAHA! Yes! YES! Thank you, *Captain*."" she snickers. ""It's so easy when we resolve things non-violently, hm?"" and with that, the commlink disconnects, leaving a black screen where her face once was.
 
-""$PlayerSirOrMadam."" tactical stiffly begins. ""Their fleet is moving back towards eventide. Seems we convinced them to forget about whatever that Youn told them.""",defaultLeave:Leave,
+""$PlayerSirOrMadam."" tactical stiffly begins. ""Their fleet is moving back towards eventide. Seems we convinced them to forget about whatever that Youn told them.""",cutCommLink:Leave,
 MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,100:cutCommLink:Cut the comm link,
 #END Comms with her sister,,,,,,
 #END Panicked comms call after her house betrays her,,,,,,
@@ -4877,7 +4906,7 @@ MPC_IAIICaloofSisterCommsOptionsCutComms,MPC_IAIICaloofSisterCommsOptions,,,,100
 MPC_IAIICaloofSisterElim,PickGreeting,"$id == MPC_hegeAristoDefector score:1000
 !$temporarilyIgnoreYou
 MPC_IAIICHegeCMD ALOstateIs ELIMINATE_TARGET_FINISHED score:5",BeginConversation MPC_hegeAristoDefector,"The exasperated face of the young aristocrat flickers into view. ""Did-did you take care of her?!""","MPC_IAIICaloofSisterElimYes:""Yes. She won't be a problem any longer.""",
-MPC_IAIICaloofSisterElimYes,DIalogOptionSelected,$option == MPC_IAIICaloofSisterElimYes,FireBest MPC_IAIICaloofSisterElimReportOptions,"A grotesque smile spreads across her disheveled face, but shrinks quickly as some invisible weight seems to fall upon her. She shrivels, balling her hands and nervously rubbing them together.
+MPC_IAIICaloofSisterElimYes,DialogOptionSelected,$option == MPC_IAIICaloofSisterElimYes,FireBest MPC_IAIICaloofSisterElimReportOptions,"A grotesque smile spreads across her disheveled face, but shrinks quickly as some invisible weight seems to fall upon her. She shrivels, balling her hands and nervously rubbing them together.
 
 ""I-is... is she...?"" she stumbles out, eyes shot wide open with full attention, hoping for the correct answer to exit your lips.",,
 MPC_IAIICaloofSisterElimReportOptionsNoKill,MPC_IAIICaloofSisterElimReportOptions,$player.MPC_IAIICbribedALOTarget,,,"MPC_IAIICaloofSisterElimBribed:""She's alive.""
@@ -4898,7 +4927,7 @@ She quickly remembers your existance, covering up her horrified realization with
 MPC_IAIICaloofSisterElimThree,DialogOptionSelected,$option == MPC_IAIICaloofSisterElimThree,,"""If my house really are such... short-sighted fools that they would remove me for attempting to *HELP* them..."" she growls, taking another quick sip of wine. ""Then we need another plan. My sister, scorn her heart, still sold off her stock in the military complex."" she crosses her fingers. ""Now, I'd suggest we'd use you, but if we just... plant our evidence, COMSEC will start digging. And find me. But, if we give them a convenient scapegoat..."" she grins, slowly pulling her PDA up to the screen. ""Then they'll have no need. COMSEC doesn't much care about actual justice, just, well, keeping the peace, hm?""
 
 ""Besides - they already know it was you. They just want to know who to punish for helping you.""","MPC_IAIICaloofSisterElimFour:""A scapegoat. Anyone in mind?""",
-MPC_IAIICaloofSisterElimFour,DialogOptionSelected,$option == MPC_IAIICaloofSisterElimFour,,"""Of course I do, Captain! What, do you think I don't know what I'm *doing*?"" she feigns offense, but if you said what you thought, you feel it would become genuine in an instant. ""Remember who you're imitating with those commkeys I gave you? Orthus. My long lost brother. Already a prime target from our *shenanigans*, he's a tad estranged and has a rebellious streak. Plus, ah...""
+MPC_IAIICaloofSisterElimFour,DialogOptionSelected,$option == MPC_IAIICaloofSisterElimFour,,"""Of course I do, Captain! What, do you think I don't know what I'm *doing*?"" she feigns offense, but if you said what you thought, you feel it would become genuine in an instant. ""Remember who you're imitating with those commkeys I gave you? Orthus. My long lost brother. Already a prime target from our *schenanigans*, he's a tad estranged and has a rebellious streak. Plus, ah...""
 
 She hums, paying close attention to the corner of the room as she pretends to be in thought. ""I don't like him."" A snicker. ","MPC_IAIICaloofSisterElimFive:Continue
 MPC_IAIICaloofSisterElimMorality:""'I don't like him'? Has he done something to you?""",
@@ -4934,7 +4963,7 @@ MPC_IAIICAloofJangalaImplicateFinishedA,MPC_IAIICAloofJangalaImplicateFinishedA,
 An incoming crew shuttle is quickly disabled, boarded, and taken over, your marines donning the protective gear of the cleaning crew on-board. Then, they load up on data-sticks, paper trails, and other bits of incriminating evidence as they move to join the workforce for the day. Noone pays them any mind as they walk through the front door and clock in under another name, before fanning out and making a show of organizing and cleaning the villa.
 
 ",,
-MPC_IAIICAloofJangalaImplicateFinishedB,MPC_IAIICAloofJangalaImplicateFinishedB,,MPC_IAIICHegeCMD ALOscapegoatMade,"Through hidden cameras inserted in stolen fiber-clothes, you watch as your marines masterfully avoid enforcers, supervisors, and other people that would give them away. When a carpet is lifted up to dust, a data-stick is inserted. Papers being sorted prompts a incriminating document to be inserted. A forgotten data-chit put in a dry-pressed jacket. Plausible locations with plausible quantity and plausible contents, each placed in either a remote room or in some place only a inspector would look.
+MPC_IAIICAloofJangalaImplicateFinishedB,MPC_IAIICAloofJangalaImplicateFinishedB,,MPC_IAIICHegeCMD ALOscapegoatMade,"Through hidden cameras inserted in stolen fiber-clothes, you watch as your marines masterfully avoid enforcers, supervisors, and other people that would give them away. When a carpet is lifted up to dust, a data-stick is inserted. Papers being sorted prompts a incriminating document to be placed. A forgotten data-chit put in a dry-pressed jacket. Plausible locations with plausible quantity and plausible contents, each placed in either a remote room or in some place only a inspector would look.
 
 After only a few hours, the marines walk out a back entrance, into a nearby shuttle, and fly back to your $shipOrFleet, ending the operation. After dropping off your prisoners a few kliks out of a nearby spaceport, you re-enter orbit, having surely given COMSEC just what they need to lock Orthus behind bars for the foreseeable future. Now you just need to trigger their investigation.",,
 MPC_IAIICAloofJangalaImplicateGoBack,MPC_IAIICAloofJangalaImplicateGoBack,,"$menuState = main 0
@@ -4945,7 +4974,7 @@ ShowDefaultVisual",,,
 # Raid eventide to insert evidence,,,,,,
 MPC_IAIICAloofEventideInsrtEvdOptAdder,PopulateOptions,"$menuState == main
 $hasMarket
-$market.id == ""jangala""
+$market.id == ""eventide""
 MPC_IAIICHegeCMD ALOstateIs INSERT_EVIDENCE",SetOptionColor MPC_IAIICAloofEventideInsrtEvdRaidInit highlight,,30:MPC_IAIICAloofEventideInsrtEvdRaidInit:Prepare to plant evidence in the Youn's dwellings,
 MPC_IAIICAloofEventideInsrtEvdRaidInit,DialogOptionSelected,$option == MPC_IAIICAloofEventideInsrtEvdRaidInit,"$raidGoBackTrigger = MPC_IAIICAloofEventideInsrtEvdRaidGoBack 0
 $raidContinueTrigger = MPC_IAIICAloofEventideInsrtEvdRaidFinishedB 0
@@ -4971,7 +5000,7 @@ ShowDefaultVisual",,,
 MPC_aloofAristoFinalizeOptAdder,MPC_aloofAristoMeetOpts,"!$global.MPC_dealtWithAloofAristo
 MPC_IAIICHegeCMD houseIs ALOOF
 MPC_IAIICHegeCMD ALOstateIs FINALIZE",FireAll MPC_aloofAristoPlantedEvidenceModify,,1:MPC_aloofAristoPlantedEvidence:Set the commlink to private and inform her of your success,
-MPC_aloofAristoPlantedEvidence,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidence,,"An excited look comes over her as she notices the flicker of the commlink, knowing it must bring good news. ""Well, Captain?! How goes your adventures?!""","MPC_aloofAristoPlantedEvidenceTwo:""The evidence is planted, and Orthis implicated.?""",
+MPC_aloofAristoPlantedEvidence,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidence,,"An excited look comes over her as she notices the flicker of the commlink, knowing it must bring good news. ""Well, Captain?! How goes your adventures?!""","MPC_aloofAristoPlantedEvidenceTwo:""The evidence is planted, and Orthus implicated.""",
 MPC_aloofAristoPlantedEvidenceTwo,DialogOptionSelected,$option == MPC_aloofAristoPlantedEvidenceTwo,,"She claps her hands together giddily. ""Wonderful! Just wonderful, Captain! How long ago was this? Mayhaps I can-""
 
 With a ding, her attention is caught by her PDA. Scrambling to pick it up, she stammers out the results of your efforts with an excited laugh, ""It's worked, Captain! Xerocan just announced a 'meeting with the High Hegemon' to discuss the 'traitorous intelligence' - as well as discussing the future of our military."" she laughs, shaking her head. ""You really did it, Captain! You really did it!""","MPC_aloofAristoPlantedEvidenceThree:Continue
@@ -4999,7 +5028,7 @@ Something strikes you as familiar...",MPC_IAIICOrthusRetaliateThree:Continue,
 MPC_IAIICOrthusRetaliateThree,DialogOptionSelected,$option == MPC_IAIICOrthusRetaliateThree,BeginConversation MPC_hegeAloofBrother,"The resemblance is undeniable. This is Orthus Youn, brother of the aristocrat you worked with to turn the Youns against the Hegemony - and scapegoat of the entire operation. Here he lies, rolling in agony, covered in rags and laser burns, intent on killing you.
 
 ""---YOUUU!!"" he hisses, a sudden moment of lucidity through his screaming agony. He reaches with all his strength to the slug-launcher, but is unable to reach it. He opts for the next best thing - reaching for your *throat*. And when that fails?",MPC_IAIICOrthusRetaliateFour:Continue,
-MPC_IAIICOrthusRetaliateFour,DialogOptionSelected,$option == MPC_IAIICOrthusRetaliateFour,,"""EVERYONE!! LISTEN!!"" he growls, shouting to the gawking bystandards and apprioaching MuniSec. ""This is $PlayerName! Leader of $global.MPC_playerFacNameWithArticle, traitor to the Hegemony -"" he hisses, straining as his hands are surrounded with cold steel. ""-if you're hearing me, COMSEC, $playerHeOrShe framed me! I'VE BEEN FRAMED!! YOU SHOULD *DIE*! YOU SHOULD BE *DEAD*! I'LL KILL YOUU-!!"" he screams, straining against the MuniSec officers ushering him away.
+MPC_IAIICOrthusRetaliateFour,DialogOptionSelected,$option == MPC_IAIICOrthusRetaliateFour,EndConversation DO_NOT_FIRE,"""EVERYONE!! LISTEN!!"" he growls, shouting to the gawking bystandards and apprioaching MuniSec. ""This is $PlayerName! Leader of $global.MPC_playerFacNameWithArticle, traitor to the Hegemony -"" he hisses, straining as his hands are surrounded with cold steel. ""-if you're hearing me, COMSEC, $playerHeOrShe framed me! I'VE BEEN FRAMED!! YOU SHOULD *DIE*! YOU SHOULD BE *DEAD*! I'LL KILL YOUU-!!"" he screams, straining against the MuniSec officers ushering him away.
 
 One stays behind, apologizing profusely, assuring you and your guards over and over that ""incidents like these are so uncommon, we are so, so sorry."" All you can do is watch that poor man be dragged away and wonder if your actions really were just. Or maybe it's just part of the business? ","MPC_IAIICOrthusRetaliateFive:Sigh, and shake your head",
 MPC_IAIICOrthusRetaliateFive,DialogOptionSelected,$option == MPC_IAIICOrthusRetaliateFive,,"You turn to address the MuniSec officer and get things straight. After a brief examination, he concludes you do not need medical, and that you're free to leave whenever you want, but he's willing to provide you with a free consult with a psychologist in case of any lasting trauma. You elegantly turn down the offer.","MPC_IAIICOrthusRetaliatePressCharges:""I'd like to press charges.""
@@ -5110,9 +5139,9 @@ Your salvors walk through, the orange-red lock casting a clarifying light on the
 Samples are taken and quickly analyzed, raising more questions than answers. For one, there's no torch-residue on the remaining foundation, nor is there any sign of prior entry - or even an external locking mechanism. It's like whatever these objects were just vanished.
 
 ""$PlayerSirOrMadam."" your ops chief grunts, catching your attention.","MPC_IAIICAlphaSiteInvestigateDataCacheFour:""Report.""",
-MPC_IAIICAlphaSiteInvestigateDataCacheFour,DialogOptionSelected,$option == MPC_IAIICAlphaSiteInvestigateDataCacheFour,"SetTextHighlights ""Magnetar""","""Atmo scan just finished. We found some sort of exotic particle - some sort of stable antimatter, just free-floating inside the canister. Doors sealed them in, and they don't seem too prone to annihilation, explaining how they're still here. But that's not all..."" your ops chief then hands you a TriPad, and narrates as you read.
+MPC_IAIICAlphaSiteInvestigateDataCacheFour,DialogOptionSelected,$option == MPC_IAIICAlphaSiteInvestigateDataCacheFour,,"""Atmo scan just finished. We found some sort of exotic particle - some sort of stable antimatter, just free-floating inside the canister. Doors sealed them in, and they don't seem too prone to annihilation, explaining how they're still here. But that's not all..."" your ops chief then hands you a TriPad, and narrates as you read.
 
-""Remember the Magnetar? That weird factory we raided a while ago?"" The chief's gaze hardens. ""We took an atmos sample there too, and..."" a nod to the PDA you now hold. It's the same type of particle; the same stability, the same composition, the same amount, even.",MPC_IAIICAlphaSiteInvestigateDataCacheFive:Continue,
+""We've got some kinda exotic particle trace in here. Some sort of Muon. Stable, in pairs, and all around anomalous.""",MPC_IAIICAlphaSiteInvestigateDataCacheFive:Continue,
 MPC_IAIICAlphaSiteInvestigateDataCacheFive,DialogOptionSelected,$option == MPC_IAIICAlphaSiteInvestigateDataCacheFive,"SetTextHighlights ""hundred cycles""","""What's more, we detected a trace of this antimatter on our approach to this damned rock. High concentration in orbit - but a small trail leading off. And when we followed that trace with our sensors...""
 
 Your chief nods, prompting sensors to approach and speak up. ""Some sort of highly polarized meson emission, from the outskirts of this system. Barely any to speak of, but just enough for an active sensor burst to detect."" You catch your ops chief shivering in the corner of your eye. ""No way to tell how old it is, but if I had to guess? At least a hundred cycles, $playerSirOrMadam.""
@@ -5148,7 +5177,7 @@ MPC_IAIICAlphaSiteMesonReadingsScanTwo,DialogOptionSelected,$option == MPC_IAIIC
 ShowImageVisual niko_MPC_magnetar
 niko_MPC_musicToggle ""MPC_magnetarAmbience"" true","Your sensor grid shrieks as anything granular is overcome by the sheer magnetic force beyond the breach. Any approximation you might have once had is now gone, replaced by meson-amplified magnetism and it's source: A terrifying magnetar. Even through the intense sensor noise you can see it's spectacular mag-loops, begging for you to come closer so it may release you from this coil.
 
-You shut off the alarms and stare into the now all-blue sensor profile, taking in the implications of a direct rift to this horrible place right in the middle of the core worlds. Those unidentified craft; have they truely used this hole as a means of passage? What else are they doing? How long have they been here for? These questions rattle in your mind - answers refusing to surface, no matter how hard you think about it.",MPC_IAIICAlphaSiteMesonReadingsScanThree:Continue,
+You shut off the alarms and stare into the now all-blue sensor profile, stunned into silence in sympathy with your quiet officer corps. Nobody expected this.",MPC_IAIICAlphaSiteMesonReadingsScanThree:Continue,
 MPC_IAIICAlphaSiteMesonReadingsScanThree,DialogOptionSelected,$option == MPC_IAIICAlphaSiteMesonReadingsScanThree,,"You are broken out of your thought by a report from your tactical officer, visibly shaken. ""$PlayerSirOrMadam,"" your officer begins. ""sensors are really struggling to see through the magfield. Either this rift is caught in the middle of a storm, or we're in the middle of a meson field. And judging from the meson readings..."" a finger taps a highlighted section on the TriPad. ""-that's right where it is. And while it's impossible to determine where our bogey went from here, our best guess is this gravimetric distortion-"" a swipe on the touchscreen moves the display to an abstract wireframe of 3D space - with a large well in the center. ""seems to be some astronomical body."" Your officer gives you a look. ""A planet, most likely.""
 
 ""If our target exfiltrated directly on top of a planet, it stands to reason they should have landed on that planet."" your officer continues. ""Should.""","MPC_IAIICAlphaSiteMesonReadingsScanFour:""Meaning... we have to return to the Magnetar, and find this planet.""",
@@ -5195,7 +5224,9 @@ MPC_IAIICmagnetarZiggPlanetScanShakeItOff:Shake it off - you have work to do (UN
 MPC_IAIICmagnetarZiggPlanetScanTakeItIn,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetScanTakeItIn,ShowLargePlanet,"You set down your TriPad and stare ahead, into the deep, smoldering depths of the insurmountable body ahead of you. From the molten sea spews countless mass ejections - points where the star's magnetism is strong enough to rip alloy away from the planet's meagre gravity. A tributary, you muse.
 
 In the shimmering orbit you spy motes of glinting light - ejections that never quite made it as far as the greedy star, waiting for the next magnetic pinprick to find it and finish its journey. You wonder just how long it'll take for the distant star to deconstitute and summarily absorb the remnants of the Domain on this planet - likely a few millennia. You shiver for a moment as you imagine yourself on one of the many raised laboratories - looking through three layers of diamond-matrix glass towards that deathly star, wondering when the Domain will call for your return.",MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo:Take a deep breath,
-MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo,MPC_IAIICHegeCMD getFractalCoreColonyName,"You follow that imaginary gaze, turning towards the magnetar through the dying body in front of you. A corona of blue and white traces the edge of its perception, burning your eyes when you look for too long. Reminds you of an old earth phenomena - a lunar eclipse? Millions of eyes cast towards their blue sky, turned a striking black with a ring of burning red. Said to be one of the most beautiful natural phenomena of humanity's cradle; and you can see why. ",MPC_IAIICmagnetarZiggPlanetScanTakeItInThree:Exhale,
+MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInTwo,MPC_IAIICHegeCMD getFractalCoreColonyName,"You follow that imaginary gaze, turning towards the magnetar through the dying body in front of you. A corona of blue and white traces the edge of its perception, burning your eyes when you look for too long. Reminds you of an old earth phenomena - a lunar eclipse? Millions of eyes cast towards their blue sky, turned a striking black with a ring of burning red. Said to be one of the most beautiful natural phenomena of humanity's cradle; and you can see why.
+
+Of course, such a phenomenon is commonplace in the Persean sector. But you don't let that detract from your whimsy.",MPC_IAIICmagnetarZiggPlanetScanTakeItInThree:Exhale,
 MPC_IAIICmagnetarZiggPlanetScanTakeItInThree,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInThree,,"You turn your gaze from the fulsome aura and to the inky void, filtered by the clouds of cyan dust blown off by intense solar winds. Somewhere alongst this planet's orbit is a crack - a gateway directly from this Ludd-damned place into the last bastion of humanity for the next ten thousand light years. Science suggests it's inert and will not grow - in fact, it may collapse in the near future. But the idea of these recondite monsters, mere days away from the core worlds... ",MPC_IAIICmagnetarZiggPlanetScanTakeItInFour:Breathe,
 MPC_IAIICmagnetarZiggPlanetScanTakeItInFour,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetScanTakeItInFour,,"You have to wonder what their purpose is. They don't attack human settlements. They never seem to leave - save for an instance of data theft, they're seemingly static to the magnetar, to hypershunts...
 
@@ -5270,8 +5301,8 @@ MPC_IAIICmagnetarZiggPlanetEngageCmplx,DialogOptionSelected,$option == MPC_IAIIC
 ,,,,,,
 # Defeat the defenders and explore the complex,,,,,,
 MPC_IAIICmagnetarZiggPlanetDefendersDefeated,BeatDefendersContinue,$id == MPC_magnetarSystemPlanetTwo,,"Once you're certain you've fully eradicated your angular opponents - and that none more will appear - you order weapons hold, standby alert, and (panting) ask for a SitRep. ",MPC_IAIICmagnetarZiggPlanetComplexExplore:Continue,
-MPC_IAIICmagnetarZiggPlanetComplexExplore,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetComplexExplore,,"A quick scan reveals no further hostiles, at least none that have left the confines of the structure beyond the newly-created debris field. The complex itself seems insert, with ambient radiation levels well below dangerous levels. The melody has fallen silent, too, leaving you in an comfortable silence as you contemplate your next move.",MPC_IAIICmagnetarZiggPlanetComplexExploreTwo:Send a detachment of exploration drones,
-MPC_IAIICmagnetarZiggPlanetComplexExploreTwo,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetComplexExploreTwo,"niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","Not wanting to risk the lives of your salvor crew in the face of this unknown object, you opt for an unmanned exploration until it can be confirmed the structure poses no threat to human life. With a nod and a hand signal, your ops chief grunts and begins barking order to your salvage corps. Within minutes, a group of exploration drones are in vacuum and burning hard.",MPC_IAIICmagnetarZiggPlanetComplexExploreThree:Continue,
+MPC_IAIICmagnetarZiggPlanetComplexExplore,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetComplexExplore,,"A quick scan reveals no further hostiles, at least none that have left the confines of the structure beyond the newly-created debris field. The complex itself seems inert, with ambient radiation levels well below dangerous thresholds. The melody has fallen silent too, leaving you in an comfortable quiet as you contemplate your next move.",MPC_IAIICmagnetarZiggPlanetComplexExploreTwo:Send a detachment of exploration drones,
+MPC_IAIICmagnetarZiggPlanetComplexExploreTwo,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetComplexExploreTwo,"niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","Not wanting to risk the lives of your salvor crew in the face of this unknown object, you opt for an unmanned exploration until it can be confirmed the structure poses no threat to human life. With a nod and a hand signal, your ops chief grunts and begins barking orders to your salvage corps. Within minutes, a group of exploration drones are in vacuum and burning hard.",MPC_IAIICmagnetarZiggPlanetComplexExploreThree:Continue,
 MPC_IAIICmagnetarZiggPlanetComplexExploreThree,DialogOptionSelected,$option == MPC_IAIICmagnetarZiggPlanetComplexExploreThree,,"The drones circle the entity, hugging it's exterior as they run detailed scan on it's bulbous surface for any sign of entrance. Nothing. No scan penetrates, no data is gathered. ""Team Bravo, adjust three degrees rotation, burn minimal, forward thrust, prox-check off, abort con impact."" your ops chief growls, prompting collective affirmative from the salvor group. ""Execute.""
 
 On that command, a group of drones go minimal engines, slow burn forward, directly on a course for the hull of the object. You intuit what your chief is thinking - if those objects can pass through the solid walls of the object, so should we. And they're right.
@@ -5319,7 +5350,7 @@ MPC_oppAristoMeetDuringQuestOptionsTurnIn,MPC_oppAristoMeetDuringQuestOptions,$p
 MPC_oppAristoMeetDuringQuestOptionsCutComms,MPC_oppAristoMeetDuringQuestOptions,,,,cutCommLink:Cut the comm link,
 MPC_oppAristoMeetHasZigg,DialogOptionSelected,$option == MPC_oppAristoMeetHasZigg,,"His expression contorts negatively, brightening only faintly upon seeing the useless snippet of encrypted data - just enough to confirm it's structure and header. ""This was not the deal, $playerSirOrMadam..."" his voice shakes, gently enough to still be called ""elegant"". ""You give us a whole copy of our data, or the deal is *off*.""
 
-He huffs. ""-the sooner can take action, the better. Isn't that right, Captain?"" he forces a smile, malice laden on his lower lip. ","0:MPC_oppAristoMeetHasZiggTransfer:""Okay, okay. Here you go."" (Transfer the dataset)
+He huffs. ""-the sooner we can take action, the better. Isn't that right, Captain?"" he forces a smile, malice laden in that lower lip. ","0:MPC_oppAristoMeetHasZiggTransfer:""Okay, okay. Here you go."" (Transfer the dataset)
 10:MPC_oppAristoMeetHasZiggDeny:""No. The deal's off."" (Keep it for yourself) (TODO HAS NO BENEFITS AS OF NOW)
 20:MPC_oppAristoMeetHasZiggCantCopy:""We can't copy it. Some daemon embedded in the file structure forbids it.""",
 MPC_oppAristoMeetHasZiggTransfer,DialogOptionSelected,$option == MPC_oppAristoMeetHasZiggTransfer,"AddTextSmall ""Lost \""Project Ziggurat\"" dataset"" bad
@@ -5399,7 +5430,7 @@ MPC_honAristoInitialMeetSix,DialogOptionSelected,$option == MPC_honAristoInitial
 
 The two stare at eachother for a few moments, before the younger one slowly turns to you.
 
-""'Wretch?' Denial of audience? Do you really think this follows the path, Jerus?"" Jerus snorts, grumbling. ""There is no honor in this man. To string up the very demons of Moloch as saints and use them to advantage $playerHimorHerself...""",MPC_honAristoInitialMeetSeven:Continue,
+""'Wretch?' Denial of audience? Do you really think this follows the path, Jerus?"" Jerus snorts, grumbling. ""There is no honor in this man. To string up the very demons of Moloch as saints and use them to advantage $playerHimOrHerself...""",MPC_honAristoInitialMeetSeven:Continue,
 MPC_honAristoInitialMeetSeven,DialogOptionSelected,$option == MPC_honAristoInitialMeetSeven,ShowSecondPerson MPC_hegeAristoMoralistRepTwo,"""-those are *rumors*, Jerus. Nothing more."" the younger man softly adds. Turning to you, he continues. ""And if they're not - I'm surely $playerHeOrShe has an explanation?"" he prompts.","MPC_honAristoInitialMeetRumors:""Rumors, nothing more."" (Lie)
 MPC_honAristoInitialMeetStudy:""I am studying them. Determing how best to destroy them.""
 MPC_honAristoInitialMeetPractical:""I am using them to safeguard my citizenry. The IAIIC is proof I need it.""
@@ -5411,7 +5442,7 @@ $player.ethosLiar++","He nods. ""See, Jerus? Rumors."" Noticing the older man's 
 MPC_honAristoInitialMeetStudy,DialogOptionSelected,$option == MPC_honAristoInitialMeetStudy,"$option = MPC_honAristoInitialMeetEight
 FireBest DialogOptionSelected
 
-$player.ethosAntiAI++","He raises a brow, but nods nonetheless. ""See, Jenius? The Iron Path teaches us to have humility and learn before acting. Remember; you are not omniscient."" Jenius seems unconvinced, but relents with a grunt.",,
+$player.ethosAntiAI++","He raises a brow, but nods nonetheless. ""See, Jerus? The Iron Path teaches us to have humility and learn before acting. Remember; you are not omniscient."" Jerus seems unconvinced, but relents with a grunt.",,
 MPC_honAristoInitialMeetPractical,DialogOptionSelected,$option == MPC_honAristoInitialMeetPractical,"$option = MPC_honAristoInitialMeetEight
 FireBest DialogOptionSelected
 
@@ -5426,19 +5457,19 @@ AdjustRep MPC_hegeAristoMoralistRep VENGEFUL -25
 AdjustRep MPC_hegeAristoMoralistRepTwo VENGEFUL -5","Halatius stares. His calm demeanour twitches.
 
 ""...at least you have a sense of empathy, Captain."" he sighs, shaking his head.",,
-MPC_honAristoInitialMeetEight,DialogOptionSelected,$option == MPC_honAristoInitialMeetEight,,"""Regardless, I believe Jenius is being a tad too harsh. I am Halatius Alotera, and I believe you're here on business, yes?""
+MPC_honAristoInitialMeetEight,DialogOptionSelected,$option == MPC_honAristoInitialMeetEight,,"""Regardless, I believe Jerus is being a tad too harsh. I am Halatius Alotera, and I believe you're here on business, yes?""
 
-You notice Jenius grumbling in the corner, arms crossed like an petulant child unable to play his games.","MPC_honAristoInitialMeetOnBusiness:""Yes. The IAIIC.""
+You notice Jerus grumbling in the corner, arms crossed like an petulant child unable to play his games.","MPC_honAristoInitialMeetOnBusiness:""Yes. The IAIIC.""
 MPC_honAristoInitialMeetOffBusiness:""No, I wanted to talk about other things."" (Lie) (UNFINISHED)",
 MPC_honAristoInitialMeetOnBusiness,DialogOptionSelected,$option == MPC_honAristoInitialMeetOnBusiness,,"He nods. ""The IAIIC. The hegemony. You wish for the hegemon to divest from the IAIIC, and make your war against the sector just a bit easier. And *we*, one of the more influential eventide houses, can make this happen.""
 
-""Of course. It's not that easy."" he nods, turning to Jenius, who has not stopped glaring at you for even a second. ""You see, we in Alotera are the last remnants of the Iron Path; a luddic sect that made up the earliest portions of the knights. And while we care not about resurfacing, we do care about our values..."" Jenius scowls a little, prompting Halatius to softly chuckle and add, ""...well maybe a few of us still hold nostalgia for the old days.""
+""Of course. It's not that easy."" he nods, turning to Jerus, who has not stopped glaring at you for even a second. ""You see, we in Alotera are the last remnants of the Iron Path; a luddic sect that made up the earliest portions of the knights. And while we care not about resurfacing, we do care about our values..."" Jerus scowls a little, prompting Halatius to softly chuckle and add, ""...well maybe a few of us still hold nostalgia for the old days.""
 
 He turns to you. ""Our values... values we hope you share. Skills, accomplishments, abilities...""","MPC_honAristoInitialIfMeetGood:""If I have these values, these abilities... you'll back me?""",
 MPC_honAristoInitialIfMeetGood,DialogOptionSelected,$option == MPC_honAristoInitialIfMeetGood,,"He walks over and picks up a small, dusty book, from a nearby shelf. ""Maybe."" he says, dusting off the cover. He walks back to the desk and sets it down. ""Depends on how aligned you find yourself. Depends on a few other things, too."" The book opens; artfully designed hands grasp an iron chain, wrapped around their wrists. Beneath, a sun shines over old earth, watched over by the hard steel above.",MPC_honAristoInitialNine:Continue,
 MPC_honAristoInitialNine,DialogOptionSelected,$option == MPC_honAristoInitialNine,"SetTextHighlights ""strength"" ""honor"" ""direction""","The page flips. Halatius reads; ""The first, and foremest tenet, is strength. Strength to dominate, strength to destroy, but above all, strength to protect. We follow in Ludd's steps - his fight against Mammon - with hammer in hand."" 
 He flips the page. ""The second is honor; Your vows are eternal. You do not go back on your promises. Your strength is forever. And the third is direction; Your strength defines you, and must not be miswielded. We are the iron, the chains, the gate before the storm - we must protect those we care for and crush those we do not.""","MPC_honAristoInitialTen:""Okay... where are you going with this?""",
-MPC_honAristoInitialTen,DialogOptionSelected,$option == MPC_honAristoInitialTen,MPC_IAIICHegeCMD newHouse HONORABLE,"He claps the book closed, dust flitting up and into the air. ""To gain our support, you must prove yourself valiant and strong. You will pass our rites; Combat. You will prove your honor; dispatch those that have none. And you will prove yourself to Jenius."" he snickers behind a soft smile, turning to the disgruntled man beside him. ""I believe you will have to prove your willingness to battle the demons of Moloch. We *are* luddites, after all.""","MPC_honAristoInitialWhatInItForYou:""What's in this for you? Why are you willing to support me?""
+MPC_honAristoInitialTen,DialogOptionSelected,$option == MPC_honAristoInitialTen,MPC_IAIICHegeCMD newHouse HONORABLE,"He claps the book closed, dust flitting up and into the air. ""To gain our support, you must prove yourself valiant and strong. You will pass our rites; Combat. You will prove your honor; dispatch those that have none. And you will prove yourself to Jerus."" he snickers behind a soft smile, turning to the disgruntled man beside him. ""I believe you will have to prove your willingness to battle the demons of Moloch. We *are* luddites, after all.""","MPC_honAristoInitialWhatInItForYou:""What's in this for you? Why are you willing to support me?""
 MPC_honAristoInitialWhyConvinceYou:""I'm assuming you two hold great power in the Alotera?""
 MPC_honAristoInitialEleven:""Very well. What do you want me to do?""",
 MPC_honAristoInitialWhatInItForYou,DialogOptionSelected,$option == MPC_honAristoInitialWhatInItForYou,RemoveOption MPC_honAristoInitialWhatInItForYou,"He nods. ""As you may have gathered, we have mixed opinions on the hegemony's involvement with the IAIIC. On one hand - it is righteous. These rumors, if true, are damning - a black mark on your soul, a tendril of mammon behind your subconcious.""
@@ -5449,15 +5480,15 @@ He raises a hand. ""But on the other; the hegemony weakens itself. Shows it's hy
 MPC_honAristoInitialWhyConvinceYou,DialogOptionSelected,$option == MPC_honAristoInitialWhyConvinceYou,RemoveOption MPC_honAristoInitialWhyConvinceYou,"His smile widens, and he nods. ""Halatius. Jerus, won't you introduce yourself?"" he turns to the grumpy man, who reluctantly grunts and begins a canned introduction. ""...Jerus Alotera... second patriarch of the Alotera house..."" Halatius kindly nods and returns to you. ""We are the two heads of the house. We decide what happens, where resources go... quite useful for someone like you, I'm sure.""",,
 MPC_honAristoInitialElevenNormal,DialogOptionSelected,$option == MPC_honAristoInitialEleven,"FireAll MPC_honAristoInitialEthosReactions
 FireAll MPC_honAristoInitialElevenNormalB","""Well...""",,
-MPC_honAristoInitialEthosReactionHonorable,MPC_honAristoInitialEthosReactions,$player.ethosHonorable >= 3,MPC_IAIICHegeCMD HONincrementHonor,"""Your honor is well known; we will not scorn you as much as we would otherwise."" Halatius - and reluctantly, Jenius - nod sagely.",,
-MPC_honAristoInitialElevenNormalB,MPC_honAristoInitialElevenNormalB,,,"""Firstly, the rite of combat. Jenius here - old fart he is -"" Jenius shoots the younger man a death glare. ""-hasn't had a good duel in ages. We can tell you more when asked.""
+MPC_honAristoInitialEthosReactionHonorable,MPC_honAristoInitialEthosReactions,$player.ethosHonorable >= 3,MPC_IAIICHegeCMD HONincrementHonor,"""Your honor is well known; we will not scorn you as much as we would otherwise."" Halatius - and reluctantly, Jerus - nod sagely.",,
+MPC_honAristoInitialElevenNormalB,MPC_honAristoInitialElevenNormalB,,,"""Firstly, the rite of combat. Jerus here - old fart he is -"" Jerus shoots the younger man a death glare. ""-hasn't had a good duel in ages. We can tell you more when asked.""
 ""Secondly, another tenet of our path is temperament. I would have you learn the values of meditation and silence, if you'd let me.""
-""Jenius? You have a few you'd like to share, don't you?"" the younger man turns to the older one, a knowing look cast. The man grumbles but eventually relents under immense visual pressure.
+""Jerus? You have a few you'd like to share, don't you?"" the younger man turns to the older one, a knowing look cast. The man grumbles but eventually relents under immense visual pressure.
 ""...I have a few things I'd like to see, yes."" he growls. ""The shattered form of a molochian servant. The bodies of our *traitors*."" he grinds his teeth. ""The traitorous dogs in the knights who cast us aside torn asunder with their flesh and-""
 
-""Thaaat's enough, Jenius."" The younger man scowls, pinching his arm, prompting a pained hiss and a welcome silence. ""He's... got some issues, $personLastName. Still; I have no qualms if you choose to pursue his ideas of honor. After all, he *is* my second-in-command, after all."" Jenius grumbles, clearly upset by the status of only being *second*.",MPC_honAristoInitialTwelve:Continue,
+""Thaaat's enough, Jerus."" The younger man scowls, pinching his arm, prompting a pained hiss and a welcome silence. ""He's... got some issues, $personLastName. Still; I have no qualms if you choose to pursue his ideas of honor. After all, he *is* my second-in-command, after all."" Jerus grumbles, clearly upset by the status of only being *second*.",MPC_honAristoInitialTwelve:Continue,
 MPC_honAristoInitialTwelve,DialogOptionSelected,$option == MPC_honAristoInitialTwelve,"AddTextSmall ""Recieved direct Alotera comm-keys"" good
-FireAll MPC_honAristoHubOpts","""With that out of the way, you will undoubtably find yourself off, completing the tasks we give you. So, to make this more convenient..."" the younger man leans in front of Jenius - whom grumbles - and transmits you a set of data keys. ""Use these; it will bypass our reception and connect you to us directly. I cannot guarantee we will be here at all times, but we can try."" he bows, clasping his chained hands together.
+FireAll MPC_honAristoHubOpts","""With that out of the way, you will undoubtably find yourself off, completing the tasks we give you. So, to make this more convenient..."" the younger man leans in front of Jerus - whom grumbles - and transmits you a set of data keys. ""Use these; it will bypass our reception and connect you to us directly. I cannot guarantee we will be here at all times, but we can try."" he bows, clasping his chained hands together.
 
 ""Now, would you like to get started?""",,
 #END Initial meeting with honroable,,,,,,
@@ -5481,7 +5512,7 @@ MPC_honAristoHalatiusPostHonorOptsEnough,MPC_honAristoHalatiusPostHonorOpts,MPC_
 ,,,,,,
 # Jerus Dialog,,,,,,
 MPC_honAristoJerusOpts,DialogOptionSelected,$option == MPC_honAristoJerusOpts,SetShortcut MPC_honAristoBackToHub ESCAPE,"You turn your gaze to the old-looking aristocrat, who grunts in annoyance.","MPC_honAristoJerusTaskOpts:Ask him about tasks
-MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoJerusDialogOpts:Ask him about himself (UNFINISHED)
 MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
 MPC_honAristoJerusTaskOpts,DialogOptionSelected,$option == MPC_honAristoJerusTaskOpts,FireAll MPC_honAristoJerusTaskOptsImpl,"He raises a brow and grunts. ""Your path will be arduous, slave to mammon."" He growls. ""But it will not be impossible.""
 
@@ -5493,7 +5524,7 @@ MPC_honAristoJerusTasksTraitors,MPC_honAristoJerusTaskOptsImpl,"!$player.MPC_did
 !$global.MPC_IAIICHegeHonKillingTraitor",,,"30:MPC_honAristoJerusTasksTraitorsSel:""...the traitorous knights, who cast us out...""",
 MPC_honAristoJerusTasksReturn,MPC_honAristoJerusTaskOptsImpl,,SetShortcut MPC_honAristoJerusTasksReturnSel ESCAPE,,"100:MPC_honAristoJerusTasksReturnSel:Thank him for his time, but don't take him up on anything (Back)",
 MPC_honAristoJerusTasksReturnSel,DialogOptionSelected,$option == MPC_honAristoJerusTasksReturnSel,SetShortcut MPC_honAristoBackToHub ESCAPE,He merely grunts.,"MPC_honAristoJerusTaskOpts:Ask him about tasks
-MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoJerusDialogOpts:Ask him about himself (UNFINISHED)
 MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
 MPC_honAristoJerusTaskAbort,DialogOptionSelected,$option == MPC_honAristoJerusTaskAbort,FireAll MPC_honAristoJerusTaskOptsImpl,He frowns.,,
 ,,,,,,
@@ -5539,7 +5570,7 @@ MPC_honAristoJerusTasksAICoreAcceptModify,MPC_honAristoJerusTasksAICoreAcceptMod
 SetTooltip MPC_honAristoJerusTasksAICoreAccept ""You have no alpha cores.""",,,
 MPC_honAristoJerusTasksAICoreAccept,DialogOptionSelected,$option == MPC_honAristoJerusTasksAICoreAccept,AdjustRepActivePerson VENGEFUL -5,"He gasps as he sees it, and then *hisses*. ""I knew it! You, servant of mammon, are NOTHING b-""",MPC_honAristoJerusTasksAICoreAcceptTwo:Draw your pistol,
 MPC_honAristoJerusTasksAICoreAcceptTwo,DialogOptionSelected,$option == MPC_honAristoJerusTasksAICoreAcceptTwo,,"You withdraw your magpistol, silencing the old man before you. You check its mag - loaded. Rack the slide - charged. Then, you aim, staring right at Jerus as you line it up.",MPC_honAristoJerusTasksAICoreAcceptThree:Fire,AdjustRepActivePerson COOPERATIVE 5
-MPC_honAristoJerusTasksAICoreAcceptThree,DialogOptionSelected,$option == MPC_honAristoJerusTasksAICoreAcceptThree,"AddRemoveAnyItem alpha_core 1
+MPC_honAristoJerusTasksAICoreAcceptThree,DialogOptionSelected,$option == MPC_honAristoJerusTasksAICoreAcceptThree,"AddRemoveAnyItem RESOURCES alpha_core 1
 PlaySound storyevent_diktat_execution","WIth a flash of pulsefire, the AI core explodes into a shower of debris. You wince as you feel bits of intelligent steel cut into your arms, the AI core's last ditch effort to fight back.
 
 Jerus, stunned, watches with bulging eyes and an awe-struck look.","MPC_honAristoJerusTasksAICoreAcceptFour:""I was never a servant of Mammon, Jerus. They are nothing to me.""","AdjustRepActivePerson COOPERATIVE 5
@@ -5601,7 +5632,7 @@ FireAll MPC_IAIICHegeHonIronDefectorSecondOpts","In an instant, $hisOrHer smile 
 
 $HeOrShe extends $hisOrHer arms wide. ""If you have any questions, you may ask. Otherwise, begone, and leave us - and our holy mission - in peace.""",,
 MPC_IAIICHegeHonIronDefectorHistorian,DialogOptionSelected,$option == MPC_IAIICHegeHonIronDefectorHistorian,FireAll MPC_IAIICHegeHonIronDefectorSecondOpts,"$HeOrShe initially scowls, but resolves into a nod. ""An explorer? Well, as long as you follow the teachings of Ludd, and respect our chains, you are welcome here.""",,
-MPC_IAIICHegeHonIronDefectorPather,DialogOptionSelected,$option == MPC_IAIICHegeHonIronDefectorLuddic,"AdjustRepActivePerson VENGEFUL -1
+MPC_IAIICHegeHonIronDefectorPather,DialogOptionSelected,$option == MPC_IAIICHegeHonIronDefectorPather,"AdjustRepActivePerson VENGEFUL -1
 FireAll MPC_IAIICHegeHonIronDefectorSecondOpts","$HisOrHer smile fades a bit. ""...curious. We do not recall this being a commonplace rumor across the path. Perhaps you were simply lucky?""",,
 MPC_IAIICHegeHonIronDefectorWhyLeaveOptAdder,MPC_IAIICHegeHonIronDefectorSecondOpts,!$MPC_askedWhyLeave,,,"10:MPC_IAIICHegeHonIronDefectorWhyLeaveAdder:""Why did you leave the iron path?""",
 MPC_IAIICHegeHonIronDefectorWhyLeaveAdder,DialogOptionSelected,$option == MPC_IAIICHegeHonIronDefectorWhyLeaveAdder,"$MPC_askedWhyLeave = true
@@ -5663,8 +5694,8 @@ He tells you about...",,
 MPC_honAristoHalatiusTasksDuel,MPC_honAristoHalatiusTaskOptsImpl,!$player.MPC_didHalatiusDuelTask,,,"10:MPC_honAristoHalatiusTasksDuelSel:""...a rite of combat that would prove your honor...""",
 MPC_honAristoHalatiusTasksMeditate,MPC_honAristoHalatiusTaskOptsImpl,!$player.MPC_didHalatiusMeditateTask,,,"20:MPC_honAristoHalatiusTasksMeditateSel:""...an opportunity to meditate, to learn more about yourself...""",
 MPC_honAristoHalatiusTasksReturn,MPC_honAristoHalatiusTaskOptsImpl,,SetShortcut MPC_honAristoHalatiusTasksReturnSel ESCAPE,,"100:MPC_honAristoHalatiusTasksReturnSel:Thank him for his time, but don't take him up on anything (Back)",
-MPC_honAristoHalatiusTasksReturnSel,DialogOptionSelected,$option == MPC_honAristoHalatiusTasksReturnSel,SetShortcut MPC_honAristoBackToHub ESCAPE,"He nods, smiling. ""Take your time.""","MPC_honAristoJerusTaskOpts:Ask him about tasks
-MPC_honAristoJerusDialogOpts:Ask him about himself
+MPC_honAristoHalatiusTasksReturnSel,DialogOptionSelected,$option == MPC_honAristoHalatiusTasksReturnSel,SetShortcut MPC_honAristoBackToHub ESCAPE,"He nods, smiling. ""Take your time.""","MPC_honAristoHalatiusTaskOpts:Ask him about tasks
+MPC_honAristoHalatiusDialogOpts:Ask him about himself (UNFINISHED)
 MPC_honAristoBackToHub:Bring your attention back to the both of the aristocrats (Back)",
 MPC_honAristoHalatiusTaskAbort,DialogOptionSelected,$option == MPC_honAristoHalatiusTaskAbort,FireAll MPC_honAristoHalatiusTaskOptsImpl,"He nods. ""Of course.""",,
 ,,,,,,
@@ -5733,10 +5764,10 @@ $player.MPC_previouslyFailedHalatiusDuel score:20",,"""Do you wish to attempt th
 MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
 MPC_honAristoHalatiusTasksDuelSelRepairing,DialogOptionSelected,"$option == MPC_honAristoHalatiusTasksDuelSel
 $global.MPC_halatiusDuelRepairing score:50",RemoveOption MPC_honAristoHalatiusTasksDuelSel,"Halatius seems to wince for a moment. ""Ah, Captain... sorry, but after your defeat, we've had to requester our vessels to a shipyard for repairs. Shouldn't be too long - a few weeks at most. Perhaps you could take another task in the meantime?"" He smiles sympathetically.",,
-MPC_honAristoHalatiusTasksDuelTwo,DialogOptionSelected,$option == MPC_honAristoHalatiusTasksDuelTwo,$player.MPC_heardJeniusCanPilotAfflictor,"""Two afflictors, each fitted with an array of mortars and a strike weapon, as well as various other modifications. If you're truely the pilot I've heard about, Captain..."" he clicks his tongue. ""...I believe Jenius would be quite happy to test your mettle.""","MPC_honAristoHalatiusDuelAccept:Accept
+MPC_honAristoHalatiusTasksDuelTwo,DialogOptionSelected,$option == MPC_honAristoHalatiusTasksDuelTwo,$player.MPC_heardJerusCanPilotAfflictor,"""Two afflictors, each fitted with an array of mortars and a strike weapon, as well as various other modifications. If you're truely the pilot I've heard about, Captain..."" he clicks his tongue. ""...I believe Jerus would be quite happy to test your mettle.""","MPC_honAristoHalatiusDuelAccept:Accept
 MPC_honAristoHalatiusTaskAbort:""Not now."" (BACK)",
 MPC_honAristoHalatiusDuelAccept,DialogOptionSelected,"$option == MPC_honAristoHalatiusDuelAccept
-!$player.MPC_previouslyFailedHalatiusDuel",,"""Wonderful!"" he claps his hands together and glances over to Jenius, who has been rigorously pretending not to listen. ""Jenius - our friend here would like to invoke the rite of steel. Do you accept?"" he smiles, knowing his response. And of course, Jenius nods; turning to face you and glare intensely.
+!$player.MPC_previouslyFailedHalatiusDuel",,"""Wonderful!"" he claps his hands together and glances over to Jerus, who has been rigorously pretending not to listen. ""Jerus - our friend here would like to invoke the rite of steel. Do you accept?"" he smiles, knowing his response. And of course, Jerus nods; turning to face you and glare intensely.
 
 With the smallest of smiles, he hisses, ""I will meet you in orbit. Come to these coordinates; face me in warfare, and we will see how true the rumors are."" True to his word, your $shipOrFleet quickly receives a set of coordinates in Eventide orbit. And predictably, a pair of afflictors are already being towed into place, a small cordon being set to dissuade civilian traffic and spectatorship.
 
@@ -5787,15 +5818,17 @@ The duel over, the victor decided, you choose to ask him about...",,
 "# Once your honor is maxed, invited in for a final rite",,,,,,
 ,,,,,,
 "# Introductions - come here, etc.",,,,,,
-MPC_honAristoFinalInitFromHalatiusTask,DialogOptionSelected,$option == MPC_honAristoFinalInitFromHalatiusTask,,"Halatius promptly claps his hands together, his smile widening. ""Well, Captain. This was fun! I've seen a lot of growth in you, I'll tell you what. In my eyes, at least, you are... strong. Poweful. Decent-of-heart."" he giggles. ""As for Jerus? You wouldn't believe the smiles I've seen across his face. He seems... happy, for once."" his expression softens, his eyes glancing off. ""...thank you, Captain. I was getting worried his... rage, might consume him. At least now, it's... better.""
+MPC_honAristoFinalInitFromHalatiusTask,DialogOptionSelected,$option == MPC_honAristoFinalInitFromHalatiusTask,"AddTextSmall ""It may be wise to save your game before continuing"" bad","Halatius promptly claps his hands together, his smile widening. ""Well, Captain. This was fun! I've seen a lot of growth in you, I'll tell you what. In my eyes, at least, you are... strong. Poweful. Decent-of-heart."" he giggles. ""As for Jerus? You wouldn't believe the smiles I've seen across his face. He seems... happy, for once."" his expression softens, his eyes glancing off. ""...thank you, Captain. I was getting worried his... rage, might consume him. At least now, it's... better.""
 He stares at the desk for an uncomfortable amount of time, before glancing back. ""-I believe it's time we finish this little game of ours."" He bows graciously. ""Come visit us, Captain. There, your final judgement will be rendered, and it will be determined if you truely have walked our path.""
 
-And with that, the commlink dies, shut off from their end. It would seem you've done it, proven your ""honor"" (or, whatever this was) and earned an audience. Seal the deal.","MPC_honAristoFinalInit:Board a shuttle, and depart
+And with that, the commlink dies, shut off from their end. It would seem you've done it, proven your ""honor"" (or, whatever this was) and earned an audience. Seal the deal.","MPC_honAristoFinalInitShuttle:Board a shuttle, and depart
 MPC_honAristoFinalInitFromHonorAbort:Maybe later - this may take some time",
-MPC_honAristoFinalInitFromJerusTask,DialogOptionSelected,$option == MPC_honAristoFinalInitFromJerusTask,,"""...the time has come, Starfarer."" Jerus mumbles. Before you can ask the time for *what*, he continues: ""Me and Halatius have made a decision. You. Are to meet us on the surface. There, *servant of Mammon*-"" you notice a lack of outright malice in his voice- ""-we will render our final, crushing verdict, on your soul. And then - and only then - may your trial end.""
+MPC_honAristoFinalInitFromJerusTask,DialogOptionSelected,$option == MPC_honAristoFinalInitFromJerusTask,"AddTextSmall ""It may be wise to save your game before continuing"" bad","""...the time has come, Starfarer."" Jerus mumbles. Before you can ask the time for *what*, he continues: ""Me and Halatius have made a decision. You. Are to meet us on the surface. There, *servant of Mammon*-"" you notice a lack of outright malice in his voice- ""-we will render our final, crushing verdict, on your soul. And then - and only then - may your trial end.""
 
-He stands up straight, staring down at you. ""You will recieve coordinates. You will follow."" And with that, the commlink dies. Ominous. Seems it's time for your ""final judgement"", whatever that is. Though, you can't imagine it'll be too bad - after all, Jerus was barely holding back a smile during his entire monologue. ","MPC_honAristoFinalInit:Board a shuttle, and depart
+He stands up straight, staring down at you. ""You will recieve coordinates. You will follow."" And with that, the commlink dies. Ominous. Seems it's time for your ""final judgement"", whatever that is. Though, you can't imagine it'll be too bad - after all, Jerus was barely holding back a smile during his entire monologue. ","MPC_honAristoFinalInitShuttle:Board a shuttle, and depart
 MPC_honAristoFinalInitFromHonorAbort:Maybe later - this may take some time",
+MPC_honAristoFinalInitFromHonorAbort,DialogOptionSelected,$option == MPC_honAristoFinalInitFromHonorAbort,"ShowDefaultVisual
+EndConversation",You cut the comm link.,,
 MPC_honAristoRevisitEnoughHonor,PickGreeting,"$id == MPC_hegeAristoMoralistRep score:1000
 MPC_IAIICHegeCMD HONstateIs GOT_ENOUGH_HONOR score:5
 !$temporarilyIgnoreYou","FireBest MPC_honAristoRevisitEnoughHonorImpl
@@ -5963,13 +5996,16 @@ MPC_honAristoFinalDuelRoomSkilledImpl,MPC_honAristoFinalDuelRoomSkilledImpl,,Fir
 You turn back to Halatius, who looks shocked - before positively *beaming*. ""I'm so glad to hear it, Captain.""",,
 MPC_honAristoFinalDuelRoomNotSkilled,DialogOptionSelected,$option == MPC_honAristoFinalDuelRoomNotSkilled,FireBest MPC_honAristoFinalDuelRoomPhaseTwo,,,
 MPC_honAristoFinalDuelRoomPhaseTwo,MPC_honAristoFinalDuelRoomPhaseTwo,,"MPC_IAIICHegeCMD HONbeginDuelPrep
-FireAll MPC_honAristoDuelPrepOpts","""...the rules are simple. You strike the enemy until they stop moving. The only specification is that you must use standard dueling stance. If you don't know what that is, that's fine - just copy your opponent. If he strikes, you move your sword to block. Here - "" he nods to the rack. We can practice, if you'd like. Otherwise... I believe the crowd is waiting.",,
+FireAll MPC_honAristoDuelPrepOpts
+AddTextSmall ""Failing this duel will ruin your chances to separate the Hegemony and the IAIIC"" bad","""...the rules are simple. You strike the enemy until they stop moving. The only specification is that you must use standard dueling stance. If you don't know what that is, that's fine - just copy your opponent. If he strikes, you move your sword to block. Here - "" he nods to the rack. We can practice, if you'd like. Otherwise... I believe the crowd is waiting.",,
 MPC_honAristoDuelPrepDuel,MPC_honAristoDuelPrepOpts,,,,"10:MPC_honAristoDuelPrepBeginSel:""I'm ready.""",
 MPC_honAristoDuelPrepTutorial,MPC_honAristoDuelPrepOpts,,,,"20:MPC_honAristoDuelPrepTutorialSel:""How about a warmup?"" (Begin dueling tutorial)",
 MPC_honAristoDuelPrepWasDramatic,MPC_honAristoDuelPrepOpts,!$saidDramatic,,,"30:MPC_honAristoDuelPrepWasDramaticSel:""This 'rite of exordium' - it's quite dramatic. Why not just help me outright? I've proven myself.""",
 MPC_honAristoDuelPrepIsJerusOk,MPC_honAristoDuelPrepOpts,"$saidDramatic
 !$askedAboutJerus",,,"30:MPC_honAristoDuelPrepIsJerusOkSel:""I noticed quite a few 'honorable tasks' were merely running errands for Jerus, or related.""",
 MPC_honAristoDuelPrepIsDeath,MPC_honAristoDuelPrepOpts,!$askedIsDeath,,,"40:MPC_honAristoDuelPrepIsDeathSel:""Is this really a fight to the death?""",
+#MPC_honAristoDuelPrepSave,MPC_honAristoDuelPrepOpts,,,,50:MPC_honAristoDuelPrepSaveSel:(Save your game),
+MPC_honAristoDuelPrepSaveSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepSaveSel,MPC_IAIICHegeCMD HONforceSave,,,
 MPC_honAristoDuelPrepTutorialSel,DialogOptionSelected,$option == MPC_honAristoDuelPrepTutorialSel,"niko_MPC_musicToggle """" true
 MPC_IAIICHegeCMD HONbeginDuelTutorial","Halatius smiles. ""Of course!"" He then picks up a rapier, tosses you one, and assumes standard dueling stance. ""Once we're done - maybe, heh. Maybe you'll be ready?""",,
 MPC_IAIICHonTutorialDuelFinished,MPC_IAIICHonTutorialDuelFinished,,"niko_MPC_musicToggle """" false
@@ -6125,7 +6161,7 @@ It might be wise to never return.",,
 # COMSEC interception after the second house,,,,,,
 MPC_IAIICHegeCOMSECInterc,DialogOptionSelected,$option == MPC_IAIICHegeCOMSECInterc,BeginConversation MPC_hegeIntsecGoon,"Your communication panel desperately tries to cling to the now-obfuscated commlink, fighting through layers of encryption and proxy-stations to locate it's source. And, finally, after what feels like an eternity, it does so.
 
-An unfamiliar man sits across from you, likely on the other side of the planet. ""Hello, $PlayerFirstName. Think we should have a little *chat*.""",MPC_IAIICHegeCOMSECIntercTwo:Continue,
+An unfamiliar man sits across from you, likely on the other side of the planet. ""Hello, $PlayerName. Think we should have a little *chat*.""",MPC_IAIICHegeCOMSECIntercTwo:Continue,
 MPC_IAIICHegeCOMSECIntercTwo,DialogOptionSelected,$option == MPC_IAIICHegeCOMSECIntercTwo,,"""It has come to our *attention* that something... strange, is happening on eventide. Spontanious civil unrest amongst the aristocracy, strangely shifting 'opinions'..."" he takes a mirthful appearance and shrugs. ""Things a faction should, frankly, never say... they're *saying it*. And all-the-while, you run about the sector, back and forth from eventide, either in our space or without, but always returning here...""
 
 He leans in, eyes like fire. ""Care to explain how you're involved?""","MPC_IAIICHegeCOMSECIntercDenyInv:""Not at all, Sir. I have business here, and elsewhere. The responsibilities of being in a war..."" (Lie)
@@ -6413,10 +6449,10 @@ MPC_IAIICBKRepInitialOfferPay,DialogOptionSelected,$option == MPC_IAIICBKRepInit
 
 Despite her seemingly belligerent stance, though, you detect a hint of ingenuity as her expression drifts into something like thoughtfulness. ""...maybe... nh..."" she mumbles, narrowing her eyes.","MPC_IAIICBKRepInitialAskWhatsUp:""Thinking of something?""",
 MPC_IAIICBKRepInitialAskWhatsUp,DialogOptionSelected,$option == MPC_IAIICBKRepInitialAskWhatsUp,,"Your question catches her attention, prompting the humorously belligerent wall to be rebuilt - but with a few cracks. ""Awgh, naw. Just thinking about how best tah breach your arcologies and kill ya citizens."" she snickers. ""No.""","MPC_IAIICBKRepInitialAskWhatsUpTwo:""If you have something on your mind, maybe I can help you with it.""",
-MPC_IAIICBKRepInitialAskWhatsUpTwo,DialogOptionSelected,$option == MPC_IAIICBKRepInitialAskWhatsUpTwo,"SetTextHighlights ""Jenius""
+MPC_IAIICBKRepInitialAskWhatsUpTwo,DialogOptionSelected,$option == MPC_IAIICBKRepInitialAskWhatsUpTwo,"SetTextHighlights ""Jerus""
 MPC_IAIICIndieCMD blackknifeGenTargetFleet","She snorts, rolling her eyes. ""Hah! Nothin' like that."" she mumbles, reaching for the privacy-link switch and hitting it, causing a momentary glitch as the commlink goes private.
 
-Instantly, her visage drops from a cocky grin to a annoyed scowl. ""-just thinkin' of that *bitch* on Salamanca that screwed us big-style. Yaknow, we used to have a much better navy-"" she spits, again. ""-but then that *worm* Jenius ratted us out to a PL patrol. After that..."" she scowls, thinking off to some disastrous battle.
+Instantly, her visage drops from a cocky grin to a annoyed scowl. ""-just thinkin' of that *bitch* on Salamanca that screwed us big-style. Yaknow, we used to have a much better navy-"" she spits, again. ""-but then that *worm* Jerus ratted us out to a PL patrol. After that..."" she scowls, thinking off to some disastrous battle.
 
 this is definitely rushed, TODO",MPC_IAIICBKRepInitialAskWhatsUpThree:Continue,
 MPC_IAIICBKRepInitialAskWhatsUpThree,DialogOptionSelected,$option == MPC_IAIICBKRepInitialAskWhatsUpThree,"SetTextHighlights $global.MPC_IAIICBKTargetSysName

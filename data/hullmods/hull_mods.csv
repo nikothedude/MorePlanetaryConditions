@@ -19,6 +19,11 @@ Accelerated Particle Drivers,niko_MPC_acceleratedParticleDrivers,,,,hide_in_code
 Missile Carrier,MPC_missileCarrier,,,,"codex_unlockable, no_drop, restricted",,,,TRUE,,0,0,0,0,data.hullmods.MPC_missileCarrier,"This vessel is a home to a %s autofactory, enabling its use as both a frighteningly effective combat vessel and a terrifyingly effective strategic weapon.
 
 Enables the use of the %s ability.",,,graphics/hullmods/assault_package.png
+Modular Automation - Enabled,MPC_toggleAutomationEnabled,,,,"hide_in_codex, no_drop, restricted",,,,TRUE,,0,0,0,0,data.hullmods.MPC_toggleableAutomation,This vessel has been automated in a way such that it is possible to change its automation status with minimal fuss.,,,graphics/hullmods/MPC_automationEnabled.png
+    Enabled Automation Handler,MPC_toggleAutomationEnabledHandler,,,,"hide_in_codex, no_drop, restricted",,,,TRUE,TRUE,0,0,0,0,data.hullmods.MPC_toggleableAutomationHandler,,,,graphics/hullmods/MPC_automationEnabled.png
+Modular Automation - Disabled,MPC_toggleAutomationDisabled,,,,"hide_in_codex, no_drop, restricted",,,,TRUE,,0,0,0,0,data.hullmods.MPC_toggleableAutomation,This vessel has been automated in a way such that it is possible to change its automation status with minimal fuss.,,,graphics/hullmods/MPC_automationDisabled.png
+    Disabled Automation Handler,MPC_toggleAutomationDisabledHandler,,,,"hide_in_codex, no_drop, restricted",,,,TRUE,TRUE,0,0,0,0,data.hullmods.MPC_toggleableAutomationHandler,,,,graphics/hullmods/MPC_automationDisabled.png
+,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,
 Exotic Phase Coils,MPC_exoticPhaseCoils,,,,"no_drop, restricted, hide_in_codex",,,FALSE,TRUE,,0,0,0,0,data.hullmods.MPC_exoticPhaseCoils,"This ship is host to phase coils not derived from any known specs, and operates on a phase level dissimilar to any other phase field you've come across.
 

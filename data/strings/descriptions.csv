@@ -198,12 +198,9 @@ MPC_ultimaSingularity,PLANET,"The result of the apocalyptic collapse of a massiv
 Your sensors report exotic phase readings eminating from the core of the singularity. It is unlike anything you, or any scientist in the sector, for that matter, has ever seen before. To make matters worse, this SHOULD be an impossibility - nothing can escape the event horizon of a black hole. And yet, here you are, listening to whining phase oscillation.
 ",,,
 ,,,,,
-MPC_IAIIC,FACTION,"Officially a collection of independant polities ""concerned"" with unregulated AI use in frontier space, the IAIIC is little more than a proxy state controlled by numerous major factions, your IntSec suggests. They engage in limited diplomacy or even trade with any faction not your own, and the extent of that diplomacy is often demands for access to your space or polite threats of ""disciplinary action"".
+MPC_IAIIC,FACTION,"Officially a collection of independant polities ""concerned"" with unregulated AI use in frontier space, the IAIIC (pronounced 'ike') is little more than a proxy state controlled by numerous major factions, your IntSec suggests. They engage in limited diplomacy or even trade with any faction not your own, and the extent of that diplomacy is often demands for access to your space or polite threats of ""disciplinary action"".
 
-The ""article"" they so enjoy citing is Section 15::52 of the 29th Domain Expansion Charter, which provides provisionary power to any independant party to stomp out rogue AI use in fringe sectors. It's wording is incredibly loose and flowery, and clearly was never meant to be used this way - but no factions have raised their hands in protest.
-
-
-",,,
+The ""article"" they so enjoy citing is Section 15::52 of the 29th Domain Expansion Charter, which provides provisionary power to any independant party to stomp out rogue AI use in fringe sectors. It's wording is incredibly loose and flowery, and clearly was never meant to be used this way - but no factions have raised their hands in protest.",,,
 MPC_IAIICFOB,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure. Bristling with weapon emplacements, launchbays, and hull reinforcements, this hulking installation represents the combined efforts of the sector at large to put you down. It's up for you to determine if their efforts will be successful or not.",,"Patrols are everpresent around Ark FOB, with civilian traffic a rarity at best. It's hull is pockmarked with countless weapons and sensor installations, all keeping a close eye on anything that comes too close.",
 MPC_IAIICFOBDecivved,CUSTOM,"A truely gargantuan station, Ark FOB is what modern military analyists call a ""static command structure"" - a highly fortified and militarized compound with no mind paid to civilian infrastructure.
 

@@ -42,6 +42,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
     companion object {
         fun getAlphaSite(): StarSystemAPI = Global.getSector().getStarSystem("Unknown Location")
+        fun getAloofRep(): PersonAPI = Global.getSector().importantPeople.getPerson(MPC_People.HEGE_ARISTO_DEFECTOR)
 
         fun get(withUpdate: Boolean = false): MPC_hegemonyContributionIntel? {
             if (withUpdate) {
@@ -198,10 +199,22 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             }
         },
         ELIMINATE_TARGET_FINISHED {
-
+            override fun apply() {
+                getAloofRep().memoryWithoutUpdate.unset("\$temporarilyIgnoreYou")
+            }
         },
         CREATE_SCAPEGOAT {
+            override fun apply() {
+                super.apply()
 
+                Global.getSector().economy.getMarket("jangala")?.primaryEntity?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+            }
+
+            override fun unapply() {
+                super.unapply()
+
+                Global.getSector().economy.getMarket("jangala")?.primaryEntity?.makeUnimportant(niko_MPC_ids.IAIIC_QUEST)
+            }
         },
         INSERT_EVIDENCE {
 
@@ -359,7 +372,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         val loc = getAlphaSite()
         val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
 
-        val combat = (Global.getSector().playerFleet.fleetPoints * 0.8f).coerceAtLeast(50f).coerceAtMost(600f)
+        val combat = (Global.getSector().playerFleet.fleetPoints * 0.4f).coerceAtLeast(50f).coerceAtMost(200f)
 
         val params = FleetParamsV3(
             Global.getSector().playerFleet.locationInHyperspace,
@@ -379,7 +392,6 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         params.maxShipSize = 2
         params.aiCores = OfficerQuality.AI_OMEGA
 
-        val omega = Global.getSector().getFaction(Factions.OMEGA)
         val fleet = FleetFactoryV3.createFleet(params)
 
         fleet.memoryWithoutUpdate.set("\$genericHail", true)
@@ -425,6 +437,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     var cooldownActive = false
     var cooldownDays = IntervalUtil(30f, 30f)
     var aloofTimer: Float? = null
+
+    init {
+        Global.getSector().addScript(this)
+    }
 
     override fun getIcon(): String {
         return Global.getSector().getFaction(Factions.HEGEMONY).crest
@@ -750,8 +766,6 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         return Global.getSector().getFaction(Factions.HEGEMONY)
     }
 
-    fun getAloofRep(): PersonAPI = Global.getSector().importantPeople.getPerson(MPC_People.HEGE_ARISTO_DEFECTOR)
-
     override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
         if (info == null) return
         info.addImage(factionForUIColors.logo, width, 128f, 10f)
@@ -931,7 +945,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                             }
                             AloofState.CREATE_SCAPEGOAT -> {
                                 info.addPara(
-                                    "Aleratus has hatched a plan; infiltrate her sister's villa and insert evidence in hard-to-reach places " +
+                                    "Aleratus has hatched a plan; infiltrate her brother's villa and insert evidence in hard-to-reach places " +
                                     "to frame him for the data heists, and as a traitor.",
                                     5f
                                 )
@@ -947,7 +961,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                     "get the Youns to turn traitor.",
                                     5f,
                                     Misc.getHighlightColor(),
-                                    "Orthus"
+                                    "Orthus", "Eventide"
                                 )
                             }
                             AloofState.FINALIZE -> {
@@ -1176,6 +1190,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         super.notifyEnded()
 
         Global.getSector().memoryWithoutUpdate[KEY] = null
+        Global.getSector().removeScript(this)
     }
 
     override fun advanceImpl(amount: Float) {

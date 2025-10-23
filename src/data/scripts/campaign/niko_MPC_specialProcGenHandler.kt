@@ -198,6 +198,7 @@ object niko_MPC_specialProcGenHandler {
 
         val terrain = picked.terrainCopy
         val stars = picked.planets.filter { it.isStar }
+        var addedRing = false
         for (star in stars) {
             if (star.isBlackHole) continue
             if (!terrain.any { it.type == Terrain.MAGNETIC_FIELD && it.orbitFocus == star }) {
@@ -226,7 +227,7 @@ object niko_MPC_specialProcGenHandler {
                 magfield.setCircularOrbit(star, 0f, 0f, 100f)
             }
 
-            if (!terrain.any { (it.type == Terrain.ASTEROID_BELT || it.type == Terrain.RING) && it.orbitFocus == star }) {
+            if (!addedRing && !terrain.any { (it.type == Terrain.ASTEROID_BELT || it.type == Terrain.RING) && it.orbitFocus == star }) {
                 val ring = picked.addRingBand(
                     star,
                     "misc",
@@ -242,6 +243,7 @@ object niko_MPC_specialProcGenHandler {
                 )
                 ring.setLocation(star.location.x, star.location.y)
                 ring.setCircularOrbit(star, 0f, 0f, 200f)
+                addedRing = true
             }
         }
 
@@ -410,6 +412,8 @@ object niko_MPC_specialProcGenHandler {
         newVariant.hullVariantId = Misc.genUID()
         member.setVariant(newVariant, false, false)
         newVariant.addPermaMod(HullMods.AUTOMATED)
+        newVariant.addMod("MPC_toggleAutomationEnabled")
+        newVariant.addPermaMod("MPC_toggleAutomationEnabledHandler")
         newVariant.addPermaMod(HullMods.AUXILIARY_THRUSTERS, true)
         newVariant.addPermaMod(HullMods.REINFORCEDHULL, true)
         newVariant.addTag(Tags.VARIANT_ALWAYS_RECOVERABLE)

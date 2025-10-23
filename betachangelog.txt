@@ -1,3 +1,16 @@
+0.0.5
+
+Ark FOB is now a star citadel if AOTD
+    Else, now lowtech starforts
+    Hightech starforts suck to fight, lmao
+
+Buffed arrow pather condition
+    Now gives much faster build speed, now gives way more defense rating after transfer
+
+Fixed pather questline
+    Also, the pather rep now tells you what conditions are not satisfied
+Fixed parts of hege questline
+
 0.0.4
 
 Luddic questline in progress

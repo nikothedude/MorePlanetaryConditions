@@ -262,6 +262,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
 
+        // somewhere in here is the rep loss sound on new game
+
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.OMAN_BOMBARD_COST_ID] = niko_MPC_settings.OMAN_BOMBARD_COST
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DELAYED_REPAIR_TIME_ID] = niko_MPC_settings.DELAYED_REPAIR_TIME
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PATHER_SECT_NAME] = SECT_NAME
@@ -390,6 +392,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     }
 
     override fun onNewGameAfterEconomyLoad() {
+        // not the cause of the rep loss sound
+
         super.onNewGameAfterEconomyLoad()
         if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) {
             niko_MPC_satelliteUtils.obliterateSatellites()

@@ -43,6 +43,7 @@ import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitari
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.IAIIC_QUEST
+import data.utilities.niko_MPC_marketUtils.isInhabited
 import org.magiclib.kotlin.getFactionMarkets
 import org.magiclib.kotlin.getSourceMarket
 import org.magiclib.kotlin.getStationIndustry
@@ -118,7 +119,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
                 if (!intel.factionContributions.any { it.factionId == Factions.HEGEMONY }) return false
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_didInitialDaudMeet")) return false
-                //if (!market.isFractalMarket()) return false
+                if (Global.getSector().economy.getMarket("eventide")?.isInhabited() != true) return false
                 return true
             }
 
@@ -173,7 +174,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             "createIntel" -> {
                 val intel = MPC_hegemonyContributionIntel.get(true)
                 Global.getSector().importantPeople.getPerson(People.DAUD).makeUnimportant(IAIIC_QUEST)
-                Global.getSector().economy.getMarket("eventide").primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                Global.getSector().economy.getMarket("eventide").primaryEntity.makeImportant(IAIIC_QUEST)
                 intel?.sendUpdateIfPlayerHasIntel("Rumors of involvement", dialog.textPanel)
             }
 
@@ -469,7 +470,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             }
             "HONforceSave" -> {
                 val campaignUI = Global.getSector().campaignUI ?: return false
-                campaignUI.cmdSaveCopy()
+                //campaignUI.cmdSave()
             }
             "HONfuckingDie" -> {
                 val campaignUI = Global.getSector().campaignUI ?: return false
@@ -490,15 +491,14 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             }
             "HONbeginKillingTraitor" -> {
                 val hesp = Global.getSector().economy.getMarket("hesperus")
-                hesp.primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                hesp.primaryEntity.makeImportant(IAIIC_QUEST)
 
                 val intel = MPC_hegemonyContributionIntel.get() ?: return false
                 intel.sendUpdateIfPlayerHasIntel("MPC_IAIICHegeHonKillingTraitor", dialog.textPanel)
             }
             "HONgetTargetPather" -> {
                 var intelRaw: List<LuddicPathBaseIntel> = Global.getSector().intelManager.getIntel(LuddicPathBaseIntel::class.java) as List<LuddicPathBaseIntel>
-                var intel = intelRaw
-                intel = intelRaw.filter { !it.market.starSystem.isEnteredByPlayer }
+                var intel = intelRaw.filter { !it.market.starSystem.isEnteredByPlayer }
                 if (intel.isEmpty()) intel = intelRaw
                 val manager = LuddicPathBaseManager.getInstance()
                 if (intel.isEmpty()) {
@@ -554,7 +554,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
                 target.primaryEntity.customDescriptionId = "MPC_IAIICIronPathDefectorMkt"
 
-                target.primaryEntity.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+                target.primaryEntity.makeImportant(IAIIC_QUEST)
                 var admin = target.admin
                 if (admin == null || admin.name.first == "") {
                     admin = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()

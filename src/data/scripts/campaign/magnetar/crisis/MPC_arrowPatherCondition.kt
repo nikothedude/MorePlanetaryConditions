@@ -14,7 +14,7 @@ class MPC_arrowPatherCondition: niko_MPC_baseNikoCondition() {
         const val INDUSTRY_INCREMENT = 1f
         const val INCOME_MULT = 0.25f
 
-        const val CONSTRUCTION_PERCENT = 0.5f // construction is jumpstarted to this percent
+        const val CONSTRUCTION_PERCENT = 0.6f // construction is jumpstarted to this percent
     }
 
     override fun apply(id: String) {
@@ -39,8 +39,9 @@ class MPC_arrowPatherCondition: niko_MPC_baseNikoCondition() {
                     }
                 }
             }
+            val minPercentProgress = (CONSTRUCTION_PERCENT)
             val minProgress = (buildTime * CONSTRUCTION_PERCENT)
-            if (castedIndustry.buildOrUpgradeProgress < minProgress) {
+            if (castedIndustry.buildOrUpgradeProgress < minPercentProgress) {
                 castedIndustry.buildProgress = minProgress
             }
         }
@@ -76,5 +77,11 @@ class MPC_arrowPatherCondition: niko_MPC_baseNikoCondition() {
             Misc.getNegativeHighlightColor(),
             "${INCOME_MULT}x"
         )
+
+        tooltip.addPara(
+            "You could, of course, use their manpower to rapidly build a colony, then remove them with a marine raid...",
+            10f,
+            Misc.getNegativeHighlightColor()
+        ).color = Misc.getGrayColor()
     }
 }
