@@ -189,15 +189,24 @@ class niko_MPC_magnetarStarScript(
     }
 
     fun doPulse() {
-        val color = niko_MPC_magnetarPulse.BASE_COLOR
-        val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(magnetar.containingLocation, magnetar.location, 500f, 2f, color = color)
+        //val color = MPC_magnetarPulseTerrain.BASE_COLOR
+        val lastPlanet = magnetar.containingLocation.planets.maxBy { MathUtils.getDistance(magnetar, it) }
+        val dist = MathUtils.getDistance(magnetar, lastPlanet) * 0.9f
+        val maxEffectDist = magnetar.radius
+        val params = MPC_magnetarPulseTerrain.MPC_magnetarPulseParams(
+            dist,
+            maxEffectDist,
+            10f,
+            magnetar,
+            speed = 1000f,
+            startingRange = 500f
+        )
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
         params.explosionDisruptionMult = 0.7f
-        val explosion = magnetar.containingLocation.addCustomEntity(
-            Misc.genUID(), "Ionized Pulse",
-            "MPC_magnetarPulse", Factions.NEUTRAL, params
+        val explosion = MPC_magnetarPulseTerrain.createPulse(
+            magnetar,
+            params
         )
-        explosion.setLocation(magnetar.location.x, magnetar.location.y)
     }
 
     override fun reportFleetJumped(fleet: CampaignFleetAPI?, from: SectorEntityToken?, to: JumpDestination?) {

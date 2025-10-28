@@ -3,13 +3,14 @@ package data.scripts.campaign.magnetar
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.impl.campaign.terrain.RangeBlockerUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.MPC_magnetarPulseTerrain.Companion.SHIELDS_FROM_TAG
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 import kotlin.arrayOf
 import kotlin.math.*
 import kotlin.math.roundToInt
 
-class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
+class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float, var blockingTag: String) {
 
     //	private LocationAPI location;
     //	private SectorEntityToken entity;
@@ -94,7 +95,9 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
 
         isAnythingShortened = false
 
-        for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
+        if (blockingTag == null) blockingTag = SHIELDS_FROM_TAG
+
+        for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(blockingTag)) {
             if (iterEntity == entity || iterEntity == exclude) continue
             val dist = Misc.getDistance(entity.location, iterEntity.location)
             if (dist > maxRange) continue
@@ -103,7 +106,7 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
             graceRadius = 0f
             graceRadius = iterEntity.radius + 100f
             var span = Misc.computeAngleSpan(iterEntity.radius + graceRadius, dist)
-            if (iterEntity.hasTag("MPC_magnetarShield")) {
+            if (iterEntity.hasTag(blockingTag)) {
                 span = span.coerceAtLeast(8f)
             }
 

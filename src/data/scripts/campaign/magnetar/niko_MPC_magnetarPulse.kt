@@ -20,6 +20,7 @@ import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.campaign.magnetar.MPC_magnetarPulseTerrain.Companion.SHIELDS_FROM_TAG
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
@@ -34,6 +35,7 @@ import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.rotateAroundOrigin
 import java.awt.Color
 
+@Deprecated("use the pulse terrain instead")
 class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     companion object {
@@ -91,7 +93,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         initialShockwaveDuration = castedParams.shockwaveDuration
         shockwaveDuration = castedParams.shockwaveDuration
         noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.15f)
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
 
         for (particle in particles) {
             particle.maxDur = shockwaveDuration
@@ -554,7 +556,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
 
     override fun onGameLoad() {
         sprite = getSprite()
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
     }
 
     fun getSprite(): SpriteAPI = Global.getSettings().getSprite("misc", "nebula_particles")

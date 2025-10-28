@@ -71,7 +71,7 @@ class MPC_energyField: BaseRingTerrain() {
     }
 
     fun getFurthestField(): MPC_energyFieldInstance? {
-        return getFields().sortedBy { it.over.middleRadius }.lastOrNull()
+        return getFields().maxByOrNull { it.over.middleRadius }
     }
 
     override fun hasTooltip(): Boolean {

@@ -47,6 +47,10 @@
 		# inside active aurora/magnetic storm
 		"loopTwo":"terrain_magstorm",
 	},
+    "MPC_magnetarPulseTerrain":{
+        "plugin":"data.scripts.campaign.magnetar.MPC_magnetarPulseTerrain",
+        "musicSuppression":0.0
+      },
 	"MPC_energyField":{
 		"plugin":"data.scripts.campaign.singularity.MPC_energyField",
 		"musicSuppression":0.0,

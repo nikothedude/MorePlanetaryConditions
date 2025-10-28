@@ -16,6 +16,7 @@ import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.listeners.niko_MPC_saveListener
+import data.scripts.campaign.magnetar.MPC_magnetarPulseTerrain.Companion.SHIELDS_FROM_TAG
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerExposedToMagnetarCore
 import data.scripts.campaign.terrain.niko_MPC_scannableTerrain
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
@@ -50,7 +51,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             name = "Magnetar Field"
         }
         Global.getSector().listenerManager.addListener(this)
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
     }
 
     override fun advance(amount: Float) {
@@ -311,7 +312,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     @Transient
     var blockerUtil: MPC_rangeBlockerWithEnds? = null
         get() {
-            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f)
+            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
             return field
         }
     fun isProtected(location: Vector2f): Boolean {
@@ -478,7 +479,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     }
 
     override fun onGameLoad() {
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
     }
 
     override fun afterGameSave() {
