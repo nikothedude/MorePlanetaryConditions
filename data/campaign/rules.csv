@@ -55,7 +55,7 @@ MPC_FRTBattlestationSalvageThree,DialogOptionSelected,$option == MPC_FRTBattlest
 
 Turning your attention to the screen, you watch a salvor stumble back in terror and then take off sprinting in the opposite direction. And you can see why, from the frozen camera of his crewmate.
 
-A massive cruise missile. Unexploded, lodged in a relatively intact part of the station, and with a orange-white chevron emblazened on it. If this exploded, it could take out half the station, taking most of your crew alongst with it.","MPC_FRTBattlestationSalvageFour:""Hazcon five! Evac nearby areas, UXO protocols!",
+A massive cruise missile. Unexploded, lodged in a relatively intact part of the station, and with a orange-white chevron emblazened on it. If this exploded, it could take out half the station, taking most of your crew alongst with it.","MPC_FRTBattlestationSalvageFour:""Hazcon five! Evac nearby areas, UXO protocols!""",
 MPC_FRTBattlestationSalvageFour,DialogOptionSelected,$option == MPC_FRTBattlestationSalvageFour,,"Before long, your salvors have evacuated back into their shuttles and have entered a wide holding pattern, and a small detachment of drones is dispatched into the station for disposal of the missile.
 
 Carefully, your ops chief coordinates a remote removal of the missile. It quickly becomes clear that it was a dud - a catastrophic failure in the missile's fuse renders it completely inert and easy to transport. Though...

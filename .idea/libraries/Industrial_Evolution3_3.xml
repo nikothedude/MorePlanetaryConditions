@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../Industrial.Evolution4.0.i/jars/IndEvo.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Industrial.Evolution4.1.3/jars/IndEvo.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Industrial.Evolution-4.1.b/jars/IndEvo.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
