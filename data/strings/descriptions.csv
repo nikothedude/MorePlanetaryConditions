@@ -77,6 +77,7 @@ MPC_magnetic_field_hyper,TERRAIN,"An extremely strong magnetic field which traps
 MPC_mesonField,TERRAIN,"A thick field of meson particles. Due to their signature enhancing nature, it's very easy to get a clear sensor reading on a fleet passing through. The effect is inverted, however, once meson concentration surpasses the Burivil threshold, and instead fleets lurking within find their sensors massively amplified and their own signature hidden.",,,
 MPC_magnetarField,TERRAIN,"Naturally produced by magnetars, these magnetic fields are unfathomobly strong, capable of shredding atoms into quark cylinders. Thankfully, if one keeps their distance, they can usually avoid the worst - but magnetars typically make that difficult.",,,
 MPC_missileTerrain,TERRAIN,Not displayed in-game!,,,
+MPC_magnetarPulseTerrain,TERRAIN,"A titanic ejection of ionized dust, magnetic particles, and other highly charged materia, travelling at extreme speeds. Avoid at all costs.",,,
 ,,,,,
 MPC_devilRocketPod,WEAPON,"The devil-class torpedo combines the destructive power of the famous reaper with a long-distance ion thruster, creating a terrifyingly effective cruise missile capable of striking targets from across the battlefield with 50 MJ of explosive force. A combat-rated autoloader system ensures usefulness in protracted engagements.
 

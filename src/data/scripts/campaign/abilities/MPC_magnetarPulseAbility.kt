@@ -17,6 +17,7 @@ import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers.Fl
 import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.MPC_magnetarPulseTerrain
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse.Companion.BASE_SHOCKWAVE_DURATION
 import data.utilities.niko_MPC_ids
@@ -36,7 +37,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         //public static final float RANGE = 1000f;
         const val BASE_RADIUS = 225f
         const val BASE_DURATION = BASE_SHOCKWAVE_DURATION * 0.03f
-        const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 1.5f
+        const val BASE_PULSE_SPEED = MPC_magnetarPulseTerrain.BASE_SHOCKWAVE_SPEED * 1.5f
         const val BASE_PULSE_ACCEL = 20f
         const val BASE_SECONDS = 6f
         const val STRENGTH_PER_SECOND = 200f
@@ -48,6 +49,9 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         const val BASE_REP_LOSS = 0.04f // if a fleet is hit by the shockwave
 
         const val FUEL_USE_MULT = 2f
+
+        const val BASE_BANDWIDTH = 2f
+        const val BASE_DISTANCE = 150f
 
         val BASE_COLOR = Color(202, 27, 233, 190)
 
@@ -177,24 +181,26 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
                 }
             }*/
 
-            val duration = BASE_DURATION * getSizeMult(fleet)
-            val radius = BASE_RADIUS * getSizeMult(fleet)
+            val bandwidth = BASE_BANDWIDTH * getSizeMult(fleet)
+            val distance = BASE_DISTANCE * getSizeMult(fleet)
             val speed = BASE_PULSE_SPEED * getSizeMult(fleet)
-            //val accel = BASE_PULSE_ACCEL * getSizeMult(fleet)
-            val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(fleet.containingLocation, fleet.location, radius, 2f, color = BASE_COLOR, shockwaveDuration = duration, shockwaveSpeed = speed)
-            params.sourceFleet = fleet
-            params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.MEDIUM
-            params.baseRepLoss = BASE_REP_LOSS
-            params.makeParticlesMaxVelocityImmediately = true
-            params.respectIgnore = false
-
-            params.explosionDamageMult = 2f
-
-            val explosion = fleet.containingLocation.addCustomEntity(
-                Misc.genUID(), "Ionized Pulse",
-                "MPC_magnetarPulse", Factions.NEUTRAL, params
+            val params = MPC_magnetarPulseTerrain.MPC_magnetarPulseParams(
+                distance,
+                fleet.radius * 1.1f,
+                bandwidth,
+                fleet,
+                sourceFleet = fleet,
+                speed = speed,
+                startingRange = fleet.radius,
+                respectIgnore = false,
+                baseRepLoss = BASE_REP_LOSS,
+                damage = ExplosionEntityPlugin.ExplosionFleetDamage.MEDIUM,
             )
-            explosion.setLocation(fleet.location.x, fleet.location.y)
+            params.explosionDamageMult = 2f
+            val explosion = MPC_magnetarPulseTerrain.createPulse(
+                fleet,
+                params
+            )
 
             primed = false
             elapsed = 0f

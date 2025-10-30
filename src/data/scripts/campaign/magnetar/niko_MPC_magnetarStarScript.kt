@@ -196,13 +196,14 @@ class niko_MPC_magnetarStarScript(
         val params = MPC_magnetarPulseTerrain.MPC_magnetarPulseParams(
             dist,
             maxEffectDist,
-            10f,
+            1500f, // TODO lower a lot once we get our own sprite
             magnetar,
-            speed = 1000f,
-            startingRange = 500f
+            speed = 3000f,
+            startingRange = magnetar.radius
         )
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
-        params.explosionDisruptionMult = 0.7f
+        params.explosionDisruptionMult = 1f
+        params.explosionDamageMult = 1f
         val explosion = MPC_magnetarPulseTerrain.createPulse(
             magnetar,
             params

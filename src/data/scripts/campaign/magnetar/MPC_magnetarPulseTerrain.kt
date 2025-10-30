@@ -5,10 +5,11 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.RepLevel
-import com.fs.starfarer.api.campaign.RingBandAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.SectorEntityToken.VisibilityLevel
+import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
+import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.CustomRepImpact
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActionEnvelope
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.RepActions
@@ -22,13 +23,11 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain
 import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
+import com.fs.starfarer.api.loading.Description
+import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
-import com.fs.starfarer.campaign.CampaignTerrain
-import com.fs.starfarer.campaign.CustomCampaignEntity
-import com.fs.starfarer.campaign.RingBand
-import com.fs.starfarer.combat.CombatViewport
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
 import data.utilities.niko_MPC_ids
@@ -38,33 +37,18 @@ import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_stringUtils.toPercent
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
-import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import java.util.EnumSet
 
 class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
 
     companion object {
         fun createPulse(source: SectorEntityToken, params: MPC_magnetarPulseParams): MPC_magnetarPulseTerrain {
-            val ring = source.containingLocation.addRingBand(
-                source,
-                "planets",
-                "MPCatmosphere3_blue",
-                params.bandWidthInEngine,
-                1,
-                BASE_COLOR,
-                params.bandWidthInEngine,
-                params.middleRadius, //starts at the center
-                4f // rotation speed i think?
-            )
-            ring.alwaysUseSensorFaderBrightness = true
-            ring.setLocation(source.location.x, source.location.y)
             val terrain = source.containingLocation.addTerrain(
                 "MPC_magnetarPulseTerrain",
                 params
             ) as CampaignTerrainAPI
-            val plugin = terrain.plugin as MPC_magnetarPulseTerrain
-            plugin.ring = ring
             terrain.setLocation(source.location.x, source.location.y)
             return terrain.plugin as MPC_magnetarPulseTerrain
         }
@@ -81,11 +65,13 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
 
         const val DIST_NEEDED_TO_HIT = 500f
 
-        const val BASE_SHOCKWAVE_SPEED = 250f
+        const val BASE_SHOCKWAVE_SPEED = 1000f
         const val INTERDICT_COMPLETE_GRACE_DAYS = 0.1f
 
         const val SHIELDS_FROM_TAG = "MPC_blocksMagnetarPulse"
         const val IGNORES_TAG = niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
+
+        const val SENSOR_MALUS_MULT = 0.5f
     }
 
     class MPC_magnetarPulseParams(
@@ -96,6 +82,7 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         bandWidth: Float,
         relatedEntity: SectorEntityToken? = null,
         startingRange: Float = 0f,
+        name: String = "Magnetar Pulse",
         val spawnSounds: List<String> = listOf("mote_attractor_targeted_ship", "gate_explosion"),
         /** In SU. Does not increase the distance of the wave. */
         val speed: Float = BASE_SHOCKWAVE_SPEED,
@@ -105,9 +92,7 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         var sourceFleet: CampaignFleetAPI? = null,
         var baseRepLoss: Float = 7f,
         val respectIgnore: Boolean = true
-    ): RingParams(bandWidth, startingRange, relatedEntity)
-
-    lateinit var ring: RingBandAPI
+    ): RingParams(bandWidth, startingRange, relatedEntity, name)
 
     @Transient
     var blockerUtil: MPC_rangeBlockerWithEnds = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_TAG)
@@ -117,47 +102,101 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         }
 
     val alreadyHit = HashSet<CampaignFleetAPI>()
+    var idealBandwidth: Float = 0f
+
 
     override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
         super.init(terrainId, entity, param)
 
         if (entity == null) return
+        if (name == null || name == "Unknown") name = "Magnetar Pulse"
         val casted = getCastedParams()
         if (relatedEntity?.containingLocation?.isCurrentLocation == true || entity.containingLocation?.isCurrentLocation == true) {
+
+            val viewport = Global.getSector().viewport
+            var volume = 1f
+
+            var soundLoc = Vector2f(entity.location)
+
+            if (!viewport.isNearViewport(soundLoc, 10f)) {
+                val vec = VectorUtils.getDirectionalVector(soundLoc, viewport.center)
+                val dist = MathUtils.getDistance(soundLoc, viewport.center)
+                soundLoc = vec.scale(dist * 0.9f) as Vector2f
+
+                volume = 0.1f
+            }
+
             for (id in casted.spawnSounds) {
-                Global.getSoundPlayer().playSound(id, 1f, 1f, entity.location, Misc.ZERO)
+                Global.getSoundPlayer().playSound(id, 1f, volume, soundLoc, Misc.ZERO)
             }
         }
+        idealBandwidth = params.bandWidthInEngine
     }
+
+    /** Determines how often we check for nearby fleets that want to interdict to avoid it */
+    val avoidInterval = IntervalUtil(0.4f, 0.45f)
 
     override fun advance(amount: Float) {
         super.advance(amount)
 
         val mult = getEffectMult(null)
-        entity.forceSensorFaderBrightness(mult)
+        if (mult <= 0f) {
+            delete()
+            return
+        }
 
         val casted = getCastedParams()
         val days = Misc.getDays(amount)
         val adjustPos = casted.speed * days
-        ring.middleRadius += adjustPos
-        params.middleRadius = ring.middleRadius
-        val castedRing = ring as RingBand
-        for (layer in castedRing.activeLayers) {
-            castedRing.render(layer, Global.getSector().viewport as CombatViewport)
+        casted.middleRadius += adjustPos
+
+        if (!blockerUtil.wasEverUpdated()) {
+            blockerUtil.updateAndSync(entity, entity.starSystem?.star, 0.1f)
         }
 
-        if (mult <= 0f) {
-            delete()
+        blockerUtil.updateLimits(entity, entity.starSystem?.star, 0.5f)
+        blockerUtil.advance(amount, 100f, 0.5f)
+    }
+
+    @Transient
+    var sprite: SpriteAPI = Global.getSettings().getSprite("planets", "MPCTESTTEST")
+        get() {
+            field = Global.getSettings().getSprite("planets", "MPCTESTTEST")
+            return field
         }
+    override fun render(layer: CampaignEngineLayers?, v: ViewportAPI?) {
+        super.render(layer, v)
+
+        if (layer == null || v == null) return
+
+        params.bandWidthInEngine = idealBandwidth.coerceAtMost(params.middleRadius)
+
+        val params = getCastedParams()
+        OpenGlUtils.drawTexturedRing(
+            Vector2f(entity.location),
+            params.middleRadius,
+            params.bandWidthInEngine,
+            250, // polygons of the circle
+            50, // segments of the ring
+            500f,
+            sprite,
+            90f,
+            getEffectMult(null),
+        )
     }
 
     private fun delete() {
         val containing = entity.containingLocation
         containing.removeEntity(entity)
-        containing.removeEntity(ring)
     }
 
     fun getCastedParams(): MPC_magnetarPulseParams = params as MPC_magnetarPulseParams
+
+    val UID = Misc.genUID()
+    override fun getTerrainId(): String? {
+        return UID
+    }
+
 
     override fun applyEffect(entity: SectorEntityToken?, days: Float) {
         super.applyEffect(entity, days)
@@ -169,26 +208,43 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         }
 
         if (!shouldAffectFleet(entity)) return
-        affectFleet(entity)
+
+        entity.stats.addTemporaryModMult(
+            0.1f,
+            UID,
+            nameForTooltip,
+            SENSOR_MALUS_MULT,
+            entity.stats.detectedRangeMod
+        )
+        entity.stats.addTemporaryModMult(
+            0.1f,
+            "${UID}2",
+            nameForTooltip,
+            SENSOR_MALUS_MULT,
+            entity.stats.sensorRangeMod
+        )
+
+        if (!shouldHitFleet(entity)) return
+        hitFleet(entity)
     }
 
     fun shouldAffectFleet(fleet: CampaignFleetAPI): Boolean {
-        var dist = MathUtils.getDistance(getMiddle(), fleet.location)
-        dist -= fleet.radius
-        dist -= params.middleRadius
-        if (dist > 0f) return false
+        return fleet != getCastedParams().sourceFleet
+    }
+
+    fun shouldHitFleet(fleet: CampaignFleetAPI): Boolean {
         if (fleetIsImmune(fleet)) return false
         if (fleet in alreadyHit) return false
         if (fleetIsBlocked(fleet)) return false
 
-        return true
+        return shouldAffectFleet(fleet)
     }
 
     fun getMiddle(): Vector2f {
         return (Vector2f(entity.location).translate(params.middleRadius, params.middleRadius))
     }
 
-    fun affectFleet(fleet: CampaignFleetAPI) {
+    fun hitFleet(fleet: CampaignFleetAPI) {
         val mult = getEffectMult(fleet)
         val casted = getCastedParams()
 
@@ -236,6 +292,7 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         }
 
         val numStrikes = picker.items.size
+        alreadyHit += fleet
 
         for (i in 0 until numStrikes) {
             val member = picker.pick() ?: return
@@ -314,7 +371,7 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
             interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundNumTo(1))}"
         }
 
-        val immobileDur = ((10f * shatterTimeMult * casted.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
+        val immobileDur = ((1f * shatterTimeMult * casted.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
         val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
         val desc = "Drive field destroyed (${immobileDur.trimHangingZero()} days to repair)"
 
@@ -338,7 +395,8 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         fleet.memoryWithoutUpdate.set(DRIVE_BUBBLE_DESTROYED, true, immobileDur)
 
         val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
-        val shoveIntensity = (damageFraction * 20f).coerceAtMost((casted.speed/625f)) // not arbitrary, it mostly keeps it locked to the speed of the pulse
+        //val shoveIntensity = (damageFraction * 20f).coerceAtMost((casted.speed/625f))
+        val shoveIntensity = (damageFraction * 20f).coerceAtMost(casted.speed / 5000f) // not arbitrary, it mostly keeps it locked to the speed of the pulse
 
         if (fleet.isPlayerFleet) {
             if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f)  {
@@ -415,7 +473,7 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
     fun getProgress(): Float = MathUtils.getDistance(entity.location, getMiddle())
 
     fun fleetIsImmune(fleet: CampaignFleetAPI): Boolean {
-        if (fleet.hasTag(IGNORES_TAG) && getCastedParams().respectIgnore) return true
+        if (fleet.memoryWithoutUpdate.getBoolean(IGNORES_TAG) && getCastedParams().respectIgnore) return true
 
         return false
     }
@@ -439,16 +497,50 @@ class MPC_magnetarPulseTerrain(): BaseRingTerrain() {
         return null
     }
 
-    val UID = Misc.genUID()
-    override fun getTerrainId(): String? {
-        return UID
-    }
-
     override fun canPlayerHoldStationIn(): Boolean {
         return false
     }
 
     override fun hasAIFlag(flag: Any?): Boolean {
+        return false // it just passes over fleets
+    }
+
+    override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
+        return EnumSet.of(CampaignEngineLayers.ABOVE_STATIONS)
+    }
+
+    override fun hasTooltip(): Boolean = true
+
+    override fun isTooltipExpandable(): Boolean {
         return false
+    }
+
+    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {
+        super.createTooltip(tooltip, expanded)
+
+        if (tooltip == null) return
+
+        val baseName = nameForTooltip
+        tooltip.addTitle(baseName)
+        tooltip.addPara(Global.getSettings().getDescription(spec.id, Description.Type.TERRAIN).text1, 5f)
+
+        tooltip.addPara(
+            "%s of any %s within it, as well as %s by %s - even if protected.",
+            5f,
+            Misc.getHighlightColor(),
+            "Destroys the drive field", "unprotected fleets", "reducing sensor strength and profile", "${SENSOR_MALUS_MULT}x"
+        ).setHighlightColors(
+            Misc.getNegativeHighlightColor(),
+            Misc.getHighlightColor(),
+            Misc.getNegativeHighlightColor(),
+            Misc.getNegativeHighlightColor()
+        )
+    }
+
+    override fun getNameColor(): Color? {
+        val base = Color.WHITE
+        val special = BASE_COLOR
+
+        return Misc.interpolateColor(base, special, Global.getSector().campaignUI.sharedFader.brightness * 1f)
     }
 }

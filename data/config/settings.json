@@ -26,6 +26,7 @@
 			"MPCshieldInnerRed":"graphics/planets/MPC_shieldInnerRed.png",
 			"MPCshieldInnerBlue":"graphics/planets/MPC_shieldInnerBlue.png",
 			"MPCshieldInnerGreen":"graphics/planets/MPC_shieldInnerGreen.png",
+            "MPCTESTTEST":"graphics/planets/zea_dawn_wavefront.png"
 		},
 		"events":{
 			"MPC_IAIIC_ICON":"graphics/icons/campaign/hostile_activity_start.png",
