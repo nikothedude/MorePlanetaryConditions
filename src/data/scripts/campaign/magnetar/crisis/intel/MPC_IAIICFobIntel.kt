@@ -165,7 +165,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
     fun forceAllOutAttack() {
         for (stage in stages.toList()) {
-            if (stage.id != Stage.ALL_OR_NOTHING) {
+            if (stage.id != Stage.ALL_OR_NOTHING && !stage.wasEverReached) {
                 stages.remove(stage)
             }
         }
