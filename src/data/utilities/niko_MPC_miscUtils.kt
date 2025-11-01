@@ -134,9 +134,7 @@ object niko_MPC_miscUtils {
         }
     }
 
-    fun SectorEntityToken.getApproximateHyperspaceLoc(
-
-    ): Vector2f {
+    fun SectorEntityToken.getApproximateHyperspaceLoc(): Vector2f {
         if (isInHyperspace) return location
         if (containingLocation !is StarSystemAPI) return Vector2f()
         val starSystem = containingLocation as StarSystemAPI

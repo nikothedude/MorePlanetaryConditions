@@ -43,6 +43,7 @@ import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
 import data.scripts.campaign.magnetar.MPC_magnetarThreatFleetManager
 import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
+import data.scripts.campaign.supernova.MPC_supernovaPrepScript
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.*
@@ -77,6 +78,68 @@ object niko_MPC_specialProcGenHandler {
         generateRandomBaryonEmitters()
         generateMagnetar()
         generateFortressSystem()
+        initSupernova()
+    }
+
+    private fun initSupernova() {
+        if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.SUPERNOVA_INITIALIZED)) return
+        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET_ID] != null) return
+
+        var highestRatedSys: StarSystemAPI? = null
+        var highestRatedStar: PlanetAPI? = null
+        var highestRate = 0f
+        for (starSystem in Global.getSector().starSystems) {
+            if (!isValidSupernovaSys(starSystem)) continue
+            val stars = starSystem.planets.filter { it.isStar }
+            val pair = getBestSupernovaCandidate(stars) ?: continue
+            if (pair.second > highestRate) {
+                highestRatedSys = starSystem
+                highestRatedStar = pair.first
+                highestRate = pair.second
+            }
+        }
+
+        if (highestRatedStar == null || highestRatedSys == null) {
+            niko_MPC_debugUtils.log.warn("failed to initialize supernova - no candidate sys")
+            return
+        }
+
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_INITIALIZED] = true
+
+        val chance = niko_MPC_settings.SUPERNOVA_GEN_CHANCE
+        if (!niko_MPC_mathUtils.prob(chance)) return
+
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET_ID] = highestRatedSys.id
+
+        val targetSys = highestRatedSys
+        val targetStar = highestRatedStar
+
+        MPC_supernovaPrepScript(targetStar).start()
+
+        val corona = Misc.getCoronaFor(targetStar)
+        corona.params.flareProbability = 1f
+    }
+
+    fun isValidSupernovaSys(sys: StarSystemAPI): Boolean {
+        val stars = sys.planets.filter { it.isStar }
+
+        val
+    }
+
+    val starPriority = mapOf(
+        Pair("star_blue_supergiant", 100f),
+        Pair("star_yellow_supergiant", 90f),
+        Pair("star_red_supergiant", 80f),
+        Pair("star_blue_giant", 70f),
+        Pair("star_yellow_supergiant", 60f),
+        Pair("star_orange_giant", 50f),
+        Pair("star_red_giant", 40f),
+    )
+
+    fun getBestSupernovaCandidate(stars: Collection<PlanetAPI>): Pair<PlanetAPI, Float>? {
+        val best = stars.maxByOrNull { starPriority[it.spec.descriptionId] ?: 0f } ?: return null
+        val rating = starPriority[best.spec.descriptionId] ?: 0f
+        return Pair(best, rating)
     }
 
     private fun generateFortressSystem() {
