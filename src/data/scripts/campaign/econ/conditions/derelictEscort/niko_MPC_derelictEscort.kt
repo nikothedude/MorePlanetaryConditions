@@ -408,7 +408,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         fleet.name = "Derelict Escorts"
 
         fleet.memoryWithoutUpdate[niko_MPC_ids.DERELICT_ESCORT_FLEET_MEMID] = market
-        fleet.memoryWithoutUpdate["\$MPC_derelictEscortSourceMarketName"] = market.name.uppercase()
+        fleet.memoryWithoutUpdate["\$MPC_derelictEscortSourceMarketName"] = market.name?.uppercase()
         fleet.memoryWithoutUpdate["\$MPC_derelictEscortSourceMarketFacId"] = market.factionId
         fleet.memoryWithoutUpdate[MemFlags.FLEET_FIGHT_TO_THE_LAST] = true
         fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_HOLD_VS_STRONGER] = true
