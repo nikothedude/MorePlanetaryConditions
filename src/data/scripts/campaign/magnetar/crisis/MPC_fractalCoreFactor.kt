@@ -172,8 +172,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             if (!isReclaimed) market.addIndustry("MPC_FOBIAIICPatherResist")
 
             if (niko_MPC_settings.stationAugmentsLoaded) {
-                market.getIndustry(Industries.STARFORTRESS).isImproved = true
-                market.getIndustry("aotd_citadel").isImproved = true
+                market.getIndustry(Industries.STARFORTRESS)?.isImproved = true
+                market.getIndustry("aotd_citadel")?.isImproved = true
 
                 market.addStationAugment("SA_tacticalLink")?.builtInMode = BuiltInMode.NORMAL
                 market.addStationAugment("SA_bubbleShield")?.builtInMode = BuiltInMode.NORMAL
