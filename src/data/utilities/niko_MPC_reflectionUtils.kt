@@ -261,4 +261,10 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
         setFieldAccessibleHandle.invoke(field, true)
         return getFieldHandle.invoke(field, instanceToGetFrom)
     }
+
+    fun getDeclaredField(instanceToGetFrom: Any, index: Int): Any? {
+        var field: Any? = instanceToGetFrom.javaClass.declaredFields[index]
+        setFieldAccessibleHandle.invoke(field, true)
+        return getFieldHandle.invoke(field, instanceToGetFrom)
+    }
 }

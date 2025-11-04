@@ -1,5 +1,11 @@
 graphics/icons/markets/niko_MPC_STC.png sourced from https://www.flaticon.com/free-icon/radar_196345
 distant explosion w32t by Setuniman -- https://freesound.org/s/131967/ -- License: Attribution NonCommercial 4.0
+sounds/MPC_supernovaAlarmImminent.ogg by ryansnook -- https://freesound.org/s/108012/ -- License: Attribution NonCommercial 4.0
+sounds/MPC_supernovaAlarm.ogg by ryansnook -- https://freesound.org/s/103580/ -- License: Attribution NonCommercial 4.0
+implosion_near.WAV by Klerrp -- https://freesound.org/s/121942/ -- License: Creative Commons 0
+Huge Explosion4.flac by CGEffex -- https://freesound.org/s/93844/ -- License: Attribution NonCommercial 4.0
+Large, Low Boom.wav by duckduckpony -- https://freesound.org/s/130973/ -- License: Attribution 4.0
+Thunder, Very Close, No Rain, A.wav by InspectorJ -- https://freesound.org/s/320050/ -- License: Attribution 4.0
 
 sounds/music/MPC_contactWithTheUnknown.ogg sourced from https://www.fesliyanstudios.com/royalty-free-music/downloads-c/suspenseful-music/25
 sounds/music/MPC_contactWithTheUnknownTwo.ogg sourced from https://www.fesliyanstudios.com/royalty-free-music/downloads-c/suspenseful-music/25
@@ -10,3 +16,6 @@ sounds/music/MPC_icecaveAmbience.ogg sourced from https://www.youtube.com/watch?
 sounds/weapons/MPC_cruiseLaunch by qubodup -- https://freesound.org/s/184274/ -- License: Creative Commons 0
 
 Fractal core oracle, optimiser, enlightenment skills from astral ascension
+
+graphics/fx/MPC_beamRadiate.png from seeker
+MPC_supernovaInhibitorEntity renderLine from ship mastery systems

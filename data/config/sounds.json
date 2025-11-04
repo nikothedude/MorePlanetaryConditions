@@ -121,7 +121,39 @@
 			{"file":"sounds/weapons/MPC_tachyonPikeFire.ogg", "pitch":1.0,"volume":1.0},
 		],
 	},
-	
+	# SUPERNOVA
+	"MPC_supernovaAlarmImminent":
+	[
+		{"file":"sounds/MPC_supernovaAlarmImminent.ogg","pitch":1,"volume":0.6},
+	],
+	"MPC_supernovaAlarm":
+	[
+		{"file":"sounds/MPC_supernovaAlarm.ogg","pitch":1,"volume":0.6},
+	],
+	"MPC_supernovaInit":
+	[
+		{"file":"sounds/MPC_supernovaInit.ogg","pitch":1.0,"volume":1.9},
+	],
+	"MPC_supernova":
+	[
+		{"file":"sounds/MPC_supernova.ogg","pitch":0.7,"volume":1.1},
+	],
+	"MPC_supernovaThunder":
+	[
+		{"file":"sounds/MPC_supernovaThunder.ogg","pitch":0.9,"volume":1.0},
+	],
+	"MPC_supernovaTwo":
+	[
+		{"file":"sounds/MPC_supernovaTwo.ogg","pitch":1.0,"volume":3.0},
+	],
+	"MPC_supernovaUnder":
+	[
+		{"file":"sounds/MPC_supernovaUnder.ogg","pitch":1.0,"volume":1.5},
+	],
+	"MPC_supernovaWavefrontLoop":
+	[
+		{"file":"sounds/MPC_supernovaWavefrontLoop.ogg","pitch":1,"volume":1},
+	],
 	# CRUISE
 	"MPC_cruiseLaunch":
 	[

@@ -116,15 +116,43 @@ object niko_MPC_specialProcGenHandler {
 
         MPC_supernovaPrepScript(targetStar).start()
 
+        val inhibitorOne = targetSys.addCustomEntity(
+            "MPC_supernovaInhibitorOne",
+            null,
+            "MPC_supernovaInhibitor",
+            Factions.NEUTRAL
+        )
+        val inhibitorTwo = targetSys.addCustomEntity(
+            "MPC_supernovaInhibitorOne",
+            null,
+            "MPC_supernovaInhibitor",
+            Factions.NEUTRAL
+        )
+        val inhibitorThree = targetSys.addCustomEntity(
+            "MPC_supernovaInhibitorOne",
+            null,
+            "MPC_supernovaInhibitor",
+            Factions.NEUTRAL
+        )
+        inhibitorOne.setCircularOrbitPointingDown(targetStar, 120f, targetStar.radius + 300f, 180f)
+        inhibitorTwo.setCircularOrbitPointingDown(targetStar, 240f, targetStar.radius + 300f, 180f)
+        inhibitorThree.setCircularOrbitPointingDown(targetStar, 360f, targetStar.radius + 300f, 180f)
+
+        targetSys.addTag(Tags.THEME_SPECIAL)
+
         val corona = Misc.getCoronaFor(targetStar)
         corona.params.flareProbability = 1f
     }
 
     fun isValidSupernovaSys(sys: StarSystemAPI): Boolean {
+        if (!sys.hasTag(Tags.THEME_UNSAFE)) return false
+        if (sys.hasTag(Tags.THEME_SPECIAL) || sys.hasTag(Tags.THEME_HIDDEN) || sys.getMarketsInLocation().any { it.isInhabited() }) return false
+        if (sys.hasTag(Tags.SYSTEM_ABYSSAL)) return false
+        if (!sys.isProcgen) return false
         val stars = sys.planets.filter { it.isStar }
-
-        val
+        return getBestSupernovaCandidate(stars) != null
     }
+
 
     val starPriority = mapOf(
         Pair("star_blue_supergiant", 100f),

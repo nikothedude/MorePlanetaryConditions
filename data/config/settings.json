@@ -41,6 +41,9 @@
 		"fx":{
 		 "MPC_omegurat_highlight":"graphics/ships/MPC_omegurat_glow1.png",
 		 "MPC_omegurat_diffuse":"graphics/ships/MPC_omegurat_glow2.png",
+		 "MPC_supernovaInhibitionBeamFringe":"graphics/fx/beamfringed.png",
+		 "MPC_supernovaInhibitionBeamCore":"graphics/fx/beam_laser_core.png",
+		 "MPC_supernovaInhibitionBeamGlow":"graphics/fx/particlealpha64sq.png",
 		},
 	},
 	"stations":{

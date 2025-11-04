@@ -2,9 +2,11 @@ package data.scripts.campaign.supernova
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.PlanetAPI
+import com.fs.starfarer.api.impl.campaign.ids.StarTypes
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_settings
 
 class MPC_supernovaPrepScript(
     val star: PlanetAPI
@@ -29,6 +31,7 @@ class MPC_supernovaPrepScript(
 
     override fun stopImpl() {
         star.removeScript(this)
+        Global.getSector().memoryWithoutUpdate[EXPLOSION_TIMER_MEMID] = null
     }
 
     var baseMiddleRad = 0f
@@ -57,6 +60,7 @@ class MPC_supernovaPrepScript(
         checkIntervalThresholds(supernovaInterval)
     }
 
+    // TODO repolace corona with a custom one that we can manipulate independently of the star
     private fun checkIntervalThresholds(interval: IntervalUtil) {
         val dur = interval.intervalDuration
         val curr = interval.elapsed
@@ -65,9 +69,9 @@ class MPC_supernovaPrepScript(
         val corona = Misc.getCoronaFor(star) ?: return
         val params = corona.params
         val sizeMult = 1f + (3f * (progress))
-        params.middleRadius = baseMiddleRad * sizeMult
-        params.bandWidthInEngine = baseBandwidth * sizeMult
-        params.windBurnLevel = solarWinds * sizeMult
+        //params.middleRadius = (baseMiddleRad * sizeMult)
+        //params.bandWidthInEngine = baseBandwidth * sizeMult
+        params.windBurnLevel = solarWinds
     }
 
     private fun getCurrentSupernovaAdvanceMult(interval: IntervalUtil): Float {
@@ -87,6 +91,7 @@ class MPC_supernovaPrepScript(
     }
 
     private fun doSupernova() {
-        TODO("Not yet implemented")
+        delete()
+        MPC_supernovaActionScript(star).start()
     }
 }

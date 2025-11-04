@@ -96,6 +96,11 @@ object niko_MPC_settings {
     const val OVERGROWN_NANOFORGE_NOT_INHABITED_PROGRESS_MULT = 0.0f
     const val OVERGROWN_NANOFORGE_INTEL_TOGGLE_VIEWMODE_ID = "toggleViewmode"
 
+    var MIN_TIME_TIL_SUPERNOVA = 1825f
+    var MAX_TIME_TIL_SUPERNOVA = 2000f
+
+    var SUPERNOVA_GEN_CHANCE = 100f // todo change
+
     val hyperMagFieldColors: MutableSet<Color> = hashSetOf(
         Color(144, 44, 152, 100),
         Color(50, 25, 100, 100),

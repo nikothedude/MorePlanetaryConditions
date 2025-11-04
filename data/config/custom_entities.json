@@ -498,4 +498,34 @@
 		"renderCircleIndicatorSelectionFlash":true
 	},
 
+	"MPC_supernovaInhibitor":{
+		"baseId": "station_jangala_type",
+		"defaultName":"Inhibition Matrix", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_supernovaInhibitor",
+		"sprite":"graphics/stations/station_jangala2.png",
+		"spriteWidth":160,
+		"spriteHeight":160,
+		"pluginClass":"data.scripts.campaign.supernova.entities.MPC_supernovaInhibitorEntity",
+
+		"tags":["has_interaction_dialog", "neutrino_high", "MPC_supernovaInhibitor", "protects_from_corona_in_battle"],
+	},
+
+	"MPC_supernovaIncitor":{
+		"baseId": "station_jangala_type",
+		"defaultName":"Incitor Unit", # used if name=null in addCustomEntity(),
+		"customDescriptionId":"MPC_supernovaIncitor",
+		"spriteWidth":160,
+		"spriteHeight":160,
+		"defaultRadius":160,
+		"detectionRange":2800, # must be >0 for discoverable/discoveryXP to be used
+		"discoverable":true,
+		"discoveryXP":500,
+
+		"tags":["has_interaction_dialog", "neutrino_high", "MPC_supernovaInhibitor", "protects_from_corona_in_battle"],
+	},
+
+	"MPC_supernovaExplosion":{
+		"baseId": "explosion",
+		"pluginClass":"data.scripts.campaign.supernova.entities.MPC_supernovaExplosion"
+	}
 }
