@@ -1,0 +1,7 @@
+STEP 1: How do we want the player to interact with the supernova?
+
+IDea one: It triggers on its own and sends shockwaves through the entire sector
+    Your're told by your sensors officer after it subsides that something happened at x coordinates
+    Get a breadcrumb...
+
+

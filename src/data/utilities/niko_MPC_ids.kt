@@ -3,7 +3,8 @@ package data.utilities
 object niko_MPC_ids {
 
     const val SUPERNOVA_INITIALIZED = "\$MPC_supernovaInitialized"
-    const val SUPERNOVA_TARGET_ID = "\$MPC_supernovaTarget"
+    // starysstenapi
+    const val SUPERNOVA_TARGET = "\$MPC_supernovaTarget"
 
     const val REMNANT_MISSILE_CARRIER = "\$MPC_remnantMissileCarrier"
     const val REMNANT_MISSILE_CARRIER_ACTIVE = "${REMNANT_MISSILE_CARRIER}_active"

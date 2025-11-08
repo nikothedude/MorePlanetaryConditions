@@ -2,6 +2,43 @@ id,trigger,conditions,script,text,options,notes
 #RULESET_NAME niko_MPC,,,,,,
 MPC_sal_printDefaultDefenders_objectives,TriggerAutomatedDefenses,$MPC_hasSalvageObjectives score:200,MPC_SalvageDefenderInteractionWithObjectives,"As your $shipOrFleet moves in closer, new energy signatures are detected near the $shortName.",,
 ,,,,,,
+MPC_reloadLastSave,DialogOptionSelected,$option == MPC_reloadLastSave,"niko_MPC_musicToggle """" false false
+DismissDialog
+MPC_reloadLastSave",,,
+MPC_goToTitle,DialogOptionSelected,$option == MPC_goToTitle,"niko_MPC_musicToggle """" false false
+DismissDialog
+MPC_returnToTitle",,,
+,,,,,,
+# Supernova,,,,,,
+MPC_vaporized,MPC_vaporizedInit,,"niko_MPC_musicToggle """" true false",White.,MPC_vaporizedTwo:...,
+MPC_vaporizedTwo,DialogOptionSelected,$option == MPC_vaporizedTwo,,And then black. Some red in-between.,MPC_vaporizedThree:...,
+MPC_vaporizedThree,DialogOptionSelected,$option == MPC_vaporizedThree,,Those were the last colors you remember.,MPC_vaporizedFour:...,
+MPC_vaporizedFour,DialogOptionSelected,$option == MPC_vaporizedFour,,"Inbetween the screaming, the begging, the pleading. Those were the colors.",MPC_vaporizedFive:...,
+MPC_vaporizedFive,DialogOptionSelected,$option == MPC_vaporizedFive,,"There were mutinies. Escape attempts. Hundreds of panicked crew, your traitorous officers, banging on your door.
+
+All because you couldn't run fast enough.",MPC_vaporizedSix:...,
+MPC_vaporizedSix,DialogOptionSelected,$option == MPC_vaporizedSix,,"You think you tried to rally them. And when that failed, bribe. And when that failed, charm. And when even that failed... red.
+
+But none of that matters now.",MPC_vaporizedSeven:...,
+MPC_vaporizedSeven,DialogOptionSelected,$option == MPC_vaporizedSeven,,"Stuck in this final moment of searing, agonized conciousness, you feel a strange peace.
+
+Maybe thats because your nerves have already burnt off. Maybe your frontal lobe is turning to ash. Your eyes certainly already have.
+
+You feel the warm heat of the nova piercing through the disintegrating hull, wrapping around your skin, suffusing you, filling you... deconstructing you... its... almost like... a... blank...et...","MPC_vaporizedEightSmile:Smile
+MPC_vaporizedEight:...",
+MPC_vaporizedEightSmile,DialogOptionSelected,$option == MPC_vaporizedEightSmile,"$option = MPC_vaporizedEight
+FireBest DialogOptionSelected",,,
+MPC_vaporizedEight,DialogOptionSelected,$option == MPC_vaporizedEight,,...,MPC_vaporizedNine:...,
+MPC_vaporizedNine,DialogOptionSelected,$option == MPC_vaporizedNine,"ShowImageVisual space_wreckage
+SetTextHighlightColors bad
+SetTextHighlights ""YOU HAVE DIED.""","Now mere stardust floating through this newly-formed nebula, scavengers and explorers will certainly find you in the coming cycle. But they'll never be able to attach the name.
+
+YOU HAVE DIED.
+
+Reload your latest save, or abandon this save file in ending.","MPC_reloadLastSave:Reload your last saved game
+MPC_goToTitle:Return to the title screen",
+,DialogOptionSelected,$option == ,,,,
+#END Supernova,,,,,,
 # Fortress missile system,,,,,,
 MPC_FRTBeacon,OpenInteractionDialog,$tag:MPC_fortressBeacon score:1000,"ShowDefaultVisual
 SetTextHighlights ""missile defense system""","This autonomous warning beacon emits a looping high-frequency message on all channels.

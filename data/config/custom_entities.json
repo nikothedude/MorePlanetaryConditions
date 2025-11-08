@@ -526,6 +526,7 @@
 
 	"MPC_supernovaExplosion":{
 		"baseId": "explosion",
-		"pluginClass":"data.scripts.campaign.supernova.entities.MPC_supernovaExplosion"
-	}
+		"pluginClass":"data.scripts.campaign.supernova.entities.MPC_supernovaExplosion",
+        "layers":[TERRAIN_10], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
+    }
 }

@@ -6,6 +6,7 @@ import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.supernova.MPC_supernovaActionScript
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import org.lazywizard.console.BaseCommand
+import org.lazywizard.console.Console
 
 class niko_MPC_genericCommand: BaseCommand {
 
@@ -14,9 +15,8 @@ class niko_MPC_genericCommand: BaseCommand {
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        val star = Global.getSector().currentLocation.planets[0]
-        val script = MPC_supernovaActionScript(star)
-        script.start()
+        val playerFleet = Global.getSector().playerFleet
+        Console.showMessage(playerFleet.location)
 
         return BaseCommand.CommandResult.SUCCESS
     }

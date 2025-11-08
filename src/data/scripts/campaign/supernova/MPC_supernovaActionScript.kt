@@ -4,6 +4,7 @@ import com.fs.graphics.particle.GenericTextureParticle
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.ParticleControllerAPI
 import com.fs.starfarer.api.campaign.PlanetAPI
+import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
@@ -11,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.ids.StarTypes
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.CampaignState
+import com.fs.starfarer.campaign.CampaignUIPersistentData
 import com.fs.starfarer.campaign.ParticleController
 import com.fs.state.AppDriver
 import data.scripts.campaign.supernova.entities.MPC_supernovaExplosion
@@ -107,7 +109,7 @@ class MPC_supernovaActionScript(
                         shockwaveColor,
                         containing,
                         Vector2f(star.location),
-                        star.radius * 25f,
+                        star.radius * 1.1f,
                         12f
                     )
                     explParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.EXTREME
@@ -149,8 +151,12 @@ class MPC_supernovaActionScript(
                     screenshake?.stop()
                     screenshake = null
 
+                    star.containingLocation.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "MPC_supernovaAmbience"
+
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = Stage.ENDING
                     interval.setInterval(ENDING_PHASE_LENGTH, ENDING_PHASE_LENGTH)
+
+                    star.containingLocation.jumpPoints.first().desta
                 }
                 Stage.ENDING -> {
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = null
@@ -172,6 +178,11 @@ class MPC_supernovaActionScript(
                 //corona.params.bandWidthInEngine = (coronaBand * inverted).coerceAtLeast(MIN_CORONA_BAND)
                 corona.params.middleRadius = (coronaRad * inverted).coerceAtLeast(MIN_STAR_SIZE)
 
+                if (star.containingLocation.isCurrentLocation) {
+                    val state = AppDriver.getInstance().currentState as CampaignState
+                    state.suppressMusic(progress)
+                }
+
                 //star.lightColorOverrideIfStar = Color(r, g, b, 255)
 
                 star.containingLocation.addHitParticle(
@@ -189,8 +200,18 @@ class MPC_supernovaActionScript(
                     val casted = supernovaParticle as GenericTextureParticle
                     casted.setSize(shockwaveDist, shockwaveDist)
                 }
+
+                if (star.containingLocation.isCurrentLocation) {
+                    val state = AppDriver.getInstance().currentState as CampaignState
+                    state.suppressMusic(1f)
+                }
             }
             Stage.ENDING -> {
+
+                if (star.containingLocation.isCurrentLocation) {
+                    val state = AppDriver.getInstance().currentState as CampaignState
+                    state.suppressMusic(1f - progress)
+                }
 
             }
         }

@@ -14,6 +14,9 @@
 		"MPC_icecaveAmbience":[
 			{"file":"MPC_icecaveAmbience.ogg","source":"sounds/music","volume":0.8},
 		],
+        "MPC_supernovaAmbience":[
+            {"file":"MPC_supernovaRemnantAmbience.ogg","source":"sounds/music","volume":0.8},
+        ],
 		"MPC_ludditeMenace":[
 			{
 				"source":"sounds/music/music.bin",
@@ -154,6 +157,10 @@
 	[
 		{"file":"sounds/MPC_supernovaWavefrontLoop.ogg","pitch":1,"volume":1},
 	],
+    "MPC_vaporized":
+    [
+        {"file":"sounds/MPC_vaporized.ogg","pitch":1,"volume":1},
+    ],
 	# CRUISE
 	"MPC_cruiseLaunch":
 	[

@@ -7,19 +7,13 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
-import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
-import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin
-import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
-import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
-import com.fs.starfarer.api.impl.campaign.WarningBeaconEntityPlugin
+import com.fs.starfarer.api.impl.campaign.*
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
-import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
-import com.fs.starfarer.api.impl.campaign.procgen.MagFieldGenPlugin
-import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.*
 import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.MiscellaneousThemeGenerator
@@ -35,7 +29,6 @@ import com.fs.starfarer.api.loading.CampaignPingSpec
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.ai.ModularFleetAI
 import data.coronaResistStationCoreFleetListener
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.econ.industries.missileLauncher.MPC_remnantMissileCarrierScript
@@ -50,16 +43,11 @@ import data.utilities.*
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
+import lunalib.lunaExtensions.generatePlanetCondition
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.kotlin.addSalvageEntity
-import org.magiclib.kotlin.getMarketsInLocation
-import org.magiclib.kotlin.getPulsarInSystem
-import org.magiclib.kotlin.hasRuins
-import org.magiclib.kotlin.makeImportant
-import org.magiclib.kotlin.setDefenderOverride
-import org.magiclib.kotlin.setSalvageSpecial
+import org.magiclib.kotlin.*
 import org.magiclib.util.MagicCampaign
 import java.awt.Color
 
@@ -83,91 +71,60 @@ object niko_MPC_specialProcGenHandler {
 
     private fun initSupernova() {
         if (Global.getSector().memoryWithoutUpdate.getBoolean(niko_MPC_ids.SUPERNOVA_INITIALIZED)) return
-        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET_ID] != null) return
-
-        var highestRatedSys: StarSystemAPI? = null
-        var highestRatedStar: PlanetAPI? = null
-        var highestRate = 0f
-        for (starSystem in Global.getSector().starSystems) {
-            if (!isValidSupernovaSys(starSystem)) continue
-            val stars = starSystem.planets.filter { it.isStar }
-            val pair = getBestSupernovaCandidate(stars) ?: continue
-            if (pair.second > highestRate) {
-                highestRatedSys = starSystem
-                highestRatedStar = pair.first
-                highestRate = pair.second
-            }
-        }
-
-        if (highestRatedStar == null || highestRatedSys == null) {
-            niko_MPC_debugUtils.log.warn("failed to initialize supernova - no candidate sys")
-            return
-        }
+        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET] != null) return
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_INITIALIZED] = true
 
         val chance = niko_MPC_settings.SUPERNOVA_GEN_CHANCE
         if (!niko_MPC_mathUtils.prob(chance)) return
 
-        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET_ID] = highestRatedSys.id
+        val name = ProcgenUsedNames.pickName(NameGenData.TAG_STAR, null, null).nameWithRomanSuffixIfAny
+        val system = Global.getSector().createStarSystem(name)
 
-        val targetSys = highestRatedSys
-        val targetStar = highestRatedStar
+        system.backgroundTextureFilename = "graphics/backgrounds/hyperspace1.jpg"
+        val star = system.initStar("MPC_supernovaStar", StarTypes.BLUE_SUPERGIANT, 1700f, 1200f, 20f, 1f, 2f)
 
-        MPC_supernovaPrepScript(targetStar).start()
+        MPC_supernovaPrepScript(star).start()
 
-        val inhibitorOne = targetSys.addCustomEntity(
+        val inhibitorOne = system.addCustomEntity(
             "MPC_supernovaInhibitorOne",
             null,
             "MPC_supernovaInhibitor",
             Factions.NEUTRAL
         )
-        val inhibitorTwo = targetSys.addCustomEntity(
+        val inhibitorTwo = system.addCustomEntity(
             "MPC_supernovaInhibitorOne",
             null,
             "MPC_supernovaInhibitor",
             Factions.NEUTRAL
         )
-        val inhibitorThree = targetSys.addCustomEntity(
+        val inhibitorThree = system.addCustomEntity(
             "MPC_supernovaInhibitorOne",
             null,
             "MPC_supernovaInhibitor",
             Factions.NEUTRAL
         )
-        inhibitorOne.setCircularOrbitPointingDown(targetStar, 120f, targetStar.radius + 300f, 180f)
-        inhibitorTwo.setCircularOrbitPointingDown(targetStar, 240f, targetStar.radius + 300f, 180f)
-        inhibitorThree.setCircularOrbitPointingDown(targetStar, 360f, targetStar.radius + 300f, 180f)
+        inhibitorOne.setCircularOrbitPointingDown(star, 120f, star.radius + 300f, 180f)
+        inhibitorTwo.setCircularOrbitPointingDown(star, 240f, star.radius + 300f, 180f)
+        inhibitorThree.setCircularOrbitPointingDown(star, 360f, star.radius + 300f, 180f)
 
-        targetSys.addTag(Tags.THEME_SPECIAL)
+        val planetOne = system.addPlanet(
+            "MPC_supernovaVictimOne",
+            star,
+            ProcgenUsedNames.pickName(NameGenData.TAG_PLANET, null, null).nameWithRomanSuffixIfAny,
+            Planets.PLANET_LAVA,
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            150f,
+            star.radius + 1200f,
+            -90f
+        )
+        planetOne.generatePlanetCondition(StarAge.YOUNG)
 
-        val corona = Misc.getCoronaFor(targetStar)
-        corona.params.flareProbability = 1f
-    }
+        system.addTag(Tags.THEME_SPECIAL)
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET] = system
 
-    fun isValidSupernovaSys(sys: StarSystemAPI): Boolean {
-        if (!sys.hasTag(Tags.THEME_UNSAFE)) return false
-        if (sys.hasTag(Tags.THEME_SPECIAL) || sys.hasTag(Tags.THEME_HIDDEN) || sys.getMarketsInLocation().any { it.isInhabited() }) return false
-        if (sys.hasTag(Tags.SYSTEM_ABYSSAL)) return false
-        if (!sys.isProcgen) return false
-        val stars = sys.planets.filter { it.isStar }
-        return getBestSupernovaCandidate(stars) != null
-    }
-
-
-    val starPriority = mapOf(
-        Pair("star_blue_supergiant", 100f),
-        Pair("star_yellow_supergiant", 90f),
-        Pair("star_red_supergiant", 80f),
-        Pair("star_blue_giant", 70f),
-        Pair("star_yellow_supergiant", 60f),
-        Pair("star_orange_giant", 50f),
-        Pair("star_red_giant", 40f),
-    )
-
-    fun getBestSupernovaCandidate(stars: Collection<PlanetAPI>): Pair<PlanetAPI, Float>? {
-        val best = stars.maxByOrNull { starPriority[it.spec.descriptionId] ?: 0f } ?: return null
-        val rating = starPriority[best.spec.descriptionId] ?: 0f
-        return Pair(best, rating)
+        MPC_genUtils.shuffleLocation(system, true, 36000f, 80000f, 12000f, 49000f)
+        system.autogenerateHyperspaceJumpPoints(true, true)
     }
 
     private fun generateFortressSystem() {

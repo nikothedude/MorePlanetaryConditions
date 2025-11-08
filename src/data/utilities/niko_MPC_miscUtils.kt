@@ -217,7 +217,7 @@ object niko_MPC_miscUtils {
             Global.getSector().removeScript(this)
         }
 
-        override fun runWhilePaused(): Boolean = false
+        override fun runWhilePaused(): Boolean = true
 
         override fun advance(amount: Float) {
             val days = Misc.getDays(amount)
@@ -233,8 +233,9 @@ object niko_MPC_miscUtils {
                 return
             }
 
-            val dir = VectorUtils.getAngle(playerFleet.location, source)
-            val newLoc = MathUtils.getPointOnCircumference(playerFleet.location, (playerFleet.radius) * 1.1f, dir)
+            val viewport = Global.getSector().viewport
+            val dir = VectorUtils.getAngle(viewport.center, source)
+            val newLoc = MathUtils.getPointOnCircumference(viewport.center, 10f, dir)
             token.setLocation(newLoc.x, newLoc.y)
             sound.setLocation(newLoc.x, newLoc.y)
         }

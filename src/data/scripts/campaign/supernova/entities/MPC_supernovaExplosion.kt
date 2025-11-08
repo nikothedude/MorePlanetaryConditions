@@ -1,9 +1,21 @@
 package data.scripts.campaign.supernova.entities
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.ids.Entities
+import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.campaign.supernova.renderers.MPC_vaporizedShader
+import lunalib.lunaUtil.campaign.LunaCampaignRenderer
+import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import kotlin.math.max
@@ -13,22 +25,32 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
 
     companion object {
         const val SPEED = 500f
+
+        const val DIST_TO_PLAY_LOOP = 5000f
+        const val MIN_DIST_FOR_MAX_VOL = 1000f
+
+        const val MIN_ASTEROID_SIZE = 10f
+        const val MAX_ASTEROID_SIZE = 40f
+
+        const val ASTEROID_DIVISOR = 10f
     }
 
+    lateinit var token: SectorEntityToken
     override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
         super.init(entity, pluginParams)
 
         sprite = Global.getSettings().getSprite("misc", "nebula_particles")
 
         params = pluginParams as ExplosionParams?
+        token = params.where.createToken(Vector2f(0f, 0f))
 
-        val baseSize = params.radius * 0.08f
-        maxParticleSize = baseSize * 2f
+        val baseSize = params.radius * 30f
+        maxParticleSize = baseSize * 3f
 
         val fullArea = (Math.PI * params.radius * params.radius).toFloat()
         val particleArea = (Math.PI * baseSize * baseSize).toFloat()
 
-        val count = (fullArea / particleArea * 50f).roundToInt()
+        val count = 500
 
         var durMult = 2f
         durMult = params.durationMult
@@ -106,6 +128,138 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
 
     override fun getRenderRange(): Float {
         return Float.MAX_VALUE
+    }
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+
+        if (!params.where.isCurrentLocation) return
+        val viewport = Global.getSector().viewport
+        val viewportOffset = MathUtils.getDistance(params.loc, viewport.center)
+        val ourDist = getProgress()
+
+        val distFromUs = (viewportOffset - ourDist).coerceAtLeast(0f)
+        if (distFromUs <= DIST_TO_PLAY_LOOP) {
+            playLoop()
+        }
+
+        val particleScaleMax = ourDist / 500f
+        for (particle in particles) {
+            particle.scale = particle.scale.coerceAtMost(particleScaleMax)
+        }
+
+        for (planet in params.where.planets.filter { !it.isStar }) {
+            val planDist = MathUtils.getDistance(params.loc, planet.location)
+            if ((planDist - planet.radius) <= ourDist) {
+                explodePlanet(planet)
+            }
+        }
+
+        for (entity in params.where.getCustomEntitiesWithTag("MPC_supernovaInhibitor")) {
+            val entityDist = MathUtils.getDistance(params.loc, entity.location)
+            if ((entityDist - entity.radius) <= ourDist) {
+                params.where.removeEntity(entity)
+            }
+        }
+    }
+
+    private fun explodePlanet(planet: PlanetAPI) {
+        val explParams = ExplosionParams(
+            planet.spec.planetColor,
+            planet.containingLocation,
+            planet.location,
+            planet.radius * 1.5f,
+            1f
+        )
+        explParams.damage = ExplosionFleetDamage.NONE
+
+        val explosion = planet.containingLocation.addCustomEntity(
+            "${planet.id}_explosion_MPC",
+            null,
+            Entities.EXPLOSION,
+            Factions.NEUTRAL,
+            explParams
+        )
+
+        val asteroidDivisor = ASTEROID_DIVISOR
+        val numAsteroids = planet.radius / asteroidDivisor
+        val angle = VectorUtils.getAngle(params.loc, planet.location)
+        val min = (angle - 90f)
+        val max = (angle + 90f)
+        var asteroidsLeft = numAsteroids
+        while (asteroidsLeft-- > 0) {
+            val velTarget = Misc.normalizeAngle(MathUtils.getRandomNumberInRange(min, max))
+            val velVector = Misc.getUnitVectorAtDegreeAngle(velTarget).scale(shockwaveSpeed) as Vector2f
+            val offsetX = MathUtils.getRandomNumberInRange(-planet.radius, planet.radius)
+            val offsetY = MathUtils.getRandomNumberInRange(-planet.radius, planet.radius)
+            val randLoc = Vector2f(planet.location).translate(offsetX, offsetY)
+            val asteroidRadius = MathUtils.getRandomNumberInRange(MIN_ASTEROID_SIZE, MAX_ASTEROID_SIZE)
+            val asteroid = planet.containingLocation.addAsteroid(asteroidRadius)
+            asteroid.setLocation(randLoc.x, randLoc.y)
+            asteroid.velocity.set(velVector)
+        }
+
+        planet.containingLocation.removeEntity(planet)
+    }
+
+    private fun playLoop() {
+        val ourDist = getProgress()
+        val viewport = Global.getSector().viewport
+        val angle = VectorUtils.getAngle(params.loc, viewport.center)
+        val target = MathUtils.getPointOnCircumference(
+            params.loc,
+            ourDist,
+            angle
+        )
+        val newLoc = MathUtils.getPointOnCircumference(viewport.center, 10f, VectorUtils.getAngle(viewport.center, params.loc))
+
+        val distFromTarget = MathUtils.getDistance(target, viewport.center)
+        val adjustedDist = (distFromTarget - MIN_DIST_FOR_MAX_VOL).coerceAtLeast(0f)
+        val volume = 1 - (adjustedDist / DIST_TO_PLAY_LOOP)
+        token.setLocation(newLoc.x, newLoc.y)
+        Global.getSoundPlayer().playLoop(
+            "MPC_supernovaWavefrontLoop",
+            token,
+            1f,
+            volume,
+            token.location,
+            Misc.ZERO
+        )
+    }
+
+    override fun applyDamageToFleet(fleet: CampaignFleetAPI?, damageMult: Float) {
+        if (fleet == null) return
+        if (!fleet.isPlayerFleet) {
+            for (member in fleet.fleetData.membersListCopy) {
+                fleet.removeFleetMemberWithDestructionFlash(member)
+            }
+            fleet.despawn()
+        } else {
+            LunaCampaignRenderer.addRenderer(MPC_vaporizedShader())
+
+            class VaporizedScript: MPC_delayedExecutionNonLambda(IntervalUtil(6f, 6f), false, false) {
+                override fun executeImpl() {
+                    Global.getSector().campaignUI.showInteractionDialog(
+                        RuleBasedInteractionDialogPluginImpl("MPC_vaporizedInit"),
+                        Global.getSector().playerFleet
+                    )
+                }
+            }
+            class VaporizedScriptTwo: MPC_delayedExecutionNonLambda(IntervalUtil(1.1f, 1.1f), false, false) {
+                override fun executeImpl() {
+                    Global.getSector().playerFleet.setLocation(99999f, 99999f)
+                }
+            }
+
+            VaporizedScriptTwo().start()
+            VaporizedScript().start()
+            Global.getSoundPlayer().playUISound("MPC_vaporized", 1f, 1f)
+
+            Global.getSector().campaignUI.addMessage(
+                "Your fleet is vaporized by the Supernova",
+                Misc.getNegativeHighlightColor()
+            )
+        }
     }
 
 }

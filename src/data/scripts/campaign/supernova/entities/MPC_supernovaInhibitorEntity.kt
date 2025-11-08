@@ -42,15 +42,18 @@ class MPC_supernovaInhibitorEntity: BaseCustomEntityPlugin() {
             warningGlowPhase += amount
             if (warningGlowPhase > 1f) warningGlowPhase = -1f
         } else {
-            warningGlowPhase += amount
-            if (warningGlowPhase > 1f) warningGlowPhase = -1f
             val prepInterval = MPC_supernovaPrepScript.getExplosionInterval(false)
             if (prepInterval != null) {
                 val dur = prepInterval.intervalDuration
                 val curr = prepInterval.elapsed
 
                 if (shouldDoWarning(curr / dur)) {
+                    warningGlowPhase += amount
+                    if (warningGlowPhase > 1f) warningGlowPhase = -1f
+
                     Global.getSoundPlayer().playLoop("MPC_supernovaAlarm", entity, 1f, 1f, entity.location, Misc.ZERO)
+                } else {
+                    warningGlowPhase = -1f
                 }
             }
         }
@@ -138,7 +141,7 @@ class MPC_supernovaInhibitorEntity: BaseCustomEntityPlugin() {
         glow.renderAtCenter(dest.x, dest.y)
 
         if (warningGlowPhase >= 0f) {
-            val warningColor = Color(255, 35, 0, (100 * alphaMult).toInt())
+            val warningColor = Color(255, 35, 0, (150 * alphaMult).toInt())
 
             val sourceWarning = MathUtils.getPointOnCircumference(
                 entity.location,
