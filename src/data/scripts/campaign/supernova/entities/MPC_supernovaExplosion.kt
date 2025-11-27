@@ -148,7 +148,7 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
             particle.scale = particle.scale.coerceAtMost(particleScaleMax)
         }
 
-        for (planet in params.where.planets.filter { !it.isStar }) {
+        for (planet in params.where.planets.filter { !it.isStar && !it.memoryWithoutUpdate.getBoolean("\$MPC_ignoresSupernova") }) {
             val planDist = MathUtils.getDistance(params.loc, planet.location)
             if ((planDist - planet.radius) <= ourDist) {
                 explodePlanet(planet)

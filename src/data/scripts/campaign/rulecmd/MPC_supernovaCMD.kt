@@ -19,7 +19,6 @@ class MPC_supernovaCMD: BaseCommandPlugin() {
 
         when (command) {
             "canAddBreadcrumbBar" -> {
-                if (Global.getSector().memoryWithoutUpdate)
             }
         }
 

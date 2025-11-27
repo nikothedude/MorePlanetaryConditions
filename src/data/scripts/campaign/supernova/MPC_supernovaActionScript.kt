@@ -2,10 +2,12 @@ package data.scripts.campaign.supernova
 
 import com.fs.graphics.particle.GenericTextureParticle
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.ParticleControllerAPI
 import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.StarTypes
@@ -23,6 +25,7 @@ import data.utilities.niko_MPC_miscUtils.playSoundEvenIfFar
 import data.utilities.niko_MPC_miscUtils.playSoundFar
 import data.utilities.niko_MPC_reflectionUtils
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
+import org.lazywizard.console.commands.Jump
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.addHitGlow
@@ -156,10 +159,11 @@ class MPC_supernovaActionScript(
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = Stage.ENDING
                     interval.setInterval(ENDING_PHASE_LENGTH, ENDING_PHASE_LENGTH)
 
-                    star.containingLocation.jumpPoints.first().desta
+                    getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
                 }
                 Stage.ENDING -> {
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = null
+                    getJumpPoints().forEach { it.memoryWithoutUpdate.unset(JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY) }
                     delete()
                     return
                 }
@@ -217,6 +221,18 @@ class MPC_supernovaActionScript(
         }
     }
 
+    fun getJumpPoints(): MutableSet<JumpPointAPI> {
+        val points = HashSet<JumpPointAPI>()
+
+        points.addAll(star.starSystem.jumpPoints as Collection<out JumpPointAPI>)
+        for (point in Global.getSector().hyperspace.jumpPoints) {
+            val casted = point as? JumpPointAPI ?: continue
+            if (casted.destinationStarSystem == star.starSystem) points += casted
+        }
+
+        return points
+    }
+
     fun getStageProgress(): Float {
         val curr = interval.elapsed
         val dur = interval.intervalDuration
@@ -225,7 +241,6 @@ class MPC_supernovaActionScript(
     }
 
     fun detonate() {
-
         doExplodeAlwaysEffects()
     }
 
