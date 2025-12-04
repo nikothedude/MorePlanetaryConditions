@@ -2,6 +2,12 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val SHIELD_BUBBLE_PLANET = "\$MPC_shieldBubblePlanet"
+    const val SUPERNOVA_SHIELD_JUMPPOINT = "\$MPC_supernovaShieldJumppoint"
+    const val SUPERNOVA_SHIELD_TOKEN = "\$MPC_supernovaShieldToken"
+    const val SUPERNOVA_NEBULA_TWO_MEMID = "\$MPC_supernovaRemnantUnder"
+    const val SUPERNOVA_NEBULA_ONE_MEMID = "\$MPC_supernovaRemnantReal"
+    const val SUPERNOVA_NEBULA_ID = "MPC_supernovaRemnantNebula"
     const val SUPERNOVA_INITIALIZED = "\$MPC_supernovaInitialized"
     // starysstenapi
     const val SUPERNOVA_TARGET = "\$MPC_supernovaTarget"

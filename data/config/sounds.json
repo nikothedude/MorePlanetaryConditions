@@ -125,6 +125,10 @@
 		],
 	},
 	# SUPERNOVA
+	"MPC_shieldPlanetRaise":
+	[
+		{"file":"sounds/sfx_shields/shields_up_large.ogg","pitch":0.8,"volume":1.4}
+	],
 	"MPC_supernovaAlarmImminent":
 	[
 		{"file":"sounds/MPC_supernovaAlarmImminent.ogg","pitch":1,"volume":0.6},

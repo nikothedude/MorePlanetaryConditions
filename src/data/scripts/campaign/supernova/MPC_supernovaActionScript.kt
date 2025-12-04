@@ -2,6 +2,7 @@ package data.scripts.campaign.supernova
 
 import com.fs.graphics.particle.GenericTextureParticle
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.ParticleControllerAPI
 import com.fs.starfarer.api.campaign.PlanetAPI
@@ -11,18 +12,25 @@ import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.StarTypes
+import com.fs.starfarer.api.impl.campaign.terrain.BaseTiledTerrain
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.CampaignState
 import com.fs.starfarer.campaign.CampaignUIPersistentData
 import com.fs.starfarer.campaign.ParticleController
+import com.fs.starfarer.campaign.int
 import com.fs.state.AppDriver
 import data.scripts.campaign.supernova.entities.MPC_supernovaExplosion
 import data.scripts.campaign.supernova.renderers.MPC_supernovaShader
+import data.scripts.campaign.supernova.terrain.SupernovaNebulaHandler
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.SUPERNOVA_NEBULA_ONE_MEMID
+import data.utilities.niko_MPC_ids.SUPERNOVA_NEBULA_TWO_MEMID
 import data.utilities.niko_MPC_miscUtils.changeTypeManual
 import data.utilities.niko_MPC_miscUtils.playSoundEvenIfFar
 import data.utilities.niko_MPC_miscUtils.playSoundFar
+import data.utilities.niko_MPC_miscUtils.setArc
 import data.utilities.niko_MPC_reflectionUtils
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import org.lazywizard.console.commands.Jump
@@ -43,10 +51,15 @@ class MPC_supernovaActionScript(
 
         const val PREPARE_PHASE_LENGTH = 9f // seconds
         const val DURING_PHASE_LENGTH = 30f
-        const val ENDING_PHASE_LENGTH = 5f
+        const val ENDING_PHASE_LENGTH = 10f
 
         const val MIN_STAR_SIZE = 100f
         const val MIN_CORONA_BAND = 25f
+
+        // the absolute max. we will make the edges more fuzzy...
+        const val MAX_NEBULA_RADIUS = 10000f
+        const val SHIELD_BUBBLE_ACTIVATE_DIST = 7000f
+        const val SHIELD_BUBBLE_DIST = 10000f
     }
 
     enum class Stage {
@@ -148,6 +161,11 @@ class MPC_supernovaActionScript(
 
                     Global.getSector().campaignUI.addMessage("WARNING:::MASSIVE SPATIAL DISRUPTION DETECTED", Misc.getNegativeHighlightColor())
 
+                    val nebula = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
+                        0f, 0f, star.containingLocation, "terrain", "nebula", 4 , 4, "MPC_supernovaRemnantNebula", star.starSystem.age) as? CampaignTerrainAPI ?: return
+                    star.containingLocation.memoryWithoutUpdate[SUPERNOVA_NEBULA_ONE_MEMID] = nebula.plugin
+                    getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
+
                 }
                 Stage.DURING -> {
                     supernovaGlow?.maxAge = 500f
@@ -155,15 +173,18 @@ class MPC_supernovaActionScript(
                     screenshake = null
 
                     star.containingLocation.memoryWithoutUpdate[MusicPlayerPluginImpl.MUSIC_SET_MEM_KEY] = "MPC_supernovaAmbience"
+                    /*val nebulaTwo = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
+                        0f, 0f, star.containingLocation, "terrain", "nebula_amber", 2, 2, star.starSystem.age) as? CampaignTerrainAPI ?: return
+                    star.containingLocation.memoryWithoutUpdate[SUPERNOVA_NEBULA_TWO_MEMID] = nebulaTwo.plugin*/
 
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = Stage.ENDING
                     interval.setInterval(ENDING_PHASE_LENGTH, ENDING_PHASE_LENGTH)
-
-                    getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
                 }
                 Stage.ENDING -> {
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = null
+                    supernovaGlow?.maxAge = 0f
                     getJumpPoints().forEach { it.memoryWithoutUpdate.unset(JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY) }
+                    failsafe()
                     delete()
                     return
                 }
@@ -211,13 +232,35 @@ class MPC_supernovaActionScript(
                 }
             }
             Stage.ENDING -> {
+                val shockwaveDist = shockwave!!.getProgress() * 5f
+                if (supernovaParticle is GenericTextureParticle) {
+                    val casted = supernovaParticle as GenericTextureParticle
+                    val inverted = 1f - (interval.elapsed / interval.intervalDuration)
+                    casted.setSize(shockwaveDist * inverted, shockwaveDist * inverted)
+                }
 
                 if (star.containingLocation.isCurrentLocation) {
                     val state = AppDriver.getInstance().currentState as CampaignState
                     state.suppressMusic(1f - progress)
                 }
-
             }
+        }
+    }
+
+    // finishes generation in case our supernova didnt actually do it all
+    private fun failsafe() {
+        val editors = SupernovaNebulaHandler.getEditors() ?: return
+        val rad = star.radius
+        for (editor in editors.values) {
+            editor.setArc(
+                100,
+                0f,
+                0f,
+                rad,
+                MAX_NEBULA_RADIUS,
+                0f,
+                360f
+            )
         }
     }
 

@@ -71,5 +71,12 @@
 		# inside active aurora/magnetic storm
 		#"loopTwo":"terrain_magstorm",
 	},
+
+    "MPC_supernovaRemnantNebula":{
+      "plugin":"data.scripts.campaign.supernova.terrain.MPC_supernovaNebula",
+      "musicSuppression":0, # TODO, make it based on various factors
+      # inside nebula
+      "loopOne":"terrain_nebula",
+    },
 }
 

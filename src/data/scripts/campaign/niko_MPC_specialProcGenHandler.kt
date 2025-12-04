@@ -36,20 +36,24 @@ import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
 import data.scripts.campaign.magnetar.MPC_magnetarThreatFleetManager
 import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
+import data.scripts.campaign.supernova.MPC_supernovaActionScript.Companion.SHIELD_BUBBLE_DIST
 import data.scripts.campaign.supernova.MPC_supernovaPrepScript
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.*
+import data.utilities.niko_MPC_ids.SUPERNOVA_SHIELD_JUMPPOINT
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import lunalib.lunaExtensions.generatePlanetCondition
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.*
 import org.magiclib.util.MagicCampaign
 import java.awt.Color
+import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 
 object niko_MPC_specialProcGenHandler {
 
@@ -120,11 +124,25 @@ object niko_MPC_specialProcGenHandler {
         )
         planetOne.generatePlanetCondition(StarAge.YOUNG)
 
+        val shieldPoint = MathUtils.getPointOnCircumference(system.location, star.radius + SHIELD_BUBBLE_DIST, MathUtils.getRandomNumberInRange(0f, 360f))
+        val token = system.createToken(shieldPoint)
+        token.setCircularOrbit(star, VectorUtils.getAngle(star.location, token.location), star.radius + SHIELD_BUBBLE_DIST, 290f)
+        system.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] = token
+
         system.addTag(Tags.THEME_SPECIAL)
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET] = system
 
         MPC_genUtils.shuffleLocation(system, true, 36000f, 80000f, 12000f, 49000f)
         system.autogenerateHyperspaceJumpPoints(true, true)
+
+        val innerPoint = system.jumpPoints[0] as JumpPointAPI
+        val jumpAngle = MathUtils.getRandomNumberInRange(0f, 360f)
+        innerPoint.setCircularOrbit(token, jumpAngle, 25f, -34f)
+        val dest = innerPoint.destinations[0].destination
+        val approx = MathUtils.getDistance(system.hyperspaceAnchor, innerPoint.getApproximateHyperspaceLoc())
+        dest.setCircularOrbit(dest.orbitFocus, jumpAngle, approx, -34f)
+
+        system.memoryWithoutUpdate[SUPERNOVA_SHIELD_JUMPPOINT] = innerPoint
     }
 
     private fun generateFortressSystem() {

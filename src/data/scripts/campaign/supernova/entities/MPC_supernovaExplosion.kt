@@ -2,6 +2,7 @@ package data.scripts.campaign.supernova.entities
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.StarSystemAPI
@@ -12,13 +13,22 @@ import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.campaign.supernova.MPC_supernovaActionScript
+import data.scripts.campaign.supernova.MPC_supernovaActionScript.Companion.SHIELD_BUBBLE_ACTIVATE_DIST
+import data.scripts.campaign.supernova.MPC_supernovaActionScript.Companion.SHIELD_BUBBLE_DIST
 import data.scripts.campaign.supernova.renderers.MPC_vaporizedShader
+import data.scripts.campaign.supernova.terrain.SupernovaNebulaHandler
+import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.SHIELD_BUBBLE_PLANET
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
 import kotlin.math.max
+import kotlin.math.roundToInt
+import data.utilities.niko_MPC_miscUtils.setArc
+import org.magiclib.kotlin.setAlpha
 import kotlin.math.roundToInt
 
 class MPC_supernovaExplosion: ExplosionEntityPlugin() {
@@ -33,6 +43,41 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
         const val MAX_ASTEROID_SIZE = 40f
 
         const val ASTEROID_DIVISOR = 10f
+
+        fun createShieldBubble(sys: StarSystemAPI): PlanetAPI {
+            val token = sys.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] as SectorEntityToken
+            val angle = VectorUtils.getAngle(sys.star.location, token.location)
+            val dist = MathUtils.getDistance(sys.star.location, token.location)
+            val planet = sys.addPlanet(
+                "MPC_shieldPlanet",
+                sys.star,
+                "Anomaly",
+                "MPC_shieldPlanet",
+                angle,
+                350f,
+                dist,
+                token.orbit.orbitalPeriod
+            )
+            planet.memoryWithoutUpdate["\$MPC_ignoresSupernova"] = true
+            //planet.market.addCondition("MPC_shieldBubbleCond")
+            sys.memoryWithoutUpdate[SHIELD_BUBBLE_PLANET] = planet
+
+            val jumpPoint = sys.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_JUMPPOINT] as JumpPointAPI
+            jumpPoint.setCircularOrbit(planet, VectorUtils.getAngle(token.location, jumpPoint.location), 400f, jumpPoint.orbit.orbitalPeriod)
+
+            sys.removeEntity(token)
+            sys.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] = null
+
+            Global.getSoundPlayer().playSound(
+                "MPC_shieldPlanetRaise",
+                1f,
+                1f,
+                planet.location,
+                Misc.ZERO
+            )
+
+            return planet
+        }
     }
 
     lateinit var token: SectorEntityToken
@@ -138,6 +183,19 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
         val viewportOffset = MathUtils.getDistance(params.loc, viewport.center)
         val ourDist = getProgress()
 
+        if (ourDist >= SHIELD_BUBBLE_ACTIVATE_DIST) {
+            val progress = ((ourDist - SHIELD_BUBBLE_ACTIVATE_DIST) / (SHIELD_BUBBLE_DIST - SHIELD_BUBBLE_ACTIVATE_DIST)).coerceAtMost(1f).coerceAtLeast(0f)
+            if (params.where.memoryWithoutUpdate[niko_MPC_ids.SHIELD_BUBBLE_PLANET] == null) {
+                createShieldBubble(params.where as StarSystemAPI)
+            }
+            val planet = params.where.memoryWithoutUpdate[niko_MPC_ids.SHIELD_BUBBLE_PLANET] as PlanetAPI
+
+            // todo - make it so it fades in. this doesnt work
+            /*planet.spec.
+            planet.spec.planetColor.setAlpha((255 * progress).roundToInt())
+            planet.spec.iconColor.setAlpha((255 * progress).roundToInt())*/
+        }
+
         val distFromUs = (viewportOffset - ourDist).coerceAtLeast(0f)
         if (distFromUs <= DIST_TO_PLAY_LOOP) {
             playLoop()
@@ -148,7 +206,7 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
             particle.scale = particle.scale.coerceAtMost(particleScaleMax)
         }
 
-        for (planet in params.where.planets.filter { !it.isStar && !it.memoryWithoutUpdate.getBoolean("\$MPC_ignoresSupernova") }) {
+        for (planet in params.where.planets.filter { !it.isStar && !it.memoryWithoutUpdate.getBoolean("\$MPC_ignoresSupernova") && !it.memoryWithoutUpdate.getBoolean("\$MPC_reactedToNova") }) {
             val planDist = MathUtils.getDistance(params.loc, planet.location)
             if ((planDist - planet.radius) <= ourDist) {
                 explodePlanet(planet)
@@ -160,6 +218,28 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
             if ((entityDist - entity.radius) <= ourDist) {
                 params.where.removeEntity(entity)
             }
+        }
+
+        val sys = params.where as StarSystemAPI
+        val star = sys.star
+        val rad = star.radius * 3f
+        if (ourDist <= rad) return
+        val editors = SupernovaNebulaHandler.getEditors() ?: return
+        for (editor in editors.values) {
+            editor.setArc(
+                100,
+                0f,
+                0f,
+                rad,
+                ourDist - 50f,
+                0f,
+                360f
+            )
+        }
+
+        if (MPC_supernovaActionScript.getCurrStage() == null) {
+            params.where.removeEntity(this.entity)
+            return
         }
     }
 

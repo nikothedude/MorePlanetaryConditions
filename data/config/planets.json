@@ -40,5 +40,21 @@
       "scaleMultStarscapeIcon":0.8,
       "lightPosition":[0,0,10], # in planet radii.  Not used for stars.  z > 0 is above the playing field.
 	  "tags":["codex_unlockable", "star_hidden_in_planet_list"]
-  }
+  },
+	"MPC_shieldPlanet":{
+		"name":"Shield Bubble",	
+		"tilt":-27, # left-right (>0 tilts to the left)
+		"pitch":2, # towards-away from the viewer (>0 pitches towards)
+		"rotation":-3, # degrees/second
+		"planetColor":[255,255,255,255],
+		"atmosphereThickness":0, # as fraction of radius.  Set to 0 for no atmosphere
+		"atmosphereThicknessMin":12, #  minimum thickness in pixels
+		"atmosphereColor":[100,140,160,155],
+		"texture":"graphics/planets/planetary_shield.png",
+		"icon":"graphics/warroom/ship_ring.png",
+		"iconColor":[255,255,255,125],
+		"isStar":false,
+		"lightPosition":[-2,-8,10], # in planet radii.  Not used for stars.  z > 0 is above the playing field.
+		"tags":["codex_unlockable", "star_hidden_in_planet_list"]
+	},
 }
