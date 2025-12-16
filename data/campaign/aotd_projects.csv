@@ -1,0 +1,2 @@
+id,name,description,stageWeight,iconData,tags,rewards,plugin,modID,,,,
+wwlb_missile_restoration,XLY-293 Restoration,"The recently recovered Lockbow-class missile carrier is formidable, but not at the peak of its power. Unfortunately, the nature of the damaged components are rather archaic, necessitating a dedicated restoration to bring it back to full strength.","wwlb_missile_restoration_1:20,wwlb_missile_restoration_2:20",MPC_lockbow:SHIP:500,ship_engineering,wwlb_missle_restoration:CUSTOM:1,data.VOK.MPC_missileImprovementProject,niko_morePlanetaryConditions,,,,

@@ -2,38 +2,63 @@ package data.scripts.campaign
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
+import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
 import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
+import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
+import com.fs.starfarer.api.impl.campaign.DerelictShipEntityPlugin
 import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
+import com.fs.starfarer.api.impl.campaign.WarningBeaconEntityPlugin
 import com.fs.starfarer.api.impl.campaign.enc.AbyssalRogueStellarObjectEPEC
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.*
+import com.fs.starfarer.api.impl.campaign.missions.hub.HubMissionWithTriggers
 import com.fs.starfarer.api.impl.campaign.procgen.DefenderDataOverride
+import com.fs.starfarer.api.impl.campaign.procgen.MagFieldGenPlugin
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseThemeGenerator
 import com.fs.starfarer.api.impl.campaign.procgen.themes.DerelictThemeGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.themes.MiscellaneousThemeGenerator
+import com.fs.starfarer.api.impl.campaign.procgen.themes.SalvageSpecialAssigner.ShipRecoverySpecialCreator
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.special.ShipRecoverySpecial
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager
 import com.fs.starfarer.api.impl.campaign.shared.WormholeManager.WormholeItemData
-import com.fs.starfarer.api.impl.campaign.terrain.*
-import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceAbyssPluginImpl.NASCENT_WELL_DETECTED_RANGE
+import com.fs.starfarer.api.impl.campaign.terrain.EventHorizonPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.MagneticFieldTerrainPlugin
+import com.fs.starfarer.api.impl.campaign.terrain.PulsarBeamTerrainPlugin
+import com.fs.starfarer.api.loading.CampaignPingSpec
+import com.fs.starfarer.api.loading.VariantSource
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.ai.ModularFleetAI
 import data.coronaResistStationCoreFleetListener
+import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_remnantMissileCarrierScript
 import data.scripts.campaign.magnetar.MPC_magnetarMothershipScript
 import data.scripts.campaign.magnetar.MPC_magnetarThreatFleetManager
 import data.scripts.campaign.magnetar.niko_MPC_magnetarField
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.*
+import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.isInhabited
 import data.utilities.niko_MPC_miscUtils.getApproximateOrbitDays
 import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.addSalvageEntity
+import org.magiclib.kotlin.getMarketsInLocation
 import org.magiclib.kotlin.getPulsarInSystem
+import org.magiclib.kotlin.hasRuins
+import org.magiclib.kotlin.makeImportant
 import org.magiclib.kotlin.setDefenderOverride
+import org.magiclib.kotlin.setSalvageSpecial
 import org.magiclib.util.MagicCampaign
 import java.awt.Color
 
@@ -51,6 +76,440 @@ object niko_MPC_specialProcGenHandler {
         generateCoronaImmunityStuff()
         generateRandomBaryonEmitters()
         generateMagnetar()
+        generateFortressSystem()
+    }
+
+    private fun generateFortressSystem() {
+        if (niko_MPC_settings.FORTRESS_SYSTEM_DISABLED) return
+        if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.FORTRESS_SYSTEM] != null) return
+
+        var candidates = HashSet<StarSystemAPI>()
+        var picked: StarSystemAPI? = null
+        val allNexi = MiscellaneousThemeGenerator.getRemnantStations(false, false)
+        val nexiSystems = allNexi.map { it.containingLocation }
+
+        for (system in nexiSystems) {
+            if (system !is StarSystemAPI) continue
+            if (system.hasTag(Tags.THEME_SPECIAL) || system.hasTag(Tags.THEME_HIDDEN) || system.getMarketsInLocation().any { it.isInhabited() }) continue
+            if (system.hasTag(Tags.SYSTEM_ABYSSAL)) continue
+            if (!system.isProcgen) continue
+
+            val planets = system.planets
+            if (planets.isEmpty()) continue
+            candidates += system
+            break
+        }
+        if (candidates.isEmpty()) {
+            niko_MPC_debugUtils.log.info("Failed to find a fortress system candidate")
+            return
+        }
+        val nebulaCandiates = candidates.filter { sys -> sys.hasSystemwideNebula() && sys.planets.filter { !it.isStar }.size > 1f }
+        if (nebulaCandiates.isNotEmpty()) candidates = nebulaCandiates.toHashSet()
+        picked = candidates.maxBy { it.planets.size }
+        var nexus: CampaignFleetAPI = allNexi.find { it.containingLocation == picked }!!
+
+        val hyperspace = Global.getSector().hyperspace
+        val beacon = hyperspace.getCustomEntitiesWithTag(Tags.WARNING_BEACON).minBy { MathUtils.getDistance(picked.hyperspaceAnchor, it) }
+        //FortressBeaconPingScript(beacon).start()
+        beacon.memoryWithoutUpdate[WarningBeaconEntityPlugin.PING_ID_KEY] = "MPC_fortressBeacon"
+        beacon.memoryWithoutUpdate[WarningBeaconEntityPlugin.PING_FREQ_KEY] = 2f
+        beacon.addTag("MPC_fortressBeacon")
+
+        val fleet = generateMissileCarrierFleet(picked, nexus.location)
+        fleet.addAssignment(
+            FleetAssignment.ORBIT_PASSIVE,
+            nexus,
+            Float.MAX_VALUE,
+            "scanning for targets"
+        )
+        fleet.addAssignment(
+            FleetAssignment.DEFEND_LOCATION,
+            picked.planets.random(),
+            Float.MAX_VALUE
+        )
+        fleet.addEventListener(RemnantMissileCarrierListener())
+        fleet.memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER] = true
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER_ACTIVE] = true
+
+        val localPlanets = picked.planets.filter { !it.isStar }.toMutableSet()
+        val innermostPlanet = localPlanets.minBy { MathUtils.getDistance(picked.center, it) } ?: genInnermostPlanet(picked)
+        localPlanets -= innermostPlanet
+        setupInnermostPlanet(innermostPlanet)
+        var secondInnermostPlanet: PlanetAPI? = null
+        if (localPlanets.isNotEmpty()) {
+            secondInnermostPlanet = localPlanets.minBy { MathUtils.getDistance(picked.center, it) }!!
+            localPlanets -= secondInnermostPlanet
+        } else {
+            secondInnermostPlanet = genSecondPlanet(picked, innermostPlanet)
+        }
+        setupSecondPlanet(secondInnermostPlanet)
+
+        val battlestation = picked.addSalvageEntity(
+            MathUtils.getRandom(),
+            "MPC_abandonedBattlestation",
+            Factions.NEUTRAL,
+            null
+        )
+        battlestation.setCircularOrbitPointingDown(
+            innermostPlanet,
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            innermostPlanet.radius + battlestation.radius + 30f,
+            -20f * innermostPlanet.radius
+        )
+
+        if (!innermostPlanet.market.hasRuins()) {
+            innermostPlanet.market.addCondition(Conditions.RUINS_EXTENSIVE)
+        }
+
+        val starfortEntity = picked.addSalvageEntity(
+            MathUtils.getRandom(),
+            "MPC_abandonedStarFort",
+            Factions.NEUTRAL,
+            null
+        )
+        starfortEntity.setCircularOrbitPointingDown(
+            secondInnermostPlanet,
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            secondInnermostPlanet.radius + starfortEntity.radius + 30f,
+            20f * secondInnermostPlanet.radius
+        )
+
+        if (!secondInnermostPlanet.market.hasRuins()) {
+            secondInnermostPlanet.market.addCondition(Conditions.RUINS_VAST)
+        }
+
+        for (jumpPoint in picked.jumpPoints + picked.planets.filter { it.isGasGiant }) {
+            val spotter = picked.addSalvageEntity(
+                MathUtils.getRandom(),
+                "MPC_missileSpotter",
+                Factions.NEUTRAL,
+                null
+            )
+
+            spotter.setCircularOrbitWithSpin(
+                jumpPoint,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                jumpPoint.radius + 70f,
+                60f,
+                -30f,
+                30f
+            )
+        }
+
+        val terrain = picked.terrainCopy
+        val stars = picked.planets.filter { it.isStar }
+        var addedRing = false
+        for (star in stars) {
+            if (star.isBlackHole) continue
+            if (!terrain.any { it.type == Terrain.MAGNETIC_FIELD && it.orbitFocus == star }) {
+                val widthToUse = 1500f
+                var visStartRadius = (star.radius * 2f)
+                var visEndRadius = visStartRadius + widthToUse
+                var bandWidth = (visEndRadius - visStartRadius) * 0.6f
+                var midRadius = (visStartRadius + visEndRadius) / 2
+                var auroraProbability = 1f
+                val auroraIndex =
+                    (MagFieldGenPlugin.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
+
+                val ringParams = MagneticFieldTerrainPlugin.MagneticFieldParams(
+                    bandWidth, midRadius,
+                    star,
+                    visStartRadius, visEndRadius,
+                    niko_MPC_settings.hyperMagFieldColors.random(),
+                    auroraProbability,
+                    *MagFieldGenPlugin.auroraColors[auroraIndex],
+                )
+                val magfield = picked.addTerrain(
+                    Terrain.MAGNETIC_FIELD,
+                    ringParams
+                ) as CampaignTerrainAPI
+                magfield.setLocation(star.location.x, star.location.y)
+                magfield.setCircularOrbit(star, 0f, 0f, 100f)
+            }
+
+            if (!addedRing && !terrain.any { (it.type == Terrain.ASTEROID_BELT || it.type == Terrain.RING) && it.orbitFocus == star }) {
+                val ring = picked.addRingBand(
+                    star,
+                    "misc",
+                    "rings_dust0",
+                    256f,
+                    1,
+                    Color.WHITE,
+                    256f,
+                    star.radius + 7000f,
+                    200f,
+                    Terrain.RING,
+                    null
+                )
+                ring.setLocation(star.location.x, star.location.y)
+                ring.setCircularOrbit(star, 0f, 0f, 200f)
+                addedRing = true
+            }
+        }
+
+        picked.addTag(Tags.THEME_SPECIAL)
+        picked.addTag(Tags.THEME_UNSAFE)
+
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER] = fleet
+        Global.getSector().memoryWithoutUpdate[niko_MPC_ids.FORTRESS_SYSTEM] = picked
+    }
+
+    private fun setupInnermostPlanet(planet: PlanetAPI) {
+
+        planet.changeType(getInnermostPlanetType(), MathUtils.getRandom())
+
+        val market = planet.market
+
+        val disallowedConds = listOf(
+            Conditions.RUINS_SCATTERED, Conditions.RUINS_VAST, Conditions.RUINS_EXTENSIVE, Conditions.RUINS_WIDESPREAD,
+            Conditions.VERY_HOT,
+            Conditions.COLD, Conditions.VERY_COLD, Conditions.POOR_LIGHT,
+            Conditions.ORE_SPARSE, Conditions.ORE_ABUNDANT, Conditions.ORE_MODERATE, Conditions.ORE_ULTRARICH,
+            Conditions.VOLATILES_TRACE, Conditions.VOLATILES_PLENTIFUL, Conditions.VOLATILES_DIFFUSE, Conditions.VOLATILES_ABUNDANT,
+            Conditions.NO_ATMOSPHERE, Conditions.HABITABLE
+        )
+
+        for (condId in disallowedConds) {
+            market.removeCondition(condId)
+        }
+
+        market.addConditionIfNotPresent(Conditions.ORE_ULTRARICH)
+        market.addConditionIfNotPresent(Conditions.THIN_ATMOSPHERE)
+        market.addConditionIfNotPresent(Conditions.HOT)
+        market.addConditionIfNotPresent(Conditions.RUINS_EXTENSIVE)
+
+        Global.getSector().memoryWithoutUpdate["\$MPC_FTRInnerPlanetName"] = market.name
+        market.memoryWithoutUpdate["\$MPC_FTRInnerPlanet"] = true
+        market.primaryEntity.memoryWithoutUpdate["\$MPC_FTRInnerPlanet"] = true
+    }
+
+    private fun genInnermostPlanet(picked: StarSystemAPI): PlanetAPI {
+        val star = picked.star
+
+        val newPlanet = picked.addPlanet(
+            "MPC_fortressPlanetOneManualSpawn",
+            star,
+            getInnermostPlanetName(),
+            getInnermostPlanetType(),
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            300f,
+            star.radius + 700f,
+            90f
+        )
+
+        return newPlanet
+    }
+
+    private fun getInnermostPlanetName(): String {
+        return "Aithern"
+    }
+
+    fun getInnermostPlanetType(): String = Planets.BARREN_DESERT
+
+    fun genSecondPlanet(picked: StarSystemAPI, firstPlanet: PlanetAPI): PlanetAPI {
+        val star = picked.star
+        val dist = MathUtils.getDistance(star, firstPlanet)
+
+        val newPlanet = picked.addPlanet(
+            "MPC_fortressPlanetOneManualSpawn",
+            star,
+            "Hanarat Skies",
+            getSecondPlanetType(),
+            MathUtils.getRandomNumberInRange(0f, 360f),
+            200f,
+            dist + 1000f,
+            270f
+        )
+
+        return newPlanet
+    }
+
+    private fun setupSecondPlanet(planet: PlanetAPI) {
+
+        planet.changeType(getSecondPlanetType(), MathUtils.getRandom())
+
+        val market = planet.market
+
+        val disallowedConds = listOf(
+            Conditions.RUINS_SCATTERED, Conditions.RUINS_VAST, Conditions.RUINS_EXTENSIVE, Conditions.RUINS_WIDESPREAD,
+            Conditions.VERY_HOT, Conditions.HOT,
+            Conditions.COLD, Conditions.VERY_COLD, Conditions.POOR_LIGHT,
+            Conditions.ORE_SPARSE, Conditions.ORE_ABUNDANT, Conditions.ORE_MODERATE, Conditions.ORE_ULTRARICH, Conditions.ORE_RICH,
+            Conditions.RARE_ORE_SPARSE, Conditions.RARE_ORE_RICH, Conditions.RARE_ORE_ULTRARICH, Conditions.RARE_ORE_MODERATE, Conditions.RARE_ORE_ABUNDANT,
+            Conditions.VOLATILES_TRACE, Conditions.VOLATILES_PLENTIFUL, Conditions.VOLATILES_DIFFUSE, Conditions.VOLATILES_ABUNDANT,
+            Conditions.NO_ATMOSPHERE, Conditions.THIN_ATMOSPHERE,
+            Conditions.EXTREME_TECTONIC_ACTIVITY,
+            Conditions.TOXIC_ATMOSPHERE,
+            Conditions.IRRADIATED,
+            Conditions.ORGANICS_TRACE, Conditions.ORGANICS_COMMON, Conditions.ORGANICS_ABUNDANT, Conditions.ORGANICS_PLENTIFUL,
+            Conditions.FARMLAND_POOR, Conditions.FARMLAND_RICH, Conditions.FARMLAND_ADEQUATE, Conditions.FARMLAND_BOUNTIFUL,
+            Conditions.DECIVILIZED
+        )
+
+        for (condId in disallowedConds) {
+            market.removeCondition(condId)
+        }
+
+        market.addConditionIfNotPresent(Conditions.RUINS_VAST)
+
+        market.addConditionIfNotPresent(Conditions.ORE_SPARSE)
+        market.addConditionIfNotPresent(Conditions.RARE_ORE_SPARSE)
+        market.addConditionIfNotPresent(Conditions.ORGANICS_COMMON)
+        market.addConditionIfNotPresent(Conditions.HABITABLE)
+        market.addConditionIfNotPresent(Conditions.FARMLAND_ADEQUATE)
+
+        market.addConditionIfNotPresent("niko_MPC_carnivorousFauna")
+
+        market.addConditionIfNotPresent(Conditions.POLLUTION)
+
+        market.memoryWithoutUpdate["\$MPC_aegisMissileSource"] = true
+        market.primaryEntity.memoryWithoutUpdate["\$MPC_aegisMissileSource"] = true
+        Global.getSector().memoryWithoutUpdate["\$MPC_FTRSecondPlanetName"] = market.name
+
+        market.primaryEntity.setDefenderOverride(DefenderDataOverride(
+            Factions.REMNANTS,
+            100f,
+            200f,
+            210f
+        ))
+    }
+
+    private fun getSecondPlanetType(): String = Planets.PLANET_TERRAN
+
+    fun generateMissileCarrierFleet(containingLoc: LocationAPI, loc: Vector2f): CampaignFleetAPI {
+        val FP = 375f
+
+        val params = FleetParamsV3(
+            null,
+            Factions.REMNANTS,
+            1f,
+            FleetTypes.PATROL_LARGE,
+            FP,  // combatPts
+            0f,  // freighterPts
+            0f,  // tankerPts
+            0f,  // transportPts
+            0f,  // linerPts
+            0f,  // utilityPts
+            0f
+        )
+        params.averageSMods = 3
+        params.aiCores = HubMissionWithTriggers.OfficerQuality.AI_ALPHA
+
+        val fleet = FleetFactoryV3.createFleet(params)
+        fleet.name = "Carrier Group"
+
+        containingLoc.addEntity(fleet)
+        fleet.setLocation(loc.x, loc.y)
+
+        fleet.inflateIfNeeded()
+        fleet.inflater = null
+
+        val member = fleet.fleetData.addFleetMember("MPC_lockbow_Ordnance")
+        val variant = member.variant
+        val newVariant = variant.clone()
+        newVariant.source = VariantSource.REFIT
+        newVariant.originalVariant = null
+        newVariant.hullVariantId = Misc.genUID()
+        member.setVariant(newVariant, false, false)
+        newVariant.addPermaMod(HullMods.AUTOMATED)
+        newVariant.addMod("MPC_toggleAutomationEnabled")
+        newVariant.addPermaMod("MPC_toggleAutomationEnabledHandler")
+        newVariant.addPermaMod(HullMods.AUXILIARY_THRUSTERS, true)
+        newVariant.addPermaMod(HullMods.REINFORCEDHULL, true)
+        newVariant.addPermaMod(HullMods.DEFENSIVE_TARGETING_ARRAY, true) // built into the hull, just improving it
+        newVariant.addTag(Tags.VARIANT_ALWAYS_RECOVERABLE)
+
+        for (member in fleet.fleetData.membersListCopy) {
+            member.variant.originalVariant = null
+        }
+
+        fleet.fleetData.sort()
+
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_AVOID_PLAYER_SLOWLY] = true
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_NO_JUMP] = true
+        fleet.memoryWithoutUpdate[MemFlags.MEMORY_KEY_MAKE_NON_AGGRESSIVE] = true
+
+        fleet.makeImportant("MPC_remnantMissileCarrier")
+
+        fleet.addTag("MPC_remnantMissileCarrierFleet")
+
+        MPC_remnantMissileCarrierScript(fleet).start()
+
+        member.captain = AICoreOfficerPluginImpl().createPerson(Commodities.ALPHA_CORE, Factions.REMNANTS, MathUtils.getRandom())
+        val capStats = member.captain.stats
+
+        capStats.setSkillLevel(Skills.MISSILE_SPECIALIZATION, 2f)
+        capStats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)
+        capStats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
+        capStats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+        capStats.setSkillLevel(Skills.POINT_DEFENSE, 2f)
+        capStats.setSkillLevel(Skills.SYSTEMS_EXPERTISE, 2f)
+        capStats.setSkillLevel(Skills.COMBAT_ENDURANCE, 2f)
+
+        fleet.commander = member.captain
+        val commander = fleet.commander
+        val comStats = commander.stats
+        comStats.setSkillLevel(Skills.CREW_TRAINING, 2f)
+        comStats.setSkillLevel(Skills.ELECTRONIC_WARFARE, 2f)
+        comStats.setSkillLevel(Skills.CYBERNETIC_AUGMENTATION, 2f)
+        comStats.setSkillLevel(Skills.TACTICAL_DRILLS, 2f)
+
+        member.repairTracker.cr = member.repairTracker.maxCR
+
+        fleet.fleetData.setSyncNeeded()
+        fleet.fleetData.syncIfNeeded()
+
+        fleet.isDiscoverable = true
+        fleet.discoveryXP = 100f
+
+        return fleet
+    }
+
+    class RemnantMissileCarrierListener: BaseFleetEventListener() {
+
+        override fun reportBattleOccurred(
+            fleet: CampaignFleetAPI?,
+            primaryWinner: CampaignFleetAPI?,
+            battle: BattleAPI?
+        ) {
+            super.reportBattleOccurred(fleet, primaryWinner, battle)
+
+            if (fleet == null) return
+            if (!fleet.fleetData.membersListCopy.any { it.hullId == "MPC_lockbow" }) {
+                Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER_ACTIVE] = false
+                Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER] = null
+                fleet.memoryWithoutUpdate.unset(niko_MPC_ids.REMNANT_MISSILE_CARRIER)
+                val script = fleet.scripts.find { it is MPC_remnantMissileCarrierScript } as? MPC_remnantMissileCarrierScript
+                script?.delete()
+
+                class DialogAdder: MPC_delayedExecutionNonLambda(
+                    IntervalUtil(0f, 0f),
+                    false,
+                    false
+                ) {
+                    override fun executeImpl() {
+                        val playerFleet = Global.getSector().playerFleet
+                        if (playerFleet.fleetData.membersListCopy.any { it.hullId.contains("MPC_lockbow") }) {
+                            val plugin = RuleBasedInteractionDialogPluginImpl("MPC_recoveredMissileCarrier")
+
+                            Global.getSector().campaignUI.showInteractionDialog(plugin, playerFleet)
+                        }
+                    }
+                }
+                DialogAdder().start()
+                //createCarrierWreck(fleet)
+            }
+        }
+
+        override fun reportFleetDespawnedToListener(
+            fleet: CampaignFleetAPI?,
+            reason: CampaignEventListener.FleetDespawnReason?,
+            param: Any?
+        ) {
+            Global.getSector().memoryWithoutUpdate[niko_MPC_ids.REMNANT_MISSILE_CARRIER_ACTIVE] = false
+            fleet!!.memoryWithoutUpdate.unset(niko_MPC_ids.REMNANT_MISSILE_CARRIER)
+        }
+
     }
 
     private fun generateMagnetar() {
@@ -290,6 +749,28 @@ object niko_MPC_specialProcGenHandler {
         system.addCustomEntity("MPC_magnetarShieldSix", null, "MPC_magnetarShield", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), 2900f, -90f)
         system.addCustomEntity("MPC_magnetarShield_hijacked", null, "MPC_magnetarShield_hijacked", Factions.NEUTRAL, null).setCircularOrbitPointingDown(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), ringCenter, -90f)
 
+        // THE TOTEM - i agreed that if hal solod magnetar with an afflictor id add a totem for his hubris. and. he
+        // soloed it with like 500 stacks of modded nonsense but a prOMISE IS A PROMISE
+        val perShipData = ShipRecoverySpecial.PerShipData("afflictor_Strike", ShipRecoverySpecial.ShipCondition.WRECKED)
+        perShipData.sModProb = 100f
+        perShipData.shipName = "Hal's Hubris"
+        val totemParams = DerelictShipEntityPlugin.DerelictShipData(
+            perShipData,
+            false
+        )
+        val totem = BaseThemeGenerator.addSalvageEntity(
+            system,
+            Entities.WRECK,
+            Factions.NEUTRAL,
+            totemParams
+        )
+        val creator = ShipRecoverySpecialCreator(null, 0, 0, false, null, null)
+        totem.setSalvageSpecial(creator)
+        totem.tags += "MPC_totemToHalHubris"
+        totem.isDiscoverable = true
+        totem.discoveryXP = 50f
+        totem.setCircularOrbitWithSpin(magnetar, MathUtils.getRandomNumberInRange(0f, 360f), ringCenter, 270f, 5f, -5f)
+
         // OMEGA CACHES
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitWithSpin(magnetar, 250f, 1208f, 365f, -10f, 10f)
         makeEntityHackable(system.addSalvageEntity(MathUtils.getRandom(), "MPC_magnetarOmegaCache", Factions.NEUTRAL), 1.9f).setCircularOrbitWithSpin(magnetar, 310f, 985f, 342f, -10f, 10f)
@@ -387,6 +868,47 @@ object niko_MPC_specialProcGenHandler {
         AbyssalRogueStellarObjectEPEC.setAbyssalDetectedRange(beacon, 2800f) // its a beacon, of course you can see it
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.MAGNETAR_SYSTEM] = system
+    }
+
+    class FortressBeaconPingScript(val beacon: SectorEntityToken): niko_MPC_baseNikoScript() {
+
+        val interval = IntervalUtil(3f, 3f) // seconds
+
+        override fun startImpl() {
+            beacon.addScript(this)
+        }
+
+        override fun stopImpl() {
+            beacon.removeScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            if (beacon.isExpired) {
+                delete()
+                return
+            }
+            interval.advance(amount)
+            if (interval.intervalElapsed()) {
+                firePing()
+            }
+        }
+
+        private fun firePing() {
+            val custom = CampaignPingSpec()
+            custom.width = 15f
+            custom.range = 500f
+            custom.duration = 0.5f
+            custom.alphaMult = 1f
+            custom.inFraction = 0.1f
+            custom.num = 5
+            custom.delay = 0.3f
+            custom.color = Misc.getNegativeHighlightColor()
+            //custom.sounds.add("default_campaign_ping")
+            Global.getSector().addPing(beacon, custom)
+            Global.getSoundPlayer().playSound("default_campaign_ping", 1f, 5f, beacon.location, Misc.ZERO)
+        }
     }
 
     /*private fun createOmegaMothershipDefenders(): CampaignFleetAPI {

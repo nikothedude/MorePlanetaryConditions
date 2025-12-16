@@ -1,10 +1,12 @@
 package data.scripts.campaign.rulecmd
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
 import com.fs.starfarer.api.campaign.RepLevel
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.rules.MemKeys
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.FleetEncounterContext
@@ -14,22 +16,40 @@ import com.fs.starfarer.api.impl.campaign.eventide.Actions
 import com.fs.starfarer.api.impl.campaign.eventide.DuelDialogDelegate
 import com.fs.starfarer.api.impl.campaign.eventide.DuelPanel
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactory
+import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
+import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
+import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import com.fs.starfarer.api.impl.campaign.ids.People
+import com.fs.starfarer.api.impl.campaign.ids.Skills
+import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseIntel
+import com.fs.starfarer.api.impl.campaign.intel.bases.LuddicPathBaseManager
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.rulecmd.FireBest
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript.Companion.getFractalColony
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
+import data.scripts.campaign.magnetar.crisis.MPC_hegemonyUnrestScript
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_aloofTargetAssignmentAI
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyContributionIntel.TargetHouse
 import data.scripts.campaign.magnetar.crisis.intel.hegemony.MPC_hegemonyMilitaristicHouseEventIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_ids
+import data.utilities.niko_MPC_ids.IAIIC_QUEST
+import data.utilities.niko_MPC_marketUtils.isInhabited
+import org.magiclib.kotlin.getFactionMarkets
 import org.magiclib.kotlin.getSourceMarket
+import org.magiclib.kotlin.getStationIndustry
+import org.magiclib.kotlin.makeImportant
+import org.magiclib.kotlin.makeUnimportant
+import sound.int
 
 class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
@@ -99,7 +119,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
                 if (!intel.factionContributions.any { it.factionId == Factions.HEGEMONY }) return false
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_didInitialDaudMeet")) return false
-                //if (!market.isFractalMarket()) return false
+                if (Global.getSector().economy.getMarket("eventide")?.isInhabited() != true) return false
                 return true
             }
 
@@ -153,6 +173,8 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
             "createIntel" -> {
                 val intel = MPC_hegemonyContributionIntel.get(true)
+                Global.getSector().importantPeople.getPerson(People.DAUD).makeUnimportant(IAIIC_QUEST)
+                Global.getSector().economy.getMarket("eventide").primaryEntity.makeImportant(IAIIC_QUEST)
                 intel?.sendUpdateIfPlayerHasIntel("Rumors of involvement", dialog.textPanel)
             }
 
@@ -267,6 +289,18 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 val check = params[1].getString(memoryMap)
                 return (intel.aloofState?.name == check)
             }
+            "generalStateIs" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                val check = params[1].getString(memoryMap)
+                return (intel.state.name == check)
+            }
+            "beginFinalWait" -> {
+                val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
+                intel.state = MPC_hegemonyContributionIntel.State.WAIT
+                intel.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
+
+                MPC_hegemonyUnrestScript().start()
+            }
             "ALOincrementEvidence" -> {
                 val intel = MPC_hegemonyContributionIntel.get(false) ?: return false
                 intel.evidencePieces++
@@ -328,6 +362,10 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 MPC_OrthusPaybackScript().start()
             }
 
+            "HONswitchToEntity" -> {
+
+            }
+
             "HONbeginFirstDuel" -> {
 
             }
@@ -343,6 +381,7 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
 
                 Global.getSector().memoryWithoutUpdate["\$MPC_playerFleetStorage"] = oldFleet
 
+                val entity = dialog.interactionTarget
                 dialog.interactionTarget = targetFleet
 
                 val config = FIDConfig()
@@ -367,9 +406,16 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
                 config.dismissOnLeave = false
                 config.printXPToDialog = true
 
-                val entity = dialog.interactionTarget
                 val originalPlugin = dialog.plugin
-                val plugin = FleetInteractionDialogPluginImpl(config)
+                val plugin = object : FleetInteractionDialogPluginImpl(config) {
+                    override fun updateEngagementChoice(withText: Boolean) {
+                        super.updateEngagementChoice(withText)
+
+                        options.removeOption(OptionId.ATTEMPT_TO_DISENGAGE)
+                        options.removeOption(OptionId.DISENGAGE)
+                        options.removeOption(OptionId.CLEAN_DISENGAGE)
+                    }
+                }
 
                 config.delegate = object : FleetInteractionDialogPluginImpl.BaseFIDDelegate() {
                     override fun notifyLeave(dialog: InteractionDialogAPI) {
@@ -424,15 +470,132 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
             }
             "HONforceSave" -> {
                 val campaignUI = Global.getSector().campaignUI ?: return false
-                campaignUI.cmdSaveCopy()
+                //campaignUI.cmdSave()
             }
             "HONfuckingDie" -> {
                 val campaignUI = Global.getSector().campaignUI ?: return false
                 campaignUI.cmdExitWithoutSaving()
             }
+            "HONisEnoughHonor" -> {
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                return intel.honor >= MPC_hegemonyContributionIntel.HONOR_NEEDED
+            }
             "HONincrementHonor" -> {
                 val intel = MPC_hegemonyContributionIntel.get() ?: return false
                 intel.incrementHonor(dialog.textPanel)
+            }
+            "HONsendGenericUpdate" -> {
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                val gen = params[1].getString(memoryMap)
+                intel.sendUpdateIfPlayerHasIntel(gen, dialog.textPanel)
+            }
+            "HONbeginKillingTraitor" -> {
+                val hesp = Global.getSector().economy.getMarket("hesperus")
+                hesp.primaryEntity.makeImportant(IAIIC_QUEST)
+
+                val intel = MPC_hegemonyContributionIntel.get() ?: return false
+                intel.sendUpdateIfPlayerHasIntel("MPC_IAIICHegeHonKillingTraitor", dialog.textPanel)
+            }
+            "HONgetTargetPather" -> {
+                var intelRaw: List<LuddicPathBaseIntel> = Global.getSector().intelManager.getIntel(LuddicPathBaseIntel::class.java) as List<LuddicPathBaseIntel>
+                var intel = intelRaw.filter { !it.market.starSystem.isEnteredByPlayer }
+                if (intel.isEmpty()) intel = intelRaw
+                val manager = LuddicPathBaseManager.getInstance()
+                if (intel.isEmpty()) {
+                    manager.advance(100000f)
+                    intel = Global.getSector().intelManager.getIntel(LuddicPathBaseIntel::class.java) as List<LuddicPathBaseIntel>
+                }
+                val target = intel.random().market
+                val fp = Global.getSector().playerFleet.fleetPoints.coerceAtLeast(350).toFloat()
+
+                val params = FleetParamsV3(
+                    target,
+                    target.locationInHyperspace,
+                    Factions.LUDDIC_PATH,
+                    null,
+                    FleetTypes.PATROL_LARGE,
+                    fp,  // combatPts
+                    0f,  // freighterPts
+                    0f,  // tankerPts
+                    0f,  // transportPts
+                    0f,  // linerPts
+                    0f,  // utilityPts
+                    0f // qualityMod
+                )
+                params.officerNumberMult = 3f
+                val fleet = FleetFactoryV3.createFleet(params)
+
+                target.containingLocation.addEntity(fleet)
+                fleet.setLocation(target.primaryEntity.location.x, target.primaryEntity.location.y)
+
+                class AfterMarketGoneAssignment(): Script {
+                    override fun run() {
+                        val despawnLoc = Global.getSector().getFaction(Factions.LUDDIC_PATH).getFactionMarkets().randomOrNull() ?: Global.getSector().economy.marketsCopy.random()
+
+                        fleet.clearAssignments()
+                        fleet.addAssignment(
+                            FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
+                            despawnLoc.primaryEntity,
+                            Float.MAX_VALUE
+                        )
+                    }
+
+                }
+
+                fleet.isNoFactionInName = true
+                fleet.name = "${target.name} Sacred Backguard"
+                fleet.addAssignment(
+                    FleetAssignment.ORBIT_AGGRESSIVE,
+                    target.primaryEntity,
+                    9999f,
+                    "in eternal vigil",
+                    AfterMarketGoneAssignment()
+                )
+
+                target.primaryEntity.customDescriptionId = "MPC_IAIICIronPathDefectorMkt"
+
+                target.primaryEntity.makeImportant(IAIIC_QUEST)
+                var admin = target.admin
+                if (admin == null || admin.name.first == "") {
+                    admin = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
+                    target.admin = admin
+                    target.commDirectory.addPerson(admin)
+                }
+                admin.makeImportant(IAIIC_QUEST)
+                admin.stats.setSkillLevel(Skills.INDUSTRIAL_PLANNING, 1f)
+                admin.memoryWithoutUpdate.set("\$MPC_IAIICHegeHonIronPathDefector", true)
+
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICHonPatherTargetMarketId"] = target.id
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICHonPatherTargetMarketName"] = target.name
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICHonPatherTargetMarketSysName"] = target.starSystem.name
+                MPC_IAIICHegeHonPatherTargetChecker(target).start()
+
+                val station = target.getStationIndustry()
+                if (station != null) {
+                    target.removeIndustry(station.id, null, false)
+                }
+                target.addIndustry(Industries.STARFORTRESS)
+                target.removeIndustry(Industries.PATROLHQ, null, false)
+                target.removeIndustry(Industries.MILITARYBASE, null, false)
+                target.removeIndustry(Industries.HIGHCOMMAND, null, false)
+                target.addIndustry(Industries.HIGHCOMMAND)
+                target.getIndustry(Industries.HIGHCOMMAND).isImproved = true
+                target.removeIndustry(Industries.GROUNDDEFENSES, null, false)
+                target.removeIndustry(Industries.HEAVYBATTERIES, null, false)
+                target.addIndustry(Industries.HEAVYBATTERIES)
+                target.addIndustry(Industries.WAYSTATION)
+
+                target.respawnAllFleets()
+
+            }
+            "HONbeginDuelPrep" -> {
+                val contribIntel = MPC_hegemonyContributionIntel.get() ?: return false
+                contribIntel.honorableState = MPC_hegemonyContributionIntel.HonorableState.WIN_FINAL_DUEL
+                contribIntel.sendUpdateIfPlayerHasIntel(contribIntel.honorableState, dialog.textPanel)
+            }
+            "HONbeginPatherHunt" -> {
+                val contribIntel = MPC_hegemonyContributionIntel.get() ?: return false
+                contribIntel.sendUpdateIfPlayerHasIntel("MPC_killingJerusDeserters", dialog.textPanel)
             }
             "HONstateIs" -> {
                 val intel = MPC_hegemonyContributionIntel.get() ?: return false
@@ -442,6 +605,29 @@ class MPC_IAIICHegeCMD: BaseCommandPlugin() {
         }
 
         return false
+    }
+
+    class MPC_IAIICHegeHonPatherTargetChecker(val market: MarketAPI): niko_MPC_baseNikoScript() {
+        override fun startImpl() {
+            Global.getSector().addScript(this)
+        }
+
+        override fun stopImpl() {
+            Global.getSector().removeScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            if (!market.isInEconomy) {
+                val intel = MPC_hegemonyContributionIntel.get()
+                intel?.sendUpdateIfPlayerHasIntel("HON_KILLED_DESERTERS", null)
+                intel?.incrementHonor(null)
+                Global.getSector().playerPerson.memoryWithoutUpdate["\$MPC_didJerusDesertersTask"] = true
+                delete()
+            }
+        }
+
     }
 
     class MPC_OrthusPaybackScript(): niko_MPC_baseNikoScript() {

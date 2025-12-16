@@ -1,0 +1,14 @@
+{
+	"MPC_fortressBeacon":{
+		"sounds":["default_campaign_ping", "", "default_campaign_ping", "", "default_campaign_ping"],
+		"color":[255,165,30,255],
+		"useFactionColor":false,
+		"width":7,
+		"range":500,
+		"duration":1.2,
+		"invert":false,
+		
+		"num":5,
+		"delay":0.2,
+	},
+}

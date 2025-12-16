@@ -1,6 +1,5 @@
 package data.utilities
 
-import niko_SA.SA_debugUtils
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.invoke.MethodType
@@ -248,5 +247,18 @@ object niko_MPC_reflectionUtils { // yoinked from exotica which yoinked it from 
     class ReflectedMethod(val method: Any) {
         fun invoke(instance: Any?, vararg arguments: Any?): Any? =
             invokeMethodHandle.invoke(method, instance, arguments)
+    }
+
+    //Useful for some classes with just one field
+    fun getFirstDeclaredField(instanceToGetFrom: Any): Any? {
+        var field: Any? = instanceToGetFrom.javaClass.declaredFields[0]
+        setFieldAccessibleHandle.invoke(field, true)
+        return getFieldHandle.invoke(field, instanceToGetFrom)
+    }
+
+    fun getLastDeclaredField(instanceToGetFrom: Any): Any? {
+        var field: Any? = instanceToGetFrom.javaClass.declaredFields[instanceToGetFrom.javaClass.declaredFields.size - 1]
+        setFieldAccessibleHandle.invoke(field, true)
+        return getFieldHandle.invoke(field, instanceToGetFrom)
     }
 }

@@ -2,6 +2,10 @@ package data.utilities
 
 object niko_MPC_ids {
 
+    const val REMNANT_MISSILE_CARRIER = "\$MPC_remnantMissileCarrier"
+    const val REMNANT_MISSILE_CARRIER_ACTIVE = "${REMNANT_MISSILE_CARRIER}_active"
+    const val FORTRESS_SYSTEM = "\$MPC_fortressSys"
+
     const val IAIIC_QUEST = "\$MPC_IAIICquest"
     const val DEFEATED_FRC_RAID = "\$MPC_defeatedFRCRaid"
 

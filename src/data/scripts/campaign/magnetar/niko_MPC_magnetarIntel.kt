@@ -48,6 +48,20 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
                         percentNeeded
                     )
                 }
+                "FIRST_ADD" -> {
+                    info?.addPara(
+                        "New %s added",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "exploration intel"
+                    )
+                    info?.addPara(
+                        "Holds %s information for in-system navigation",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "extremely important"
+                    )
+                }
             }
         }
         /*info!!.addSpacer(3f)
@@ -134,7 +148,7 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
     override fun canTurnImportantOff(): Boolean = true
 
     override fun getName(): String {
-        return "An important travel advisory"
+        return "An important travel advisory: Magnetars"
     }
 
     override fun getIntelTags(map: SectorMapAPI?): Set<String?>? {

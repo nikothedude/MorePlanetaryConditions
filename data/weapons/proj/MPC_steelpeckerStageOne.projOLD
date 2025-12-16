@@ -1,0 +1,78 @@
+{
+	"id":"MPC_steelpeckerStageOne",
+	"specClass":"missile",	
+	"missileType":"MIRV",
+	"onFireEffect":"data.scripts.weapons.MPC_interceptScript",
+	"sprite":"graphics/missiles/dragonfire.png",
+	"size":[13,26],	
+	"center":[6.5,13],
+	"collisionRadius":20,
+	"collisionClass":"MISSILE_NO_FF",
+	"explosionColor":[255,100,100,255],  # purely visual, will get a white additively blended core on top of this color
+	"explosionRadius":100, # purely visual
+	#"alwaysAccelerate":true,
+	"engineSpec":{
+				  #"turnAcc":150,
+				  #"turnRate":70,
+				  #"acc":200,
+				  #"dec":100},
+				  "turnAcc":1000,
+				  "turnRate":500,
+				  "acc":2000,
+				  "dec":2000,
+				  "maxSpeed":1500,},
+	"engineSlots":[{"id":"ES1",
+					"loc":[-12, 0],
+				    #"style":"MISSILE_MIDLINE",
+				    "style":"CUSTOM",
+					"styleSpec":{
+						"mode":"QUAD_STRIP", # PARTICLES or QUAD_STRIP, determines which params are used
+						"engineColor":[100,165,255,255],
+						"contrailDuration":2,
+						"contrailWidthMult":2,
+						"contrailWidthAddedFractionAtEnd":2,  # can be negative. makes trail spread out/narrow at the end
+						"contrailMinSeg":15, # min segment length, in pixels
+						"contrailMaxSpeedMult":.0f,
+						"contrailAngularVelocityMult":0.5f,
+						"contrailSpawnDistMult":.75, # how far away from engine it starts
+						"contrailColor":[100,100,100,150],
+						"glowSizeMult":1.5,
+						"type":"SMOKE" # GLOW or SMOKE; additive or regular blend mode
+					},
+				    "width":5.0,
+				    "length":39.0,
+				    "angle":180.0}],
+	"behaviorSpec":{"behavior":"MIRV",
+					"splitRange":1250,
+					"minTimeToSplit":0.0,
+					"canSplitEarly":true,
+					"splitSound":"reaper_fire",
+					"numShots":1,
+					"damage":375,
+					"emp":0, # needs to match highlight in weapon_data.csv
+					"impact":30,
+					"damageType":FRAGMENTATION,
+					"hitpoints":150,
+					#"evenSpread":true,
+					"arc":0,
+					"spreadInaccuracy":0,
+					#"spreadSpeed":300,
+					"spreadSpeed":50, # controls speed of launched projectile
+					"spreadSpeedRange":0,
+					#"projectileRange":600, # only needed if not a missile
+					"projectileSpec":"MPC_steelpeckerStageTwo",
+					"debrisSmall":2,
+					"debrisMedium":0,
+					"debrisLarge":0,
+					"smokeSpec":{"particleSizeMin":5.0,
+								 "particleSizeRange":5.0,
+								 "cloudParticleCount":11,
+								 "cloudDuration":1.0,
+								 "cloudRadius":10.0,
+								 "blowbackParticleCount":0,
+								 "blowbackDuration":0,
+								 "blowbackLength":0,
+								 "blowbackSpread":0,
+								 "particleColor":[100,100,100,200]}
+					}				    
+}

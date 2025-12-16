@@ -121,9 +121,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             }
         }
 
-        if (decrement <= 0 && industry.id == "militarygarrison") { // aotd
+        /*if (decrement <= 0 && industry.id == "militarygarrison") { // aotd
             decrement += AOTD_DEFENSE_FORCE_HAZARD_MULT
-        }
+        }*/
 
         val deficit = industry.getMaxDeficit(*(industry.allDemand.map { it.commodityId }.toTypedArray()))
         if (decrement > 0 && deficit != null && deficit.one != null) {
@@ -145,9 +145,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
                 break
             }
         }
-        if (amount <= 0 && industry.id == "militarygarrison") { // aotd
+        /*if (amount <= 0 && industry.id == "militarygarrison") { // aotd
             amount += AOTD_DEFENSE_FORCE_FOOD_PROD
-        }
+        }*/
 
         val anchorPoint = 3
         val sizeBonus = (market.size - anchorPoint).coerceAtMost(0)
@@ -166,9 +166,9 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
                 break
             }
         }
-        if (amount <= 0 && industry.id == "militarygarrison") { // aotd
+        /*if (amount <= 0 && industry.id == "militarygarrison") { // aotd
             amount += AOTD_DEFENSE_FORCE_LUXURY_PROD
-        }
+        }*/
 
         val anchorPoint = 5
         val sizeBonus = (market.size - anchorPoint).coerceAtMost(0)
@@ -204,12 +204,12 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
             "Bonus", "food", "luxury goods"
         )
         if (niko_MPC_settings.AOTD_vaultsEnabled) {
-            tooltip.addPara(
+            /*tooltip.addPara(
                 "A %s is particularly effective (%s)",
                 10f,
                 Misc.getHighlightColor(),
                 "standing army", "planetary defense force"
-            )
+            )*/
         }
     }
 }

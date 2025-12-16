@@ -18,7 +18,7 @@ class MPC_interceptScriptTwo: MPC_interceptScript() {
     class MPC_proxFuseScript(val projectile: MissileAPI, val ai: GuidedMissileAI, val engine: CombatEngineAPI) : BaseEveryFrameCombatPlugin() {
 
         companion object {
-            const val RANGE_TO_DETONATE = 50f
+            const val RANGE_TO_DETONATE = 15f
         }
 
         override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
@@ -37,16 +37,16 @@ class MPC_interceptScriptTwo: MPC_interceptScript() {
 
             val explosion = DamagingExplosionSpec(
                 0.1f,
-                90f,
+                20f,
                 RANGE_TO_DETONATE,
                 projectile.damage.damage,
                 projectile.damage.damage,
                 CollisionClass.MISSILE_NO_FF,
                 CollisionClass.MISSILE_NO_FF,
-                1.5f,
-                3f,
                 0.5f,
-                10,
+                1f,
+                0.2f,
+                2,
                 Color(185, 245, 255, 255),
                 Color(185, 245, 255, 255)
             )

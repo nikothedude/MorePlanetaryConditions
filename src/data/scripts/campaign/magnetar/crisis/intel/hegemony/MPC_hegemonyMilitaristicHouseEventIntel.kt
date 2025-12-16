@@ -112,7 +112,9 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
             val base = ind.spec.disruptDanger.disruptionDays
             val per = BASE_POINTS_FOR_INDUSTRY_DISRUPT.toFloat()
 
-            val days = ind.disruptedDays
+            var days = ind.disruptedDays
+
+            if (ind.spec.hasTag(Industries.TAG_UNRAIDABLE)) days *= 0.2f
 
             val points = (days / base * per).roundToInt().coerceAtMost(MAX_POINTS_FOR_INDUSTRY_DISRUPT)
             return points
@@ -422,7 +424,7 @@ class MPC_hegemonyMilitaristicHouseEventIntel: BaseEventIntel(), ColonyPlayerHos
         var points = 0
         for (industry in market.industries) {
             if (recentlyDisrupted.contains(industry)) continue
-            if (industry.spec.hasTag(Industries.TAG_UNRAIDABLE)) continue
+            //if (industry.spec.hasTag(Industries.TAG_UNRAIDABLE)) continue
 
             val curr = computeIndustryDisruptedPoints(industry)
             if (curr > 0) {

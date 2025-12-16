@@ -87,6 +87,8 @@ Idea two
         Is less of a zealot and more of a practicalist
             Still faithful, but wishes best for the people
 
+        In harsh love with aloof
+
     CHARACTER THREE - Asher plant
         Kind of a cunt?
         Not actually directly affiliated with the militants, more of af reelance worker
@@ -427,7 +429,7 @@ GENERAL OUTLINE
         Initially hostile, but when you offer a deal, they get intrigued
 
         This guy is intensely zealotic, constantly quoting ludd, but believes in the "eternal torment of heretical intelligence"
-        Promises each AI core you give them will be cosigned to literal eternal fucking hell
+        Promises each AI core you give them will be cosigned to literal eternal fucking super hell
             Very nice guy!
             And this will somehow bring them all closer to Ludd...?
 
@@ -453,8 +455,9 @@ GENERAL OUTLINE
                 Had to do it - Merc++
 
             ...this provokes a knight eradication raid on the station. Oopsie
+            We never said the pathers were smart.
 
-    Wait another week or so...
+    Wait a day or so...
         Get called back
         The guards are visibly upset
         "...hey. They aren't too happy in there. And uh... well, just go in and see for yourself."
@@ -473,6 +476,63 @@ GENERAL OUTLINE
             She hisses and recoils, accusing him of being a tyrant, but the guards back him. Quickly, she's apprehended and locked in the brig while naive takes over
             Aloof looks very shaken.
                 Comfort
+                    Aloof takes a moment to breathe, gather his thoughts
                 Demand to get on with it
+                    Aloof grimaces, closes his eyes. Takse a breath. determination comeso ver him. He nods. Opens eyes. Looks at you. Complies.
+
+                Either way, a determination comes over him. He WILL complete this mission.
+
+                "She was lost in her fervor. She believes herself to be a paladin. But she was but a knight." He sighs, performing a ludic hand-gesture
+                    Pinching his fingers, raising them above his head, then slowly dragging them down to his chin.
+                "One day, I hope she will see the light."
+                    ...this little sequence feels a little weird. Maybe axe it? Maybe he just goes straight into the next task?
+
+                Then, he goes right into it. Full personality shift. Command mode.
+                    But his aloofness hides underneath. At times, it comes out
+
+                Taking a shakey breath... he squares his shoulders... and looks you RIGHt in the eyes. But he still doesnt look too good.
+                "-the... the last operation, did not work." he pants, shoulders shivering
+                "It was a desperate move - but it did get eyes off us. They think the perpetrators are dead. They are not."
+                Gasping, he continues, "Any further actions will have suspicion cast on them, we will have to be careful"
+                "-give me some time to think about our next moves. I... I also need some time to talk to her. She's damaged." (Pain) (Not exact words)
+                    Nod solemnly
+                        They sniffle, a solemntude coming over them
+                    "You'd best have something for me when I get back. I'm getting annoyed."
+                        They shiver, and nod, walking off
+                    "How long?" - Radiant
+                        A week
+
+                Regardless, he freezes - staring at a guard - before moments later, uner his breath, hanging his head, ordering your exit as he turns
+                to the brig and walks slowly
+                    Realizing. Maybe make him a her. Woman? I dunno.
 
 
+    Wait another week...
+        Called back - again
+        The guards smile and offer friendly greetings when you arriave
+            Smile
+                :)
+            Ignore
+
+        In the middle of the room is a far better dressed aloof
+            In military garb, facing away, hands hidden behind his back...
+            Then - he tilts his head, regarding you
+            Turns. A rigid look on his face. Almost like a completely different person
+            "PlayerName."
+                "AloofName."
+                "You look good."
+                He pauses, closes his eyes, and nods, before regarding you again
+            He stares at you. His expression softens, his lips quiver half-open, as he contemplates on what to say. His head drifts...
+            He wants to say thank you. He wants to say sorry... but...
+            He takes a quick breath and jerks his head back up, immediately beginning to speak
+
+            "The Luddic populace isn't biting just yet. Hardcore wasn't wrong - they're not doing much. But she wasn't right either."
+            Splits into two things here
+            1. "It was... 'foolish' (she hesitates to use this word here - doesnt want to disredit hardcore) t-to... *breath*
+            imply the average church citizen would rise up when only faced with proof of wrongdoing. We must get their peers on our side -
+            which is quite difficult. Thankfully, I haev an idea."
+                Go to churchpathpart.txt
+            2. "She was right in that the people feel powerless at the moment (or something), but any attack on the knights will be used to galvanize the people again."
+                "The people need to be made sure of their own ability to act without tipping the Knights off - and given the means to push against the Knights
+                when the time comes."
+                Go to churchknightpart.txt

@@ -22,13 +22,15 @@
     <orderEntry type="library" name="Station-Augments" level="project" />
     <orderEntry type="library" name="ungp" level="project" />
     <orderEntry type="library" name="GraphicsLib" level="project" />
-    <orderEntry type="library" name="starsector-core" level="project" />
-    <orderEntry type="library" name="MagicLib-Kotlin" level="project" />
     <orderEntry type="library" name="SS-armaa-3.1" level="project" />
     <orderEntry type="library" name="luna" level="project" />
     <orderEntry type="library" name="ExerelinCore" level="project" />
     <orderEntry type="library" name="sotf" level="project" />
     <orderEntry type="library" name="Industrial.Evolution3.3" level="project" />
-    <orderEntry type="library" name="aitweaks" level="project" />
+    <orderEntry type="library" name="src" level="project" />
+    <orderEntry type="library" name="commons-compiler" level="project" />
+    <orderEntry type="library" name="starsector-cor" level="project" />
+    <orderEntry type="library" name="MagicLib" level="project" />
+    <orderEntry type="library" name="WideHorizons" level="project" />
   </component>
 </module>

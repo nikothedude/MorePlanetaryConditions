@@ -41,19 +41,19 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken): niko_MPC_baseN
         val iter = affecting.iterator()
         val fleetBin: MutableSet<CampaignFleetAPI> = HashSet()
 
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             val it = iter.next()
-            var shouldRemove=false
-            if((it.fleetData == null)||(it.fleetData.fleet == null)){
-                shouldRemove=true
+            var shouldRemove = false
+            if ((it.fleetData == null) || (it.fleetData.fleet == null)) {
+                shouldRemove = true
             }
-            else if (!shouldAffectFleet((it.fleetData.fleet))){
-                if (!fleetBin.contains(it.fleetData.fleet)){
+            else if (!shouldAffectFleet((it.fleetData.fleet))) {
+                if (!fleetBin.contains(it.fleetData.fleet)) {
                     fleetBin += it.fleetData.fleet
                 }
-                shouldRemove=true
+                shouldRemove = true
             }
-            if(shouldRemove){
+            if(shouldRemove) {
                 unAffectFleetMember(it)
                 iter.remove()
             }
@@ -129,7 +129,7 @@ open class MPC_coronaResistScript(val entity: SectorEntityToken): niko_MPC_baseN
     }
 
     open fun shouldAffectFleet(fleet: CampaignFleetAPI): Boolean {
-        return !fleet.isInHyperspaceTransition
+        return !fleet.isInHyperspaceTransition && fleet.containingLocation == entity.containingLocation
     }
 
     open fun getTargetFleets(): MutableSet<CampaignFleetAPI> {

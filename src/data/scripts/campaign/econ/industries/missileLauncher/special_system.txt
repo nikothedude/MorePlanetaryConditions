@@ -1,0 +1,80 @@
+Timeline
+    System was a somewhat important, or at least well-off system, in the frontier days of the domain
+    But they were planning to rebel
+    Two polities: Hanarat Skies and Aithern
+        Aithern, the innermost planet, was a heavy production hub
+        Hanarat skies was primarily agrarian and extractive
+
+        They worked together, had a secret allegiance to eachother
+            But only to fuck w/ the domain oh my god yeah
+            COMSEC actively worked to push them apart. Honestly, they were never g etting too far.
+
+    So they stole a missile complex and made a lockbow around it
+
+    But they changed their minds and realized a strategic wepaon is best for offense
+    So instead they decided to prototype the aegis missile system, keeping the lockbox in the back
+
+    Then the collapse
+    The system quickly collapsed to pirates and infighting between the two polities
+
+    Fast forward to the ai wars, remnants found it and converted it into an AI ship with direction from tritach
+
+    The system was then used as a remnant fortress for a while, but the ai wars ended before the carrier could be used offensively
+
+Specifics
+    The system had a significant dissident culture
+        Noone really said anything aloud, but people did not like the domain here
+
+        Guerilla camps on hanarat skies
+        Hidden recruitment pamphlets within panels on the stations
+
+    Hanarat skies was destroyed by the remnants via bombardment
+    Aithern, the innermost planet, was a heavy production hub
+    Hanarat skies was primarily agrarian and extractive
+
+    They had stations beacuse pirates REALLY loved to pick on them
+        A very tricky pirate gang
+        Another raeson they wanted to rebel... the domain didnt offer much protection
+
+Culture
+    Hanarat skies was a somewhat well-off society and enjoyed arts. Joyous
+    Aithern was a rough-and-tumble colony that did a lot of drugs and produced a lot of shit
+
+    Hanarat thought aithern were a bunch of dirt-scum
+    Aithern thought hanarat hated them for no reason, but also thought hanarat had it soooooo good
+
+Outline
+    Hanarat
+        Starfort
+
+
+        Hanarat skies
+            As with everything else, pretty heavily stripped already
+            Can still get a lot, though
+
+            "Unlike most of the ruins you've explored before, $planetName sticks out with the sheer aesthetics. The most common construction material is marble -
+            followed by granite, and finally, painted steel. Within the cratered ruins of homes, past the dried blood of
+            your ancestors, paintings, sculptures, and faded artifacts still lie - if they were lucky enough to evade the battle fought here."
+            "A sparse number of skeletonized bodies, set in heavy armor and hauling heavy weapons, line the streets, surrounded by their work. Rubble, scorchmarks, and death is the most common
+            sight in this tragic world. Beyond that are the massive craters - remnant from an orbital bombardment, no doubt. Despite this warscape,
+            the (official) military infrastructure on $playerName is significantly lacking. There is nary a police station, let alone a military base. This world must
+            have been subject to an invasion, you conclude."
+
+            "Further, more in-depth exploration reveals even more insights to the nature of this world. Heavy sub-surface weapon emplacements, cleverly hidden,
+            dot the crust of the earth, accompanied by countless small guerilla camps fitted with small-arms, anti-Domain recruitment material, and countless bits of media
+            picking fun at the '$global.MPC_aithernPlanetName' snot-dribblers. And yet, you find evidence of cooperation between the two polities in the same camps -
+            an effort to pool resources and rebel against the Domain. From what is written, it seems the majority of the military resource came from $global.MPC_aithernPlanetName,
+            and the majority of the capital from $planetName."
+
+            (Show missile image here?)
+            "This collaboration seems to have coalesced into one final plan that would secure their victory; some sort of
+            missile defense system. But unlike the missile carrier raining hellfire in this system, it would have been planet-based.
+            Longer range. More reliable, and more deadly. Enough to push out an entire battlegroup with firepower alone. However, it was never completed -
+            if the massive scaffolding around the equator is evidence enough."
+
+            "The blueprints are still intact, and found in a particularly large (and lavishly decorated) underground camp. The only missing piece is a missile complex -
+            one conveniently placed in this very system. Maybe you could succeed where they failed."
+
+            The aegis missile pods are stripped down but you find the specs
+                "Besides, who has a cruise missile autofactory but you?"
+            +Industry BP

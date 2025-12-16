@@ -27,10 +27,19 @@ class MPC_driveFieldResonator: BaseHullMod() {
         if (member == null) return
         val fleet = member.fleetData?.fleet ?: return
         if (fleet.abilities.values.any { it.isActive && it.spec.hasTag(Abilities.TAG_BURN + "+") }) {
-            //member.stats.dynamic.getMod(Stats.FLEET_BURN_BONUS).modifyFlat(this.spec.id, SUSTAINED_BURN_BONUS)
-            fleet.stats.fleetwideMaxBurnMod.modifyFlat(member.id + spec.id, SUSTAINED_BURN_BONUS, "Drive field resonator")
+            //member.stats.dynamic.getMod(Stats.FLEET_BURN_BONUS).modifyFlat("${this.spec.id}_Sustained", SUSTAINED_BURN_BONUS, "Drive Field Resonator")
+            //return
+            fleet.stats.addTemporaryModFlat(
+                0.1f,
+                "${member.id}_${this.spec.id}_Sustained",
+                "Drive Field Resonator",
+                1f,
+                fleet.stats.fleetwideMaxBurnMod,
+
+            )
         } else {
-            fleet.stats.fleetwideMaxBurnMod.unmodify(member.id + spec.id)
+            member.stats.dynamic.getMod(Stats.FLEET_BURN_BONUS).unmodify("${member.id}_${this.spec.id}_Sustained")
+            //fleet.stats.fleetwideMaxBurnMod.unmodify(member.id + spec.id)
         }
     }
 

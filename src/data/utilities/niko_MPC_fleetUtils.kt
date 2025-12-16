@@ -191,7 +191,7 @@ object niko_MPC_fleetUtils {
         return (numPhaseShips / numMembers)
     }
 
-    fun CampaignFleetAPI.getApproximateECMValue(): Float{
+    fun CampaignFleetAPI.getApproximateECMValue(): Float {
         var ecmValue = 0f
 
         for (member in fleetData.membersListCopy) {

@@ -35,6 +35,7 @@ import com.fs.starfarer.api.impl.campaign.intel.group.FleetGroupIntel
 import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI
 import com.fs.starfarer.api.impl.campaign.intel.group.GenericRaidFGI.GenericRaidParams
 import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
+import com.fs.starfarer.api.impl.campaign.missions.DelayedFleetEncounter
 import com.fs.starfarer.api.impl.campaign.missions.FleetCreatorMission.FleetStyle
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.impl.campaign.rulecmd.SetStoryOption.BaseOptionStoryPointActionDelegate
@@ -53,6 +54,7 @@ import com.fs.starfarer.campaign.ai.CampaignFleetAI
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript
+import data.scripts.campaign.magnetar.crisis.MPC_IAIICChurchInitializerScript
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
@@ -129,6 +131,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     /** If true, reputation can go above hostile for this frame. */
     var acceptingPeaceOneFrame: Boolean = false
     var pulledOut: Int = 0
+    var contribsRemoved: Int = 0
     /** How long the IAIIC is suffering disrupted command for. */
     var disruptedCommandDaysLeft = 0f
 
@@ -137,12 +140,13 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         return factionContributions
     }
 
-    fun removeContribution(contribution: MPC_factionContribution, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null) {
+    fun removeContribution(contribution: MPC_factionContribution, becauseFactionDead: Boolean, dialog: InteractionDialogAPI? = null, sendMessage: Boolean = true) {
         if (!becauseFactionDead) {
             pulledOut++
         }
+        contribsRemoved++
         factionContributions -= contribution
-        contribution.onRemoved(this, becauseFactionDead, dialog)
+        contribution.onRemoved(this, becauseFactionDead, dialog, sendMessage)
         updateDoctrine()
         checkContributionValues()
 
@@ -154,18 +158,18 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val fleetSize = getFleetMultFromContributingFactions()
 
         if (fleetSize <= MIN_FLEET_SIZE_TIL_GIVE_UP) {
-            //forceAllOutAttack()
-            end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
+            forceAllOutAttack()
+            //end(MPC_IAIICFobEndReason.LOSS_OF_BENEFACTORS)
         }
     }
 
     fun forceAllOutAttack() {
         for (stage in stages.toList()) {
-            if (stage.id != Stage.ALL_OR_NOTHING) {
+            if (stage.id != Stage.ALL_OR_NOTHING && !stage.wasEverReached) {
                 stages.remove(stage)
             }
         }
-        setProgress(999999999)
+        setProgress(maxProgress)
     }
 
     fun updateDoctrine() {
@@ -243,6 +247,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     companion object {
+        const val ALL_OUT_ATTACK_BASE_FP = 600f
+        const val ALL_OUT_ATTACK_FP_MULT = 7f // fleets are HUGE
         const val GLOBAL_SABOTAGE_MULT = 1f
         const val GLOBAL_FLEETSIZE_MULT = 1f
         const val DEFAULT_DISARM_TIME = 60f
@@ -289,7 +295,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (fleetPointsDestroyed <= 0) return 0
             var points = (fleetPointsDestroyed / FP_PER_POINT).roundToInt()
             if (points < 1) points = 1
-            return points.coerceAtMost(100)
+            return points.coerceAtMost(50)
         }
 
         fun getFleetMultFromContributingFactions(contributions: ArrayList<MPC_factionContribution>): Float {
@@ -457,7 +463,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         )
         //Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP).makeImportant("\$MPC_IAIICquest")
         //Global.getSector().economy.getMarket("baetis")?.commDirectory?.addPerson(Global.getSector().importantPeople.getPerson(MPC_People.HAMMER_REP))
-        Global.getSector().economy.getMarket("baetis").makeStoryCritical(IAIIC_QUEST)
+        //Global.getSector().economy.getMarket("baetis").makeStoryCritical(IAIIC_QUEST)
         Global.getSector().economy.getMarket("baetis").primaryEntity.makeImportant(IAIIC_QUEST)
 
         class BlackKnifeExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
@@ -465,6 +471,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 return Global.getSector().economy.getMarket("qaras")?.isInhabited() ?: return false
             }
         }
+        Global.getSector().economy.getMarket("qaras").primaryEntity.makeImportant(IAIIC_QUEST)
         list += MPC_factionContribution(
             Factions.PIRATES,
             0.1f,
@@ -497,6 +504,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             0.3f,
             0.6f,
             null,
+            bulletColor = Global.getSector().playerFaction.baseUIColor,
             contributorExists = null, // exists on one of your planets
             addBenefactorInfo = false,
             contributionId = "voidsun",
@@ -517,6 +525,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             contributionId = "agreus",
             factionName = "IIT&S"
         )
+        Global.getSector().importantPeople.getPerson(People.IBRAHIM).makeImportant(IAIIC_QUEST)
         class AlimarExistsScript(factionId: String, requireMilitary: Boolean): MPC_factionContribution.ContributorExistsScript(factionId, requireMilitary) {
             override fun run(): Boolean {
                 return Global.getSector().economy.getMarket("ailmar")?.isInhabited() ?: return false
@@ -571,7 +580,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         list += MPC_factionContribution(
             Factions.LUDDIC_PATH,
             0.3f,
-            0.7f,
+            0.8f,
             removeContribution = null,
             removeNextAction = false,
             requireMilitary = false,
@@ -1630,7 +1639,16 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             if (stage.wasEverReached) continue
             if (stage.progress < lowestReachableProgress) lowestReachableProgress = stage.progress
         }
-        super.setProgress(progress.coerceAtMost(lowestReachableProgress))
+        val newProgress = progress.coerceAtMost(lowestReachableProgress)
+        if (newProgress >= (maxProgress / 0.4f)) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_voidsunCanSpawnNow"] = true
+        }
+        if (newProgress >= (maxProgress / 0.3f) && contribsRemoved >= 2 && !Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICchurchInitiated")) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_IAIICchurchInitiated"] = true
+
+            MPC_IAIICChurchInitializerScript().start()
+        }
+        super.setProgress(newProgress)
     }
 
     private fun startBombardment() {
@@ -1741,7 +1759,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         val colony = getFractalColony() ?: return end(MPC_IAIICFobEndReason.FRACTAL_COLONY_LOST)
         //if (validTargets.isEmpty()) validTargets = getGenericTargets()
 
-        val spawnFP = 1100f // multiplied against the fob's fleetsize
+        val spawnFP = ALL_OUT_ATTACK_BASE_FP // multiplied against the fob's fleetsize
         val raidIntel = MPC_IAIICAllOutAttack(FOB, colony, spawnFP)
 
         /*

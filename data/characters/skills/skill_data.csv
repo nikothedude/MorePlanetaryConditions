@@ -17,3 +17,5 @@ MPC_fleet_logistics,Fleet Logistics,1560,4,,,"Making sure supplies and other mat
 MPC_planetary_operations,Ground Operations,600,5,,,"The mud? I don't mind it. Spacers always carry on about mud.
 It's the blood I can't stand.","Griffin Sweet, mercenary marine",,,TRUE,npc_only,graphics/icons/skills/planetary_ops.png,
 MPC_space_operations,Space Operations,590,5,,,The same stars are seen in the sky of every world.,Persean League founding charter,,,TRUE,npc_only,graphics/icons/skills/space_ops.png,
+,,,,,,,,,,,,,
+MPC_immortalSnailSkill,Unending Pursuit,580,5,,,"Oh, you really pissed him off.",You,TRUE,,,"npc_only, hide_in_codex",graphics/icons/skills/space_ops.png,

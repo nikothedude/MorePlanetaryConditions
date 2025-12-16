@@ -12,8 +12,12 @@ import com.fs.starfarer.api.impl.campaign.econ.RecentUnrest
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
 import com.fs.starfarer.api.impl.campaign.submarkets.StoragePlugin
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.ui.intnew
+import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel
 import data.utilities.niko_MPC_marketUtils.isFractalMarket
@@ -64,29 +68,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
         }
 
         fun marketSuitableForTransfer(market: MarketAPI): Boolean {
-            //if (market.hasCondition(Conditions.HABITABLE)) return false // the nanoforge would defile this
-            if (market.industries.any { it.aiCoreId != null }) return false
-            if (market.admin.isAICore) return false
-            if (market.stabilityValue < MIN_STABILITY) return false
-            if (market.industries.any { it.isDisrupted }) return false
-            if (!market.hasIndustry(Industries.ORBITALWORKS)) return false
-            if (!market.hasIndustry(Industries.HEAVYBATTERIES)) return false
-            if (!market.hasIndustry(Industries.MEGAPORT)) return false
-            if (!market.hasIndustry(Industries.MILITARYBASE) && !market.hasIndustry(Industries.HIGHCOMMAND)) return false
-            if (market.getStationIndustry()?.spec?.hasTag(Industries.TAG_BATTLESTATION) != true && market.getStationIndustry()?.spec?.hasTag(Industries.TAG_STARFORTRESS) != true) return false
-            if (market.getIndustry(Industries.ORBITALWORKS).specialItem == null &&
-                market.getIndustry(Industries.HEAVYBATTERIES).specialItem == null &&
-                market.getIndustry(Industries.MEGAPORT).specialItem == null &&
-                (market.getIndustry(Industries.MILITARYBASE) != null && market.getIndustry(Industries.MILITARYBASE).specialItem == null) &&
-                (market.getIndustry(Industries.HIGHCOMMAND) != null && market.getIndustry(Industries.HIGHCOMMAND).specialItem == null)
-            ) return false
-
-            if (market.containingLocation == null) return false
-            if (market.containingLocation?.getCustomEntitiesWithTag(Tags.COMM_RELAY)?.isNotEmpty() != true) return false
-            if (market.containingLocation.hasTag(Tags.THEME_UNSAFE)) return false
-            if (market.starSystem.hasBlackHole() || market.starSystem.hasPulsar()) return false
-
-            return true
+            return MPC_patherContributionIntel.Requirement.entries.all { it.isSatisfied(market) }
         }
 
         const val MIN_HAZARD = 1.5f
@@ -97,15 +79,13 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
 
         //public static final float SIZE_FRACTION_FOR_VICTORY = 0.501f;
         //public static final float HI_FRACTION_FOR_VICTORY = 0.67f;
-        val POSTS_TO_CHANGE_ON_CAPTURE = Arrays.asList(
-            *arrayOf(
-                Ranks.POST_BASE_COMMANDER,
-                Ranks.POST_OUTPOST_COMMANDER,
-                Ranks.POST_STATION_COMMANDER,
-                Ranks.POST_PORTMASTER,
-                Ranks.POST_SUPPLY_OFFICER,
-                Ranks.POST_ADMINISTRATOR
-            )
+        val POSTS_TO_CHANGE_ON_CAPTURE = listOf(
+            Ranks.POST_BASE_COMMANDER,
+            Ranks.POST_OUTPOST_COMMANDER,
+            Ranks.POST_STATION_COMMANDER,
+            Ranks.POST_PORTMASTER,
+            Ranks.POST_SUPPLY_OFFICER,
+            Ranks.POST_ADMINISTRATOR
         )
     }
 
@@ -173,16 +153,24 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 interactionTarget.market?.addCondition("MPC_arrowPatherCondition")
 
                 Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketName"] = interactionTarget.market.name
-                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market.id
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketId"] = interactionTarget.market.id
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market
             }
             "setTarget" -> {
                 Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketName"] = interactionTarget.market.name
-                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market.id
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarketId"] = interactionTarget.market.id
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] = interactionTarget.market
             }
             "targetReady" -> {
-                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? String ?: return false
-                val market = Global.getSector().economy.getMarket(target)
-                return marketSuitableForTransfer(market)
+                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? MarketAPI ?: return false
+                return marketSuitableForTransfer(target)
+            }
+
+            "tempSetMktFac" -> {
+                dialog.interactionTarget.setFaction(Factions.LUDDIC_PATH)
+            }
+            "resetMktFac" -> {
+                dialog.interactionTarget.setFaction(dialog.interactionTarget.market.faction.id)
             }
 
             "canVisitHideoutAgain" -> {
@@ -198,6 +186,7 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 intel.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.FAILED, dialog.textPanel)
                 intel.endAfterDelay()
                 interactionTarget.market?.removeCondition("MPC_arrowPatherCondition")
+                (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.makeUnimportant("\$MPC_IAIICPatherHideout")
             }
             "isDangerous" -> {
                 return interactionTarget.starSystem?.hasTag(Tags.THEME_UNSAFE) == true || (interactionTarget.starSystem.hasPulsar() || interactionTarget.starSystem.hasBlackHole())
@@ -212,9 +201,10 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.market?.removeCondition("MPC_arrowPatherCondition")
                 (Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPHideout"] as? PlanetAPI)?.makeUnimportant("\$MPC_IAIICPatherHideout")
 
-                val target = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? String ?: return false
-                val targetMarket = Global.getSector().economy.getMarket(target) ?: return false
+                val targetMarket = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? MarketAPI ?: return false
+                targetMarket.memoryWithoutUpdate["\$startingFactionId"] = Factions.LUDDIC_PATH
                 targetMarket.isPlayerOwned = false
+                targetMarket.factionId = Factions.LUDDIC_PATH
                 targetMarket.admin = Global.getSector().getFaction(Factions.LUDDIC_PATH).createRandomPerson()
                 targetMarket.admin.stats.setSkillLevel(Skills.INDUSTRIAL_PLANNING, 1f)
                 targetMarket.commDirectory.addPerson(targetMarket.admin)
@@ -255,9 +245,9 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 targetMarket.removeCondition(Conditions.POPULATION_3)
                 targetMarket.addCondition(Conditions.POPULATION_4)
 
-                if (niko_MPC_settings.AOTD_vaultsEnabled) {
+                /*if (niko_MPC_settings.AOTD_vaultsEnabled) {
                     targetMarket.constructionQueue.addToEnd("militarygarrison", 0)
-                }
+                }*/
                 targetMarket.constructionQueue.addToEnd(Industries.WAYSTATION, 0)
                 targetMarket.getIndustry(Industries.MILITARYBASE)?.startUpgrading()
                 targetMarket.getIndustry(Industries.MILITARYBASE)?.isImproved = true
@@ -280,12 +270,25 @@ class MPC_IAIICPatherCMD: BaseCommandPlugin() {
                 intel.sendUpdateIfPlayerHasIntel(MPC_patherContributionIntel.State.DONE, dialog.textPanel)
                 intel.endAfterDelay()
 
+                class RespawnScript(): MPC_delayedExecutionNonLambda(IntervalUtil(0.2f, 0.3f)) {
+                    override fun executeImpl() {
+                        targetMarket.respawnAllFleets()
+                    }
+                }
+                RespawnScript().start()
+
                 Global.getSoundPlayer().restartCurrentMusic()
             }
             "pullOut" -> {
                 val intel = MPC_IAIICFobIntel.get() ?: return false
                 val toRemove = intel.getContributionById(Factions.LUDDIC_PATH) ?: return false
                 intel.removeContribution(toRemove, false, dialog)
+            }
+            "printNotReadyText" -> {
+                val targetMarket = Global.getSector().memoryWithoutUpdate["\$MPC_IAIICLPTargetMarket"] as? MarketAPI ?: return false
+                for (req in MPC_patherContributionIntel.Requirement.entries.filter { !it.isSatisfied(targetMarket) }) {
+                    req.printUnsatisfiedText(dialog.textPanel, MPC_People.getImportantPeople()[MPC_People.ARROW_PATHER_REP]!!)
+                }
             }
         }
 

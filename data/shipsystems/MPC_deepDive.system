@@ -16,6 +16,7 @@
 	#"loopSound":"system_temporalshell_loop",
 	#"deactivateSound":"system_temporalshell_off",
 	"outOfUsesSound":"gun_out_of_ammo",
+	"runScriptWhileIdle":true,
 
     "aiHints":{
         "activeSpeedIncrease":5000,  # not right since it's ship-dependent, but hopefully close enough

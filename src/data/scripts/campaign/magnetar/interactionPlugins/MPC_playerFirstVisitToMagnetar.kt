@@ -70,16 +70,15 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
                     "buzzing, seeming to emanate from the outside of the ship - the telltale sound of imminent drive bubble failure. " +
                     "You prepare to raise your voice and issue emergency commands, but when you look up from your station, " +
                     "you stop. Half your bridge crew is staring at the viewport, filled with what could be the most terrifying sight in the galaxy - " +
-                    "a magnetar. $lineText\n" +
+                    "a magnetar. \n$lineText\n" +
                     "\n" +
                     "Your gawking is interrupted by your tactical officer hurriedly approaching. " +
                     "A datapad clatters onto your desk, lacking the usual cadence you expect from your crew. Your advisor stands stiff, " +
                     "putting on a strong face - but you can tell from the micro-twitches and the dilated pupils that this is only a professional courtesy." +
-                    "\"S-sir,\" your officer begins, \"We... we have translated... directly on top of a magnetar.\" they state with a sub-tone of terror." +
-                    "A nod to the datapad shifts your attention, as your tactical officer continues. \"We are... safe for now, sir, but-\" your officer makes the " +
-                    "spacer sign for \"All airlocks sealed\", a sort of ward against evil. \"The drive field, if it breaks-\" their voice catches. " +
-                    "\"...we... we won't be able to resist the magnetic field.\" Their grim intonation tells you all you need to know, and " +
-                    "after reading the tactical report, you grimly agree and order an immediate emergency burn away from the star."
+                    "\"Sir.\" your officer begins - making the spacer sign for \"all seals confirmed safe\", an errant twitch in their eyes. " +
+                    "\"We have... translated. Directly on top of a... of a...\" your officer has to take a moment to catch their breath. \"-a magnetar, Sir.\"" +
+                    "\"Recommend an immediate emergency burn away.\" Your officer then slides you the expected tactical report, and after briefly skimming over it, you agree - " +
+                    "you need to get away from this deathtrap. Now."
 
                     /*" \"S-sir-\" your officer stammers out, before resolving themselves - making the spacer sign for \"all seals confirmed safe\". " +
                     "\"We... that, that is a magnetar, sir.\" you hear, as if you were unaware. \"-I will... give you a detailed report in a moment, " +
@@ -88,16 +87,17 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
                     "\"W-we will die, sir. We need to get out of here...NOW.\" He slides you the expected tactical report, and after " +
                     "briefly skimming over it, you grimly agree and order an emergency burn away from the star. Immediately."*/
             )
-            textPanel!!.highlightInLastPara("magnetar", "directly on top of a magnetar", "won't be able to resist the magnetic field", "immediate emergency burn")
-            textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
+            textPanel!!.highlightInLastPara("magnetar", "a magnetar", "immediate emergency burn")
+            textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
         } else {
             textPanel!!.addParagraph(
                 "Your fleet smoothly translates through the jump point. You request fleet status, put up a jump sickness bulletin, " +
                     "and run a sensor sweep. Ten seconds later, you're still waiting for it's initiation. Irritated, you look " +
                     "up from your station only to see something that makes your heart sink. In the distance, mere light seconds away, " +
-                    "is a magnetar. $lineText Even now, you can hear the creaking of your ship's hull as it strains against the " +
+                    "is a magnetar.\n"+
+                    "$lineText Even now, you can hear the creaking of your ship's hull as it strains against the " +
                     "ever-calling magnetic force, trying to bring your fleet ever-closer." +
-                    "\n" +
+                    "\n\n" +
                     "Your gawking is interrupted by your senior tactical officer delivering a report to your desk. Blinking a few " +
                     "times, you shake off your awe, and return to semi-normal duties."
             )
@@ -105,7 +105,9 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
         }
 
-        Global.getSector().intelManager.addIntel(niko_MPC_magnetarIntel(), false, dialog!!.textPanel)
+        val intel = niko_MPC_magnetarIntel()
+        Global.getSector().intelManager.addIntel(intel, true, dialog!!.textPanel)
+        intel.sendUpdateIfPlayerHasIntel("FIRST_ADD", dialog!!.textPanel)
 
         textPanel!!.highlightInLastPara(Misc.getHighlightColor(), "magnetars")
         options!!.addOption("Continue", "CONTINUE")

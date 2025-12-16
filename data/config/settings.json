@@ -14,7 +14,9 @@
 			"niko_MPC_magnetarIcon":"graphics/icons/intel/magnetaricon.png",
 		},
 		"illustrations":{
-			"niko_MPC_magnetar":"graphics/illustrations/magnetar.jpg"
+			"niko_MPC_magnetar":"graphics/illustrations/magnetar.jpg",
+			"MPC_icecave":"graphics/illustrations/MPC_iceCave.jpg",
+			"MPC_harry":"graphics/illustrations/harry.jpg"
 		},
 		"planets":{
 			"MPCatmosphere3":"graphics/planets/MPC_atmosphere3.png",

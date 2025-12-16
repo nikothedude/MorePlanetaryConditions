@@ -30,7 +30,7 @@ abstract class MPC_delayedExecutionNonLambda(
         }
     }
 
-    fun execute() {
+    open fun execute() {
         executeImpl()
         delete()
     }

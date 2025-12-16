@@ -2,7 +2,7 @@ package data.scripts.campaign.magnetar.crisis.intel.hegemony
 
 import com.fs.starfarer.api.impl.campaign.intel.events.BaseEventIntel
 
-class MPC_hegemonyMilHouseNanoforgeStolenFactorHint : MPC_hegemonyMilHouseNanoforgeStolenFactor(0, "Industries on Hegemony colonies disrupted") {
+class MPC_hegemonyMilHouseNanoforgeStolenFactorHint : MPC_hegemonyMilHouseNanoforgeStolenFactor(0, "Stolen Nanoforges") {
 
     init {
         timestamp = 0

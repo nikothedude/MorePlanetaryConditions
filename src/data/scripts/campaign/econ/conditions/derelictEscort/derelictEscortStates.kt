@@ -5,7 +5,6 @@ import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import data.utilities.niko_MPC_ids
-import org.lazywizard.console.clear
 
 enum class derelictEscortStates {
     CATCHING_UP_TO {

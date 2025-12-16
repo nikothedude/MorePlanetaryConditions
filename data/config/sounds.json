@@ -11,6 +11,21 @@
 		"MPC_magnetarAmbience":[
 			{"file":"MPC_ambiencemagnetar.ogg","source":"sounds/music","volume":0.8},
 		],
+		"MPC_icecaveAmbience":[
+			{"file":"MPC_icecaveAmbience.ogg","source":"sounds/music","volume":0.8},
+		],
+		"MPC_ludditeMenace":[
+			{
+				"source":"sounds/music/music.bin",
+				"volume":0.8,
+				"pitch":0.4,
+				"files":[
+					"faction_luddite_market_02_hostile_var01.ogg",
+					"faction_luddite_market_02_hostile_var02.ogg",
+				],
+				"randomStart":true, 
+			},
+		],
 		
 	# collapseclose
 	},
@@ -18,6 +33,18 @@
 	"MPC_punch":{
 		"sounds":[
 			{"file":"sounds/MPC_punch.ogg","pitch":1.0,"volume":1.0},
+		],
+	},
+	
+	"MPC_swordUnsheath":{
+		"sounds":[
+			{"file":"sounds/MPC_swordUnsheath.ogg","pitch":1.1,"volume":1.3},
+		],
+	},
+	
+	"MPC_crowdCheer":{
+		"sounds":[
+			{"file":"sounds/MPC_crowdCheer.ogg","pitch":1.0,"volume":1.0},
 		],
 	},
 	
@@ -94,6 +121,16 @@
 			{"file":"sounds/weapons/MPC_tachyonPikeFire.ogg", "pitch":1.0,"volume":1.0},
 		],
 	},
+	
+	# CRUISE
+	"MPC_cruiseLaunch":
+	[
+		{"file":"sounds/weapons/MPC_cruiseLaunch.ogg","pitch":1,"volume":1},
+	],
+	"MPC_missileStrikeReload":
+	[
+		{"file":"sounds/MPC_missileStrikeReload.ogg","pitch":1,"volume":1},
+	],
 
 
 }

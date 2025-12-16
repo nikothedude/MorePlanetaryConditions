@@ -29,7 +29,7 @@ object CodexData {
         createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId(Industries.HIGHCOMMAND))
 
         if (niko_MPC_settings.AOTD_vaultsEnabled) {
-            createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId("militarygarrison"))
+            //createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId("militarygarrison"))
         }
 
         val ultraMagneticFieldId = CodexDataV2.getConditionEntryId("niko_MPC_ultraMagneticField")

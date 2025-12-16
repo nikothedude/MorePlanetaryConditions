@@ -18,6 +18,9 @@
     "viewOffset": 0,
     "builtInWings": [],
     "builtInModules": null,
+	"builtInMods": [
+		"phasefield"
+	],
     "weaponSlots": [
         {
             "id": "WS 000",
@@ -76,46 +79,46 @@
         },
         {
             "id": "WS 005",
-            "size": "LARGE",
+            "size": "MEDIUM",
             "type": "ENERGY",
             "mount": "TURRET",
             "arc": 220,
             "angle": 0,
             "locations": [
-                      53,       64
+                      66,       59
             ]
         },
         {
             "id": "WS 006",
-            "size": "LARGE",
+            "size": "MEDIUM",
             "type": "ENERGY",
             "mount": "TURRET",
             "arc": 220,
             "angle": 0,
             "locations": [
-                      53,      -64
+                      66,      -59
             ]
         },
         {
             "id": "WS 007",
-            "size": "LARGE",
+            "size": "MEDIUM",
             "type": "ENERGY",
             "mount": "TURRET",
             "arc": 220,
             "angle": 0,
             "locations": [
-                      10,       65
+                       6,       68
             ]
         },
         {
             "id": "WS 008",
-            "size": "LARGE",
+            "size": "MEDIUM",
             "type": "ENERGY",
             "mount": "TURRET",
             "arc": 220,
             "angle": 0,
             "locations": [
-                      10,      -65
+                       6,      -68
             ]
         },
         {

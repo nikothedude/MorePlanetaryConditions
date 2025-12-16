@@ -10,4 +10,5 @@ object niko_MPC_industryIds {
     const val primordialNanoforgeId = "niko_MPC_primordialNanoforge"
     const val overgrownNanoforgeIndustryId = "niko_MPC_overgrownNanoforge"
     const val overgrownNanoforgeJunkStructureId = "niko_MPC_overgrownNanoforgeJunk_"
+    const val AEGIS_ROCKET_INDID = "niko_MPC_aegisMissileSystem"
 }

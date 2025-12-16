@@ -6,10 +6,13 @@ import com.fs.starfarer.api.characters.FullName
 import com.fs.starfarer.api.characters.FullName.Gender
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Personalities
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
 import com.fs.starfarer.api.impl.campaign.ids.Skills
+import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Voices
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
+import com.fs.starfarer.api.loading.ContactTagSpec
 import data.utilities.niko_MPC_ids
 import org.magiclib.kotlin.adjustReputationWithPlayer
 import org.magiclib.kotlin.makeImportant
@@ -24,6 +27,9 @@ object MPC_People {
 
     const val PLAYER_FACTION_INTSEC_SQUAD_CHIEF = "MPC_playerFacIntsecSquadChief"
     const val HEGEMONY_SPY = "MPC_hegemonySpy"
+
+    const val MISSILE_CARRIER_AGENT = "MPC_missileCarrierAgent"
+    const val MISSILE_CARRIER_AGENT_TWO = "MPC_missileCarrierAgentTwo"
 
     const val IAIIC_LEADER = "MPC_IAIIC_Leader"
     const val IAIIC_MERC_COMMANDER = "MPC_IAIIC_Merc_Commander"
@@ -46,6 +52,7 @@ object MPC_People {
     const val BLACKKNIFE_BAR_GUY = "MPC_blackknifeBarGuy"
     const val BLACKKNIFE_TARGET = "MPC_blackknifeTarget"
     const val MMMC_REP = "MPC_MMMCRep"
+    const val VOIDSUN_REP = "MPC_voidsunRep"
 
     const val HEGE_ARISTO_DEFECTOR = "MPC_hegeAristoDefector"
 
@@ -54,13 +61,21 @@ object MPC_People {
     const val HEGE_MORALIST_ARISTO_REP = "MPC_hegeAristoMoralistRep"
     const val HEGE_MORALIST_ARISTO_REP_TWO = "MPC_hegeAristoMoralistRepTwo"
     const val HEGE_MORALIST_RECEPTIONIST = "MPC_hegeMoralistReceptionist"
+    const val HEGE_MORALIST_COMSEC_DUELIST = "MPC_hegeAristoMoralistComsecDuelist"
 
     const val HEGE_ALOOF_SISTER = "MPC_hegeAristoSister"
     const val HEGE_ALOOF_BROTHER = "MPC_hegeAloofBrother"
 
-    //const val
+    const val HEGE_HON_TRAITOR = "MPC_hegeHonTraitor"
+
+    const val PATHER_BROKER = "MPC_patherBroker"
+    const val CHURCH_ALOOF_MILITANT = "MPC_aloofMilitant"
+    const val CHURCH_HARDCORE_MILITANT = "MPC_hardcoreMilitant"
+    const val CHURCH_KNIGHT_FENCE = "MPC_knightFence"
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
+
+    const val IMMORTAL_SNAIL = "MPC_immortalSnailCaptain"
 
     fun getImportantPeople(): HashMap<String, PersonAPI> {
         if (Global.getSector().memoryWithoutUpdate[niko_MPC_ids.IMPORTANT_PEOPLE] == null) {
@@ -71,6 +86,9 @@ object MPC_People {
 
     fun createCharacters() {
         val importantPeople = Global.getSector().importantPeople
+
+        // something in here is causing the rep loss sound
+        // its NOT the reltoplayer.rel shit
 
         // Pirate bar encounter after delivering loke, points you to the magnetar quest
         val MPC_importantPeople = getImportantPeople()
@@ -156,6 +174,26 @@ object MPC_People {
             //moralityGuard.voice = Voices.FAITHFUL
             importantPeople.addPerson(intsecChief)
             MPC_importantPeople[PLAYER_FACTION_INTSEC_SQUAD_CHIEF] = intsecChief
+        }
+
+        if (MPC_importantPeople[MISSILE_CARRIER_AGENT] == null) {
+            val agent = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson()
+            agent.id = MISSILE_CARRIER_AGENT
+            agent.rankId = Ranks.SPECIAL_AGENT
+            agent.postId = Ranks.POST_SPECIAL_AGENT
+
+            importantPeople.addPerson(agent)
+            MPC_importantPeople[MISSILE_CARRIER_AGENT] = agent
+        }
+
+        if (MPC_importantPeople[MISSILE_CARRIER_AGENT_TWO] == null) {
+            val agent = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson()
+            agent.id = MISSILE_CARRIER_AGENT_TWO
+            agent.rankId = Ranks.SPECIAL_AGENT
+            agent.postId = Ranks.POST_SPECIAL_AGENT
+
+            importantPeople.addPerson(agent)
+            MPC_importantPeople[MISSILE_CARRIER_AGENT_TWO] = agent
         }
 
         if (MPC_importantPeople[HEGEMONY_SPY] == null) {
@@ -360,6 +398,7 @@ object MPC_People {
 
             rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
+
         if (MPC_importantPeople[BLACKKNIFE_BAR_GUY] == null) {
             val rep = Global.getSector().getFaction(Factions.PIRATES).createRandomPerson(Gender.MALE)
             rep.id = BLACKKNIFE_BAR_GUY
@@ -420,6 +459,24 @@ object MPC_People {
             rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
+        if (MPC_importantPeople[VOIDSUN_REP] == null) {
+            val rep = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.MALE)
+            rep.id = VOIDSUN_REP
+
+            rep.rankId = Ranks.CITIZEN
+            rep.postId = Ranks.POST_MERCENARY
+
+            rep.importance = PersonImportance.HIGH
+            rep.voice = Voices.SPACER
+
+            rep.name = FullName("Mike", "Jackdaw", Gender.MALE)
+
+            importantPeople.addPerson(rep)
+            MPC_importantPeople[VOIDSUN_REP] = rep
+
+            rep.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+        // no sound on return here
         if (MPC_importantPeople[HEGE_ARISTO_DEFECTOR] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
@@ -452,7 +509,7 @@ object MPC_People {
             aristo.voice = Voices.ARISTO
 
             aristo.name = FullName("Alnessa", "Youn", Gender.FEMALE)
-            aristo.adjustReputationWithPlayer(-0.4f, null, null)
+            aristo.relToPlayer.rel = -0.4f
 
             //aristo.portraitSprite = "graphics/portraits/portrait_hegemony10.png"
 
@@ -473,7 +530,7 @@ object MPC_People {
             aristo.voice = Voices.ARISTO
 
             aristo.name = FullName("Orthus", "Youn", Gender.FEMALE)
-            aristo.adjustReputationWithPlayer(-0.9f, null, null)
+            aristo.relToPlayer.rel = -0.9f
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[aristo.id] = aristo
@@ -498,6 +555,7 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        // made sound at return here
         if (MPC_importantPeople[HEGE_OPPORTUNISTIC_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 
@@ -516,6 +574,7 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        // made sound at return here
         if (MPC_importantPeople[HEGE_MORALIST_ARISTO_REP] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
 
@@ -566,6 +625,24 @@ object MPC_People {
 
             aristo.makeImportant("MPC_hegeAristo")
         }
+        if (MPC_importantPeople[HEGE_MORALIST_COMSEC_DUELIST] == null) {
+            val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.MALE)
+
+            aristo.id = HEGE_MORALIST_COMSEC_DUELIST
+
+            aristo.rankId = Ranks.SPECIAL_AGENT
+            aristo.postId = Ranks.POST_SPECIAL_AGENT
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.SOLDIER
+
+            aristo.name = FullName("Jamaniah", "Glowfest", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_MORALIST_COMSEC_DUELIST] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
         if (MPC_importantPeople[HEGE_MORALIST_RECEPTIONIST] == null) {
             val aristo = Global.getSector().getFaction(Factions.HEGEMONY).createRandomPerson(Gender.FEMALE)
 
@@ -581,6 +658,26 @@ object MPC_People {
 
             importantPeople.addPerson(aristo)
             MPC_importantPeople[HEGE_MORALIST_RECEPTIONIST] = aristo
+
+            aristo.makeImportant("MPC_hegeAristo")
+        }
+        if (MPC_importantPeople[HEGE_HON_TRAITOR] == null) {
+            val aristo = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.FEMALE)
+            aristo.name = FullName("Jane", "Blackwell", Gender.FEMALE)
+
+            aristo.id = HEGE_HON_TRAITOR
+
+            aristo.rankId = Ranks.KNIGHT_CAPTAIN
+            aristo.postId = Ranks.POST_PATROL_COMMANDER
+
+            aristo.importance = PersonImportance.HIGH
+            aristo.voice = Voices.OFFICIAL
+            aristo.portraitSprite = "graphics/portraits/portrait_luddic07.png"
+
+            //aristo.name = FullName("Jerus", "Alotera", Gender.MALE)
+
+            importantPeople.addPerson(aristo)
+            MPC_importantPeople[HEGE_HON_TRAITOR] = aristo
 
             aristo.makeImportant("MPC_hegeAristo")
         }
@@ -601,6 +698,129 @@ object MPC_People {
             MPC_importantPeople[HEGE_INTSEC_GOON] = goon
 
             goon.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        // LUDDIC CHURCH SHIT
+        if (MPC_importantPeople[CHURCH_ALOOF_MILITANT] == null) {
+            val militant = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.FEMALE)
+            militant.id = CHURCH_ALOOF_MILITANT
+
+            militant.rankId = Ranks.CITIZEN
+            militant.postId = Ranks.POST_TERRORIST
+
+            militant.importance = PersonImportance.VERY_HIGH
+            militant.voice = Voices.FAITHFUL
+
+            militant.name = FullName("Alice", "Semblemind", Gender.FEMALE)
+            militant.portraitSprite = "graphics/portraits/portrait_luddic10.png"
+
+            militant.stats.level = 4
+            militant.stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            militant.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
+            militant.stats.setSkillLevel(Skills.OFFICER_MANAGEMENT, 1f)
+            militant.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 1f)
+
+            importantPeople.addPerson(militant)
+            MPC_importantPeople[CHURCH_ALOOF_MILITANT] = militant
+
+            militant.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[CHURCH_HARDCORE_MILITANT] == null) {
+            val militant = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.FEMALE)
+            militant.id = CHURCH_HARDCORE_MILITANT
+
+            militant.rankId = Ranks.CITIZEN
+            militant.postId = Ranks.POST_TERRORIST
+            militant.relToPlayer.rel = -0.1f
+
+            militant.importance = PersonImportance.VERY_HIGH
+            militant.voice = Voices.FAITHFUL
+
+            militant.name = FullName("Alaz", "Blackwind", Gender.FEMALE)
+            militant.portraitSprite = "graphics/portraits/portrait_luddic01.png"
+
+            militant.stats.level = 7
+            militant.stats.setSkillLevel(Skills.CREW_TRAINING, 1f)
+            militant.stats.setSkillLevel(Skills.HELMSMANSHIP, 2f)
+            militant.stats.setSkillLevel(Skills.OFFICER_MANAGEMENT, 1f)
+            militant.stats.setSkillLevel(Skills.COMBAT_ENDURANCE, 1f)
+            militant.stats.setSkillLevel(Skills.IMPACT_MITIGATION, 2f)
+            militant.stats.setSkillLevel(Skills.TARGET_ANALYSIS, 2f)
+            militant.stats.setSkillLevel(Skills.BALLISTIC_MASTERY, 2f)
+
+            importantPeople.addPerson(militant)
+            MPC_importantPeople[CHURCH_HARDCORE_MILITANT] = militant
+
+            militant.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[CHURCH_KNIGHT_FENCE] == null) {
+            val fence = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.MALE)
+            fence.id = CHURCH_KNIGHT_FENCE
+
+            fence.rankId = Ranks.CITIZEN
+            fence.postId = Ranks.POST_SMUGGLER
+
+            fence.importance = PersonImportance.MEDIUM
+            fence.addTag(Tags.CONTACT_UNDERWORLD)
+            fence.addTag(Tags.CONTACT_TRADE)
+            fence.voice = Voices.SPACER
+
+            fence.name = FullName("Rodger", "Jackden", Gender.MALE)
+            fence.portraitSprite = "graphics/portraits/portrait18.png"
+
+            importantPeople.addPerson(fence)
+            MPC_importantPeople[CHURCH_KNIGHT_FENCE] = fence
+
+            fence.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[PATHER_BROKER] == null) {
+            val broker = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.ANY)
+            broker.id = PATHER_BROKER
+
+            broker.rankId = Ranks.CITIZEN
+            broker.postId = Ranks.POST_HERMIT
+
+            broker.importance = PersonImportance.VERY_HIGH
+            broker.voice = Voices.PATHER
+
+            broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
+
+            broker.name = FullName("Broker", "", Gender.ANY)
+
+            importantPeople.addPerson(broker)
+            MPC_importantPeople[PATHER_BROKER] = broker
+
+            broker.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
+        if (MPC_importantPeople[IMMORTAL_SNAIL] == null) {
+            val broker = Global.getSector().getFaction(Factions.INDEPENDENT).createRandomPerson(Gender.ANY)
+            broker.id = IMMORTAL_SNAIL
+
+            broker.rankId = Ranks.CITIZEN
+            broker.postId = Ranks.POST_CITIZEN
+
+            broker.importance = PersonImportance.VERY_HIGH
+            broker.voice = Voices.VILLAIN
+
+            broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
+
+            broker.relToPlayer.rel = -100f
+            val stats = broker.stats
+            stats.level = 15
+            stats.setSkillLevel("MPC_immortalSnailSkill", 2f)
+
+            broker.setPersonality(Personalities.RECKLESS)
+
+            broker.name = FullName("Immortal", "Adversary", Gender.ANY)
+
+            importantPeople.addPerson(broker)
+            MPC_importantPeople[IMMORTAL_SNAIL] = broker
+
+            broker.makeImportant("\$MPC_immortalSnail")
         }
 
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.GENERATED_PEOPLE] = true

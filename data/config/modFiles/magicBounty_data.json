@@ -1,0 +1,85 @@
+{
+    "MPC_destroyMissileCarrier":{
+
+		"trigger_player_minLevel": 10,
+		"trigger_min_fleet_size": 100,
+
+		"trigger_playerRelationship_atLeast": { # Default: no values. This job will require the player to have the specified relationship or HIGHER with the specified faction(s).
+			"hegemony":-0.2
+		},
+
+		"job_name":"Destroy the strategic weapon",
+		"job_description":"You've been contacted via long-range FTL transmission by a Hegemony special agent, claiming to be INTSEC.\n\n\"$PlayerName? Good. I will keep this brief. A long-ranged patrol has confirmed the existence of an autonomous ==ship-borne strategic weapon system== in ==$system==, a known ==autoship hotspot==.\" A image is promptly sent to your display - what appears to be a massive ==cruise missile== careening towards the backside of a Lasher-class frigate, which burns away in desperate speed.\n\"Ahem. This is officially considered a minor threat - it cannot target out of its system - however, MILCOM is getting ancy, and a few generals want this thing gone and swept under the rug. So. Provided combat footage of the weapon's destruction, I am authorized to release a payment of ==$reward==, and additionally, a ==rare item== installable in various colony industries to boost their performance. Best used in our own worlds - but we need good incentive for you. Interested?\"\n\nThe target is likely hardened and surrounded by Ordos. Besides that, the agent sent you a threat analysis of the weapon - your fleet will likely be ==fired upon== if your sensor profile is too high, regardless of distance - though a high ==ECM rating== may prove useful in diverting incoming missiles. Said missiles were also found to have ==great effect== on the scout fleet - and likely, yours as well.",
+		"job_intel_success":"The missile carrier now lies burning in space, reduced to scrap. Appreciation for your work is shown in the form of an instant ==$reward== transmission and a promise for a ==colony item== to be set aside in an unmarked storage depo on ==Chicozmostoc==.",
+		"job_intel_failure":"Good news: You have an extremely dangerous tactical weapon available to you. Bad news: This wasn't the deal. You opt not to send the combat footage, in hopes the Hegemony won't realize - but you know, they will.",
+		"job_intel_expired": "what?",
+
+		"job_forFaction": "Hegemony",
+		"job_credit_reward": 750000,
+		"job_reputation_reward": 10,
+		"job_type": "destruction",
+		"job_show_fleet": "none",
+		"job_show_distance": "system",
+		"job_difficultyDescription": "The target is likely hardened and surrounded by Ordos. Besides that, the agent sent you a threat analysis of the weapon - your fleet will likely be ==fired upon== if your sensor profile is too high, regardless of distance. Said missiles were also found to have ==great effect== on the scout fleet - and likely, yours as well.",
+
+	    "job_conclusion_script": "MPC_remnantMissileCarrierBountyConclusion",
+        "existing_target_memkey": "$MPC_remnantMissileCarrier",
+    },
+
+    "MPC_toyolBounty":{
+		"trigger_player_minLevel": 7,
+		"trigger_min_fleet_size": 225,
+
+		"job_name":"Bury the unearthed",
+		"job_description":"While browsing an anonymous mercenary request board, one listing catches your eye. A request from a Luddic scientist concerned about a recent find on a far-away planet.\n\n\"Hello, greetings, and salutations. My name is Jeffery Dennis, a devout Luddite and researcher of non-euclidian space. Something very concerning has recently unearthed itself (literally) - recently, my monitoring systems have uncovered ==strange flux variations== in the surface of the phase dimension. Repeatadly. Further analysis suggests an origin in ==$location==, and after paying another merc to scout it out - they found it. Some sort of ==cruiser-class phase ship==, in the middle of a large scavenger fleet, in the process of being refitted. My analysis suggests it dives ==deep into phase space==, caring not for its surroundings. I am terrified. Moloch, Mammon, and the demons beneath may use this to finally rear their head. ==$reward== for the first to send me proof of its destruction.\"",
+		"job_intel_success":"The strange cruiser burns in space, prompting you to send the combat footage to the client. Satisfied, you recieve a sum of credits, as well as a heart-felt thanks - and a heavily religious blessing.",
+		"job_intel_failure":"With the Toyol now under your command, you decide not to send the combat footage to the scientist. They'll just have to freak out over phase readings for the forseeable future.",
+
+		"job_forFaction": "luddic_church",
+		"job_credit_reward": 400000,
+		"job_reputation_reward": 10,
+		"job_type": "destruction",
+		"job_show_fleet": "vanilla",
+		"job_show_distance": "system",
+
+        "target_personality": "aggressive",
+        "target_level": 9,
+        "target_elite_skills": 3,
+        "target_skills": {
+            "helmsmanship": 2,
+            "field_modulation": 2,
+            "impact_mitigation": 1,
+            "combat_endurance": 2,
+            "damage_control": 1,
+            "systems_expertise": 1,
+            "missile_specialization": 1,
+
+            "phase_corps": 1,
+            "electronic_warfare": 1,
+        },
+
+        "fleet_name": "Scavenger Fleet",
+        "fleet_faction": "independent",
+        "fleet_flagship_variant": "MPC_toyol_Attack",
+        "fleet_min_FP": 325,
+        "fleet_composition_quality": 2,
+        "fleet_composition_faction": "mercenary",
+
+        "location_distance": "FAR",
+        "location_themes": [
+            "theme_ruins",
+            "theme_ruins_main",
+            "theme_ruins_secondary",
+
+            "procgen_no_theme",
+        ],
+        "location_entities": [
+            "planet",
+            "gas_giant",
+        ],
+
+        "fleet_flagship_alwaysRecoverable":true,
+        "job_comm_reply": "The commander of the fleet appears on your vid-screen, grinning widely. \"Like this thing? Just found it, and its got a bit of a *kick*. I can see the way you're lookin' at it...\" $HeOrShe cracks $hisOrHer fingers. \"If you've got the knocks for it, go ahead and try. Need a test run anyway!\" $HeOrShe cackles.",
+    },
+
+}

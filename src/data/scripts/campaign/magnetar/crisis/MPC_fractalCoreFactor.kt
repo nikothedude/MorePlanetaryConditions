@@ -83,7 +83,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             industries.forEach { it.aiCoreId = Commodities.BETA_CORE }
 
             getIndustry(Industries.HIGHCOMMAND)?.aiCoreId = Commodities.ALPHA_CORE
-            getIndustry(Industries.STARFORTRESS_HIGH)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry("aotd_citadel")?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry(Industries.STARFORTRESS)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("IndEvo_embassy")?.aiCoreId = Commodities.GAMMA_CORE
             getIndustry("IndEvo_Academy")?.aiCoreId = Commodities.GAMMA_CORE
@@ -93,7 +94,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             getIndustry(Industries.ORBITALWORKS)?.aiCoreId = Commodities.BETA_CORE
             getIndustry("triheavy")?.specialItem = SpecialItemData(Items.CORRUPTED_NANOFORGE, null)
             getIndustry("triheavy")?.aiCoreId = Commodities.BETA_CORE
-            getIndustry("militarygarrison")?.aiCoreId = Commodities.ALPHA_CORE
+            //getIndustry("militarygarrison")?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("IndEvo_IntArray")?.specialItem = SpecialItemData("IndEvo_transmitter", null)
             getIndustry("logisitcbureau")?.aiCoreId = Commodities.BETA_CORE
             getIndustry(Industries.WAYSTATION)?.aiCoreId = Commodities.BETA_CORE
@@ -106,6 +107,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             //Global.getSector().economy.getMarket("culann")?.makeStoryCritical("\$MPC_IAIICEvent")
             Global.getSector().economy.getMarket("eochu_bres")?.makeStoryCritical("\$MPC_IAIICEvent")
             Global.getSector().economy.getMarket("new_maxios")?.makeStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("eventide")?.makeStoryCritical("\$MPC_IAIICEvent")
         }
         fun unSetImportantMarkets() {
             Global.getSector().economy.getMarket("sindria")?.makeNonStoryCritical("\$MPC_IAIICEvent")
@@ -113,6 +115,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             //Global.getSector().economy.getMarket("culann")?.makeNonStoryCritical("\$MPC_IAIICEvent")
             Global.getSector().economy.getMarket("eochu_bres")?.makeNonStoryCritical("\$MPC_IAIICEvent")
             Global.getSector().economy.getMarket("new_maxios")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+            Global.getSector().economy.getMarket("eventide")?.makeNonStoryCritical("\$MPC_IAIICEvent")
         }
 
         fun createMarket(FOBStation: SectorEntityToken, isReclaimed: Boolean = false): MarketAPI {
@@ -135,7 +138,11 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
 
             market.addIndustry(Industries.POPULATION)
             market.addIndustry(Industries.MEGAPORT)
-            market.addIndustry(Industries.STARFORTRESS_HIGH)
+            if (niko_MPC_settings.AOTD_vaultsEnabled) {
+                market.addIndustry("aotd_citadel")
+            } else {
+                market.addIndustry(Industries.STARFORTRESS)
+            }
             market.addIndustry(Industries.HIGHCOMMAND)
             val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
             HC.isImproved = true
@@ -143,9 +150,9 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
             if (niko_MPC_settings.AOTD_vaultsEnabled) {
                 market.addIndustry("triheavy") // skunkworks
-                market.addIndustry("militarygarrison")
+                //market.addIndustry("militarygarrison")
                 market.addIndustry("logisitcbureau") // terminus
-                market.getIndustry("militarygarrison")?.isImproved = true
+                //market.getIndustry("militarygarrison")?.isImproved = true
             } else {
                 market.addIndustry(Industries.ORBITALWORKS)
                 market.addIndustry(Industries.WAYSTATION)
@@ -165,7 +172,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             if (!isReclaimed) market.addIndustry("MPC_FOBIAIICPatherResist")
 
             if (niko_MPC_settings.stationAugmentsLoaded) {
-                market.getIndustry(Industries.STARFORTRESS_HIGH).isImproved = true
+                market.getIndustry(Industries.STARFORTRESS)?.isImproved = true
+                market.getIndustry("aotd_citadel")?.isImproved = true
 
                 market.addStationAugment("SA_tacticalLink")?.builtInMode = BuiltInMode.NORMAL
                 market.addStationAugment("SA_bubbleShield")?.builtInMode = BuiltInMode.NORMAL
@@ -173,6 +181,10 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                 market.addStationAugment("SA_commsCenter")
                 market.addStationAugment("SA_ecmPackage")
                 market.addStationAugment("SA_navRelay")
+                if (niko_MPC_settings.AOTD_vaultsEnabled) {
+                    market.addStationAugment("SA_armoredWeaponMounts")
+                    market.addStationAugment("SA_automatedRepairUnit")
+                }
             }
 
             market.addSpecialItems()
@@ -361,7 +373,6 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
     private fun doDialog(system: StarSystemAPI?) {
         Global.getSector().memoryWithoutUpdate["\$MPC_FOBSystemName"] = system?.name
         Global.getSector().campaignUI.showInteractionDialog(RuleBasedInteractionDialogPluginImpl("MPC_IAIICSpawned"), Global.getSector().playerFleet)
-
     }
 
     override fun getStageTooltipImpl(intel: HostileActivityEventIntel?, stage: EventStageData): TooltipCreator? {

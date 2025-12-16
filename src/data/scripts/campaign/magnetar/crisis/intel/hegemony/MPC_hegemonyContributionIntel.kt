@@ -42,6 +42,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
     companion object {
         fun getAlphaSite(): StarSystemAPI = Global.getSector().getStarSystem("Unknown Location")
+        fun getAloofRep(): PersonAPI = Global.getSector().importantPeople.getPerson(MPC_People.HEGE_ARISTO_DEFECTOR)
 
         fun get(withUpdate: Boolean = false): MPC_hegemonyContributionIntel? {
             if (withUpdate) {
@@ -113,6 +114,8 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     enum class State {
         GO_TO_EVENTIDE_INIT,
         CONVINCE_HOUSES,
+        RETURN_TO_ALOOF,
+        WAIT,
         DONE,
         FAILED
     }
@@ -196,10 +199,22 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
             }
         },
         ELIMINATE_TARGET_FINISHED {
-
+            override fun apply() {
+                getAloofRep().memoryWithoutUpdate.unset("\$temporarilyIgnoreYou")
+            }
         },
         CREATE_SCAPEGOAT {
+            override fun apply() {
+                super.apply()
 
+                Global.getSector().economy.getMarket("jangala")?.primaryEntity?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+            }
+
+            override fun unapply() {
+                super.unapply()
+
+                Global.getSector().economy.getMarket("jangala")?.primaryEntity?.makeUnimportant(niko_MPC_ids.IAIIC_QUEST)
+            }
         },
         INSERT_EVIDENCE {
 
@@ -219,6 +234,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
 
         open fun apply() {}
         open fun unapply() {}
+    }
+
+    enum class HonorableTask {
+        KILL_TRAITOR,
     }
 
     enum class OpportunisticState {
@@ -353,7 +372,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         val loc = getAlphaSite()
         val readings = loc.getCustomEntitiesWithTag("MPC_riftRemnant").firstOrNull() ?: return
 
-        val combat = (Global.getSector().playerFleet.fleetPoints * 0.8f).coerceAtLeast(50f).coerceAtMost(600f)
+        val combat = (Global.getSector().playerFleet.fleetPoints * 0.4f).coerceAtLeast(50f).coerceAtMost(200f)
 
         val params = FleetParamsV3(
             Global.getSector().playerFleet.locationInHyperspace,
@@ -373,7 +392,6 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         params.maxShipSize = 2
         params.aiCores = OfficerQuality.AI_OMEGA
 
-        val omega = Global.getSector().getFaction(Factions.OMEGA)
         val fleet = FleetFactoryV3.createFleet(params)
 
         fleet.memoryWithoutUpdate.set("\$genericHail", true)
@@ -419,6 +437,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
     var cooldownActive = false
     var cooldownDays = IntervalUtil(30f, 30f)
     var aloofTimer: Float? = null
+
+    init {
+        Global.getSector().addScript(this)
+    }
 
     override fun getIcon(): String {
         return Global.getSector().getFaction(Factions.HEGEMONY).crest
@@ -466,6 +488,30 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     5f,
                     Misc.getHighlightColor(),
                     currentHouse.stringName
+                )
+            }
+            State.WAIT -> {
+                info.addPara(
+                    "Wait approximately %s",
+                    5f,
+                    Misc.getHighlightColor(),
+                    "one month"
+                )
+            }
+            State.DONE -> {
+                info.addPara(
+                    "Completed",
+                    5f
+                )
+                /*info.addPara(
+                    "Received summons from High Hegemon Daud",
+                    5f,
+                ).color = Misc.getNegativeHighlightColor()*/
+            }
+            State.FAILED -> {
+                info.addPara(
+                    "Failed",
+                    5f
                 )
             }
             TargetHouse.MILITARISTIC -> {
@@ -621,6 +667,47 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     0f,
                 )
             }
+            "HONOR_UPDATE" -> {
+                info.addPara(
+                    "%s/%s honor needed",
+                    0f,
+                    Misc.getHighlightColor(),
+                    honor.toString(), HONOR_NEEDED.toString()
+                )
+                if (honor >= HONOR_NEEDED) {
+                    info.addPara(
+                        "Return to %s",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "eventide"
+                    )
+                }
+            }
+            "HON_KILLED_DESERTERS" -> {
+                info.addPara(
+                    "Traitors Destroyed",
+                    0f,
+                    Misc.getHighlightColor()
+                ).color = Misc.getHighlightColor()
+            }
+            "MPC_IAIICHegeHonKillingTraitor" -> {
+                info.addPara(
+                    "Assassinate %s on %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    getHonorableTraitorPerson().name.fullName,
+                    "Hesperus"
+                )
+            }
+            "MPC_killingJerusDeserters" -> {
+                val name = Global.getSector().memoryWithoutUpdate.getString("\$MPC_IAIICHonPatherTargetMarketName")
+                info.addPara(
+                    "Destroy %s",
+                    0f,
+                    Global.getSector().getFaction(Factions.LUDDIC_PATH).baseUIColor,
+                    name
+                )
+            }
             "EVIDENCE_PIECES" -> {
                 info.addPara(
                     "%s/%s pieces of proof",
@@ -648,20 +735,36 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     "$housesTurned", "$HOUSES"
                 )
             }
+            "HOUSES_DONE", State.RETURN_TO_ALOOF -> {
+                info.addPara(
+                    "%s - return to %s",
+                    0f,
+                    Misc.getHighlightColor(),
+                    "Total Control", "eventide"
+                ).setHighlightColors(
+                    Misc.getPositiveHighlightColor(),
+                    Misc.getHighlightColor()
+                )
+            }
             "COOLDOWN_EXPIRED" -> {
                 info.addPara(
                     "Next mission now available",
                     5f
                 )
             }
+            else -> {
+                info.addPara(listInfoParam.toString(), 0f)
+            }
         }
+    }
+
+    fun getHonorableTraitorPerson(): PersonAPI {
+        return Global.getSector().importantPeople.getPerson(MPC_People.HEGE_HON_TRAITOR)
     }
 
     override fun getFactionForUIColors(): FactionAPI {
         return Global.getSector().getFaction(Factions.HEGEMONY)
     }
-
-    fun getAloofRep(): PersonAPI = Global.getSector().importantPeople.getPerson(MPC_People.HEGE_ARISTO_DEFECTOR)
 
     override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
         if (info == null) return
@@ -842,7 +945,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                             }
                             AloofState.CREATE_SCAPEGOAT -> {
                                 info.addPara(
-                                    "Aleratus has hatched a plan; infiltrate her sister's villa and insert evidence in hard-to-reach places " +
+                                    "Aleratus has hatched a plan; infiltrate her brother's villa and insert evidence in hard-to-reach places " +
                                     "to frame him for the data heists, and as a traitor.",
                                     5f
                                 )
@@ -858,7 +961,7 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                     "get the Youns to turn traitor.",
                                     5f,
                                     Misc.getHighlightColor(),
-                                    "Orthus"
+                                    "Orthus", "Eventide"
                                 )
                             }
                             AloofState.FINALIZE -> {
@@ -984,8 +1087,10 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                         when (honorableState) {
                             HonorableState.CONVINCE -> {
                                 info.addPara(
-                                    "You have not fully convinced them quite just yet.",
-                                    0f
+                                    "You have not fully convinced them quite just yet - you are at %s/%s honor.",
+                                    0f,
+                                    Misc.getHighlightColor(),
+                                    "$honor", "$HONOR_NEEDED"
                                 )
                             }
                             HonorableState.WIN_FINAL_DUEL -> {
@@ -997,6 +1102,40 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                                 0f,
                                 Misc.getHighlightColor(),
                                 "Eventide"
+                            )
+                        }
+
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICHegeHonKillingTraitor")) {
+                            info.addPara(
+                                "You've 'accepted' a 'task' from %s, who wants you to take revenge on a certain %s - a member of the " +
+                                "initial 'iron schism' that forced the %s out of the church. They are currently retired on %s.",
+                                5f,
+                                Misc.getHighlightColor(),
+                                "Jerus Alotera", "Jane Blackwell", "Iron Path", "Hesperus"
+                            )
+                        }
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_killingJerusDeserters")) {
+                            val id = Global.getSector().memoryWithoutUpdate.getString("\$MPC_IAIICHonPatherTargetMarketId")
+                            val market = Global.getSector().economy.getMarket(id) ?: return
+                            val name = market.name
+                            val sys = market.starSystem
+                            info.addPara(
+                                "%s has tasked you with destroying a cell of ex-iron pathers that currently operate a (non-iron) pather base named %s, in %s. " +
+                                "Specifically, you were instructed to destroy the station, and collect a trophy for Jerus to hang on his wall.",
+                                5f,
+                                Misc.getHighlightColor(),
+                                "Jerus Alotera", name, sys.name
+                            ).setHighlightColors(
+                                Misc.getHighlightColor(),
+                                market.faction.baseUIColor,
+                                Misc.getHighlightColor()
+                            )
+                            info.addPara(
+                                "Jerus also warned you that this base is %s and may be %s of any pather base you have " +
+                                "fought before.",
+                                5f,
+                                Misc.getNegativeHighlightColor(),
+                                "extremely well established", "well beyond the defenses"
                             )
                         }
                     }
@@ -1015,15 +1154,43 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                     Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).baseUIColor
                 )
             }
+
+            State.RETURN_TO_ALOOF -> {
+                info.addPara(
+                    "You've successfully turnt all four target against the Hegemony. You must now return to %s, on %s.",
+                    5f,
+                    Misc.getHighlightColor(),
+                    getAloofRep().name.fullName, "Eventide"
+                )
+            }
+            State.WAIT -> {
+                info.addPara(
+                    "The four houses are currently spreading dissent, politically maneuvering, and lobbying the Hegemony. You must wait until Daud cracks - which is, presumably, an inevitability.",
+                    5f
+                )
+            }
         }
+    }
+
+    override fun notifyEnding() {
+        super.notifyEnding()
+
+        val eventide = Global.getSector().economy.getMarket("eventide") ?: return
+        val comms = eventide.commDirectory ?: return
+        val importantPeople = MPC_People.getImportantPeople()
+        comms.removePerson(importantPeople[MPC_People.HEGE_MILITARIST_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_OPPORTUNISTIC_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_MORALIST_ARISTO_REP])
+        comms.removePerson(importantPeople[MPC_People.HEGE_ARISTO_DEFECTOR])
+
+        eventide.makeNonStoryCritical("\$MPC_IAIICEvent")
     }
 
     override fun notifyEnded() {
         super.notifyEnded()
 
         Global.getSector().memoryWithoutUpdate[KEY] = null
-
-        Global.getSector().economy.getMarket("eventide")?.makeNonStoryCritical("\$MPC_IAIICEvent")
+        Global.getSector().removeScript(this)
     }
 
     override fun advanceImpl(amount: Float) {
@@ -1091,11 +1258,27 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
                         }
                     }
                     TargetHouse.MILITARISTIC -> null
-                    TargetHouse.HONORABLE -> null
+                    TargetHouse.HONORABLE -> {
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICHegeHonKillingTraitor")) {
+                            return Global.getSector().economy.getMarket("hesperus").primaryEntity
+                        }
+                        if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_killingJerusDeserters") && (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_didJerusDesertersTask"))) {
+                            val id = Global.getSector().memoryWithoutUpdate.getString("\$MPC_IAIICHonPatherTargetMarketId")
+                            return Global.getSector().economy.getMarket(id)?.primaryEntity
+                        }
+                        when (honorableState) {
+                            HonorableState.CONVINCE -> null
+                            HonorableState.WIN_FINAL_DUEL -> Global.getSector().economy.getMarket("eventide").primaryEntity
+                            HonorableState.GOT_ENOUGH_HONOR -> Global.getSector().economy.getMarket("eventide").primaryEntity
+                            null -> null
+                        }
+                    }
                 }
             }
             State.DONE -> null
             State.FAILED -> null
+            State.RETURN_TO_ALOOF -> Global.getSector().economy.getMarket("eventide").primaryEntity
+            State.WAIT -> null
         }
     }
 
@@ -1119,6 +1302,12 @@ class MPC_hegemonyContributionIntel: BaseIntelPlugin() {
         } else if (housesTurned == 3) {
             text?.addPara("Suddenly, MilSec lights up with alarming reports of IAIIC activity - it seems INTSEC is not happy about your attempts to sabotage their efforts.")
             retaliate(text)
+        } else if (housesTurned == HOUSES) {
+            state = State.RETURN_TO_ALOOF
+            sendUpdateIfPlayerHasIntel(
+                state,
+                text
+            )
         }
 
         currentHouse = TargetHouse.NONE

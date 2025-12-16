@@ -135,6 +135,7 @@ class MPC_IAIICDKCMD: BaseCommandPlugin() {
                 if (activePerson.id != "macario") return false
                 if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$sdtu_missionCompleted")) return false
                 if (!intel.factionContributions.any { it.factionId == Factions.DIKTAT }) return false
+                if (Global.getSector().economy.getMarket("sindria")?.isInhabited() != true || Global.getSector().economy.getMarket("umbra")?.isInhabited() != true)
                 if (Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICDKInvestigationStarted")) return false
                 return true
             }

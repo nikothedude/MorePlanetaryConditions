@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="WideHorizons">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../Wide Horizons v1.2.9d/jars/WideHorizons.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

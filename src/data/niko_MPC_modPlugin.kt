@@ -7,6 +7,7 @@ import com.fs.starfarer.api.Script
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.InstallableIndustryItemPlugin.InstallableItemDescriptionMode
+import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.campaign.listeners.BaseFleetEventListener
 import com.fs.starfarer.api.combat.AutofireAIPlugin
 import com.fs.starfarer.api.combat.MissileAIPlugin
@@ -29,6 +30,7 @@ import data.kaysaar.aotd.vok.scripts.research.AoTDMainResearchManager
 import data.scripts.autofire.MPC_towerTorpedoAutofirePlugin
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.MPC_hostileActivityHook
+import data.scripts.campaign.abilities.MPC_missileStrikeKeypressListener
 import data.scripts.campaign.econ.MPC_incomeTallyListener
 import data.scripts.campaign.econ.conditions.defenseSatellite.handlers.niko_MPC_satelliteHandlerCore
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.handler.overgrownNanoforgeJunkHandler
@@ -45,6 +47,7 @@ import data.scripts.campaign.magnetar.crisis.listeners.MPC_ArkFOBColonizedListen
 import data.scripts.campaign.magnetar.niko_MPC_omegaWeaponPurger
 import data.scripts.campaign.niko_MPC_specialProcGenHandler.doSpecialProcgen
 import data.scripts.campaign.plugins.niko_MPC_campaignPlugin
+import data.scripts.campaign.rulecmd.MPC_IAIICChurchCMD
 import data.scripts.campaign.rulecmd.MPC_IAIICTriTachCMD.Companion.DOWN_PAYMENT
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
@@ -56,6 +59,7 @@ import data.utilities.niko_MPC_ids.overgrownNanoforgeItemId
 import data.utilities.niko_MPC_ids.specialSyncrotronItemId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeIndustryId
 import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
+import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
@@ -73,6 +77,8 @@ import lunalib.lunaSettings.LunaSettingsListener
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
+import org.lazywizard.console.commands.Survey
+import org.lazywizard.lazylib.MathUtils
 import org.magiclib.kotlin.*
 import kotlin.collections.set
 import kotlin.math.max
@@ -120,6 +126,33 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             intel.removeBlueprintFunctions.removeAll { nullable: Script? -> nullable == null } // TODO remove
             intel.removeBlueprintFunctions.forEach { it?.run() }
         }
+
+        fun addExtraExodusPlanet(): PlanetAPI? {
+            val exodus = MPC_IAIICChurchCMD.getExodus() ?: return null
+            val furthestPlanet = exodus.planets.filter { !it.isStar && it.orbit != null }.maxBy { it.orbit.orbitalPeriod }
+            val furthestOrbit = furthestPlanet.orbit.makeCopy()
+            val newPlanet = exodus.addPlanet(
+                MPC_IAIICChurchCMD.HIDEOUT_ID,
+                exodus.star,
+                "Altreides",
+                Planets.FROZEN2,
+                MathUtils.getRandomNumberInRange(0f, 360f),
+                240f,
+                MathUtils.getDistance(exodus.star, furthestPlanet) + 6000f,
+                furthestOrbit.orbitalPeriod * 1.5f
+            )
+
+            newPlanet.market.addConditionIfNotPresent(Conditions.VERY_COLD)
+            newPlanet.market.addConditionIfNotPresent(Conditions.POOR_LIGHT)
+            newPlanet.market.addConditionIfNotPresent(Conditions.THIN_ATMOSPHERE)
+            newPlanet.market.addConditionIfNotPresent(Conditions.VOLATILES_TRACE)
+            newPlanet.market.addConditionIfNotPresent(Conditions.ORE_SPARSE)
+
+            newPlanet.market.conditions.forEach { it.isSurveyed = true }
+            newPlanet.market.surveyLevel = MarketAPI.SurveyLevel.FULL
+
+            return newPlanet
+        }
     }
 
     private fun setupIAIICResearch() {
@@ -160,6 +193,7 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         StarSystemGenerator.addTerrainGenPlugin(niko_MPC_mesonFieldGenPlugin())
 
         Global.getSettings().loadTexture("graphics/portraits/MPC_fractalCore.png")
+        Global.getSettings().loadTexture("graphics/portraits/MPC_luddicBroker.png")
         Global.getSettings().getShipSystemSpec("MPC_deepDive").isCanUseWhileRightClickSystemOn = true
         // afaik, theres no flag for this you can set via json, has to be done through code
 
@@ -232,6 +266,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     override fun onGameLoad(newGame: Boolean) {
         super.onGameLoad(newGame)
 
+        // somewhere in here is the rep loss sound on new game
+
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.OMAN_BOMBARD_COST_ID] = niko_MPC_settings.OMAN_BOMBARD_COST
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.DELAYED_REPAIR_TIME_ID] = niko_MPC_settings.DELAYED_REPAIR_TIME
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.PATHER_SECT_NAME] = SECT_NAME
@@ -298,6 +334,14 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         setupIAIICBlueprints()
         setupIAIICResearch()
 
+        Global.getSector().listenerManager.addListener(MPC_missileStrikeKeypressListener() ,true)
+
+        val aegisAmount = 1000000f
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeCredits"] = aegisAmount
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeCreditsDGS"] = Misc.getDGSCredits(aegisAmount)
+        Global.getSector().memoryWithoutUpdate["\$MPC_aegisTradeArmaments"] = 350
+
+
         for (listener in Global.getSector().listenerManager.getListeners(niko_MPC_saveListener::class.java)) {
             listener.onGameLoad()
         }
@@ -352,6 +396,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
     }
 
     override fun onNewGameAfterEconomyLoad() {
+        // not the cause of the rep loss sound
+
         super.onNewGameAfterEconomyLoad()
         if (!niko_MPC_settings.DEFENSE_SATELLITES_ENABLED) {
             niko_MPC_satelliteUtils.obliterateSatellites()
@@ -377,11 +423,13 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         IAIIC.setRelationship(Factions.PIRATES, -0.5f)
         IAIIC.setRelationship(Factions.REMNANTS, -0.5f)
         IAIIC.setRelationship(Factions.LUDDIC_PATH, -0.5f) // only officially
-        IAIIC.setRelationship(Factions.PLAYER, -0.2f)
+        IAIIC.relToPlayer.rel = -0.2f // this way it doesnt make a noise
         IAIIC.setRelationship(Factions.PERSEAN, RepLevel.SUSPICIOUS)
         //IAIIC.isShowInIntelTab = false
 
         setupIAIICBlueprints()
+
+        addExtraExodusPlanet()
 
         doSpecialProcgen(true)
     }

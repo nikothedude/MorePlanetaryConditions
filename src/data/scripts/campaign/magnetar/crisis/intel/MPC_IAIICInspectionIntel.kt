@@ -80,10 +80,13 @@ class MPC_IAIICInspectionIntel(val from: MarketAPI, val target: MarketAPI, val i
             MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED)
         }
         if (repResult != null && repResult!!.delta != 0f) {
+            val impact = CustomRepImpact()
+            impact.delta = -repResult!!.delta
             Global.getSector().adjustPlayerReputation(
                 RepActionEnvelope(
                     RepActions.CUSTOM,
-                    -repResult!!.delta, null, null, false, true, "Hostilities Ended"
+                    impact,
+                    null, null, false, true, "Hostilities Ended"
                 ),
                 getFaction().id
             )

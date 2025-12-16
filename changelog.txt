@@ -1,11 +1,94 @@
+4.4.1
+SAVE COMPATIBLE
+
+A funny UNGP rule
+
+4.4.0
+SEMI-SAVE COMPATIBLE - Lockbow hullmods wont update if youve salvaged it
+
+Fixed drive field resonators not unapplying
+
+You can now use ECM to scramble the guidance of missiles
+    The avg. ECCM value across your missile carriers determines how much you ignore their ECM
+You can now install high res sensors on stations to give your aegis systems better detection thresholds
+Aegis missile system now occasionally fires torpedoes
+Reduced the armament cost for some missiles
+
+Fixed the dialogutils needing station augments
+
+Fixed that annoying rep loss sound at new game
+
+Lockbow given a special hullmod that lets you toggle its automation on the fly
+Lockbow armor increased
+Lockbow shield eff reduced
+Lockbow given missile autoforge instead of burn drive
+Lockbow ordnance variant reworked - now has harpoons and sarissas
+Lockbow now spams missiles
+
+Missile system now generates more intelligently
+
+Cruise Missile now doesnt lose lock on close misses
+
+4.3.7d
+
+Fixes missiles playing their sound when theyre in a different location
+Fixes toyol not being always recoverable
+Some proofreading
+
+4.3.7c
+
+Fixes magnetar rules (Wow, lots of bugs this release, huh?)
+
+4.3.7b
+
+Fixes the [REDACTED] firing its [ERR] from the center of the system
+
+Removes the fucking desync check
+
+Implements the steelpecker in code, but not in game
+
+4.3.7a
+
+Fixes a random sector crash
+Fixed another crash
+
+Cruise missile can now resist up to 10 emp bolts before flaming out
+
+4.3.7
+SAVE COMPATIBLE - RUN MPC_genSpecialContent IF UPDATING
+
+Magnetar now makes the bwummm noise if you cant see it
+Magnetar intel updated
+Magnetar pulse delay increased to ~4 days
+Magnetar pulse nerfed, now destroys your drive field for 30% less time
+
+Ionized pulse is now super fast and does appreciable cr damage
+
+Magnetar rewritten
+    Magnetar rewrite is mostly small details, and breaking up giant walls of text
+    The kanta part is next and will be substantial
+
+A new secret system. A new industry. A new ability. A new ship and a new mini-story to discover
+
+Toyol bounty
+    A terrifyingly effective super phase cruiser that is frankly just overpowered in player hands
+        But what else is new?
+Toyol system AI improved
+Toyol weapon slots fixed
+Toyol variant added
+Toyol FP increased to 65
+
 4.3.6
 SAVE COMPATIBLE?
 
+Waits no longer expire if you fight a fleet
+
 Adds some extra flavor to magnetar
+    The totem.
 Overgrown nanoforges no longer spawn naturally
     Can be spawned via commands
 Gave a few untested buffs to ionized pulse, again
-Sustained burn now makles you immune to the effects of the magnetar's pull
+Sustained burn now makes you immune to the effects of the magnetar's pull
 Clarified a few things in magnetar intel
 
 My end of the AOTD integration for cerulean vapors

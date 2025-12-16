@@ -1,0 +1,75 @@
+{
+    "displayName": "Attack",
+    "fluxCapacitors": 27,
+    "fluxVents": 0,
+    "goalVariant": true,
+    "hullId": "MPC_toyol",
+    "hullMods": [
+        "adaptive_coils",
+        "missleracks",
+        "magazines",
+        "fluxbreakers"
+    ],
+    "quality": 1.0,
+    "variantId": "MPC_toyol_Attack",
+    "weaponGroups": [
+        {
+            "autofire": false,
+            "mode": "ALTERNATING",
+            "weapons": {
+                "WS 004": "amblaster",
+                "WS 003": "amblaster"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 009": "gigacannon"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 006": "phasebeam",
+                "WS 005": "phasebeam"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 007": "irautolance",
+                "WS 008": "irautolance"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "ALTERNATING",
+            "weapons": {
+                "WS 001": "ionpulser",
+                "WS 002": "ionpulser"
+            }
+        },
+        {
+            "autofire": false,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 010": "sabotpod",
+                "WS 000": "sabotpod"
+            }
+        },
+        {
+            "autofire": true,
+            "mode": "LINKED",
+            "weapons": {
+                "WS 011": "vulcan",
+                "WS 012": "vulcan",
+                "WS 013": "vulcan",
+                "WS 015": "pdburst",
+                "WS 014": "pdburst"
+            }
+        }
+    ]
+}

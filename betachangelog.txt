@@ -1,6 +1,26 @@
+0.0.5
+
+Ark FOB is now a star citadel if AOTD
+    Else, now lowtech starforts
+    Hightech starforts suck to fight, lmao
+
+Buffed arrow pather condition
+    Now gives much faster build speed, now gives way more defense rating after transfer
+
+Fixed pather questline
+    Also, the pather rep now tells you what conditions are not satisfied
+Fixed parts of hege questline
+
+Proofread a lot of hege questline
+
+IAIIC all out attack now spawns less fleets, and those it does spawn are larger
+
+0.0.4
+
+Luddic questline in progress
+
 0.0.3
 
-A few changes, more progress on aloof aristocrat
 Clarified shit in TT contribution intel
 AA now seriously increases the strength of the IAIIC
 Fixes the Ark FOB having shit be unbuildable
@@ -13,11 +33,17 @@ Fixed fractal support not disappearing and having no limit to their fleets
 
 Fixed IAIIC inspections never ending
 
-IAIIC retaliation cooldown is 5 days now
+IAIIC retaliation cooldown is 0 days now
 ARK Fob is now essential and wont deciv
 
-IAIIC
+Hegemony
+    FINISHED
     Militaristic aristocrats now get terrified if you steal chico's nanoforge
+
+Indie
+    Voidsun finished (Mostly)
+    Ibrahim finished - will be fleshed out more later
+    MMMC fixed
 
 0.0.2
 
