@@ -1,16 +1,18 @@
 package data.scripts.weapons
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.combat.DamageType
 import com.fs.starfarer.api.combat.DamagingProjectileAPI
 import com.fs.starfarer.api.combat.EveryFrameWeaponEffectPlugin
+import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipwideAIFlags
 import com.fs.starfarer.api.combat.WeaponAPI
 import com.fs.starfarer.api.impl.campaign.ids.Personalities
+import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import com.genir.aitweaks.core.extensions.fluxLeft
 import data.scripts.weapons.MPC_collisionUtils.analyzeHit
 import org.lazywizard.lazylib.MathUtils
 import java.awt.Color
@@ -104,8 +106,7 @@ class MPC_towerWpnScript: EveryFrameWeaponEffectPlugin {
             }
 
             if (ship.customData["MPC_towerTorpAlreadyFired"] == true) {
-                threshold *= 3f
-                ship.setCustomData("MPC_towerTorpAlreadyFired", false)
+                threshold *= 4f
             }
 
             threshold *= MathUtils.getRandomNumberInRange(0.9f, 1.1f)
@@ -113,11 +114,33 @@ class MPC_towerWpnScript: EveryFrameWeaponEffectPlugin {
                 weapon.isForceNoFireOneFrame = false
                 weapon.setForceFireOneFrame(true)
 
-                ship.setCustomData("MPC_towerTorpAlreadyFired", true)
+                ship.setCustomDataWithTimer("MPC_towerTorpAlreadyFired", true, 5f)
                 iteratedProjectiles.forEach { it.setCustomData("MPC_towerTorpAlreadyCountered", true) }
             } else {
                 weapon.isForceNoFireOneFrame = true
             }
         }
     }
+
+    private fun ShipAPI.setCustomDataWithTimer(key: String, value: Any?, time: Float) {
+        setCustomData(key, value)
+        Global.getCombatEngine().addPlugin(KeyClear(this, key, time))
+    }
+
+    class KeyClear(val ship: ShipAPI, val key: String, time: Float) : BaseEveryFrameCombatPlugin() {
+        val interval = IntervalUtil(time, time)
+
+        override fun advance(amount: Float, events: List<InputEventAPI?>?) {
+            super.advance(amount, events)
+            val engine = Global.getCombatEngine()
+            if (engine.isPaused) return
+            interval.advance(amount)
+            if (interval.intervalElapsed()) {
+                ship.removeCustomData(key)
+                engine.removePlugin(this)
+                return
+            }
+        }
+    }
+
 }

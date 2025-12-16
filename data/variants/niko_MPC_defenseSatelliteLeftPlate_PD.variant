@@ -1,0 +1,79 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteLeftPlate_PD",
+  "hullId": "niko_MPC_defenseSatelliteLeftPlate",
+  "displayName": "PD",
+  "goalVariant": false,
+  "fluxCapacitors": 60,
+  "fluxVents": 20,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "heavyarmor",
+    "missleracks",
+    "autorepair",
+    "armoredweapons",
+    "eccm"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0006": "hurricane"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0003": "MPC_steelpecker",
+        "WS0005": "MPC_steelpecker",
+        "WS0008": "MPC_steelpecker",
+        "WS0010": "MPC_steelpecker",
+        "WS0011": "MPC_steelpecker"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0016": "MPC_devilRocketPod"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "ALTERNATING",
+      "weapons": {
+        "WS0007": "swarmer",
+        "WS0009": "swarmer",
+        "WS0012": "swarmer"
+      }
+    },
+    {
+      "autofire": false,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0004": "dualflak",
+        "WS0014": "dualflak",
+        "WS0015": "dualflak"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0002": "vulcan"
+      }
+    },
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "MPC_heavyFlak",
+        "WS0013": "vulcan"
+      }
+    }
+  ],
+  "modules": [],
+  "wings": []
+}

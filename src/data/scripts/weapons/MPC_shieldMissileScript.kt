@@ -5,6 +5,8 @@ import com.fs.starfarer.api.combat.BaseEveryFrameCombatPlugin
 import com.fs.starfarer.api.combat.CollisionClass
 import com.fs.starfarer.api.combat.CombatEngineAPI
 import com.fs.starfarer.api.combat.CombatEngineLayers
+import com.fs.starfarer.api.combat.CombatEntityAPI
+import com.fs.starfarer.api.combat.DamageAPI
 import com.fs.starfarer.api.combat.DamagingProjectileAPI
 import com.fs.starfarer.api.combat.MissileAPI
 import com.fs.starfarer.api.combat.OnFireEffectPlugin
@@ -12,6 +14,7 @@ import com.fs.starfarer.api.combat.ShieldAPI
 import com.fs.starfarer.api.combat.ShipAPI
 import com.fs.starfarer.api.combat.ShipwideAIFlags
 import com.fs.starfarer.api.combat.WeaponAPI
+import com.fs.starfarer.api.combat.listeners.DamageTakenModifier
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.input.InputEventAPI
 import com.fs.starfarer.api.util.IntervalUtil
@@ -24,6 +27,15 @@ import kotlin.math.ceil
 
 abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
 
+
+    companion object {
+        const val SHIELD_MISSILE_DATA_TAG = "MPC_shieldMissile"
+        const val DRONE_DATA_KEY = "MPC_shieldDroneKey"
+        const val RAYCAST_FAIL_TIMES_TIL_END = 5
+        const val RAYCAST_STEP_MULT = 8f
+        const val DAMAGE_NULLIFIED_KEY = "MPC_shieldNullifiedDamage"
+    }
+
     abstract val id: String
     open val variantId: String = "MPC_shield_drone_Shield"
 
@@ -31,6 +43,10 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         if (projectile == null) return
 
         createShieldDrone(projectile, engine)
+        projectile.setCustomData(SHIELD_MISSILE_DATA_TAG, true)
+        if (!Global.getCombatEngine().listenerManager.hasListenerOfClass(MPC_shieldMissileDamageTakenMod::class.java)) {
+            Global.getCombatEngine().listenerManager.addListener(MPC_shieldMissileDamageTakenMod())
+        }
     }
 
     open fun createShieldDrone(projectile: DamagingProjectileAPI, engine: CombatEngineAPI): ShipAPI {
@@ -64,6 +80,9 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         updateDronePos(drone, projectile)
         val script = MPC_shieldMissileEveryframeScript(drone, projectile)
         engine.addPlugin(script)
+
+        projectile.setCustomData(DRONE_DATA_KEY, drone)
+
         return drone
     }
 
@@ -80,7 +99,7 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         drone.mutableStats.overloadTimeMod.modifyMult(id, getOverloadTimeMult())
         drone.mutableStats.shieldUnfoldRateMult.modifyFlat(id, getShieldUnfoldMult())
 
-        drone.shield.radius = projectile.collisionRadius * 5f
+        drone.shield.radius = getShieldRadius(projectile)
         drone.collisionRadius = drone.shield.radius * 1.2f
 
         val shieldInner = getShieldInnerColor()
@@ -109,6 +128,42 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
 
     open fun getShieldInnerColor(): Color? = null
     open fun getShieldOuterColor(): Color? = null
+
+    open fun getShieldRadius(missile: DamagingProjectileAPI): Float = missile.collisionRadius * 3f
+
+    class MPC_shieldMissileDamageTakenMod: DamageTakenModifier {
+        override fun modifyDamageTaken(
+            param: Any?,
+            target: CombatEntityAPI?,
+            damage: DamageAPI?,
+            point: Vector2f?,
+            shieldHit: Boolean
+        ): String? {
+            if (target?.customData[SHIELD_MISSILE_DATA_TAG] != true) return null
+            val missile = (target as? MissileAPI) ?: return null
+            val drone = (target.customData[DRONE_DATA_KEY] as? ShipAPI) ?: return null
+            val shield = drone.shield
+
+            var iterPoint = Vector2f(point)
+            val dir = VectorUtils.getDirectionalVector(point, missile.location)
+
+            var fails = 0f
+            while (fails < RAYCAST_FAIL_TIMES_TIL_END) {
+
+                if (!shield.isWithinArc(iterPoint)) {
+                    fails++
+                    iterPoint = iterPoint.translate(dir.x * RAYCAST_STEP_MULT, dir.y * RAYCAST_STEP_MULT)
+                    continue
+                }
+
+                damage?.modifier?.modifyMult(DAMAGE_NULLIFIED_KEY, 0f)
+
+                return DAMAGE_NULLIFIED_KEY
+            }
+
+            return null
+        }
+    }
 
     open class MPC_shieldMissileEveryframeScript(
         val drone: ShipAPI,

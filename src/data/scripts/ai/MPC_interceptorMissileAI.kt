@@ -90,9 +90,7 @@ class MPC_interceptorMissileAI(val missile: MissileAPI, val launchingShip: ShipA
         val correction = (MathUtils.getShortestRotation(
             correctAngle,
             VectorUtils.getFacing(missile.velocity) + 180
-        )
-                * 0.5f * FastTrig.sin((MathUtils.FPI / 90 * Math.min(Math.abs(offCourseAngle), 45f)).toDouble())
-            .toFloat()) //damping when the correction isn't important
+        ) * 0.5f * FastTrig.sin((MathUtils.FPI / 90 * Math.min(Math.abs(offCourseAngle), 45f)).toDouble()).toFloat()) //damping when the correction isn't important
 
         //modified optimal facing to correct the velocity vector angle as soon as possible
         correctAngle = correctAngle + correction

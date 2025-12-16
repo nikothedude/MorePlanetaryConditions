@@ -3,7 +3,7 @@
 	"specClass":"missile",	
 	"missileType":"ROCKET",
 	"onFireEffect":"data.scripts.weapons.MPC_towerScript",
-	"sprite":"graphics/missiles/missile_torpedo_compact.png",
+	"sprite":"graphics/proj/MPC_tower.png",
 	"size":[14,23],	
 	"center":[7,11],
 	"collisionRadius":20,

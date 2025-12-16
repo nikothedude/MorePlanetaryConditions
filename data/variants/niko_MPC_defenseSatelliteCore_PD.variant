@@ -1,0 +1,44 @@
+{
+  "variantId": "niko_MPC_defenseSatelliteCore_PD",
+  "hullId": "niko_MPC_defenseSatelliteCore",
+  "displayName": "PD",
+  "goalVariant": false,
+  "fluxCapacitors": 0,
+  "fluxVents": 26,
+  "quality": 1,
+  "permaMods": [],
+  "hullMods": [
+    "eccm",
+    "missleracks"
+  ],
+  "weaponGroups": [
+    {
+      "autofire": true,
+      "mode": "LINKED",
+      "weapons": {
+        "WS0001": "niko_MPC_LR_heavyburst",
+        "WS0002": "niko_MPC_LR_heavyburst",
+        "WS0003": "niko_MPC_LR_heavyburst",
+        "WS0004": "niko_MPC_LR_heavyburst"
+      }
+    }
+  ],
+  "modules": [
+	  {
+	    "WS0005": "niko_MPC_connectorModule_support",
+	  },
+	  {
+	    "WS0006": "niko_MPC_defenseSatelliteLeftPlate_PD",
+	  },
+	  {
+	    "WS0007": "niko_MPC_defenseSatelliteRightPlate_PD"
+	  },
+   
+  ],
+  "wings": [
+    "MPC_pickhead_wing",
+	"MPC_pickhead_wing",
+	"MPC_minecart_wing",
+	"MPC_minecart_wing"
+  ]
+}

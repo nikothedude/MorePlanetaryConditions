@@ -18,7 +18,7 @@ class MPC_interceptScriptTwo: MPC_interceptScript() {
     class MPC_proxFuseScript(val projectile: MissileAPI, val ai: GuidedMissileAI, val engine: CombatEngineAPI) : BaseEveryFrameCombatPlugin() {
 
         companion object {
-            const val RANGE_TO_DETONATE = 15f
+            const val RANGE_TO_DETONATE = 30f
         }
 
         override fun advance(amount: Float, events: MutableList<InputEventAPI>?) {
@@ -37,28 +37,30 @@ class MPC_interceptScriptTwo: MPC_interceptScript() {
 
             val explosion = DamagingExplosionSpec(
                 0.1f,
-                20f,
-                RANGE_TO_DETONATE,
-                projectile.damage.damage,
-                projectile.damage.damage,
+                RANGE_TO_DETONATE * 2f,
+                RANGE_TO_DETONATE * 1.25f,
+                projectile.damage.damage * 6f,
+                projectile.damage.damage * 6f,
                 CollisionClass.MISSILE_NO_FF,
                 CollisionClass.MISSILE_NO_FF,
                 0.5f,
                 1f,
                 0.2f,
                 2,
-                Color(185, 245, 255, 255),
-                Color(185, 245, 255, 255)
+                Color(255, 90, 90, 255),
+                Color(185, 90, 90, 255)
             )
 
             explosion.damageType = DamageType.FRAGMENTATION
             explosion.isShowGraphic = true
+            explosion.detailedExplosionFlashDuration *= 0.25f
+            explosion.detailedExplosionRadius *= 0.25f
+            explosion.detailedExplosionFlashRadius *= 0.25f
             explosion.soundSetId = "MPC_heavyFlakExplosion"
 
             engine.spawnDamagingExplosion(explosion, projectile.source, projectile.location)
             engine.removeEntity(projectile)
             engine.removePlugin(this)
-
         }
     }
 }

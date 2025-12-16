@@ -19,7 +19,7 @@
 				  "turnRate":500,
 				  "acc":6000,
 				  "dec":9500,
-				  "maxSpeed":2600},
+				  "maxSpeed":1200},
 	"engineSlots":[{"id":"ES1",
 					"loc":[-1, 0],
 				    #"style":"ROCKET_LOW_TECH",
