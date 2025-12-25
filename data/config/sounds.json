@@ -131,6 +131,13 @@
 	[
 		{"file":"sounds/MPC_missileStrikeReload.ogg","pitch":1,"volume":1},
 	],
+	
+	# ICEWIND
+	"MPC_icewindPayloadLoop": {
+		"sounds":[
+			{"file":"sounds/weapons/MPC_icewindPayloadLoop.ogg", "pitch":1.0,"volume":1.0},
+		],
+	},
 
 
 }

@@ -27,5 +27,5 @@
 				 "blowbackSpread":10.0,
 				 "particleColor":[100,100,100,200]},
 	"projectileSpecId":"MPC_towerTorpedoProj",
-	"fireSoundTwo":"harpoon_fire",
+	"fireSoundTwo":"sabot_srm_fire",
 }

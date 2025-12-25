@@ -38,7 +38,7 @@ class MPC_bullrushOnHit: OnHitEffectPlugin {
         val targetHardFlux = (target as? ShipAPI)?.hardFluxLevel ?: 0f
         while (arcsLeft-- > 0f) {
 
-            val pierce = niko_MPC_mathUtils.prob((targetHardFlux * 100f) / 2f)
+            val pierce = (niko_MPC_mathUtils.prob((efficacy * 100f) * 0.3f)) || (niko_MPC_mathUtils.prob(targetHardFlux * 100f))
 
             if (pierce) {
                 engine.spawnEmpArcPierceShields(
@@ -55,7 +55,7 @@ class MPC_bullrushOnHit: OnHitEffectPlugin {
                     Color(25, 100, 155, 255),
                     Color(255, 255, 255, 255)
                 )
-            } else {
+            } else if (!shieldHit) {
                  engine.spawnEmpArc(
                     projectile.source,
                     point,

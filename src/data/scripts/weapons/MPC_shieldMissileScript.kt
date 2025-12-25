@@ -64,12 +64,13 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
 
         drone.isRenderEngines = false
         drone.isDoNotRenderSprite = true
-        drone.activeLayers.remove(CombatEngineLayers.FF_INDICATORS_LAYER)
+        drone.activeLayers.clear()
 
         drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
 
         drone.collisionClass = CollisionClass.FIGHTER
         drone.hullSize = ShipAPI.HullSize.FIGHTER
+        drone.addListener(MPC_shieldDroneProjectileNullifier())
 
         val shield = createShieldAndFlux(drone, projectile)
         if (projectile is MissileAPI) {
@@ -165,18 +166,40 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
         }
     }
 
+    class MPC_shieldDroneProjectileNullifier(): DamageTakenModifier {
+        override fun modifyDamageTaken(
+            param: Any?,
+            target: CombatEntityAPI?,
+            damage: DamageAPI?,
+            point: Vector2f?,
+            shieldHit: Boolean
+        ): String? {
+            if (param !is DamagingProjectileAPI) return null
+            if (!shieldHit) return null
+
+            if (param.projectileSpec?.isPassThroughFighters == true) {
+                Global.getCombatEngine().removeEntity(param)
+            }
+
+            return null
+        }
+    }
+
     open class MPC_shieldMissileEveryframeScript(
         val drone: ShipAPI,
         val projectile: DamagingProjectileAPI
     ): BaseEveryFrameCombatPlugin() {
 
+        var fading = false
         var storedHP = 0f
 
         companion object {
             fun updateDronePos(drone: ShipAPI, projectile: DamagingProjectileAPI) {
                 val newPos = getTargetDronePos(drone, projectile)
                 drone.location.set(newPos)
-                drone.facing = projectile.facing
+                if (drone.shield.type != ShieldAPI.ShieldType.OMNI) {
+                    drone.facing = projectile.facing
+                }
             }
 
             fun getTargetDronePos(drone: ShipAPI, projectile: DamagingProjectileAPI): Vector2f {
@@ -209,30 +232,44 @@ abstract class MPC_shieldMissileScript: OnFireEffectPlugin {
                 }
 
                 updateDronePos(drone, projectile)
-                var forceShield = true
-                if (projectile.isFading) {
+                if (fading) {
                     drone.aiFlags.removeFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
                     drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.DO_NOT_USE_SHIELDS)
                     if (drone.shield.isOn) drone.shield.toggleOff()
-                    forceShield = false
-                }
 
-                if (projectile is MissileAPI) {
-                    if (projectile.isFizzling) {
+                    if (drone.shield.activeArc <= 0f) {
+                        delete()
+                        return
+                    }
+                } else {
+                    var forceShield = true
+                    if (projectile.isFading) {
                         drone.aiFlags.removeFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
                         drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.DO_NOT_USE_SHIELDS)
                         if (drone.shield.isOn) drone.shield.toggleOff()
                         forceShield = false
                     }
+
+                    if (projectile is MissileAPI) {
+                        if (projectile.isFizzling) {
+                            drone.aiFlags.removeFlag(ShipwideAIFlags.AIFlags.KEEP_SHIELDS_ON)
+                            drone.aiFlags.setFlag(ShipwideAIFlags.AIFlags.DO_NOT_USE_SHIELDS)
+                            if (drone.shield.isOn) drone.shield.toggleOff()
+                            forceShield = false
+                        }
+                    }
+
+                    if (forceShield && drone.shield.isOff && !drone.fluxTracker.isOverloaded) drone.shield.toggleOn() // idk why but its super hesitant to do this otherwise, even with the ai flag
+
+
+                    if (projectile.isExpired || !Global.getCombatEngine().isEntityInPlay(projectile)) {
+                        fading = true
+                    }
                 }
 
-                if (forceShield && drone.shield.isOff && !drone.fluxTracker.isOverloaded) drone.shield.toggleOn() // idk why but its super hesitant to do this otherwise, even with the ai flag
-
-
-                if (projectile.isExpired || !Global.getCombatEngine().isEntityInPlay(projectile)) {
-                    delete()
-                    return
-                }
+                val flux = drone.fluxTracker.fluxLevel
+                val shieldOpacity = (1 - (flux)).coerceAtLeast(0.01f)
+                drone.extraAlphaMult2 = shieldOpacity
             }
         }
 
