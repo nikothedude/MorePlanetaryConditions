@@ -107,6 +107,7 @@ MPC_mallet,WEAPON,"A low-yield chemical warhead strapped to an underwhelming eng
 
 A large internal magazine ensures protracted usefulness.",,,
 MPC_malletPod,WEAPON,"The mallet-class S-MRM, now in pod form. Equipped with an even larger magazine and rapid cycling actuators, this weapon can absorb entire salvos of incoming fire before delivering equal firepower.",,,
+MPC_sawnOffSabot,WEAPON,"A product of desperation rather than ingenuity, this rack of sabot SRMs has been hapazardly converted to use a hammer-based priming mechanism, much like a crude firearm. Such a violent launch drastically reduces range, accuracy, and damage output, but vastly improves strike capability.",,,
 ,,,,,
 MPC_coronaResistStation,CUSTOM,"A potentially abandoned research station, built either to study some interesting local phenomenon or to study that which is best kept far, far away from inhabited worlds. Its oddity is immediately noticable - the ionized beam of the nearby pulsar curves around the station as if repelled by an invisible force, and sensor sweeps show clear signs of activity both inside and outside the station.",,,
 ,,,,,
