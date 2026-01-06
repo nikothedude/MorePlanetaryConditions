@@ -45,7 +45,7 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
         const val ASTEROID_DIVISOR = 10f
 
         fun createShieldBubble(sys: StarSystemAPI): PlanetAPI {
-            val token = sys.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] as SectorEntityToken
+            val token = sys.jumpPoints.last().orbitFocus as SectorEntityToken
             val angle = VectorUtils.getAngle(sys.star.location, token.location)
             val dist = MathUtils.getDistance(sys.star.location, token.location)
             val planet = sys.addPlanet(
@@ -54,7 +54,7 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
                 "Anomaly",
                 "MPC_shieldPlanet",
                 angle,
-                350f,
+                200f,
                 dist,
                 token.orbit.orbitalPeriod
             )
@@ -66,7 +66,6 @@ class MPC_supernovaExplosion: ExplosionEntityPlugin() {
             jumpPoint.setCircularOrbit(planet, VectorUtils.getAngle(token.location, jumpPoint.location), 400f, jumpPoint.orbit.orbitalPeriod)
 
             sys.removeEntity(token)
-            sys.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] = null
 
             Global.getSoundPlayer().playSound(
                 "MPC_shieldPlanetRaise",

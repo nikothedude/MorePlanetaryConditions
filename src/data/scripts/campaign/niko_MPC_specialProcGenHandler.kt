@@ -127,7 +127,6 @@ object niko_MPC_specialProcGenHandler {
         val shieldPoint = MathUtils.getPointOnCircumference(system.location, star.radius + SHIELD_BUBBLE_DIST, MathUtils.getRandomNumberInRange(0f, 360f))
         val token = system.createToken(shieldPoint)
         token.setCircularOrbit(star, VectorUtils.getAngle(star.location, token.location), star.radius + SHIELD_BUBBLE_DIST, 290f)
-        system.memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_SHIELD_TOKEN] = token
 
         system.addTag(Tags.THEME_SPECIAL)
         Global.getSector().memoryWithoutUpdate[niko_MPC_ids.SUPERNOVA_TARGET] = system

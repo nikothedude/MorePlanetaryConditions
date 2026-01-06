@@ -29,4 +29,8 @@ class MPC_supernovaNebula: NebulaTerrainPlugin() {
                 flag == TerrainAIFlags.REDUCES_SPEED_SMALL ||
                 flag == TerrainAIFlags.TILE_BASED
     }
+
+    override fun advance(amount: Float) {
+        super.advance(amount)
+    }
 }

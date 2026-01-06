@@ -12,6 +12,7 @@ import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.StarTypes
+import com.fs.starfarer.api.impl.campaign.procgen.StarAge
 import com.fs.starfarer.api.impl.campaign.terrain.BaseTiledTerrain
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
@@ -53,7 +54,7 @@ class MPC_supernovaActionScript(
         const val DURING_PHASE_LENGTH = 30f
         const val ENDING_PHASE_LENGTH = 10f
 
-        const val MIN_STAR_SIZE = 100f
+        const val MIN_STAR_SIZE = 125f
         const val MIN_CORONA_BAND = 25f
 
         // the absolute max. we will make the edges more fuzzy...
@@ -116,7 +117,11 @@ class MPC_supernovaActionScript(
                 Stage.BEFORE -> {
                     playSoundFar("MPC_supernova", star.containingLocation, star.location)
                     playSoundFar("MPC_supernovaThunder", star.containingLocation, star.location)
-                    playSoundFar("MPC_supernovaTwo", star.containingLocation, star.location)
+                    if (star.containingLocation.isCurrentLocation) {
+                        playSoundFar("MPC_supernovaTwo", star.containingLocation, star.location)
+                    } else {
+                        Global.getSoundPlayer().playSound("MPC_supernovaTwo", 1f, 1f, Global.getSector().playerFleet.location, Misc.ZERO)
+                    }
                     playSoundFar("MPC_supernovaUnder", star.containingLocation, star.location)
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = Stage.DURING
 
@@ -146,7 +151,9 @@ class MPC_supernovaActionScript(
                         10000f,
                         shockwaveColor
                     )
-                    supernovaParticle = niko_MPC_reflectionUtils.get("p", supernovaGlow!!, ParticleController::class.java)
+                    if (supernovaGlow != null) {
+                        supernovaParticle = niko_MPC_reflectionUtils.get("p", supernovaGlow!!, ParticleController::class.java)
+                    }
                     screenshake = MPC_supernovaCameraShake(this)
                     screenshake?.start()
 
@@ -162,7 +169,8 @@ class MPC_supernovaActionScript(
                     Global.getSector().campaignUI.addMessage("WARNING:::MASSIVE SPATIAL DISRUPTION DETECTED", Misc.getNegativeHighlightColor())
 
                     val nebula = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
-                        0f, 0f, star.containingLocation, "terrain", "nebula", 4 , 4, "MPC_supernovaRemnantNebula", star.starSystem.age) as? CampaignTerrainAPI ?: return
+                        0f, 0f, star.containingLocation, "terrain", "nebula", 2, 2, "MPC_supernovaRemnantNebula", StarAge.YOUNG
+                    ) as? CampaignTerrainAPI ?: return
                     star.containingLocation.memoryWithoutUpdate[SUPERNOVA_NEBULA_ONE_MEMID] = nebula.plugin
                     getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
 
@@ -184,6 +192,7 @@ class MPC_supernovaActionScript(
                     Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"] = null
                     supernovaGlow?.maxAge = 0f
                     getJumpPoints().forEach { it.memoryWithoutUpdate.unset(JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY) }
+                    supernovaFinalized()
                     failsafe()
                     delete()
                     return
@@ -245,6 +254,10 @@ class MPC_supernovaActionScript(
                 }
             }
         }
+    }
+
+    private fun supernovaFinalized() {
+        MPC_supernovaMoteScript(star).start()
     }
 
     // finishes generation in case our supernova didnt actually do it all

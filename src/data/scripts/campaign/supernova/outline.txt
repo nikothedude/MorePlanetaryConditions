@@ -4,6 +4,27 @@ IDea one: It triggers on its own and sends shockwaves through the entire sector
     Your're told by your sensors officer after it subsides that something happened at x coordinates
     Get a breadcrumb...
 
+Idea two: Galatian quests
+    Approached and asked to investigaet the system
+
+STEP 1.5: What is in the supernova system prior to the explosion?
+    And how does this relate to the post-supernova system...
+
+STEP 1.75: What is the draw of the supernova system?
+    Obviously, domain tech
+    The entire fucking shield planet
+        This holds a number of domain secrets
+            A research station, maybe?
+            Definitely holds the bulk of the research data
+
+    Exotic materia?
+        Tasked with recovering some of this for the scientists
+        Can be used to develop new funny hmods
+        Weapons...?
+
+    The surviving planets surely have something
+
+    The issue is that the scav fleets will definitely have found a lot of it...
 
 STEP 2: What is the challenge of the supernova? (Most important bit)
 
@@ -11,6 +32,7 @@ STEP 2: What is the challenge of the supernova? (Most important bit)
         Radiation
         Heat
         The supernova remnant itself
+        Regions of that weird material you want to recover?
 
     Unnatural threats:
         Dweller
@@ -20,3 +42,8 @@ STEP 2: What is the challenge of the supernova? (Most important bit)
         Tri-tach
         Diktat (Low amounts)
         Hegemony (Low amounts, countering tritach?)
+
+        Mote swarms?
+            Swarms of motes that travel around unpredictably...
+            Damage your fleet if you get near them...
+            Sometimes manifest into something... else?
