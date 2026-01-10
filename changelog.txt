@@ -1,3 +1,9 @@
+4.5.0
+
+Derelict escort no longer spawns on war fleets/raiders
+Removed a bunch of unused weapons
+Toyol now has 5 degree hardpoint arcs
+
 4.4.1
 SAVE COMPATIBLE
 

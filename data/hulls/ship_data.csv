@@ -12,7 +12,6 @@ Toyol,MPC_toyol,Battlecruiser,High Tech,MPC_deepDive,65,11000,1500,10000,30000,9
 Pickhead,MPC_pickhead,,Explorarium,,,125,35,500,,100,0,,375,500,450,180,360,25,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,102
 Minecart,MPC_minecart,,Explorarium,,,1600,90,500,,300,0,,100,25,25,35,50,200,NONE,,0,0,0,,,0,0,,,,,,,,,,,,,,,,,,,,,,0,,,,103
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-Onslaught (XIV) (Kanta),MPC_onslaught_xiv_kanta,Battleship,Kanta's Favored,MPC_acceleratedOrdnanceFeeder,50,20000,1750,17000,15000,600,360,,25,10,10,4,4,3500,PHASE,damper,180,0.4,1,,,750,1500,300,400,15,27,7,900000,3,12,720,0.25,40,40,,,,,,,HIDE_IN_CODEX,no_dealer,,0.4,2,4,,500
 Atlas Mk.II (Kanta),MPC_atlas2_kanta,Modified Superfreighter,Kanta's Favored,MPC_acceleratedOrdnanceFeeder,50,9000,750,8000,8750,350,220,,30,8,4,4,2,4000,OMNI,,60,0.5,1,,,250,300,200,400,10,40,7,150000,2,20,720,0.25,50,24,,,,,,,,"no_dealer, codex_unlockable",,0.7,2,4,,502.5
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Lockbow,MPC_lockbow,Converted Missile Carrier,Low Tech,forgevats,40,12000,850,9000,8750,750,130,4,50,7,5,24,5,3100,OMNI,,180,0.3,1.2,,,100,450,600,40,20,2,6,500000,3,20,720,0.25,40,40,,,,,,,"ALWAYS_PANIC, CARRIER, HIDE_IN_CODEX","no_dealer, restricted, codex_unlockable, MPC_carriesMissiles2",,0.7,2,4,,9010
