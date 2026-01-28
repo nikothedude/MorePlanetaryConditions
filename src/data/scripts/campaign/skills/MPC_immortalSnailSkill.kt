@@ -22,6 +22,7 @@ class MPC_immortalSnailSkill {
             if (stats == null) return
 
             stats.timeMult.modifyFlat(id, 15f)
+            stats.peakCRDuration.modifyMult(id, 10f)
             stats.missileMaxSpeedBonus.modifyMult(id, 3f)
             stats.missileMaxTurnRateBonus.modifyMult(id, 2f)
             stats.missileAccelerationBonus.modifyMult(id, 3f)
@@ -30,6 +31,8 @@ class MPC_immortalSnailSkill {
 
             stats.missileAmmoRegenMult.modifyFlat(id, 5000f)
             stats.missileAmmoBonus.modifyFlat(id, 9559f)
+            stats.damageToTargetHullMult.modifyFlat(id, 3f)
+            stats.damageToTargetShieldsMult.modifyFlat(id, 3f)
 
             stats.peakCRDuration.modifyMult(id, 0.5f)
         }

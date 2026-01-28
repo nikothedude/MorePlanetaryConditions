@@ -12,7 +12,7 @@
         {
             "autofire": false,
             "mode": "ALTERNATING",
-            "weapons": {"WS 001": "hephag", "WS 002": "hephag"},
+            "weapons": {"WS 001": "hellbore", "WS 002": "hellbore"},
         },
         {
             "autofire": true,

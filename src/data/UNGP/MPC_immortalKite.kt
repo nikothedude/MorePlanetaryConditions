@@ -38,7 +38,7 @@ class MPC_immortalKite: UNGP_BaseRuleEffect(), UNGP_CampaignTag, UNGP_CampaignLi
 
     companion object {
         const val IMMORTAL_KITE_MEMID = "\$MPC_immortalKite"
-        const val BASE_SINKHOLE_SIZE = 400f
+        const val BASE_SINKHOLE_SIZE = 500f
 
         fun getRespawnTimer(): IntervalUtil? {
             var timer = Global.getSector().memoryWithoutUpdate["\$MPC_immortalKiteRespawn"] as? IntervalUtil
@@ -55,7 +55,7 @@ class MPC_immortalKite: UNGP_BaseRuleEffect(), UNGP_CampaignTag, UNGP_CampaignLi
             fleet.fleetData.addFleetMember(createImmortalKite())
             fleet.forceSync()
 
-            fleet.stats.fleetwideMaxBurnMod.modifyMult("MPC_immortalSnail", 0.4f)
+            fleet.stats.fleetwideMaxBurnMod.modifyMult("MPC_immortalSnail", 0.6f)
             fleet.stats.sensorProfileMod.modifyMult("MPC_immortalSnail", 4f)
             fleet.removeAbility(Abilities.SUSTAINED_BURN)
             fleet.removeAbility(Abilities.EMERGENCY_BURN)

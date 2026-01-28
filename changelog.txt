@@ -3,6 +3,10 @@
 Derelict escort no longer spawns on war fleets/raiders
 Removed a bunch of unused weapons
 Toyol now has 5 degree hardpoint arcs
+Cruise missile now has a secondary explosion if it overloads the enemy
+Cruise missile now damages fighters
++2000 damage to the cruise missile
+Immortal kite rule made a lot worse
 
 4.4.1
 SAVE COMPATIBLE
