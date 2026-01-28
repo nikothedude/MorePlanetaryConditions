@@ -1,4 +1,5 @@
 4.5.0
+SAVE COMPATIBLE
 
 Derelict escort no longer spawns on war fleets/raiders
 Removed a bunch of unused weapons
