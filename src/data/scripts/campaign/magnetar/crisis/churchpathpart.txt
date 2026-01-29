@@ -181,6 +181,8 @@
 
                         One on Baetis, one on another church planet (Tarteressus?)
 
+                        TODO this kinda kills the momentum... maybe we do this before the planet
+
                     Baetis guy actually hails you when you land - offers to give up his coordinates as long as you give him safe
                     passage to some independent world and give him some special thing (AI cores?)
                         Or you can just raid a buncha safehouses for him
@@ -229,6 +231,18 @@
                         Pather, indie... different results
                         Maybe add it before, but grey it out because its a bad idea to drop off your only in to this world
 
+                Regardless of how you get here, once you have the planet and the coordinates, you land on a sandy waste, nothing to be seen
+                Its very fucking careful. Guns from orbit. Boots on the ground. Gunships in the air, like
+
+                But theres nothing. Except...
+
+                A depth scan reveals a small chamber under the sand, buried
+                Your crew quickly get to work
+                Despite your worries, there doesnt appear to be anything besides the vigil fleet
+                Then, the bunker opens
+                You opt to come yourself because you want to meet this broker
+
+
                 THROUGHOUT THIS ENTIRE QUESTLINE I REALLY WANT TO COMMUNICATE THE SEMI-LEGENDARY STATUS OF BROKER
                 How... not sure
 
@@ -236,6 +250,7 @@
                     Just go back to them occasionally, theyll have feedback and maybe even give you leads?
                         Maybe at some point you HVAE to go back and theyll tell you somethin
                     Maybe not needed anymore with the 2nd part of this arc
+
 
 
 
