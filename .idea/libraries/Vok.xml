@@ -2,6 +2,7 @@
   <library name="Vok">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../Ashes of  The Domain- Vaults of Knowledge/jars/Vok.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../AoTD- Vaults of Knowledge-4.1.4/jars/Vok.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

@@ -4,12 +4,16 @@
       <root url="file://$PROJECT_DIR$/../Nexerelin/jars/src" />
       <root url="jar://$PROJECT_DIR$/../Nexerelin/jars/ExerelinCore.jar!/" />
       <root url="file://$PROJECT_DIR$/../Nexerelin" />
+      <root url="jar://$PROJECT_DIR$/../Nexerelin-0.12.1d/jars/ExerelinCore.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/../Nexerelin/jars/src" />
       <root url="jar://$PROJECT_DIR$/../Nexerelin/jars/ExerelinCore.jar!/" />
       <root url="file://$PROJECT_DIR$/../Nexerelin/jars/src" />
+      <root url="file://$PROJECT_DIR$/../Nexerelin/jars/sources/ExerelinCore" />
+      <root url="jar://$PROJECT_DIR$/../Nexerelin-0.12.1d/jars/ExerelinCore.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Nexerelin-0.12.1d/jars/ExerelinCore.jar!/" />
     </SOURCES>
   </library>
 </component>

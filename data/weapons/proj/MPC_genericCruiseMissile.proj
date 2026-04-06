@@ -14,8 +14,8 @@
 	"explosionSpec":{"duration":0.1, # not visual
 				 "radius":300,
 				 "coreRadius":60, # full damage within core radius
-				 "collisionClass":HITS_SHIPS_ONLY_NO_FF,
-				 "collisionClassByFighter":HITS_SHIPS_ONLY_NO_FF,
+				 "collisionClass":PROJECTILE_NO_FF,
+				 "collisionClassByFighter":PROJECTILE_NO_FF,
 				 "particleSizeMin":6.0,
 				 "particleSizeRange":3.0,
 				 "particleDuration":1.3,

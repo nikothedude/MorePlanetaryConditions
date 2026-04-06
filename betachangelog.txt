@@ -1,3 +1,7 @@
+0.0.6
+
+Fully disabled for now, because I want to stop getting feedback until Im ready with a beta
+
 0.0.5
 
 Ark FOB is now a star citadel if AOTD

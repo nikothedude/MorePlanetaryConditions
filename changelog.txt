@@ -1,3 +1,22 @@
+4.5.1
+PROBABLY SAVE COMPATIBLE
+
+Toyol substantially nerfed
+Less flux cap, less dissipation, less OP
+Deep dive now lasts for 6 seconds, has 50 seconds cooldown
+Toteliac habitat now works with AOTD hexagon
+
+4.5.0
+SAVE COMPATIBLE
+
+Derelict escort no longer spawns on war fleets/raiders
+Removed a bunch of unused weapons
+Toyol now has 5 degree hardpoint arcs
+Cruise missile now has a secondary explosion if it overloads the enemy
+Cruise missile now damages fighters
++2000 damage to the cruise missile
+Immortal kite rule made a lot worse
+
 4.4.1
 SAVE COMPATIBLE
 

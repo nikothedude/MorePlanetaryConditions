@@ -3,8 +3,14 @@ Multi-step, multi-part, non-linear
 General structure here?
 
 Step 1: Create caches of weapons and supplies on various church worlds
+    Req: 3 or 35% of church worlds, whichever is lower
+    ~500 heavy armaments each, ~1000 supplies, ~900 fuel
+    Makes suspicion extreme each time
 Step 2: Distribute fliers advertising ways to fight against the government - mostly nonviolently
     Probably causes a rep loss? Something?
+
+    Do we even do this one?
+
 Step 3: Move in to covertly take out key knight commanders, to disrupt their response and information control
     Bribery, or murder?
     Maybe this is the only part that really matters. Caches of course should be made but this is the key
@@ -12,9 +18,28 @@ Step 3: Move in to covertly take out key knight commanders, to disrupt their res
     "The knights are too strong at the moment, but an overt attack is too obvious. We need to make people disappear"
     OR
     "We must exploit cracks in the foundation - direct attacks will never work. We must exploit the greed of these few people"
+    Combat/raid focus. Raid knight strongholds, attack knights out in the fringe
+        Each should have a different gimmick
+            Fighter spam
+            Max smods/officers
+            Ambush - a second fleet joins, or some unfair trick is played
+
+    Probably four knights
+        1. A knight on a pather station [Tyrannical hero]
+        2. That one knight moon - raid [Commander]
+            Alternatively, fight them in orbit of the planet, with ASB support from the ground
+            Or some long range fire support
+        3. A knight out hunting heresy (Derelicts/remnants) [Spirutual leader]
+            Lots of smods, max level officers, possibly a special faith hullmod that makes them undying for a few secs after receiving lethal dmg
+        4. ???
+
 Step 4: Establish militant cells/reactivate militant cells on church worlds
     Or maybe just use them to help you with the other tasks?
     Not all these militants are OUR militant. Some are tangently related, like pathers.
+
+    3 or 35% of church worlds, whichever is lower
+
+    Short questline/fetch quest for these guys maybe
 
 "The Luddic people need to become aware of their own political and military power - and also to be given it."
 

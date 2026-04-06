@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar.crisis.intel
 
 import com.fs.starfarer.api.Global
+import org.magiclib.kotlin.getFactionMarkets
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
@@ -9,12 +10,16 @@ import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
+import com.fs.starfarer.api.impl.campaign.ids.Industries
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.SectorMapAPI
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.campaign.Faction
 import data.scripts.campaign.MPC_People
+import data.scripts.campaign.magnetar.crisis.MPC_churchOverextensionCondition
+import data.scripts.campaign.magnetar.crisis.MPC_knightsDownedCondition
 import data.scripts.campaign.rulecmd.MPC_IAIICChurchCMD
 import data.scripts.campaign.rulecmd.MPC_IAIICPatherCMD
 import data.utilities.niko_MPC_ids
@@ -36,6 +41,14 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
             return Global.getSector().memoryWithoutUpdate[KEY] as? MPC_churchContributionIntel
         }
         fun getMarket(id: String): MarketAPI? = Global.getSector().economy.getMarket(id)
+        fun destroyKnights() {
+            MPC_knightsDownedCondition.MPC_knightsDownedScript().start()
+            for (market in Global.getSector().getFaction(Factions.LUDDIC_CHURCH).getFactionMarkets()) {
+                for (iterInd in market.industries.filter { it.spec.hasTag(Industries.TAG_MILITARY) }) {
+                    iterInd.setDisrupted(MPC_knightsDownedCondition.MPC_knightsDownedScript.DURATION)
+                }
+            }
+        }
 
         const val KEY = "\$MPC_churchContributionIntel"
     }
@@ -64,7 +77,12 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
                 asher.primaryEntity?.makeUnimportant(niko_MPC_ids.IAIIC_QUEST)
             }
         },
-        DONE,
+        DONE {
+            override fun apply() {
+                MPC_churchOverextensionCondition.MPC_churchOverextensionScript.getScript()?.delete()
+                destroyKnights()
+            }
+        },
         FAILED;
 
         open fun apply() {}

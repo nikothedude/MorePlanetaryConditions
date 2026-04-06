@@ -32,12 +32,6 @@ class niko_MPC_derelictAntiAsteroidSatellites: niko_MPC_antiAsteroidSatellitesBa
         var baseGroundDefenseMultObj = 1.5f
     }
 
-    // TODO: COMPATABILITY: these fields are only here so games load. remove post 3.1.0
-    var baseAccessibilityIncrement = -0.30f
-    var baseGroundDefenseIncrement = 400f
-    var baseStabilityIncrement = 2f
-    var baseGroundDefenseMult = 1.5f
-
     override fun handleConditionAttributes(id: String, ourMarket: MarketAPI) {
         for (suppressedCondition in suppressedConditions) {
             market.suppressCondition(suppressedCondition)

@@ -37,6 +37,8 @@ import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.magiclib.kotlin.isPatrol
+import org.magiclib.kotlin.isRaider
+import org.magiclib.kotlin.isWarFleet
 
 class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
 
@@ -277,6 +279,8 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
         val timeout = market.getDerelictEscortTimeouts()[fleet]
         if (fleet in market.getEscortFleetList().keys) return handleFailedEscortSpawn(fleet, route)
         if (timeout != null) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.isWarFleet()) return handleFailedEscortSpawn(fleet, route)
+        if (fleet.isRaider()) return handleFailedEscortSpawn(fleet, route)
         if (!niko_MPC_settings.DERELICT_ESCORT_SPAWN_ON_PATROLS && fleet.isPatrol()) return handleFailedEscortSpawn(fleet, route)
 
         var factionToUse = market.faction

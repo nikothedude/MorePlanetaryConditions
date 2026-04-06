@@ -28,8 +28,8 @@ object CodexData {
         createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId(Industries.MILITARYBASE))
         createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId(Industries.HIGHCOMMAND))
 
-        if (niko_MPC_settings.AOTD_vaultsEnabled) {
-            //createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId("militarygarrison"))
+        if (niko_MPC_settings.AOTD_seatsEnabled && niko_MPC_settings.AOTD_seatsVersion >= "3.0.5") {
+            createReciprocalLink(toteliacCodex.id, CodexDataV2.getIndustryEntryId("aotd_hexagon"))
         }
 
         val ultraMagneticFieldId = CodexDataV2.getConditionEntryId("niko_MPC_ultraMagneticField")
