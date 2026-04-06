@@ -23,4 +23,5 @@ class MPC_IAIICAllOutAttackAssemble(raid: RaidIntel?, gatheringPoint: SectorEnti
     override fun getFPLarge(): Float {
         return super.getFPLarge() * ALL_OUT_ATTACK_FP_MULT
     }
+
 }

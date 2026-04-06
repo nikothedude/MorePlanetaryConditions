@@ -151,7 +151,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             if (niko_MPC_settings.AOTD_vaultsEnabled) {
                 market.addIndustry("triheavy") // skunkworks
                 //market.addIndustry("militarygarrison")
-                market.addIndustry("logisitcbureau") // terminus
+                market.addIndustry("aotd_terminus") // terminus
                 //market.getIndustry("militarygarrison")?.isImproved = true
             } else {
                 market.addIndustry(Industries.ORBITALWORKS)

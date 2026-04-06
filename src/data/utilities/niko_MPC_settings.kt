@@ -40,6 +40,8 @@ object niko_MPC_settings {
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
     var AOTD_vaultsEnabled = false
+    var AOTD_seatsEnabled = false
+    var AOTD_seatsVersion = "0.0.0"
     var SOTF_enabled = false
     var graphicsLibEnabled = false
     var astralAscensionEnabled = false
@@ -138,7 +140,8 @@ object niko_MPC_settings {
 
         DISABLE_MAGNETAR_CORE_DROPS = LunaSettings.getBoolean(modId, "MPC_disableMagnetarCoreDrops")!!
 
-        ENABLE_IAIIC_CRISIS = LunaSettings.getBoolean(modId, "MPC_enableIAIICCrisis")!!
+        ENABLE_IAIIC_CRISIS = false
+        //ENABLE_IAIIC_CRISIS = LunaSettings.getBoolean(modId, "MPC_enableIAIICCrisis")!!
 
         overgrownNanoforgeCommodityDataStore.reload()
     }

@@ -2,16 +2,22 @@ package data.scripts.campaign.magnetar.crisis.intel.allOutAttack
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.LocationAPI
+import com.fs.starfarer.api.campaign.OrbitAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
+import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin
 import com.fs.starfarer.api.campaign.comm.IntelInfoPlugin.ListInfoMode
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
+import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.MilitaryResponseScript
 import com.fs.starfarer.api.impl.campaign.command.WarSimScript
 import com.fs.starfarer.api.impl.campaign.fleets.FleetFactoryV3
 import com.fs.starfarer.api.impl.campaign.fleets.FleetParamsV3
 import com.fs.starfarer.api.impl.campaign.fleets.RouteLocationCalculator
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
+import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Ranks
@@ -30,6 +36,7 @@ import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionOrders
 import data.utilities.niko_MPC_ids
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
+import java.awt.Color
 import java.util.*
 
 class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spawnFP: Float): RaidIntel(target.starSystem, from.faction, null),
@@ -48,6 +55,26 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
         val MADE_HOSTILE_UPDATE = Any()
 
         const val MPC_IAIICAOAFLEET = "\$MPC_IAIICAOAFLEET"
+
+        fun warpEffect(loc: Vector2f, sys: LocationAPI) {
+            val params = ExplosionEntityPlugin.ExplosionParams(
+                Color.CYAN,
+                sys,
+                loc,
+                100f,
+                1f
+            )
+            params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.NONE
+
+            val expl = sys.addCustomEntity(
+                Misc.genUID(),
+                null,
+                Entities.EXPLOSION,
+                Factions.NEUTRAL,
+                params
+            )
+            expl.setLocation(loc.x, loc.y)
+        }
     }
 
     override fun getName(): String {
@@ -56,6 +83,8 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
     }
 
     override fun notifyRaidEnded(raid: RaidIntel?, status: RaidStageStatus?) {
+        eventEnded()
+
         if (action?.gotCore == true) {
             MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FRACTAL_CORE_OBTAINED)
         } else {
@@ -103,10 +132,64 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
         MPC_IAIICFobIntel.get()?.currentAction = this
     }
 
+    var didScripts = false
+    var scripts = HashSet<MilitaryResponseScript>()
+    override fun advanceImpl(amount: Float) {
+        super.advanceImpl(amount)
+
+        val stage = stages[currentStage] ?: return
+        if (stage is MPC_IAIICAllOutAttackAssemble) {
+            if (!didScripts) {
+                didScripts = true
+
+                // getMaxDays() is always 1 here
+                // scripts get removed anyway so we don't care about when they expire naturally
+                // just make sure they're around for long enough
+                val duration = 100f
+                val params = MilitaryResponseScript.MilitaryResponseParams(
+                    CampaignFleetAIAPI.ActionType.HOSTILE,
+                    "defMPC_IAIIC_AOA" + organizeStage.market.id,
+                    organizeStage.market.faction,
+                    organizeStage.market.primaryEntity,
+                    1f,
+                    duration
+                )
+                val script = MilitaryResponseScript(params)
+                target.containingLocation.addScript(script)
+                scripts?.add(script)
+                val defParams = MilitaryResponseScript.MilitaryResponseParams(
+                    CampaignFleetAIAPI.ActionType.HOSTILE,
+                    "defMPC_IAIIC_AOA" + target.id,
+                    target.faction,
+                    target.primaryEntity,
+                    1f,
+                    duration
+                )
+                val defScript = MilitaryResponseScript(defParams)
+                target.containingLocation.addScript(defScript)
+                scripts?.add(defScript)
+            }
+        }
+    }
+
     override fun failedAtStage(stage: RaidStage?) {
         super.failedAtStage(stage)
 
+        eventEnded()
         MPC_IAIICFobIntel.get()?.end(MPC_IAIICFobEndReason.FAILED_ALL_OUT_ATTACK)
+    }
+
+    private fun eventEnded() {
+        val fob = MPC_IAIICFobIntel.getFOB()
+        if (fob != null) {
+            val orbit = fob.memoryWithoutUpdate["\$MPC_IAIICOldOrbitLoc"]
+            fob.primaryEntity.orbit = orbit as OrbitAPI?
+            warpEffect(fob.location, fob.containingLocation)
+        }
+
+        for (script in scripts) {
+            script.forceDone()
+        }
     }
 
     override fun createSmallDescription(info: TooltipMakerAPI?, width: Float, height: Float) {
@@ -174,6 +257,13 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
         )
         label.setHighlight(strDesc, "" + numFleets, "multiple s-mods", "exceptional officers/commanders")
         label.setHighlightColors(h, h, h, h)
+
+        val labelTwo = info.addPara(
+            "In addition, your fractal core warns you of some %s surrounding %s. %s.",
+            opad,
+        )
+        label.setHighlight("enigmatic threat", "the enemy's approach", "It is highly advised for you to be in orbit of ${colony.name} once the invasion starts.")
+        label.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
 
         defenderStr = WarSimScript.getEnemyStrength(getFaction(), system)
         val defensiveStr = defenderStr + WarSimScript.getStationStrength(target.faction, system, target.primaryEntity)

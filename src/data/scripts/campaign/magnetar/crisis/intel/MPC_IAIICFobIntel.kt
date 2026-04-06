@@ -55,6 +55,7 @@ import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
 import data.scripts.campaign.magnetar.MPC_fractalCoreReactionScript
 import data.scripts.campaign.magnetar.crisis.MPC_IAIICChurchInitializerScript
+import data.scripts.campaign.magnetar.crisis.MPC_churchOverextensionCondition
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCoreFactor.Companion.addSpecialItems
 import data.scripts.campaign.magnetar.crisis.MPC_hegemonyFractalCoreCause.Companion.getFractalColony
@@ -650,6 +651,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             }
         }
         Global.getSector().addScript(IndieContribAdderScript())
+        MPC_churchOverextensionCondition.MPC_churchOverextensionScript().start()
     }
 
     private fun setup() {
@@ -658,7 +660,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
         setMaxProgress(PROGRESS_MAX)
 
-        addFactor(MPC_IAIICMilitaryDestroyedHint())
+        //addFactor(MPC_IAIICMilitaryDestroyedHint())
         //addFactor(MPC_IAIICTradeDestroyedFactorHint()) // the shortage factor already does this
         addFactor(MPC_IAIICShortageFactor())
         addFactor(MPC_IAIICAttritionFactor())
@@ -1283,7 +1285,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     /** Increases amount of fleets launched by the FOB and repairs all industries, but increases conflict fatigue. */
-    private fun escalate(amount: Float) {
+    fun escalate(amount: Float) {
         val FOB = MPC_fractalCoreFactor.getFOB() ?: return
         FOB.industries.forEach {
             if (it.disruptedDays > 0f) {
@@ -1525,6 +1527,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
             }
         }
         killIAIIC()
+        MPC_churchOverextensionCondition.MPC_churchOverextensionScript.getScript()?.delete()
         support.forEach {
             it.recallFleets(MPC_fractalSupportFleetAssignmentAI.ReturnReason.EVENT_OVER)
             Global.getSector().intelManager.removeIntel(it)
@@ -1833,6 +1836,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     private fun checkBattleForFactors(primaryWinner: CampaignFleetAPI, battle: BattleAPI) {
+        return // TODO - maybe just purge this entire thing. not needed!
         if (currentAction != null) return
 
         val playerFleet = Global.getSector().playerFleet

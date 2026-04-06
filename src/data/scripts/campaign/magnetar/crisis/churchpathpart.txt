@@ -14,6 +14,8 @@
                     But you were right - it is the ship. Unfortunately the logs are purged - but deep analysis reveals the last location the ship took off from
                         But they forgot to clear an engine's memory - the thrust patterns indicate it took off from a small village in asher
                         Unfortuntaely, further analysis reveals a shuttle left the ship bnefore it crashed. This isnt the place.
+                        Or alternatively theres a trace away, bnut its way too obvious, and had to have been intentionally placed
+                        A drone sent finds nothing but a massive crater. Clearly they want us to believe whoever was here died, or something
                     A hyperwave signal was sent just before the explosion - a fleet spawns, and people might be tipped off
 
                     Conclusion: This might be fucking risky. The bomb was intentionally rigged to explode. The ship intentionally crashed. It was no accident.
@@ -155,8 +157,14 @@
                         He lets it slip that he was responsible for bugging many comm relays with a thing that monitors for any mention of broker
                         This also includes. The planet he hides out on.
 
+                        Youll never find it though, haha, even with the planet youll still never know the corodinates.
+                        Even I dont know them all. (Gives you his set of coordinates)
+
                     He is then delivered to your brig, heaviled bruised, a bit out of it
                     Not very responsive until your doctor gives him a stim-shot
+
+                    If you fail?
+                        Send a HUGE marine raid to search strongholds
 
                     Search 4 comm relays (THIS IS NOT LISTED - it just says do it til you get enough info)
                         Ambushed on 2nd, 3rd, and 4th
@@ -192,7 +200,14 @@
                         Supposedly in deep cover, but isnt(?)
                         Gives it up voluntarily
                         ...maybe sends a knights of ludd fleet to kill you so they can interrogate you and get the code for themselves...?
-                            This makes a lot of sense. This sohuld ONLY happen once youre done with this
+                            This makes a lot of sense. This sohuld ONLY happen once youre done with all 3 codes
+
+                    Maybe a third guy whos a red herring and ends up with you in a trap again
+
+                    I do think there should be a bunch of red herrings in this quest
+                    Someone visiting you in the bar and luring you to a trap?
+                    A strategically placed derelict in front of you?
+                    Someone who hails you randomly?
 
                     OR
 
@@ -235,13 +250,87 @@
                 Its very fucking careful. Guns from orbit. Boots on the ground. Gunships in the air, like
 
                 But theres nothing. Except...
+                    Yeah so broker wants noone on his planet
 
                 A depth scan reveals a small chamber under the sand, buried
                 Your crew quickly get to work
                 Despite your worries, there doesnt appear to be anything besides the vigil fleet
+                    Maybe not even a vigil. Maybe its genuinely disconnected
                 Then, the bunker opens
                 You opt to come yourself because you want to meet this broker
 
+                You creep in, behind your guards... but then a door shuts ahead - then behind - and then, you are tackled
+                    SP option to overpower him
+                        All this does is get you on equal footing
+
+                    In either case, it progresses into you both standing, staring at eachother
+                    Its broker.
+
+                    Silence.
+
+                    "I'm here for your help."
+                    "The church has long been corrupt. We both know this."
+                    "I don't know why you stopped. But we can finish the job, together."
+                    He just stands there, even after
+                    And then, eventually, he gingerly walks over to a PDA. Looking at you - taking a picture - then looking something up...
+                    It takes a few minutes. The plasma torch of your marines get closer.
+                    Then. He looks up. You can see, just from a corner... a database. With your name on it.
+
+                    ...and then he nods. A quick, solemn nod. But... then the display switches to the face of a knight.
+                    Jouriles Panathea.
+
+                    He drops the TriPad, walking close. Visor to face. A second of dread. Then, he slowly, meticulously, makes the spacer sign for
+                    "Disassemble". Then "Hostile fleet". You catch a wink of condensation on the visor.
+
+                        "...you want me to kill this man?" (Wrong)
+                        "...you want to kill this man?" (Right)
+                        "...disassemble... his fleet?" (Wrong)
+
+                    With your correct answer, you can hear a small, satisfied breath. Then, a nod.
+                    He stares at you for a moment longer. Uncomfortably close. You feel his hand reach down, gripping yours, tightly...
+                    Then, he turns on a dime, opens a false wall, closes it, and leaves.
+                    Your marines bust in a moment later. You stand them down, but choose not to tell them his direction.
+                    Then, a moment later, a phantom emerges from the dust, phases, and is not seen again.
+
+                    -you realize a moment later, you were never told where this guy is or who they are. Your officers are similarly clueless.
+                    You just assume broker will approach you when he needs you.
+
+                    END
+
+                    Maybe extend this a bit.
+
+                OR
+                    You send your marines first, bnut they are easily overpowered and disarmed and disposed of by many, many traps
+                    Doors shut, firebombs ignite, and quickly your marines retreat with their losses
+                    Your chief tries to communicate, saying they only want to talk
+                    Suddenly, a grenade flies out of the front, ejected from somewhere deep iunside, but instead of exploding,
+                    It displays a holographic message:
+                        "Send me your leader, alone"
+
+                    You can leave and come back later here
+
+                    If you go in alone...
+                    The instant you enter, the bunker doors close and communications with the outside cease
+                    Autoturrets deploy and stare at you
+                    You dont draw your own because one is staring at your gun hand
+                    But they just stare at you
+                    The dusty, sand-caked interior, dunes on the floor, taper off into a brutalist interior
+
+                    In general, the interior of the bunker is brutalist industrial and efficient at the front
+                    Small holes, illusion generators, so many defensive measures
+                    But the at a certain point, once you turn a corner, you see it opens up into a large living space
+                    To the right, a sizable library though a small doorway. To the left, a hangar, with a hidden tunnel for a shuttle going into the earth
+                    In front, a couch, a radio, a kitchen, and further ahead, a bedroom. It is almost luxuriously ascetic.
+                    And on a second look, you seem him, the cloaked figure, a high-powered pistol aimed at your head... slowly lowering it.
+                        Though the autoturrets are still there
+                        If you try to engage him in conversation, he reminds you he cant via an X on his lips-area
+
+                    Go up, resume the other conversation with the dossier and him asking for your help
+                    But maybe some pleasantries at first?
+
+                Anyway, after this, if you return to the militants theyll say a bunch of public figures have had a change of heart
+                And theres a big shakeup in the underworld
+                Everything is in place here
 
                 THROUGHOUT THIS ENTIRE QUESTLINE I REALLY WANT TO COMMUNICATE THE SEMI-LEGENDARY STATUS OF BROKER
                 How... not sure

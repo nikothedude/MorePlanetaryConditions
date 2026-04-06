@@ -1,7 +1,9 @@
 package data.scripts.campaign.magnetar.crisis.intel.allOutAttack
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
+import com.fs.starfarer.api.campaign.JumpPointAPI
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.ai.CampaignFleetAIAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
@@ -16,11 +18,16 @@ import com.fs.starfarer.api.impl.campaign.intel.raid.RaidIntel
 import com.fs.starfarer.api.impl.campaign.procgen.themes.BaseAssignmentAI
 import com.fs.starfarer.api.impl.campaign.rulecmd.salvage.MarketCMD
 import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobEndReason
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionOrders
+import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack.Companion.warpEffect
+import org.magiclib.kotlin.getStationFleet
+import org.magiclib.kotlin.getStationIndustry
 
 class MPC_IAIICAOAActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionStage(raid), BaseAssignmentAI.FleetActionDelegate {
 
@@ -35,36 +42,36 @@ class MPC_IAIICAOAActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionS
         untilAutoresolve -= days
         if (!didScripts) {
             didScripts = true
-            removeMilScripts()
-
-            // getMaxDays() is always 1 here
-            // scripts get removed anyway so we don't care about when they expire naturally
-            // just make sure they're around for long enough
-            val duration = 100f
-            val params = MilitaryResponseScript.MilitaryResponseParams(
-                CampaignFleetAIAPI.ActionType.HOSTILE,
-                "defMPC_IAIIC_AOA" + target.id,
-                intel.faction,
-                target.primaryEntity,
-                1f,
-                duration
-            )
-            val script = MilitaryResponseScript(params)
-            target.containingLocation.addScript(script)
-            scripts?.add(script)
-            val defParams = MilitaryResponseScript.MilitaryResponseParams(
-                CampaignFleetAIAPI.ActionType.HOSTILE,
-                "defMPC_IAIIC_AOA" + target.id,
-                target.faction,
-                target.primaryEntity,
-                1f,
-                duration
-            )
-            val defScript = MilitaryResponseScript(defParams)
-            target.containingLocation.addScript(defScript)
-            scripts?.add(defScript)
+            //removeMilScripts()
 
             (intel as? MPC_IAIICAllOutAttack)?.makeHostileAndSendUpdate()
+            val fob = MPC_IAIICFobIntel.getFOB()!!
+            val oldOrbit = fob.primaryEntity.orbit
+            fob.memoryWithoutUpdate["\$MPC_IAIICOldOrbitLoc"] = oldOrbit
+            MPC_IAIICFobIntel.get()?.escalate(0f)
+            val fleet = fob.getStationFleet() ?: return // uh oh
+            val targetStation = (target.getStationIndustry() as? OrbitalStation)?.stationEntity
+
+            val target = targetStation ?: target.primaryEntity
+            val dest = JumpPointAPI.JumpDestination(target, null)
+            //Global.getSector().doHyperspaceTransition(fleet, null, dest)
+            class jumpScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                override fun executeImpl() {
+                    fob.primaryEntity.setCircularOrbit(
+                        target,
+                        0f,
+                        target.radius + 20f,
+                        90f
+                    )
+                    val fobFleet = fob.getStationFleet() ?: return
+                    val targetFleet = target.getStationFleet() ?: return
+                    val battle = Global.getFactory().createBattle(fobFleet, targetFleet)
+                    fobFleet.battle = battle
+                    targetFleet.battle = battle
+                    warpEffect(target.location, fob.containingLocation)
+                }
+            }
+            jumpScript(IntervalUtil(1f, 1f)).start()
         }
     }
 

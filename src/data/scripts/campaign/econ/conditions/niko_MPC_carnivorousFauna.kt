@@ -20,21 +20,21 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
         val INDUSTRY_TO_HAZARD_MULT = hashMapOf(
             Pair(Industries.TAG_PATROL, 0.2f),
             Pair(Industries.TAG_MILITARY, 0.5f),
-            Pair(Industries.TAG_COMMAND, 0.8f)
+            Pair(Industries.TAG_COMMAND, 0.8f),
+            Pair("aotd_hexagon", 1f)
         )
         val INDUSTRY_TO_BASE_FOOD_PROD = hashMapOf(
             Pair(Industries.TAG_PATROL, 2),
             Pair(Industries.TAG_MILITARY, 3),
-            Pair(Industries.TAG_COMMAND, 4)
+            Pair(Industries.TAG_COMMAND, 4),
+            Pair("aotd_hexagon", 5)
         )
         val INDUSTRY_TO_BASE_LUXURY_PROD = hashMapOf(
             Pair(Industries.TAG_PATROL, 1),
             Pair(Industries.TAG_MILITARY, 2),
-            Pair(Industries.TAG_COMMAND, 3)
+            Pair(Industries.TAG_COMMAND, 3),
+            Pair("aotd_hexagon", 4)
         )
-        val AOTD_DEFENSE_FORCE_FOOD_PROD = 4
-        val AOTD_DEFENSE_FORCE_LUXURY_PROD = 3
-        val AOTD_DEFENSE_FORCE_HAZARD_MULT = 0.9f
     }
 
     override fun apply(id: String) {
@@ -113,11 +113,14 @@ class niko_MPC_carnivorousFauna: niko_MPC_baseNikoCondition() {
         var decrement = 0f
         if (!industry.isFunctional) return decrement
 
-        for (tag in industry.spec.tags) {
-            val result = INDUSTRY_TO_HAZARD_MULT[tag]
-            if (result != null) {
-                decrement += result
-                break // improperly tagged buildings should not get huge reductions
+        decrement = INDUSTRY_TO_HAZARD_MULT[industry.spec.id] ?: 0f
+        if (decrement == 0f) {
+            for (tag in industry.spec.tags) {
+                val result = INDUSTRY_TO_HAZARD_MULT[tag]
+                if (result != null) {
+                    decrement += result
+                    break // improperly tagged buildings should not get huge reductions
+                }
             }
         }
 

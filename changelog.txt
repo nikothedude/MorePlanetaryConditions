@@ -1,3 +1,11 @@
+4.5.1
+PROBABLY SAVE COMPATIBLE
+
+Toyol substantially nerfed
+Less flux cap, less dissipation, less OP
+Deep dive now lasts for 6 seconds, has 50 seconds cooldown
+Toteliac habitat now works with AOTD hexagon
+
 4.5.0
 SAVE COMPATIBLE
 

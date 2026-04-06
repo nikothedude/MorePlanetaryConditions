@@ -59,6 +59,8 @@ import data.utilities.niko_MPC_industryIds.overgrownNanoforgeJunkStructureId
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_marketUtils.getNextOvergrownJunkDesignation
 import data.utilities.niko_MPC_memoryUtils.createNewSatelliteTracker
+import data.utilities.niko_MPC_settings.AOTD_seatsEnabled
+import data.utilities.niko_MPC_settings.AOTD_seatsVersion
 import data.utilities.niko_MPC_settings.AOTD_vaultsEnabled
 import data.utilities.niko_MPC_settings.SOTF_enabled
 import data.utilities.niko_MPC_settings.astralAscensionEnabled
@@ -167,6 +169,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         niko_MPC_settings.MCTE_loaded = Global.getSettings().modManager.isModEnabled("niko_moreCombatTerrainEffects")
         niko_MPC_settings.indEvoEnabled = Global.getSettings().modManager.isModEnabled("IndEvo")
         AOTD_vaultsEnabled = Global.getSettings().modManager.isModEnabled("aotd_vok")
+        AOTD_seatsEnabled = Global.getSettings().modManager.isModEnabled("aotd_sop")
+        if (AOTD_seatsEnabled) {
+            AOTD_seatsVersion = Global.getSettings().modManager.getModSpec("aotd_sop").version
+        }
         nexLoaded = Global.getSettings().modManager.isModEnabled("nexerelin")
         SOTF_enabled = Global.getSettings().modManager.isModEnabled("secretsofthefrontier")
         graphicsLibEnabled = Global.getSettings().modManager.isModEnabled("shaderLib")
