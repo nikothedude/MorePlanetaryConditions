@@ -68,6 +68,7 @@ import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedF
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICMilitaryDestroyedHint
 import data.scripts.campaign.magnetar.crisis.factors.MPC_IAIICShortageFactor
 import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack
+import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack.Companion.warpEffect
 import data.scripts.campaign.magnetar.crisis.intel.blockade.MPC_IAIICBlockadeFGI
 import data.scripts.campaign.magnetar.crisis.intel.bombard.MPC_IAIICBombardFGI
 import data.scripts.campaign.magnetar.crisis.intel.sabotage.MPC_IAIICSabotageType
@@ -1481,6 +1482,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
                 fob.primaryEntity.customDescriptionId = "MPC_IAIICFOBDecivved"
                 DecivTracker.decivilize(fob, false,  false)
             }
+
         } else {
             val params = DebrisFieldParams(
                 500f,

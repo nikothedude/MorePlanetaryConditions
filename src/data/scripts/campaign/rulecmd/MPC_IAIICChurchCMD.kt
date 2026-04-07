@@ -108,6 +108,9 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
                 contribIntel?.state = MPC_churchContributionIntel.State.GO_TO_ASHER_NANOFORGE
                 contribIntel?.sendUpdate(contribIntel.state, dialog.textPanel)
             }
+            "availableToGoToNanoforge" -> {
+                return contribIntel?.state == MPC_churchContributionIntel.State.GO_TO_ASHER_NANOFORGE || contribIntel?.state == MPC_churchContributionIntel.State.DELIVER_HERETICAL_TECH
+            }
         }
 
         return false

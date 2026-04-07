@@ -22,7 +22,6 @@ class MPC_IAIICHighCommand: MilitaryBase() {
         market.containingLocation.addEntity(fleet)
         fleet.facing = Math.random().toFloat() * 360f
         // this will get overridden by the patrol assignment AI, depending on route-time elapsed etc
-        // this will get overridden by the patrol assignment AI, depending on route-time elapsed etc
         fleet.setLocation(market.primaryEntity.location.x, market.primaryEntity.location.y)
 
         fleet.addScript(MPC_IAIICPatrolAssignmentAI(fleet, route)) // EDIT

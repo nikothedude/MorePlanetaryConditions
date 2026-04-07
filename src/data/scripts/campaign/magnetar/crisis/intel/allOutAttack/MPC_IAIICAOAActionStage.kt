@@ -26,6 +26,7 @@ import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICInspectionOrders
 import data.scripts.campaign.magnetar.crisis.intel.allOutAttack.MPC_IAIICAllOutAttack.Companion.warpEffect
+import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.getStationFleet
 import org.magiclib.kotlin.getStationIndustry
 
@@ -47,6 +48,7 @@ class MPC_IAIICAOAActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionS
             (intel as? MPC_IAIICAllOutAttack)?.makeHostileAndSendUpdate()
             val fob = MPC_IAIICFobIntel.getFOB()!!
             val oldOrbit = fob.primaryEntity.orbit
+            fob.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] = Vector2f(fob.location)
             fob.memoryWithoutUpdate["\$MPC_IAIICOldOrbitLoc"] = oldOrbit
             MPC_IAIICFobIntel.get()?.escalate(0f)
             val fleet = fob.getStationFleet() ?: return // uh oh
@@ -55,23 +57,7 @@ class MPC_IAIICAOAActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionS
             val target = targetStation ?: target.primaryEntity
             val dest = JumpPointAPI.JumpDestination(target, null)
             //Global.getSector().doHyperspaceTransition(fleet, null, dest)
-            class jumpScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
-                override fun executeImpl() {
-                    fob.primaryEntity.setCircularOrbit(
-                        target,
-                        0f,
-                        target.radius + 20f,
-                        90f
-                    )
-                    val fobFleet = fob.getStationFleet() ?: return
-                    val targetFleet = target.getStationFleet() ?: return
-                    val battle = Global.getFactory().createBattle(fobFleet, targetFleet)
-                    fobFleet.battle = battle
-                    targetFleet.battle = battle
-                    warpEffect(target.location, fob.containingLocation)
-                }
-            }
-            jumpScript(IntervalUtil(1f, 1f)).start()
+            MPC_allOutAttackWarpScript(fob, target.market).start()
         }
     }
 

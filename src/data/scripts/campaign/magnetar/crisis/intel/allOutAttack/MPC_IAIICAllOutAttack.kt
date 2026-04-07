@@ -58,7 +58,7 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
 
         fun warpEffect(loc: Vector2f, sys: LocationAPI) {
             val params = ExplosionEntityPlugin.ExplosionParams(
-                Color.CYAN,
+                Color.BLUE,
                 sys,
                 loc,
                 100f,
