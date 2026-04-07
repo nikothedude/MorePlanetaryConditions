@@ -341,7 +341,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         if (!isActive()) return 0f
         if (getFOB() != null) return 0f
 
-        return 10f
+        return if (Global.getSettings().isDevMode) Float.MAX_VALUE else 10f
     }
 
     override fun rollEvent(intel: HostileActivityEventIntel?, stage: EventStageData?) {
