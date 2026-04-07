@@ -84,6 +84,8 @@ object niko_MPC_specialProcGenHandler {
 
         val name = ProcgenUsedNames.pickName(NameGenData.TAG_STAR, null, null).nameWithRomanSuffixIfAny
         val system = Global.getSector().createStarSystem(name)
+        system.mapGridHeightOverride = 100000f
+        system.mapGridWidthOverride = 100000f
 
         system.backgroundTextureFilename = "graphics/backgrounds/hyperspace1.jpg"
         val star = system.initStar("MPC_supernovaStar", StarTypes.BLUE_SUPERGIANT, 1700f, 1200f, 20f, 1f, 2f)
@@ -97,13 +99,13 @@ object niko_MPC_specialProcGenHandler {
             Factions.NEUTRAL
         )
         val inhibitorTwo = system.addCustomEntity(
-            "MPC_supernovaInhibitorOne",
+            "MPC_supernovaInhibitorTwo",
             null,
             "MPC_supernovaInhibitor",
             Factions.NEUTRAL
         )
         val inhibitorThree = system.addCustomEntity(
-            "MPC_supernovaInhibitorOne",
+            "MPC_supernovaInhibitorThree",
             null,
             "MPC_supernovaInhibitor",
             Factions.NEUTRAL

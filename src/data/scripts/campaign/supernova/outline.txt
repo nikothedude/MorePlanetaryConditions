@@ -30,7 +30,18 @@ STEP 2: What is the challenge of the supernova? (Most important bit)
 
     Natural threats:
         Radiation
+            A more persistent threat
+            Spending time out in the wastes raises a radiation value
+            This does not go down unless you decontaminate at a port or with some item
+            Reduces CR cap of your vessels past a certain point
+            Also increases sensor profile
+            Crew loss, too
+            Increases more if youre in certain regions / your drive bubble slash rad shielding is offline
+                More about this in heat
         Heat
+            A short term threat caused by diving into the heart of the system, or regions of superheated gas
+            Simply a CR reduction over time, increasing with your heat level
+            You can dump heat by going dark but this exposes you to radiation
         The supernova remnant itself
         Regions of that weird material you want to recover?
 

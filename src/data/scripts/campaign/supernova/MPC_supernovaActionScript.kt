@@ -245,7 +245,7 @@ class MPC_supernovaActionScript(
                     ) as? CampaignTerrainAPI ?: return
                     star.containingLocation.memoryWithoutUpdate[SUPERNOVA_NEBULA_ONE_MEMID] = nebula.plugin
                     addNebulaFromPNG("data/campaign/terrain/MPC_superheatedNebula.png",
-                        0f, 0f, star.containingLocation, "terrain", "nebula_amber", 2, 2, "MPC_superheatedNebula", StarAge.YOUNG, tileSize = 200f)
+                        0f, 0f, star.containingLocation, "terrain", "nebula_amber", 2, 2, "MPC_superheatedNebula", StarAge.YOUNG)
                     getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
 
                 }
