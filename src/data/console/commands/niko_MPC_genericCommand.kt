@@ -4,6 +4,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.supernova.MPC_supernovaActionScript
+import data.scripts.campaign.supernova.MPC_supernovaPrepScript
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import org.lazywizard.console.BaseCommand
 import org.lazywizard.console.Console
@@ -15,8 +16,7 @@ class niko_MPC_genericCommand: BaseCommand {
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        val playerFleet = Global.getSector().playerFleet
-        Console.showMessage(playerFleet.location)
+        MPC_supernovaPrepScript.getExplosionInterval(false)?.elapsed = Float.MAX_VALUE
 
         return BaseCommand.CommandResult.SUCCESS
     }

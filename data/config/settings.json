@@ -67,7 +67,9 @@
 		
 		"MPC_noBonusXP":0,
 	},
-
+	"terrain":{
+		
+	},
 	 "designTypeColors":{
 		 "Kanta's Favored":[200,0,0,255],
 		 "Domain Forbidden":[155,155,155,255],

@@ -78,5 +78,12 @@
       # inside nebula
       "loopOne":"terrain_nebula",
     },
+	
+    "MPC_superheatedNebula":{
+      "plugin":"data.scripts.campaign.supernova.terrain.MPC_superheatedNebula",
+      "musicSuppression":0.5, # TODO, make it based on various factors
+      # inside nebula
+      "loopOne":"terrain_nebula",
+    },
 }
 

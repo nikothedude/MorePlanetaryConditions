@@ -2,44 +2,36 @@ package data.scripts.campaign.supernova
 
 import com.fs.graphics.particle.GenericTextureParticle
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignTerrainAPI
-import com.fs.starfarer.api.campaign.JumpPointAPI
-import com.fs.starfarer.api.campaign.ParticleControllerAPI
-import com.fs.starfarer.api.campaign.PlanetAPI
+import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.impl.MusicPlayerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.JumpPointInteractionDialogPluginImpl
-import com.fs.starfarer.api.impl.campaign.ids.Entities
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.StarTypes
 import com.fs.starfarer.api.impl.campaign.procgen.StarAge
-import com.fs.starfarer.api.impl.campaign.terrain.BaseTiledTerrain
+import com.fs.starfarer.api.impl.campaign.terrain.BaseTiledTerrain.TileParams
+import com.fs.starfarer.api.impl.campaign.terrain.NebulaTerrainPlugin
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.CampaignState
-import com.fs.starfarer.campaign.CampaignUIPersistentData
 import com.fs.starfarer.campaign.ParticleController
-import com.fs.starfarer.campaign.int
 import com.fs.state.AppDriver
 import data.scripts.campaign.supernova.entities.MPC_supernovaExplosion
 import data.scripts.campaign.supernova.renderers.MPC_supernovaShader
 import data.scripts.campaign.supernova.terrain.SupernovaNebulaHandler
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
-import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_ids.SUPERNOVA_NEBULA_ONE_MEMID
-import data.utilities.niko_MPC_ids.SUPERNOVA_NEBULA_TWO_MEMID
 import data.utilities.niko_MPC_miscUtils.changeTypeManual
-import data.utilities.niko_MPC_miscUtils.playSoundEvenIfFar
 import data.utilities.niko_MPC_miscUtils.playSoundFar
 import data.utilities.niko_MPC_miscUtils.setArc
 import data.utilities.niko_MPC_reflectionUtils
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
-import org.lazywizard.console.commands.Jump
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.kotlin.addHitGlow
 import java.awt.Color
-import kotlin.math.exp
+import java.awt.image.BufferedImage
+import java.io.IOException
+import javax.imageio.ImageIO
 
 class MPC_supernovaActionScript(
     val star: PlanetAPI
@@ -50,6 +42,86 @@ class MPC_supernovaActionScript(
             return (Global.getSector().memoryWithoutUpdate["\$MPC_supernovaActionStage"]) as? Stage
         }
 
+
+        fun addNebulaFromPNG(
+            image: String?, centerX: Float, centerY: Float, location: LocationAPI,
+            category: String?, key: String?, tilesWide: Int, tilesHigh: Int,
+            terrainType: String?, age: StarAge?, chunkSize: Int = 10000, tileSize: Float = NebulaTerrainPlugin.TILE_SIZE
+        ): SectorEntityToken? {
+            try {
+                var img: BufferedImage? = null
+                //img = ImageIO.read(new File("../starfarer.res/res/data/campaign/terrain/nebula_test.png"));
+                img = ImageIO.read(Global.getSettings().openStream(image))
+
+                //val chunkSize = 10000
+                val w = img.width
+                val h = img.height
+                val data = img.getData()
+                var i = 0
+                while (i < w) {
+                    var j = 0
+                    while (j < h) {
+                        var chunkWidth = chunkSize
+                        if (i + chunkSize > w) chunkWidth = w - i
+                        var chunkHeight = chunkSize
+                        if (j + chunkSize > h) chunkHeight = h - i
+
+
+//		    		boolean hasAny = false;
+//		    		for (int x = i; x < i + chunkWidth; x++) {
+//		    			for (int y = j; y < j + chunkHeight; y++) {
+//		    				int [] pixel = data.getPixel(i, h - j - 1, (int []) null);
+//		    				int total = pixel[0] + pixel[1] + pixel[2];
+//		    				if (total > 0) {
+//		    					hasAny = true;
+//		    					break;
+//		    				}
+//		    			}
+//		    		}
+//		    		if (!hasAny) continue;
+                        val string = StringBuilder()
+                        for (y in j + chunkHeight - 1 downTo j) {
+                            for (x in i..<i + chunkWidth) {
+                                val pixel = data.getPixel(x, h - y - 1, null as IntArray?)
+                                val total = pixel[0] + pixel[1] + pixel[2]
+                                if (total > 0) {
+                                    string.append("x")
+                                } else {
+                                    string.append(" ")
+                                }
+                            }
+                        }
+
+                        val x = centerX - tileSize * w.toFloat() / 2f + i.toFloat() * tileSize + chunkWidth / 2f * tileSize
+                        val y = centerY - tileSize * h.toFloat() / 2f + j.toFloat() * tileSize + chunkHeight / 2f * tileSize
+
+                        val curr = location.addTerrain(
+                            terrainType, TileParams(
+                                string.toString(),
+                                chunkWidth, chunkHeight,
+                                category, key, tilesWide, tilesHigh, null
+                            )
+                        )
+                        curr.location.set(x, y)
+
+                        if (location is StarSystemAPI) {
+                            val system = location
+
+                            system.age = age
+                            system.setHasSystemwideNebula(true)
+                        }
+
+                        return curr
+                        j += chunkSize
+                    }
+                    i += chunkSize
+                }
+                return null
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            }
+        }
+
         const val PREPARE_PHASE_LENGTH = 9f // seconds
         const val DURING_PHASE_LENGTH = 30f
         const val ENDING_PHASE_LENGTH = 10f
@@ -58,9 +130,9 @@ class MPC_supernovaActionScript(
         const val MIN_CORONA_BAND = 25f
 
         // the absolute max. we will make the edges more fuzzy...
-        const val MAX_NEBULA_RADIUS = 10000f
-        const val SHIELD_BUBBLE_ACTIVATE_DIST = 7000f
-        const val SHIELD_BUBBLE_DIST = 10000f
+        const val MAX_NEBULA_RADIUS = 4000f
+        const val SHIELD_BUBBLE_ACTIVATE_DIST = 13500f
+        const val SHIELD_BUBBLE_DIST = 30000f
     }
 
     enum class Stage {
@@ -168,10 +240,12 @@ class MPC_supernovaActionScript(
 
                     Global.getSector().campaignUI.addMessage("WARNING:::MASSIVE SPATIAL DISRUPTION DETECTED", Misc.getNegativeHighlightColor())
 
-                    val nebula = Misc.addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
+                    val nebula = addNebulaFromPNG("data/campaign/terrain/generic_system_nebula.png",
                         0f, 0f, star.containingLocation, "terrain", "nebula", 2, 2, "MPC_supernovaRemnantNebula", StarAge.YOUNG
                     ) as? CampaignTerrainAPI ?: return
                     star.containingLocation.memoryWithoutUpdate[SUPERNOVA_NEBULA_ONE_MEMID] = nebula.plugin
+                    addNebulaFromPNG("data/campaign/terrain/MPC_superheatedNebula.png",
+                        0f, 0f, star.containingLocation, "terrain", "nebula_amber", 2, 2, "MPC_superheatedNebula", StarAge.YOUNG, tileSize = 200f)
                     getJumpPoints().forEach { it.memoryWithoutUpdate[JumpPointInteractionDialogPluginImpl.UNSTABLE_KEY] = true }
 
                 }
@@ -263,7 +337,7 @@ class MPC_supernovaActionScript(
     // finishes generation in case our supernova didnt actually do it all
     private fun failsafe() {
         val editors = SupernovaNebulaHandler.getEditors() ?: return
-        val rad = star.radius
+        val rad = star.radius * 3f
         for (editor in editors.values) {
             editor.setArc(
                 100,
@@ -275,6 +349,8 @@ class MPC_supernovaActionScript(
                 360f
             )
         }
+
+
     }
 
     fun getJumpPoints(): MutableSet<JumpPointAPI> {
