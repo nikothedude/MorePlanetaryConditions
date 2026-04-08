@@ -1,21 +1,22 @@
 package data.scripts.campaign.econ.industries
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.campaign.econ.Industry
 import com.fs.starfarer.api.campaign.econ.Industry.AICoreDescriptionMode
 import com.fs.starfarer.api.campaign.econ.Industry.ImprovementDescriptionMode
-import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
 import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
-import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.abilities.MPC_missileStrikeReactionScript
 import data.scripts.campaign.econ.industries.MPC_constructionAcceleratorIndustry.Companion.IMPROVED_BONUS
-import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisRocketPodsScript
-import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisRocketPodsScript.Companion.HIGH_RES_SENSORS_BONUS_MULT
-import data.scripts.campaign.econ.industries.missileLauncher.MPC_orbitalMissileLauncher
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisPlatformScript
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisPlatformScript.Companion.HIGH_RES_SENSORS_BONUS_MULT
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_marketBasedMissileLauncherScript
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_missileEntityPlugin
 import data.scripts.campaign.rulecmd.MPC_remnantMissileCarrierCMD.Companion.getComplexMarket
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
@@ -25,13 +26,10 @@ import niko_SA.MarketUtils.hasStationAugment
 import org.magiclib.kotlin.getStationIndustry
 import java.util.*
 
-class MPC_aegisRocketPods: baseNikoIndustry() {
-
-    var rocketHandler: MPC_orbitalMissileLauncher? = null
+class MPC_aegisRocketPods: MPC_missileLauncherIndustry() {
 
     companion object {
         const val GROUND_DEFENSE_MULT = 1f
-        const val SIZE_TO_RANGE_MULT = 0.5f
         const val RANGE_PER_MARKET_SIZE = 3500f
         const val EXTRA_MISSILES_PER_MARKET_SIZE = 1
 
@@ -44,72 +42,54 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
         const val RELOAD_INC_PER_MARKET_SIZE = 0.1f
     }
 
-    override fun buildingFinished() {
-        super.buildingFinished()
-
-        setupDefenseGrid()
+    override fun getRelevantDeficitMult(): Float {
+        return getDeficitMult(Commodities.MARINES, Commodities.SUPPLIES, Commodities.HAND_WEAPONS)
     }
 
-    override fun apply() {
-        super.apply(true)
+    override fun createNewDefenseGrid() {
+        rocketHandler = MPC_aegisPlatformScript(market, this)
+    }
 
+    override fun applyImpl() {
         val size = market.size
+        val mult = getRelevantDeficitMult()
 
-        val mult = getDeficitMult(Commodities.SUPPLIES, Commodities.MARINES, Commodities.HAND_WEAPONS)
-        if (complexInstalled()) {
-            demand(Commodities.SUPPLIES, size + 1)
-            demand(Commodities.HAND_WEAPONS, size + 2)
-            demand(Commodities.MARINES, size + 1)
+        demand(Commodities.SUPPLIES, size + 1)
+        demand(Commodities.HAND_WEAPONS, size + 2)
+        demand(Commodities.MARINES, size + 1)
 
-            if (isFunctional) {
-                var extra = ""
-                if (mult != 1f) {
-                    val com = getMaxDeficit(Commodities.SUPPLIES, Commodities.MARINES, Commodities.HAND_WEAPONS).one
-                    extra = " (" + getDeficitText(com).lowercase(Locale.getDefault()) + ")"
-                }
-                val bonus = GROUND_DEFENSE_MULT
-                market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(modId, 1f + bonus * mult, nameForModifier + extra)
-
-                if (!reapplying) {
-                    setupDefenseGrid()
-                }
+        if (isFunctional) {
+            var extra = ""
+            if (mult != 1f) {
+                val com = getMaxDeficit(Commodities.SUPPLIES, Commodities.MARINES, Commodities.HAND_WEAPONS).one
+                extra = " (" + getDeficitText(com).lowercase(Locale.getDefault()) + ")"
             }
-
-            var reloadMult = 1f
-            if (isImproved) reloadMult += IMPROVED_RELOAD_BONUS_INCR
-            reloadMult += getSizeBasedReloadInc()
-            if (!isFunctional) reloadMult = 0f
-            rocketHandler?.reloadRateMult = (reloadMult * mult)
-            rocketHandler?.maxMissilesLoaded = if (!isFunctional) 0f else getMaxRockets()
-            rocketHandler?.minSensorProfile = getMinSensorProfile()
-            //rocketHandler?.missilesLoaded = getMaxRockets()
-        } else {
-            dismantleDefenseGrid()
+            val bonus = GROUND_DEFENSE_MULT
+            market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).modifyMult(modId, 1f + bonus * mult, nameForModifier + extra)
+            setupDefenseGrid()
         }
     }
 
     override fun unapply() {
+        super.unapply()
+
         market.stats.dynamic.getMod(Stats.GROUND_DEFENSES_MOD).unmodify(modId)
-        /*if (!reapplying) {
-            dismantleDefenseGrid()
-        }*/
     }
 
-    private fun setupDefenseGrid() {
-        if (rocketHandler != null) return
+    override fun getBaseReloadRate(): Float {
+        return 5f
+    }
 
-        rocketHandler = MPC_aegisRocketPodsScript(market, this)
+    override fun updateDefenseGrid() {
+        var reloadMult = 1f
+        reloadMult += getSizeBasedReloadInc()
+        if (!isFunctional) reloadMult = 0f
+        rocketHandler?.reloadRateMult = (reloadMult * getRelevantDeficitMult())
+        rocketHandler?.maxMissilesLoaded = if (!isFunctional) 0f else getMaxRockets()
         rocketHandler?.minSensorProfile = getMinSensorProfile()
-        rocketHandler?.missileReloadInterval = IntervalUtil(getReloadRate(), getReloadRate())
-        rocketHandler?.start()
     }
 
-    private fun dismantleDefenseGrid() {
-        rocketHandler?.delete()
-        rocketHandler = null
-    }
-
-    fun getMinSensorProfile(): Float {
+    override fun getMinSensorProfile(): Float {
         var base = 700f
         if (niko_MPC_settings.stationAugmentsLoaded) {
             val ind = market.getStationIndustry()
@@ -119,14 +99,87 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
         }
         return base
     }
-    fun getReloadRate(): Float {
-        return 5f
-    }
+
     fun getSizeBasedReloadInc(): Float {
         val effectiveSize = market.size - 3
         val bonus = RELOAD_INC_PER_MARKET_SIZE * effectiveSize
 
         return 0f + bonus
+    }
+
+    override fun getMaxRockets(): Float {
+        if (!missilesEnabled()) return 0f
+        val effectiveSize = (market.size - 3)
+        var bonus = effectiveSize * EXTRA_MISSILES_PER_MARKET_SIZE
+        if (aiCoreId == Commodities.ALPHA_CORE) bonus += ALPHA_CORE_MAX_MISSILES_INC
+
+        return 3f + bonus
+    }
+
+    override fun getMaxRange(): Float {
+        val effectiveSize = (market.size - 3)
+
+        val bonus = effectiveSize * RANGE_PER_MARKET_SIZE
+
+        return 5000f + bonus
+    }
+
+    override fun missilesEnabled(): Boolean {
+        return complexInstalled()
+    }
+
+    override fun addAlphaCoreDescription(tooltip: TooltipMakerAPI?, mode: AICoreDescriptionMode?) {
+        val opad = 10f
+        val highlight = Misc.getHighlightColor()
+
+        var pre = "Alpha-level AI core currently assigned. "
+        if (mode == AICoreDescriptionMode.MANAGE_CORE_DIALOG_LIST || mode == AICoreDescriptionMode.INDUSTRY_TOOLTIP) {
+            pre = "Alpha-level AI core. "
+        }
+        if (mode == AICoreDescriptionMode.INDUSTRY_TOOLTIP || mode == AICoreDescriptionMode.MANAGE_CORE_TOOLTIP) {
+            val coreSpec = Global.getSettings().getCommoditySpec(aiCoreId)
+            val text = tooltip!!.beginImageWithText(coreSpec.iconName, 48f)
+            text.addPara(
+                pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
+                        "Increases max missiles by %s.", 0f, highlight,
+                "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
+                "" + ALPHA_CORE_MAX_MISSILES_INC
+            )
+            tooltip.addImageWithText(opad)
+            return
+        }
+
+        tooltip!!.addPara(
+            pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
+                    "Increases max missiles by %s.", opad, highlight,
+            "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
+            "" + ALPHA_CORE_MAX_MISSILES_INC
+        )
+    }
+
+    override fun addImproveDesc(info: TooltipMakerAPI, mode: ImprovementDescriptionMode) {
+        val opad = 10f
+        val highlight = Misc.getHighlightColor()
+        IMPROVED_BONUS
+
+        val str = niko_MPC_stringUtils.toPercent(IMPROVED_RELOAD_BONUS_INCR)
+        if (mode == ImprovementDescriptionMode.INDUSTRY_TOOLTIP) {
+            info.addPara("Reload rate increased by %s.", 0f, highlight, str)
+        } else {
+            info.addPara("Increases reload rate by %s.", 0f, highlight, str)
+        }
+
+        info.addSpacer(opad)
+        super.addImproveDesc(info, mode)
+    }
+
+    override fun canImprove(): Boolean {
+        return true
+    }
+
+    fun complexInstalled(): Boolean {
+        val existing = getComplexMarket() ?: return false
+        return existing.id == market.id
     }
 
     override fun addRightAfterDescriptionSection(tooltip: TooltipMakerAPI?, mode: Industry.IndustryTooltipMode?) {
@@ -181,12 +234,12 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
             )
             tooltip.setBulletedListMode(null)
 
-            val baseReloadRate = getReloadRate()
+            getBaseReloadRate()
             tooltip.addPara(
                 "Reloads a missile every %s days.",
                 5f,
                 Misc.getHighlightColor(),
-                getReloadRate().toInt().toString()
+                getBaseReloadRate().toInt().toString()
             )
             val marketReload = getSizeBasedReloadInc()
             tooltip.setBulletedListMode(BaseIntelPlugin.BULLET)
@@ -201,22 +254,12 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
             if (niko_MPC_settings.stationAugmentsLoaded) {
                 tooltip.addSectionHeading("Station Augments", Alignment.MID, 5f)
 
-                tooltip.addPara(
-                    "The %s grants each launched missile %s - provided the station remains functional.",
-                    5f,
-                    Misc.getHighlightColor(),
-                    "ECCM Package station augment", "50% ECCM"
-                ).setHighlightColors(
-                    Misc.getHighlightColor(),
-                    Misc.getPositiveHighlightColor()
-                )
-
                 tooltip.addPara("If %s are installed in an orbiting station, " +
                         "the detection threshold would be decreased by %s.",
                     5f,
                     Misc.getHighlightColor(),
                     "high resolution sensors",
-                    "${MPC_aegisRocketPodsScript.HIGH_RES_SENSORS_BONUS_MULT.trimHangingZero()}x"
+                    "${HIGH_RES_SENSORS_BONUS_MULT.trimHangingZero()}x"
                 ).setHighlightColors(
                     Misc.getHighlightColor(),
                     Misc.getPositiveHighlightColor()
@@ -285,10 +328,7 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
     }
 
     override fun showWhenUnavailable(): Boolean {
-        if (!Global.getSector().playerFaction.knowsIndustry(getId())) {
-            return false
-        }
-        return true
+        return Global.getSector().playerFaction.knowsIndustry(getId())
     }
 
     override fun isAvailableToBuild(): Boolean {
@@ -298,74 +338,11 @@ class MPC_aegisRocketPods: baseNikoIndustry() {
         return super.isAvailableToBuild()
     }
 
-    fun getMaxRockets(): Float {
-        if (!complexInstalled()) return 0f
-        val effectiveSize = (market.size - 3)
-        var bonus = effectiveSize * EXTRA_MISSILES_PER_MARKET_SIZE
-        if (aiCoreId == Commodities.ALPHA_CORE) bonus += ALPHA_CORE_MAX_MISSILES_INC
+    override fun missileCreated(missile: MPC_missileEntityPlugin, target: SectorEntityToken) {
+        super.missileCreated(missile, target)
 
-        return 3f + bonus
-    }
-
-    fun getMaxRange(): Float {
-        val effectiveSize = (market.size - 3)
-
-        val bonus = effectiveSize * RANGE_PER_MARKET_SIZE
-
-        return 5000f + bonus
-    }
-
-    override fun addAlphaCoreDescription(tooltip: TooltipMakerAPI?, mode: Industry.AICoreDescriptionMode?) {
-        val opad = 10f
-        val highlight = Misc.getHighlightColor()
-
-        var pre = "Alpha-level AI core currently assigned. "
-        if (mode == AICoreDescriptionMode.MANAGE_CORE_DIALOG_LIST || mode == AICoreDescriptionMode.INDUSTRY_TOOLTIP) {
-            pre = "Alpha-level AI core. "
+        if (market.isPlayerOwned && !Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_missileStrikeReactionPrepared")) {
+            MPC_missileStrikeReactionScript.get(true)?.start()
         }
-        if (mode == AICoreDescriptionMode.INDUSTRY_TOOLTIP || mode == AICoreDescriptionMode.MANAGE_CORE_TOOLTIP) {
-            val coreSpec = Global.getSettings().getCommoditySpec(aiCoreId)
-            val text = tooltip!!.beginImageWithText(coreSpec.getIconName(), 48f)
-            text.addPara(
-                pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
-                        "Increases max missiles by %s.", 0f, highlight,
-                "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
-                "" + ALPHA_CORE_MAX_MISSILES_INC
-            )
-            tooltip.addImageWithText(opad)
-            return
-        }
-
-        tooltip!!.addPara(
-            pre + "Reduces upkeep cost by %s. Reduces demand by %s unit. " +
-                    "Increases max missiles by %s.", opad, highlight,
-            "" + ((1f - UPKEEP_MULT) * 100f).toInt() + "%", "" + DEMAND_REDUCTION,
-            "" + ALPHA_CORE_MAX_MISSILES_INC
-        )
-    }
-
-    override fun addImproveDesc(info: TooltipMakerAPI, mode: Industry.ImprovementDescriptionMode) {
-        val opad = 10f
-        val highlight = Misc.getHighlightColor()
-        val bonus = IMPROVED_BONUS
-
-        val str = niko_MPC_stringUtils.toPercent(IMPROVED_RELOAD_BONUS_INCR)
-        if (mode == ImprovementDescriptionMode.INDUSTRY_TOOLTIP) {
-            info.addPara("Reload rate increased by %s.", 0f, highlight, str)
-        } else {
-            info.addPara("Increases reload rate by %s.", 0f, highlight, str)
-        }
-
-        info.addSpacer(opad)
-        super.addImproveDesc(info, mode)
-    }
-
-    override fun canImprove(): Boolean {
-        return true
-    }
-
-    fun complexInstalled(): Boolean {
-        val existing = getComplexMarket() ?: return false
-        return existing.id == market.id
     }
 }

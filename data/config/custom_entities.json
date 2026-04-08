@@ -433,7 +433,7 @@
 		"scaleIconWithZoom":true,
 		"renderCircleIndicator":true,
 		"customDescriptionId":"MPC_cruiseMissile",
-		"pluginClass":"data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisMissileEntityPlugin",
+		"pluginClass":"data.scripts.campaign.econ.industries.missileLauncher.MPC_missileEntityPlugin",
 		"tags":["neutrino_high", "MPC_cruiseMissile"],
 		"layers":[STATIONS], # what layer(s) to render in. See CampaignEngineLayers.java for possible values
 	},

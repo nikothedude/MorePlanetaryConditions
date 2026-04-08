@@ -11,7 +11,7 @@ import kotlin.math.ceil
 
 class MPC_missileExplosionPlugin: ExplosionEntityPlugin() {
 
-    var source: MPC_aegisMissileEntityPlugin? = null
+    var source: MPC_missileEntityPlugin? = null
 
     fun getAlreadyDamaged(): LinkedHashSet<String> = damagedAlready
 

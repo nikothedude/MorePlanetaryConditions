@@ -21,9 +21,7 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.campaign.ai.ModularFleetAI
 import com.fs.starfarer.campaign.fleet.CampaignFleetMemberView
-import com.fs.starfarer.campaign.ui.fleet.FleetMemberView
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_mathUtils
 import data.utilities.niko_MPC_settings
 import niko_SA.MarketUtils.getStationIndustry
@@ -35,7 +33,7 @@ import org.lwjgl.util.vector.Vector2f
 import org.magiclib.plugins.MagicCampaignTrailPlugin
 import java.awt.Color
 
-class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
+class MPC_missileEntityPlugin: BaseCustomEntityPlugin() {
 
     companion object {
         fun getDamageStringAndColor(damage: ExplosionEntityPlugin.ExplosionFleetDamage): Pair<String, Color> {
@@ -67,7 +65,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             return Pair(damageString, damageColor)
         }
 
-        fun createNew(params: MissileParams, containing: LocationAPI, loc: Vector2f, facing: Float): MPC_aegisMissileEntityPlugin {
+        fun createNew(params: MissileParams, containing: LocationAPI, loc: Vector2f, facing: Float): MPC_missileEntityPlugin {
             val name = params.name
             val id = params.id
             val entity = containing.addCustomEntity(id, name, "MPC_cruiseMissile", params.faction, params)
@@ -78,7 +76,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
 
             entity.setLocation(loc.x, loc.y)
 
-            val plugin = entity.customPlugin as MPC_aegisMissileEntityPlugin
+            val plugin = entity.customPlugin as MPC_missileEntityPlugin
             plugin.target = params.target
             return plugin
         }
@@ -87,7 +85,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             market: MarketAPI,
             params: MissileParams,
             spec: MPC_missileStrikeAbility.Missile
-        ): MPC_aegisMissileEntityPlugin {
+        ): MPC_missileEntityPlugin {
             if (params.name == null) params.name = "${market.faction.entityNamePrefix} ${spec.getBaseEntityName()} (${market.name})"
             params.originMarket = market
             params.faction = market.factionId
@@ -98,7 +96,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
         fun createNewFromFleet(
             fleet: CampaignFleetAPI,
             params: MissileParams,
-        ): MPC_aegisMissileEntityPlugin {
+        ): MPC_missileEntityPlugin {
             val carriers = MPC_missileStrikeAbility.getMissileCarriers(fleet)
             val picked = carriers.randomOrNull() ?: return createNewFromEntity(fleet, params)
             val view = fleet.getViewForMember(picked) as? CampaignFleetMemberView ?: return createNewFromEntity(fleet, params)
@@ -112,7 +110,7 @@ class MPC_aegisMissileEntityPlugin: BaseCustomEntityPlugin() {
             entity: SectorEntityToken,
             params: MissileParams,
             spawnLoc: Vector2f? = null
-        ): MPC_aegisMissileEntityPlugin {
+        ): MPC_missileEntityPlugin {
             var spawnLoc = spawnLoc
             if (spawnLoc == null) {
                 val loc = entity.location

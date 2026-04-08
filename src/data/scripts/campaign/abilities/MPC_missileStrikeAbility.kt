@@ -22,7 +22,7 @@ import com.fs.starfarer.campaign.ai.ModularFleetAI
 import data.hullmods.MPC_missileCarrier
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.abilities.MPC_missileStrikeAbility.Missile.Companion.pickable
-import data.scripts.campaign.econ.industries.missileLauncher.MPC_aegisMissileEntityPlugin
+import data.scripts.campaign.econ.industries.missileLauncher.MPC_missileEntityPlugin
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import org.lazywizard.lazylib.MathUtils
@@ -43,7 +43,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
         val combatVariant: String? = null,
     ) {
         EXPLOSIVE(Color(255, 90, 60), "Explosive (Low-Yield)",) {
-            override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
+            override fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
 
                 val source = params.origin ?: return params
@@ -102,7 +102,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             }
         },
         EXPLOSIVE_HEAVY(Color(255, 40, 20), "Explosive (High-Yield)",) {
-            override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
+            override fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
 
                 val source = params.origin ?: return params
@@ -164,7 +164,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
             override fun addAfterStatsSection(
                 tooltip: TooltipMakerAPI,
-                params: MPC_aegisMissileEntityPlugin.MissileParams,
+                params: MPC_missileEntityPlugin.MissileParams,
                 isForAbility: Boolean
             ) {
                 super.addAfterStatsSection(tooltip, params, isForAbility)
@@ -237,7 +237,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             }
         },
         INTERDICT(Color(134, 255, 228), "Interdictor",) {
-            override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
+            override fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
                 val source = params.origin ?: return params
                 val explosionParams = ExplosionEntityPlugin.ExplosionParams(
@@ -305,9 +305,9 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 return total.coerceAtMost(getBaseInterdictTime()) // / Global.getSector().getClock().getSecondsPerDay();
             }
 
-            override fun getOnHitEffect(): MPC_aegisMissileEntityPlugin.MissileOnHitEffect? {
+            override fun getOnHitEffect(): MPC_missileEntityPlugin.MissileOnHitEffect? {
 
-                class InterdictEffect: MPC_aegisMissileEntityPlugin.MissileOnHitEffect() {
+                class InterdictEffect: MPC_missileEntityPlugin.MissileOnHitEffect() {
                     override fun execute(source: SectorEntityToken?, hit: SectorEntityToken) {
                         var interdictTime = getEffectiveInterdictStrength(hit)
                         if (interdictTime > 0 && interdictTime < 1f) interdictTime = 1f
@@ -367,7 +367,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             fun getBaseInterdictTime(): Float = 6f
             override fun addAfterStatsSection(
                 tooltip: TooltipMakerAPI,
-                params: MPC_aegisMissileEntityPlugin.MissileParams,
+                params: MPC_missileEntityPlugin.MissileParams,
                 isForAbility: Boolean
             ) {
                 super.addAfterStatsSection(tooltip, params, isForAbility)
@@ -425,7 +425,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 return 5f
             }
 
-            override fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
+            override fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
                 val params = super.adjustMissileParams(params)
                 val source = params.origin ?: return params
                 val explosionParams = ExplosionEntityPlugin.ExplosionParams(
@@ -449,7 +449,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 return "Obscura"
             }
 
-            override fun getOnHitEffect(): MPC_aegisMissileEntityPlugin.MissileOnHitEffect? {
+            override fun getOnHitEffect(): MPC_missileEntityPlugin.MissileOnHitEffect? {
 
                 val durDays = 5f
                 val detectedMult = 3f
@@ -458,7 +458,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
                 val id = "${name}_${Misc.genUID()}"
 
-                class TagHitEffect: MPC_aegisMissileEntityPlugin.MissileOnHitEffect() {
+                class TagHitEffect: MPC_missileEntityPlugin.MissileOnHitEffect() {
                     override fun execute(
                         source: SectorEntityToken?,
                         hit: SectorEntityToken
@@ -492,7 +492,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
             override fun addAfterStatsSection(
                 tooltip: TooltipMakerAPI,
-                params: MPC_aegisMissileEntityPlugin.MissileParams,
+                params: MPC_missileEntityPlugin.MissileParams,
                 isForAbility: Boolean
             ) {
                 super.addAfterStatsSection(tooltip, params, isForAbility)
@@ -505,9 +505,78 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 )
             }
 
+        },
+        STEALTH(Color(9, 120, 50, 255), "Stealth") {
+            override fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
+                val params = super.adjustMissileParams(params)
+
+                val source = params.origin ?: return params
+                val explosionParams = ExplosionEntityPlugin.ExplosionParams(
+                    Color(255, 90, 60),
+                    source.containingLocation,
+                    source.location,
+                    100f,
+                    0.4f
+                )
+                explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
+
+                params.explosionParams = explosionParams
+
+                return params
+            }
+
+            override fun getMaxSpeed(): Float {
+                return 600f
+            }
+
+            override fun getTurnRate(): Float {
+                return 20f
+            }
+
+            override fun getAccelTime(): Float {
+                return 9f
+            }
+
+            override fun getArmamentCost(): Float {
+                return 270f
+            }
+
+            override fun getFuelCost(): Float {
+                return 300f
+            }
+
+            override fun getCooldownTimeDays(): Float {
+                return 30f
+            }
+
+            override fun getSpeedString(): String = "Moderate"
+            override fun getSpeedHl(): Color = Misc.getHighlightColor()
+            override fun getManeuverString(): String = "Bad"
+            override fun getManeuverHl(): Color = Misc.getNegativeHighlightColor()
+            override fun getBaseRepLoss(): Float {
+                return 3f
+            }
+
+            override fun getECMCoeff(): Float {
+                return 0f
+            }
+
+            override fun getECMHl(): Color {
+                return Misc.getGrayColor()
+            }
+
+            override fun getSensorProfile(): Float {
+                return 25f
+            }
+
+            override fun getNameSuffix(name: String): String {
+                return "Stealth Missile"
+            }
+
+
         };
 
-        open fun adjustMissileParams(params: MPC_aegisMissileEntityPlugin.MissileParams): MPC_aegisMissileEntityPlugin.MissileParams {
+        open fun adjustMissileParams(params: MPC_missileEntityPlugin.MissileParams): MPC_missileEntityPlugin.MissileParams {
             params.spec = this
 
             return params
@@ -520,9 +589,9 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
         open fun postAbilityUse() {
             return
         }
-        fun addToTooltip(tooltip: TooltipMakerAPI, params: MPC_aegisMissileEntityPlugin.MissileParams, isForAbility: Boolean) {
+        fun addToTooltip(tooltip: TooltipMakerAPI, params: MPC_missileEntityPlugin.MissileParams, isForAbility: Boolean) {
             val params = adjustMissileParams(params)
-            val damagePair = MPC_aegisMissileEntityPlugin.getDamageStringAndColor(params.explosionParams.damage)
+            val damagePair = MPC_missileEntityPlugin.getDamageStringAndColor(params.explosionParams.damage)
 
             tooltip.setBulletedListMode(BaseIntelPlugin.BULLET)
             tooltip.addPara(
@@ -612,7 +681,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
         open fun getLosesLockUnderProfile(): Float = 200f
         open fun getSecsToLoseLock(): Float = 2f
-        open fun getOnHitEffect(): MPC_aegisMissileEntityPlugin.MissileOnHitEffect? = null
+        open fun getOnHitEffect(): MPC_missileEntityPlugin.MissileOnHitEffect? = null
         open fun getAccelTime(): Float = 3f
         open fun getMaxSpeed(): Float = 600f
         open fun getTurnRate(): Float = 12f
@@ -620,7 +689,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
 
         open fun addAfterStatsSection(
             tooltip: TooltipMakerAPI,
-            params: MPC_aegisMissileEntityPlugin.MissileParams,
+            params: MPC_missileEntityPlugin.MissileParams,
             isForAbility: Boolean
         ) {
             return
@@ -640,26 +709,26 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 id: String = Misc.genUID(),
                 market: MarketAPI? = null,
                 faceTarget: Boolean = true,
-            ): MPC_aegisMissileEntityPlugin {
+            ): MPC_missileEntityPlugin {
                 val params = getStandardAbilityParams(source, target, id)
                 missile.adjustMissileParams(params)
                 params.launchFacingTarget = faceTarget
 
-                val new: MPC_aegisMissileEntityPlugin
+                val new: MPC_missileEntityPlugin
                 if (market == null) {
                     if (source is CampaignFleetAPI) {
-                        new = MPC_aegisMissileEntityPlugin.createNewFromFleet(
+                        new = MPC_missileEntityPlugin.createNewFromFleet(
                             source,
                             params
                         )
                     } else {
-                        new = MPC_aegisMissileEntityPlugin.createNewFromEntity(
+                        new = MPC_missileEntityPlugin.createNewFromEntity(
                             source,
                             params
                         )
                     }
                 } else {
-                    new = MPC_aegisMissileEntityPlugin.createNewFromMarket(
+                    new = MPC_missileEntityPlugin.createNewFromMarket(
                         market,
                         params,
                         missile
@@ -701,7 +770,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
             return carriers
         }
 
-        fun getStandardAbilityParams(fleet: SectorEntityToken, currTarget: SectorEntityToken?, id: String): MPC_aegisMissileEntityPlugin.MissileParams {
+        fun getStandardAbilityParams(fleet: SectorEntityToken, currTarget: SectorEntityToken?, id: String): MPC_missileEntityPlugin.MissileParams {
             val explosionParams = ExplosionEntityPlugin.ExplosionParams(
                 Color(255, 90, 60),
                 fleet.containingLocation,
@@ -710,7 +779,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 0f
             )
             explosionParams.damage = ExplosionEntityPlugin.ExplosionFleetDamage.NONE
-            val params = MPC_aegisMissileEntityPlugin.MissileParams(
+            val params = MPC_missileEntityPlugin.MissileParams(
                 currTarget ?: fleet, // please dont use this missile if you dont pass in target.
                 "${id}_${Misc.genUID()}",
                 null,
@@ -901,7 +970,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
         }
     }
 
-    fun getBaseParams(): MPC_aegisMissileEntityPlugin.MissileParams {
+    fun getBaseParams(): MPC_missileEntityPlugin.MissileParams {
         return getStandardAbilityParams(fleet, currTarget, id)
     }
 
@@ -1043,7 +1112,7 @@ class MPC_missileStrikeAbility: BaseDurationAbility() {
                 "orient your fleet towards your target"
             )
 
-            val eccmMult = MPC_aegisMissileEntityPlugin.getECCMValue(fleet)
+            val eccmMult = MPC_missileEntityPlugin.getECCMValue(fleet)
             val eccmValue = 1f - eccmMult
 
             val eccmColor = if (eccmValue > 0f) Misc.getPositiveHighlightColor() else Misc.getNegativeHighlightColor()

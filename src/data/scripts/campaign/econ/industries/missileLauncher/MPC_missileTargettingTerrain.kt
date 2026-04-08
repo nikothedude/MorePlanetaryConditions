@@ -3,32 +3,20 @@ package data.scripts.campaign.econ.industries.missileLauncher
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import com.fs.starfarer.api.Global
-import com.fs.starfarer.api.campaign.CampaignEngineLayers
 import com.fs.starfarer.api.campaign.SectorEntityToken
-import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.impl.campaign.intel.BaseIntelPlugin
 import com.fs.starfarer.api.impl.campaign.terrain.BaseRingTerrain
 import com.fs.starfarer.api.impl.campaign.terrain.RingRenderer
-import com.fs.starfarer.api.loading.Description
 import com.fs.starfarer.api.ui.Alignment
 import com.fs.starfarer.api.ui.TooltipMakerAPI
 import com.fs.starfarer.api.util.Misc
-import data.scripts.campaign.magnetar.niko_MPC_magnetarField.Companion.DETECTED_MULT
-import data.scripts.campaign.magnetar.niko_MPC_magnetarField.Companion.DETECTED_MULT_STORM
-import data.scripts.campaign.magnetar.niko_MPC_magnetarField.Companion.SENSOR_RANGE_MULT
-import data.scripts.campaign.magnetar.niko_MPC_magnetarField.Companion.SENSOR_RANGE_MULT_STORM
-import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_fleetUtils.getApproximateECMValue
-import data.utilities.niko_MPC_ids
-import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_stringUtils
 import org.lazywizard.lazylib.MathUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
-import java.util.UUID
-import kotlin.math.PI
 
 class MPC_missileTargettingTerrain: BaseRingTerrain() {
 
@@ -211,10 +199,10 @@ class MPC_missileTargettingTerrain: BaseRingTerrain() {
                 "and the use of one of the following abilities:",
                 nextPad,
                 Misc.getHighlightColor(),
-                "ECM", "${MPC_aegisMissileEntityPlugin.MIN_ECM_NEEDED.toInt()}%"
+                "ECM", "${MPC_missileEntityPlugin.MIN_ECM_NEEDED.toInt()}%"
             )
             tooltip.setBulletedListMode(BaseIntelPlugin.BULLET)
-            for (id in MPC_aegisMissileEntityPlugin.ecmAbilities) {
+            for (id in MPC_missileEntityPlugin.ecmAbilities) {
                 val spec = Global.getSettings().getAbilitySpec(id)
                 if (spec == null) {
                     niko_MPC_debugUtils.log.warn("wrong ability spec id, no spec found: $id")
@@ -232,10 +220,10 @@ class MPC_missileTargettingTerrain: BaseRingTerrain() {
             tooltip.setBulletedListMode(null)
 
             val ECMlevel = playerFleet.getApproximateECMValue()
-            val enoughECM = (ECMlevel >= MPC_aegisMissileEntityPlugin.MIN_ECM_NEEDED)
+            val enoughECM = (ECMlevel >= MPC_missileEntityPlugin.MIN_ECM_NEEDED)
             var activeColor: Color
             var activeString: String
-            val usingECM = MPC_aegisMissileEntityPlugin.targetUsingECM(playerFleet)
+            val usingECM = MPC_missileEntityPlugin.targetUsingECM(playerFleet)
             if (!enoughECM) {
                 activeString = "Your fleet does not have enough ECM to counter incoming missiles."
                 activeColor = Misc.getNegativeHighlightColor()

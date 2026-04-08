@@ -50,7 +50,7 @@ class MPC_remnantMissileCarrierScript(
     override fun createMissile(
         spec: MPC_missileStrikeAbility.Missile,
         target: SectorEntityToken
-    ): MPC_aegisMissileEntityPlugin {
+    ): MPC_missileEntityPlugin {
         val missile = MPC_missileStrikeAbility.Missile.getMissileFrom(spec, getHost(), target)
 
         return missile

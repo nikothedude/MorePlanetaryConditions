@@ -9,6 +9,8 @@ import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamEntityPlugin2
 import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamTerrainPlugin2
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
@@ -25,7 +27,6 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
 
                 val tokenLoc = VectorUtils.getDirectionalVector(fob.location, target.location).scale(fob.primaryEntity.radius) as Vector2f
                 fob.containingLocation.createToken(tokenLoc)
-
 
                 val params = SlipstreamTerrainPlugin2.SlipstreamParams2()
                 params.burnLevel = 40
@@ -49,6 +50,13 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                 Global.getFactory().createBattle(
                     station,
                     targetStation
+                )
+
+                fob.primaryEntity.setCircularOrbitPointingDown(
+                    target.primaryEntity,
+                    VectorUtils.getAngle(target.location, fob.location),
+                    MathUtils.getDistance(target.primaryEntity, fob.primaryEntity),
+                    30f
                 )
             }
         },
@@ -79,13 +87,13 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
         Global.getSector().addScript(this)
         val token = fob.containingLocation.createToken(surgeSourceLoc)
         Global.getSector().addPing(token, Pings.SLIPSURGE)
-        Global.getSoundPlayer().playSound(
+        /*Global.getSoundPlayer().playSound(
             "MPC_IAIICWarpBegin",
             1f,
             1f,
             surgeSourceLoc,
             Misc.ZERO
-        )
+        )*/
     }
 
     override fun stopImpl() {
@@ -98,7 +106,12 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
         val days = Misc.getDays(amount)
         interval.advance(days)
         if (interval.intervalElapsed()) {
+            if (stage == Stage.FINISHED) {
+                delete()
+                return
+            }
             stage = Stage.entries.toTypedArray()[stage.ordinal + 1]
+            stage.apply(fob, target, this)
         }
 
         val oldLoc = fob.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] as Vector2f
@@ -123,6 +136,6 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
             }
         }
 
-        Misc.getStationFleet(fob)?.views?.forEach { it.setJitter(0f, 0f, color, jitterLevel.toInt(), 5f) }
+        Misc.getStationFleet(fob)?.views?.forEach { it.setJitter(0f, 1f, color, jitterLevel.toInt(), 5f) }
     }
 }

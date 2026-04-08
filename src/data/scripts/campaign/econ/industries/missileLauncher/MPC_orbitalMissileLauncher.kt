@@ -38,7 +38,7 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
             return field
         }
     open var missileReloadInterval = IntervalUtil(14f, 15f) // days
-    val missilesInFlight = HashMap<MPC_aegisMissileEntityPlugin, CampaignFleetAPI>()
+    val missilesInFlight = HashMap<MPC_missileEntityPlugin, CampaignFleetAPI>()
 
     // scales detection rate up to 100% from min to max
     open var minSensorProfile = 300f
@@ -111,8 +111,12 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
         val newDays = days * reloadRateMult
         missileReloadInterval.advance(newDays)
         if (missileReloadInterval.intervalElapsed()) {
-            missilesLoaded = (missilesLoaded + 1).coerceAtMost(maxMissilesLoaded)
+            doReload()
         }
+    }
+
+    open fun doReload() {
+        missilesLoaded = (missilesLoaded + 1).coerceAtMost(maxMissilesLoaded)
     }
 
     override fun advance(amount: Float) {
@@ -219,11 +223,10 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
 
             val adjust = getDetectionIncrement(fleet, amount)
 
-            var entry = detection[fleet]
+            val entry = detection[fleet]
             if (entry == null) {
                 if (adjust <= 0f) continue
                 detection[fleet] = 0f
-                entry = detection[fleet]
             }
             detection[fleet] = (getDetectionLevel(fleet) + adjust).coerceAtMost(1f)
 
@@ -293,7 +296,7 @@ abstract class MPC_orbitalMissileLauncher: niko_MPC_baseNikoScript() {
         return true
     }
 
-    abstract fun createMissile(spec: MPC_missileStrikeAbility.Missile, target: SectorEntityToken): MPC_aegisMissileEntityPlugin
+    abstract fun createMissile(spec: MPC_missileStrikeAbility.Missile, target: SectorEntityToken): MPC_missileEntityPlugin
 
     abstract fun getSpec(target: SectorEntityToken): MPC_missileStrikeAbility.Missile
 
