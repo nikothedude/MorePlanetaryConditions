@@ -32,5 +32,6 @@
     <orderEntry type="library" name="MagicLib" level="project" />
     <orderEntry type="library" name="WideHorizons" level="project" />
     <orderEntry type="library" name="LunaLib" level="project" />
+    <orderEntry type="library" name="niko_morePlanetaryConditions" level="project" />
   </component>
 </module>

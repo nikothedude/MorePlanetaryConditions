@@ -5,7 +5,6 @@ import com.fs.starfarer.api.impl.campaign.ids.Stats
 import com.fs.starfarer.api.util.IntervalUtil
 import data.utilities.niko_MPC_mathUtils.prob
 import lunalib.lunaUtil.LunaCommons
-import niko.MCTE.utils.MCTE_shipUtils.isTangible
 import org.dark.shaders.distortion.DistortionShader
 import org.dark.shaders.distortion.RippleDistortion
 

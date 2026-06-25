@@ -39,6 +39,7 @@ import data.scripts.campaign.singularity.MPC_energyFieldInstance
 import data.scripts.campaign.singularity.MPC_singularityHyperspaceProximityChecker
 import data.scripts.campaign.sinkhole.MPC_sinkholeTerrain
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.scripts.ghosts.MPC_ambushFleetScript
 import data.utilities.MPC_abyssUtils
 import data.utilities.niko_MPC_ids
 import org.lazywizard.console.BaseCommand
@@ -63,45 +64,7 @@ class niko_MPC_genericCommand: BaseCommand {
     }
     override fun runCommand(args: String, context: BaseCommand.CommandContext): BaseCommand.CommandResult {
 
-        val playerFleet = Global.getSector().playerFleet
-
-        /*val fleet = Global.getSector().playerFleet.containingLocation.fleets[4] ?: return BaseCommand.CommandResult.ERROR
-        val params = MPC_sinkholeTerrain.SinkholeParams(
-            1400f,
-            200f,
-            fleet
-        )
-        val paramsTwo = MPC_sinkholeTerrain.SinkholeParams(
-            1400f,
-            200f,
-            playerFleet
-        )*/
-
-        val widthToUse = 325f
-        var visStartRadius = (playerFleet.radius * 2f)
-        var visEndRadius = visStartRadius + widthToUse
-        var bandWidth = (visEndRadius - visStartRadius) * 0.6f
-        var midRadius = (visStartRadius + visEndRadius) / 2
-        var auroraProbability = 1f
-        val auroraIndex =
-            (MagFieldGenPlugin.auroraColors.size * StarSystemGenerator.random.nextDouble()).toInt()
-        val params = MagneticFieldTerrainPlugin.MagneticFieldParams(
-            bandWidth, midRadius,
-            playerFleet,
-            visStartRadius, visEndRadius,
-            niko_MPC_settings.hyperMagFieldColors.random(),
-            auroraProbability,
-            *MagFieldGenPlugin.auroraColors[auroraIndex],
-        )
-
-        /*MPC_sinkholeTerrain.addFieldToEntity(fleet, "test", params)
-        MPC_sinkholeTerrain.addFieldToEntity(playerFleet, "ttest", paramsTwo)*/
-
-        MPC_sinkholeTerrain.addTerrainToEntity(
-            playerFleet,
-            Terrain.MAGNETIC_FIELD,
-            params
-        )
+        MPC_ambushFleetScript.createNewEncounter(Global.getSector().playerFleet)
 
         return BaseCommand.CommandResult.SUCCESS
     }

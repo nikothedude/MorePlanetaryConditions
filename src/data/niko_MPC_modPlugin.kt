@@ -16,6 +16,7 @@ import com.fs.starfarer.api.impl.campaign.econ.impl.BoostIndustryInstallableItem
 import com.fs.starfarer.api.impl.campaign.econ.impl.ItemEffectsRepo
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
+import com.fs.starfarer.api.impl.campaign.ghosts.SensorGhostManager
 import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.StarSystemGenerator
 import com.fs.starfarer.api.ui.TooltipMakerAPI
@@ -48,6 +49,7 @@ import data.scripts.campaign.rulecmd.MPC_IAIICChurchCMD
 import data.scripts.campaign.rulecmd.MPC_IAIICTriTachCMD.Companion.DOWN_PAYMENT
 import data.scripts.campaign.terrain.niko_MPC_mesonFieldGenPlugin
 import data.scripts.everyFrames.niko_MPC_HTFactorTracker
+import data.scripts.ghosts.MPC_ambushFleetManager
 import data.utilities.*
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_ids.overgrownNanoforgeConditionId
@@ -73,7 +75,6 @@ import data.utilities.niko_MPC_settings.stationAugmentsLoaded
 import data.utilities.niko_MPC_settings.yunruIndustriesEnabled
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
-import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
 import org.lazywizard.console.commands.Survey
@@ -352,6 +353,10 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         if (niko_MPC_settings.nexLoaded) {
             //MPC_IAIICFobInvasionListener.get(true)
         }
+
+        if (!Global.getSector().hasScript(MPC_ambushFleetManager::class.java)) {
+            MPC_ambushFleetManager().start()
+        }
     }
 
     override fun beforeGameSave() {
@@ -500,8 +505,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             try {
                 loadAllSettings()
             } catch (ex: Exception) {
-                MCTE_debugUtils.displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
-                MCTE_debugUtils.log.debug("info:", ex)
+                displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
+                niko_MPC_debugUtils.log.debug("info:", ex)
             }
         }
     }
