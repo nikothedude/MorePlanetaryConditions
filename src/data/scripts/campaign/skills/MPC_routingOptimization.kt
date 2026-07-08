@@ -46,12 +46,12 @@ class MPC_routingOptimization {
         BETA(Commodities.BETA_CORE) {
             override fun apply(industry: Industry, id: String) {
                 GAMMA.apply(industry, id)
-                industry.upkeep.modifyMult(id, BETA_INDUSTRY_UPKEEP_MULT, "Routing Optimization")
+                industry.upkeep?.modifyMult(id, BETA_INDUSTRY_UPKEEP_MULT, "Routing Optimization")
             }
 
             override fun unapply(industry: Industry, id: String) {
                 GAMMA.unapply(industry, id)
-                industry.upkeep.unmodify(id)
+                industry.upkeep?.unmodify(id)
             }
         },
         ALPHA(Commodities.ALPHA_CORE) {
