@@ -52,4 +52,7 @@ niko_MPC_aegisMissileSystem,Aegis Missile System,100,20,,18,,,"structure, tactic
 
 Using the old-but-gold XLY-293 missile complex, this undertaking is sure to make pirates think thrice.",302,HIGH
 ,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+MPC_FOBIAIICMissileSystem,Integrated Assault System,100,20,,26,,,"structure, tactical_bombardment, hide_in_codex",,graphics/illustrations/desert_moons_ruins.jpg,data.scripts.campaign.magnetar.crisis.industries.MPC_FOBMissileLauncher,"Built deep into the structure of the Ark FOB, this ""deterrence system"" as the IAIIC so-lovingly calls it is a network of missile silos built into the hull of the station, accompanied by a suspiciously intelligent targetting computer capable of tracking gravitic distortions from entire star systems away, and pinpointing IFF even when no transponder is visible.",302,EXTREME
+MPC_FOBIAIICHighCommand,IAIIC Central Operations,30,120,,20,militarybase,,"command, unraidable, tactical_bombardment, industry",,graphics/icons/industry/high_command.png,data.scripts.campaign.magnetar.crisis.industries.MPC_IAIICHighCommand,"The operational seat of the IAIIC, a bustling hub of interstellar communications and thousands of dispatch consoles. From here, bristling warfleets are dispatched, to enact infinite warfare on their mortal enemy. You.",2600,
 MPC_FOBIAIICPatherResist,you shouldnt see this,0,0,,0,,,"structure, unraidable, no_saturation_bombardment, hide_in_codex",,graphics/industry/niko_MPC_defenseSatelliteLuddicSupressor.png,data.scripts.campaign.magnetar.crisis.industries.MPC_FOBIAIICPatherResist,:),9999,

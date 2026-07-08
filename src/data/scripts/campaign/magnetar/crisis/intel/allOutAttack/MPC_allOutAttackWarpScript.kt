@@ -3,19 +3,21 @@ package data.scripts.campaign.magnetar.crisis.intel.allOutAttack
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
+import com.fs.starfarer.api.impl.campaign.abilities.GenerateSlipsurgeAbility.SlipsurgeFadeInScript
 import com.fs.starfarer.api.impl.campaign.ids.Pings
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
-import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamEntityPlugin2
 import com.fs.starfarer.api.impl.campaign.velfield.SlipstreamTerrainPlugin2
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
-import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_mathUtils.easeOutSine
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
+import kotlin.math.min
+import kotlin.math.sqrt
 
 class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): niko_MPC_baseNikoScript() {
 
@@ -31,12 +33,33 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                 val params = SlipstreamTerrainPlugin2.SlipstreamParams2()
                 params.burnLevel = 40
                 params.baseWidth = 1200f
-                params
 
                 val slipstream = fob.containingLocation.addTerrain(Terrain.SLIPSTREAM, params) as CampaignTerrainAPI
                 val plugin = slipstream.plugin as SlipstreamTerrainPlugin2
-                plugin.addSegment()
 
+                val spacing = 100f
+                val length = 3000f
+                val width = 2000f
+                val incr: Float = spacing / length
+
+                val to = target.location
+                val from = fob.location
+
+                val diff = Vector2f.sub(to, from, Vector2f())
+                var f = 0f
+                while (f <= 1f) {
+                    val curr = Vector2f(diff)
+                    curr.scale(f)
+                    Vector2f.add(curr, from, curr)
+                    plugin.addSegment(curr, width - min(300f, 300f * sqrt(f.toDouble()).toFloat()))
+                    f += incr
+                }
+
+                plugin.recomputeIfNeeded()
+
+                // TODO untested
+
+                slipstream.addScript(SlipsurgeFadeInScript(plugin))
                 plugin.despawn(duration, LANDED.duration, MathUtils.getRandom())
             }
         },
@@ -58,6 +81,8 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                     MathUtils.getDistance(target.primaryEntity, fob.primaryEntity),
                     30f
                 )
+
+                fob.respawnAllFleets()
             }
         },
         FINISHED(Float.MAX_VALUE) {
@@ -123,7 +148,7 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                 jitterLevel = (maxJitterLevel * progress)
             }
             Stage.WARPING -> {
-                val newLoc = Misc.interpolateVector(oldLoc, targetLoc, progress)
+                val newLoc = Misc.interpolateVector(oldLoc, targetLoc, easeOutSine(progress).toFloat())
                 fob.location.set(newLoc.x, newLoc.y)
                 jitterLevel = maxJitterLevel
             }

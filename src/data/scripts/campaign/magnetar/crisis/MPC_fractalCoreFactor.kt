@@ -82,7 +82,7 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         fun MarketAPI.addSpecialItems() {
             industries.forEach { it.aiCoreId = Commodities.BETA_CORE }
 
-            getIndustry(Industries.HIGHCOMMAND)?.aiCoreId = Commodities.ALPHA_CORE
+            getIndustry("MPC_FOBIAIICHighCommand")?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry("aotd_citadel")?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.STARFORTRESS)?.aiCoreId = Commodities.ALPHA_CORE
             getIndustry(Industries.HEAVYBATTERIES)?.aiCoreId = Commodities.ALPHA_CORE
@@ -143,8 +143,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
             } else {
                 market.addIndustry(Industries.STARFORTRESS)
             }
-            market.addIndustry(Industries.HIGHCOMMAND)
-            val HC = market.getIndustry(Industries.HIGHCOMMAND) as MilitaryBase
+            market.addIndustry("MPC_FOBIAIICHighCommand")
+            val HC = market.getIndustry("MPC_FOBIAIICHighCommand") as MilitaryBase
             HC.isImproved = true
             market.addIndustry(Industries.HEAVYBATTERIES)
             market.getIndustry(Industries.HEAVYBATTERIES).isImproved = true
@@ -186,6 +186,8 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
                     market.addStationAugment("SA_automatedRepairUnit")
                 }
             }
+
+            market.addIndustry("MPC_FOBIAIICMissileSystem")
 
             market.addSpecialItems()
 
@@ -366,6 +368,11 @@ class MPC_fractalCoreFactor(intel: HostileActivityEventIntel?) : BaseHostileActi
         setImportantMarkets()
 
         doDialog(getFOB()?.starSystem)
+
+        Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID).isShowInIntelTab = true
+        if (MPC_IAIICFobIntel.get() == null) {
+            MPC_IAIICFobIntel()
+        }
 
         return true
     }

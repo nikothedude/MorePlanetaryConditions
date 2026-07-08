@@ -7,6 +7,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 object niko_MPC_mathUtils {
     @JvmStatic
@@ -129,5 +130,10 @@ object niko_MPC_mathUtils {
 
     fun prob(chance: Double, random: Random = MathUtils.getRandom()): Boolean {
         return (random.nextFloat() * 100f < chance)
+    }
+
+    fun easeOutSine(x: Float): Double {
+        return sin((x * Math.PI) / 2);
+
     }
 }

@@ -6,7 +6,6 @@ import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript
-import data.scripts.utils.SotfMisc
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_settings
 

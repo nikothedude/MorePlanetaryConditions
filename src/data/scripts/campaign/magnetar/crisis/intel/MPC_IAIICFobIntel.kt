@@ -50,6 +50,7 @@ import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipCreator
 import com.fs.starfarer.api.ui.TooltipMakerAPI.TooltipLocation
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
+import com.fs.starfarer.api.util.WeightedRandomPicker
 import com.fs.starfarer.campaign.ai.CampaignFleetAI
 import data.scripts.MPC_delayedExecutionNonLambda
 import data.scripts.campaign.MPC_People
@@ -249,7 +250,7 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
     }
 
     companion object {
-        const val ALL_OUT_ATTACK_BASE_FP = 600f
+        const val ALL_OUT_ATTACK_BASE_FP = 250f
         const val ALL_OUT_ATTACK_FP_MULT = 7f // fleets are HUGE
         const val GLOBAL_SABOTAGE_MULT = 1f
         const val GLOBAL_FLEETSIZE_MULT = 1f
@@ -2069,6 +2070,13 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
 
     private fun unapplyCommandDisruption() {
         getFOB()?.removeCondition(niko_MPC_ids.IAIIC_COMMAND_DISRUPTED_CONDITION)
+    }
+
+    fun getRandContribForFleet(): MPC_factionContribution? {
+        val contribs = getFactionContributionsExternal()
+        val picker = WeightedRandomPicker<MPC_factionContribution>()
+        contribs.forEach { picker.add(it, it.fleetMultIncrement) }
+        return picker.pick()
     }
 
     abstract class RemoveContributionScript: Script {

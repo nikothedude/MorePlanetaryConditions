@@ -1,19 +1,26 @@
 package data.scripts.campaign.magnetar.crisis.industries
 
+import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
+import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
+import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICPatrolAssignmentAI
+import data.utilities.niko_MPC_ids
 
 class MPC_IAIICHighCommand: MilitaryBase() {
     override fun spawnFleet(route: RouteManager.RouteData?): CampaignFleetAPI? {
+        if (market.faction.id != niko_MPC_ids.IAIIC_FAC_ID) return super.spawnFleet(route)
+
         val custom = route!!.custom as PatrolFleetData
         val type = custom.type
 
         val random = route!!.random
 
-        val fleet = createPatrol(type, market.factionId, route, market, null, random)
+        val fleet = createPatrol(type, getFleetFactionSource().id, route, market, null, random)
+        fleet.setFaction(market.faction.id, true)
 
         if (fleet == null || fleet.isEmpty) return null
 
@@ -39,5 +46,11 @@ class MPC_IAIICHighCommand: MilitaryBase() {
         }
 
         return fleet
+    }
+
+    private fun getFleetFactionSource(): FactionAPI {
+        val intel = MPC_IAIICFobIntel.get() ?: return market.faction
+        val rand = intel.getRandContribForFleet() ?: return market.faction
+        return Global.getSector().getFaction(rand.factionId)
     }
 }

@@ -259,11 +259,11 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
         label.setHighlightColors(h, h, h, h)
 
         val labelTwo = info.addPara(
-            "In addition, your fractal core warns you of some %s surrounding %s. %s.",
+            "In addition, your fractal core warns you of some enigmatic threat surrounding the enemy's approach. It is highly advised for you to be in orbit of ${colony.name} once the invasion starts.",
             opad,
         )
-        label.setHighlight("enigmatic threat", "the enemy's approach", "It is highly advised for you to be in orbit of ${colony.name} once the invasion starts.")
-        label.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
+        labelTwo.setHighlight("enigmatic threat", "the enemy's approach", "It is highly advised for you to be in orbit of ${colony.name} once the invasion starts.")
+        labelTwo.setHighlightColors(Misc.getNegativeHighlightColor(), Misc.getHighlightColor(), Misc.getNegativeHighlightColor())
 
         defenderStr = WarSimScript.getEnemyStrength(getFaction(), system)
         val defensiveStr = defenderStr + WarSimScript.getStationStrength(target.faction, system, target.primaryEntity)

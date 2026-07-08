@@ -11,7 +11,7 @@ class MPC_spaceOperations {
 
     companion object {
         const val SHIP_QUALITY_PERCENT = 0.25f
-        fun getPatrol(market: MarketAPI): MilitaryBase? = (market.getIndustry(Industries.MILITARYBASE) ?: market.getIndustry(Industries.HIGHCOMMAND) ?: market.getIndustry(Industries.PATROLHQ)) as? MilitaryBase
+        fun getPatrol(market: MarketAPI): MilitaryBase? = (market.industries.first { it is MilitaryBase} as? MilitaryBase)
     }
 
     class Market1: MarketSkillEffect {
