@@ -475,7 +475,7 @@ class MPC_missileEntityPlugin: BaseCustomEntityPlugin() {
                 nav.avoidEntity(entity, 2000f, 3000f, 0.2f)
             }
             val range = MathUtils.getDistance(entity, target)
-            if ((target as? CampaignFleetAPI)?.battle != null && range <= (params.spec.getMaxSpeed() * PANIC_EBURN_SPEED_TO_DIST_RATIO)) {
+            if ((target as? CampaignFleetAPI)?.battle == null && range <= (params.spec.getMaxSpeed() * PANIC_EBURN_SPEED_TO_DIST_RATIO)) {
                 val ability = target!!.getAbility(Abilities.EMERGENCY_BURN)
                 if (ability?.isUsable == true) {
                     didEburn = true

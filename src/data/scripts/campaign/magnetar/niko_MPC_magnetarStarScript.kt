@@ -9,25 +9,18 @@ import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
-import com.fs.starfarer.api.impl.campaign.ids.Commodities
-import com.fs.starfarer.api.impl.campaign.ids.Factions
-import com.fs.starfarer.api.impl.campaign.ids.HullMods
-import com.fs.starfarer.api.impl.campaign.ids.Tags
-import com.fs.starfarer.api.impl.campaign.ids.Terrain
+import com.fs.starfarer.api.impl.campaign.ids.*
 import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGeneratorPlugin.integrateAndAdaptCoreForAIFleet
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.scripts.utils.SotfMisc
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_settings
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
 import org.lazywizard.lazylib.MathUtils
 
 class niko_MPC_magnetarStarScript(

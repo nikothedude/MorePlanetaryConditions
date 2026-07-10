@@ -33,7 +33,6 @@ import data.utilities.niko_MPC_miscUtils.isStationFleet
 import data.utilities.niko_MPC_reflectionUtils.set
 import data.utilities.niko_MPC_settings
 import data.utilities.niko_MPC_stringUtils
-import niko.MCTE.settings.MCTE_settings
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.magiclib.kotlin.isPatrol

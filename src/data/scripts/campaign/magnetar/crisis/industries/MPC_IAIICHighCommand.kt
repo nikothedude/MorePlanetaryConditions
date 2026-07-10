@@ -5,6 +5,7 @@ import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FactionAPI
 import com.fs.starfarer.api.impl.campaign.econ.impl.MilitaryBase
 import com.fs.starfarer.api.impl.campaign.fleets.RouteManager
+import com.fs.starfarer.api.impl.campaign.ids.FleetTypes
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICPatrolAssignmentAI
@@ -21,6 +22,9 @@ class MPC_IAIICHighCommand: MilitaryBase() {
 
         val fleet = createPatrol(type, getFleetFactionSource().id, route, market, null, random)
         fleet.setFaction(market.faction.id, true)
+
+        val IAIIC = Global.getSector().getFaction(niko_MPC_ids.IAIIC_FAC_ID)
+        fleet.name = IAIIC.getFleetTypeName(type.fleetType)
 
         if (fleet == null || fleet.isEmpty) return null
 

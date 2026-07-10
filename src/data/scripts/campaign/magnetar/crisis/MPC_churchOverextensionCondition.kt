@@ -20,7 +20,7 @@ import org.magiclib.kotlin.getFactionMarkets
 class MPC_churchOverextensionCondition: niko_MPC_baseNikoCondition() {
 
     companion object {
-        const val FLEETSIZE_MULT = 0.9f
+        const val FLEETSIZE_MULT = 0.7f
 
         fun isValid(market: MarketAPI) = market.factionId == Factions.LUDDIC_CHURCH
     }
@@ -49,7 +49,7 @@ class MPC_churchOverextensionCondition: niko_MPC_baseNikoCondition() {
         super.createTooltipAfterDescription(tooltip, expanded)
 
         if (isValid(market)) {
-            tooltip.addPara("Fleet size decreased by %s", 5f, Misc.getHighlightColor(), "${(FLEETSIZE_MULT).trimHangingZero()}")
+            tooltip.addPara("Fleet size decreased by %s", 5f, Misc.getHighlightColor(), "${(FLEETSIZE_MULT).trimHangingZero()}x")
         }
     }
 

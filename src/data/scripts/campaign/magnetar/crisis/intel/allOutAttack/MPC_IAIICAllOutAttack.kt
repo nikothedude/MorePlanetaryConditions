@@ -137,6 +137,7 @@ class MPC_IAIICAllOutAttack(val from: MarketAPI, val target: MarketAPI, val spaw
     override fun advanceImpl(amount: Float) {
         super.advanceImpl(amount)
 
+        if (stages.size <= currentStage) return
         val stage = stages[currentStage] ?: return
         if (stage is MPC_IAIICAllOutAttackAssemble) {
             if (!didScripts) {

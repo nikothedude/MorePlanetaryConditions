@@ -225,7 +225,7 @@ open class MPC_churchContributionIntel: BaseIntelPlugin() {
 
                 info.addPara(
                     "You've made contact with the fence and obtained coordinates and a brief window to bypass knight " +
-                        "patrols at %s, a military stronghold for the Knights of Ludd on Asher. You'll find your target there.",
+                        "patrols at %s, a military/industrial stronghold for the Knights of Ludd on Asher. You'll find your target there.",
                     5f,
                     Misc.getHighlightColor(),
                     "Artebus Station"

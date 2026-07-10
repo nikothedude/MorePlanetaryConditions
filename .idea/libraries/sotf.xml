@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../Secrets of the Frontier 0.15.0c/jars/secretsofthefrontier.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Secrets of the Frontier 0.15.1/jars/secretsofthefrontier.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Secrets of the Frontier/jars/secretsofthefrontier.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

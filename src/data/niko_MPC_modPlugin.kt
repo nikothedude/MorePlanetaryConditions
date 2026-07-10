@@ -73,7 +73,6 @@ import data.utilities.niko_MPC_settings.stationAugmentsLoaded
 import data.utilities.niko_MPC_settings.yunruIndustriesEnabled
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
-import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
 import org.lazywizard.console.commands.Survey
@@ -500,8 +499,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             try {
                 loadAllSettings()
             } catch (ex: Exception) {
-                MCTE_debugUtils.displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
-                MCTE_debugUtils.log.debug("info:", ex)
+                niko_MPC_debugUtils.displayError("settingsChangedListener exception caught, logging info", logType = Level.ERROR)
+                niko_MPC_debugUtils.log.debug("info:", ex)
             }
         }
     }

@@ -57,6 +57,7 @@ class MPC_FOBMissileLauncher: MPC_missileLauncherIndustry() {
 
     override fun createNewDefenseGrid() {
         rocketHandler = MPC_FOBMissileLauncherScript(market, this)
+        rocketHandler!!.missilesLoaded = rocketHandler!!.maxMissilesLoaded
     }
 
     override fun getMinSensorProfile(): Float = 600f

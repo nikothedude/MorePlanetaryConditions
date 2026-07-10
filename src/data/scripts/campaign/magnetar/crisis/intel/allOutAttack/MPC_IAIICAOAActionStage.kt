@@ -48,7 +48,7 @@ class MPC_IAIICAOAActionStage(raid: RaidIntel?, val target: MarketAPI) : ActionS
             (intel as? MPC_IAIICAllOutAttack)?.makeHostileAndSendUpdate()
             val fob = MPC_IAIICFobIntel.getFOB()!!
             val oldOrbit = fob.primaryEntity.orbit
-            fob.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] = Vector2f(fob.location)
+            fob.primaryEntity.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] = Vector2f(fob.location)
             fob.memoryWithoutUpdate["\$MPC_IAIICOldOrbitLoc"] = oldOrbit
             MPC_IAIICFobIntel.get()?.escalate(0f)
             val fleet = fob.getStationFleet() ?: return // uh oh

@@ -1,6 +1,7 @@
 package data.scripts.campaign.magnetar.crisis.intel.allOutAttack
 
 import com.fs.starfarer.api.Global
+import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.CampaignTerrainAPI
 import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.impl.campaign.abilities.GenerateSlipsurgeAbility.SlipsurgeFadeInScript
@@ -11,10 +12,14 @@ import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.magnetar.crisis.MPC_fractalCrisisHelpers.respawnAllFleets
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
+import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_mathUtils.easeOutSine
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.kotlin.isPatrol
+import org.magiclib.kotlin.isWarFleet
+import sound.int
 import java.awt.Color
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -22,10 +27,17 @@ import kotlin.math.sqrt
 class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): niko_MPC_baseNikoScript() {
 
     enum class Stage(val duration: Float) {
-        BEGINNING(3f),
+        BEGINNING(0.2f),
         WARPING(2f) {
             override fun apply(fob: MarketAPI, target: MarketAPI, script: MPC_allOutAttackWarpScript) {
                 super.apply(fob, target, script)
+
+                script.fleets = fob.containingLocation.fleets.filter { it.faction.id == niko_MPC_ids.IAIIC_FAC_ID && MathUtils.getDistance(it, fob.primaryEntity) <= 600f && (it.isWarFleet() || it.isPatrol()) }.toHashSet()
+                for (fleet in script.fleets) {
+                    fleet.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] = Vector2f(fleet.location)
+                }
+
+                fob.primaryEntity.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] = Vector2f(fob.primaryEntity.location)
 
                 val tokenLoc = VectorUtils.getDirectionalVector(fob.location, target.location).scale(fob.primaryEntity.radius) as Vector2f
                 fob.containingLocation.createToken(tokenLoc)
@@ -35,6 +47,7 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                 params.baseWidth = 1200f
 
                 val slipstream = fob.containingLocation.addTerrain(Terrain.SLIPSTREAM, params) as CampaignTerrainAPI
+                slipstream.setLocation(fob.primaryEntity.location.x, fob.primaryEntity.location.y)
                 val plugin = slipstream.plugin as SlipstreamTerrainPlugin2
 
                 val spacing = 100f
@@ -61,32 +74,40 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
 
                 slipstream.addScript(SlipsurgeFadeInScript(plugin))
                 plugin.despawn(duration, LANDED.duration, MathUtils.getRandom())
+
+                fob.primaryEntity.orbit = null
             }
         },
         LANDED(1f) {
             override fun apply(fob: MarketAPI, target: MarketAPI, script: MPC_allOutAttackWarpScript) {
                 super.apply(fob, target, script)
 
-                val station = Misc.getStationFleet(fob) ?: return
-                val targetStation = Misc.getStationFleet(target) ?: return
-
-                Global.getFactory().createBattle(
-                    station,
-                    targetStation
-                )
-
                 fob.primaryEntity.setCircularOrbitPointingDown(
                     target.primaryEntity,
-                    VectorUtils.getAngle(target.location, fob.location),
-                    MathUtils.getDistance(target.primaryEntity, fob.primaryEntity),
+                    VectorUtils.getAngle(target.primaryEntity.location, fob.primaryEntity.location),
+                    MathUtils.getDistance(target.primaryEntity.location, fob.primaryEntity.location),
                     30f
                 )
 
                 fob.respawnAllFleets()
+
+                val station = Misc.getStationFleet(fob) ?: return
+                val targetStation = Misc.getStationFleet(target) ?: return
+
+                val battle = Global.getFactory().createBattle(
+                    station,
+                    targetStation
+                )
+                Global.getSector().memoryWithoutUpdate["\$MPC_IAIICFinalBattle"] = battle
+
+                for (fleet in script.fleets) {
+                    battle.join(fleet)
+                }
             }
         },
         FINISHED(Float.MAX_VALUE) {
             override fun apply(fob: MarketAPI, target: MarketAPI, script: MPC_allOutAttackWarpScript) {
+                Global.getSector().memoryWithoutUpdate.unset("\$MPC_IAIICFinalBattle")
                 script.delete()
             }
         };
@@ -102,8 +123,8 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
     var stage = Stage.BEGINNING
     val color = Color(60, 0, 255, 255)
     val targetAngle = MathUtils.getRandomNumberInRange(0f, 360f)
-    val surgeSourceLoc = VectorUtils.getDirectionalVector(fob.location, target.location).scale(fob.primaryEntity.radius) as Vector2f
-
+    val surgeSourceLoc = MathUtils.getPointOnCircumference(fob.primaryEntity.location, fob.primaryEntity.radius, VectorUtils.getAngle(fob.primaryEntity.location, target.primaryEntity.location))
+    var fleets = HashSet<CampaignFleetAPI>()
     init {
         stage.apply(fob, target, this)
     }
@@ -135,22 +156,29 @@ class MPC_allOutAttackWarpScript(val fob: MarketAPI, val target: MarketAPI): nik
                 delete()
                 return
             }
-            stage = Stage.entries.toTypedArray()[stage.ordinal + 1]
+            stage = Stage.entries[stage.ordinal + 1]
             stage.apply(fob, target, this)
         }
 
-        val oldLoc = fob.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] as Vector2f
         val targetLoc = MathUtils.getPointOnCircumference(target.primaryEntity.location, target.primaryEntity.radius, targetAngle)
 
-        val progress = (interval.intervalDuration / interval.elapsed)
+        var progress = (interval.elapsed / interval.intervalDuration)
         when (stage) {
             Stage.BEGINNING -> {
                 jitterLevel = (maxJitterLevel * progress)
             }
             Stage.WARPING -> {
-                val newLoc = Misc.interpolateVector(oldLoc, targetLoc, easeOutSine(progress).toFloat())
-                fob.location.set(newLoc.x, newLoc.y)
-                jitterLevel = maxJitterLevel
+                for (entity in fleets + fob.primaryEntity) {
+                    val oldLoc = entity.memoryWithoutUpdate["\$MPC_IAIICOldLoc"] as? Vector2f ?: Misc.ZERO
+                    val newLoc = Misc.interpolateVector(oldLoc, targetLoc, easeOutSine(progress).toFloat())
+                    //val newLoc = Misc.interpolateVector(oldLoc, targetLoc, progress)
+                    if (entity is CampaignFleetAPI) {
+                        entity.setLocation(newLoc.x, newLoc.y)
+                    } else {
+                        entity.location.set(newLoc.x, newLoc.y)
+                    }
+                    jitterLevel = maxJitterLevel
+                }
             }
             Stage.LANDED -> {
                 jitterLevel = (maxJitterLevel * (1 - progress))

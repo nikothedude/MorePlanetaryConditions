@@ -5,6 +5,7 @@
 	
 	"plugins":{
 		"niko_MPC_coronaResistCombatScript":"data.scripts.everyFrames.combat.niko_MPC_coronaResistCombatScript",
+		"MPC_IAIICFinalFightScript":"data.scripts.campaign.magnetar.crisis.combat.MPC_IAIICFinalFightScript",
 		"niko_MPC_satelliteSpawnerScript":"data.scripts.everyFrames.combat.niko_MPC_newSatelliteDeployerScript",
 		"niko_MPC_campaignPlugin":"data.scripts.campaign.plugins.niko_MPC_campaignPlugin",
 	},
