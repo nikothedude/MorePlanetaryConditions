@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.fs.starfarer:starfarer-api:local" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.fs.starfarer" artifactId="starfarer-api" version="local" baseVersion="local" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/build/starsector-api/com/fs/starfarer/starfarer-api/local/starfarer-api-local.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/build/starsector-api/com/fs/starfarer/starfarer-api/local/starfarer-api-local-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

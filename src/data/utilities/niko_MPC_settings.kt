@@ -10,8 +10,6 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.overgrownNanofor
 import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.randomizedSourceBudgets
 import data.utilities.niko_MPC_debugUtils.displayError
 import data.utilities.niko_MPC_satelliteUtils.getSatelliteHandlers
-import dynamictariffs.util.SettingsUtil
-import dynamictariffs.util.SettingsUtil.readSettings
 import lunalib.lunaSettings.LunaSettings
 import org.json.JSONException
 import java.awt.Color
