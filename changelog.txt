@@ -1,3 +1,8 @@
+4.5.3
+SAVE COMPATIBLE
+
+Fixes a crash with derelict escorts.
+
 4.5.2
 SAVE COMPATIBLE
 
