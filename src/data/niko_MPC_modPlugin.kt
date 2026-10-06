@@ -124,33 +124,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
             intel.removeBlueprintFunctions.removeAll { nullable: Script? -> nullable == null } // TODO remove
             intel.removeBlueprintFunctions.forEach { it?.run() }
         }
-
-        fun addExtraExodusPlanet(): PlanetAPI? {
-            val exodus = MPC_IAIICChurchCMD.getExodus() ?: return null
-            val furthestPlanet = exodus.planets.filter { !it.isStar && it.orbit != null }.maxBy { it.orbit.orbitalPeriod }
-            val furthestOrbit = furthestPlanet.orbit.makeCopy()
-            val newPlanet = exodus.addPlanet(
-                MPC_IAIICChurchCMD.HIDEOUT_ID,
-                exodus.star,
-                "Altreides",
-                Planets.FROZEN2,
-                MathUtils.getRandomNumberInRange(0f, 360f),
-                240f,
-                MathUtils.getDistance(exodus.star, furthestPlanet) + 6000f,
-                furthestOrbit.orbitalPeriod * 1.5f
-            )
-
-            newPlanet.market.addConditionIfNotPresent(Conditions.VERY_COLD)
-            newPlanet.market.addConditionIfNotPresent(Conditions.POOR_LIGHT)
-            newPlanet.market.addConditionIfNotPresent(Conditions.THIN_ATMOSPHERE)
-            newPlanet.market.addConditionIfNotPresent(Conditions.VOLATILES_TRACE)
-            newPlanet.market.addConditionIfNotPresent(Conditions.ORE_SPARSE)
-
-            newPlanet.market.conditions.forEach { it.isSurveyed = true }
-            newPlanet.market.surveyLevel = MarketAPI.SurveyLevel.FULL
-
-            return newPlanet
-        }
     }
 
     private fun setupIAIICResearch() {
@@ -430,8 +403,6 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         //IAIIC.isShowInIntelTab = false
 
         setupIAIICBlueprints()
-
-        addExtraExodusPlanet()
 
         doSpecialProcgen(true)
     }
