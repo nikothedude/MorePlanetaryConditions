@@ -302,7 +302,7 @@ class niko_MPC_derelictEscort: niko_MPC_baseNikoCondition() {
                         return handleFailedEscortSpawn(fleet, route)
                     }
                 }
-                set("activeFleet", route, fleet)
+                set("activeFleet", route, fleet, RouteData::class.java)
                 fleet.addEventListener(RouteManager.getInstance())
             }
             return spawnEscortOn(fleet, factionToUse)

@@ -1,0 +1,170 @@
+ABANDON EVERYTHING WITH THE MILITANTS
+
+someone needs to introduce the plan
+    (intsec guy?)
+
+you simply go to this planet to find broker
+    engines disabled, ambushed by fleet
+    find a serial number in the graveyard, point to the village
+
+    also, probably capture a member of the crew and get pointed to a number of systems
+    onc
+
+go there
+    windows close, guards close in with weapons
+    find the part shop
+    the shopkeeper clearly doesnt like you, answers quesitons with no
+    guards are about to mow you down
+    decide to say fuck it and shoot everyone
+
+    a obvious stack of sale ledgers is on the table, but youve lewarned this trick
+    break into the back, a guard carries out a safe (power armor)
+    uses it as a shield against incoming pulse fire
+    take off under fire
+
+    its trapped, engi disarms it carefully
+    inside is a grenade and a pile of ledgers
+    scientists run it thru a autoscanner, find the name of jerus and chalceledon
+
+    Go to chalceledon
+        If you ask around in the bar, someone will firmly grip you and tell you to get fucked
+        The admin can be bribed for a location, however
+            Or intimidated with a strong fleet...
+
+        But when you go to the location... oh shit.
+        Where sensors showed heat signatures are instead space heaters. You take one step out -
+        BODYGUARDS GRAB YOU AND THROW YOU IN! PULSEFIRE RAINS DOWN ON THE SHUTTLE FROM ALL SIDES!
+        The shuttle only barely manages to take off, firing flares and recieving ECM support to evade an incoming missile
+        Get an option to drop a bomb here - for no reason other than FUCK THESE GUYS
+
+        Go back to the admin, who looks terrified to see you
+        Reiterate your threat, but this time with vigor
+        Eventually, he just gives you a comms key
+        Gets the FUCK out of there
+        No admin for a few days - then a new guy a few days later
+            "The last one just disappeared."
+            In-lore, this guy realized he was fucked. You survived his trap and are certainly cokming for him if you dont tell him the location
+            But once people figure out he talked... he'll be hunted
+            So he goes into hiding
+        Again, the narrator reiterates - this whole thing. Is. So sketchy.
+
+    Call jereth over comms
+        Finish later; TLDR idea is you have to hold him long enough for your comms officer to trace the signal
+        And after that, you can interrogate him for info
+
+        The commlink hangs for an unusal amount of time
+            Tactical: "It's unlikely they'll talk, especialyl since we don't know where they are"
+            "Pather comms are generally spotty and badly protected. I might be able to track them"
+            "Hold them on the line - I'll perform a trace"
+        , before it clicks on
+        The man careens into the screen, panting, breathing heavily - then he notices you
+            Was far away, sprinted to silence the pinging
+        Inbetween gasps, he stammers - "You know not to call this ID - wait - who are you?"
+        Visibly spooked - hand is nearing the comms-disconnect. Its likely he wont accept any further calls
+
+        Have to come up with something to bullshit him with...
+        He looks scared, spooked
+        "-listen. You've been compromised. You need a new COMMSID and to exfil ASAP."
+        He freezes, his body tensing further. He stares at you a moment - then-
+        "-I-I don't know who you are." he just says, reaching the the button-
+        "Someone found $global.shipPlanetName, and somehow, they found your name in the wreckage. They've already been to Asher - I don't know how long til they find you."
+        "They've been asking around everywhere, it's a miracle *I* found you first. Saddle up, you're moving out before the day ends."
+        He freezes. Time stills for thirty seconds. Tactical gives you a so-so gesture - you need more time
+        Slowly, though, he withdraws his hand from the disconnect button, turning to stare through a wall... then snaps his head back, eyes as big as dinner plates
+        "Who *are* you?"
+            "Doesn't matter. I'm just here to keep you safe."
+            "A friend of our mutual friend."
+            "A brother in Ludd."
+
+        "...okay. Okay." he picks up a nearby narco-stick, taking a deep breath, and sighing, his anxiety reducing and being replaced with a narcotic twitch
+        "...I'll need some help first. I was running an operation down here, and I'll need someone to help me move my equipment.
+        not related to our 'friend' (airquotes), but personal and operational support was part of the deal."
+        He pauses.
+        "Where do you have in mind?"
+            "We'll figure it out once we get you onboard."
+            "Baetis."
+                Negative reaction, but with some pressing, he relents
+            "Just somewhere else on Chalceledon."
+        "...alright. Send your shuttles. I'll be waiting." Reaches for the disconnect...
+        Tactical shakes his head, staring at the screen...
+        "WAIT! Where *are* you?"
+        He stops. Shock wells in his eyes. "...you don't know? Wait... are you..."
+        ...
+        "You'll never find them, you know. I'm not the only part of this - there's many, many more pieces. And, besides..."
+        Tactical waves you down, giving you a thumbs up
+        "I can just hit this button right here and give you nothing. You don't even know where I am" He puts pressure on the button...
+            "'Look up.'" (Cut the link) (DO I WANT THIS)
+            ...
+                Send the marines
+
+        And down go the marines!
+        Within minutes, the marines descend onto a small chalceledonian city. Shock & awe operation - we know eaxctly where he is...
+        So we just break into the building, extract him, and run the fuck away. Resistance is minimal
+            Should clariy. Hes a member of the misdirection part of the operation; he was responsible for that ship idea
+            Of course. He knows a lot, too
+            But what *does* he know...?
+
+            So what hes done for this...
+            Is hes made the ship idea. He had the ship planted.
+
+            AND WHAT IS IMPORTANT!
+            He lets it slip that he was responsible for bugging many comm relays with a thing that monitors for any mention of broker
+            This also includes. The planet he hides out on.
+
+            Youll never find it though, haha, even with the planet youll still never know the corodinates.
+            Even I dont know them all. (Gives you his set of coordinates)
+
+        He is then delivered to your brig, heaviled bruised, a bit out of it
+        Not very responsive until your doctor gives him a stim-shot
+
+        If you fail?
+            Send a HUGE marine raid to search strongholds
+
+        Search 4 comm relays (THIS IS NOT LISTED - it just says do it til you get enough info)
+            Ambushed on 2nd, 3rd, and 4th
+                The 2nd activates a anti-tamper mechanism that alerts nearby patrols instead of a fleet
+            The 4th fucking explodes (Like voidsun?)
+            Async
+
+        Also the two other guys are mentioned here
+
+            Baetis guy actually hails you when you land - offers to give up his coordinates as long as you give him safe
+            passage to some independent world and give him some special thing (AI cores?)
+                Or you can just raid a buncha safehouses for him
+                Taking a risk... make it clear the safehouse raid is the safer option
+
+            The other guy is actually a station out in the fringes, heavily defended
+                Get the coords from raiding or blowing it up, admin doesnt want to give it
+
+            Knight ambush after all 3 cause they wanna find broker
+
+eventually finmd broker
+    deeps can, find bunker
+    you come out, but a trapdoor open and closes and you fall thru
+    you quickly reach for your gun but youre quickly disarmed and cuffed
+
+    thrust into a chair in the dim, sandy room, through a secret door
+    broker is there, staring eerily, leaning on a counter as the air currents blow the robe
+
+    youre cuffed to the chair so all you can do is talk
+
+    hey broker
+    i know you know who i am
+    i know what you want
+    i dont know why you retired
+    but i can help you, and you can help me
+    together, maybe, we can figure out how to end this
+    i found you, so clarly, im a step above the average goon
+    (etc)
+
+    he stares
+    stares
+    stares
+
+    then eventually, casually walks to a cabinet, pulls out a pen, annotates a stack of papers, before lazily tossing them on your lap,
+    shooting your cuffs, and slipping through a false wall. opening later reveals a tunnel system thats collapsed. he mustve collapsed it
+
+    freed by your marines later
+
+    this is the second part of the quest - work with broker, dow hat he wants
+        the papers are the key, his plans he never got to finish
