@@ -7,6 +7,8 @@ import com.fs.starfarer.api.campaign.econ.MarketAPI
 import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.combat.ViewportAPI
+import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
@@ -18,23 +20,23 @@ import com.fs.starfarer.api.impl.campaign.procgen.themes.RemnantOfficerGenerator
 import com.fs.starfarer.api.loading.VariantSource
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
-import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.interactionPlugins.MPC_playerFirstVisitToMagnetar
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.scripts.utils.SotfMisc
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_settings
-import niko.MCTE.utils.MCTE_mathUtils.roundTo
+import lunalib.lunaUtil.campaign.LunaCampaignRenderingPlugin
 import org.lazywizard.lazylib.MathUtils
+import org.lwjgl.opengl.GL11
+import org.lwjgl.util.vector.Vector3f
+import java.nio.FloatBuffer
+import java.util.EnumSet
 
 class niko_MPC_magnetarStarScript(
     val magnetar: PlanetAPI
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
-
-    var generatedDefenders = false
 
     companion object {
         fun doBlindJump(fleet: CampaignFleetAPI) {
@@ -79,9 +81,135 @@ class niko_MPC_magnetarStarScript(
 
         const val MAX_CREW_LOSS_DURING_BLIND_JUMP = 2000
         const val CREW_LOST_DURING_BLIND_JUMP_PERCENT = 0.1f
+
+        const val LINES_TOTAL = 24
+        const val MAX_LENGTH = 2500f
     }
 
     val daysPerPulse = IntervalUtil(MIN_DAYS_PER_PULSE, MAX_DAYS_PER_PULSE)
+    var generatedDefenders = false
+    val lines: ArrayList<MPC_bipoleMagneticLine> = generateMagneticLines()
+
+    private fun generateMagneticLines(): ArrayList<MPC_bipoleMagneticLine> {
+        var left = LINES_TOTAL
+        while (left-- > 0f) {
+
+        }
+    }
+
+    // if we are under, we must be under the star and the fleet and terrain
+    // TODO - add a terrain effect if you fly to the intersection point
+    // uh oh! major damage
+    // squish determines how far off the line is from the star. e.g. its angle from the camera
+    // higher squish means more/less (not sure which) parallax
+    // no squish? it goes forward, then directly back onto the other pole
+    // 50 squish? follows a circle around the star to the pole
+    // using an under layer means parallax is reversed.
+    class MPC_bipoleMagneticLine(val star: PlanetAPI, val length: Float, val layer: CampaignEngineLayers): LunaCampaignRenderingPlugin {
+
+        @Transient
+        var sprite: SpriteAPI? = null
+        @Transient
+        var spriteTwo: SpriteAPI? = null
+
+        var texX = 0f
+
+        override fun isExpired(): Boolean = false
+
+        override fun advance(amount: Float) {
+            texX += amount
+            if (texX >= 1f) texX -= 1f
+        }
+
+        override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
+            return EnumSet.of(layer)
+        }
+
+        override fun render(
+            layer: CampaignEngineLayers,
+            viewport: ViewportAPI
+        ) {
+            if (!star.starSystem.isCurrentLocation) return
+
+            if (sprite == null) {
+                Global.getSettings().loadTexture("graphics/fx/beam_rough2_core.png")
+                sprite = Global.getSettings().getSprite("graphics/fx/beam_rough2_core.png")
+            }
+            if (spriteTwo == null) {
+                Global.getSettings().loadTexture("graphics/fx/beam_rough2_fringe.png")
+                spriteTwo = Global.getSettings().getSprite("graphics/fx/beam_rough2_fringe.png")
+            }
+
+            GL11.glTranslatef(star.location.x, star.location.y, 0f)
+            GL11.glRotatef(star.facing, 0f, 0f, 1f) // todo test
+
+            var i = 0f
+            var currSprite = sprite!!
+            while (i++ < 2f) {
+                if (i == 2f) {
+                    currSprite = spriteTwo!!
+                }
+                currSprite.bindTexture()
+
+                draw(viewport, currSprite)
+            }
+
+            GL11.glEnd()
+        }
+
+        private fun draw(viewport: ViewportAPI, sprite: SpriteAPI) {
+            // the bezier curve needs to be quartic - five points\
+            // 3 may also work but i lose control over the curve
+            // maybe 4? not sure.
+            // quadradic (four) can work, but five seems the easist to wrap m head around
+            // use parallax here to simulate 3d movement
+            // we always start from the north pole and project back
+
+            val start = MathUtils.getPointOnCircumference(
+                star.location,
+                star.radius,
+                0f
+            )
+            val end = MathUtils.getPointOnCircumference(
+                star.location,
+                star.radius,
+                360f // opposite pole
+            )
+
+            val amplitude = 50f // TODO make const
+            // NEVER EXCEED AMPLITUDE. EVER
+
+            // TODO cache
+            val p1 = Vector3f(start.x, start.y, 0f)
+            val p2 = Vector3f(amplitude, length, 0f)
+            val p4 = Vector3f(-p2.x, -p2.y, 0f)
+            val p5 = Vector3f(end.x, end.y, 0f)
+
+            val array = floatArrayOf(
+                p1.x, p1.y, p1.z,
+                p2.x, p2.y, p2.z,
+                p4.x, p2.y, p2.z,
+                p5.x, p5.y, p5.z,
+            )
+            val buffer = FloatBuffer.wrap(array)
+
+            GL11.glMap1f(
+                GL11.GL_MAP1_VERTEX_3,
+                0f,
+                1f,
+                3,
+                4,
+                buffer
+            )
+            GL11.glEnable(GL11.GL_MAP1_VERTEX_3)
+
+            var i = 0f
+            while (i++ < 250f) {
+                GL11.glEvalCoord1f(i / 250f) // TODO ripped from https://www.geeksforgeeks.org/cpp/bezier-curves-in-opengl/ (wtf is this code doing)
+            }
+        }
+
+    }
 
     override fun startImpl() {
         magnetar.addScript(this)
