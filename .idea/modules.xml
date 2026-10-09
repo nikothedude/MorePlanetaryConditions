@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.iml" filepath="$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.test.iml" filepath="$PROJECT_DIR$/.idea/modules/MorePlanetaryConditions.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.iml" filepath="$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.main.iml" filepath="$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.test.iml" filepath="$PROJECT_DIR$/.idea/modules/More_Planetary_Conditions.test.iml" />
     </modules>
   </component>
 </project>
