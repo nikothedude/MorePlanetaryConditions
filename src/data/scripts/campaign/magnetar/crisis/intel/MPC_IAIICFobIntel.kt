@@ -1649,10 +1649,8 @@ class MPC_IAIICFobIntel(dialog: InteractionDialogAPI? = null): BaseEventIntel(),
         if (newProgress >= (maxProgress / 0.4f)) {
             Global.getSector().memoryWithoutUpdate["\$MPC_voidsunCanSpawnNow"] = true
         }
-        if (newProgress >= (maxProgress / 0.3f) && contribsRemoved >= 2 && !Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_IAIICchurchInitiated")) {
-            Global.getSector().memoryWithoutUpdate["\$MPC_IAIICchurchInitiated"] = true
-
-            MPC_IAIICChurchInitializerScript().start()
+        if (newProgress >= (maxProgress / 0.3f) && contribsRemoved >= 2) {
+            Global.getSector().memoryWithoutUpdate["\$MPC_IAIICChurchCanSpawnNow"] = true
         }
         super.setProgress(newProgress)
     }

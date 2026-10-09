@@ -72,6 +72,7 @@ object MPC_People {
     const val CHURCH_ALOOF_MILITANT = "MPC_aloofMilitant"
     const val CHURCH_HARDCORE_MILITANT = "MPC_hardcoreMilitant"
     const val CHURCH_KNIGHT_FENCE = "MPC_knightFence"
+    const val CHURCH_NANOFORGE_OVERSEER = "MPC_nanoforgeOverseer"
 
     const val HEGE_INTSEC_GOON = "MPC_hegeIntsecGoon"
 
@@ -776,6 +777,27 @@ object MPC_People {
             fence.makeImportant(niko_MPC_ids.IAIIC_QUEST)
         }
 
+        if (MPC_importantPeople[CHURCH_NANOFORGE_OVERSEER] == null) {
+            val overseer = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.MALE)
+            overseer.id = CHURCH_NANOFORGE_OVERSEER
+
+            overseer.rankId = Ranks.KNIGHT_CAPTAIN
+            overseer.postId = Ranks.POST_SUPPLY_OFFICER
+
+            overseer.importance = PersonImportance.HIGH
+            overseer.addTag(Tags.CONTACT_MILITARY)
+            overseer.addTag(Tags.CONTACT_TRADE)
+            overseer.voice = Voices.SOLDIER
+
+            overseer.name = FullName("Jao'Ho", "Imineu", Gender.MALE)
+            overseer.portraitSprite = "graphics/portraits/portrait_luddic13.png"
+
+            importantPeople.addPerson(overseer)
+            MPC_importantPeople[CHURCH_NANOFORGE_OVERSEER] = overseer
+
+            overseer.makeImportant(niko_MPC_ids.IAIIC_QUEST)
+        }
+
         if (MPC_importantPeople[PATHER_BROKER] == null) {
             val broker = Global.getSector().getFaction(Factions.LUDDIC_CHURCH).createRandomPerson(Gender.ANY)
             broker.id = PATHER_BROKER
@@ -788,7 +810,7 @@ object MPC_People {
 
             broker.portraitSprite = "graphics/portraits/MPC_luddicBroker.png"
 
-            broker.name = FullName("Broker", "", Gender.ANY)
+            broker.name = FullName("Ishmael", "", Gender.ANY)
 
             importantPeople.addPerson(broker)
             MPC_importantPeople[PATHER_BROKER] = broker

@@ -11,16 +11,20 @@ import data.scripts.campaign.econ.conditions.niko_MPC_baseNikoCondition
 import data.scripts.campaign.magnetar.crisis.MPC_ailmarFleetsizeCondition.Companion.DURATION
 import data.scripts.campaign.magnetar.crisis.MPC_ailmarFleetsizeCondition.Companion.getAilmar
 import data.scripts.campaign.magnetar.crisis.MPC_ailmarFleetsizeScript.Companion.getDaysLeft
+import data.scripts.campaign.magnetar.crisis.intel.church.MPC_churchContributionIntel
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_marketUtils.addConditionIfNotPresent
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
+import data.utilities.niko_MPC_stringUtils
 import org.magiclib.kotlin.getFactionMarkets
 
 class MPC_churchOverextensionCondition: niko_MPC_baseNikoCondition() {
 
     companion object {
         const val FLEETSIZE_MULT = 0.7f
+        const val UNREST_STAB_MALUS = 2f
+        const val MARTIAL_LAW_INCOME_MULT = 0.75f
 
         fun isValid(market: MarketAPI) = market.factionId == Factions.LUDDIC_CHURCH
     }
@@ -31,6 +35,14 @@ class MPC_churchOverextensionCondition: niko_MPC_baseNikoCondition() {
         if (!showIcon()) return
 
         if (isValid(market)) {
+            val intel = MPC_churchContributionIntel.get() ?: return
+            if (intel.unrestActive) {
+                if (intel.martialLawEnacted) {
+                    market.incomeMult.modifyFlat(id, 1f - MARTIAL_LAW_INCOME_MULT, "Martial Law")
+                } else {
+                    market.stability.modifyFlat(id, -UNREST_STAB_MALUS, "Knightly Unrest")
+                }
+            }
             market.stats.dynamic.getMod(Stats.COMBAT_FLEET_SIZE_MULT).modifyMult(id, FLEETSIZE_MULT, name)
         }
     }
@@ -50,6 +62,24 @@ class MPC_churchOverextensionCondition: niko_MPC_baseNikoCondition() {
 
         if (isValid(market)) {
             tooltip.addPara("Fleet size decreased by %s", 5f, Misc.getHighlightColor(), "${(FLEETSIZE_MULT).trimHangingZero()}x")
+            val intel = MPC_churchContributionIntel.get() ?: return
+            if (intel.unrestActive) {
+                if (intel.martialLawEnacted) {
+                    tooltip.addPara(
+                        "Unrest has mounted, but %s prevents any stability loss, at the cost of %s colony income.",
+                        5f,
+                        Misc.getHighlightColor(),
+                        niko_MPC_stringUtils.toPercent(MARTIAL_LAW_INCOME_MULT)
+                    )
+                } else {
+                    tooltip.addPara(
+                        "Unrest has grown against the Knights of Ludd from within, reducing stability by %s",
+                        5f,
+                        Misc.getHighlightColor(),
+                        "${UNREST_STAB_MALUS.toInt()}"
+                    )
+                }
+            }
         }
     }
 

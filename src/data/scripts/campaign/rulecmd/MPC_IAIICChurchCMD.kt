@@ -4,33 +4,24 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.CampaignFleetAPI
 import com.fs.starfarer.api.campaign.FleetAssignment
 import com.fs.starfarer.api.campaign.InteractionDialogAPI
-import com.fs.starfarer.api.campaign.PlanetAPI
 import com.fs.starfarer.api.campaign.StarSystemAPI
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.rulecmd.BaseCommandPlugin
+import com.fs.starfarer.api.impl.campaign.rulecmd.missions.BarCMD
 import com.fs.starfarer.api.util.Misc
-import com.fs.starfarer.campaign.ai.CampaignFleetAI
-import data.scripts.campaign.magnetar.crisis.MPC_IAIICChurchInitializerScript
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_churchContributionIntel
-import data.scripts.campaign.magnetar.crisis.intel.MPC_indieContributionIntel
+import data.scripts.campaign.magnetar.crisis.intel.church.MPC_churchContributionIntel
 import data.scripts.campaign.plugins.MPC_vignetteRenderer
-import data.scripts.campaign.plugins.MPC_vignetteScript
 import data.utilities.niko_MPC_ids
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import lunalib.lunaUtil.campaign.LunaCampaignRenderingPlugin
-import org.lwjgl.opengl.GL11
 import org.magiclib.kotlin.makeImportant
 
 class MPC_IAIICChurchCMD: BaseCommandPlugin() {
 
     companion object {
-        const val HIDEOUT_ID = "MPC_eos_hideout_planet"
-        const val HIDEOUT_NAME = "\$MPC_IAIICChurchHideoutPlanetName"
-
         fun getExodus(): StarSystemAPI? = Global.getSector().getStarSystem("Eos Exodus")
-        fun getHideout(): PlanetAPI? = getExodus()?.planets?.find { it.id == HIDEOUT_ID }
     }
 
     @Transient
@@ -59,23 +50,9 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
             "canDoPreIntelStuff" -> {
                 return (fobIntel.getContributionById(Factions.LUDDIC_CHURCH)) != null && contribIntel == null
             }
-            "getHideoutName" -> {
-                Global.getSector().memoryWithoutUpdate[HIDEOUT_NAME] = getHideout()?.name
-            }
             "beginIntel" -> {
                 val intel = MPC_churchContributionIntel.get(true, noUpdate = true, text = dialog.textPanel)
                 intel?.sendUpdateIfPlayerHasIntel(intel.state, dialog.textPanel)
-                getHideout()?.makeImportant(niko_MPC_ids.IAIIC_QUEST)
-            }
-            "goToHideout" -> {
-                val fleet = interactionTarget as? CampaignFleetAPI ?: return false
-                fleet.clearAssignments()
-                fleet.addAssignmentAtStart(
-                    FleetAssignment.GO_TO_LOCATION_AND_DESPAWN,
-                    getHideout(),
-                    Float.MAX_VALUE,
-                    null
-                )
             }
             "endScript" -> {
                 MPC_IAIICChurchInitializerScript.get()?.delete()
@@ -110,6 +87,19 @@ class MPC_IAIICChurchCMD: BaseCommandPlugin() {
             }
             "availableToGoToNanoforge" -> {
                 return contribIntel?.state == MPC_churchContributionIntel.State.GO_TO_ASHER_NANOFORGE || contribIntel?.state == MPC_churchContributionIntel.State.DELIVER_HERETICAL_TECH
+            }
+            "endAmbience" -> {
+                val ambiencePlayer = BarCMD.getAmbiencePlayer()
+                ambiencePlayer?.stop()
+                return true
+            }
+            "incrFirstStage" -> {
+                MPC_churchContributionIntel.get()?.stageOneCompletion++
+                MPC_churchContributionIntel.get()?.sendUpdateIfPlayerHasIntel("STAGE_ONE_INCR", dialog.textPanel)
+            }
+            "incrSecondStage" -> {
+                MPC_churchContributionIntel.get()?.stageTwoCompletion++
+                MPC_churchContributionIntel.get()?.sendUpdateIfPlayerHasIntel("STAGE_TWO_INCR", dialog.textPanel)
             }
         }
 
