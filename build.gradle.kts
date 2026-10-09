@@ -1,19 +1,15 @@
-import java.util.zip.ZipFile
-
-
-
 //Automatically points to the starsector folder if the mod is placed in to the "mods" folder.
 //If you do not place the project in to your mods folder, replace this with the path to Starsectors root folder.
 val starsectorPath= "../../";
 
 //The name of the file that the code is compiled to. This will automatically place in to the /jars folder.
 //Make sure that the "jars" entry in your mod_info.json matches this.
-val jarName = "a.jar"
+val jarName = "niko_morePlanetaryConditions.jar"
 
 //Name for the Zip that is created when you run package_mod.bat.
 //This zip includes the data, graphics, jars, sounds and src folder.
 //It also includes the mod_info.json and .version files at the root folder.
-val zipName = "a.zip"
+val zipName = "What We Left Behind.zip"
 
 //Other mods to load as compile-time dependencies. Adding them will provide auto-complete for their functions.
 //Each entry is the jar name. The build searches every mod /jars/ folder for a matching file ("LazyLib.jar" -> "Starsector/mods/LazyLib/jars/LazyLib.jar")
@@ -33,12 +29,14 @@ val modDependencies = listOf(
     "Graphics.jar", //GraphicsLib
     "ExerelinCore.jar", //Nexerelin
     "lw_Console.jar", //Console Commands
+    "ungp.jar",
+    "Vok.jar",
+    "niko_stationAugments.jar",
+    "IndEvo.jar",
+    "secretsofthefrontier.jar",
+    "niko_MCTE.jar",
+
 )
-
-
-
-
-
 
 //Files and folders (relative to the project root) included in the packaged zip.
 //Directories keep their structure in the zip; files are placed at the zip root.
@@ -78,10 +76,7 @@ val devResolution = "1920x1080"
 //Java version to use. Should be 17, as it is what starsector itself uses.
 val javaVersion = 17
 
-//When set to true, .java and .kt source files will be bundled with your jar. This will provide people
-//with real javadocs/comments when viewing things from your mod within their IDE. Does increase the jar size.
-//You should set this to "true" if you expect other people to add your mod as a dependency
-val isLibrary = false
+
 
 
 
@@ -95,17 +90,6 @@ val isLibrary = false
 
 /// BUILD PIPELINE
 /// In Most cases, you should not need to change anything below here.
-
-
-
-
-
-
-//Local Maven repo where mod-dependency jars get staged, along with a matching "-sources.jar"
-//(see stageModDependency / addModJars below). Declared up here (rather than next to docsRepoDir)
-//because it needs to be initialized before the dependencies{} block runs, which happens earlier
-//in this file.
-val modDepsRepoDir = layout.buildDirectory.dir("modDepsRepo").get().asFile
 
 dependencies {
     addModJars(modDependencies)
@@ -177,12 +161,6 @@ repositories {
     //Local Maven repo of staged Starsector API artifacts. The maven layout (vs flatDir) is what
     //actually lets IntelliJ pick up the "-sources.jar" sibling for autocomplete and navigation.
     maven { url = uri(stageStarsectorApi()) }
-
-    //Local Maven repo of staged mod-dependency jars (see addModJars/stageModDependency). Same trick as
-    //above: each mod jar is also staged under a matching "-sources.jar" name so IntelliJ attaches
-    //docs/navigation for it. Starsector mod jars already bundle their .java/.kt source files
-    //alongside the .class files, so the jar itself works fine as its own "sources" jar.
-    maven { url = uri(modDepsRepoDir) }
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -203,15 +181,6 @@ sourceSets {
     }
 }
 
-//Build in parameter names, in case another mod needs to check out the code without having source access.
-tasks.withType<JavaCompile>().configureEach {
-    options.compilerArgs.add("-parameters")
-}
-kotlin {
-    compilerOptions {
-        javaParameters = true
-    }
-}
 
 tasks.test {
     enabled = false
@@ -220,14 +189,6 @@ tasks.test {
 tasks.jar {
     destinationDirectory.set(file("$rootDir/jars"))
     archiveFileName.set(jarName)
-
-    if (isLibrary) {
-        //Includes the .java and .kt sources for documentation detection
-        from(sourceSets.main.get().allSource) {
-            include("**/*.java", "**/*.kt")
-        }
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
 }
 
 fun DependencyHandler.addModJars(jarNames: List<String>) {
@@ -253,10 +214,10 @@ fun DependencyHandler.addModJars(jarNames: List<String>) {
         files()
     }
 
-    val allJarFiles = (modJarFiles + libsJarFiles).files
+    val allJarFiles = modJarFiles + libsJarFiles
 
     // Realize the file tree once to detect missing entries.
-    val foundNames = allJarFiles.map { it.name }.toSet()
+    val foundNames = allJarFiles.files.map { it.name }.toSet()
     jarNames.filterNot { it in foundNames }.forEach { missing ->
         logger.error(
             "Mod dependency '$missing' was not found in any mod's " +
@@ -265,110 +226,19 @@ fun DependencyHandler.addModJars(jarNames: List<String>) {
         )
     }
 
-    // A jar name could theoretically be found more than once (e.g. present in both the mods
-    // folder and the libs folder) - keep only the first match per filename.
-    allJarFiles.distinctBy { it.name }.forEach { jarFile ->
-        val notation = stageModDependency(jarFile)
-        compileOnly(notation)
-        if (jarDeclaresAnnotationProcessor(jarFile)) {
-            annotationProcessor(notation)
-        }
-    }
-}
-
-//Jars that ship an annotation processor declare it in META-INF/services.
-//Such jars get registered on the annotation processor path too, so javac picks the processor
-//up automatically. Kotlin sources would additionally need the kapt/ksp plugin, this only
-//covers Java compilation.
-fun jarDeclaresAnnotationProcessor(jarFile: File): Boolean {
-    //Track the jar's mtime as a configuration-cache input, so a swapped/updated jar re-runs this check.
-    providers.of(FileMtimeSource::class.java) { parameters.path.set(jarFile.absolutePath) }.get()
-    return runCatching {
-        ZipFile(jarFile).use { zip ->
-            zip.getEntry("META-INF/services/javax.annotation.processing.Processor") != null
-        }
-    }.getOrDefault(false)
-}
-
-//Stages a mod-dependency jar as a local Maven artifact under modDepsRepoDir, so it can be added
-//as "modjars:<jarBaseName>:local". This mirrors stageStarsectorApi() below: the maven layout +
-//"-sources.jar" naming convention is what lets IntelliJ automatically attach sources/docs for a
-//compileOnly dependency.
-//Starsector mod jars typically bundle their .java/.kt source files alongside the .class files
-//in the same jar.
-fun stageModDependency(jarFile: File): String {
-    val jarBaseName = jarFile.nameWithoutExtension
-    val artifactDir = File(modDepsRepoDir, "modjars/$jarBaseName/local")
-    val dstJar = File(artifactDir, "$jarBaseName-local.jar")
-    val dstSources = File(artifactDir, "$jarBaseName-local-sources.jar")
-    val pomFile = File(artifactDir, "$jarBaseName-local.pom")
-
-    artifactDir.mkdirs()
-
-    if (!dstJar.exists() || dstJar.lastModified() < jarFile.lastModified()) {
-        jarFile.copyTo(dstJar, overwrite = true)
-    }
-
-    if (!dstSources.exists() || dstSources.lastModified() < jarFile.lastModified()) {
-        extractSourceEntriesOnly(jarFile, dstSources)
-    }
-
-    if (!pomFile.exists()) {
-        pomFile.writeText(
-            """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <project xmlns="http://maven.apache.org/POM/4.0.0">
-                <modelVersion>4.0.0</modelVersion>
-                <groupId>modjars</groupId>
-                <artifactId>$jarBaseName</artifactId>
-                <version>local</version>
-            </project>
-            """.trimIndent()
-        )
-    }
-
-    return "modjars:$jarBaseName:local"
-}
-
-//Builds a "real" sources jar containing only .kt/.java/.kts entries copied out of the mod jar,
-//discarding the .class entries. A straight copy of the whole jar technically also satisfies the
-//"-sources.jar" naming convention and works fine for Java classes (IntelliJ's Java decompiler
-//navigation matches by filename regardless of what else is in the jar), but the Kotlin plugin's
-//library-source resolution appears to fall back to the compiled stub when it finds .class files
-//sitting in what's supposed to be a pure source root. Filtering them out fixes that.
-fun extractSourceEntriesOnly(srcJar: File, dstJar: File) {
-    val extractDir = File(dstJar.parentFile, "${dstJar.nameWithoutExtension}-tmp")
-    extractDir.deleteRecursively()
-
-    project.copy {
-        from(zipTree(srcJar))
-        into(extractDir)
-        include("**/*.kt", "**/*.java", "**/*.kts")
-    }
-
-    dstJar.delete()
-    ant.withGroovyBuilder {
-        "zip"(
-        "destfile" to dstJar.absolutePath,
-        "basedir" to extractDir.absolutePath
-        )
-    }
-
-    extractDir.deleteRecursively()
+    compileOnly(allJarFiles)
 }
 
 fun DependencyHandler.addCompileOnlyJar(path: String) {
     val jarFile = file(path)
     if (jarFile.exists()) {
         compileOnly(files(jarFile))
-        if (jarDeclaresAnnotationProcessor(jarFile)) annotationProcessor(files(jarFile))
         return
     }
     // Fallback: try resolving the same path relative to the libs folder.
     val libsFile = file("$libsFolder/$path")
     if (libsFile.exists()) {
         compileOnly(files(libsFile))
-        if (jarDeclaresAnnotationProcessor(libsFile)) annotationProcessor(files(libsFile))
         return
     }
     logger.error(
@@ -614,7 +484,21 @@ fun parseLauncher(): StarsectorLaunchSpec {
 }
 
 val launcherInfo by lazy { starsectorLayout() to parseLauncher() }
-fun List<String>.filteredArgs(): List<String> = filterNot { it.contains("PrintCodeCache") }
+
+//JetBrains Runtime, downloaded on demand via the foojay resolver (see settings.gradle.kts).
+//Used in place of the bundled Starsector JRE for these tasks so an attached debugger can
+//redefine classes with structural changes (added/removed methods, including lambdas).
+//Requires the -XX:+AllowEnhancedClassRedefinition vmparams flag to be set.
+val jbrLauncher = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(javaVersion)
+    vendor = JvmVendorSpec.JETBRAINS
+}
+
+//AllowEnhancedClassRedefinition requires Serial or G1 GC, but Starsector's vmparams
+//configures Shenandoah. Drop the Shenandoah-specific flags so JBR falls back to its
+//default (G1). Only affects these gradle tasks; the in-game launcher (vmparams) is
+//untouched, so normal runs still use Shenandoah.
+fun List<String>.forJbr(): List<String> = filterNot { it.contains("Shenandoah") || it.contains("PrintCodeCache") }
 
 //Builds the mod jar, then runs Starsector using the same classpath/jvmArgs the launcher would use.
 tasks.register<JavaExec>("runStarsector") {
@@ -623,13 +507,15 @@ tasks.register<JavaExec>("runStarsector") {
     dependsOn(tasks.jar)
 
     val (layout, parsed) = launcherInfo
-    setExecutable(layout.javaExecutable.absolutePath)
+    javaLauncher.set(jbrLauncher)
     workingDir = layout.gameWorkingDir
     mainClass.set(parsed.mainClass)
     classpath = files(parsed.classpath)
     //Stops treating game-crashes as build errors
     isIgnoreExitValue = true
-    jvmArgs = parsed.jvmArgs.filteredArgs()
+    jvmArgs = listOf(
+        "-XX:+AllowEnhancedClassRedefinition",
+    ) + parsed.jvmArgs.forJbr()
 }
 
 //Same as above, but skips the launcher window and jumps straight in to the game.
@@ -640,17 +526,18 @@ tasks.register<JavaExec>("runStarsectorNoLauncher") {
     dependsOn(tasks.jar)
 
     val (layout, parsed) = launcherInfo
-    setExecutable(layout.javaExecutable.absolutePath)
+    javaLauncher.set(jbrLauncher)
     workingDir = layout.gameWorkingDir
     mainClass.set(parsed.mainClass)
     classpath = files(parsed.classpath)
     isIgnoreExitValue = true
     jvmArgs = listOf(
+        "-XX:+AllowEnhancedClassRedefinition",
         "-DstartRes=$devResolution",
         "-DlaunchDirect=true",
         "-DstartFS=false",
         "-DstartSound=true",
-    ) + parsed.jvmArgs.filteredArgs()
+    ) + parsed.jvmArgs.forJbr()
 }
 
 //Ensure IntelliJ's "Build and run using" stays on IDEA (not Gradle) so HotSwap can recompile
