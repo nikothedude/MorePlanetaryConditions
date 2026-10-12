@@ -2,7 +2,7 @@
   <artifact type="jar" build-on-make="true" name="Create .jar">
     <output-path>$PROJECT_DIR$/jars</output-path>
     <root id="archive" name="niko_morePlanetaryConditions.jar">
-      <element id="module-output" name="MorePlanetaryConditions.main" />
+      <element id="module-output" name="More_Planetary_Conditions.main" />
     </root>
   </artifact>
 </component>
