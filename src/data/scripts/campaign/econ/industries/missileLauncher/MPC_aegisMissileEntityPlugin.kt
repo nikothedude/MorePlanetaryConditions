@@ -26,12 +26,12 @@ import data.scripts.campaign.abilities.MPC_missileStrikeAbility
 import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_mathUtils
 import data.utilities.niko_MPC_settings
-import niko_SA.MarketUtils.getStationIndustry
 import niko_SA.MarketUtils.hasStationAugment
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lazywizard.lazylib.ext.rotateAroundPivot
 import org.lwjgl.util.vector.Vector2f
+import org.magiclib.kotlin.getStationIndustry
 import org.magiclib.plugins.MagicCampaignTrailPlugin
 import java.awt.Color
 

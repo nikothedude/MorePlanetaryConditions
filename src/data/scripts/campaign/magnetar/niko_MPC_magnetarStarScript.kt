@@ -88,14 +88,14 @@ class niko_MPC_magnetarStarScript(
 
     val daysPerPulse = IntervalUtil(MIN_DAYS_PER_PULSE, MAX_DAYS_PER_PULSE)
     var generatedDefenders = false
-    val lines: ArrayList<MPC_bipoleMagneticLine> = generateMagneticLines()
+    //val lines: ArrayList<MPC_bipoleMagneticLine> = generateMagneticLines()
 
-    private fun generateMagneticLines(): ArrayList<MPC_bipoleMagneticLine> {
+    /*private fun generateMagneticLines(): ArrayList<MPC_bipoleMagneticLine> {
         var left = LINES_TOTAL
         while (left-- > 0f) {
 
         }
-    }
+    }*/
 
     // if we are under, we must be under the star and the fleet and terrain
     // TODO - add a terrain effect if you fly to the intersection point
@@ -105,7 +105,7 @@ class niko_MPC_magnetarStarScript(
     // no squish? it goes forward, then directly back onto the other pole
     // 50 squish? follows a circle around the star to the pole
     // using an under layer means parallax is reversed.
-    class MPC_bipoleMagneticLine(val star: PlanetAPI, val length: Float, val layer: CampaignEngineLayers): LunaCampaignRenderingPlugin {
+    class MPC_bipoleMagneticLine(val star: PlanetAPI, val projectionAngle: Float): LunaCampaignRenderingPlugin {
 
         @Transient
         var sprite: SpriteAPI? = null
@@ -113,6 +113,12 @@ class niko_MPC_magnetarStarScript(
         var spriteTwo: SpriteAPI? = null
 
         var texX = 0f
+
+        val midPoint = MathUtils.getPointOnCircumference(
+            star.location,
+            star.radius + 50f,
+            projectionAngle
+        )
 
         override fun isExpired(): Boolean = false
 
@@ -122,7 +128,7 @@ class niko_MPC_magnetarStarScript(
         }
 
         override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
-            return EnumSet.of(layer)
+            return EnumSet.of(CampaignEngineLayers.TERRAIN_9, CampaignEngineLayers.TERRAIN_1) // above, so below
         }
 
         override fun render(
@@ -141,7 +147,7 @@ class niko_MPC_magnetarStarScript(
             }
 
             GL11.glTranslatef(star.location.x, star.location.y, 0f)
-            GL11.glRotatef(star.facing, 0f, 0f, 1f) // todo test
+            //GL11.glRotatef(star.facing, 1f, 1f, 0f) // todo test
 
             var i = 0f
             var currSprite = sprite!!
@@ -151,13 +157,13 @@ class niko_MPC_magnetarStarScript(
                 }
                 currSprite.bindTexture()
 
-                draw(viewport, currSprite)
+                //draw(viewport, currSprite, layer)
             }
 
             GL11.glEnd()
         }
 
-        private fun draw(viewport: ViewportAPI, sprite: SpriteAPI) {
+        /*private fun draw(viewport: ViewportAPI, sprite: SpriteAPI, layer: CampaignEngineLayers) {
             // the bezier curve needs to be quartic - five points\
             // 3 may also work but i lose control over the curve
             // maybe 4? not sure.
@@ -165,25 +171,29 @@ class niko_MPC_magnetarStarScript(
             // use parallax here to simulate 3d movement
             // we always start from the north pole and project back
 
-            val start = MathUtils.getPointOnCircumference(
-                star.location,
-                star.radius,
-                0f
-            )
-            val end = MathUtils.getPointOnCircumference(
-                star.location,
-                star.radius,
-                360f // opposite pole
-            )
-
             val amplitude = 50f // TODO make const
             // NEVER EXCEED AMPLITUDE. EVER
 
             // TODO cache
-            val p1 = Vector3f(start.x, start.y, 0f)
-            val p2 = Vector3f(amplitude, length, 0f)
-            val p4 = Vector3f(-p2.x, -p2.y, 0f)
-            val p5 = Vector3f(end.x, end.y, 0f)
+
+            // ALL LINES ARE STRAIGHT UNLESS PARALAXXED. YES. THIS IS THE WAY.
+            // a second line will always be under and be under all terrain/fleets/the star etc
+            // get the mid point and use that as the start for the next one
+
+            // mid point will never shift so just cache it
+
+            // how to do parallax:
+            // top layer should move more when viewport moves
+            // bottom layer should be more static
+
+            val p1 = Vector3f(0f, 0f, 0f)
+            val p3 = Vector3f(midPoint.x, midPoint.y, 0f)
+
+            val view = viewport.center
+
+            // get the dist from our midpoint, get the point away from the viewport from same(?) dist
+            // might be best to do 2 3d renders anyway. ugh
+            val p2 = p3.negate(Vector3f(view.x, view.y, 0f))
 
             val array = floatArrayOf(
                 p1.x, p1.y, p1.z,
@@ -207,7 +217,12 @@ class niko_MPC_magnetarStarScript(
             while (i++ < 250f) {
                 GL11.glEvalCoord1f(i / 250f) // TODO ripped from https://www.geeksforgeeks.org/cpp/bezier-curves-in-opengl/ (wtf is this code doing)
             }
-        }
+        }*/
+
+        /*fun getParallaxValue(viewport: ViewportAPI): Float {
+            val center = viewport.center
+            val point =
+        }*/
 
     }
 
