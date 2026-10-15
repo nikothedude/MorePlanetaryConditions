@@ -30,6 +30,24 @@
 	# collapseclose
 	},
 	
+	"MPC_magnetarPulseImpact":{
+		"sounds":[
+			{"file":"sounds/fx/MPC_magnetarPulseImpact.ogg","pitch":1.0,"volume":1.0}
+		],
+	},
+	
+	"MPC_magnetarPulseLaunch":{
+		"sounds":[
+			{"file":"sounds/fx/MPC_magnetarPulseLaunch.ogg","pitch":1.0,"volume":1.0}
+		],
+	},
+	
+	"MPC_magnetarPulseAmbience":{
+		"sounds":[
+			{"file":"sounds/fx/MPC_magnetarPulseAmbience.ogg","pitch":1.0,"volume":0.9}
+		],
+	},
+	
 	"MPC_punch":{
 		"sounds":[
 			{"file":"sounds/MPC_punch.ogg","pitch":1.0,"volume":1.0},

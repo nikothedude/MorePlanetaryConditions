@@ -50,7 +50,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
             name = "Magnetar Field"
         }
         Global.getSector().listenerManager.addListener(this)
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, niko_MPC_magnetarPulse.SHIELDS_FROM_PULSE_TAG)
     }
 
     override fun advance(amount: Float) {
@@ -311,7 +311,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     @Transient
     var blockerUtil: MPC_rangeBlockerWithEnds? = null
         get() {
-            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f)
+            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f, niko_MPC_magnetarPulse.SHIELDS_FROM_PULSE_TAG)
             return field
         }
     fun isProtected(location: Vector2f): Boolean {
@@ -478,7 +478,7 @@ class niko_MPC_magnetarField: MagneticFieldTerrainPlugin(), niko_MPC_scannableTe
     }
 
     override fun onGameLoad() {
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
+        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f, niko_MPC_magnetarPulse.SHIELDS_FROM_PULSE_TAG)
     }
 
     override fun afterGameSave() {

@@ -17,7 +17,7 @@ import java.util.*
 class MPC_derelictOmegaDerelictAutofitPlugin(fleetCommander: PersonAPI?) : CoreAutofitPlugin(fleetCommander) {
 
     companion object {
-        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 0.15f
+        const val CHANCE_FOR_OMEGA_TO_BE_BOOSTED = 0.2f
     }
 
     override fun getBestMatch(

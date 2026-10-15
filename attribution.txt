@@ -9,3 +9,5 @@ sounds/music/MPC_icecaveAmbience.ogg sourced from https://www.youtube.com/watch?
 sounds/weapons/MPC_cruiseLaunch by qubodup -- https://freesound.org/s/184274/ -- License: Creative Commons 0
 
 Fractal core oracle, optimiser, enlightenment skills from astral ascension
+
+sounds/fx/MPC_magnetarPulseImpact.ogg component sourced from https://freesound.org/people/RescopicSound/sounds/749782/

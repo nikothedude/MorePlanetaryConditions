@@ -1,0 +1,4 @@
+id,weight,pluginPath
+,#Highter Weight = Higher chance to appear. Should generaly be far lower than vanillas titlescreen.,"#Class that inherits from ""BaseLunaTitleScreenPlugin"""
+#vanilla,1000,
+MPC_magnetar,3,data.titles.MagnetarTitleScreen

@@ -12,7 +12,6 @@ import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
-import com.fs.starfarer.api.impl.campaign.ids.Factions
 import com.fs.starfarer.api.impl.campaign.ids.HullMods
 import com.fs.starfarer.api.impl.campaign.ids.Tags
 import com.fs.starfarer.api.impl.campaign.ids.Terrain
@@ -27,18 +26,51 @@ import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_settings
+import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import lunalib.lunaUtil.campaign.LunaCampaignRenderingPlugin
 import org.lazywizard.lazylib.MathUtils
+import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.util.vector.Vector3f
-import java.nio.FloatBuffer
 import java.util.EnumSet
+import kotlin.math.max
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlin.math.tan
 
 class niko_MPC_magnetarStarScript(
     val magnetar: PlanetAPI
 ): niko_MPC_baseNikoScript(), CampaignEventListener {
 
     companion object {
+        fun generateFieldLines(magnetar: SectorEntityToken?, script: niko_MPC_magnetarStarScript?): HashSet<DipoleFieldLine> {
+            // 3 layers. 8, 8, 8
+
+            val lines = HashSet<DipoleFieldLine>()
+
+            var currZ = Z_LEVEL
+            var currOffset = OFFSET_ITER + 500f
+            var left = LINE_LAYERS
+            while (left-- > 0) {
+                var linesInLayerLeft = LINES_PER_LAYER
+                var currAngle = 0f
+                while (linesInLayerLeft-- > 0) {
+                    lines += DipoleFieldLine(magnetar, script, currAngle, currOffset, currZ)
+
+                    currAngle += (360f * (1f / LINES_PER_LAYER))
+                }
+                currOffset += OFFSET_ITER
+                currZ += OFFSET_ITER
+            }
+
+            for (line in lines) {
+                LunaCampaignRenderer.addRenderer(line)
+            }
+
+            return lines
+        }
+
         fun doBlindJump(fleet: CampaignFleetAPI) {
             val system = fleet.starSystem ?: return
             val approximateLoc = fleet.getApproximateHyperspaceLoc()
@@ -82,30 +114,28 @@ class niko_MPC_magnetarStarScript(
         const val MAX_CREW_LOSS_DURING_BLIND_JUMP = 2000
         const val CREW_LOST_DURING_BLIND_JUMP_PERCENT = 0.1f
 
-        const val LINES_TOTAL = 24
-        const val MAX_LENGTH = 2500f
+        const val LINE_LAYERS = 3
+        const val LINES_PER_LAYER = 16
+        const val OFFSET_ITER = 3000f
+        const val Z_LEVEL = 3000f
     }
-
-    val daysPerPulse = IntervalUtil(MIN_DAYS_PER_PULSE, MAX_DAYS_PER_PULSE)
-    var generatedDefenders = false
-    //val lines: ArrayList<MPC_bipoleMagneticLine> = generateMagneticLines()
-
-    /*private fun generateMagneticLines(): ArrayList<MPC_bipoleMagneticLine> {
-        var left = LINES_TOTAL
-        while (left-- > 0f) {
-
-        }
-    }*/
 
     // if we are under, we must be under the star and the fleet and terrain
     // TODO - add a terrain effect if you fly to the intersection point
-    // uh oh! major damage
+    // uh oh! major damage. break drive field(?)
     // squish determines how far off the line is from the star. e.g. its angle from the camera
     // higher squish means more/less (not sure which) parallax
     // no squish? it goes forward, then directly back onto the other pole
     // 50 squish? follows a circle around the star to the pole
     // using an under layer means parallax is reversed.
-    class MPC_bipoleMagneticLine(val star: PlanetAPI, val projectionAngle: Float): LunaCampaignRenderingPlugin {
+    class DipoleFieldLine(val star: SectorEntityToken?, val script: niko_MPC_magnetarStarScript?, projectionAngle: Float, val dist: Float, val z: Float): LunaCampaignRenderingPlugin {
+
+        companion object {
+            const val LINE_WIDTH = 10f
+            const val LINE_SEGMENTS = 250
+        }
+
+        val projectionAngle = Misc.normalizeAngle(projectionAngle - 90f)
 
         @Transient
         var sprite: SpriteAPI? = null
@@ -113,118 +143,231 @@ class niko_MPC_magnetarStarScript(
         var spriteTwo: SpriteAPI? = null
 
         var texX = 0f
+        var rotate = 0f
 
-        val midPoint = MathUtils.getPointOnCircumference(
-            star.location,
-            star.radius + 50f,
-            projectionAngle
-        )
+        var P0: Vector3f
+        var P1: Vector3f
+        var P1Invert: Vector3f
+        var P2: Vector3f
+        var P2Invert: Vector3f
+        var P3: Vector3f
+
+        init {
+
+            P0 = Vector3f(0f, 0f, 0f)
+            P3 = Vector3f(dist, 0f, 0f)
+            val P3F = Vector2f(P3.x, P3.y)
+            VectorUtils.rotateAroundPivot(P3F, Misc.ZERO, this.projectionAngle)
+            P3.set(P3F.x, P3F.y, P3.z)
+            // TODO - can we just rotate before?
+            // Bezier control point chosen so the curve passes THROUGH APEX at t = 0.5:
+            // B(0.5) = 0.25*P0 + 0.5*P1 + 0.25*P2  =>  P1 = 2*APEX - 0.5*(P0 + P2)
+            P1 = Vector3f(
+                P0.x,
+                P0.y,
+                z
+            )
+            P2 = Vector3f(
+                P3.x,
+                P3.y,
+                z
+            )
+            P1Invert = Vector3f(
+                P1.x,
+                P1.y,
+                -P1.z
+            )
+            P2Invert = Vector3f(
+                P2.x,
+                P2.y,
+                -P2.z
+            )
+        }
 
         override fun isExpired(): Boolean = false
 
         override fun advance(amount: Float) {
             texX += amount
             if (texX >= 1f) texX -= 1f
+            rotate += amount * 10f
+            if (rotate >= 360f) rotate -= 360f
+            alphaScroll += amount * 0.1f
+            //if (alphaScroll >= 0.5f) alphaScroll -= 0.5f
+
+            sprite?.texX = texX
+            spriteTwo?.texX = texX
         }
 
         override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
             return EnumSet.of(CampaignEngineLayers.TERRAIN_9, CampaignEngineLayers.TERRAIN_1) // above, so below
         }
 
+        var alphaScroll = 0f
+
         override fun render(
             layer: CampaignEngineLayers,
             viewport: ViewportAPI
         ) {
-            if (!star.starSystem.isCurrentLocation) return
+            if (star != null && !star.containingLocation.isCurrentLocation) return
 
             if (sprite == null) {
                 Global.getSettings().loadTexture("graphics/fx/beam_rough2_core.png")
                 sprite = Global.getSettings().getSprite("graphics/fx/beam_rough2_core.png")
+                //sprite = Global.getSettings().getSprite("graphics/planets/arid.jpg")
             }
             if (spriteTwo == null) {
                 Global.getSettings().loadTexture("graphics/fx/beam_rough2_fringe.png")
                 spriteTwo = Global.getSettings().getSprite("graphics/fx/beam_rough2_fringe.png")
             }
 
-            GL11.glTranslatef(star.location.x, star.location.y, 0f)
-            //GL11.glRotatef(star.facing, 1f, 1f, 0f) // todo test
+            val fov = 60f
 
-            var i = 0f
-            var currSprite = sprite!!
-            while (i++ < 2f) {
-                if (i == 2f) {
-                    currSprite = spriteTwo!!
-                }
-                currSprite.bindTexture()
+            // cache all attributes so we can popattrib and restore defaults later
+            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
 
-                //draw(viewport, currSprite, layer)
+            val viewportHeight = viewport.visibleHeight
+            val viewportWidth = viewport.visibleWidth
+            val viewportCenter = viewport.center
+
+            val dist = (viewportHeight * 0.5f) / tan(Math.toRadians((fov * 0.5f).toDouble())).toFloat() // TODO - figure out what this is doing
+            // sorta. it just controls the 3 axises of movement for the eye
+
+            val viewportCenterX = viewport.center.x
+            val viewportCenterY = viewport.center.y
+
+            val segments = LINE_SEGMENTS
+
+            // ---- STEP 1: sample the curve and fake-project each point into 2D ----
+            // Arrays: screen-plane x, y, and the scale factor s for each sample.
+            val xArray = FloatArray(segments + 1)
+            val yArray = FloatArray(segments + 1)
+            val parallaxArray = FloatArray(segments + 1)
+
+            val originX = 0f
+            val originY = 0f
+
+            val P1 = if (layer == CampaignEngineLayers.TERRAIN_9) P1 else P1Invert
+            val P2 = if (layer == CampaignEngineLayers.TERRAIN_9) P2 else P2Invert
+
+            for (i in 0..segments) {
+                val t = i / segments.toFloat()
+
+                // todo - what the fuck is this function???
+                val nextX = (1f - t) * (1f - t) * (1f - t) * P0.x + 3f * (1f - t) * (1f - t) * t * P1.x + 3f * (1f - t) * t * t * P2.x + t * t * t * P3.x
+                val nextY = (1f - t) * (1f - t) * (1f - t) * P0.y + 3f * (1f - t) * (1f - t) * t * P1.y + 3f * (1f - t) * t * t * P2.y + t * t * t * P3.y
+                val nextZ = (1f - t) * (1f - t) * (1f - t) * P0.z + 3f * (1f - t) * (1f - t) * t * P1.z + 3f * (1f - t) * t * t * P2.z + t * t * t * P3.z
+
+                // Perspective scale: 1.0 at z=0, grows as z approaches the camera.
+                // max(...) guards against divide-by-zero / flipping if z >= cameraDist.
+                // TODO - yes. this is needed. dont ask me why. some opengl rendering shit. THIS IS 2D RENDERING OMG
+                val parallax = dist / max(dist - nextZ, 1f)
+
+                val xCoord = originX + nextX
+                val yCoord = originY + nextY
+                // Push the point away from the view center by s. Because the center moves when the
+                // camera pans, high-z points slide across the screen faster than low-z ones (parallax).
+                // todo what is this doing
+                xArray[i] = viewportCenterX + ((xCoord - viewportCenterX) * parallax)
+                yArray[i] = viewportCenterY + ((yCoord - viewportCenterY) * parallax)
+                val parallaxMult = if (nextZ >= dist) 0f else 1f
+                parallaxArray[i] = parallax * parallaxMult
             }
 
+            // ---- STEP 2: set GL state (push/pop so we don't leak state into the game) ----
+            GL11.glEnable(GL11.GL_CULL_FACE)               // ribbon winding may flip; draw both sides
+            GL11.glDisable(GL11.GL_DEPTH_TEST)              // pure 2D layering; draw order decides overlap
+            GL11.glEnable(GL11.GL_BLEND) // enables transparency, coloring
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA) // standard alpha blending
+
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            //sprite!!.bindTexture()
+            
+            // Color multiplies the texture when one is bound (use white to show it unmodified).
+            val color = niko_MPC_magnetarPulse.BASE_COLOR
+            val ourColor = arrayOf((color.red / 255f), (color.green / 255f), (color.blue / 255f), (color.alpha / 255f))
+
+            // ---- STEP 3: build a ribbon (triangle strip) along the projected path ----
+            // GL_LINE_STRIP can't be textured or scaled per-vertex, so we draw a thin quad strip:
+            // two vertices per sample (left/right of the path), connected into triangles.
+            GL11.glBegin(GL11.GL_QUAD_STRIP)
+            for (i in 0..segments) {
+                val t = (i / segments.toFloat())
+                // Tangent from neighbors (clamped at the ends), in projected screen space
+                val a = (i - 1).coerceAtLeast(0)
+                val b = (i + 1).coerceAtMost(segments)
+                var xDiff = xArray[b] - xArray[a]
+                var yDiff = yArray[b] - yArray[a]
+                // todo why do we do this math
+                var distBetween = sqrt(xDiff * xDiff + yDiff * yDiff)
+                if (distBetween == 0f) distBetween = 0.0001f
+                xDiff /= distBetween
+                yDiff /= distBetween
+
+                // Normal = tangent rotated 90 degrees. Half-width is scaled by s so parts of the
+                // curve nearer the camera are drawn thicker (perspective size).
+                val half = LINE_WIDTH * 0.5f * parallaxArray[i]
+                val xBuffer = -yDiff * half
+                val yBuffer = xDiff * half
+
+                /*GL11.glTexCoord2f(sprite!!.texX, sprite!!.texY)
+                GL11.glVertex2f(xArray[i] + xBuffer, yArray[i] + yBuffer)         // one edge of the ribbon
+                GL11.glTexCoord2f(sprite!!.texX + sprite!!.texWidth, sprite!!.texY + sprite!!.texHeight)
+                GL11.glVertex2f(xArray[i] - xBuffer, yArray[i] - yBuffer)*/
+                val localT = if (layer == CampaignEngineLayers.TERRAIN_9) t else 1f - t
+                val mult = getAlphaMult(localT)
+                val fade = getColorFade(localT)
+                var ourAlpha = 1f * (mult).coerceAtMost(1f)
+                val bonus = if (script == null) 0f else script.lineBonus
+                ourAlpha += (bonus * -0.7f)
+                /*val blueMult = 1f + (0.16f * fade)
+                val redMult = 1f + (3f * fade)
+                val greenMult = 1f + (-0.4f * fade)*/
+                val blueMult = 1f + (-0.1f * fade) + (bonus * 1.13f)
+                val redMult = 1f + (-0.2f * fade) + (bonus * 12f)
+                var greenMult = 1f + (-0.1f * fade)
+                greenMult -= bonus * 4f
+                val red = (ourColor[0] * redMult).coerceAtMost(1f)
+                val green = (ourColor[1] * greenMult).coerceAtMost(1f)
+                val blue = (ourColor[2] * blueMult).coerceAtMost(1f)
+
+                GL11.glColor4f(red, green, blue, ourAlpha)
+                GL11.glTexCoord2f(0f, 0f)
+                GL11.glVertex2f(xArray[i] + xBuffer, yArray[i] + yBuffer)         // one edge of the ribbon
+                GL11.glColor4f(red, green, blue, ourAlpha)
+                GL11.glTexCoord2f(1f, 1f)
+                GL11.glVertex2f(xArray[i] - xBuffer, yArray[i] - yBuffer)
+
+                // PASTED AHHGHAG
+                /*GL11.glTexCoord2f(this.texX, this.texY);
+                GL11.glVertex2f(0.0F, 0.0F);
+                GL11.glTexCoord2f(this.texX, this.texY + this.texHeight);
+                GL11.glVertex2f(0.0F, this.height);
+                GL11.glTexCoord2f(this.texX + this.texWidth, this.texY + this.texHeight);
+                GL11.glVertex2f(this.width, this.height);
+                GL11.glTexCoord2f(this.texX + this.texWidth, this.texY);// the other edge*/
+            }
             GL11.glEnd()
+
+            GL11.glPopAttrib() // restore everything we changed
         }
 
-        /*private fun draw(viewport: ViewportAPI, sprite: SpriteAPI, layer: CampaignEngineLayers) {
-            // the bezier curve needs to be quartic - five points\
-            // 3 may also work but i lose control over the curve
-            // maybe 4? not sure.
-            // quadradic (four) can work, but five seems the easist to wrap m head around
-            // use parallax here to simulate 3d movement
-            // we always start from the north pole and project back
+        private fun getAlphaMult(t: Float): Float {
+            val a = 0.54f
+            val sineFunc = ((a)*sin((t-alphaScroll)/0.156f))+(1f - a)
+            return sineFunc
+        }
 
-            val amplitude = 50f // TODO make const
-            // NEVER EXCEED AMPLITUDE. EVER
-
-            // TODO cache
-
-            // ALL LINES ARE STRAIGHT UNLESS PARALAXXED. YES. THIS IS THE WAY.
-            // a second line will always be under and be under all terrain/fleets/the star etc
-            // get the mid point and use that as the start for the next one
-
-            // mid point will never shift so just cache it
-
-            // how to do parallax:
-            // top layer should move more when viewport moves
-            // bottom layer should be more static
-
-            val p1 = Vector3f(0f, 0f, 0f)
-            val p3 = Vector3f(midPoint.x, midPoint.y, 0f)
-
-            val view = viewport.center
-
-            // get the dist from our midpoint, get the point away from the viewport from same(?) dist
-            // might be best to do 2 3d renders anyway. ugh
-            val p2 = p3.negate(Vector3f(view.x, view.y, 0f))
-
-            val array = floatArrayOf(
-                p1.x, p1.y, p1.z,
-                p2.x, p2.y, p2.z,
-                p4.x, p2.y, p2.z,
-                p5.x, p5.y, p5.z,
-            )
-            val buffer = FloatBuffer.wrap(array)
-
-            GL11.glMap1f(
-                GL11.GL_MAP1_VERTEX_3,
-                0f,
-                1f,
-                3,
-                4,
-                buffer
-            )
-            GL11.glEnable(GL11.GL_MAP1_VERTEX_3)
-
-            var i = 0f
-            while (i++ < 250f) {
-                GL11.glEvalCoord1f(i / 250f) // TODO ripped from https://www.geeksforgeeks.org/cpp/bezier-curves-in-opengl/ (wtf is this code doing)
-            }
-        }*/
-
-        /*fun getParallaxValue(viewport: ViewportAPI): Float {
-            val center = viewport.center
-            val point =
-        }*/
+        private fun getColorFade(t: Float): Float {
+            val sineFunc = ((0.5f)*sin((t-alphaScroll)/0.152f))+0.5f
+            return sineFunc
+        }
 
     }
+
+    var fieldLines = generateFieldLines(magnetar, this)
+
+    val daysPerPulse = IntervalUtil(MIN_DAYS_PER_PULSE, MAX_DAYS_PER_PULSE)
+    var generatedDefenders = false
 
     override fun startImpl() {
         magnetar.addScript(this)
@@ -238,7 +381,16 @@ class niko_MPC_magnetarStarScript(
 
     override fun runWhilePaused(): Boolean = false
 
+    var recoilLeft = 0f
+    var lineBonus = 0f
+
     override fun advance(amount: Float) {
+
+        if (fieldLines == null) fieldLines = generateFieldLines(magnetar, this)
+
+        if (recoilLeft > 0f) {
+            recoilLeft = (recoilLeft - amount).coerceAtLeast(0f)
+        }
 
         val containingLocation = magnetar.containingLocation ?: return
         val playerFleet = Global.getSector().playerFleet
@@ -307,8 +459,21 @@ class niko_MPC_magnetarStarScript(
         // we advance to make things a bit more unpredictable
         if (containingLocation != Global.getSector().playerFleet?.containingLocation) return
         // but we dont pulse, since that can cause overhead
+        val left = (daysPerPulse.intervalDuration - daysPerPulse.elapsed)
+        val leftMult = 1f - ((left / 0.9f)).coerceAtMost(1f)
+        if (leftMult > 0f) {
+            doLaunchEffects(((1f - leftMult) * 0.3f).coerceAtLeast(0f).coerceAtMost(1f))
+            val local = (leftMult - 0.75f).coerceAtLeast(0f)
+            lineBonus = (local * 0.6f).coerceAtLeast(0f).coerceAtMost(1f)
+        } else if (recoilLeft > 0f) {
+            doLaunchEffects(1f - (recoilLeft / 1.1f).coerceAtLeast(0f).coerceAtMost(1f), 1f - (recoilLeft / 5f).coerceAtLeast(0f).coerceAtMost(1f))
+            lineBonus = (recoilLeft * 0.05f).coerceAtLeast(0f).coerceAtMost(1f)
+        } else {
+            lineBonus = 0f
+        }
         if (daysPerPulse.intervalElapsed()) {
             doPulse()
+            recoilLeft = 3f
         }
         // yeahhh this fucking sucks
         // this is best done in a listener but no listeners exist
@@ -331,16 +496,53 @@ class niko_MPC_magnetarStarScript(
         }
     }
 
-    fun doPulse() {
-        val color = niko_MPC_magnetarPulse.BASE_COLOR
-        val params = niko_MPC_magnetarPulse.MPC_magnetarPulseParams(magnetar.containingLocation, magnetar.location, 500f, 2f, color = color)
-        params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
-        params.explosionDisruptionMult = 0.7f
-        val explosion = magnetar.containingLocation.addCustomEntity(
-            Misc.genUID(), "Ionized Pulse",
-            "MPC_magnetarPulse", Factions.NEUTRAL, params
+    fun doLaunchEffects(mult: Float, soundMult: Float = mult) {
+        val inverted = (1f - mult)
+        val dist = MathUtils.getDistance(magnetar, Global.getSector().playerFleet).coerceAtLeast(0.1f)
+        val distMult = (1500f / dist).coerceAtMost(1f).coerceAtLeast(0f)
+        Global.getSector().campaignUI.suppressMusic(((inverted * 1.03f) * distMult).coerceAtLeast(0f).coerceAtMost(1f))
+
+        magnetar.containingLocation.addHitParticle(
+            magnetar.location,
+            Misc.ZERO,
+            magnetar.radius * (1f - mult),
+            2f * (1f - mult),
+            0.1f,
+            niko_MPC_magnetarPulse.BASE_COLOR
         )
-        explosion.setLocation(magnetar.location.x, magnetar.location.y)
+
+        Global.getSoundPlayer().playLoop(
+            "phase_beam_loop",
+            magnetar,
+            (1f - soundMult),
+            (1f - soundMult),
+            magnetar.location,
+            Misc.ZERO,
+        )
+    }
+
+    fun doPulse() {
+        val params = niko_MPC_magnetarPulse.MagnetarPulseParams(
+            18000f,
+            magnetar.radius + 50f,
+            magnetar.radius / 2f,
+            magnetar,
+            startingRange = magnetar.radius / 2f,
+            explosionDamageMult = 0.7f
+        )
+        params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
+        niko_MPC_magnetarPulse.createPulse(
+            magnetar,
+            params
+        )
+        magnetar.containingLocation.addHitParticle(
+            magnetar.location,
+            Misc.ZERO,
+            magnetar.radius * 15f,
+            1f,
+            3f,
+            niko_MPC_magnetarPulse.BASE_COLOR
+        )
     }
 
     override fun reportFleetJumped(fleet: CampaignFleetAPI?, from: SectorEntityToken?, to: JumpDestination?) {

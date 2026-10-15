@@ -31,6 +31,14 @@
 		# inside active aurora/magnetic storm
 		"loopTwo":"terrain_magstorm",
 	},
+	"MPC_magnetarPulseTerrain":{
+		"plugin":"data.scripts.campaign.magnetar.niko_MPC_magnetarPulse",
+		"musicSuppression":1,
+		# inside field
+		"loopOne":"terrain_magstorm",
+		# inside active aurora/magnetic storm
+		"loopTwo":"terrain_magstorm",
+	},
 	"MPC_mesonField":{
 		"plugin":"data.scripts.campaign.terrain.niko_MPC_mesonField",
 		"musicSuppression":0,

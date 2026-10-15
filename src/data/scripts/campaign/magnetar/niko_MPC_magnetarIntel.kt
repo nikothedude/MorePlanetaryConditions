@@ -105,7 +105,7 @@ class niko_MPC_magnetarIntel: BaseIntelPlugin() {
 
         val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
         info.setBulletedListMode(BULLET)
-        info.addPara("Pulses impact when the %s hits", 0f, Misc.getHighlightColor(), "center of the cloud")
+        info.addPara("Pulses impact when the %s hits", 0f, Misc.getHighlightColor(), "ridge of the field")
         info.addPara("Pulses are more dangerous when %s to the magnetar due to the fall-off effect", 0f, Misc.getHighlightColor(), "up-close")
         info.addPara("Pulses are %s", 0f, Misc.getHighlightColor(), "semi-regular")
         info.addPara("Being hit with a pulse will cause %s", 0f, Misc.getHighlightColor(), "significant CR drain")

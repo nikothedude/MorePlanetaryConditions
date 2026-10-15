@@ -9,7 +9,7 @@ import kotlin.arrayOf
 import kotlin.math.*
 import kotlin.math.roundToInt
 
-class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
+class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float, val tag: String) {
 
     //	private LocationAPI location;
     //	private SectorEntityToken entity;
@@ -103,7 +103,7 @@ class MPC_rangeBlockerWithEnds(val resolution: Int, val maxRange: Float) {
             graceRadius = 0f
             graceRadius = iterEntity.radius + 100f
             var span = Misc.computeAngleSpan(iterEntity.radius + graceRadius, dist)
-            if (iterEntity.hasTag("MPC_magnetarShield")) {
+            if (iterEntity.hasTag(tag)) {
                 span = span.coerceAtLeast(8f)
             }
 

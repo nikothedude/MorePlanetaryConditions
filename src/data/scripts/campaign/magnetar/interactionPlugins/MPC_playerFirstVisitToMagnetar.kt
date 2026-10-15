@@ -6,10 +6,12 @@ import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.util.Misc
+import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.niko_MPC_magnetarIntel
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
 import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
+import lunalib.lunaUtil.LunaCommons
 import org.lazywizard.lazylib.MathUtils
 
 class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
@@ -34,6 +36,8 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
         if (dialog == null) {
             return
         }
+
+        LunaCommons.set(niko_MPC_modPlugin.modId, "MPC_hasFoundMagnetar", true)
 
         this.dialog = dialog
         textPanel = dialog.textPanel

@@ -1486,12 +1486,12 @@ MPC_magnetarGenericCMD learnedInterdiction","You hastily scroll through the PDA,
 
 But if you were to coordinate a fleet-wide interdiction, you may be able to deflect future pulses.
 
-You thank you tactical officer, who responds with a stiff salute, and returns to your duties. You think you should, too.",MPC_discoveredInterdictLeave:Return to your station,
+You thank you tactical officer, who responds with a stiff salute, and returns to their duties. You think you should, too.",MPC_discoveredInterdictLeave:Return to your station,
 #END Hit by pulse,,,,,,
 ,,,,,,
 # Avoided pulse,,,,,,
 MPC_hidMagnetarPulseFirstTime,MPC_hidMagnetarPulseFirstTime,,"ShowImageVisual illustrations niko_MPC_magnetar
-niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","The atmosphere amongst your crew is unusually tense as the clouds pass over your hiding spot, but a collective ease falls upon you when it begins to harmlessly travel away, leaving you and your crew unscathed.
+niko_MPC_musicToggle ""music_encounter_mysterious_non_aggressive"" true true","The atmosphere amongst your crew is unusually tense as the pulse passes over your hiding spot, but a collective ease falls upon you when it begins to harmlessly travel away, leaving you and your crew unscathed.
 
 Just before you're able to return to nav and start plotting a course, tactical walks up and drops a PDA on your desk. ""Engineering thinks they found something interesting. Take a look.""",MPC_hidMagnetarPulseFirstTimeTwo:Inspect the report,
 MPC_hidMagnetarPulseFirstTimeTwo,DialogOptionSelected,$option == MPC_hidMagnetarPulseFirstTimeTwo,"SetTextHighlights ""deflect future pulses"" ""fleetwide interdiction matrix""

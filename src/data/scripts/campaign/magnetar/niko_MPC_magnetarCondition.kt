@@ -33,13 +33,6 @@ class niko_MPC_magnetarCondition: niko_MPC_baseNikoCondition() {
         if (tooltip == null) return
 
         tooltip.addPara(
-            "While traditional logic would stipulate a %s could help, the magnetar's %s would quickly %s",
-            10f,
-            Misc.getHighlightColor(),
-            "planetary shield", "ionized pulses", "destroy it"
-        )
-
-        tooltip.addPara(
             "%s hazard rating",
             10f,
             Misc.getHighlightColor(),

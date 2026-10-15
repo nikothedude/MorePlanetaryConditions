@@ -39,8 +39,11 @@
 			"MPC_IAIIC_BOMBARDMENT":"graphics/icons/missions/tactical_bombardment.png",
 		},
 		"fx":{
-		 "MPC_omegurat_highlight":"graphics/ships/MPC_omegurat_glow1.png",
-		 "MPC_omegurat_diffuse":"graphics/ships/MPC_omegurat_glow2.png",
+			"MPC_omegurat_highlight":"graphics/ships/MPC_omegurat_glow1.png",
+			"MPC_omegurat_diffuse":"graphics/ships/MPC_omegurat_glow2.png",
+		},
+		"terrain":{
+			"MPC_reversedAurora":"graphics/planets/MPC_reversedCorona.png"
 		},
 	},
 	"stations":{

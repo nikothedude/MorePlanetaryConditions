@@ -2,44 +2,52 @@ package data.scripts.campaign.magnetar
 
 import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
-import com.fs.starfarer.api.campaign.SectorEntityToken.VisibilityLevel
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.fleet.FleetMemberAPI
 import com.fs.starfarer.api.graphics.SpriteAPI
-import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin.*
-import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
+import com.fs.starfarer.api.impl.campaign.CoreReputationPlugin
+import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin.ExplosionFleetDamage
 import com.fs.starfarer.api.impl.campaign.RuleBasedInteractionDialogPluginImpl
 import com.fs.starfarer.api.impl.campaign.abilities.InterdictionPulseAbility
 import com.fs.starfarer.api.impl.campaign.ids.Abilities
 import com.fs.starfarer.api.impl.campaign.ids.MemFlags
 import com.fs.starfarer.api.impl.campaign.ids.Stats
-import com.fs.starfarer.api.impl.campaign.terrain.HyperspaceTerrainPlugin
-import com.fs.starfarer.api.impl.campaign.terrain.ShoveFleetScript
+import com.fs.starfarer.api.impl.campaign.terrain.*
+import com.fs.starfarer.api.loading.Description
+import com.fs.starfarer.api.ui.TooltipMakerAPI
+import com.fs.starfarer.api.util.FaderUtil
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
 import data.scripts.MPC_delayedExecutionNonLambda
-import data.scripts.campaign.listeners.niko_MPC_saveListener
-import data.scripts.campaign.magnetar.niko_MPC_magnetarStarScript.Companion.MIN_DAYS_PER_PULSE
-import data.utilities.niko_MPC_debugUtils
 import data.utilities.niko_MPC_ids
-import data.utilities.niko_MPC_ids.DRIVE_BUBBLE_DESTROYED
-import data.utilities.niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
 import data.utilities.niko_MPC_stringUtils.toPercent
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
+import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
-import org.magiclib.kotlin.rotateAroundOrigin
+import org.magiclib.kotlin.addHitGlow
 import java.awt.Color
+import java.util.*
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
-class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
+/** The wave itself */
+class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRendererDelegate {
 
     companion object {
-        const val BASE_SHOCKWAVE_DURATION = 40f
+        fun createPulse(source: SectorEntityToken, params: MagnetarPulseParams): niko_MPC_magnetarPulse {
+            val terrain = source.containingLocation.addTerrain(
+                TERRAIN_ID,
+                params
+            ) as CampaignTerrainAPI
+            terrain.setLocation(source.location.x, source.location.y)
+            return terrain.plugin as niko_MPC_magnetarPulse
+        }
+
         val BASE_COLOR = Color(37, 245, 200, 190)
-        const val BASE_STRIKE_DAMAGE = 25
 
         /** At max interdict effectiveness, immobility is reduced by this percent. */
         const val MAX_INTERDICT_REINFORCEMENT = 1f
@@ -47,264 +55,373 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         const val MAX_INTERDICT_PROGRESS_NEEDED = 0.6f
         const val INTERDICT_EXTRA_COOLDOWN = 3f
 
-        const val DIST_NEEDED_TO_HIT = 500f
-
-        const val BASE_SHOCKWAVE_SPEED = 250f
         const val INTERDICT_COMPLETE_GRACE_DAYS = 0.1f
+
+        const val BASE_STRIKE_DAMAGE = 25
+
+        const val BASE_SHOCKWAVE_SPEED = 5000f
+
+        const val BASE_BURN_MULT = 0.8f
+        const val BASE_BURN_MULT_DURATION = 0.2f
+
+        const val PARTICLE_GEN_DIST = 10000f
+        const val PARTICLES_PER_SECOND = 45f
+
+        const val TERRAIN_ID = "MPC_magnetarPulseTerrain"
+
+        const val DIST_TO_PLAY_LOOP = 2500f
+        const val MIN_DIST_FOR_MAX_VOL = 500f
+
+        const val SHIELDS_FROM_PULSE_TAG = "MPC_blocksMagnetarPulse"
     }
 
-    class MPC_magnetarPulseParams(where: LocationAPI,
-                                  loc: Vector2f,
-                                  radius: Float,
-                                  durationMult: Float,
-                                  val shockwaveSpeed: Float = BASE_SHOCKWAVE_SPEED,
-                                  val shockwaveDuration: Float = BASE_SHOCKWAVE_DURATION,
-                                  val shockwaveAccel: Float? = null,
-                                  color: Color = BASE_COLOR
-    ): ExplosionParams(color, where, loc, radius, durationMult) {
-        var baseRepLoss = 0f
-        var sourceFleet: CampaignFleetAPI? = null
-        var explosionDamageMult = 1f
-        /** Higher = longer drive field disruption. */
-        var explosionDisruptionMult = 1f
-        var makeParticlesMaxVelocityImmediately = false
-        var respectIgnore = true
-    }
+    class MagnetarPulseParams(
+        /** The distance this pulse will travel before completely expiring. */
+        val distance: Float,
+        /** Works with distance. When within this many SU of the source, the pulse does the max effect possible. Outside, it will fade from 100% to 0% opacity - hitting 0% at the end of lifespan.*/
+        val maxEffectRange: Float,
+        bandWidth: Float,
+        relatedEntity: SectorEntityToken? = null,
+        startingRange: Float = 0f,
+        name: String = "Magnetar Pulse",
+        /** Will ALWAYS play, even if the player is too far away. If the player IS far away, plays a lot more quietely.*/
+        val spawnSounds: List<String> = listOf("MPC_magnetarPulseLaunch"),
+        /** In SU/s. Does not increase the distance of the wave. */
+        val speed: Float = BASE_SHOCKWAVE_SPEED,
+        var damage: ExplosionFleetDamage = ExplosionFleetDamage.LOW,
+        var explosionDamageMult: Float = 1f,
+        var explosionDisruptionMult: Float = 1f,
+        /** Do we respect the memory flag that says 'we dont take damage from this terrain'?*/
+        val respectIgnore: Boolean = true,
+        val sourceFleet: CampaignFleetAPI? = null,
+        val baseRepLoss: Float = 0f,
+        val color: Color = BASE_COLOR,
+    ): RingParams(bandWidth, startingRange, relatedEntity, name)
 
-    var noEffectShockwaveDurationThreshold: Float = 0f // once we have this much duration left we dont have any effects
-    var initialShockwaveDuration: Float = 0f
     @Transient
-    var blockerUtil: MPC_rangeBlockerWithEnds? = null
-
-    override fun init(entity: SectorEntityToken?, pluginParams: Any?) {
-        super.init(entity, pluginParams)
-
-        doParamsCheck()
-
-        Global.getSector().listenerManager.addListener(this)
-
-        val castedParams = getCastedParams()
-        if (castedParams.shockwaveAccel != null) {
-            shockwaveAccel = castedParams.shockwaveAccel
-        }
-        shockwaveSpeed = castedParams.shockwaveSpeed
-        initialShockwaveDuration = castedParams.shockwaveDuration
-        shockwaveDuration = castedParams.shockwaveDuration
-        noEffectShockwaveDurationThreshold = (shockwaveDuration * 0.15f)
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
-
-        for (particle in particles) {
-            particle.maxDur = shockwaveDuration
-            particle.i = 0
-            particle.j = 0
-            if (castedParams.makeParticlesMaxVelocityImmediately) {
-                val accel = Misc.getUnitVectorAtDegreeAngle(Misc.getAngleInDegrees(particle.offset))
-                accel.scale(shockwaveSpeed)
-                particle.vel.x += accel.x
-                particle.vel.y += accel.y
-            }
+    var blockerUtil: MPC_rangeBlockerWithEnds = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_PULSE_TAG)
+        get() {
+            if (field == null) field = MPC_rangeBlockerWithEnds(1440, 10000f, SHIELDS_FROM_PULSE_TAG)
+            return field
         }
 
-        sprite = getSprite()
+    /** A list of fleets we've already hit. Used to avoid spamming hits over and over. */
+    val alreadyHit = HashSet<CampaignFleetAPI>()
+    /** The bandwidth we started with. Our bandwith can change based on the position of our ring, and if its too small. */
+    var idealBandwidth: Float = 0f
 
-        if (params.where.isCurrentLocation) {
+    @Transient
+    var texture: SpriteAPI? = null
+
+    lateinit var token: SectorEntityToken
+    override fun init(terrainId: String?, entity: SectorEntityToken?, param: Any?) {
+        super.init(terrainId, entity, param)
+
+        if (entity == null) return
+        if (name == null || name == "Unknown") name = "Magnetar Pulse"
+        val casted = getCastedParams()
+        if (casted.spawnSounds.isNotEmpty() && relatedEntity?.containingLocation?.isCurrentLocation == true || entity.containingLocation?.isCurrentLocation == true) {
             val viewport = Global.getSector().viewport
-            val fleet = Global.getSector().playerFleet
             var volume = 1f
 
-            var soundLoc = params.loc
+            var soundLoc = Vector2f(entity.location)
 
-            if (!viewport.isNearViewport(params.loc, 10f)) {
-                val vec = VectorUtils.getDirectionalVector(params.loc, viewport.center)
-                val dist = MathUtils.getDistance(params.loc, viewport.center)
-                val width = viewport.visibleWidth
-                val height = viewport.visibleHeight
-                soundLoc = vec.scale(dist * 0.9f) as Vector2f?
+            if (!viewport.isNearViewport(soundLoc, 10f)) {
+                val vec = VectorUtils.getDirectionalVector(soundLoc, viewport.center)
+                val dist = MathUtils.getDistance(soundLoc, viewport.center)
+                soundLoc = vec.scale(dist * 0.9f) as Vector2f
 
                 volume = 0.1f
             }
 
-            val sound = Global.getSoundPlayer().playSound("mote_attractor_targeted_ship", 1f, volume, soundLoc, Misc.ZERO)
-            val soundTwo = Global.getSoundPlayer().playSound("gate_explosion", 1f, volume, soundLoc, Misc.ZERO)
+            for (id in casted.spawnSounds) {
+                Global.getSoundPlayer().playSound(id, 1f, volume, soundLoc, Misc.ZERO)
+            }
         }
+        idealBandwidth = params.bandWidthInEngine
 
-        return
+        token = relatedEntity.containingLocation.createToken(Vector2f(0f, 0f))
     }
 
-    private fun doParamsCheck() {
-        if (params !is MPC_magnetarPulseParams) {
-            niko_MPC_debugUtils.displayError("wrong param types passed into magnetar pulse, using default, logging info")
-            niko_MPC_debugUtils.log.info("${params.damage}, ${params.color}")
-            params = MPC_magnetarPulseParams(
-                params.where,
-                params.loc,
-                params.radius,
-                params.durationMult
-            )
-        }
-    }
-
-    private fun getCastedParams(): MPC_magnetarPulseParams {
-        doParamsCheck()
-        return params as MPC_magnetarPulseParams
-    }
-
+    var particleCache = 0f
     override fun advance(amount: Float) {
-        blockerUtil?.updateLimits(entity, entity.starSystem?.star, 0.5f)
-        blockerUtil?.advance(amount, 100f, 0.5f)
+        if (params !is MagnetarPulseParams) {
+            relatedEntity?.containingLocation?.removeEntity(entity)
+            return // wait for compatibility utils to clean us up
+        }
 
         super.advance(amount)
-    }
 
-    override fun render(layer: CampaignEngineLayers?, viewport: ViewportAPI?) {
-        if (blockerUtil != null && !blockerUtil!!.wasEverUpdated()) {
-            blockerUtil!!.updateAndSync(entity, entity.starSystem?.star, 0.1f)
+        corona.advance(amount)
+        for (fader in faders.values) {
+            fader.advance(amount * MathUtils.getRandomNumberInRange(0.1f, 10f))
         }
 
-        var alphaMult = viewport!!.alphaMult
-        alphaMult *= entity.sensorFaderBrightness
-        alphaMult *= entity.sensorContactFaderBrightness
-        if (alphaMult <= 0) return
-
-        val x = entity.location.x
-        val y = entity.location.y
-
-
-        //Color color = params.color;
-        //color = Misc.setAlpha(color, 30);
-        val b = alphaMult
-
-        sprite.texWidth = 0.25f
-        sprite.texHeight = 0.25f
-        sprite.setAdditiveBlend()
-
-        for (p in particles) {
-            var size = p.size
-            size *= p.scale
-
-            val loc = Vector2f(x + p.offset.x, y + p.offset.y)
-
-            //val rotated = Vector2f(loc).rotateAroundOrigin(-p.angle, loc)
-
-            val checkLocOne = Vector2f(loc).translate((p.scale + p.size) * 2f, 0f).rotateAroundOrigin(p.angle, loc)
-            val checkLocTwo = Vector2f(loc).translate(-(p.scale + p.size) * 2f, 0f).rotateAroundOrigin(p.angle, loc)
-
-            var a = 1f
-            a = 0.33f
-
-            sprite.texX = p.i * 0.25f
-            sprite.texY = p.j * 0.25f
-
-            sprite.angle = p.angle
-            sprite.setSize(size, size)
-            sprite.alphaMult = b * a * p.getBrightness()
-            /*if (isProtected(loc) || isProtected(checkLocOne) || isProtected(checkLocTwo)) {
-                sprite.alphaMult *= 0.1f
-            }*/
-            sprite.color = p.color
-            sprite.renderAtCenter(loc.x, loc.y)
-        }
-    }
-
-    override fun applyDamageToFleets() {
-
-        if (shockwaveDuration <= noEffectShockwaveDurationThreshold) {
+        val mult = getEffectMult(null)
+        if (mult <= 0f) {
+            delete()
             return
         }
-        if (params.damage == null || params.damage == ExplosionFleetDamage.NONE) {
-            return
-        }
-        var shockwaveDist = 0f
-        for (p in particles) {
-            shockwaveDist = shockwaveDist.coerceAtLeast(p.offset.length())
 
-            /*val location = Vector2f(entity.location).translate(p.offset.x, p.offset.y)
-            val protectionRating: Float = getProtectionRating(location)
-            if (protectionRating > 0f) {
-                p.brightness /= 2f * protectionRating
-            } else {
-                p.brightness *= 2f * protectionRating
-            }*/
+        val casted = getCastedParams()
+        val days = Misc.getDays(amount)
+        val adjustPos = casted.speed * days
+        casted.middleRadius += adjustPos
+
+        if (!blockerUtil.wasEverUpdated()) {
+            blockerUtil.updateAndSync(entity, entity.starSystem?.star, 0.1f)
         }
-        /*var maxScale = 0f
-        for (particle in particles) {
-            if (particle.scale > maxScale) {
-                maxScale = particle.scale
-            }
-        }*/
+
+        blockerUtil.updateLimits(entity, entity.starSystem?.star, 0.5f)
+        blockerUtil.advance(amount, 100f, 0.5f)
+
+        val ourDist = getProgress()
+        val viewport = Global.getSector().viewport
+        val viewportOffset = MathUtils.getDistance(entity.location, viewport.center)
+        val distFromUs = (viewportOffset - ourDist).coerceAtLeast(0f)
+        if (distFromUs <= DIST_TO_PLAY_LOOP) {
+            playLoop()
+        }
+
         for (fleet in entity.containingLocation.fleets) {
-            if (fleet.memoryWithoutUpdate[IMMUNE_TO_MAGNETAR_PULSE] == true && getCastedParams().respectIgnore) continue
-            val id = fleet.id
-            if (damagedAlready.contains(id)) continue
             if (fleet.memoryWithoutUpdate.getBoolean(MemFlags.JUST_DID_INTERDICTION_PULSE) && !fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION)) {
                 fleet.memoryWithoutUpdate.set(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION, true, INTERDICT_COMPLETE_GRACE_DAYS)
             }
-
-            val dist = Misc.getDistance(fleet, entity)
-            if (dist < shockwaveDist) {
-                damagedAlready.add(id)
-                if (getCastedParams().sourceFleet == fleet) return
-                if (fleet.isStationMode) return
-                val distNeededToHit = ((shockwaveDist - DIST_NEEDED_TO_HIT)).coerceAtLeast(0f)
-
-                if (dist <= distNeededToHit) {
-                    continue
-                }
-
-                var skipBecauseOfBlocker = false
-                val point = fleet.location
-                if (isProtected(point)) {
-                    if (fleet.isPlayerFleet) {
-                        val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
-                        if (discoveredInterdictTech) break
-                        class parryDiscoverScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
-                            override fun executeImpl() {
-                                if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
-                                    Global.getSector().campaignUI.showInteractionDialog(
-                                        RuleBasedInteractionDialogPluginImpl("MPC_hidMagnetarPulseFirstTime"),
-                                        Global.getSector().playerFleet
-                                    )
-                                }
-                            }
-                        }
-                        parryDiscoverScript(IntervalUtil(0.1f, 0.1f)).start()
-                    }
-                    break
-                }
-
-                var damageMult = 1f - dist / params.radius
-                if (damageMult > 1f) damageMult = 1f
-                if (damageMult < 0.1f) damageMult = 0.1f
-                if (dist < entity.radius + params.radius * 0.1f) damageMult = 1f
-                applyDamageToFleet(fleet, damageMult)
-            }
         }
+
+        /*particleCache += amount * PARTICLES_PER_SECOND
+        if (particleCache >= 1) {
+            while (particleCache-- > 0) {
+                val point = MathUtils.getRandomPointOnCircumference(
+                    entity.location,
+                    casted.middleRadius + (casted.bandWidthInEngine / 2)
+                )
+                if (MathUtils.getDistance(point, Global.getSector().viewport.center) > PARTICLE_GEN_DIST) return
+                val particle = entity.containingLocation.addGlowyParticle(
+                    Global.getSector().playerFleet.location, // we're tricking the particles to spawn even when they will be outside our viewport
+                    VectorUtils.getDirectionalVector(entity.location, point).scale(casted.speed * MathUtils.getRandomNumberInRange(0.04f, 0.06f)) as Vector2f,
+                    MathUtils.getRandomNumberInRange(50f, 60f),
+                    0.1f,
+                    MathUtils.getRandomNumberInRange(20f, 30f),
+                    Color(0, 90, 0)
+                )
+                for (part in particle) {
+                    if (part == null) continue
+                    part.setPos(point.x, point.y)
+                }
+                particle[1]?.color = Color(0, 30, 0)
+                particle[2]?.color = Color(0, 30, 0)
+            }
+        }*/
     }
 
-    fun isProtected(location: Vector2f): Boolean {
-        //val actualLoc = Vector2f(entity.location).translate(location.x, location.y)
-        val angle = VectorUtils.getAngle(entity.location, location)
-        val range = blockerUtil!!.getBlockedRangeAt(angle)
-        val dist = MathUtils.getDistance(entity.location, location)
+    private fun playLoop() {
+        val ourDist = getProgress()
+        val viewport = Global.getSector().viewport
+        val angle = VectorUtils.getAngle(entity.location, viewport.center)
+        val target = MathUtils.getPointOnCircumference(
+            entity.location,
+            ourDist,
+            angle
+        )
+        val point = MathUtils.getPointOnCircumference(entity.location, params.middleRadius, angle)
+        val newLoc = MathUtils.getPointOnCircumference(viewport.center, 250f, VectorUtils.getAngle(viewport.center, point))
+        token.setLocation(newLoc.x, newLoc.y)
 
-        if (dist > range.first && dist < range.second) return true
+        val distFromTarget = MathUtils.getDistance(point, viewport.center)
+        val adjustedDist = (distFromTarget - MIN_DIST_FOR_MAX_VOL).coerceAtLeast(0f)
+        var volume = 1 - (adjustedDist / DIST_TO_PLAY_LOOP)
 
-        for (iterEntity in entity.containingLocation.planets + entity.containingLocation.getEntitiesWithTag(niko_MPC_ids.BLOCKS_MAGNETAR_PULSE_TAG)) {
-            if (iterEntity.isStar) continue
-            val distFromBlocker = Misc.getDistance(iterEntity.location, location)
-            if (distFromBlocker <= iterEntity.radius) {
-                return true
-            }
-        }
-        return false
+        volume *= getEffectMult(null)
+        volume *= 0.5f
+        Global.getSoundPlayer().playLoop(
+            "phase_beam_loop",
+            token,
+            0.6f,
+            volume,
+            token.location,
+            Misc.ZERO
+        )
     }
 
-    override fun applyDamageToFleet(fleet: CampaignFleetAPI?, damageMult: Float) {
-        if (fleet == null) return
+    val corona = MPC_magnetarFieldAuroraRenderer(this)
+    override fun render(layer: CampaignEngineLayers?, v: ViewportAPI?) {
+        super.render(layer, v)
+
+        if (layer == null || v == null) return
+
+        //params.middleRadius = idealBandwidth.coerceAtMost(params.middleRadius) // prevents really weird inverse ring behavior
+        corona.render(Global.getSector().viewport.alphaMult)
+        /*params.bandWidthInEngine = idealBandwidth.coerceAtMost(params.middleRadius) // prevents really weird inverse ring behavior
+        // glitches on advance, trust me, i tried
+
+        val params = getCastedParams()
+        OpenGlUtils.drawTexturedRing(
+            Vector2f(entity.location),
+            params.middleRadius,
+            params.bandWidthInEngine,
+            380, // polygons of the circle
+            25, // segments of the ring
+            500f,
+            sprite,
+            90f,
+            getEffectMult(null),
+        )*/
+    }
+
+    @Transient
+    var rr: RingRenderer? = null
+    override fun renderOnMap(factor: Float, alphaMult: Float) {
+        if (params == null) return
         val castedParams = getCastedParams()
-        var damageMult = (shockwaveDuration / initialShockwaveDuration) * 0.15f
+        if (rr == null) {
+            rr = RingRenderer("systemMap", "map_asteroid_belt")
+        }
+        val playerFleet = Global.getSector().playerFleet
+        // make it a bit transparent if the wave isnt a current threat
+        var adjustedAlpha = if (shouldHitFleet(playerFleet)) alphaMult else alphaMult * 0.5f
+        val mult = getEffectMult(null)
+        adjustedAlpha *= mult
+        val max = castedParams.middleRadius + (castedParams.bandWidthInEngine / 2f)
+        val min = max - 500f
+        rr!!.render(
+            entity.location,
+            min,
+            max,
+            getCastedParams().color,
+            false, factor, adjustedAlpha
+        )
+    }
+
+    override fun renderOnRadar(radarCenter: Vector2f?, factor: Float, alphaMult: Float) {
+        if (radarCenter == null) return
+
+        GL11.glPushMatrix();
+        GL11.glTranslatef(-radarCenter.x * factor, -radarCenter.y * factor, 0f);
+        renderOnMap(factor, alphaMult);
+        GL11.glPopMatrix();
+    }
+
+    private fun delete() {
+        val containing = entity.containingLocation
+        containing.removeEntity(entity)
+    }
+
+    fun getCastedParams(): MagnetarPulseParams = params as MagnetarPulseParams
+
+    val UID = Misc.genUID()
+    override fun getTerrainId(): String? {
+        return UID // allows multiple pulses to affect a fleet
+    }
+
+    override fun applyEffect(entity: SectorEntityToken?, days: Float) {
+        super.applyEffect(entity, days)
+
+        if (entity !is CampaignFleetAPI) return
+
+        // place behavior that also affects the dawntide fleets here
+        if (fleetIsBlocked(entity) && entity.isPlayerFleet) {
+            val discoveredInterdictTech = Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")
+            if (!discoveredInterdictTech) {
+                class parryDiscoverScript(interval: IntervalUtil) : MPC_delayedExecutionNonLambda(interval) {
+                    override fun executeImpl() {
+                        if (!Global.getSector().memoryWithoutUpdate.getBoolean("\$MPC_discoveredInterdictsCounterPulses")) {
+                            Global.getSector().campaignUI.showInteractionDialog(
+                                RuleBasedInteractionDialogPluginImpl("MPC_hidMagnetarPulseFirstTime"),
+                                Global.getSector().playerFleet
+                            )
+                        }
+                    }
+                }
+                parryDiscoverScript(IntervalUtil(0.1f, 0.1f)).start()
+            }
+        }
+        if (!shouldHitFleet(entity)) return
+        hitFleet(entity)
+    }
+
+    fun shouldHitFleet(fleet: CampaignFleetAPI): Boolean {
+        if (fleetIsImmune(fleet)) return false
+        if (fleet in alreadyHit) return false
+        if (fleetIsBlocked(fleet)) return false
+
+        return true
+    }
+
+    fun getMiddle(): Vector2f {
+        return (Vector2f(entity.location).translate(params.middleRadius, params.middleRadius))
+    }
+
+    fun hitFleet(fleet: CampaignFleetAPI) {
+        val mult = getEffectMult(fleet)
+        val casted = getCastedParams()
+
         val members = fleet.fleetData.membersListCopy
         if (members.isEmpty()) return
+
+        val interdictAbility = fleet.getAbility(Abilities.INTERDICTION_PULSE) as? InterdictionPulseAbility
+        var interdictionEffectiveness: Float? = null
+        /** Non-null if an interdiction was attempted. */
+        var shatterTimeMult = mult
+        if (interdictAbility != null) {
+            val progressFraction: Float = interdictAbility.progressFraction
+
+            if (fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION)) {
+                interdictionEffectiveness = MAX_INTERDICT_REINFORCEMENT
+            } else if (interdictAbility.isInProgress) {
+                interdictionEffectiveness = (progressFraction / MAX_INTERDICT_PROGRESS_NEEDED).coerceAtMost(MAX_INTERDICT_REINFORCEMENT)
+            }
+
+            if (interdictionEffectiveness != null) {
+                shatterTimeMult *= (1 - interdictionEffectiveness)
+                if (interdictAbility.isInProgress) {
+                    interdictAbility.activeDaysLeft = 0.0000001f
+                    interdictAbility.advance(1f) // just to get it to naturally deactivate
+                }
+                interdictAbility.cooldownLeft += INTERDICT_EXTRA_COOLDOWN
+            }
+        }
+        var interdictionResultsString = ""
+        if (interdictionEffectiveness != null) {
+            interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundNumTo(1))}"
+        }
+
+        val immobileDur = ((1f * shatterTimeMult * casted.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(
+            niko_MPC_magnetarStarScript.MIN_DAYS_PER_PULSE * 0.8f)
+        val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
+        val desc = "Drive field destroyed (${immobileDur.trimHangingZero()} days to repair)"
+
+        for (ability in fleet.abilities.values) {
+            if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") && ability.id != Abilities.TRANSVERSE_JUMP) continue
+            ability.deactivate()
+            ability.cooldownLeft = ability.cooldownLeft.coerceAtLeast(immobileDur)
+        }
+
+        if (immobileFromDays > 0) {
+            for (view in fleet.views) {
+                view.setJitter(0.1f, immobileFromDays, getCastedParams().color, 2, 3f)
+                view.setUseCircularJitter(true)
+                view.setJitterDirection(Misc.ZERO)
+                view.setJitterLength(immobileFromDays)
+                view.setJitterBrightness(0.2f)
+            }
+        }
+
+        fleet.stats.addTemporaryModMult(immobileDur, entity.id + "_magnetPulseAftermathEngines", desc, -500f, fleet.stats.fleetwideMaxBurnMod)
+        fleet.memoryWithoutUpdate.set(niko_MPC_ids.DRIVE_BUBBLE_DESTROYED, true, immobileDur)
+
+        if (fleet.isPlayerFleet) {
+            if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f)  {
+                Global.getSector().campaignUI.addMessage(
+                    "The ionized pulse bounces off your reinforced drive bubble, thanks to your interdiction", Misc.getHighlightColor()
+                )
+            } else {
+                Global.getSector().campaignUI.addMessage(
+                    "The ionized pulse shatters your drive bubble, disabling your travel drive for ${immobileDur.trimHangingZero()} days${interdictionResultsString}",
+                    Misc.getNegativeHighlightColor()
+                )
+            }
+        }
 
         var totalValue = 0f
         for (member in members) {
@@ -313,7 +430,7 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         if (totalValue <= 0) return
 
         var damageFraction = 0f
-        damageFraction = when (params.damage) {
+        damageFraction = when (casted.damage) {
             ExplosionFleetDamage.NONE -> return
             ExplosionFleetDamage.LOW -> 0.4f
             ExplosionFleetDamage.MEDIUM -> 0.7f
@@ -322,21 +439,16 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             else -> return
         }
 
-        damageFraction *= damageMult
+        damageFraction *= mult
 
         if (fleet.isInCurrentLocation && fleet.isVisibleToPlayerFleet) {
             val dist = Misc.getDistance(fleet, Global.getSector().playerFleet)
             if (dist < HyperspaceTerrainPlugin.STORM_STRIKE_SOUND_RANGE) {
-                val volumeMult = 6f * damageFraction
-                Global.getSoundPlayer()
-                    .playSound("gate_explosion_fleet_impact", 1f, volumeMult, fleet.location, Misc.ZERO)
+                val volumeMult = 3f * damageFraction
+                Global.getSoundPlayer().playSound("MPC_magnetarPulseImpact", 1f, volumeMult, fleet.location, Misc.ZERO)
             }
         }
 
-        //float strikeValue = totalValue * damageFraction * (0.5f + (float) Math.random() * 0.5f);
-
-
-        //float strikeValue = totalValue * damageFraction * (0.5f + (float) Math.random() * 0.5f);
         val picker = WeightedRandomPicker<FleetMemberAPI>()
         for (member in members) {
             var w = 1f
@@ -347,21 +459,23 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
         }
 
         val numStrikes = picker.items.size
+        alreadyHit += fleet
 
-         for (i in 0 until numStrikes) {
+        for (i in 0 until numStrikes) {
             val member = picker.pick() ?: return
             val crPerDep = member.deployCost
             //if (crPerDep <= 0) continue;
             val suppliesPerDep = member.stats.suppliesToRecover.modifiedValue
             if (suppliesPerDep <= 0 || crPerDep <= 0) return
-            val suppliesPer100CR = suppliesPerDep * 1f / Math.max(0.01f, crPerDep)
+            val suppliesPer100CR = suppliesPerDep * 1f / 0.01f.coerceAtLeast(crPerDep)
 
             // half flat damage, half scaled based on ship supply cost cost
             var strikeSupplies = ((BASE_STRIKE_DAMAGE) + suppliesPer100CR) * 0.5f * damageFraction
-            strikeSupplies *= castedParams.explosionDamageMult
+            strikeSupplies *= casted.explosionDamageMult
             //strikeSupplies = suppliesPerDep * 0.5f * damageFraction;
             var strikeDamage = strikeSupplies / suppliesPer100CR * (0.75f + Math.random().toFloat() * 0.5f)
             strikeDamage *= 0.6f
+            strikeDamage *= mult
 
             //float strikeDamage = damageFraction * (0.75f + (float) Math.random() * 0.5f);
             val resistance = member.stats.dynamic.getValue(Stats.CORONA_EFFECT_MULT)
@@ -397,80 +511,24 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
             //picker.remove(member);
         }
 
-        var shatterTimeMult = damageMult
-        val interdictAbility = fleet.getAbility(Abilities.INTERDICTION_PULSE) as? InterdictionPulseAbility
-        /** Non-null if an interdiction was attempted. */
-        var interdictionEffectiveness: Float? = null
-        if (interdictAbility != null) {
-            val progressFraction: Float = interdictAbility.progressFraction
-
-            if (fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_PULSE_DUE_TO_RECENT_INTERDICTION)) {
-                interdictionEffectiveness = MAX_INTERDICT_REINFORCEMENT
-            } else if (interdictAbility.isInProgress) {
-                interdictionEffectiveness =
-                    (progressFraction / MAX_INTERDICT_PROGRESS_NEEDED).coerceAtMost(MAX_INTERDICT_REINFORCEMENT)
-            }
-
-            if (interdictionEffectiveness != null) {
-                shatterTimeMult *= (1 - interdictionEffectiveness)
-                if (interdictAbility.isInProgress) {
-                    interdictAbility.activeDaysLeft = 0.0000001f
-                    interdictAbility.advance(1f) // just to get it to naturally deactivate
-                }
-                interdictAbility.cooldownLeft += INTERDICT_EXTRA_COOLDOWN
-            }
-        }
-        var interdictionResultsString = ""
-        if (interdictionEffectiveness != null) {
-            interdictionResultsString = " (interdiction reduced days needed by ${toPercent((interdictionEffectiveness).roundNumTo(1))}"
-        }
-
-        val immobileDur = ((10f * shatterTimeMult * castedParams.explosionDisruptionMult).roundNumTo(1)).coerceAtMost(MIN_DAYS_PER_PULSE * 0.8f)
-        val immobileFromDays = Global.getSector().clock.convertToSeconds(immobileDur)
-        val desc = "Drive field destroyed (${immobileDur.trimHangingZero()} days to repair)"
-
-        for (ability in fleet.abilities.values) {
-            if (!ability.spec.hasTag(Abilities.TAG_BURN + "+") && ability.id != Abilities.TRANSVERSE_JUMP) continue
-            ability.deactivate()
-            ability.cooldownLeft = ability.cooldownLeft.coerceAtLeast(immobileDur)
-        }
-
-        if (immobileFromDays > 0) {
-            for (view in fleet.views) {
-                view.setJitter(0.1f, immobileFromDays, BASE_COLOR, 2, 3f)
-                view.setUseCircularJitter(true)
-                view.setJitterDirection(Misc.ZERO)
-                view.setJitterLength(immobileFromDays)
-                view.setJitterBrightness(0.2f)
-            }
-        }
-
-        fleet.stats.addTemporaryModMult(immobileDur, entity.id + "_magnetPulseAftermathEngines", desc, -500f, fleet.stats.fleetwideMaxBurnMod)
-        fleet.memoryWithoutUpdate.set(DRIVE_BUBBLE_DESTROYED, true, immobileDur)
-
         val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
-        val shoveIntensity = (damageFraction * 20f).coerceAtMost((shockwaveSpeed/625f)) // not arbitrary, it mostly keeps it locked to the speed of the pulse
+        val shoveIntensity = (damageFraction * 20f).coerceAtMost(casted.speed / 12000f) // not arbitrary, it mostly keeps it locked to the speed of the pulse
+        fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity))
 
-        if (fleet.isPlayerFleet) {
-            if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f)  {
-                Global.getSector().campaignUI.addMessage(
-                    "The ionized pulse bounces off your reinforced drive bubble, thanks to your interdiction", Misc.getHighlightColor()
-                )
-            } else {
-                Global.getSector().campaignUI.addMessage(
-                    "The ionized pulse shatters your drive bubble, disabling your travel drive for ${immobileDur.trimHangingZero()} days${interdictionResultsString}",
-                    Misc.getNegativeHighlightColor()
-                )
-            }
-        }
-
-        if (interdictionEffectiveness == null || interdictionEffectiveness < 1f) {
-            fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity)) // EDIT
+        val sourceFleet = casted.sourceFleet
+        if (sourceFleet?.isPlayerFleet == true && fleet.knowsWhoPlayerIs() && sourceFleet.faction != fleet.faction) {
+            val repParams = CoreReputationPlugin.CustomRepImpact()
+            repParams.delta = -casted.baseRepLoss * (mult * 10f)
+            repParams.limit = RepLevel.INHOSPITABLE
+            Global.getSector().adjustPlayerReputation(
+                CoreReputationPlugin.RepActionEnvelope(CoreReputationPlugin.RepActions.CUSTOM, repParams, null, false),
+                fleet.faction.id
+            )
         }
 
         if (fleet.isInCurrentLocation) {
-            val vis: VisibilityLevel = fleet.visibilityLevelToPlayerFleet
-            if (fleet.isPlayerFleet || vis == VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS || vis == VisibilityLevel.COMPOSITION_DETAILS) {
+            val vis: SectorEntityToken.VisibilityLevel = fleet.visibilityLevelToPlayerFleet
+            if (fleet.isPlayerFleet || vis == SectorEntityToken.VisibilityLevel.COMPOSITION_AND_FACTION_DETAILS || vis == SectorEntityToken.VisibilityLevel.COMPOSITION_DETAILS) {
                 if (interdictionEffectiveness != null && interdictionEffectiveness >= 1f) {
                     fleet.addFloatingText("Pulse avoided!", fleet.faction.baseUIColor, 1f, true)
                     if (fleet.isPlayerFleet) {
@@ -501,70 +559,149 @@ class niko_MPC_magnetarPulse: ExplosionEntityPlugin(), niko_MPC_saveListener {
                 }
             }
         }
+    }
 
-        val sourceFleet = castedParams.sourceFleet
-        if (sourceFleet?.isPlayerFleet == true && fleet.knowsWhoPlayerIs() && sourceFleet.faction != fleet.faction) {
-            val repParams = CustomRepImpact()
-            repParams.delta = -castedParams.baseRepLoss * (damageMult * 10f)
-            repParams.limit = RepLevel.INHOSPITABLE
-            Global.getSector().adjustPlayerReputation(
-                RepActionEnvelope(RepActions.CUSTOM, repParams, null, false),
-                fleet.faction.id
+    // corresponds with the opacity of the wave
+    private fun getEffectMult(fleet: CampaignFleetAPI?): Float {
+        val progress = getProgress()
+        val casted = getCastedParams()
+        val progressOutsideMaxRange = (progress - casted.maxEffectRange).coerceAtLeast(0f)
+        val lifespanOutsideRange = casted.distance - casted.maxEffectRange
+        val mult = 1 - (progressOutsideMaxRange / lifespanOutsideRange)
+        return mult
+    }
+
+    fun getProgress(): Float = MathUtils.getDistance(entity.location, getMiddle())
+
+    fun fleetIsImmune(fleet: CampaignFleetAPI): Boolean {
+        if (fleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.IMMUNE_TO_MAGNETAR_PULSE) && getCastedParams().respectIgnore) return true
+        if (getCastedParams().sourceFleet == fleet) return true
+
+        return false
+    }
+
+    fun fleetIsBlocked(fleet: CampaignFleetAPI): Boolean {
+        val location = fleet.location
+        val angle = VectorUtils.getAngle(entity.location, location)
+        val containing = entity.containingLocation ?: return false
+        val blockers = containing.planets + containing.getEntitiesWithTag(SHIELDS_FROM_PULSE_TAG)
+        if (blockers.any { MathUtils.getDistance(it, fleet) <= 0f }) return true
+
+        val range = blockerUtil.getBlockedRangeAt(angle)
+        val dist = MathUtils.getDistance(entity.location, location)
+
+        if (dist > range.first && dist < range.second) return true
+        return false
+    }
+
+    override fun getEffectCategory(): String? {
+        return null
+    }
+
+    override fun canPlayerHoldStationIn(): Boolean {
+        return false
+    }
+
+    override fun hasAIFlag(flag: Any?): Boolean {
+        return false // it just passes over fleets
+    }
+
+    override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
+        return EnumSet.of(CampaignEngineLayers.ABOVE_STATIONS)
+    }
+
+    override fun hasTooltip(): Boolean = true
+
+    override fun isTooltipExpandable(): Boolean {
+        return false
+    }
+
+    override fun createTooltip(tooltip: TooltipMakerAPI?, expanded: Boolean) {
+        super.createTooltip(tooltip, expanded)
+
+        if (tooltip == null) return
+
+        val baseName = nameForTooltip
+        tooltip.addTitle(baseName)
+        tooltip.addPara(Global.getSettings().getDescription(spec.id, Description.Type.TERRAIN).text1, 5f)
+        // nothing else here. most of the intel on what these do and how to avoid them will be in a system-spanning terrain
+    }
+
+    override fun getNameColor(): Color? {
+        val base = getCastedParams().color
+        val special = Misc.getNegativeHighlightColor()
+
+        return Misc.interpolateColor(base, special, Global.getSector().campaignUI.sharedFader.brightness * 1f)
+    }
+
+    override fun getAuroraInnerRadius(): Float {
+        return (getCastedParams().middleRadius - (getCastedParams().bandWidthInEngine / 2f)).coerceAtLeast(0f)
+    }
+
+    override fun getAuroraOuterRadius(): Float {
+        return getCastedParams().middleRadius + (getCastedParams().bandWidthInEngine / 2f)
+    }
+
+    override fun getAuroraCenterLoc(): Vector2f? {
+        return entity.location
+    }
+
+    override fun getAuroraColorForAngle(angle: Float): Color {
+        val color = getCastedParams().color
+        val ourColor = Color(color.red, color.green, color.blue, (color.alpha))
+        return ourColor
+    }
+
+    override fun getAuroraAlphaMultForAngle(angle: Float): Float {
+        return getEffectMult(null)
+    }
+
+    val faders = HashMap<Float, FaderUtil>()
+
+    fun getFader(angle: Float): FaderUtil {
+        if (faders[angle] == null) {
+            val newFader = FaderUtil(
+                MathUtils.getRandomNumberInRange(0f, 1f),
+                1f
             )
+            faders[angle] = newFader
         }
+        return faders[angle]!!
     }
 
-    /*override fun render(layer: CampaignEngineLayers?, viewport: ViewportAPI) {
-        var alphaMult = viewport.alphaMult
-        alphaMult *= entity.sensorFaderBrightness
-        alphaMult *= entity.sensorContactFaderBrightness
-        if (alphaMult <= 0) return
-        val x = entity.location.x
-        val y = entity.location.y
+    override fun getAuroraShortenMult(angle: Float): Float {
+        val fader = getFader(angle)
+        return fader.brightness.coerceAtLeast(0f)
+    }
 
-        //Color color = params.color;
-        //color = Misc.setAlpha(color, 30);
-        val b = alphaMult
-        sprite.setTexWidth(0.25f)
-        sprite.setTexHeight(0.25f)
-        sprite.setAdditiveBlend()
-        for (p in particles) {
-            var size = p.size
-            size *= p.scale
-            val loc = Vector2f(x + p.offset.x, y + p.offset.y)
-            var a = 1f
-            a = 0.33f
-            sprite.setTexX(p.i * 0.25f)
-            sprite.setTexY(p.j * 0.25f)
-            sprite.angle = p.angle
-            sprite.setSize(size, size)
-            sprite.alphaMult = a // EDIT
-            sprite.color = p.color
-            sprite.renderAtCenter(loc.x, loc.y)
+    override fun getAuroraInnerOffsetMult(angle: Float): Float {
+        return 100f
+    }
+
+    override fun getAuroraThicknessMult(angle: Float): Float {
+        return 1f
+    }
+
+    override fun getAuroraThicknessFlat(angle: Float): Float {
+        return 0f
+    }
+
+    override fun getAuroraTexPerSegmentMult(): Float {
+        return 2f
+    }
+
+    override fun getAuroraBandWidthInTexture(): Float {
+        return 256f
+    }
+
+    override fun getAuroraTexture(): SpriteAPI? {
+        if (texture == null) {
+            texture = Global.getSettings().getSprite("terrain", "MPC_reversedAurora")
         }
-    }*/
-
-    override fun getRenderRange(): Float {
-        return shockwaveRadius * 2
+        return texture
     }
 
-    override fun beforeGameSave() {
-        return
+    override fun getAuroraBlocker(): RangeBlockerUtil? {
+        return null
     }
-
-    override fun onGameLoad() {
-        sprite = getSprite()
-        blockerUtil = MPC_rangeBlockerWithEnds(1440, 10000f)
-    }
-
-    fun getSprite(): SpriteAPI = Global.getSettings().getSprite("misc", "nebula_particles")
-
-    override fun afterGameSave() {
-        return
-    }
-
-    override fun onGameSaveFailed() {
-        return
-    }
-
 }
