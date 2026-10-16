@@ -8,7 +8,6 @@ import com.fs.starfarer.api.characters.AbilityPlugin
 import com.fs.starfarer.api.characters.PersonAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
 import com.fs.starfarer.api.combat.ViewportAPI
-import com.fs.starfarer.api.graphics.SpriteAPI
 import com.fs.starfarer.api.impl.campaign.AICoreOfficerPluginImpl
 import com.fs.starfarer.api.impl.campaign.ExplosionEntityPlugin
 import com.fs.starfarer.api.impl.campaign.ids.Commodities
@@ -34,10 +33,9 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import org.lwjgl.util.vector.Vector3f
 import java.util.EnumSet
-import kotlin.math.max
+import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.math.tan
 
 class niko_MPC_magnetarStarScript(
     val magnetar: PlanetAPI
@@ -137,20 +135,14 @@ class niko_MPC_magnetarStarScript(
 
         val projectionAngle = Misc.normalizeAngle(projectionAngle - 90f)
 
-        @Transient
-        var sprite: SpriteAPI? = null
-        @Transient
-        var spriteTwo: SpriteAPI? = null
-
-        var texX = 0f
-        var rotate = 0f
-
         var P0: Vector3f
         var P1: Vector3f
         var P1Invert: Vector3f
         var P2: Vector3f
         var P2Invert: Vector3f
         var P3: Vector3f
+
+        var alphaScroll = 0f
 
         init {
 
@@ -159,9 +151,6 @@ class niko_MPC_magnetarStarScript(
             val P3F = Vector2f(P3.x, P3.y)
             VectorUtils.rotateAroundPivot(P3F, Misc.ZERO, this.projectionAngle)
             P3.set(P3F.x, P3F.y, P3.z)
-            // TODO - can we just rotate before?
-            // Bezier control point chosen so the curve passes THROUGH APEX at t = 0.5:
-            // B(0.5) = 0.25*P0 + 0.5*P1 + 0.25*P2  =>  P1 = 2*APEX - 0.5*(P0 + P2)
             P1 = Vector3f(
                 P0.x,
                 P0.y,
@@ -187,22 +176,13 @@ class niko_MPC_magnetarStarScript(
         override fun isExpired(): Boolean = false
 
         override fun advance(amount: Float) {
-            texX += amount
-            if (texX >= 1f) texX -= 1f
-            rotate += amount * 10f
-            if (rotate >= 360f) rotate -= 360f
             alphaScroll += amount * 0.1f
-            //if (alphaScroll >= 0.5f) alphaScroll -= 0.5f
-
-            sprite?.texX = texX
-            spriteTwo?.texX = texX
+            if (alphaScroll >= 50000f) alphaScroll -= 50000f
         }
 
         override fun getActiveLayers(): EnumSet<CampaignEngineLayers?>? {
             return EnumSet.of(CampaignEngineLayers.TERRAIN_9, CampaignEngineLayers.TERRAIN_1) // above, so below
         }
-
-        var alphaScroll = 0f
 
         override fun render(
             layer: CampaignEngineLayers,
@@ -210,41 +190,18 @@ class niko_MPC_magnetarStarScript(
         ) {
             if (star != null && !star.containingLocation.isCurrentLocation) return
 
-            if (sprite == null) {
-                Global.getSettings().loadTexture("graphics/fx/beam_rough2_core.png")
-                sprite = Global.getSettings().getSprite("graphics/fx/beam_rough2_core.png")
-                //sprite = Global.getSettings().getSprite("graphics/planets/arid.jpg")
-            }
-            if (spriteTwo == null) {
-                Global.getSettings().loadTexture("graphics/fx/beam_rough2_fringe.png")
-                spriteTwo = Global.getSettings().getSprite("graphics/fx/beam_rough2_fringe.png")
-            }
-
-            val fov = 60f
-
             // cache all attributes so we can popattrib and restore defaults later
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
 
             val viewportHeight = viewport.visibleHeight
-            val viewportWidth = viewport.visibleWidth
-            val viewportCenter = viewport.center
-
-            val dist = (viewportHeight * 0.5f) / tan(Math.toRadians((fov * 0.5f).toDouble())).toFloat() // TODO - figure out what this is doing
-            // sorta. it just controls the 3 axises of movement for the eye
-
             val viewportCenterX = viewport.center.x
             val viewportCenterY = viewport.center.y
 
             val segments = LINE_SEGMENTS
 
-            // ---- STEP 1: sample the curve and fake-project each point into 2D ----
-            // Arrays: screen-plane x, y, and the scale factor s for each sample.
-            val xArray = FloatArray(segments + 1)
-            val yArray = FloatArray(segments + 1)
-            val parallaxArray = FloatArray(segments + 1)
-
-            val originX = 0f
-            val originY = 0f
+            val centerlineXArray = FloatArray(segments + 1)
+            val centerlineYArray = FloatArray(segments + 1)
+            val parallaxMults = FloatArray(segments + 1)
 
             val P1 = if (layer == CampaignEngineLayers.TERRAIN_9) P1 else P1Invert
             val P2 = if (layer == CampaignEngineLayers.TERRAIN_9) P2 else P2Invert
@@ -252,76 +209,64 @@ class niko_MPC_magnetarStarScript(
             for (i in 0..segments) {
                 val t = i / segments.toFloat()
 
-                // todo - what the fuck is this function???
-                val nextX = (1f - t) * (1f - t) * (1f - t) * P0.x + 3f * (1f - t) * (1f - t) * t * P1.x + 3f * (1f - t) * t * t * P2.x + t * t * t * P3.x
-                val nextY = (1f - t) * (1f - t) * (1f - t) * P0.y + 3f * (1f - t) * (1f - t) * t * P1.y + 3f * (1f - t) * t * t * P2.y + t * t * t * P3.y
-                val nextZ = (1f - t) * (1f - t) * (1f - t) * P0.z + 3f * (1f - t) * (1f - t) * t * P1.z + 3f * (1f - t) * t * t * P2.z + t * t * t * P3.z
+                // cubic bezier curve function components
+                //          1                               2                                           3                                           4
+                val nextX = ((1f - t).pow(3f) * P0.x) + (3f * (1f - t).pow(2f) * (t * P1.x)) + (3f * (1f - t)) * (t.pow(2f) * P2.x) + (t.pow(3f) * P3.x)
+                val nextY = ((1f - t).pow(3f) * P0.y) + (3f * (1f - t).pow(2f) * (t * P1.y)) + (3f * (1f - t)) * (t.pow(2f) * P2.y) + (t.pow(3f) * P3.y)
+                val nextZ = ((1f - t).pow(3f) * P0.z) + (3f * (1f - t).pow(2f) * (t * P1.z)) + (3f * (1f - t)) * (t.pow(2f) * P2.z) + (t.pow(3f) * P3.z)
 
-                // Perspective scale: 1.0 at z=0, grows as z approaches the camera.
-                // max(...) guards against divide-by-zero / flipping if z >= cameraDist.
-                // TODO - yes. this is needed. dont ask me why. some opengl rendering shit. THIS IS 2D RENDERING OMG
-                val parallax = dist / max(dist - nextZ, 1f)
+                // the more z it has, the less it scales when we zoom. vice versa
+                val parallaxZoomScale = viewportHeight / ((viewportHeight - nextZ).coerceAtLeast(0f))
 
-                val xCoord = originX + nextX
-                val yCoord = originY + nextY
-                // Push the point away from the view center by s. Because the center moves when the
-                // camera pans, high-z points slide across the screen faster than low-z ones (parallax).
-                // todo what is this doing
-                xArray[i] = viewportCenterX + ((xCoord - viewportCenterX) * parallax)
-                yArray[i] = viewportCenterY + ((yCoord - viewportCenterY) * parallax)
-                val parallaxMult = if (nextZ >= dist) 0f else 1f
-                parallaxArray[i] = parallax * parallaxMult
+                // im gonna be real i dont fully understand this block even still
+                val worldX = nextX - viewportCenterX
+                val worldY = nextY - viewportCenterY
+                centerlineXArray[i] = viewportCenterX + (worldX * parallaxZoomScale)
+                centerlineYArray[i] = viewportCenterY + (worldY * parallaxZoomScale)
+                // parallax is set to 0 if theyre out of our sight to avoid a rendering bug - just dont render 4head
+                val parallaxLimiter = if (nextZ >= viewportHeight) 0f else 1f
+                parallaxMults[i] = parallaxZoomScale * parallaxLimiter
             }
 
-            // ---- STEP 2: set GL state (push/pop so we don't leak state into the game) ----
-            GL11.glEnable(GL11.GL_CULL_FACE)               // ribbon winding may flip; draw both sides
-            GL11.glDisable(GL11.GL_DEPTH_TEST)              // pure 2D layering; draw order decides overlap
-            GL11.glEnable(GL11.GL_BLEND) // enables transparency, coloring
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA) // standard alpha blending
-
             GL11.glDisable(GL11.GL_TEXTURE_2D)
-            //sprite!!.bindTexture()
-            
-            // Color multiplies the texture when one is bound (use white to show it unmodified).
+            GL11.glEnable(GL11.GL_CULL_FACE)
+            GL11.glDisable(GL11.GL_DEPTH_TEST)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
             val color = niko_MPC_magnetarPulse.BASE_COLOR
             val ourColor = arrayOf((color.red / 255f), (color.green / 255f), (color.blue / 255f), (color.alpha / 255f))
 
-            // ---- STEP 3: build a ribbon (triangle strip) along the projected path ----
-            // GL_LINE_STRIP can't be textured or scaled per-vertex, so we draw a thin quad strip:
-            // two vertices per sample (left/right of the path), connected into triangles.
             GL11.glBegin(GL11.GL_QUAD_STRIP)
             for (i in 0..segments) {
                 val t = (i / segments.toFloat())
-                // Tangent from neighbors (clamped at the ends), in projected screen space
+
                 val a = (i - 1).coerceAtLeast(0)
                 val b = (i + 1).coerceAtMost(segments)
-                var xDiff = xArray[b] - xArray[a]
-                var yDiff = yArray[b] - yArray[a]
-                // todo why do we do this math
-                var distBetween = sqrt(xDiff * xDiff + yDiff * yDiff)
-                if (distBetween == 0f) distBetween = 0.0001f
-                xDiff /= distBetween
-                yDiff /= distBetween
 
-                // Normal = tangent rotated 90 degrees. Half-width is scaled by s so parts of the
-                // curve nearer the camera are drawn thicker (perspective size).
-                val half = LINE_WIDTH * 0.5f * parallaxArray[i]
-                val xBuffer = -yDiff * half
-                val yBuffer = xDiff * half
+                var xTangent = centerlineXArray[b] - centerlineXArray[a]
+                var yTangent = centerlineYArray[b] - centerlineYArray[a]
+                // distance formula
+                var distBetween = sqrt(xTangent.pow(2f) + yTangent.pow(2f))
+                if (distBetween == 0f) distBetween = 1f
+                // turn them into a unit vector
+                xTangent /= distBetween
+                yTangent /= distBetween
 
-                /*GL11.glTexCoord2f(sprite!!.texX, sprite!!.texY)
-                GL11.glVertex2f(xArray[i] + xBuffer, yArray[i] + yBuffer)         // one edge of the ribbon
-                GL11.glTexCoord2f(sprite!!.texX + sprite!!.texWidth, sprite!!.texY + sprite!!.texHeight)
-                GL11.glVertex2f(xArray[i] - xBuffer, yArray[i] - yBuffer)*/
+                // the more parallax, the thicker the line (closer to camera)
+                val sideOffsetMult = (LINE_WIDTH * 0.5f) * parallaxMults[i]
+                // rotate the tangent 90 degrees, make it thicker
+                // basically has the effect of turning our direction of movement (tangent)
+                // perpendicular and then thickening it
+                val leftEdge = -yTangent * sideOffsetMult
+                val rightEdge = xTangent * sideOffsetMult
+
                 val localT = if (layer == CampaignEngineLayers.TERRAIN_9) t else 1f - t
-                val mult = getAlphaMult(localT)
+                val mult = 1f - getAlphaMult(localT)
                 val fade = getColorFade(localT)
                 var ourAlpha = 1f * (mult).coerceAtMost(1f)
-                val bonus = if (script == null) 0f else script.lineBonus
+                val bonus = script?.lineBonus ?: 0f
                 ourAlpha += (bonus * -0.7f)
-                /*val blueMult = 1f + (0.16f * fade)
-                val redMult = 1f + (3f * fade)
-                val greenMult = 1f + (-0.4f * fade)*/
                 val blueMult = 1f + (-0.1f * fade) + (bonus * 1.13f)
                 val redMult = 1f + (-0.2f * fade) + (bonus * 12f)
                 var greenMult = 1f + (-0.1f * fade)
@@ -332,19 +277,10 @@ class niko_MPC_magnetarStarScript(
 
                 GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(0f, 0f)
-                GL11.glVertex2f(xArray[i] + xBuffer, yArray[i] + yBuffer)         // one edge of the ribbon
+                GL11.glVertex2f(centerlineXArray[i] + leftEdge, centerlineYArray[i] + rightEdge)         // one edge of the ribbon
                 GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(1f, 1f)
-                GL11.glVertex2f(xArray[i] - xBuffer, yArray[i] - yBuffer)
-
-                // PASTED AHHGHAG
-                /*GL11.glTexCoord2f(this.texX, this.texY);
-                GL11.glVertex2f(0.0F, 0.0F);
-                GL11.glTexCoord2f(this.texX, this.texY + this.texHeight);
-                GL11.glVertex2f(0.0F, this.height);
-                GL11.glTexCoord2f(this.texX + this.texWidth, this.texY + this.texHeight);
-                GL11.glVertex2f(this.width, this.height);
-                GL11.glTexCoord2f(this.texX + this.texWidth, this.texY);// the other edge*/
+                GL11.glVertex2f(centerlineXArray[i] - leftEdge, centerlineYArray[i] - rightEdge)
             }
             GL11.glEnd()
 
@@ -352,9 +288,9 @@ class niko_MPC_magnetarStarScript(
         }
 
         private fun getAlphaMult(t: Float): Float {
-            val a = 0.54f
-            val sineFunc = ((a)*sin((t-alphaScroll)/0.156f))+(1f - a)
-            return sineFunc
+            val a = 0.48f
+            val sineFunc = ((a)*sin((t-alphaScroll)/0.156f))+(0.8f)
+            return sineFunc.coerceAtMost(1f)
         }
 
         private fun getColorFade(t: Float): Float {
