@@ -190,9 +190,6 @@ class niko_MPC_magnetarStarScript(
         ) {
             if (star != null && !star.containingLocation.isCurrentLocation) return
 
-            // cache all attributes so we can popattrib and restore defaults later
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-
             val viewportHeight = viewport.visibleHeight
             val viewportCenterX = viewport.center.x
             val viewportCenterY = viewport.center.y
@@ -227,6 +224,8 @@ class niko_MPC_magnetarStarScript(
                 val parallaxLimiter = if (nextZ >= viewportHeight) 0f else 1f
                 parallaxMults[i] = parallaxZoomScale * parallaxLimiter
             }
+            // cache all attributes so we can popattrib and restore defaults later
+            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
 
             GL11.glDisable(GL11.GL_TEXTURE_2D)
             GL11.glEnable(GL11.GL_CULL_FACE)
@@ -398,7 +397,7 @@ class niko_MPC_magnetarStarScript(
         val left = (daysPerPulse.intervalDuration - daysPerPulse.elapsed)
         val leftMult = 1f - ((left / 0.9f)).coerceAtMost(1f)
         if (leftMult > 0f) {
-            doLaunchEffects(((1f - leftMult) * 0.3f).coerceAtLeast(0f).coerceAtMost(1f))
+            doLaunchEffects(((1f - leftMult)).coerceAtLeast(0f).coerceAtMost(1f), ((1f - leftMult) * 0.3f).coerceAtMost(1f).coerceAtLeast(0f))
             val local = (leftMult - 0.75f).coerceAtLeast(0f)
             lineBonus = (local * 0.6f).coerceAtLeast(0f).coerceAtMost(1f)
         } else if (recoilLeft > 0f) {
@@ -435,14 +434,14 @@ class niko_MPC_magnetarStarScript(
     fun doLaunchEffects(mult: Float, soundMult: Float = mult) {
         val inverted = (1f - mult)
         val dist = MathUtils.getDistance(magnetar, Global.getSector().playerFleet).coerceAtLeast(0.1f)
-        val distMult = (1500f / dist).coerceAtMost(1f).coerceAtLeast(0f)
-        Global.getSector().campaignUI.suppressMusic(((inverted * 1.03f) * distMult).coerceAtLeast(0f).coerceAtMost(1f))
+        val distMult = (2000f / dist).coerceAtMost(1f).coerceAtLeast(0f)
+        Global.getSector().campaignUI.suppressMusic(((inverted * 1.5f) * distMult).coerceAtLeast(0f).coerceAtMost(1f))
 
         magnetar.containingLocation.addHitParticle(
             magnetar.location,
             Misc.ZERO,
-            magnetar.radius * (1f - mult),
-            2f * (1f - mult),
+            (magnetar.radius * 3f) * (inverted),
+            2f * inverted,
             0.1f,
             niko_MPC_magnetarPulse.BASE_COLOR
         )
