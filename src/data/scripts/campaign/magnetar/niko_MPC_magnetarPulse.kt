@@ -19,7 +19,9 @@ import com.fs.starfarer.api.util.FaderUtil
 import com.fs.starfarer.api.util.IntervalUtil
 import com.fs.starfarer.api.util.Misc
 import com.fs.starfarer.api.util.WeightedRandomPicker
+import com.fs.starfarer.combat.entities.terrain.Asteroid
 import data.scripts.MPC_delayedExecutionNonLambda
+import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import data.utilities.niko_MPC_mathUtils.roundNumTo
 import data.utilities.niko_MPC_mathUtils.trimHangingZero
@@ -29,6 +31,9 @@ import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.vector.Vector2f
 import org.magiclib.kotlin.addHitGlow
+import org.magiclib.kotlin.fadeAndExpire
+import org.magiclib.kotlin.fadeInOutAndExpire
+import org.magiclib.kotlin.rotateAroundOrigin
 import java.awt.Color
 import java.util.*
 import kotlin.math.ceil
@@ -96,6 +101,7 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
         val sourceFleet: CampaignFleetAPI? = null,
         val baseRepLoss: Float = 0f,
         val color: Color = BASE_COLOR,
+        val affectPlanets: Boolean = false,
     ): RingParams(bandWidth, startingRange, relatedEntity, name)
 
     @Transient
@@ -106,7 +112,7 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
         }
 
     /** A list of fleets we've already hit. Used to avoid spamming hits over and over. */
-    val alreadyHit = HashSet<CampaignFleetAPI>()
+    val alreadyHit = HashSet<SectorEntityToken>()
     /** The bandwidth we started with. Our bandwith can change based on the position of our ring, and if its too small. */
     var idealBandwidth: Float = 0f
 
@@ -213,17 +219,90 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
                 particle[2]?.color = Color(0, 30, 0)
             }
         }*/
+
+        if (casted.affectPlanets) {
+            for (planet in entity.containingLocation.planets) {
+                if (planet.isStar) continue
+                if (planet.isGasGiant) continue
+                if (!containsEntity(planet)) continue
+                if (planet in alreadyHit) continue
+                createDebris(planet)
+            }
+        }
+    }
+
+    private fun createDebris(planet: PlanetAPI) {
+        val planetRadius = planet.radius
+        val min = 10
+        val max = 25
+        val mult = getEffectMult(null)
+        val num = (MathUtils.getRandomNumberInRange(min, max) * mult).roundToInt()
+        if (num <= 0f) return
+        var left = num
+        val angle = VectorUtils.getAngle(planet.location, planet.starSystem.star.location)
+        while (left-- > 0f) {
+            val radius = MathUtils.getRandomNumberInRange(5f, 15f)
+            val asteroid = planet.containingLocation.addAsteroid(radius)
+            asteroid.setLocation(
+                planet.location.x + MathUtils.getRandomNumberInRange(-planetRadius, planetRadius),
+                planet.location.y + MathUtils.getRandomNumberInRange(-planetRadius, planetRadius),
+            )
+            asteroid.fadeInOutAndExpire(
+                MathUtils.getRandomNumberInRange(1f, 1.2f),
+                MathUtils.getRandomNumberInRange(10f, 30f),
+                MathUtils.getRandomNumberInRange(5f, 7f)
+            )
+            asteroid.rotation = MathUtils.getRandomNumberInRange(1f, 6f)
+            val dir = VectorUtils.getDirectionalVector(
+                planet.location,
+                planet.starSystem.star.location
+            )
+            asteroid.velocity.set(dir)
+            asteroid.velocity.scale(MathUtils.getRandomNumberInRange(50f, 200f) * mult)
+            asteroid.velocity.rotateAroundOrigin(angle)
+            asteroid.name = "Planetary Debris"
+
+            AsteroidHitStarScript(asteroid, asteroid.starSystem.star).start()
+        }
+
+        Global.getSoundPlayer().playSound(
+            "MPC_magnetarPulsePlanetImpact",
+            0.6f,
+            0.3f,
+            planet.location,
+            Misc.ZERO
+        )
+        alreadyHit += planet
+    }
+
+    class AsteroidHitStarScript(val asteroid: AsteroidAPI, val star: PlanetAPI): niko_MPC_baseNikoScript() {
+        override fun startImpl() {
+            asteroid.addScript(this)
+        }
+
+        override fun stopImpl() {
+            asteroid.removeScript(this)
+        }
+
+        override fun runWhilePaused(): Boolean = false
+
+        override fun advance(amount: Float) {
+            if (asteroid.isExpired) {
+                delete()
+                return
+            }
+            if (MathUtils.getDistance(asteroid, star) <= 0f) {
+                delete()
+                asteroid.fadeAndExpire(1f)
+                return
+            }
+        }
     }
 
     private fun playLoop() {
         val ourDist = getProgress()
         val viewport = Global.getSector().viewport
         val angle = VectorUtils.getAngle(entity.location, viewport.center)
-        val target = MathUtils.getPointOnCircumference(
-            entity.location,
-            ourDist,
-            angle
-        )
         val point = MathUtils.getPointOnCircumference(entity.location, params.middleRadius, angle)
         val newLoc = MathUtils.getPointOnCircumference(viewport.center, 250f, VectorUtils.getAngle(viewport.center, point))
         token.setLocation(newLoc.x, newLoc.y)

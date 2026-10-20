@@ -130,14 +130,8 @@ class niko_MPC_magnetarStarScript(
 
         companion object {
             const val LINE_WIDTH = 10f
-            const val LINE_SEGMENTS = 250
+            const val LINE_SEGMENTS = 50
         }
-
-        data class PointData(
-            val point: Vector3f,
-            val t: Float,
-            val parallaxMult: Float
-        )
 
         val projectionAngle = Misc.normalizeAngle(projectionAngle - 90f)
 
@@ -228,12 +222,7 @@ class niko_MPC_magnetarStarScript(
                 parallaxArray[i] = parallaxMult
             }
 
-            // cache all attributes so we can popattrib and restore defaults later
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-
             GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glEnable(GL11.GL_CULL_FACE)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
@@ -289,13 +278,12 @@ class niko_MPC_magnetarStarScript(
                 GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(0f, 0f)
                 GL11.glVertex2f(x + xWidth, y + yWidth)         // one edge of the ribbon
-                GL11.glColor4f(red, green, blue, ourAlpha)
+                //GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(1f, 1f)
                 GL11.glVertex2f(x - xWidth, y - yWidth)
             }
+            //GL11.glEnable(GL11.GL_TEXTURE_2D)
             GL11.glEnd()
-
-            GL11.glPopAttrib() // restore everything we changed
         }
 
         private fun getAlphaMult(t: Float): Float {
@@ -475,7 +463,8 @@ class niko_MPC_magnetarStarScript(
             magnetar.radius / 2f,
             magnetar,
             startingRange = magnetar.radius / 2f,
-            explosionDamageMult = 0.7f
+            explosionDamageMult = 0.7f,
+            affectPlanets = true
         )
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW
         niko_MPC_magnetarPulse.createPulse(
