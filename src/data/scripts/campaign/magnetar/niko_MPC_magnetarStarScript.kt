@@ -133,6 +133,12 @@ class niko_MPC_magnetarStarScript(
             const val LINE_SEGMENTS = 250
         }
 
+        data class PointData(
+            val point: Vector3f,
+            val t: Float,
+            val parallaxMult: Float
+        )
+
         val projectionAngle = Misc.normalizeAngle(projectionAngle - 90f)
 
         var P0: Vector3f
@@ -188,24 +194,22 @@ class niko_MPC_magnetarStarScript(
             layer: CampaignEngineLayers,
             viewport: ViewportAPI
         ) {
+            // TODO - desloppifying this func made the quad strips... well, strips. find a way to return the behavior where they face the camera?
+            // well its cool in this way too
             if (star != null && !star.containingLocation.isCurrentLocation) return
 
             val viewportHeight = viewport.visibleHeight
-            val viewportCenterX = viewport.center.x
-            val viewportCenterY = viewport.center.y
-
-            val segments = LINE_SEGMENTS
-
-            val centerlineXArray = FloatArray(segments + 1)
-            val centerlineYArray = FloatArray(segments + 1)
-            val parallaxMults = FloatArray(segments + 1)
+            val viewportCenter = viewport.center
 
             val P1 = if (layer == CampaignEngineLayers.TERRAIN_9) P1 else P1Invert
             val P2 = if (layer == CampaignEngineLayers.TERRAIN_9) P2 else P2Invert
 
-            for (i in 0..segments) {
-                val t = i / segments.toFloat()
+            val xArray = FloatArray(LINE_SEGMENTS + 1)
+            val yArray = FloatArray(LINE_SEGMENTS + 1)
+            val parallaxArray = FloatArray(LINE_SEGMENTS + 1)
 
+            for (i in 0..LINE_SEGMENTS) {
+                val t = (i / LINE_SEGMENTS.toFloat())
                 // cubic bezier curve function components
                 //          1                               2                                           3                                           4
                 val nextX = ((1f - t).pow(3f) * P0.x) + (3f * (1f - t).pow(2f) * (t * P1.x)) + (3f * (1f - t)) * (t.pow(2f) * P2.x) + (t.pow(3f) * P3.x)
@@ -213,17 +217,17 @@ class niko_MPC_magnetarStarScript(
                 val nextZ = ((1f - t).pow(3f) * P0.z) + (3f * (1f - t).pow(2f) * (t * P1.z)) + (3f * (1f - t)) * (t.pow(2f) * P2.z) + (t.pow(3f) * P3.z)
 
                 // the more z it has, the less it scales when we zoom. vice versa
-                val parallaxZoomScale = viewportHeight / ((viewportHeight - nextZ).coerceAtLeast(0f))
+                val distBetweenViewportAndZ = (viewportHeight - nextZ)
+                val parallaxMult = viewportHeight / ((distBetweenViewportAndZ).coerceAtLeast(0f))
 
                 // im gonna be real i dont fully understand this block even still
-                val worldX = nextX - viewportCenterX
-                val worldY = nextY - viewportCenterY
-                centerlineXArray[i] = viewportCenterX + (worldX * parallaxZoomScale)
-                centerlineYArray[i] = viewportCenterY + (worldY * parallaxZoomScale)
-                // parallax is set to 0 if theyre out of our sight to avoid a rendering bug - just dont render 4head
-                val parallaxLimiter = if (nextZ >= viewportHeight) 0f else 1f
-                parallaxMults[i] = parallaxZoomScale * parallaxLimiter
+                val worldX = nextX - viewportCenter.x
+                val worldY = nextY - viewportCenter.y
+                xArray[i] = viewportCenter.x + (worldX * parallaxMult)
+                yArray[i] = viewportCenter.y + (worldY * parallaxMult)
+                parallaxArray[i] = parallaxMult
             }
+
             // cache all attributes so we can popattrib and restore defaults later
             GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
 
@@ -237,14 +241,22 @@ class niko_MPC_magnetarStarScript(
             val ourColor = arrayOf((color.red / 255f), (color.green / 255f), (color.blue / 255f), (color.alpha / 255f))
 
             GL11.glBegin(GL11.GL_QUAD_STRIP)
-            for (i in 0..segments) {
-                val t = (i / segments.toFloat())
+            for (i in 0..LINE_SEGMENTS) {
+                val t = (i / LINE_SEGMENTS.toFloat())
+                if (t == 0f) continue
 
-                val a = (i - 1).coerceAtLeast(0)
-                val b = (i + 1).coerceAtMost(segments)
+                val last = (i - 1).coerceAtLeast(0)
+                val next = (i + 1).coerceAtMost(LINE_SEGMENTS)
 
-                var xTangent = centerlineXArray[b] - centerlineXArray[a]
-                var yTangent = centerlineYArray[b] - centerlineYArray[a]
+                val nextX = xArray[next]
+                val nextY = yArray[next]
+                val parallaxMult = parallaxArray[i]
+
+                val lastX = xArray[last]
+                val lastY = yArray[last]
+
+                var xTangent = nextX - lastX
+                var yTangent = nextY - lastY
                 // distance formula
                 var distBetween = sqrt(xTangent.pow(2f) + yTangent.pow(2f))
                 if (distBetween == 0f) distBetween = 1f
@@ -252,13 +264,10 @@ class niko_MPC_magnetarStarScript(
                 xTangent /= distBetween
                 yTangent /= distBetween
 
-                // the more parallax, the thicker the line (closer to camera)
-                val sideOffsetMult = (LINE_WIDTH * 0.5f) * parallaxMults[i]
-                // rotate the tangent 90 degrees, make it thicker
-                // basically has the effect of turning our direction of movement (tangent)
-                // perpendicular and then thickening it
-                val leftEdge = -yTangent * sideOffsetMult
-                val rightEdge = xTangent * sideOffsetMult
+                val widthHalf = LINE_WIDTH * 0.5f
+                val widthMult = widthHalf * parallaxMult
+                val xWidth = -yTangent
+                val yWidth = xTangent * widthMult
 
                 val localT = if (layer == CampaignEngineLayers.TERRAIN_9) t else 1f - t
                 val mult = 1f - getAlphaMult(localT)
@@ -274,12 +283,15 @@ class niko_MPC_magnetarStarScript(
                 val green = (ourColor[1] * greenMult).coerceAtMost(1f)
                 val blue = (ourColor[2] * blueMult).coerceAtMost(1f)
 
+                val x = xArray[i]
+                val y = yArray[i]
+
                 GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(0f, 0f)
-                GL11.glVertex2f(centerlineXArray[i] + leftEdge, centerlineYArray[i] + rightEdge)         // one edge of the ribbon
+                GL11.glVertex2f(x + xWidth, y + yWidth)         // one edge of the ribbon
                 GL11.glColor4f(red, green, blue, ourAlpha)
                 GL11.glTexCoord2f(1f, 1f)
-                GL11.glVertex2f(centerlineXArray[i] - leftEdge, centerlineYArray[i] - rightEdge)
+                GL11.glVertex2f(x - xWidth, y - yWidth)
             }
             GL11.glEnd()
 
