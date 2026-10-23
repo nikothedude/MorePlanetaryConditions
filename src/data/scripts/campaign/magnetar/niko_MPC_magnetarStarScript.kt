@@ -27,6 +27,7 @@ import data.utilities.niko_MPC_miscUtils.getApproximateHyperspaceLoc
 import data.utilities.niko_MPC_settings
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import lunalib.lunaUtil.campaign.LunaCampaignRenderingPlugin
+import org.dark.shaders.util.ShaderLib
 import org.lazywizard.lazylib.MathUtils
 import org.lazywizard.lazylib.VectorUtils
 import org.lwjgl.opengl.GL11
@@ -459,11 +460,12 @@ class niko_MPC_magnetarStarScript(
     fun doPulse() {
         val params = niko_MPC_magnetarPulse.MagnetarPulseParams(
             18000f,
-            magnetar.radius + 50f,
+            magnetar.radius + 200f,
             magnetar.radius / 2f,
             magnetar,
             startingRange = magnetar.radius / 2f,
             explosionDamageMult = 0.7f,
+            explosionDisruptionMult = 1.1f,
             affectPlanets = true
         )
         params.damage = ExplosionEntityPlugin.ExplosionFleetDamage.LOW

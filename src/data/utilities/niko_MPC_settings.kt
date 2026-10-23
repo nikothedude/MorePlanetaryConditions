@@ -34,6 +34,8 @@ object niko_MPC_settings {
 
     var ENABLE_IAIIC_CRISIS = false
 
+    var COLOR_SENSITIVITY_ENABLED = false
+
     var nexLoaded: Boolean = false
     var MCTE_loaded: Boolean = false
     var indEvoEnabled = false
@@ -138,6 +140,8 @@ object niko_MPC_settings {
 
         DISABLE_MAGNETAR_CORE_DROPS = LunaSettings.getBoolean(modId, "MPC_disableMagnetarCoreDrops")!!
 
+        COLOR_SENSITIVITY_ENABLED = LunaSettings.getBoolean(modId, "MPC_colorSensitivityMode")!!
+
         ENABLE_IAIIC_CRISIS = false
         //ENABLE_IAIIC_CRISIS = LunaSettings.getBoolean(modId, "MPC_enableIAIICCrisis")!!
 
@@ -148,6 +152,10 @@ object niko_MPC_settings {
         SATELLITE_NEX_ABILITY_BASE_TOTAL_DAMAGE = LunaSettings.getFloat(modId, "MPC_satelliteBarrageDamage")!!
         SATELLITE_NEX_ABILITY_DURATION = LunaSettings.getInt(modId, "MPC_satelliteBarrageDuration")!!
         SATELLITE_NEX_ABILITY_BASE_DISRUPTION_TIME = LunaSettings.getInt(modId, "MPC_satelliteBarrageDisruptTime")!!
+    }
+
+    fun getColorSensitivityMode(): Int {
+        return if (!COLOR_SENSITIVITY_ENABLED) 0 else 1
     }
 
     @JvmStatic

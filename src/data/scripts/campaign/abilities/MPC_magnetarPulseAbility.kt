@@ -33,7 +33,7 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
         const val MAX_EFFECT = 1f
 
         //public static final float RANGE = 1000f;
-        const val BASE_RADIUS = 225f
+        const val BASE_RADIUS = 900f
         const val BASE_PULSE_SPEED = niko_MPC_magnetarPulse.BASE_SHOCKWAVE_SPEED * 1.5f
 
         const val MAX_BURN_ANCHOR = 8
@@ -181,14 +181,17 @@ class MPC_magnetarPulseAbility: BaseDurationAbility() {
                 radius,
                 radius / 2f,
                 100f,
+                relatedEntity = playerFleet,
                 speed = speed,
                 startingRange = playerFleet.radius,
                 respectIgnore = false,
                 sourceFleet = playerFleet,
                 baseRepLoss = BASE_REP_LOSS,
                 damage = ExplosionEntityPlugin.ExplosionFleetDamage.MEDIUM,
-                explosionDamageMult = 2f,
+                explosionDamageMult = 1f,
+                explosionDisruptionMult = 2f,
                 color = BASE_COLOR,
+                spawnSounds = ArrayList()
             )
 
             niko_MPC_magnetarPulse.createPulse(

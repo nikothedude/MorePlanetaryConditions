@@ -42,7 +42,7 @@ class MPC_omegaManufactorumCMD: BaseCommandPlugin() {
                 interactionTarget.memoryWithoutUpdate["\$MPC_groundDefensesDisabled"] = true
 
                 val rule = AddRemoveAnyItem()
-                rule.execute(ruleId, dialog, Misc.tokenize("RESOURCES") + Misc.tokenize(Commodities.FUEL) + Misc.tokenize("${-(niko_MPC_settings.OMAN_BOMBARD_COST)}"), memoryMap)
+                    rule.execute(ruleId, dialog, Misc.tokenize("RESOURCES") + Misc.tokenize(Commodities.FUEL) + Misc.tokenize("${-(niko_MPC_settings.OMAN_BOMBARD_COST)}"), memoryMap)
             }
             "playMusic" -> {
                 Global.getSoundPlayer().setSuspendDefaultMusicPlayback(true)

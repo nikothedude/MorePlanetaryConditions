@@ -1,6 +1,7 @@
 fieldID,fieldName,fieldType,defaultValue,secondaryValue,fieldDescription,minValue,maxValue,tab
 MPC_generalHeader,General Header,Header,General Options,,,,,General
 MPC_showErrorsInGame,Show Errors,Boolean,true,,"Whenever a custom error occurs, you will be notified by some text.",,,General
+MPC_colorSensitivityMode,Color Sensitivity Mode,Boolean,false,,"If enabled, certain VFX will be disabled or toned down. For epilepsy and other.",,,General
 ,,,,,,,,Conditions
 MPC_conditionToggleHeader,Condition Toggles,Header,Condition Toggles,,,,,Conditions
 MPC_enableDefenseSatellites,Enable Defense Satellites,Boolean,true,,"If false, removes all instances of defense satellites from the sector.",,,Conditions

@@ -38,6 +38,7 @@ import data.scripts.campaign.econ.conditions.overgrownNanoforge.sources.effects.
 import data.scripts.campaign.econ.conditions.terrain.hyperspace.niko_MPC_realspaceHyperspace
 import data.scripts.campaign.econ.specialItems.overgrownNanoforgeItemEffect
 import data.scripts.campaign.listeners.*
+import data.scripts.campaign.magnetar.MPC_glitchShaderRenderer
 import data.scripts.campaign.magnetar.crisis.intel.MPC_IAIICFobIntel
 import data.scripts.campaign.magnetar.crisis.intel.MPC_patherContributionIntel.Companion.SECT_NAME
 import data.scripts.campaign.magnetar.crisis.listeners.MPC_ArkFOBColonizedListener
@@ -73,6 +74,7 @@ import data.utilities.niko_MPC_settings.stationAugmentsLoaded
 import data.utilities.niko_MPC_settings.yunruIndustriesEnabled
 import lunalib.lunaSettings.LunaSettings
 import lunalib.lunaSettings.LunaSettingsListener
+import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import niko.MCTE.utils.MCTE_debugUtils
 import org.apache.log4j.Level
 import org.dark.shaders.util.ShaderLib
@@ -352,6 +354,8 @@ class niko_MPC_modPlugin : BaseModPlugin() {
         if (niko_MPC_settings.nexLoaded) {
             //MPC_IAIICFobInvasionListener.get(true)
         }
+
+        LunaCampaignRenderer.addTransientRenderer(MPC_glitchShaderRenderer())
     }
 
     override fun beforeGameSave() {

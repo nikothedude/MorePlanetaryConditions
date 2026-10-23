@@ -5,9 +5,11 @@ import com.fs.starfarer.api.campaign.CampaignEngineLayers
 import com.fs.starfarer.api.campaign.SectorEntityToken
 import com.fs.starfarer.api.combat.ViewportAPI
 import com.fs.starfarer.api.graphics.SpriteAPI
+import com.fs.starfarer.api.impl.campaign.rulecmd.AddAbility
 import com.fs.starfarer.api.util.Misc
 import data.scripts.campaign.abilities.MPC_magnetarPulseAbility
 import data.scripts.campaign.magnetar.niko_MPC_magnetarPulse
+import data.utilities.niko_MPC_ids
 import lunalib.lunaUtil.campaign.LunaCampaignRenderer
 import lunalib.lunaUtil.campaign.LunaCampaignRenderingPlugin
 import org.lazywizard.console.BaseCommand
@@ -35,7 +37,7 @@ class niko_MPC_genericCommand: BaseCommand {
 
         //LunaCampaignRenderer.addTransientRenderer(MPC_vignetteRenderer())
 
-        Console.showMessage("A")
+        Global.getSector().characterData.addAbility("MPC_ionizedPulse");
 
         return BaseCommand.CommandResult.SUCCESS
     }

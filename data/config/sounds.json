@@ -53,6 +53,12 @@
 			{"file":"sounds/fx/MPC_magnetarPulseAmbience.ogg","pitch":1.0,"volume":0.9}
 		],
 	},
+
+	"MPC_glitchLoop":{
+		"sounds":[
+			{"file":"sounds/fx/MPC_glitchLoop.ogg","pitch":1.0,"volume":1.0}
+		],
+	},
 	
 	"MPC_punch":{
 		"sounds":[

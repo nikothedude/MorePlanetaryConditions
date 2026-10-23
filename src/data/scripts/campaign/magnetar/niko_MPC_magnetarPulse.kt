@@ -57,7 +57,7 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
         /** At max interdict effectiveness, immobility is reduced by this percent. */
         const val MAX_INTERDICT_REINFORCEMENT = 1f
         /** MAX_INTERDICT_REINFORCEMENT is reached at this progress level of interdiction. */
-        const val MAX_INTERDICT_PROGRESS_NEEDED = 0.6f
+        const val MAX_INTERDICT_PROGRESS_NEEDED = 0.8f
         const val INTERDICT_EXTRA_COOLDOWN = 3f
 
         const val INTERDICT_COMPLETE_GRACE_DAYS = 0.1f
@@ -65,12 +65,6 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
         const val BASE_STRIKE_DAMAGE = 25
 
         const val BASE_SHOCKWAVE_SPEED = 5000f
-
-        const val BASE_BURN_MULT = 0.8f
-        const val BASE_BURN_MULT_DURATION = 0.2f
-
-        const val PARTICLE_GEN_DIST = 10000f
-        const val PARTICLES_PER_SECOND = 45f
 
         const val TERRAIN_ID = "MPC_magnetarPulseTerrain"
 
@@ -153,7 +147,7 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
     override fun advance(amount: Float) {
         if (params !is MagnetarPulseParams) {
             relatedEntity?.containingLocation?.removeEntity(entity)
-            return // wait for compatibility utils to clean us up
+            return
         }
 
         super.advance(amount)
@@ -590,14 +584,16 @@ class niko_MPC_magnetarPulse(): BaseRingTerrain(), AuroraRenderer.AuroraRenderer
             //picker.remove(member);
         }
 
-        val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
-        val shoveIntensity = (damageFraction * 20f).coerceAtMost(casted.speed / 12000f) // not arbitrary, it mostly keeps it locked to the speed of the pulse
-        fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity))
+        if (interdictionEffectiveness == null || interdictionEffectiveness < 1f) {
+            val shoveDir = Misc.getAngleInDegrees(entity.location, fleet.location)
+            val shoveIntensity = (damageFraction * 20f).coerceAtMost(casted.speed / 12000f) // not arbitrary, it mostly keeps it locked to the speed of the pulse
+            fleet.addScript(ShoveFleetScript(fleet, shoveDir, shoveIntensity))
+        }
 
         val sourceFleet = casted.sourceFleet
         if (sourceFleet?.isPlayerFleet == true && fleet.knowsWhoPlayerIs() && sourceFleet.faction != fleet.faction) {
             val repParams = CoreReputationPlugin.CustomRepImpact()
-            repParams.delta = -casted.baseRepLoss * (mult * 10f)
+            repParams.delta = -casted.baseRepLoss * (mult)
             repParams.limit = RepLevel.INHOSPITABLE
             Global.getSector().adjustPlayerReputation(
                 CoreReputationPlugin.RepActionEnvelope(CoreReputationPlugin.RepActions.CUSTOM, repParams, null, false),

@@ -5,6 +5,7 @@ import com.fs.starfarer.api.Global
 import com.fs.starfarer.api.campaign.*
 import com.fs.starfarer.api.campaign.rules.MemoryAPI
 import com.fs.starfarer.api.combat.EngagementResultAPI
+import com.fs.starfarer.api.impl.campaign.rulecmd.AddTextSmall
 import com.fs.starfarer.api.util.Misc
 import data.niko_MPC_modPlugin
 import data.scripts.campaign.magnetar.niko_MPC_magnetarIntel
@@ -13,6 +14,7 @@ import data.scripts.everyFrames.niko_MPC_baseNikoScript
 import data.utilities.niko_MPC_ids
 import lunalib.lunaUtil.LunaCommons
 import org.lazywizard.lazylib.MathUtils
+import org.magiclib.kotlin.addCRLossText
 
 class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
 
@@ -107,12 +109,14 @@ class MPC_playerFirstVisitToMagnetar: InteractionDialogPlugin {
             )
             textPanel!!.highlightInLastPara("magnetar")
             textPanel!!.setHighlightColorsInLastPara(Misc.getHighlightColor(), Misc.getNegativeHighlightColor(), Misc.getHighlightColor())
+
         }
 
         val intel = niko_MPC_magnetarIntel()
         Global.getSector().intelManager.addIntel(intel, true, dialog!!.textPanel)
         intel.sendUpdateIfPlayerHasIntel("FIRST_ADD", dialog!!.textPanel)
 
+        AddTextSmall().execute(null, dialog, Misc.tokenize("\"If sensitive to flashing colors, consider enabling Color Sensitivity mode in LunaSettings\"") + Misc.tokenize("bad"), null)
         textPanel!!.highlightInLastPara(Misc.getHighlightColor(), "magnetars")
         options!!.addOption("Continue", "CONTINUE")
     }
