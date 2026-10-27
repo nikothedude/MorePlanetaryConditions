@@ -65,11 +65,11 @@ class MPC_glitchShaderRenderer: LunaCampaignRenderingPlugin {
             var t = clock.convertToSeconds(clock.elapsedDaysSinceGameStart())
 
             val intensity = getIntensity(viewport)
-            if (intensity > 0f && Global.getSector().campaignUI.currentInteractionDialog == null) {
+            if (intensity > 0f && Global.getSector().campaignUI.currentInteractionDialog == null && !Global.getSector().isPaused) {
                 Global.getSoundPlayer().playUILoop(
                     "MPC_glitchLoop", // https://pixabay.com/sound-effects/technology-glitch-sounds-26212/
                     1f,
-                    intensity,
+                    intensity * 0.25f,
                 )
             }
 
@@ -107,7 +107,7 @@ class MPC_glitchShaderRenderer: LunaCampaignRenderingPlugin {
         val adjustedDist = (dist - adjustedMin).coerceAtLeast(0f)
         if (adjustedDist > maxDist) return 0f
 
-        var mult = if (playerFleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.DRIVE_BUBBLE_DESTROYED)) 1f else 0.01f
+        var mult = 0.2f //if (playerFleet.memoryWithoutUpdate.getBoolean(niko_MPC_ids.DRIVE_BUBBLE_DESTROYED)) 1f else 0.01f
         if (Global.getSector().isPaused) mult *= 0.1f
 
         return (1 - (1 / (maxDist / adjustedDist))) * mult
