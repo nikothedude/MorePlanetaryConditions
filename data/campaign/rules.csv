@@ -1032,22 +1032,36 @@ MPC_WWLLearnWalkToKantaOneIntroNotDone,DialogOptionSelected,"$option == MPC_WWLL
 !$global.didKantasDenIntro score:50",,"You leave four guards and the pilot at your shuttle. Two more guards follow you, and the pirate lieutenant sent to meet you nods that this is correct.
 
 You're led through a primary access corridor toward the center of the station. You adjust quickly to disjointed agrav fields, an effect you suspect is intentional as ranks of pirates of all shapes and ages eye you for weakness, murmuring crude comments and jostling for prestige.","kd_kantaFirstIntro1:Keep on walking","in case the player raided and never visited Kanta or something. i honestly dont know if this is needed lol"
-MPC_WWLLearnWalkToKantaOne,DialogOptionSelected,"$option == MPC_WWLLearnWalkToKantaOne",,"As always, you leave two guards and your pilot in the shuttle, but this time you take an entourage of six guards with you as the officer leads you through the disjointed hallways. While you've seen it all before, you're on extra guard this time.","0:MPC_WWLLearnEnterCourt:Enter the court",
+MPC_WWLLearnWalkToKantaOne,DialogOptionSelected,"$option == MPC_WWLLearnWalkToKantaOne",,"As always, you leave four guards and your pilot in the shuttle, but this time you take an entourage of an extra six guards with you as the officer leads you through the disjointed hallways. While you've seen it all before, you're on extra guard this time.","0:MPC_WWLLearnEnterCourt:Enter the court",
 MPC_WWLLearnEnterCourt,DialogOptionSelected,"$option == MPC_WWLLearnEnterCourt","FireBest KDKantaRouteTo",,,
-MPC_WWLLearnReachedKanta,KDKantaRouteTo,"$global.MPC_kantaExpectingPlayer score:500",,"The court's floor has been cleared of all except Kanta, Cydonia, and a handful of guards. Clearly, they've been expecting you.
+MPC_WWLLearnReachedKanta,KDKantaRouteTo,"$global.MPC_kantaExpectingPlayer score:500",,"You prepare yourself for the scent, the sight, the sounds and the touch, but nothing can quite burn it all out. This is Kanta domain, through and through - confirmed by the acrid scent of discharge and rot as the blast doors scream open once more.
 
-""Spacer!"" Cydonia spits out. ""Your crimes against Kanta are NOT! FORGOTTEN!"" He draws an x with his arms, glaring angrily. He then flips his finger up. ""BUT! The great Kanta may still have use for you..."" ","0:MPC_WWLLearnReachedKantaTwo:Continue",
-MPC_WWLLearnReachedKantaTwo,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaTwo","FireBest MPC_WWLLearnReachedKantaThreeResentfulCheck","The doctor skitters over to a gilded table beside Kanta, who stares at you with her signature menace. The gaze is broken by Cydonia, now holding a pristine tripad in his left hand. ""The mighty Kanta seeks to express her strength over all by expanding her collection of artifacts. One, however, continues to elude her!"" he exclaims, the might in his voice betrayed by his small frame. ","0:MPC_WWLLearnReachedKantaThree:Continue",
+Before you lies the Throne, once more. Cleared of all except Kanta, Cydonia, and a handful of guards, even the audience is absent for this meeting. They've been expecting you.","0:MPC_WWLLearnReachedKantaThree:Continue",
+NEW RULE,,,,"You seem to escape the introductions, this time. Cydonia scowls, stands stiffly, and marches down the crimson staircase where the dim-faced warlord resides. ""Spacer!"" he weakly commands as he approaches, ""Kneel before Kanta, and perhaps your transgressions will be forgiven...""
+
+...transgressions. You shoot a glance to the pile - a few badges of your own personal insignia have been added. They look rather gruesome. Seems she hasn't quite forgiven you.","MPC_WWLKneel:Kneel
+MPC_WWLStand:Stand",
+NEW RULE,,"$option == MPC_WWLKneel","AdjustRepActivePerson VENGEFUL -5",,,
+NEW RULE,,"$option == MPC_WWLStand",,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
+NEW RULE,,,,,,
 MPC_WWLLearnReachedKantaThree,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaThree
-","SetTextHighlights ""wormholes""","Kanta stands, causing Cydonia to wither. ""It has come to our attention that you possess a particular ability."" She pauses. For effect, or for something else, you can't tell. ""The ability to traverse wormholes.""
+","SetTextHighlights ""wormholes""","Kanta stands, causing Cydonia to wither. ""You have a strength."" She pauses, for effect or for something else. ""One not often seen.""
 
-The court gasps.
+""The ability to traverse wormholes.""
 
-She sits back down, staring intensely. ""You have proven yourself as more than just a weapon. You are powerful, willful. You cannot be wielded."" Cydonia looks absolutely shocked at her speech. ""You can, however, be pushed in a direction. Our. Direction."" She stares at Cydonia.
+The court gasps.","0:MPC_WWLLReachedKantaTwoB:Accept the task",
+MPC_WWLLReachedKantaTwoB,DialogOptionSelected,"$option == MPC_WWLLReachedKantaTwoB",,"She sits back down, staring intensely. ""You have proven yourself as more than just a weapon. You are powerful, willful. You cannot be wielded. You can, however, be pushed in a direction. Our. Direction."" Cydonia stares in shock. Only Kanta's withering gaze shatters this.
 
 After a few moments of sputtering, Cydonia seems to realize something and frantically taps his tripad, before transmitting a spec of an atlas mk2. to yours. ""A family member has betrayed the great Kanta."" She announces, to yet another gasp of the crowd. """"To facilitate this task, we will give you an invaluable treasure - a wormhole anchor, rumored to connect to a location containing this artifact. Retrieve this artifact, and the ship is yours.""
 
-You take a moment to look over the spec. While it's rather vague (to pirate standard), it describes a highly customized atlas mk2 powerful enough to rival even the onslaught in strength - though nothing will fix the horrific hull integrity.","0:MPC_WWLLearnAccept:Accept the task",
+You take a moment to look over the spec. While it's rather vague (to pirate standard), it describes a highly customized atlas mk2 powerful enough to rival even the onslaught in strength - though nothing will fix the horrific hull integrity.",,
+MPC_WWLLearnReachedKantaTwo,DialogOptionSelected,"$option == MPC_WWLLearnReachedKantaTwo","FireBest MPC_WWLLearnReachedKantaThreeResentfulCheck","The doctor skitters over to a gilded table beside Kanta, who stares at you with her signature menace. The gaze is broken by Cydonia, now holding a pristine tripad in his left hand. ""The mighty Kanta seeks to express her strength over all by expanding her collection of artifacts. One, however, continues to elude her!"" he exclaims, the might in his voice betrayed by his small frame. ","0:MPC_WWLLearnReachedKantaThree:Continue",
 MPC_WWLLearnReachedKantaThreeResentfulCheck,MPC_WWLLearnReachedKantaThreeResentfulCheck,"MPC_kantaResentful",,"""Slime."" Kanta mutters, sending Cydonia skittering away, before tiptoeing back. ""Vermin. You are no better than a common Toteliac."" She hisses, sounding like a hull breach. ""Y-Yes! Yes, you must be PUNISHED! The great KAN-""
 
 ""Yet, you are still useful."" Kanta interrupts.",,

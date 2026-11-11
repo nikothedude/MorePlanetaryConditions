@@ -57,6 +57,7 @@ class MPC_glitchShaderRenderer: LunaCampaignRenderingPlugin {
     ) {
         var playerfleet = Global.getSector().playerFleet
         if (!playerfleet.containingLocation.hasTag("theme_magnetar")) return
+        if (shader == 0) return
 
         //Screen texture can be unloaded if graphicslib shaders are disabled, causing a blackscreen
         if (ShaderLib.getScreenTexture() != 0) {
